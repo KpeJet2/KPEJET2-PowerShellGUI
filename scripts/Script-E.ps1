@@ -1,0 +1,81 @@
+# VersionTag: 2602.a.11
+# VersionTag: 2602.a.10
+# VersionTag: 2602.a.9
+# VersionTag: 2602.a.8
+# VersionTag: 2602.a.7
+<#
+.SYNOPSIS
+Script-EEE - User Management
+
+.DESCRIPTION
+This script performs user management tasks.
+#>
+
+Write-Information "================================" -InformationAction Continue
+Write-Information "Script-EEE: EEE EXAMPLE SCRIPT" -InformationAction Continue
+Write-Information "================================" -InformationAction Continue
+Write-Information "" -InformationAction Continue
+
+Write-Information "Execution Details:" -InformationAction Continue
+Write-Information "  Computer: $env:COMPUTERNAME" -InformationAction Continue
+Write-Information "  User: $env:USERNAME" -InformationAction Continue
+Write-Information "  PowerShell Version: $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)" -InformationAction Continue
+Write-Information "  Execution Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -InformationAction Continue
+Write-Information "" -InformationAction Continue
+
+Write-Information "Managing user accounts and permissions..." -InformationAction Continue
+
+Write-Information "  [OK] TASK 1 - EEE EXAMPLE SCRIPT" -InformationAction Continue
+
+Write-Information "  [OK] TASK 2 - EEE EXAMPLE SCRIPT" -InformationAction Continue
+
+Write-Information "  [OK] TASK 3 - EEE EXAMPLE SCRIPT" -InformationAction Continue
+
+Write-Information "  [OK] TASK 4 - EEE EXAMPLE SCRIPT" -InformationAction Continue
+
+Write-Information "  [OK] TASK 5 - EEE EXAMPLE SCRIPT" -InformationAction Continue
+Write-Information "" -InformationAction Continue
+
+Write-Information "User management completed successfully!" -InformationAction Continue
+Write-Information "" -InformationAction Continue
+# A
+# Write-Host "Press any key to proceed... or you can just wait 5 seconds."
+# $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+###
+#B
+# Write-Host "Press any key to proceed... or you can just wait 5 seconds."
+#timeout /t 10
+###
+#C
+# https://www.sharepointdiary.com/2023/03/pause-powershell-with-press-any-key-to-continue.html
+function Wait-KeyOrTimeout {
+    param([int]$Seconds = 5)
+     
+    $endTime = (Get-Date).AddSeconds($Seconds)
+    Write-Information "Press any key to continue or wait $Seconds seconds..." -InformationAction Continue
+     
+    while ((Get-Date) -lt $endTime) {
+        if ([Console]::KeyAvailable) {
+            [Console]::ReadKey($true) | Out-Null
+            return
+        }
+        Start-Sleep -Milliseconds 100
+    }
+    Write-Information "Timeout reached, continuing..." -InformationAction Continue
+}
+ 
+Write-Information "EEE completed." -InformationAction Continue
+Wait-KeyOrTimeout -Seconds 5
+Write-Information "Script-E execution finished." -InformationAction Continue
+
+
+
+
+
+
+
+
+
+
+
+

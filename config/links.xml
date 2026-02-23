@@ -1,0 +1,33 @@
+<!-- VersionTag: 2602.a.11 -->
+<!-- VersionTag: 2602.a.10 -->
+<!-- VersionTag: 2602.a.9 -->
+<!-- VersionTag: 2602.a.8 -->
+<!-- VersionTag: 2602.a.7 -->
+<Links>
+  <Category name="CORPORATE">
+    <Link name="Intranet" url="https://intranet.example.com" />
+    <Link name="HR Portal" url="https://hr.example.com" />
+  </Category>
+  <Category name="PUBLIC-INFO">
+    <Link name="Company Site" url="https://example.com" />
+  </Category>
+  <Category name="LOCAL">
+    <Link name="Local Dashboard" url="http://localhost" />
+  </Category>
+  <Category name="M365">
+    <Link name="Outlook" url="https://outlook.office.com" />
+    <Link name="OneDrive" url="https://onedrive.live.com" />
+  </Category>
+  <Category name="SEARCH">
+    <Link name="Bing" url="https://www.bing.com" />
+    <Link name="Google" url="https://www.google.com" />
+  </Category>
+  <Category name="USERS-URLS">
+    <Link name="User Link 1" url="https://example.com" />
+  </Category>
+</Links>
+
+
+
+
+

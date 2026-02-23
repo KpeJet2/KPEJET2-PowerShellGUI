@@ -1,0 +1,375 @@
+{
+  "metadata": {
+    "versionTag": "2602.a.8",
+    "minimumPowerShellVersion": "5.1",
+    "synopsis": "PowerShell GUI Application with Admin Elevation Support",
+    "description": "A Windows Forms GUI application that provides a menu-driven interface to launch various PowerShell scripts with optional admin elevation, config file management, and comprehensive logging.",
+    "notes": "",
+    "link": "",
+    "inputs": "",
+    "outputs": "",
+    "functionality": "For system administrators and IT professionals to easily access and run common maintenance scripts",
+    "author": "The Establishment",
+    "version": "1.0.0",
+    "created": "24th January 2026",
+    "modified": "16th February 2026",
+    "versionHistory": [
+      {
+        "version": "1.0.0",
+        "description": "Initial version"
+      }
+    ],
+    "configurationBase": "pwsh-app-config-BASE.json"
+  },
+  "errorActionPreference": "Stop",
+  "paths": {
+    "local": {
+      "description": "User-configurable local paths with GUI prompts and 9-second timeout",
+      "rootPath": {
+        "variable": "$localRoot",
+        "value": "Split-Path -Parent $MyInvocation.MyCommand.Path",
+        "description": "Base directory for script execution"
+      },
+      "configPath": {
+        "variable": "$ConfigPath",
+        "defaultValue": "$localRoot",
+        "description": "Local configuration directory",
+        "promptLabel": "ConfigPath",
+        "timeoutSeconds": 9,
+        "createIfMissing": true
+      },
+      "defaultFolder": {
+        "variable": "$DefaultFolder",
+        "defaultValue": "$localRoot",
+        "description": "Default working folder",
+        "promptLabel": "DefaultFolder",
+        "timeoutSeconds": 9,
+        "createIfMissing": true
+      },
+      "tempFolder": {
+        "variable": "$TempFolder",
+        "defaultValue": "$localRoot",
+        "description": "Temporary files directory",
+        "promptLabel": "TempFolder",
+        "timeoutSeconds": 9,
+        "createIfMissing": true
+      },
+      "reportFolder": {
+        "variable": "$ReportFolder",
+        "defaultValue": "$localRoot",
+        "description": "Report output directory",
+        "promptLabel": "ReportFolder",
+        "timeoutSeconds": 9,
+        "createIfMissing": true
+      }
+    },
+    "global": {
+      "description": "Script-relative global paths automatically derived from script location",
+      "scriptDir": {
+        "variable": "$scriptDir",
+        "value": "Split-Path -Parent $MyInvocation.MyCommand.Path",
+        "description": "Script installation directory",
+        "createIfMissing": true
+      },
+      "configDir": {
+        "variable": "$configDir",
+        "value": "Join-Path $scriptDir 'config'",
+        "description": "Configuration files directory",
+        "createIfMissing": true
+      },
+      "modulesDir": {
+        "variable": "$modulesDir",
+        "value": "Join-Path $scriptDir 'modules'",
+        "description": "PowerShell modules directory",
+        "createIfMissing": true
+      },
+      "logsDir": {
+        "variable": "$logsDir",
+        "value": "Join-Path $scriptDir 'logs'",
+        "description": "Application logs directory",
+        "createIfMissing": true
+      },
+      "scriptsDir": {
+        "variable": "$scriptsDir",
+        "value": "Join-Path $scriptDir 'scripts'",
+        "description": "Executable scripts directory",
+        "createIfMissing": true
+      }
+    },
+    "globalFiles": {
+      "description": "Configuration files with existence validation",
+      "configFile": {
+        "variable": "$configFile",
+        "value": "Join-Path $configDir 'system-variables.xml'",
+        "description": "System variables XML configuration",
+        "createIfMissing": true,
+        "type": "File"
+      },
+      "linksConfigFile": {
+        "variable": "$linksConfigFile",
+        "value": "Join-Path $configDir 'links.xml'",
+        "description": "Links and resources XML configuration",
+        "createIfMissing": true,
+        "type": "File"
+      },
+      "avpnConfigFile": {
+        "variable": "$avpnConfigFile",
+        "value": "Join-Path $configDir 'AVPN-devices.json'",
+        "description": "AVPN devices JSON configuration",
+        "createIfMissing": true,
+        "type": "File"
+      },
+      "avpnModulePath": {
+        "variable": "$avpnModulePath",
+        "value": "Join-Path $modulesDir 'AVPN-Tracker.psm1'",
+        "description": "AVPN tracking PowerShell module",
+        "createIfMissing": false,
+        "type": "File",
+        "validateOnly": true,
+        "warningOnMissing": true
+      }
+    },
+    "scriptFolders": {
+      "description": "Configurable script folder paths - stored per location for ongoing use",
+      "configFile": "pwsh-scriptfolders-config.json",
+      "required": [
+        {
+          "key": "ConfigPath",
+          "label": "Configuration Folder",
+          "description": "Location of configuration files and settings",
+          "defaultValue": "$localRoot/config",
+          "createIfMissing": true
+        },
+        {
+          "key": "DefaultFolder",
+          "label": "Default Working Folder",
+          "description": "Default directory for script operations",
+          "defaultValue": "$localRoot",
+          "createIfMissing": true
+        },
+        {
+          "key": "TempFolder",
+          "label": "Temporary Folder",
+          "description": "Location for temporary files and cache",
+          "defaultValue": "$localRoot/temp",
+          "createIfMissing": true
+        },
+        {
+          "key": "ReportFolder",
+          "label": "Report Output Folder",
+          "description": "Location where reports are saved",
+          "defaultValue": "$localRoot/~REPORTS",
+          "createIfMissing": true
+        },
+        {
+          "key": "DownloadFolder",
+          "label": "Download Folder",
+          "description": "Location for downloaded files and updates",
+          "defaultValue": "$localRoot/~DOWNLOADS",
+          "createIfMissing": true
+        }
+      ],
+      "custom": {
+        "description": "Additional custom script folder paths (can be added/removed via Settings GUI)",
+        "format": "array of {path, label, enabled}",
+        "example": [
+          {
+            "path": "C:\\PowerShellGUI\\scripts\\QUICK-APP",
+            "label": "QUICK-APP Scripts",
+            "enabled": true
+          }
+        ]
+      }
+    }
+  },
+  "functions": {
+    "requestLocalPath": {
+      "name": "Request-LocalPath",
+      "description": "GUI dialog with countdown timer for local path configuration",
+      "parameters": [
+        {
+          "name": "Label",
+          "mandatory": true,
+          "type": "string",
+          "description": "Display label for the path being configured"
+        },
+        {
+          "name": "DefaultValue",
+          "mandatory": true,
+          "type": "string",
+          "description": "Default value if user provides no input"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "mandatory": false,
+          "type": "int",
+          "default": 9,
+          "description": "Seconds before auto-continue with default"
+        }
+      ],
+      "returns": "string",
+      "assemblyDependencies": [
+        "System.Windows.Forms",
+        "System.Drawing"
+      ],
+      "behavior": "Shows modal dialog with countdown timer, returns user input or default value"
+    }
+  },
+  "sections": [
+    {
+      "name": "LOGGING FUNCTIONS",
+      "order": 1,
+      "description": "Centralized logging infrastructure for application and script events",
+      "functions": [
+        {
+          "name": "Write-AppLog",
+          "description": "Application-level logging with severity levels",
+          "parameters": [
+            {
+              "name": "Message",
+              "mandatory": true,
+              "type": "string"
+            },
+            {
+              "name": "Level",
+              "mandatory": false,
+              "type": "string",
+              "validateSet": ["Info", "Warning", "Error", "Success", "Debug", "Event"],
+              "default": "Info"
+            }
+          ],
+          "logFormat": "[$timestamp] [$Level] $Message",
+          "logFile": "$logsDir/$hostname-$(Get-Date -Format 'yyyy-MM-dd').log"
+        },
+        {
+          "name": "Write-ScriptLog",
+          "description": "Script-specific logging with script name tracking",
+          "parameters": [
+            {
+              "name": "Message",
+              "mandatory": true,
+              "type": "string"
+            },
+            {
+              "name": "ScriptName",
+              "mandatory": true,
+              "type": "string"
+            },
+            {
+              "name": "Level",
+              "mandatory": false,
+              "type": "string",
+              "validateSet": ["Info", "Warning", "Error", "Success", "Debug", "Event"],
+              "default": "Info"
+            }
+          ],
+          "logFormat": "[$timestamp] [$ScriptName] [$Level] $Message",
+          "logFile": "$logsDir/$hostname-$(Get-Date -Format 'yyyy-MM-dd')_PwShGui-SCRIPTS.log"
+        }
+      ],
+      "moduleImports": [
+        {
+          "path": "$avpnModulePath",
+          "module": "AVPN-Tracker.psm1",
+          "force": true,
+          "validatePath": true,
+          "warningOnMissing": true
+        }
+      ]
+    },
+    {
+      "name": "CONFIG FUNCTIONS",
+      "order": 2,
+      "description": "Configuration file initialization and management",
+      "functions": [
+        {
+          "name": "Initialize-ConfigFile",
+          "description": "Creates system variables XML configuration with environment data"
+        },
+        {
+          "name": "Get-SystemConfig",
+          "description": "Retrieves configuration settings from XML file"
+        },
+        {
+          "name": "Set-SystemConfig",
+          "description": "Updates configuration settings in XML file"
+        }
+      ]
+    },
+    {
+      "name": "SCRIPT EXECUTION FUNCTIONS",
+      "order": 3,
+      "description": "Script launching with admin elevation, error handling, and logging"
+    },
+    {
+      "name": "NETWORK DIAGNOSTICS",
+      "order": 4,
+      "description": "Network connectivity testing and diagnostics tools"
+    },
+    {
+      "name": "GUI LAYOUT DISPLAY",
+      "order": 5,
+      "description": "Windows Forms GUI construction and layout management"
+    },
+    {
+      "name": "HELP FUNCTIONS",
+      "order": 6,
+      "description": "Help documentation and user guidance systems"
+    },
+    {
+      "name": "TESTING ROUTINES",
+      "order": 7,
+      "description": "Application testing and validation functions"
+    },
+    {
+      "name": "GUI FUNCTIONS",
+      "order": 8,
+      "description": "GUI event handlers, form controls, and user interaction logic"
+    },
+    {
+      "name": "MAIN EXECUTION",
+      "order": 9,
+      "description": "Application entry point and initialization sequence"
+    }
+  ],
+  "validation": {
+    "pathChecks": {
+      "description": "Test-Path validation for all directories and files",
+      "sequence": [
+        "Check LOCAL directories ($ConfigPath, $DefaultFolder, $TempFolder, $ReportFolder)",
+        "Create missing LOCAL directories",
+        "Check GLOBAL directories ($scriptDir, $configDir, $modulesDir, $logsDir, $scriptsDir)",
+        "Create missing GLOBAL directories",
+        "Check GLOBAL config files ($configFile, $linksConfigFile, $avpnConfigFile)",
+        "Create missing GLOBAL config files",
+        "Check GLOBAL module files ($avpnModulePath)",
+        "Log warning for missing module files"
+      ]
+    },
+    "executionOrder": [
+      "Define $ErrorActionPreference",
+      "Define $localRoot",
+      "Define Request-LocalPath function",
+      "Define LOCAL path variables (empty)",
+      "Prompt for LOCAL paths with GUI and timeout",
+      "Create LOCAL directories",
+      "Define GLOBAL path variables",
+      "Create GLOBAL directories",
+      "Create GLOBAL config files",
+      "Validate GLOBAL module files",
+      "Define LOGGING FUNCTIONS section",
+      "Import modules",
+      "Define CONFIG FUNCTIONS section",
+      "Define remaining sections in order",
+      "Execute MAIN EXECUTION"
+    ]
+  },
+  "notes": {
+    "localPathsBehavior": "LOCAL paths are user-configurable via GUI prompts with 9-second timeout. If user does not respond, defaults to $localRoot.",
+    "globalPathsBehavior": "GLOBAL paths are automatically derived from script location and cannot be configured by user.",
+    "pathValidationPattern": "if (-not (Test-Path $variable)) { New-Item -ItemType [Directory|File] -Path $variable -Force | Out-Null }",
+    "moduleValidationPattern": "if (-not (Test-Path $avpnModulePath)) { Write-AppLog 'AVPN module not found at $avpnModulePath' 'Warning' }",
+    "configFileFormat": "XML and JSON formats used for configuration persistence",
+    "loggingPattern": "Dual logging to both application log and console output with severity-based formatting"
+  }
+}

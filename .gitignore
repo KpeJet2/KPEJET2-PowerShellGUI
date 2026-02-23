@@ -1,0 +1,39 @@
+# VersionTag: 2602.a.11
+# VersionTag: 2602.a.10
+# VersionTag: 2602.a.9
+# VersionTag: 2602.a.8
+# VersionTag: 2602.a.7
+# ignore log files and temporary data
+logs/
+*.log
+temp/
+*.tmp
+*.temp
+# ignore ~DOWNLOADS, ~README.md, ~REPORTS, .venv
+~DOWNLOADS/
+~README.md
+~REPORTS/
+.venv/
+# ignore PowerShell generated files
+*.ps1xml
+*.psd1
+# ignore system specific
+Thumbs.db
+ehthumbs.db
+# ignore user profile
+*.suo
+# exclude built manifest files? maybe include them
+# you might want to track config and manifest so not add them
+
+
+
+
+
+
+
+
+
+
+
+
+
