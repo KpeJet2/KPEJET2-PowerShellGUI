@@ -221,13 +221,19 @@ foreach ($file in $psFiles) {
     if (-not $content) { continue }
     $rel = $file.FullName.Substring($scriptRoot.Length).TrimStart('\/')
 
-    # Check for automatic variable shadowing
-    $autoVars = @('$args', '$input', '$PSItem', '$_', '$this', '$PSCmdlet')
+    # Check for automatic variable shadowing (assignments to automatic variables)
+    $autoVars = @(
+        @{ Name = '$args';     Pattern = '\$args\s*=\s*@?\(' },
+        @{ Name = '$input';    Pattern = '\$input\s*=\s' },
+        @{ Name = '$PSItem';   Pattern = '\$PSItem\s*=\s' },
+        @{ Name = '$_';        Pattern = '\$_\s*=\s' },
+        @{ Name = '$this';     Pattern = '\$this\s*=\s' },
+        @{ Name = '$PSCmdlet'; Pattern = '\$PSCmdlet\s*=\s' }
+    )
     foreach ($av in $autoVars) {
-        $escaped = [regex]::Escape($av)
-        if ($content -match "(?m)^\s*${escaped}\s*=\s*@\(") {
+        if ($content -match ('(?m)^\s*' + $av.Pattern)) {
             Add-TestResult -Status 'WARN' -Test 'AutoVarShadow' -File $file.FullName `
-                -Detail "Possible shadowing of automatic variable '$av'"
+                -Detail "Possible shadowing of automatic variable '$($av.Name)'"
         }
     }
 

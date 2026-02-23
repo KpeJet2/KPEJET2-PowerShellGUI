@@ -115,7 +115,7 @@ flow presented as a nested hierarchy.</p>
       <li><span class="phase">Phase 0: Initialisation &amp; Assembly Loading</span>
         <ul>
           <li>Load <code>System.Windows.Forms</code>, <code>System.Drawing</code>, <code>System.Web</code></li>
-          <li>Initialise XML cache (<code>$script:_XmlCache</code>) and log buffer (<code>$script:_LogBuffer</code>)</li>
+          <li>Initialize XML cache (<code>$script:_XmlCache</code>) and log buffer (<code>$script:_LogBuffer</code>)</li>
           <li>Define local path variables: <code>$ConfigPath</code>, <code>$DefaultFolder</code>, <code>$TempFolder</code>, <code>$ReportFolder</code>, <code>$DownloadFolder</code></li>
           <li>Define global path variables: <code>$configDir</code>, <code>$modulesDir</code>, <code>$logsDir</code>, <code>$scriptsDir</code></li>
           <li>Create directories if missing</li>
@@ -370,7 +370,7 @@ flow presented as a nested hierarchy.</p>
     <tr>
       <td><code>$script:_LogBuffer.Clear()</code> on non-ArrayList</td>
       <td>Main-GUI.ps1:1255</td>
-      <td><code>$script:_LogBuffer</code> is initialised as <code>@()</code> (array). <code>.Clear()</code> method exists on <code>[System.Collections.Generic.List]</code> but not on a PowerShell array. Use <code>$script:_LogBuffer = @()</code> instead.</td>
+      <td><code>$script:_LogBuffer</code> is initialized as <code>@()</code> (array). <code>.Clear()</code> method exists on <code>[System.Collections.Generic.List]</code> but not on a PowerShell array. Use <code>$script:_LogBuffer = @()</code> instead.</td>
     </tr>
     <tr>
       <td><code>Get-ConfigVariable</code> null dereference</td>
@@ -437,7 +437,7 @@ flow presented as a nested hierarchy.</p>
     <tr>
       <td>Safety Pattern Arrays</td>
       <td><code>$patterns</code> (10 items) and <code>$secretPatterns</code> (5 items) in <code>Get-ScriptSafetyScore</code> are rebuilt on every call.</td>
-      <td>Move to script-scope <code>$script:SafetyPatterns</code> and <code>$script:SecretPatterns</code> initialised once.</td>
+      <td>Move to script-scope <code>$script:SafetyPatterns</code> and <code>$script:SecretPatterns</code> initialized once.</td>
     </tr>
     <tr>
       <td>Duplicate Code in Grid Selection</td>
@@ -589,6 +589,12 @@ Results appear in the output console below.</p>
 <script type="text/javascript">
 //<![CDATA[
 var testResults = [];
+
+/* Configuration constants */
+var CONFIG = {
+  MAX_FILE_LINES: 3000,       /* Warn if a script exceeds this line count */
+  MAX_HARDCODED_PATHS: 5      /* Show at most this many unique hardcoded paths */
+};
 
 function log(msg, type) {
   var el = document.getElementById('testOutput');
@@ -801,7 +807,7 @@ function runTestsOnContent(fileName, content) {
       if (unique.indexOf(hardcodedPaths[hp]) === -1) unique.push(hardcodedPaths[hp]);
     }
     log('Hardcoded paths found: ' + unique.length + ' unique', 'info');
-    for (var u = 0; u < Math.min(unique.length, 5); u++) {
+    for (var u = 0; u < Math.min(unique.length, CONFIG.MAX_HARDCODED_PATHS); u++) {
       log('  ' + unique[u], 'info');
     }
     addResult('INFO', 'HardcodedPaths', fileName, unique.length + ' unique hardcoded paths');
@@ -837,9 +843,9 @@ function runTestsOnContent(fileName, content) {
   log('Functions: ' + funcs.length, 'info');
   addResult('INFO', 'LineCount', fileName, lines.length + ' lines');
   addResult('INFO', 'FunctionCount', fileName, funcs.length + ' functions');
-  if (lines.length > 3000) {
-    log('File exceeds 3000 lines - consider splitting', 'warn');
-    addResult('WARN', 'FileSize', fileName, 'Exceeds 3000 lines');
+  if (lines.length > CONFIG.MAX_FILE_LINES) {
+    log('File exceeds ' + CONFIG.MAX_FILE_LINES + ' lines - consider splitting', 'warn');
+    addResult('WARN', 'FileSize', fileName, 'Exceeds ' + CONFIG.MAX_FILE_LINES + ' lines');
   }
 
   log('', '');
