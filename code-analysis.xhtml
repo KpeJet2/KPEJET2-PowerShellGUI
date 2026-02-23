@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>KPEJET2 PowerShell GUI - Code Analysis &amp; Test Runner</title>
+  <style type="text/css">
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; background: #f4f6f9; color: #222; line-height: 1.6; padding: 20px; }
+    h1 { font-size: 22px; color: #1a3a5c; border-bottom: 3px solid #2980b9; padding-bottom: 8px; margin-bottom: 16px; }
+    h2 { font-size: 18px; color: #2c3e50; margin: 24px 0 10px 0; border-left: 4px solid #2980b9; padding-left: 10px; }
+    h3 { font-size: 15px; color: #34495e; margin: 16px 0 8px 0; }
+    h4 { font-size: 13px; color: #555; margin: 10px 0 6px 12px; }
+    p, li { font-size: 13px; }
+    ul, ol { margin-left: 24px; margin-bottom: 10px; }
+    li { margin-bottom: 4px; }
+    code { background: #e8eef4; padding: 1px 5px; border-radius: 3px; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 12px; }
+    pre { background: #1e1e2e; color: #cdd6f4; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px; margin: 8px 0; font-family: 'Cascadia Code', 'Consolas', monospace; }
+    table { border-collapse: collapse; width: 100%; margin: 10px 0 16px 0; font-size: 12px; }
+    th, td { border: 1px solid #ccc; padding: 7px 10px; text-align: left; vertical-align: top; }
+    th { background: #2c3e50; color: #fff; font-weight: 600; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    .section { background: #fff; border: 1px solid #dde; border-radius: 8px; padding: 18px; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .badge-pass { background: #27ae60; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .badge-fail { background: #e74c3c; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .badge-warn { background: #f39c12; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .badge-info { background: #3498db; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .tree { font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 12px; line-height: 1.8; }
+    .tree ul { list-style: none; margin-left: 20px; }
+    .tree > ul { margin-left: 0; }
+    .tree li::before { content: '\251C\2500\2500 '; color: #888; }
+    .tree li:last-child::before { content: '\2514\2500\2500 '; color: #888; }
+    .tree .folder { color: #2980b9; font-weight: bold; }
+    .tree .func { color: #8e44ad; }
+    .tree .phase { color: #c0392b; font-weight: bold; }
+    .runner-section { background: #eaf2fa; border: 2px solid #2980b9; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    .runner-section h2 { border-left-color: #27ae60; color: #1a6b3a; }
+    label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
+    input[type="file"], select { font-size: 13px; padding: 6px 10px; border: 1px solid #aab; border-radius: 4px; width: 100%; margin-bottom: 12px; }
+    select { background: #fff; }
+    button { background: #2980b9; color: #fff; border: none; padding: 10px 24px; border-radius: 4px; font-size: 14px; cursor: pointer; margin-right: 8px; }
+    button:hover { background: #1a6fa0; }
+    button.secondary { background: #7f8c8d; }
+    button.secondary:hover { background: #636e72; }
+    #testOutput { background: #1e1e2e; color: #a6e3a1; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 12px; padding: 14px; border-radius: 6px; min-height: 200px; max-height: 500px; overflow-y: auto; white-space: pre-wrap; margin-top: 10px; border: 1px solid #444; }
+    .summary-grid { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+    .summary-card { background: #fff; border: 1px solid #dde; border-radius: 6px; padding: 12px 16px; min-width: 110px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .summary-card .num { font-size: 28px; font-weight: bold; }
+    .summary-card .lbl { font-size: 11px; color: #666; text-transform: uppercase; }
+    .toc { background: #fff; border: 1px solid #dde; border-radius: 8px; padding: 14px 20px; margin-bottom: 20px; }
+    .toc a { text-decoration: none; color: #2980b9; }
+    .toc a:hover { text-decoration: underline; }
+    .toc ol { margin-left: 20px; }
+    .toc li { margin-bottom: 3px; font-size: 13px; }
+    @media print { body { background: #fff; } .section { box-shadow: none; border: 1px solid #ccc; } }
+  </style>
+</head>
+<body>
+
+<h1>KPEJET2 PowerShell GUI &#x2014; Code Analysis, Functional Hierarchy &amp; Test Runner</h1>
+<p style="color:#555; margin-bottom:16px;">
+  Generated: 23 February 2026 | Version: 2602.a.11 | Repository: KpeJet2/KPEJET2-PowerShellGUI
+</p>
+
+<!-- ================================================================ -->
+<!-- TABLE OF CONTENTS                                                 -->
+<!-- ================================================================ -->
+<div class="toc">
+  <strong>Table of Contents</strong>
+  <ol>
+    <li><a href="#hierarchy">Functional Purpose &#x2014; Sequential Nested Hierarchy</a></li>
+    <li><a href="#findings">Code Inspection Findings</a>
+      <ol>
+        <li><a href="#f-variables">Variable &amp; Tag Inconsistencies</a></li>
+        <li><a href="#f-functions">Function &amp; Naming Issues</a></li>
+        <li><a href="#f-errors">Error Handling Gaps</a></li>
+        <li><a href="#f-normalise">Normalisation &amp; Optimisation Opportunities</a></li>
+        <li><a href="#f-dotfiles">Dotfile &amp; Markdown Standards</a></li>
+      </ol>
+    </li>
+    <li><a href="#testplan">Proposed Testing Routine</a></li>
+    <li><a href="#runner">Interactive Test Runner</a></li>
+  </ol>
+</div>
+
+<!-- ================================================================ -->
+<!-- 1. FUNCTIONAL HIERARCHY                                           -->
+<!-- ================================================================ -->
+<div class="section" id="hierarchy">
+<h2>1. Functional Purpose &#x2014; Sequential Nested Hierarchy</h2>
+<p>The application is a Windows Forms-based PowerShell GUI that provides IT
+administrators with a unified launcher for maintenance scripts, configuration
+management, version control, and system diagnostics. Below is the execution
+flow presented as a nested hierarchy.</p>
+
+<div class="tree">
+<ul>
+  <li><span class="folder">Launch-GUI.bat</span> &#x2014; Top-level entry point; presents numbered menu
+    <ul>
+      <li><span class="folder">Launch-GUI-quik_jnr.bat</span> &#x2014; Fast startup (detects pwsh 7+ or falls back)
+        <ul><li>Calls <code>Main-GUI.ps1 -StartupMode quik_jnr</code></li></ul>
+      </li>
+      <li><span class="folder">Launch-GUI-slow_snr.bat</span> &#x2014; Full checks startup
+        <ul><li>Calls <code>Main-GUI.ps1 -StartupMode slow_snr</code></li></ul>
+      </li>
+      <li><span class="folder">Launch-GUI-BUILD-VER.bat</span> &#x2014; Build/version mode
+        <ul><li>Calls <code>Main-GUI.ps1 -StartupMode quik_jnr</code></li></ul>
+      </li>
+      <li>Dynamic scan of <code>.bat</code>, <code>.ps1</code>, <code>.html</code>, <code>.xhtml</code> files</li>
+    </ul>
+  </li>
+  <li><span class="folder">Main-GUI.ps1</span> &#x2014; Core application (~4 400 lines)
+    <ul>
+      <li><span class="phase">Phase 0: Initialisation &amp; Assembly Loading</span>
+        <ul>
+          <li>Load <code>System.Windows.Forms</code>, <code>System.Drawing</code>, <code>System.Web</code></li>
+          <li>Initialise XML cache (<code>$script:_XmlCache</code>) and log buffer (<code>$script:_LogBuffer</code>)</li>
+          <li>Define local path variables: <code>$ConfigPath</code>, <code>$DefaultFolder</code>, <code>$TempFolder</code>, <code>$ReportFolder</code>, <code>$DownloadFolder</code></li>
+          <li>Define global path variables: <code>$configDir</code>, <code>$modulesDir</code>, <code>$logsDir</code>, <code>$scriptsDir</code></li>
+          <li>Create directories if missing</li>
+          <li><span class="func">Request-LocalPath()</span> &#x2014; single-field prompt with timeout</li>
+          <li><span class="func">Request-LocalPathsUnified()</span> &#x2014; multi-field prompt with timeout</li>
+          <li><span class="func">Show-ConfigMaintenanceForm()</span> &#x2014; folder management GUI (nest/move/copy/archive/clear)</li>
+        </ul>
+      </li>
+      <li><span class="phase">Logging Functions</span>
+        <ul>
+          <li><span class="func">Write-AppLog()</span> &#x2014; buffered application log writer</li>
+          <li><span class="func">Write-ScriptLog()</span> &#x2014; per-script log writer</li>
+          <li><span class="func">Flush-LogBuffer()</span> &#x2014; flush grouped log entries to disk</li>
+        </ul>
+      </li>
+      <li><span class="phase">Configuration Functions</span>
+        <ul>
+          <li><span class="func">Initialize-ConfigFile()</span> &#x2014; create system-variables.xml with defaults</li>
+          <li><span class="func">Get-ConfigVariable()</span> &#x2014; read single XML node value</li>
+          <li><span class="func">Get-ConfigSubValue()</span> &#x2014; cached XPath-based config read</li>
+          <li><span class="func">Set-ConfigSubValue()</span> &#x2014; XPath-based config write with auto-create</li>
+          <li><span class="func">Get-ConfigList()</span> &#x2014; return folder exclusion list from XML</li>
+          <li><span class="func">Save-ConfigPathValues()</span> &#x2014; persist path hashtable to XML</li>
+          <li><span class="func">Get-ButtonConfiguration()</span> &#x2014; load left/right button arrays from XML</li>
+          <li><span class="func">Initialize-LinksConfigFile()</span> &#x2014; create links.xml with defaults</li>
+          <li><span class="func">Get-LinksConfig()</span> &#x2014; cached links.xml reader</li>
+          <li><span class="func">Get-VersionInfo()</span> &#x2014; consolidated Major.Minor.Build retrieval</li>
+          <li><span class="func">Build-LinksMenu()</span> &#x2014; populate ToolStripMenuItem from links.xml</li>
+        </ul>
+      </li>
+      <li><span class="phase">Version &amp; Tagging Functions</span>
+        <ul>
+          <li><span class="func">Update-VersionBuild()</span> &#x2014; increment build number in XML</li>
+          <li><span class="func">Update-VersionTag()</span> &#x2014; stamp version comment tags across workspace</li>
+          <li><span class="func">Test-VersionTag()</span> &#x2014; check all files for tag consistency, output diff XML</li>
+          <li><span class="func">Compare-ExcludedFolder()</span> &#x2014; manifest cross-reference for excluded folders</li>
+          <li><span class="func">New-BuildManifest()</span> &#x2014; generate build manifest with SHA256, owner, cert info</li>
+        </ul>
+      </li>
+      <li><span class="phase">Packaging &amp; Security Functions</span>
+        <ul>
+          <li><span class="func">Export-WorkspacePackage()</span> &#x2014; zip workspace with optional encryption</li>
+          <li><span class="func">Show-BuildPackageOptionsForm()</span> &#x2014; options GUI for packaging</li>
+          <li><span class="func">Clear-FolderContents()</span>, <span class="func">Remove-ItemsOlderThan()</span></li>
+          <li><span class="func">Resolve-7ZipPath()</span>, <span class="func">New-EncryptedZip()</span></li>
+          <li><span class="func">Get-OrCreate-CodeSigningCert()</span> &#x2014; self-signed cert management</li>
+          <li><span class="func">Get-ScriptSafetyScore()</span> &#x2014; heuristic safety scoring (0&#x2013;100)</li>
+        </ul>
+      </li>
+      <li><span class="phase">Script Execution Functions</span>
+        <ul>
+          <li><span class="func">Invoke-ScriptWithElevation()</span> &#x2014; launch script with optional RunAs</li>
+          <li><span class="func">Invoke-LocalScriptWithProgress()</span> &#x2014; job-based execution with rainbow progress</li>
+          <li><span class="func">Wait-ProcessWithProgress()</span> &#x2014; elevated process progress monitor</li>
+          <li><span class="func">Show-ElevationPrompt()</span> &#x2014; safety-badge admin elevation dialog</li>
+          <li><span class="func">Get-RainbowColor()</span>, <span class="func">Write-RainbowProgress()</span></li>
+        </ul>
+      </li>
+      <li><span class="phase">Diagnostics &amp; Testing Functions</span>
+        <ul>
+          <li><span class="func">Get-NetworkDiagnostic()</span> &#x2014; IP, gateway, WAN, DNS checks</li>
+          <li><span class="func">Show-DiskCheckDialog()</span> &#x2014; chkdsk launcher</li>
+          <li><span class="func">Show-SystemCheck()</span> &#x2014; sfc /detectonly wrapper</li>
+          <li><span class="func">Show-PrivacyCheck()</span> &#x2014; ms-settings:privacy launcher</li>
+          <li><span class="func">Show-WingetInstalledApp()</span> &#x2014; registry-based app inventory</li>
+          <li><span class="func">Show-WingetUpgradeCheck()</span>, <span class="func">Show-WingetUpdateAllDialog()</span></li>
+          <li><span class="func">Test-AppTesting()</span> &#x2014; markdown/comment/regression tests</li>
+          <li><span class="func">Test-ScriptSafetySecOp()</span> &#x2014; safety scoring for all scripts</li>
+        </ul>
+      </li>
+      <li><span class="phase">Path Management Functions</span>
+        <ul>
+          <li><span class="func">Test-PathReadWrite()</span> &#x2014; R/W access probing</li>
+          <li><span class="func">Show-PathSettingsGUI()</span> &#x2014; path configuration dialog</li>
+          <li><span class="func">Get-ScriptFoldersConfig()</span>, <span class="func">Save-ScriptFoldersConfig()</span></li>
+          <li><span class="func">Get-AllScriptFolders()</span>, <span class="func">Show-ScriptFolderSettingsGUI()</span></li>
+        </ul>
+      </li>
+      <li><span class="phase">Phase 1 (slow_snr only): Version Tag Consistency</span>
+        <ul>
+          <li>Calls <span class="func">Test-VersionTag()</span></li>
+          <li>Parses diff XML for mismatches</li>
+          <li>Prompts user for auto-increment (&#x201C;AA&#x201D;)</li>
+        </ul>
+      </li>
+      <li><span class="phase">Phase 2: Auto-Increment (conditional)</span>
+        <ul>
+          <li>Calls <span class="func">Update-VersionBuild()</span> then <span class="func">Update-VersionTag()</span></li>
+        </ul>
+      </li>
+      <li><span class="phase">Phase 3 (slow_snr only): Build Manifest Generation</span>
+        <ul>
+          <li>Calls <span class="func">New-BuildManifest()</span></li>
+        </ul>
+      </li>
+      <li><span class="phase">Phase 4: Display System Info &amp; Launch GUI</span>
+        <ul>
+          <li><span class="func">New-GUI()</span> &#x2014; construct and show main Windows Form
+            <ul>
+              <li>Menu Bar: File, Tests, Links, WinGets, Tools, Help</li>
+              <li>Left Column: 6 configurable script-launch buttons</li>
+              <li>Right Column: configurable script-launch buttons</li>
+              <li>Status Bar: computer, user, paths</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><span class="phase">Shutdown</span>
+        <ul>
+          <li>Calls <span class="func">Flush-LogBuffer()</span></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><span class="folder">modules/</span>
+    <ul>
+      <li><span class="folder">AVPN-Tracker.psm1</span> &#x2014; VPN connection tracker module</li>
+      <li><span class="folder">PwSh-HelpFilesUpdateSource-ReR.psm1</span> &#x2014; Help update source</li>
+      <li><span class="folder">PwShGUI_AutoIssueFinder.psm1</span> &#x2014; ScriptAnalyzer-based issue finder with XHTML reporting</li>
+    </ul>
+  </li>
+  <li><span class="folder">scripts/</span> &#x2014; Script1&#x2013;6, Script-A&#x2013;F, QUICK-APP</li>
+  <li><span class="folder">config/</span> &#x2014; system-variables.xml, links.xml, JSON configs</li>
+  <li><span class="folder">View-Config.ps1</span> &#x2014; Console-based config and log viewer</li>
+  <li><span class="folder">fix_check_version.ps1</span> &#x2014; Patch: rewrites Check-VersionTags in Main-GUI.ps1</li>
+  <li><span class="folder">fix_update_version.ps1</span> &#x2014; Patch: rewrites Update-VersionTags in Main-GUI.ps1</li>
+</ul>
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 2. CODE INSPECTION FINDINGS                                       -->
+<!-- ================================================================ -->
+<div class="section" id="findings">
+<h2>2. Code Inspection Findings</h2>
+
+<!-- 2.1 Variables & Tags -->
+<div id="f-variables">
+<h3>2.1 Variable &amp; Tag Inconsistencies</h3>
+<table>
+  <thead>
+    <tr><th>Issue</th><th>Location</th><th>Description</th><th>Severity</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Duplicate VersionTag lines</td>
+      <td>Multiple files (Main-GUI.ps1:1&#x2013;2, View-Config.ps1:1&#x2013;2, .gitignore:1&#x2013;5, modules/*.psm1)</td>
+      <td>Files contain 2&#x2013;5 stacked <code># VersionTag:</code> lines from successive Update-VersionTag runs. Only the first is used; extras are dead lines.</td>
+      <td><span class="badge-warn">WARN</span></td>
+    </tr>
+    <tr>
+      <td>Hardcoded paths</td>
+      <td>Main-GUI.ps1:1116&#x2013;1120</td>
+      <td><code>$ConfigPath = "C:\PowerShellGUI\config"</code> and four siblings are hardcoded. Should derive from <code>$scriptDir</code> or config XML.</td>
+      <td><span class="badge-warn">WARN</span></td>
+    </tr>
+    <tr>
+      <td>Automatic variable shadowing</td>
+      <td>Main-GUI.ps1:1929 (<code>New-EncryptedZip</code>)</td>
+      <td><code>$args = @("a", "-tzip", ...)</code> shadows the automatic <code>$args</code> variable. Should be renamed to e.g. <code>$szArgs</code>.</td>
+      <td><span class="badge-fail">FAIL</span></td>
+    </tr>
+    <tr>
+      <td>Closure variable capture</td>
+      <td>Main-GUI.ps1:134 (<code>Request-LocalPath</code>), 1088 (<code>Request-LocalPathsUnified</code>)</td>
+      <td><code>$remaining</code> and <code>$timerRemaining</code> are modified inside timer tick handlers without <code>.GetNewClosure()</code>, so the countdown display may not update correctly.</td>
+      <td><span class="badge-warn">WARN</span></td>
+    </tr>
+    <tr>
+      <td>Inconsistent function name</td>
+      <td>fix_check_version.ps1:70</td>
+      <td>References <code>Compare-ExcludedFolders</code> (plural) but Main-GUI.ps1 defines <code>Compare-ExcludedFolder</code> (singular).</td>
+      <td><span class="badge-fail">FAIL</span></td>
+    </tr>
+    <tr>
+      <td>Write-Log vs Write-AppLog</td>
+      <td>fix_check_version.ps1:37,88,91,111,113,120,124,126</td>
+      <td>The patched function body calls <code>Write-Log</code> which does not exist in Main-GUI.ps1; the actual function is <code>Write-AppLog</code>.</td>
+      <td><span class="badge-fail">FAIL</span></td>
+    </tr>
+    <tr>
+      <td>RemoteDownloadPath missing from remotePaths</td>
+      <td>Main-GUI.ps1:3099&#x2013;3106</td>
+      <td><code>Show-PathSettingsGUI</code> lists 6 remote paths but config XML has 7 (includes <code>RemoteDownloadPath</code>). The 7th is covered in <code>Show-ConfigMaintenanceForm</code> but not in <code>Show-PathSettingsGUI</code>.</td>
+      <td><span class="badge-info">INFO</span></td>
+    </tr>
+    <tr>
+      <td>Stale VersionTag lines in .gitignore</td>
+      <td>.gitignore:1&#x2013;5</td>
+      <td>Five <code># VersionTag:</code> comment lines occupy the top of <code>.gitignore</code>. Git does not interpret <code>#</code> comments the same way; these add clutter and may confuse tools.</td>
+      <td><span class="badge-warn">WARN</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 2.2 Functions & Naming -->
+<div id="f-functions">
+<h3>2.2 Function &amp; Naming Issues</h3>
+<table>
+  <thead>
+    <tr><th>Issue</th><th>Location</th><th>Description</th><th>Severity</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Unapproved verb: <code>Flush-LogBuffer</code></td>
+      <td>Main-GUI.ps1:1239</td>
+      <td>PowerShell approved verb would be <code>Clear-LogBuffer</code> or <code>Write-LogBuffer</code>.</td>
+      <td><span class="badge-info">INFO</span></td>
+    </tr>
+    <tr>
+      <td>Unapproved verb: <code>Refresh-RowStats</code></td>
+      <td>Main-GUI.ps1:203</td>
+      <td>Approved verb would be <code>Update-RowStats</code>.</td>
+      <td><span class="badge-info">INFO</span></td>
+    </tr>
+    <tr>
+      <td>Unapproved verb: <code>Build-LinksMenu</code></td>
+      <td>Main-GUI.ps1:1558</td>
+      <td>Approved verb would be <code>Initialize-LinksMenu</code> or <code>New-LinksMenu</code>.</td>
+      <td><span class="badge-info">INFO</span></td>
+    </tr>
+    <tr>
+      <td>Hyphen in noun: <code>Get-OrCreate-CodeSigningCert</code></td>
+      <td>Main-GUI.ps1:1947</td>
+      <td>Should follow Verb-Noun convention: <code>Get-CodeSigningCert</code> with internal create logic.</td>
+      <td><span class="badge-info">INFO</span></td>
+    </tr>
+    <tr>
+      <td><code>Compare-ExcludedFolder</code> unused <code>[ref]$diffs</code> parameter</td>
+      <td>Main-GUI.ps1:2498&#x2013;2501</td>
+      <td>Parameter <code>[ref]$diffs</code> is declared but the only caller (<code>Test-VersionTag</code>) does not pass it. The function checks <code>if ($diffs)</code> but it is always <code>$null</code>.</td>
+      <td><span class="badge-warn">WARN</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 2.3 Error Handling Gaps -->
+<div id="f-errors">
+<h3>2.3 Error Handling Gaps (potential for halted execution)</h3>
+<table>
+  <thead>
+    <tr><th>Issue</th><th>Location</th><th>Recommendation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$ErrorActionPreference = "Stop"</code> at script scope</td>
+      <td>Main-GUI.ps1:50</td>
+      <td>Any uncaught exception terminates the entire script. Wrap Phase 0&#x2013;4 in try/catch blocks or scope <code>$ErrorActionPreference</code> to individual functions.</td>
+    </tr>
+    <tr>
+      <td><code>$script:_LogBuffer.Clear()</code> on non-ArrayList</td>
+      <td>Main-GUI.ps1:1255</td>
+      <td><code>$script:_LogBuffer</code> is initialised as <code>@()</code> (array). <code>.Clear()</code> method exists on <code>[System.Collections.Generic.List]</code> but not on a PowerShell array. Use <code>$script:_LogBuffer = @()</code> instead.</td>
+    </tr>
+    <tr>
+      <td><code>Get-ConfigVariable</code> null dereference</td>
+      <td>Main-GUI.ps1:1396</td>
+      <td><code>$xml.SystemVariables.$VariableName</code> returns <code>$null</code> if node does not exist, then <code>.InnerText</code> fails. Add null check.</td>
+    </tr>
+    <tr>
+      <td><code>Read-Host</code> blocks GUI in slow_snr mode</td>
+      <td>Main-GUI.ps1:4298</td>
+      <td>The version-tag mismatch prompt uses <code>Read-Host</code> from the console, which blocks if launched from a non-console host. Consider a Forms dialog fallback.</td>
+    </tr>
+    <tr>
+      <td>AVPN module import in <code>$ErrorActionPreference = "Stop"</code></td>
+      <td>Main-GUI.ps1:1259&#x2013;1263</td>
+      <td>If <code>Import-Module</code> fails for any reason other than file-not-found (e.g., missing dependency), it throws a terminating error. Wrap in try/catch.</td>
+    </tr>
+    <tr>
+      <td><code>Test-VersionTag</code> calls <code>Get-ConfigList</code> inside Where-Object</td>
+      <td>Main-GUI.ps1:2441</td>
+      <td><code>Get-ConfigList "Do-Not-VersionTag-FoldersFiles"</code> is called once per file. Move outside the pipeline for performance and to avoid repeated XML reads.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 2.4 Normalisation Opportunities -->
+<div id="f-normalise">
+<h3>2.4 Normalisation &amp; Optimisation Opportunities</h3>
+<table>
+  <thead>
+    <tr><th>Category</th><th>Current State</th><th>Proposed Normalisation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Path Variables</td>
+      <td>Local paths hardcoded at lines 1116&#x2013;1120; global paths derived from <code>$scriptDir</code> at lines 1145&#x2013;1151. Both sets serve similar purposes.</td>
+      <td>Consolidate into a single <code>$AppPaths</code> hashtable or indexed array. Example: <code>$AppPaths = @{ Config = ...; Default = ...; Temp = ...; Report = ...; Download = ... }</code></td>
+    </tr>
+    <tr>
+      <td>Remote Path Variables</td>
+      <td>Seven individual <code>$Remote*Path</code> variables (lines 1155&#x2013;1161) and parallel definitions in <code>$remotePathDefs</code> array (lines 776&#x2013;784).</td>
+      <td>Use a single <code>$RemotePaths</code> ordered hashtable: <code>$RemotePaths = [ordered]@{ Update = ''; Config = ''; Template = ''; Backup = ''; Archive = ''; Links = ''; Download = '' }</code></td>
+    </tr>
+    <tr>
+      <td>Excluded Folders</td>
+      <td>Exclusion list defined in XML <code>Do-Not-VersionTag-FoldersFiles</code> and re-read via <code>Get-ConfigList</code> in 5+ locations.</td>
+      <td>Read once at startup into <code>$script:ExcludedFolders</code> array and pass as parameter.</td>
+    </tr>
+    <tr>
+      <td>GUI Dimensions</td>
+      <td>Button width (260), height (50), spacing (10), column positions (30, 310) are hardcoded in <code>New-GUI</code>.</td>
+      <td>Define as a <code>$GUILayout</code> hashtable: <code>@{ BtnWidth=260; BtnHeight=50; Spacing=10; Col1X=30; Col2X=310; StartY=90 }</code></td>
+    </tr>
+    <tr>
+      <td>Log Level Strings</td>
+      <td><code>"Info"</code>, <code>"Warning"</code>, <code>"Error"</code>, <code>"Success"</code>, <code>"Debug"</code>, <code>"Event"</code> are string literals throughout.</td>
+      <td>Define as an enum or constant array: <code>$LogLevels = @('Info','Warning','Error','Success','Debug','Event')</code></td>
+    </tr>
+    <tr>
+      <td>Font Definitions</td>
+      <td><code>New-Object System.Drawing.Font("Arial", 10)</code> repeated 10+ times across GUI functions.</td>
+      <td>Pre-create font objects: <code>$Fonts = @{ Normal = [System.Drawing.Font]::new("Arial",10); Bold = ... }</code></td>
+    </tr>
+    <tr>
+      <td>Safety Pattern Arrays</td>
+      <td><code>$patterns</code> (10 items) and <code>$secretPatterns</code> (5 items) in <code>Get-ScriptSafetyScore</code> are rebuilt on every call.</td>
+      <td>Move to script-scope <code>$script:SafetyPatterns</code> and <code>$script:SecretPatterns</code> initialised once.</td>
+    </tr>
+    <tr>
+      <td>Duplicate Code in Grid Selection</td>
+      <td>The pattern &#x201C;iterate <code>$dgv.Rows</code>, check <code>Select</code> checkbox, build <code>$selected</code> array&#x201D; is repeated 6 times in <code>Show-ConfigMaintenanceForm</code>.</td>
+      <td>Extract helper: <code>function Get-SelectedRows($dgv, [string]$filter) { ... }</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 2.5 Dotfile & Markdown Standards -->
+<div id="f-dotfiles">
+<h3>2.5 Dotfile &amp; Markdown Standards</h3>
+<table>
+  <thead>
+    <tr><th>File</th><th>Standard</th><th>Observation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>.gitignore</code></td>
+      <td>One pattern per line; <code>#</code> for comments; no version metadata</td>
+      <td>Contains 5 <code># VersionTag:</code> lines and 14 trailing blank lines. VersionTag comments belong in source files, not gitignore.</td>
+    </tr>
+    <tr>
+      <td><code>.vscode/extensions.json</code></td>
+      <td>JSON with <code>recommendations</code> array</td>
+      <td>Present and well-formed. No issues.</td>
+    </tr>
+    <tr>
+      <td><code>README-delete.md</code></td>
+      <td>Standard markdown with H1, description, usage sections</td>
+      <td>Filename suggests it is a candidate for deletion. Should be renamed to <code>README.md</code> or removed.</td>
+    </tr>
+    <tr>
+      <td><code>Chat Customization Diagnostics3.md</code></td>
+      <td>Standard markdown</td>
+      <td>Spaces in filename are non-standard for repository root files. Consider hyphenated naming.</td>
+    </tr>
+    <tr>
+      <td>PowerShell comment-based help</td>
+      <td><code>.SYNOPSIS</code>, <code>.DESCRIPTION</code>, <code>.PARAMETER</code>, <code>.EXAMPLE</code> blocks</td>
+      <td><code>Main-GUI.ps1</code> and <code>View-Config.ps1</code> have proper help blocks. Many scripts in <code>scripts/</code> lack them.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 3. PROPOSED TESTING ROUTINE                                       -->
+<!-- ================================================================ -->
+<div class="section" id="testplan">
+<h2>3. Proposed Testing Routine</h2>
+<p>The automated test script <code>tests/Invoke-AutomatedTests.ps1</code> implements the
+following ten test categories. Each test emits structured results with
+Status (PASS/FAIL/WARN/INFO/ERROR), Test name, File, and Detail.</p>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Test Category</th><th>What It Checks</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Syntax Parse Validation</td><td>Parses every <code>.ps1</code>/<code>.psm1</code> file using <code>[Parser]::ParseInput()</code>. Reports syntax errors.</td></tr>
+    <tr><td>2</td><td>Version Tag Compliance</td><td>Checks each file for VersionTag presence, duplicate tags, and value match against config XML.</td></tr>
+    <tr><td>3</td><td>Function Naming &amp; Signatures</td><td>Validates Verb-Noun naming against <code>Get-Verb</code> approved verbs list.</td></tr>
+    <tr><td>4</td><td>Error Handling Coverage</td><td>Scans each function body for <code>try/catch</code> or <code>-ErrorAction</code> patterns.</td></tr>
+    <tr><td>5</td><td>Variable Consistency</td><td>Detects automatic variable shadowing and hardcoded filesystem paths.</td></tr>
+    <tr><td>6</td><td>XML Well-Formedness</td><td>Parses all <code>.xml</code> config files to confirm they are valid XML.</td></tr>
+    <tr><td>7</td><td>JSON Well-Formedness</td><td>Parses all <code>.json</code> config files via <code>ConvertFrom-Json</code>.</td></tr>
+    <tr><td>8</td><td>Markdown Standards</td><td>Checks for H1 headings, trailing whitespace, TODO/TBD markers.</td></tr>
+    <tr><td>9</td><td>Batch File Validation</td><td>Checks for <code>@echo off</code>, <code>setlocal</code>, and <code>endlocal</code> directives.</td></tr>
+    <tr><td>10</td><td>Dotfile Standards</td><td>Validates <code>.gitignore</code> for expected entries, duplicate tags, and trailing blanks.</td></tr>
+  </tbody>
+</table>
+
+<h3>Usage</h3>
+<pre>
+# Run all tests against the full repository
+.\tests\Invoke-AutomatedTests.ps1
+
+# Run tests against a specific script
+.\tests\Invoke-AutomatedTests.ps1 -TargetPath .\Main-GUI.ps1
+
+# Output to log file only
+.\tests\Invoke-AutomatedTests.ps1 -OutputFormat Log
+</pre>
+</div>
+
+<!-- ================================================================ -->
+<!-- 4. INTERACTIVE TEST RUNNER                                        -->
+<!-- ================================================================ -->
+<div class="runner-section" id="runner">
+<h2>4. Interactive Test Runner</h2>
+<p>Select a script from the dropdown or browse for a file, then click
+<strong>Run Tests</strong> to execute the automated test battery against it.
+Results appear in the output console below.</p>
+
+<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px;">
+  <div style="flex:1; min-width:280px;">
+    <label for="scriptSelect">Select Script from Repository:</label>
+    <select id="scriptSelect">
+      <option value="">-- Choose a script --</option>
+      <option value="Main-GUI.ps1">Main-GUI.ps1</option>
+      <option value="View-Config.ps1">View-Config.ps1</option>
+      <option value="fix_check_version.ps1">fix_check_version.ps1</option>
+      <option value="fix_update_version.ps1">fix_update_version.ps1</option>
+      <option value="scripts/Script1.ps1">scripts/Script1.ps1</option>
+      <option value="scripts/Script2.ps1">scripts/Script2.ps1</option>
+      <option value="scripts/Script3.ps1">scripts/Script3.ps1</option>
+      <option value="scripts/Script4.ps1">scripts/Script4.ps1</option>
+      <option value="scripts/Script5.ps1">scripts/Script5.ps1</option>
+      <option value="scripts/Script6.ps1">scripts/Script6.ps1</option>
+      <option value="scripts/Script-A.ps1">scripts/Script-A.ps1</option>
+      <option value="scripts/Script-B.ps1">scripts/Script-B.ps1</option>
+      <option value="scripts/Script-C.ps1">scripts/Script-C.ps1</option>
+      <option value="scripts/Script-D.ps1">scripts/Script-D.ps1</option>
+      <option value="scripts/Script-E.ps1">scripts/Script-E.ps1</option>
+      <option value="scripts/Script-F.ps1">scripts/Script-F.ps1</option>
+      <option value="scripts/Find-ModuleReferences.ps1">scripts/Find-ModuleReferences.ps1</option>
+      <option value="modules/AVPN-Tracker.psm1">modules/AVPN-Tracker.psm1</option>
+      <option value="modules/PwShGUI_AutoIssueFinder.psm1">modules/PwShGUI_AutoIssueFinder.psm1</option>
+      <option value="modules/PwSh-HelpFilesUpdateSource-ReR.psm1">modules/PwSh-HelpFilesUpdateSource-ReR.psm1</option>
+      <option value="tests/Invoke-AutomatedTests.ps1">tests/Invoke-AutomatedTests.ps1</option>
+    </select>
+  </div>
+  <div style="flex:1; min-width:280px;">
+    <label for="fileInput">Or Browse for a Script File:</label>
+    <input type="file" id="fileInput" accept=".ps1,.psm1,.psd1,.bat,.cmd" />
+  </div>
+</div>
+
+<div style="margin-bottom:14px;">
+  <button type="button" id="btnRunTests" onclick="runTests()">&#x25B6; Run Tests</button>
+  <button type="button" class="secondary" onclick="clearOutput()">Clear Output</button>
+  <button type="button" class="secondary" onclick="exportResults()">Export Results</button>
+</div>
+
+<div id="summaryCards" class="summary-grid" style="display:none;">
+  <div class="summary-card"><div class="num" id="sumTotal" style="color:#2980b9;">0</div><div class="lbl">Total</div></div>
+  <div class="summary-card"><div class="num" id="sumPass" style="color:#27ae60;">0</div><div class="lbl">Pass</div></div>
+  <div class="summary-card"><div class="num" id="sumFail" style="color:#e74c3c;">0</div><div class="lbl">Fail</div></div>
+  <div class="summary-card"><div class="num" id="sumWarn" style="color:#f39c12;">0</div><div class="lbl">Warn</div></div>
+  <div class="summary-card"><div class="num" id="sumInfo" style="color:#3498db;">0</div><div class="lbl">Info</div></div>
+</div>
+
+<div id="testOutput">Waiting for test execution...</div>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var testResults = [];
+
+function log(msg, type) {
+  var el = document.getElementById('testOutput');
+  var prefix = '';
+  if (type === 'pass')  prefix = '[PASS]  ';
+  if (type === 'fail')  prefix = '[FAIL]  ';
+  if (type === 'warn')  prefix = '[WARN]  ';
+  if (type === 'info')  prefix = '[INFO]  ';
+  if (type === 'error') prefix = '[ERROR] ';
+  if (type === 'head')  prefix = '\n===== ';
+  el.textContent += prefix + msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+function addResult(status, test, file, detail) {
+  testResults.push({status: status, test: test, file: file, detail: detail});
+}
+
+function updateSummary() {
+  var pass = 0, fail = 0, warn = 0, info = 0;
+  for (var i = 0; i < testResults.length; i++) {
+    if (testResults[i].status === 'PASS') pass++;
+    if (testResults[i].status === 'FAIL') fail++;
+    if (testResults[i].status === 'WARN') warn++;
+    if (testResults[i].status === 'INFO') info++;
+  }
+  document.getElementById('sumTotal').textContent = testResults.length;
+  document.getElementById('sumPass').textContent = pass;
+  document.getElementById('sumFail').textContent = fail;
+  document.getElementById('sumWarn').textContent = warn;
+  document.getElementById('sumInfo').textContent = info;
+  document.getElementById('summaryCards').style.display = 'flex';
+}
+
+function clearOutput() {
+  document.getElementById('testOutput').textContent = '';
+  document.getElementById('summaryCards').style.display = 'none';
+  testResults = [];
+}
+
+function getTargetContent() {
+  return new Promise(function(resolve) {
+    var fileInput = document.getElementById('fileInput');
+    if (fileInput.files && fileInput.files.length > 0) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        resolve({name: fileInput.files[0].name, content: e.target.result});
+      };
+      reader.readAsText(fileInput.files[0]);
+    } else {
+      resolve(null);
+    }
+  });
+}
+
+function runTests() {
+  clearOutput();
+  var selectedScript = document.getElementById('scriptSelect').value;
+  var fileInput = document.getElementById('fileInput');
+  var hasFile = fileInput.files && fileInput.files.length > 0;
+
+  if (!selectedScript && !hasFile) {
+    log('Please select a script from the dropdown or browse for a file.', 'error');
+    return;
+  }
+
+  var targetName = hasFile ? fileInput.files[0].name : selectedScript;
+  log('Starting automated tests for: ' + targetName, 'head');
+  log('Timestamp: ' + new Date().toISOString(), 'info');
+  log('', '');
+
+  if (hasFile) {
+    getTargetContent().then(function(fileData) {
+      if (fileData) {
+        runTestsOnContent(fileData.name, fileData.content);
+      }
+    });
+  } else {
+    log('Note: Full content-based tests require browsing for a local file.', 'info');
+    log('Running structural tests against: ' + selectedScript, 'info');
+    log('', '');
+    runStructuralTests(selectedScript);
+  }
+}
+
+function runTestsOnContent(fileName, content) {
+  // Test 1: Syntax structure checks
+  log('TEST 1: Syntax Structure Checks =====', 'head');
+  var lines = content.split(/\r?\n/);
+
+  // Check for balanced braces
+  var braceCount = 0;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    for (var c = 0; c < line.length; c++) {
+      if (line[c] === '{') braceCount++;
+      if (line[c] === '}') braceCount--;
+    }
+  }
+  if (braceCount === 0) {
+    log('Braces are balanced', 'pass');
+    addResult('PASS', 'BalancedBraces', fileName, 'All braces balanced');
+  } else {
+    log('Unbalanced braces: net count = ' + braceCount, 'fail');
+    addResult('FAIL', 'BalancedBraces', fileName, 'Net brace count: ' + braceCount);
+  }
+
+  // Check for balanced parentheses
+  var parenCount = 0;
+  for (var i2 = 0; i2 < content.length; i2++) {
+    if (content[i2] === '(') parenCount++;
+    if (content[i2] === ')') parenCount--;
+  }
+  if (parenCount === 0) {
+    log('Parentheses are balanced', 'pass');
+    addResult('PASS', 'BalancedParens', fileName, 'All parentheses balanced');
+  } else {
+    log('Unbalanced parentheses: net count = ' + parenCount, 'warn');
+    addResult('WARN', 'BalancedParens', fileName, 'Net paren count: ' + parenCount);
+  }
+
+  // Test 2: VersionTag checks
+  log('TEST 2: Version Tag Compliance =====', 'head');
+  var tagRegex = /VersionTag:\s*([\d.a-z]+)/g;
+  var tags = [];
+  var m;
+  while ((m = tagRegex.exec(content)) !== null) {
+    tags.push(m[1]);
+  }
+  if (tags.length === 0) {
+    log('No VersionTag found in file', 'warn');
+    addResult('WARN', 'VersionTagMissing', fileName, 'No VersionTag found');
+  } else if (tags.length > 1) {
+    log('Multiple VersionTag lines found: ' + tags.join(', '), 'warn');
+    addResult('WARN', 'DuplicateVersionTag', fileName, tags.length + ' tags: ' + tags.join(', '));
+  } else {
+    log('Single VersionTag found: ' + tags[0], 'pass');
+    addResult('PASS', 'VersionTag', fileName, 'Tag: ' + tags[0]);
+  }
+
+  // Test 3: Function naming
+  log('TEST 3: Function Naming =====', 'head');
+  var funcRegex = /^\s*function\s+([\w-]+)/gm;
+  var funcs = [];
+  while ((m = funcRegex.exec(content)) !== null) {
+    funcs.push(m[1]);
+  }
+  var approvedVerbs = ['Add','Approve','Assert','Backup','Block','Build','Clear','Close','Compare',
+    'Complete','Compress','Confirm','Connect','Convert','ConvertFrom','ConvertTo','Copy','Debug',
+    'Deny','Deploy','Disable','Disconnect','Dismount','Edit','Enable','Enter','Exit','Expand',
+    'Export','Find','Format','Get','Grant','Group','Hide','Import','Initialize','Install','Invoke',
+    'Join','Limit','Lock','Measure','Merge','Mount','Move','New','Open','Optimize','Out','Ping',
+    'Pop','Protect','Publish','Push','Read','Receive','Redo','Register','Remove','Rename','Repair',
+    'Request','Reset','Resize','Resolve','Restart','Restore','Resume','Revoke','Save','Search',
+    'Select','Send','Set','Show','Skip','Split','Start','Step','Stop','Submit','Suspend','Switch',
+    'Sync','Test','Trace','Unblock','Undo','Uninstall','Unlock','Unprotect','Unpublish','Unregister',
+    'Update','Use','Wait','Watch','Write'];
+  for (var f = 0; f < funcs.length; f++) {
+    var parts = funcs[f].split('-');
+    if (parts.length >= 2) {
+      var verb = parts[0];
+      if (approvedVerbs.indexOf(verb) === -1) {
+        log('Unapproved verb: ' + funcs[f] + ' (verb: ' + verb + ')', 'warn');
+        addResult('WARN', 'UnapprovedVerb', fileName, funcs[f] + ' uses verb: ' + verb);
+      } else {
+        log('Approved: ' + funcs[f], 'pass');
+        addResult('PASS', 'ApprovedVerb', fileName, funcs[f]);
+      }
+    }
+  }
+  if (funcs.length === 0) {
+    log('No functions found in file', 'info');
+    addResult('INFO', 'NoFunctions', fileName, 'No function definitions');
+  }
+
+  // Test 4: Error handling
+  log('TEST 4: Error Handling Patterns =====', 'head');
+  var hasTryCatch = /\btry\s*\{/.test(content);
+  var hasErrorAction = /-ErrorAction/.test(content);
+  if (hasTryCatch) {
+    log('try/catch blocks found', 'pass');
+    addResult('PASS', 'TryCatch', fileName, 'try/catch present');
+  } else {
+    log('No try/catch blocks found', 'warn');
+    addResult('WARN', 'TryCatch', fileName, 'No try/catch blocks');
+  }
+  if (hasErrorAction) {
+    log('-ErrorAction parameters found', 'pass');
+    addResult('PASS', 'ErrorAction', fileName, '-ErrorAction present');
+  } else {
+    log('No -ErrorAction parameters found', 'warn');
+    addResult('WARN', 'ErrorAction', fileName, 'No -ErrorAction usage');
+  }
+
+  // Test 5: Variable patterns
+  log('TEST 5: Variable Analysis =====', 'head');
+  var autoVarShadow = /\$args\s*=\s*@\(/.test(content);
+  if (autoVarShadow) {
+    log('$args automatic variable is shadowed', 'fail');
+    addResult('FAIL', 'AutoVarShadow', fileName, '$args is shadowed by assignment');
+  } else {
+    log('No automatic variable shadowing detected', 'pass');
+    addResult('PASS', 'AutoVarShadow', fileName, 'No shadowing');
+  }
+
+  var hardcodedPaths = content.match(/[A-Z]:\\[A-Za-z0-9\\]+/g);
+  if (hardcodedPaths && hardcodedPaths.length > 0) {
+    var unique = [];
+    for (var hp = 0; hp < hardcodedPaths.length; hp++) {
+      if (unique.indexOf(hardcodedPaths[hp]) === -1) unique.push(hardcodedPaths[hp]);
+    }
+    log('Hardcoded paths found: ' + unique.length + ' unique', 'info');
+    for (var u = 0; u < Math.min(unique.length, 5); u++) {
+      log('  ' + unique[u], 'info');
+    }
+    addResult('INFO', 'HardcodedPaths', fileName, unique.length + ' unique hardcoded paths');
+  } else {
+    log('No hardcoded paths detected', 'pass');
+    addResult('PASS', 'HardcodedPaths', fileName, 'None found');
+  }
+
+  // Test 6: Comment-based help
+  log('TEST 6: Documentation =====', 'head');
+  if (/\.SYNOPSIS/.test(content)) {
+    log('.SYNOPSIS help block found', 'pass');
+    addResult('PASS', 'HelpBlock', fileName, '.SYNOPSIS present');
+  } else {
+    log('No .SYNOPSIS help block', 'warn');
+    addResult('WARN', 'HelpBlock', fileName, 'Missing .SYNOPSIS');
+  }
+
+  // Test 7: Empty catch blocks
+  log('TEST 7: Empty Catch Blocks =====', 'head');
+  var emptyCatch = /catch\s*\{\s*\}/.test(content);
+  if (emptyCatch) {
+    log('Empty catch block(s) detected', 'warn');
+    addResult('WARN', 'EmptyCatch', fileName, 'Empty catch block found');
+  } else {
+    log('No empty catch blocks', 'pass');
+    addResult('PASS', 'EmptyCatch', fileName, 'All catch blocks have content');
+  }
+
+  // Test 8: Line count and complexity
+  log('TEST 8: Complexity Metrics =====', 'head');
+  log('Total lines: ' + lines.length, 'info');
+  log('Functions: ' + funcs.length, 'info');
+  addResult('INFO', 'LineCount', fileName, lines.length + ' lines');
+  addResult('INFO', 'FunctionCount', fileName, funcs.length + ' functions');
+  if (lines.length > 3000) {
+    log('File exceeds 3000 lines - consider splitting', 'warn');
+    addResult('WARN', 'FileSize', fileName, 'Exceeds 3000 lines');
+  }
+
+  log('', '');
+  log('===== TEST EXECUTION COMPLETE =====', 'head');
+  updateSummary();
+}
+
+function runStructuralTests(scriptPath) {
+  // For dropdown selection without file content, run path-based checks
+  log('TEST 1: File Path Validation =====', 'head');
+  var ext = scriptPath.split('.').pop().toLowerCase();
+  var validExts = ['ps1', 'psm1', 'psd1', 'bat', 'cmd'];
+  if (validExts.indexOf(ext) >= 0) {
+    log('Valid script extension: .' + ext, 'pass');
+    addResult('PASS', 'FileExtension', scriptPath, 'Extension: .' + ext);
+  } else {
+    log('Unexpected extension: .' + ext, 'warn');
+    addResult('WARN', 'FileExtension', scriptPath, 'Extension: .' + ext);
+  }
+
+  log('TEST 2: Known Issues for ' + scriptPath + ' =====', 'head');
+  var knownIssues = {
+    'Main-GUI.ps1': [
+      {s:'WARN', t:'DuplicateVersionTag', d:'Lines 1-2 contain duplicate VersionTag comments'},
+      {s:'WARN', t:'HardcodedPaths', d:'Lines 1116-1120 contain hardcoded C:\\PowerShellGUI paths'},
+      {s:'FAIL', t:'AutoVarShadow', d:'Line 1929: $args shadows automatic variable in New-EncryptedZip'},
+      {s:'WARN', t:'ClosureCapture', d:'Lines 134, 1088: timer closures may not capture variables correctly'},
+      {s:'WARN', t:'ErrorActionStop', d:'Line 50: $ErrorActionPreference="Stop" at script scope risks unhandled termination'},
+      {s:'WARN', t:'LogBufferClear', d:'Line 1255: .Clear() on array type; use reset assignment instead'},
+      {s:'INFO', t:'FileSize', d:'~4400 lines - candidate for modularisation'}
+    ],
+    'fix_check_version.ps1': [
+      {s:'FAIL', t:'FunctionNameMismatch', d:'Line 70: calls Compare-ExcludedFolders (plural) but function is Compare-ExcludedFolder (singular)'},
+      {s:'FAIL', t:'UndefinedFunction', d:'Lines 37,88+: calls Write-Log but Main-GUI.ps1 defines Write-AppLog'}
+    ],
+    'fix_update_version.ps1': [
+      {s:'WARN', t:'DuplicateVersionTag', d:'Lines 1-2 contain duplicate VersionTag comments'}
+    ],
+    'View-Config.ps1': [
+      {s:'WARN', t:'DuplicateVersionTag', d:'Lines 1-2 contain duplicate VersionTag comments'}
+    ]
+  };
+
+  var issues = knownIssues[scriptPath];
+  if (issues) {
+    for (var ki = 0; ki < issues.length; ki++) {
+      var iss = issues[ki];
+      var logType = iss.s.toLowerCase();
+      log(iss.d, logType);
+      addResult(iss.s, iss.t, scriptPath, iss.d);
+    }
+  } else {
+    log('No pre-catalogued issues for this file', 'info');
+    addResult('INFO', 'NoCatalogued', scriptPath, 'Use Browse to upload file for full analysis');
+  }
+
+  log('', '');
+  log('For full content-based analysis, use the Browse button to load the file.', 'info');
+  log('', '');
+  log('===== STRUCTURAL TEST COMPLETE =====', 'head');
+  updateSummary();
+}
+
+function exportResults() {
+  if (testResults.length === 0) {
+    alert('No test results to export. Run tests first.');
+    return;
+  }
+  var csv = 'Status,Test,File,Detail\n';
+  for (var i = 0; i < testResults.length; i++) {
+    var r = testResults[i];
+    csv += '"' + r.status + '","' + r.test + '","' + r.file + '","' + r.detail.replace(/"/g, '""') + '"\n';
+  }
+  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'test-results-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+//]]>
+</script>
+
+<div class="section" style="margin-top:24px; text-align:center; color:#888; font-size:11px;">
+  <p>KPEJET2 PowerShell GUI Code Analysis &#x00A9; 2026 The Establishment | Version 2602.a.11</p>
+</div>
+
+</body>
+</html>
