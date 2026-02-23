@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1"
+  ],
+  "executionAgent": "",
+  "type": "Bug",
+  "sinId": "SIN-20260328082049-dbcb8434",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "executionMethod": "",
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "tags": [],
+  "created": "2026-03-30T21:10:29.8299011Z",
+  "description": "Script PKIChainManager.psm1 has 7 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:10:29.8299928Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "",
+  "title": "7 functions with no try/catch blocks",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bug-20260331051029-6dbea306"
+}

@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "schema": "PsGUI-TestRoutine/1.0",
+    "name": "Example Baseline Test Routine",
+    "description": "Demonstrates all available test condition types.",
+    "created": "2026-03-09T00:00:00Z",
+    "lastModified": "2026-03-09T00:00:00Z",
+    "version": "2603.B0.v27.0"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "type": "FileExists",
+      "label": "Main GUI script exists",
+      "param": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 2,
+      "type": "FolderExists",
+      "label": "Modules folder exists",
+      "param": "C:\\PowerShellGUI\\modules",
+      "remediation": ""
+    },
+    {
+      "id": 3,
+      "type": "FolderWritable",
+      "label": "Logs folder is writable",
+      "param": "C:\\PowerShellGUI\\logs",
+      "remediation": ""
+    },
+    {
+      "id": 4,
+      "type": "ServiceRunning",
+      "label": "Windows Update service is running",
+      "param": "wuauserv",
+      "remediation": "Start-Service wuauserv"
+    },
+    {
+      "id": 5,
+      "type": "ServiceExists",
+      "label": "WinRM service exists",
+      "param": "WinRM",
+      "remediation": ""
+    },
+    {
+      "id": 6,
+      "type": "AppInstalled",
+      "label": "PowerShell 7 is installed",
+      "param": "PowerShell",
+      "remediation": "winget install Microsoft.PowerShell"
+    },
+    {
+      "id": 7,
+      "type": "TimezoneEquals",
+      "label": "Timezone is UTC+8",
+      "param": "+8",
+      "remediation": ""
+    },
+    {
+      "id": 8,
+      "type": "LanguageEquals",
+      "label": "Language is en-AU",
+      "param": "en-AU",
+      "remediation": ""
+    },
+    {
+      "id": 9,
+      "type": "RegionEquals",
+      "label": "Region is Australia",
+      "param": "Australia",
+      "remediation": ""
+    }
+  ]
+}

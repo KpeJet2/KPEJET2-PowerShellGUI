@@ -1,0 +1,67 @@
+{
+  "checkpoint_id": "d0111ebf-a207-42b0-89d3-c24e471062ad",
+  "focalpoint_instance": "FocalPoint-null-00",
+  "state_type": "orchestrator_state",
+  "state_data": {
+    "instance_id": "FocalPoint-null-00",
+    "active_tasks": {
+      "ff8e1d7b-623a-4648-bde3-7a8c4d93e623": {
+        "task_id": "ff8e1d7b-623a-4648-bde3-7a8c4d93e623",
+        "title": "Output Validation",
+        "description": "Validate incoming user request: 'test' for compliance, safety, and suitability before further allocation.",
+        "assigned_to": "ViewPoint-init",
+        "dispatched_by": "FocalPoint-null-00",
+        "status": "DISPATCHED",
+        "directive_snapshot": {
+          "directive_id": "23a19775-17b3-4af4-9720-3db3abc77fb1",
+          "agent_id": "ViewPoint-init",
+          "directive_text": "Review and validate the user request. If compliant, pass it back for orchestration; if not, flag and halt further processing.",
+          "directive_sha256": "7f924e3367959275d8aee55ae314bcad45aecbcffe61d1b5278a09b40d2cf418",
+          "received_at": "2026-03-01T14:23:11.193569Z",
+          "signed_by": "FocalPoint-null-00"
+        },
+        "fork_id": null,
+        "fork_option_label": null,
+        "parent_task_id": null,
+        "child_task_ids": [],
+        "retry_count": 0,
+        "max_retries": 3,
+        "last_error": null,
+        "progress_pct": 0.0,
+        "progress_notes": [],
+        "created_at": "2026-03-01T14:23:11.193597Z",
+        "dispatched_at": "2026-03-01T14:23:11.194078Z",
+        "started_at": null,
+        "completed_at": null,
+        "result": null,
+        "result_sha256": null,
+        "result_viewpoint_encoded": false,
+        "human_review_requested": false,
+        "human_review_notes": null
+      }
+    },
+    "active_forks": {},
+    "completed_task_count": 0,
+    "failed_task_count": 0,
+    "version_loops_completed": 1,
+    "agent_registry_snapshot": [],
+    "last_checkpoint_id": null,
+    "started_at": "2026-03-01T14:22:45.348817Z",
+    "last_active_at": "2026-03-01T14:23:11.193500Z"
+  },
+  "active_task_ids": [
+    "ff8e1d7b-623a-4648-bde3-7a8c4d93e623"
+  ],
+  "active_fork_ids": [],
+  "created_at": "2026-03-01T14:23:11.198491Z",
+  "state_sha256": "ccab6d7aece52f03ad2d3eb367dd700728a762108775075a3555e7fb9f960ed7",
+  "signature": "nOa2V1V7YFwtyPYGZ8ouXf/ICrfA6uuxLJjxgD6ox1Sh9URBN0hIS3Qui9e7lLF6e5WO3CPgsCAQVDqMvJi2ESLbF3YTz0rFxpg0gAU5a4t5UbyNoImiuYjh5LBawXmExAEpwyidjGyEsivMe4WfeuDh3QnFhCu17Mzn78FQTKPmgcZR1GQ+klMugrbCuSaNKJPywWAgjfUvvgUfHa+8nOo5XzHGg3kFloE2uZKTOFJDbQoIdeLVOyRIT7iMITs5J+BNomuLmoH535A42G6w3I4N3Y+5+pSzxuqUO+iNta1Hx/BqQoWwlORqJ7MIi1e9ie4sVO99+GkaiGWGgW9jOw==",
+  "metadata": {
+    "allow_agent_archival_access": false,
+    "permitted_agent_ids": [],
+    "permitted_agent_public_keys": {},
+    "archive_sha256": "ccab6d7aece52f03ad2d3eb367dd700728a762108775075a3555e7fb9f960ed7",
+    "created_at": "2026-03-01T14:23:11.196542Z",
+    "archived_at": null
+  }
+}

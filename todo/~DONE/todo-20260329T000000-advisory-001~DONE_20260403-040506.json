@@ -1,0 +1,11 @@
+{
+  "status": "DONE",
+  "category": "gitignore",
+  "id": "advisory-001",
+  "priority": "low",
+  "description": "Python .venv/Scripts/Activate.ps1 is regenerated with local machine path by \"python -m venv\". The .venv/ directory should be covered by .gitignore to prevent machine-specific paths from entering source control. Verify .gitignore excludes .venv/, .venv-pygame312/, and any other venv folders.",
+  "title": ".venv/ should be in .gitignore (Activate.ps1 is auto-generated)",
+  "createdAt": "2026-03-29T00:00:00Z",
+  "completedAt": "2026-03-31T01:47:17Z",
+  "resolution": "ALREADY PRESENT: .venv/ is already in .gitignore at line 14"
+}

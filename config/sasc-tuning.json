@@ -1,0 +1,8 @@
+{
+  "PBKDF2_Iterations": 600000,
+  "MaxFailedAttempts": 5,
+  "LockoutDurationMinutes": 30,
+  "DefaultAutoLockMinutes": 15,
+  "IntegrityCheckThrottle": 60,
+  "DefaultLANPort": 8087
+}

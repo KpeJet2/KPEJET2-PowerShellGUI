@@ -1,0 +1,20 @@
+{
+  "id": "d0f4bc70-16c0-40cb-bfd5-9a516a8ae213",
+  "title": "Rename Proposal: scripts\\UserProfile-Manager.ps1",
+  "description": "Script uses non-standard verb 'UserProfile': UserProfile-Manager.ps1 -- Suggested: UserProfile-Manager.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\UserProfile-Manager.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.1367773+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "UserProfile-Manager.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

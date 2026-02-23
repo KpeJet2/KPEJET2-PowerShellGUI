@@ -1,0 +1,615 @@
+{
+  "meta": {
+    "schema": "PsGUI-TestRoutine/1.0",
+    "name": "Workspace Validation Routine",
+    "description": "Comprehensive validation of PwShGUI workspace layout, folder writability, minimum required files, manifest hashes, prerequisite binaries/versions, file versioning, XHTML link integrity, and report data completeness.",
+    "created": "2026-03-24T04:00:00.000Z",
+    "lastModified": "2026-03-24T04:00:00.000Z",
+    "version": "2603.B0.v19",
+    "locked": false
+  },
+  "steps": [
+    {
+      "id": 1,
+      "type": "FolderExists",
+      "label": "Top-level folder: config/",
+      "param": "config",
+      "remediation": ""
+    },
+    {
+      "id": 2,
+      "type": "FolderExists",
+      "label": "Top-level folder: modules/",
+      "param": "modules",
+      "remediation": ""
+    },
+    {
+      "id": 3,
+      "type": "FolderExists",
+      "label": "Top-level folder: scripts/",
+      "param": "scripts",
+      "remediation": ""
+    },
+    {
+      "id": 4,
+      "type": "FolderExists",
+      "label": "Top-level folder: tests/",
+      "param": "tests",
+      "remediation": ""
+    },
+    {
+      "id": 5,
+      "type": "FolderExists",
+      "label": "Top-level folder: todo/",
+      "param": "todo",
+      "remediation": ""
+    },
+    {
+      "id": 6,
+      "type": "FolderExists",
+      "label": "Top-level folder: logs/",
+      "param": "logs",
+      "remediation": ""
+    },
+    {
+      "id": 7,
+      "type": "FolderExists",
+      "label": "Top-level folder: Report/",
+      "param": "Report",
+      "remediation": ""
+    },
+    {
+      "id": 8,
+      "type": "FolderExists",
+      "label": "Top-level folder: pki/",
+      "param": "pki",
+      "remediation": ""
+    },
+    {
+      "id": 9,
+      "type": "FolderExists",
+      "label": "Top-level folder: UPM/",
+      "param": "UPM",
+      "remediation": ""
+    },
+    {
+      "id": 10,
+      "type": "FolderExists",
+      "label": "Top-level folder: agents/",
+      "param": "agents",
+      "remediation": ""
+    },
+    {
+      "id": 11,
+      "type": "FolderExists",
+      "label": "Top-level folder: checkpoints/",
+      "param": "checkpoints",
+      "remediation": ""
+    },
+    {
+      "id": 12,
+      "type": "FolderExists",
+      "label": "Top-level folder: sin_registry/",
+      "param": "sin_registry",
+      "remediation": ""
+    },
+    {
+      "id": 13,
+      "type": "FolderExists",
+      "label": "Top-level folder: sovereign-kernel/",
+      "param": "sovereign-kernel",
+      "remediation": ""
+    },
+    {
+      "id": 14,
+      "type": "FolderExists",
+      "label": "Top-level folder: ~README.md/",
+      "param": "~README.md",
+      "remediation": ""
+    },
+    {
+      "id": 15,
+      "type": "FolderExists",
+      "label": "Top-level folder: ~REPORTS/",
+      "param": "~REPORTS",
+      "remediation": ""
+    },
+    {
+      "id": 16,
+      "type": "FolderExists",
+      "label": "Top-level folder: ~DOWNLOADS/",
+      "param": "~DOWNLOADS",
+      "remediation": ""
+    },
+    {
+      "id": 17,
+      "type": "FolderExists",
+      "label": "2nd-level folder: scripts/XHTML-Checker/",
+      "param": "scripts/XHTML-Checker",
+      "remediation": ""
+    },
+    {
+      "id": 18,
+      "type": "FolderExists",
+      "label": "2nd-level folder: scripts/QUICK-APP/",
+      "param": "scripts/QUICK-APP",
+      "remediation": ""
+    },
+    {
+      "id": 19,
+      "type": "FolderExists",
+      "label": "2nd-level folder: config/CONFIG-TEMPLATES/",
+      "param": "config/CONFIG-TEMPLATES",
+      "remediation": ""
+    },
+    {
+      "id": 20,
+      "type": "FolderExists",
+      "label": "2nd-level folder: config/CONFIG-BACKUPS/",
+      "param": "config/CONFIG-BACKUPS",
+      "remediation": ""
+    },
+    {
+      "id": 21,
+      "type": "FolderExists",
+      "label": "2nd-level folder: config/APP-INSTALL-TEMPLATES/",
+      "param": "config/APP-INSTALL-TEMPLATES",
+      "remediation": ""
+    },
+    {
+      "id": 22,
+      "type": "FolderExists",
+      "label": "2nd-level folder: modules/LOCAL/",
+      "param": "modules/LOCAL",
+      "remediation": ""
+    },
+    {
+      "id": 23,
+      "type": "FolderExists",
+      "label": "2nd-level folder: UPM/docs/",
+      "param": "UPM/docs",
+      "remediation": ""
+    },
+    {
+      "id": 24,
+      "type": "FolderExists",
+      "label": "2nd-level folder: tests/Testing-Routine-SAVES/",
+      "param": "tests/Testing-Routine-SAVES",
+      "remediation": ""
+    },
+    {
+      "id": 25,
+      "type": "FolderWritable",
+      "label": "Writable: config/",
+      "param": "config",
+      "remediation": ""
+    },
+    {
+      "id": 26,
+      "type": "FolderWritable",
+      "label": "Writable: modules/",
+      "param": "modules",
+      "remediation": ""
+    },
+    {
+      "id": 27,
+      "type": "FolderWritable",
+      "label": "Writable: scripts/",
+      "param": "scripts",
+      "remediation": ""
+    },
+    {
+      "id": 28,
+      "type": "FolderWritable",
+      "label": "Writable: tests/",
+      "param": "tests",
+      "remediation": ""
+    },
+    {
+      "id": 29,
+      "type": "FolderWritable",
+      "label": "Writable: todo/",
+      "param": "todo",
+      "remediation": ""
+    },
+    {
+      "id": 30,
+      "type": "FolderWritable",
+      "label": "Writable: logs/",
+      "param": "logs",
+      "remediation": ""
+    },
+    {
+      "id": 31,
+      "type": "FolderWritable",
+      "label": "Writable: Report/",
+      "param": "Report",
+      "remediation": ""
+    },
+    {
+      "id": 32,
+      "type": "FolderWritable",
+      "label": "Writable: ~README.md/",
+      "param": "~README.md",
+      "remediation": ""
+    },
+    {
+      "id": 33,
+      "type": "FolderWritable",
+      "label": "Writable: ~REPORTS/",
+      "param": "~REPORTS",
+      "remediation": ""
+    },
+    {
+      "id": 34,
+      "type": "FileExists",
+      "label": "Core file: Main-GUI.ps1",
+      "param": "Main-GUI.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 35,
+      "type": "FileExists",
+      "label": "Core file: View-Config.ps1",
+      "param": "View-Config.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 36,
+      "type": "FileExists",
+      "label": "Core file: Launch-GUI.bat",
+      "param": "Launch-GUI.bat",
+      "remediation": ""
+    },
+    {
+      "id": 37,
+      "type": "FileExists",
+      "label": "Core file: Launch-GUI-SmokeTest.bat",
+      "param": "Launch-GUI-SmokeTest.bat",
+      "remediation": ""
+    },
+    {
+      "id": 38,
+      "type": "FileExists",
+      "label": "Module: PwShGUICore.psm1",
+      "param": "modules/PwShGUICore.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 39,
+      "type": "FileExists",
+      "label": "Module: PwShGUI-Theme.psm1",
+      "param": "modules/PwShGUI-Theme.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 40,
+      "type": "FileExists",
+      "label": "Module: AssistedSASC.psm1",
+      "param": "modules/AssistedSASC.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 41,
+      "type": "FileExists",
+      "label": "Module: SASC-Adapters.psm1",
+      "param": "modules/SASC-Adapters.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 42,
+      "type": "FileExists",
+      "label": "Module: UserProfileManager.psm1",
+      "param": "modules/UserProfileManager.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 43,
+      "type": "FileExists",
+      "label": "Module: AVPN-Tracker.psm1",
+      "param": "modules/AVPN-Tracker.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 44,
+      "type": "FileExists",
+      "label": "Module: PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "param": "modules/PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 45,
+      "type": "FileExists",
+      "label": "Module: PwShGUI_AutoIssueFinder.psm1",
+      "param": "modules/PwShGUI_AutoIssueFinder.psm1",
+      "remediation": ""
+    },
+    {
+      "id": 46,
+      "type": "FileExists",
+      "label": "Script: Invoke-TodoManager.ps1",
+      "param": "scripts/Invoke-TodoManager.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 47,
+      "type": "FileExists",
+      "label": "Script: Invoke-CronProcessor.ps1",
+      "param": "scripts/Invoke-CronProcessor.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 48,
+      "type": "FileExists",
+      "label": "Script: Invoke-TestRoutine.ps1",
+      "param": "scripts/Invoke-TestRoutine.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 49,
+      "type": "FileExists",
+      "label": "Script: Invoke-PSEnvironmentScanner.ps1",
+      "param": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 50,
+      "type": "FileExists",
+      "label": "Script: Invoke-ReferenceIntegrityCheck.ps1",
+      "param": "scripts/Invoke-ReferenceIntegrityCheck.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 51,
+      "type": "FileExists",
+      "label": "Script: Invoke-DataMigration.ps1",
+      "param": "scripts/Invoke-DataMigration.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 52,
+      "type": "FileExists",
+      "label": "Config: pwsh-app-config-BASE.json",
+      "param": "config/pwsh-app-config-BASE.json",
+      "remediation": ""
+    },
+    {
+      "id": 53,
+      "type": "FileExists",
+      "label": "Config: prerequisites-baseline.json",
+      "param": "config/prerequisites-baseline.json",
+      "remediation": ""
+    },
+    {
+      "id": 54,
+      "type": "FileExists",
+      "label": "Config: sasc-integrity.sha256.json",
+      "param": "config/sasc-integrity.sha256.json",
+      "remediation": ""
+    },
+    {
+      "id": 55,
+      "type": "FileExists",
+      "label": "Config: sasc-vault-config.json",
+      "param": "config/sasc-vault-config.json",
+      "remediation": ""
+    },
+    {
+      "id": 56,
+      "type": "FileExists",
+      "label": "Config: links.xml",
+      "param": "config/links.xml",
+      "remediation": ""
+    },
+    {
+      "id": 57,
+      "type": "FileExists",
+      "label": "XHTML: XHTML-FeatureRequests.xhtml",
+      "param": "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 58,
+      "type": "FileExists",
+      "label": "XHTML: XHTML-TestingRoutineBuilder.xhtml",
+      "param": "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 59,
+      "type": "FileExists",
+      "label": "XHTML: XHTML-MasterToDo.xhtml",
+      "param": "scripts/XHTML-Checker/XHTML-MasterToDo.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 60,
+      "type": "FileExists",
+      "label": "XHTML: XHTML-MCPServiceConfig.xhtml",
+      "param": "scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 61,
+      "type": "FileExists",
+      "label": "XHTML: XHTML-code-analysis.xhtml",
+      "param": "scripts/XHTML-Checker/XHTML-code-analysis.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 62,
+      "type": "FileExists",
+      "label": "XHTML: PwShGUI-Checklists.xhtml",
+      "param": "~README.md/PwShGUI-Checklists.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 63,
+      "type": "FileExists",
+      "label": "Help: PwShGUI-Help-Index.html",
+      "param": "~README.md/PwShGUI-Help-Index.html",
+      "remediation": ""
+    },
+    {
+      "id": 64,
+      "type": "FileExists",
+      "label": "Manifest: FILES-MANIFEST.md",
+      "param": "~README.md/FILES-MANIFEST.md",
+      "remediation": ""
+    },
+    {
+      "id": 65,
+      "type": "FileExists",
+      "label": "Manifest: sasc-integrity.sha256.json (hash manifest)",
+      "param": "config/sasc-integrity.sha256.json",
+      "remediation": "Run Invoke-ReferenceIntegrityCheck.ps1 -RebuildHashes to regenerate"
+    },
+    {
+      "id": 66,
+      "type": "FileExists",
+      "label": "Todo index: _index.json",
+      "param": "todo/_index.json",
+      "remediation": "Run Invoke-TodoManager.ps1 -Reindex to regenerate"
+    },
+    {
+      "id": 67,
+      "type": "FileExists",
+      "label": "Readme: README.md",
+      "param": "~README.md/README.md",
+      "remediation": ""
+    },
+    {
+      "id": 68,
+      "type": "FileExists",
+      "label": "Test: Invoke-GUISmokeTest.ps1",
+      "param": "tests/Invoke-GUISmokeTest.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 69,
+      "type": "FileExists",
+      "label": "Test: Invoke-AutomatedTests.ps1",
+      "param": "tests/Invoke-AutomatedTests.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 70,
+      "type": "FileExists",
+      "label": "UPM Guide: UPM-UserGuide.xhtml",
+      "param": "UPM/docs/UPM-UserGuide.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 71,
+      "type": "AppVersionHigher",
+      "label": "Prerequisite: PowerShell 5.1+",
+      "param": "powershell|5.1",
+      "remediation": "Install Windows Management Framework 5.1 or later"
+    },
+    {
+      "id": 72,
+      "type": "AppInstalled",
+      "label": "Prerequisite: PowerShell 7 (pwsh)",
+      "param": "pwsh",
+      "remediation": "Install PowerShell 7 from https://github.com/PowerShell/PowerShell/releases"
+    },
+    {
+      "id": 73,
+      "type": "AppInstalled",
+      "label": "Prerequisite: Git",
+      "param": "git",
+      "remediation": "Install Git from https://git-scm.com/downloads"
+    },
+    {
+      "id": 74,
+      "type": "AppInstalled",
+      "label": "Prerequisite: Visual Studio Code",
+      "param": "code",
+      "remediation": "Install VS Code from https://code.visualstudio.com/"
+    },
+    {
+      "id": 75,
+      "type": "WinVersionCurrent",
+      "label": "Windows build within 2 releases",
+      "param": "",
+      "remediation": "Run Windows Update to ensure OS is current"
+    },
+    {
+      "id": 76,
+      "type": "FileExists",
+      "label": "Version tag: Main-GUI.ps1 contains VersionTag",
+      "param": "Main-GUI.ps1",
+      "remediation": ""
+    },
+    {
+      "id": 77,
+      "type": "FileExists",
+      "label": "Version tag: XHTML-FeatureRequests.xhtml contains VersionTag",
+      "param": "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 78,
+      "type": "FileExists",
+      "label": "Version tag: XHTML-TestingRoutineBuilder.xhtml contains VersionTag",
+      "param": "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 79,
+      "type": "FileExists",
+      "label": "Version tag: PwShGUI-Checklists.xhtml contains VersionTag",
+      "param": "~README.md/PwShGUI-Checklists.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 80,
+      "type": "FileExists",
+      "label": "Version tag: PwShGUI-Help-Index.html contains VersionTag",
+      "param": "~README.md/PwShGUI-Help-Index.html",
+      "remediation": ""
+    },
+    {
+      "id": 81,
+      "type": "FileExists",
+      "label": "XHTML link target: Dependency-Visualisation.html",
+      "param": "~README.md/Dependency-Visualisation.html",
+      "remediation": ""
+    },
+    {
+      "id": 82,
+      "type": "FileExists",
+      "label": "XHTML link target: SURVEY-Viewpoints.html",
+      "param": "~README.md/SURVEY-Viewpoints.html",
+      "remediation": ""
+    },
+    {
+      "id": 83,
+      "type": "FileExists",
+      "label": "Root XHTML: Shop-ListedItems-Entry.xhtml",
+      "param": "Shop-ListedItems-Entry.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 85,
+      "type": "FileExists",
+      "label": "Root XHTML: XHTML-invoke-secrets.xhtml",
+      "param": "XHTML-invoke-secrets.xhtml",
+      "remediation": ""
+    },
+    {
+      "id": 86,
+      "type": "FolderExists",
+      "label": "Report folder exists with generated reports",
+      "param": "Report",
+      "remediation": ""
+    },
+    {
+      "id": 87,
+      "type": "FolderExists",
+      "label": "Report XHTML folder: scripts/~REPORTS/",
+      "param": "scripts/~REPORTS",
+      "remediation": ""
+    }
+  ]
+}

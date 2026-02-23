@@ -1,0 +1,15 @@
+{
+  "id": "master-003",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "critical",
+  "status": "DONE",
+  "title": "Update stale config version (pwsh-app-config-BASE.json)",
+  "description": "config/pwsh-app-config-BASE.json versionTag is 2602.a.12 (7 versions behind). Must be updated to 2603.B0.v19 to match workspace.",
+  "files": [
+    "config/pwsh-app-config-BASE.json"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:02:46.1280907+08:00",
+  "resolution": "FIXED - Already at 2603.B0.v27.0"
+}

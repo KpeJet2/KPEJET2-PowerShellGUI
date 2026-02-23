@@ -1,0 +1,119 @@
+<!-- VersionTag: 2602.a.11 -->
+<!-- VersionTag: 2602.a.10 -->
+<!-- VersionTag: 2602.a.9 -->
+<!-- VersionTag: 2602.a.8 -->
+<!-- VersionTag: 2602.a.7 -->
+<SystemVariables>
+  <UserDomain>XPS15-MS</UserDomain>
+  <SystemRoot>C:\WINDOWS</SystemRoot>
+  <PowerShellVersion>7</PowerShellVersion>
+  <RootPWSHDirectory>C:\PowerShellGUI\scripts\QUICK-APP</RootPWSHDirectory>
+  <RootGUIDirectory>C:\PowerShellGUI</RootGUIDirectory>
+  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
+  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
+  <ComputerName>XPS15-MS</ComputerName>
+  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
+  <ProgramFiles>C:\Program Files</ProgramFiles>
+  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
+  <PSVersion>7.5.4</PSVersion>
+  <UserName>msaib</UserName>
+  <Version>
+    <Major>2602</Major>
+    <Minor>a</Minor>
+    <Build>11</Build>
+  </Version>
+  <Do-Not-VersionTag-FoldersFiles>
+    
+    <Folder>~BACKUPS</Folder>
+    <Folder>~REPORTS</Folder>
+    <Folder>~DOWNLOADS</Folder>
+    <Folder>FOLDER-ROOT</Folder>
+    <Folder>logs</Folder>
+    <Folder>temp</Folder>
+    <Folder>AutoIssueFinder-Logs</Folder>
+
+  </Do-Not-VersionTag-FoldersFiles>
+  <Windows>
+  </Windows>
+  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
+  <ProcessorCount>
+  </ProcessorCount>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ExecutionDate>2026-02-03 01:26:40</ExecutionDate>
+  <Buttons>
+    <LeftColumn>
+      <Button>
+        <ScriptName>Script1</ScriptName>
+        <DisplayName>1- Access - User and Group Management</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script2</ScriptName>
+        <DisplayName>2- Backup Operations</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script3</ScriptName>
+        <DisplayName>3- Configuration Sync</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script4</ScriptName>
+        <DisplayName>4- Database Maintenance</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script5</ScriptName>
+        <DisplayName>5- Network Diagnostics</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script6</ScriptName>
+        <DisplayName>6- System Cleanup</DisplayName>
+      </Button>
+    </LeftColumn>
+    <RightColumn>
+      <Button>
+        <ScriptName>Script-A</ScriptName>
+        <DisplayName>Script-A Runner</DisplayName>
+        <ScriptPath>"./scripts/Script-A.ps1"</ScriptPath>
+      </Button>
+      <Button>
+        <ScriptName>Script-B</ScriptName>
+        <DisplayName>Script-B Runner</DisplayName>
+        <ScriptPath>./scripts/Script-B.ps1</ScriptPath>
+      </Button>
+      <Button>
+        <ScriptName>Script-C</ScriptName>
+        <DisplayName>Script-C Runner</DisplayName>
+        <ScriptPath>./scripts/Script-C.ps1</ScriptPath>
+      </Button>
+      <Button>
+        <ScriptName>Script-D</ScriptName>
+        <DisplayName>Script-D Runner</DisplayName>
+        <ScriptPath>./scripts/Script-D.ps1</ScriptPath>
+      </Button>
+      <Button>
+        <ScriptName>Script-E</ScriptName>
+        <DisplayName>Script-E Runner</DisplayName>
+        <ScriptPath>./scripts/Script-E.ps1</ScriptPath>
+      </Button>
+      <Button>
+        <ScriptName>.\QUICK-APP\~PWSH_Quick-APP3</ScriptName>
+        <DisplayName>PWSH-Quick-App (PWSH7 Prompt - Script Runner)</DisplayName>
+        <ScriptPath>.\QUICK-APP\~PWSH_Quick-APP3</ScriptPath>
+      </Button>
+    </RightColumn>
+  </Buttons>
+  <RemoteUpdatePath>\\QNAS-TVS473\Multimedia\Samples\PowerShellGUIMain-GUI-REMOTE</RemoteUpdatePath>
+  <RemoteConfigPath>
+  </RemoteConfigPath>
+  <RemoteTemplatePath>
+  </RemoteTemplatePath>
+  <RemoteBackupPath>
+  </RemoteBackupPath>
+  <RemoteArchivePath>
+  </RemoteArchivePath>
+  <RemoteLinksPath>
+  </RemoteLinksPath>
+  <RemoteDownloadPath>
+  </RemoteDownloadPath>
+</SystemVariables>

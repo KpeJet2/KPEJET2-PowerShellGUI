@@ -1,0 +1,102 @@
+{
+  "$schema": "PwShGUI-CSS-LayoutIndex/1.0",
+  "meta": {
+    "version": "2603.B0.v27.0",
+    "generated": "2026-03-31T00:00:00+11:00",
+    "purpose": "CSS layout template index. Agents select a layoutId when creating new XHTML/HTML pages. The global default applies unless a file has a per-file cssOverride set."
+  },
+  "global": {
+    "defaultLayoutId": "kpe-CSS_MasterTight-wLeftMENU",
+    "baseStylesheet": "styles/pwshgui-base.css",
+    "responsiveStylesheet": "styles/pwshgui-responsive.css",
+    "colorMapStylesheet": "styles/_color-map.css",
+    "importOrder": ["base", "responsive", "layout", "accent"]
+  },
+  "layouts": [
+    {
+      "layoutId": "kpe-CSS_TabsBlack-Checklist",
+      "file": "styles/layout-tabs-black-checklist.css",
+      "source": "~README.md/PwShGUI-Checklists.xhtml",
+      "pattern": "Dark top-bar + horizontal tab strip + checklist cards + progress bars",
+      "theme": "dark",
+      "features": ["tabs", "sub-tabs", "checklist-items", "progress-bar", "summary-cards", "item-cards", "collapsible-panels"],
+      "bestFor": ["checklists", "dashboards", "multi-tab tools", "pipeline views"]
+    },
+    {
+      "layoutId": "kpe-CSS_MasterTight-wLeftMENU",
+      "file": "styles/layout-mastertight-wleftmenu.css",
+      "source": "scripts/XHTML-Checker/XHTML-MasterToDo.xhtml",
+      "pattern": "Gradient top-bar + left sidebar nav + right content area + tight card layout",
+      "theme": "dark",
+      "features": ["left-sidebar", "filter-bar", "todo-cards", "count-badges", "nav-list"],
+      "bestFor": ["todo-lists", "task-management", "navigation-heavy tools", "default layout"],
+      "isGlobalDefault": true
+    },
+    {
+      "layoutId": "kpe-CSS_TabsWhite-wLeftMENU",
+      "file": "styles/layout-tabs-white-wleftmenu.css",
+      "source": "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "pattern": "Light body + dark tab bar + left sidebar + toolbars + cross-reference panels",
+      "theme": "light",
+      "features": ["light-theme", "tabs", "left-sidebar", "toolbar", "search-box", "data-tables", "action-log", "xref-panel", "saves-pane"],
+      "bestFor": ["feature-tracking", "bug-management", "data-entry", "tree-views"]
+    },
+    {
+      "layoutId": "kpe-CSS_TabsBlack-ModernUI",
+      "file": "styles/layout-tabs-black-modernui.css",
+      "source": "UPM/docs/UPM-UserGuide.xhtml",
+      "pattern": "Fixed left sidebar navigation + wide content area + documentation typography",
+      "theme": "dark-deep",
+      "features": ["fixed-sidebar", "doc-headings", "callouts", "code-blocks", "ops-table", "folder-tree", "syntax-highlighting"],
+      "bestFor": ["documentation", "user-guides", "reference-pages", "API-docs"]
+    },
+    {
+      "layoutId": "kpe-CSS_PageBlack-TechnicalUI",
+      "file": "styles/layout-page-black-technicalui.css",
+      "source": "~README.md/SECURITY-SETUP-GUIDE.xhtml",
+      "pattern": "Single-page padded document with technical headings, tables, code blocks",
+      "theme": "dark-mono",
+      "features": ["single-column", "monospace-body", "chain-diagram", "section-containers", "technical-headings"],
+      "bestFor": ["security-guides", "setup-instructions", "architecture-docs", "PKI-diagrams"]
+    }
+  ],
+  "fileOverrides": {
+    "_comment": "Per-file CSS layout overrides. Key = relative path, value = layoutId. Files not listed use the global defaultLayoutId.",
+    "~README.md/PwShGUI-Checklists.xhtml": "kpe-CSS_TabsBlack-Checklist",
+    "scripts/XHTML-Checker/XHTML-MasterToDo.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml": "kpe-CSS_TabsWhite-wLeftMENU",
+    "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml": "kpe-CSS_TabsWhite-wLeftMENU",
+    "scripts/XHTML-Checker/XHTML-code-analysis.xhtml": "kpe-CSS_TabsBlack-Checklist",
+    "scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "scripts/XHTML-Checker/XHTML-DependencyVis.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "scripts/XHTML-Checker/_TEMPLATE-XHTMLTool.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "UPM/docs/UPM-UserGuide.xhtml": "kpe-CSS_TabsBlack-ModernUI",
+    "~README.md/SECURITY-SETUP-GUIDE.xhtml": "kpe-CSS_PageBlack-TechnicalUI",
+    "~README.md/Dependency-Visualisation.html": "kpe-CSS_MasterTight-wLeftMENU",
+    "~README.md/PwShGUI-Help-Index.html": "kpe-CSS_MasterTight-wLeftMENU",
+    "~README.md/SURVEY-Viewpoints.html": "kpe-CSS_MasterTight-wLeftMENU",
+    "XHTML-invoke-secrets.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "Shop-ListedItems-Entry.xhtml": "kpe-CSS_TabsWhite-wLeftMENU",
+    "code-analysis.xhtml": "kpe-CSS_TabsBlack-Checklist"
+  },
+  "accentFiles": {
+    "_comment": "Accent CSS files override --heading and --status-bg per tool. See _color-map.css for full index.",
+    "folder-actions":     "styles/accent-folder-actions.css",
+    "archive-ops":        "styles/accent-archive-ops.css",
+    "config-mgmt":        "styles/accent-config-mgmt.css",
+    "remote-paths":       "styles/accent-remote-paths.css",
+    "build-pkg":          "styles/accent-build-pkg.css",
+    "master-todo":        "styles/accent-master-todo.css",
+    "feature-requests":   "styles/accent-feature-requests.css",
+    "code-analysis":      "styles/accent-code-analysis.css",
+    "mcp-config":         "styles/accent-mcp-config.css",
+    "testing-builder":    "styles/accent-testing-builder.css",
+    "scan-dashboard":     "styles/accent-scan-dashboard.css",
+    "cronaiathon":        "styles/accent-cronaiathon.css",
+    "event-log":          "styles/accent-event-log.css",
+    "app-template":       "styles/accent-app-template.css",
+    "secrets-vault":      "styles/accent-secrets-vault.css",
+    "shop-items":         "styles/accent-shop-items.css",
+    "env-scanner":        "styles/accent-env-scanner.css"
+  }
+}

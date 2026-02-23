@@ -1,0 +1,257 @@
+{
+  "meta": {
+    "schema": "CronAiAthon-Schedule/1.0",
+    "created": "2026-03-27T23:39:16.692197Z",
+    "description": "Cron-Ai-Athon task scheduling configuration."
+  },
+  "enabled": true,
+  "frequencyMinutes": 15,
+  "lastRunTime": "2026-04-04T14:01:03.7400597Z",
+  "nextRunTime": "2026-04-04T14:16:03.7400597Z",
+  "maxConcurrentJobs": 1,
+  "autoStartOnGUILaunch": false,
+  "tasks": [
+    {
+      "id": "TASK-BugScan",
+      "name": "Full Bug Scan",
+      "enabled": true,
+      "type": "BugScan",
+      "frequency": 120,
+      "lastRun": "2026-03-30T21:14:44.2300189Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-PipelineProcess",
+      "name": "Pipeline Processing",
+      "enabled": true,
+      "type": "PipelineProcess",
+      "frequency": 60,
+      "lastRun": "2026-03-30T21:14:44.3742698Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-MasterAggregate",
+      "name": "Master ToDo Aggregation",
+      "enabled": true,
+      "type": "MasterAggregate",
+      "frequency": 30,
+      "lastRun": "2026-03-30T21:14:48.2758527Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-SinRegistryReview",
+      "name": "Sin Registry Review",
+      "enabled": true,
+      "type": "SinRegistryReview",
+      "frequency": 240,
+      "lastRun": "2026-03-30T21:14:48.3279691Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-PreReqCheck",
+      "name": "Pre-Requisite Check",
+      "enabled": true,
+      "type": "PreReqCheck",
+      "frequency": 480,
+      "lastRun": "2026-03-30T21:14:48.3569627Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-ReportRetention",
+      "name": "Report Retention Cleanup",
+      "enabled": true,
+      "type": "ReportRetention",
+      "frequency": 10080,
+      "lastRun": "2026-03-30T21:14:48.3848466Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-DocFreshness",
+      "name": "Documentation Freshness Check",
+      "enabled": true,
+      "type": "DocFreshness",
+      "frequency": 1440,
+      "lastRun": "2026-03-30T21:14:48.4791901Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-DocRebuild",
+      "name": "README & Manifest Rebuild",
+      "enabled": true,
+      "type": "DocRebuild",
+      "frequency": 120,
+      "lastRun": "2026-03-30T21:14:55.8261331Z",
+      "lastResult": "SUCCESS"
+    },
+    {
+      "id": "TASK-DepMap",
+      "name": "Workspace Dependency Map",
+      "enabled": true,
+      "type": "DepMap",
+      "frequency": 1440,
+      "lastRun": null,
+      "lastResult": "PENDING"
+    },
+    {
+      "id": "TASK-CertMonitor",
+      "name": "Certificate Expiry Monitor",
+      "enabled": true,
+      "type": "CertMonitor",
+      "frequency": 1440,
+      "lastRun": null,
+      "lastResult": "PENDING"
+    },
+    {
+      "id": "TASK-TabErrorFix",
+      "name": "Tab Error Auto-Fix",
+      "enabled": true,
+      "type": "TabErrorFix",
+      "frequency": 30,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Process BUG pipeline items with category TabScanError. Attempt automated resolution and update item status."
+    },
+    {
+      "id": "TASK-AutopilotSuggestion",
+      "name": "AI Autopilot Suggestion",
+      "enabled": true,
+      "type": "AutopilotSuggestion",
+      "frequency": 60,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Every hour: derive one actionable suggestion from health signals in under 7 seconds and post to the Autopilot Suggestions store."
+    },
+    {
+      "id": "TASK-ConfigCoverage",
+      "name": "Config Coverage Audit",
+      "enabled": true,
+      "type": "ConfigCoverageAudit",
+      "frequency": 1440,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Daily: scan all .ps1/.psm1 files for central config feature adoption. Report gaps and surface SIN violations as pipeline BUG items."
+    },
+    {
+      "id": "TASK-SecMaint",
+      "name": "Security Maintenance",
+      "enabled": false,
+      "type": "SecMaint",
+      "frequency": 10080,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Weekly: rotate PSGUIAgentSvc and PSGUIPipelineSvc passwords, update vault entries, validate PSGUICertAdmin cert expiry."
+    },
+    {
+      "id": "TASK-PipelineSteer",
+      "name": "Pipeline Steering DryRun Scan",
+      "enabled": true,
+      "type": "PipelineSteer",
+      "frequency": 1440,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Daily: dry-run scan all workspace .ps1/.psm1 files for missing function descriptions, outline conformance, and dotfile presence. Report only, no changes applied."
+    },
+    {
+      "id": "TASK-PipelineSteerApply",
+      "name": "Pipeline Steering Apply Fixes",
+      "enabled": false,
+      "type": "PipelineSteerApply",
+      "frequency": 10080,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Weekly (manual enable required): apply outline stubs, inject missing SYNOPSIS headers, bump VersionTags for all conformance gaps found by PipelineSteer scan."
+    },
+    {
+      "id": "TASK-RollbackArchive",
+      "name": "Rollback Archive Export",
+      "enabled": false,
+      "type": "RollbackArchive",
+      "frequency": 10080,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Weekly (manual enable required): export encrypted rollback archive to all enabled locations defined in My-LookupLocationsConfig.json."
+    },
+    {
+      "id": "TASK-FullSystemsScan",
+      "name": "Full Systems Scan",
+      "enabled": true,
+      "type": "FullSystemsScan",
+      "frequency": 10080,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Weekly: orchestrated parallel+sequential integrity scan (SIN, SemiSin, Dependency, Orphan, ReferenceIntegrity, ConfigCoverage, AgenticManifest, PipelineSteering DryRun). Delta mode skips duplicate writes. Rotates summaries to archive after 7 files."
+    },
+    {
+      "id": "TASK-ConvoVaultExchange",
+      "name": "Rumi/Sumi Conversation Exchange",
+      "enabled": false,
+      "type": "ConvoVaultExchange",
+      "frequency": 1440,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Daily (manual enable required): invoke one koe-RumA/H-Ai-Nikr-Agi conversation exchange via PwShGUI-ConvoVault and export encrypted bundle for Checklists Rumi/Sumi tab."
+    },
+    {
+      "id": "TASK-ErrorHandlingLoop",
+      "name": "Error Handling Convergence Loop",
+      "enabled": true,
+      "type": "ErrorHandlingLoop",
+      "frequency": 240,
+      "lastRun": "2026-04-04T14:01:03.7400597Z",
+      "lastResult": "SUCCESS",
+      "description": "Every 4 hours: run iterative error-handling scan/remediation loop for Priority 1 files until convergence."
+    },
+    {
+      "id": "TASK-SelfReview",
+      "name": "Workspace Self-Review Cycle",
+      "enabled": true,
+      "type": "SelfReview",
+      "frequency": 360,
+      "lastRun": null,
+      "lastResult": "PENDING",
+      "description": "Every 6 hours: score workspace health across 8 dimensions, generate feedback items, track improvement trends, suggest config tuning."
+    }
+  ],
+  "jobStatistics": {
+    "totalCycles": 107,
+    "totalErrors": 23,
+    "totalItemsDone": 4783,
+    "totalBugsFound": 277,
+    "totalTestsMade": 0,
+    "totalPlansMade": 0,
+    "totalSubagentCalls": 0,
+    "subagentTally": {},
+    "lastErrorMessage": "ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it is an empty string.",
+    "lastErrorTime": "2026-04-04T13:56:31.8577503Z",
+    "questionsTotal": 7,
+    "questionsAutopilot": 1,
+    "questionsCommander": 6,
+    "questionsUnanswered": 0
+  },
+  "autopilotSuggestions": {
+    "items": [
+      {
+        "id": "SUGGEST-20260328155906",
+        "title": "consistency checks",
+        "description": "",
+        "category": "enhancement",
+        "status": "pending",
+        "created": "2026-03-28T07:59:06.2668344Z"
+      },
+      {
+        "id": "SUGGEST-20260328213838",
+        "title": "Improve all tools progress status indicators",
+        "description": "",
+        "category": "enhancement",
+        "status": "pending",
+        "created": "2026-03-28T13:38:38.4463746Z"
+      }
+    ],
+    "implemented": 0,
+    "pending": 2,
+    "rejected": 0,
+    "blocked": 0,
+    "failed": 0
+  },
+  "runningQueue": []
+}

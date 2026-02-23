@@ -1,0 +1,60 @@
+{
+  "$schema": "PwShGUI-ScanSchemaVersionMap/1.0",
+  "meta": {
+    "description": "Maps PwShGUI scan data schema versions to build versions and transform chains. Used by PwShGUI-SchemaTranslator.psm1 to upgrade legacy scan files to the current schema.",
+    "currentSchema": "DependencyMap/1.0",
+    "generated": "2026-04-05T00:00:00Z",
+    "generator": "scripts/Invoke-OrphanedFileAudit.ps1 / manual"
+  },
+  "schemas": [
+    {
+      "id": "DependencyMap/0.9",
+      "buildRange": { "minBuild": null, "maxBuild": "2603.B9.V30.9" },
+      "description": "Legacy schema — no schemaVersion field. Output of Invoke-WorkspaceDependencyMap.ps1 before 2026-04-05. Detected by absence of 'schemaVersion' field in JSON root.",
+      "detectionRule": "missing:schemaVersion",
+      "knownFields": {
+        "root": [ "generated", "workspace", "excludedFolders", "summary", "nodes", "edges", "urlIpByFile", "dnsResolution", "ipHitRate" ],
+        "summary": [ "folderCount", "moduleCount", "scriptCount", "functionCount", "variableCount", "configCount", "edgeCount", "urlFileCount", "uniqueHosts", "uniqueIPs" ],
+        "node": [ "id", "label", "type", "name", "versionTag", "functions", "variables", "sizeKB", "path" ],
+        "edge": [ "id", "source", "target", "type", "label" ]
+      },
+      "missingFields": {
+        "root": [ "schemaVersion" ],
+        "summary": [],
+        "node": [],
+        "edge": []
+      }
+    },
+    {
+      "id": "DependencyMap/1.0",
+      "buildRange": { "minBuild": "2604.B1.V32.0", "maxBuild": null },
+      "description": "Current schema — adds schemaVersion field at root. Output of Invoke-WorkspaceDependencyMap.ps1 from 2026-04-05 onwards.",
+      "detectionRule": "field:schemaVersion=DependencyMap/1.0",
+      "knownFields": {
+        "root": [ "schemaVersion", "generated", "workspace", "excludedFolders", "summary", "nodes", "edges", "urlIpByFile", "dnsResolution", "ipHitRate" ],
+        "summary": [ "folderCount", "moduleCount", "scriptCount", "functionCount", "variableCount", "configCount", "edgeCount", "urlFileCount", "uniqueHosts", "uniqueIPs" ],
+        "node": [ "id", "label", "type", "name", "versionTag", "functions", "variables", "sizeKB", "path" ],
+        "edge": [ "id", "source", "target", "type", "label" ]
+      },
+      "missingFields": {}
+    }
+  ],
+  "transforms": [
+    {
+      "id": "DependencyMap/0.9-to-DependencyMap/1.0",
+      "fromSchema": "DependencyMap/0.9",
+      "toSchema": "DependencyMap/1.0",
+      "description": "Upgrades legacy (no-version) scan files to DependencyMap/1.0 by injecting schemaVersion field.",
+      "operations": [
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "schemaVersion",
+          "value": "DependencyMap/1.0",
+          "position": "first",
+          "ifMissing": true
+        }
+      ]
+    }
+  ]
+}

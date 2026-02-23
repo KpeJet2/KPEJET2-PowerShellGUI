@@ -1,0 +1,33 @@
+{
+  "notes": "Matched existing sin: 6 functions with no try/catch blocks",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "description": "Script SINGovernance.psm1 has 6 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\SINGovernance.psm1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bug-20260331051326-b10d2027",
+  "sessionModCount": 1,
+  "parentId": "",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bug",
+  "priority": "MEDIUM",
+  "title": "6 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:13:26.1326522Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:13:26.1326992Z",
+  "sinId": "SIN-20260331045625-406bd3fb"
+}

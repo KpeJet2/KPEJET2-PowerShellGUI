@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2604.B1.V32.3 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspace Hub - PwShGUI</title>
+  <link rel="stylesheet" type="text/css" href="styles/pwshgui-hub.css" />
+  <style type="text/css">
+    :root{
+      --bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;
+      --accent:#007acc;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;--info:#569cd6;
+      --fg:#d4d4d4;--fg-sub:#969696;--border:#3f3f46;
+      --btn:#37373c;--btn-hover:#46464e;--btn-fg:#e6e6e6;
+      --radius:5px;--gap:10px;--pad:14px;
+      --font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      --fs:13px;--fs-sm:11px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font);font-size:var(--fs);
+         background:var(--bg);color:var(--fg);height:100vh;
+         display:flex;flex-direction:column;overflow:hidden}
+    /* ── Header ── */
+    .hdr{
+      background:var(--accent);color:#fff;flex-shrink:0;
+      padding:8px var(--pad);display:flex;align-items:center;gap:var(--gap);
+      font-size:15px;font-weight:600;
+    }
+    .hdr-ver{font-size:10px;opacity:.6;margin-left:auto}
+    .ws-dot{width:10px;height:10px;border-radius:50%;background:#444;flex-shrink:0}
+    .ws-dot.ok{background:var(--pass)}
+    .ws-dot.warn{background:var(--warn)}
+    .ws-dot.err{background:var(--fail)}
+    .eng-status-lbl{font-size:10px;color:rgba(255,255,255,0.6);margin-left:4px}
+    .eng-btn{font-size:10px;padding:2px 8px;color:#fff;border-radius:4px;cursor:pointer;font-family:var(--font)}
+    .eng-btn-start{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);margin-left:8px}
+    .eng-btn-stop{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#ccc;margin-left:4px}
+    /* ── Scan action toolbar ── */
+    .scan-bar{
+      background:var(--panel);border-bottom:1px solid var(--border);
+      padding:6px var(--pad);display:flex;align-items:center;
+      gap:var(--gap);flex-shrink:0;flex-wrap:wrap;
+    }
+    .scan-bar-title{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.5px}
+    .scan-btn{
+      font-family:var(--font);font-size:11px;
+      padding:4px 12px;border:1px solid var(--border);
+      border-radius:var(--radius);cursor:pointer;
+      background:var(--btn);color:var(--btn-fg);
+    }
+    .scan-btn:hover{background:var(--btn-hover)}
+    .scan-btn.inc{border-color:var(--info);color:var(--info)}
+    .scan-btn.full{border-color:var(--warn);color:var(--warn)}
+    .scan-pgbar-wrap{flex:1;min-width:120px;max-width:200px;
+                     height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden}
+    .scan-pgbar-fill{height:100%;width:0;background:var(--accent);
+                     border-radius:3px;transition:width .4s}
+    #scanMsgHub{font-size:10px;color:var(--fg-sub)}
+    /* ── Phase freshness strip ── */
+    .phase-strip{
+      background:var(--panel);border-bottom:1px solid var(--border);
+      padding:5px var(--pad) 5px;display:flex;align-items:center;
+      gap:8px;flex-shrink:0;flex-wrap:wrap;
+    }
+    .ph-pill{
+      display:flex;align-items:center;gap:4px;
+      background:#0a1424;border:1px solid #1a3060;
+      border-radius:10px;padding:2px 8px;font-size:10px;cursor:default;
+    }
+    .ph-dot{width:7px;height:7px;border-radius:50%;background:#444}
+    .ph-dot.green{background:#22c55e}
+    .ph-dot.yellow{background:#ca8a04}
+    .ph-dot.red{background:#dc2626}
+    .ph-dot.grey{background:#3a4a5a}
+    .ph-lbl{color:#8899bb}
+    .ph-age{color:#4a6080;font-size:9px}
+    /* ── Status bar ── */
+    .sbar{
+      background:var(--panel);border-top:1px solid var(--border);
+      padding:4px var(--pad);font-size:10px;color:var(--fg-sub);
+      display:flex;justify-content:space-between;flex-shrink:0;
+    }
+    .st-ok{color:var(--pass)}
+    .st-err{color:var(--fail)}
+    .st-warn{color:var(--warn)}
+    /* ── Section toggle buttons in sidebar ── */
+    .hub-section-btn{
+      display:block;width:100%;text-align:left;
+      border:none;background:transparent;cursor:pointer;
+      font-family:var(--font);
+    }
+    /* ── Tooltip system ── */
+    [data-tip]{position:relative;}
+    [data-tip]:hover::after{
+      content:attr(data-tip);
+      position:absolute;bottom:calc(100% + 7px);left:50%;
+      transform:translateX(-50%);
+      background:#111114;border:1px solid #3f3f46;color:#d4d4d4;
+      font-size:10px;line-height:1.4;padding:5px 9px;
+      border-radius:5px;white-space:pre-wrap;max-width:260px;
+      z-index:9999;pointer-events:none;
+      box-shadow:0 3px 8px rgba(0,0,0,.7);
+    }
+    /* ── Stats strip ── */
+    .stats-strip{
+      background:#0d0d10;border-bottom:1px solid var(--border);
+      padding:4px var(--pad);display:flex;align-items:center;
+      gap:18px;flex-shrink:0;flex-wrap:wrap;
+    }
+    .stat-item{display:flex;align-items:center;gap:5px;font-size:10px;cursor:default}
+    .stat-val{color:#569cd6;font-weight:700}
+    .stat-lbl{color:var(--fg-sub)}
+    /* ── Event Log section ── */
+    .evt-filter-bar{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      padding:8px var(--pad);background:var(--bg-alt);
+      border-bottom:1px solid var(--border);
+      border-radius:var(--radius);margin-bottom:10px;
+    }
+    .evt-filter-bar input[type=text]{
+      background:#1a1a1a;border:1px solid var(--border);
+      color:var(--fg);padding:3px 8px;font-family:var(--font);
+      font-size:11px;border-radius:var(--radius);width:200px
+    }
+    .evt-filter-bar select{
+      background:#1a1a1a;border:1px solid var(--border);
+      color:var(--fg);padding:3px 6px;font-family:var(--font);
+      font-size:11px;border-radius:var(--radius)
+    }
+    .evt-filter-bar label{
+      font-size:10px;color:var(--fg-sub);
+      display:flex;align-items:center;gap:3px;cursor:pointer
+    }
+    .evt-preset-wrap{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+    .evt-preset{
+      background:#0a1424;border:1px solid #1a3060;
+      border-radius:10px;font-size:9px;padding:2px 7px;
+      cursor:pointer;color:#7a9acc;transition:background .15s
+    }
+    .evt-preset:hover{background:#1a2a40;color:#d4d4d4}
+    .evt-preset .del{margin-left:4px;color:#f44747;cursor:pointer}
+    .evt-table-wrap{overflow:auto;max-height:calc(100vh - 330px)}
+    table.evt-table{width:100%;border-collapse:collapse;font-size:11px}
+    table.evt-table th{
+      position:sticky;top:0;background:#141418;
+      padding:5px 8px;text-align:left;color:var(--fg-sub);
+      font-weight:500;border-bottom:1px solid var(--border)
+    }
+    table.evt-table td{padding:3px 8px;border-bottom:1px solid #1a1a24;vertical-align:middle}
+    table.evt-table tr:hover td{background:#1e1e28}
+    .lvl-badge{
+      display:inline-block;padding:1px 6px;
+      border-radius:3px;font-size:9px;min-width:44px;text-align:center
+    }
+    .lvl-bg-INFO  {background:#0d2420;color:#4ec9b0}
+    .lvl-bg-BOOT  {background:#0d1e30;color:#569cd6}
+    .lvl-bg-WARN  {background:#2a2000;color:#dcdcaa}
+    .lvl-bg-ERROR {background:#2a0000;color:#f44747}
+    .lvl-bg-CRASH {background:#3a0000;color:#ff6464;font-weight:700}
+    .lvl-bg-DEBUG {background:#161616;color:#697169}
+    .scan-btn.static{border-color:#b5a04a;color:#b5a04a}
+  </style>
+</head>
+<body>
+  <!-- ── Header ── -->
+  <div class="hdr">
+    &#x1F3E0; Workspace Hub
+    <span class="hdr-ver">2604.B1.V32.3</span>
+    <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
+    <span id="engStatus" class="eng-status-lbl" data-tip="LocalWebEngine uptime and PID">&#x2014;</span>
+    <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Check if engine is running; instructions shown if offline">&#x25B6; Start Engine</button>
+    <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Send stop signal to the running LocalWebEngine">&#x25A0; Stop</button>
+  </div>
+
+  <!-- ── Scan action toolbar ── -->
+  <div class="scan-bar">
+    <span class="scan-bar-title" data-tip="Workspace scan controls. Engine-based scans require the LocalWebEngine running.">Scan Engine</span>
+    <button class="scan-btn inc" onclick="doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
+    <button class="scan-btn full" onclick="doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
+    <button class="scan-btn static" onclick="doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
+    <div class="scan-pgbar-wrap"><div class="scan-pgbar-fill" id="scanPgHub"></div></div>
+    <span id="scanMsgHub">Idle</span>
+    <button class="scan-btn" onclick="refreshAll()" data-tip="Refresh engine status, scan badges and timeline">&#x21BB; Refresh</button>
+  </div>
+
+  <!-- ── Phase freshness strip ── -->
+  <div class="phase-strip" id="phaseStrip">
+    <div class="ph-pill" id="ph-folders"  data-tip="Folder enumeration phase. Shows age of last completed scan."><div class="ph-dot grey"></div><span class="ph-lbl">Folders</span><span class="ph-age">&#x2014;</span></div>
+    <div class="ph-pill" id="ph-modules"  data-tip="Module discovery (.psm1/.psd1) and function count."><div class="ph-dot grey"></div><span class="ph-lbl">Modules</span><span class="ph-age">&#x2014;</span></div>
+    <div class="ph-pill" id="ph-scripts"  data-tip="Script inventory (.ps1) and function/variable attribution."><div class="ph-dot grey"></div><span class="ph-lbl">Scripts</span><span class="ph-age">&#x2014;</span></div>
+    <div class="ph-pill" id="ph-configs"  data-tip="Config file discovery (.json) across workspace."><div class="ph-dot grey"></div><span class="ph-lbl">Configs</span><span class="ph-age">&#x2014;</span></div>
+    <div class="ph-pill" id="ph-urls_ips" data-tip="URL and IP extraction from all scripts, modules and configs."><div class="ph-dot grey"></div><span class="ph-lbl">URLs/IPs</span><span class="ph-age">&#x2014;</span></div>
+    <div class="ph-pill" id="ph-dns_resolution" data-tip="DNS resolution of unique hosts found in URLs phase."><div class="ph-dot grey"></div><span class="ph-lbl">DNS</span><span class="ph-age">&#x2014;</span></div>
+  </div>
+
+  <!-- ── Workspace Stats strip ── -->
+  <div class="stats-strip" id="statsStrip" data-tip="Live workspace inventory from last completed scan">
+    <div class="stat-item" data-tip="Total non-excluded folders"><span class="stat-val" id="statFolders">81</span><span class="stat-lbl">Folders</span></div>
+    <div class="stat-item" data-tip="Module files (.psm1)"><span class="stat-val" id="statModules">45</span><span class="stat-lbl">Modules</span></div>
+    <div class="stat-item" data-tip="Script files (.ps1)"><span class="stat-val" id="statScripts">113</span><span class="stat-lbl">Scripts</span></div>
+    <div class="stat-item" data-tip="JSON config files"><span class="stat-val" id="statConfigs">28</span><span class="stat-lbl">Configs</span></div>
+    <div class="stat-item" data-tip="Exported functions across all modules and scripts"><span class="stat-val" id="statFunctions">775</span><span class="stat-lbl">Functions</span></div>
+    <div class="stat-item" data-tip="Variable declarations found"><span class="stat-val" id="statVars">306</span><span class="stat-lbl">Vars</span></div>
+    <div class="stat-item" data-tip="Direct dependency edges in graph"><span class="stat-val" id="statEdges">1267</span><span class="stat-lbl">Edges</span></div>
+    <div class="stat-item" data-tip="Cross-module reference links"><span class="stat-val" id="statXlinks">117</span><span class="stat-lbl">X-Links</span></div>
+    <div class="stat-item" data-tip="Files containing URLs"><span class="stat-val" id="statUrlFiles">37</span><span class="stat-lbl">URL Files</span></div>
+    <div class="stat-item" data-tip="Unique IP addresses found"><span class="stat-val" id="statIPs">19</span><span class="stat-lbl">Unique IPs</span></div>
+  </div>
+
+  <!-- ── Hub body: sidebar + main ── -->
+  <div class="hub-layout" style="flex:1;overflow:hidden">
+    <!-- Sidebar -->
+    <div class="hub-sidebar">
+      <div class="hub-sidebar-title">Sections</div>
+      <button class="hub-section-btn hub-nav-item active" id="navTools"     onclick="showSection('tools')"     data-tip="XHTML tool card launcher"><span class="hub-nav-icon">&#x1F6E0;</span>Tools</button>
+      <button class="hub-section-btn hub-nav-item"        id="navReports"   onclick="showSection('reports')"   data-tip="Generated scan and audit reports"><span class="hub-nav-icon">&#x1F4CA;</span>Reports</button>
+      <button class="hub-section-btn hub-nav-item"        id="navTimeline"  onclick="showSection('timeline')"  data-tip="Phase completion history from last scan"><span class="hub-nav-icon">&#x1F554;</span>History</button>
+      <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
+      <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
+    </div>
+
+    <!-- Main scrollable area -->
+    <div class="hub-main" id="hubMain">
+
+      <!-- ── Tools section ── -->
+      <div id="secTools">
+        <div class="hub-section-title">XHTML Tools</div>
+        <div class="hub-cards" id="toolCards">
+          <!-- populated by renderToolCards() -->
+          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+        </div>
+      </div>
+
+      <!-- ── Reports section ── -->
+      <div id="secReports" style="display:none">
+        <div class="hub-section-title">Generated Reports</div>
+        <div id="reportCards" class="hub-cards">
+          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+        </div>
+      </div>
+
+      <!-- ── Timeline section ── -->
+      <div id="secTimeline" style="display:none">
+        <div class="hub-section-title">Scan History</div>
+        <ul class="hub-timeline" id="hubTimeline">
+          <li><div class="tl-dot"></div><span class="tl-label">Loading scan history&#x2026;</span></li>
+        </ul>
+      </div>
+
+      <!-- ── Crash dumps section ── -->
+      <div id="secCrashes" style="display:none">
+        <div class="hub-section-title">Crash Dumps</div>
+        <div id="crashTable">
+          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+        </div>
+      </div>
+
+      <!-- ── Event Logs section ── -->
+      <div id="secEventLogs" style="display:none">
+        <div class="hub-section-title">Event Logs</div>
+        <!-- Filter bar -->
+        <div class="evt-filter-bar">
+          <label data-tip="Filter log messages by text">&#x1F50D;
+            <input type="text" id="evtSearch" placeholder="Search messages&#x2026;" onkeyup="applyEvtFilter()" />
+          </label>
+          <label data-tip="Filter by log source file">Source:
+            <select id="evtSource" onchange="applyEvtFilter()">
+              <option value="">All</option>
+              <option value="bootstrap">bootstrap</option>
+              <option value="stdout">stdout</option>
+              <option value="service">service</option>
+              <option value="crash">crash</option>
+            </select>
+          </label>
+          <label data-tip="Filter by severity level">Level:
+            <select id="evtLevel" onchange="applyEvtFilter()">
+              <option value="">All</option>
+              <option value="BOOT">BOOT</option>
+              <option value="INFO">INFO</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+              <option value="CRASH">CRASH</option>
+              <option value="DEBUG">DEBUG</option>
+            </select>
+          </label>
+          <button class="scan-btn" onclick="loadEventLogs()" data-tip="Refresh event logs from engine or local files">&#x21BB; Refresh</button>
+          <button class="scan-btn" onclick="saveEvtPreset()" data-tip="Save current filter as a reusable preset">+ Save Preset</button>
+          <span id="evtCount" style="font-size:10px;color:var(--fg-sub);margin-left:4px"></span>
+        </div>
+        <!-- Saved presets -->
+        <div style="padding:4px var(--pad) 6px;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:9px;color:var(--fg-sub);text-transform:uppercase" data-tip="Click a preset to instantly apply saved filter">Saved Presets:</span>
+          <span class="evt-preset-wrap" id="evtPresetList"></span>
+        </div>
+        <!-- Log table -->
+        <div class="evt-table-wrap">
+          <table class="evt-table" id="evtTable">
+            <thead><tr>
+              <th data-tip="Timestamp from log entry">Time</th>
+              <th data-tip="Severity: BOOT/INFO/WARN/ERROR/CRASH/DEBUG">Level</th>
+              <th data-tip="Source log file: bootstrap/stdout/service/crash">Source</th>
+              <th data-tip="Log message content">Message</th>
+            </tr></thead>
+            <tbody id="evtTableBody">
+              <tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">
+                Click &#x21BB; Refresh to load event logs
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- hub-main -->
+  </div><!-- hub-layout -->
+
+  <div class="sbar">
+    <span id="sbarLeft">0 tools</span>
+    <span id="sbarRight" class="st-ok">&#x2714; Initialising&#x2026;</span>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+  'use strict';
+
+  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var _wsConn     = null;
+  var _wsRetries  = 0;
+  var WS_MAX_RETRY = 6;
+  var _csrfToken  = '';
+  var POLL_MS     = 8000;   /* fallback poll interval when WS unavailable */
+
+  var PHASE_IDS = ['folders','modules','scripts','configs','urls_ips','dns_resolution'];
+
+  /* ── Built-in tool registry ── */
+  var TOOLS = [
+    { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools' },
+    { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools' },
+    { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools' },
+    { title:'Master To-Do',           icon:'&#x2705;',  desc:'Full task manager with filters and priority tracking',         href:'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',         section:'tools' },
+    { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools' },
+    { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools' },
+    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-DependencyVis.xhtml',      section:'tools' },
+    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools' },
+    { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools' },
+    { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools' },
+    { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools' },
+    { title:'Shop Listed Items',      icon:'&#x1F6D2;', desc:'Compare and track item prices across online stores',          href:'Shop-ListedItems-Entry.xhtml',                          section:'tools' },
+    { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools' }
+  ];
+
+  /* ── Section navigation ── */
+  var _sections = ['Tools','Reports','Timeline','Crashes','EventLogs'];
+
+  function showSection(name) {
+    for (var i = 0; i < _sections.length; i++) {
+      var sec = _sections[i];
+      var el  = document.getElementById('sec'  + sec);
+      var nav = document.getElementById('nav'  + sec);
+      var match = sec.toLowerCase() === name;
+      if (el)  { el.style.display = match ? '' : 'none'; }
+      if (nav) { nav.className = nav.className.replace(' active','') + (match ? ' active' : ''); }
+    }
+    if (name === 'timeline')   { loadTimeline(); }
+    if (name === 'crashes')    { loadCrashes(); }
+    if (name === 'eventlogs')  { loadEventLogs(); }
+  }
+  window.showSection = showSection;
+
+  /* ── Tool cards ── */
+  function renderToolCards(extraItems) {
+    var cards = document.getElementById('toolCards');
+    if (!cards) { return; }
+    var allTools = TOOLS.slice();
+    if (Array.isArray(extraItems)) {
+      for (var e = 0; e < extraItems.length; e++) { allTools.push(extraItems[e]); }
+    }
+    var html = '';
+    for (var i = 0; i < allTools.length; i++) {
+      var t = allTools[i];
+      html += '<a class="hub-card" href="' + escAttr(t.href) + '" title="' + escAttr(t.title) + '">' +
+        '<div class="hub-card-icon">' + t.icon + '</div>' +
+        '<div class="hub-card-title">' + escHtml(t.title) + '</div>' +
+        '<div class="hub-card-desc">' + escHtml(t.desc) + '</div>' +
+        '<span class="hub-card-badge badge-grey" id="badge_' + i + '">loading&#x2026;</span>' +
+        '</a>';
+    }
+    cards.innerHTML = html;
+    document.getElementById('sbarLeft').textContent = allTools.length + ' tools';
+    /* apply freshness badges once scan status loads */
+    loadScanStatus(allTools);
+  }
+
+  /* ── Scan status → freshness badges ── */
+  function loadScanStatus(tools) {
+    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      updatePhasePills(data);
+      /* Use max phase age for card badges (good enough proxy) */
+      var badgeCls = 'badge-grey';
+      var badgeTxt = 'no scan data';
+      if (data && data.phases) {
+        var maxAgeMin = 0;
+        var hasData = false;
+        var pIds = PHASE_IDS;
+        for (var p = 0; p < pIds.length; p++) {
+          var ph = data.phases[pIds[p]];
+          if (ph && ph.completedAt) {
+            hasData = true;
+            var ageMin = Math.floor((Date.now() - new Date(ph.completedAt).getTime()) / 60000);
+            if (ageMin > maxAgeMin) { maxAgeMin = ageMin; }
+          }
+        }
+        if (hasData) {
+          if (maxAgeMin <= 60)   { badgeCls = 'badge-green';  badgeTxt = maxAgeMin + 'm ago'; }
+          else if (maxAgeMin <= 1440) { badgeCls = 'badge-yellow'; badgeTxt = Math.floor(maxAgeMin/60) + 'h ago'; }
+          else { badgeCls = 'badge-red'; badgeTxt = Math.floor(maxAgeMin/60) + 'h ago'; }
+        }
+      }
+      /* update all tool cards with same badge (could be per-tool in a richer impl) */
+      if (tools) {
+        for (var i = 0; i < tools.length; i++) {
+          var bEl = document.getElementById('badge_' + i);
+          if (bEl) { bEl.className = 'hub-card-badge ' + badgeCls; bEl.textContent = badgeTxt; }
+        }
+      }
+      setStatus('Scan data loaded', 'ok', 'right');
+    }).catch(function(err){
+      /* engine offline — set grey badges */
+      if (tools) {
+        for (var i2 = 0; i2 < tools.length; i2++) {
+          var bEl2 = document.getElementById('badge_' + i2);
+          if (bEl2) { bEl2.className = 'hub-card-badge badge-grey'; bEl2.textContent = 'engine offline'; }
+        }
+      }
+      setStatus('Engine offline: ' + err.message, 'warn', 'right');
+    });
+  }
+
+  /* ── Phase freshness pills ── */
+  function updatePhasePills(data) {
+    if (!data || !data.phases) { return; }
+    var pIds = PHASE_IDS;
+    for (var p = 0; p < pIds.length; p++) {
+      var pid = pIds[p];
+      var pill = document.getElementById('ph-' + pid);
+      if (!pill) { continue; }
+      var dotEl = pill.querySelector('.ph-dot');
+      var ageEl = pill.querySelector('.ph-age');
+      if (!dotEl || !ageEl) { continue; }
+      var ph = data.phases[pid];
+      if (!ph || !ph.completedAt) {
+        dotEl.className = 'ph-dot grey';
+        ageEl.textContent = '—';
+        continue;
+      }
+      var ageMin = Math.floor((Date.now() - new Date(ph.completedAt).getTime()) / 60000);
+      var cls;
+      if (ageMin <= 60)   { cls = 'green'; }
+      else if (ageMin <= 1440) { cls = 'yellow'; }
+      else { cls = 'red'; }
+      dotEl.className = 'ph-dot ' + cls;
+      ageEl.textContent = ageMin < 60
+        ? ageMin + 'm'
+        : (Math.floor(ageMin / 60) + 'h');
+    }
+  }
+
+  /* ── Timeline ── */
+  function loadTimeline() {
+    var el = document.getElementById('hubTimeline');
+    if (!el) { return; }
+    el.innerHTML = '<li><div class="tl-dot"></div><span class="tl-label">Loading&#x2026;</span></li>';
+    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      var pIds = PHASE_IDS;
+      var rows = '';
+      var prevPhase = data && data.phases ? data.phases : {};
+      for (var p = 0; p < pIds.length; p++) {
+        var pid = pIds[p];
+        var ph = prevPhase[pid];
+        if (!ph) { continue; }
+        var dotCls = ph.status === 'ok' ? 'background:#22c55e' :
+                     ph.status === 'error' ? 'background:#dc2626' : 'background:#ca8a04';
+        var ts = ph.completedAt ? new Date(ph.completedAt).toLocaleString() : '—';
+        var dur = (ph.durationMs && ph.durationMs > 0) ? (ph.durationMs / 1000).toFixed(1) + 's' : '';
+        rows += '<li>' +
+          '<div class="tl-dot" style="' + dotCls + '"></div>' +
+          '<span class="tl-label">' + escHtml(pid.replace(/_/g,' ')) + '</span>' +
+          '<span class="tl-meta">' + escHtml(ts) + '</span>' +
+          '<span class="tl-size">' + escHtml(dur) + '</span>' +
+          '</li>';
+      }
+      el.innerHTML = rows || '<li><div class="tl-dot"></div><span class="tl-label">No phase data yet</span></li>';
+    }).catch(function(){
+      el.innerHTML = '<li><div class="tl-dot" style="background:#dc2626"></div><span class="tl-label" style="color:#f44747">Engine offline — no history</span></li>';
+    });
+  }
+
+  /* ── Crash dumps ── */
+  function loadCrashes() {
+    var el = document.getElementById('crashTable');
+    if (!el) { return; }
+    el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>';
+    fetch(ENGINE_BASE + '/api/scan/crashes').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      var dumps = Array.isArray(data) ? data : (data.dumps || []);
+      if (dumps.length === 0) {
+        el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No crash dumps recorded</div>';
+        return;
+      }
+      var html = '<table style="width:100%;border-collapse:collapse;font-size:11px">' +
+        '<thead><tr>' +
+        '<th style="padding:5px 8px;background:#1a1a1a;text-align:left">Time</th>' +
+        '<th style="padding:5px 8px;background:#1a1a1a;text-align:left">Phase</th>' +
+        '<th style="padding:5px 8px;background:#1a1a1a;text-align:left">Error</th>' +
+        '<th style="padding:5px 8px;background:#1a1a1a;text-align:center">Repeating</th>' +
+        '</tr></thead><tbody>';
+      for (var i = 0; i < dumps.length; i++) {
+        var d = dumps[i];
+        var repCls = d.isRepeating ? 'color:#f44747;font-weight:600' : 'color:#3a5070';
+        html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+          '<td style="padding:4px 8px;color:#4a6080">' + escHtml(d.timestamp || '') + '</td>' +
+          '<td style="padding:4px 8px;color:#7a9acc">' + escHtml(d.phase || '') + '</td>' +
+          '<td style="padding:4px 8px;color:#d4d4d4">' + escHtml(d.error || '') + '</td>' +
+          '<td style="padding:4px 8px;text-align:center;' + repCls + '">' + (d.isRepeating ? '&#x26A0; Repeating' : '&#x2014;') + '</td>' +
+          '</tr>';
+      }
+      html += '</tbody></table>';
+      el.innerHTML = html;
+    }).catch(function(){
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">Engine offline</div>';
+    });
+  }
+
+  /* ── Scan trigger ── */
+  function doScan(mode) {
+    var msgEl = document.getElementById('scanMsgHub');
+    var pgEl  = document.getElementById('scanPgHub');
+    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Requesting ' + mode + ' scan…'; }
+    fetchCsrf(function(tok) {
+      if (!tok) {
+        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Engine offline'; }
+        return;
+      }
+      fetch(ENGINE_BASE + '/api/scan/' + mode, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+        body: '{}'
+      }).then(function(r){
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(){
+        if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan started'; }
+        if (pgEl)  { pgEl.style.width = '10%'; }
+      }).catch(function(err){
+        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + err.message; }
+      });
+    });
+  }
+  window.doScan = doScan;
+
+  /* ── Static (no-engine) scan ── */
+  function doStaticScan() {
+    var msgEl = document.getElementById('scanMsgHub');
+    /* Try engine first (it proxies to static scan worker) */
+    fetchCsrf(function(tok) {
+      if (tok) {
+        fetch(ENGINE_BASE + '/api/scan/static', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+          body: '{}'
+        }).then(function(r){
+          if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          return r.json();
+        }).then(function(){
+          if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.textContent = 'Static scan started via engine'; }
+        }).catch(function() {
+          _showStaticScanOfflineInstructions(msgEl);
+        });
+      } else {
+        _showStaticScanOfflineInstructions(msgEl);
+      }
+    });
+  }
+  function _showStaticScanOfflineInstructions(msgEl) {
+    if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.textContent = 'Engine offline — see status bar for instructions'; }
+    setStatus('Run in terminal: cd C:\\PowerShellGUI  then  powershell .\\scripts\\Invoke-StaticWorkspaceScan.ps1', 'warn', 'right');
+  }
+  window.doStaticScan = doStaticScan;
+
+  function refreshAll() {
+    renderToolCards(null);
+    loadScanStatus(TOOLS);
+    /* update stats strip if scan data available */
+    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){ return r.json(); })
+      .then(function(d){ _updateStatsStrip(d); }).catch(function(){});
+  }
+  window.refreshAll = refreshAll;
+
+  function _updateStatsStrip(data) {
+    if (!data) { return; }
+    var phases = (data.phases) ? data.phases : (data.checkpoint && data.checkpoint.phases ? data.checkpoint.phases : null);
+    if (!phases) { return; }
+    var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) { el.textContent = v; } };
+    if (phases.folders)      { setVal('statFolders',   phases.folders.count); }
+    if (phases.modules)      { setVal('statModules',   phases.modules.count); setVal('statFunctions', phases.modules.functionCount); }
+    if (phases.scripts)      { setVal('statScripts',   phases.scripts.count); setVal('statVars', phases.scripts.variableCount); }
+    if (phases.configs)      { setVal('statConfigs',   phases.configs.count); }
+    if (phases.urls_ips)     { setVal('statUrlFiles',  phases.urls_ips.urlFileCount); setVal('statIPs', phases.urls_ips.uniqueIPs); }
+  }
+
+  /* ── Event Logs ── */
+  var _evtAllRows = [];
+  var EVT_PRESET_KEY = 'hub_evt_presets';
+
+  function loadEventLogs() {
+    var tbody = document.getElementById('evtTableBody');
+    var cntEl = document.getElementById('evtCount');
+    if (tbody) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:12px">Loading&#x2026;</td></tr>'; }
+    fetch(ENGINE_BASE + '/api/engine/events?tail=500').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      _evtAllRows = Array.isArray(data.events) ? data.events : [];
+      applyEvtFilter();
+      if (cntEl) { cntEl.textContent = _evtAllRows.length + ' events (live)'; }
+    }).catch(function(){
+      /* Engine offline — read log file counts from checkpoint fallback */
+      _evtAllRows = [];
+      if (cntEl) { cntEl.textContent = 'Engine offline — showing no events'; }
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">' +
+          '&#x1F534; Engine offline — start LocalWebEngine to stream event logs, or run static scan to generate logs.' +
+          '</td></tr>';
+      }
+    });
+  }
+  window.loadEventLogs = loadEventLogs;
+
+  function applyEvtFilter() {
+    var searchVal = (document.getElementById('evtSearch')  || {}).value || '';
+    var sourceVal = (document.getElementById('evtSource')  || {}).value || '';
+    var levelVal  = (document.getElementById('evtLevel')   || {}).value || '';
+    var filtered  = _evtAllRows.filter(function(e) {
+      if (sourceVal && e.source !== sourceVal)                         { return false; }
+      if (levelVal  && (e.level || '').toUpperCase() !== levelVal)     { return false; }
+      if (searchVal && (e.msg   || '').toLowerCase().indexOf(searchVal.toLowerCase()) === -1) { return false; }
+      return true;
+    });
+    _renderEvtTable(filtered);
+    var cntEl = document.getElementById('evtCount');
+    if (cntEl) { cntEl.textContent = filtered.length + ' / ' + _evtAllRows.length + ' events'; }
+  }
+  window.applyEvtFilter = applyEvtFilter;
+
+  function _renderEvtTable(rows) {
+    var tbody = document.getElementById('evtTableBody');
+    if (!tbody) { return; }
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">No matching events</td></tr>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var e     = rows[i];
+      var lvl   = (e.level || 'DEBUG').toUpperCase();
+      var bgKey = 'lvl-bg-' + (['INFO','BOOT','WARN','ERROR','CRASH','DEBUG'].indexOf(lvl) !== -1 ? lvl : 'DEBUG');
+      html += '<tr>' +
+        '<td style="color:#4a6080;white-space:nowrap">' + escHtml(e.ts || '') + '</td>' +
+        '<td><span class="lvl-badge ' + bgKey + '">' + escHtml(lvl) + '</span></td>' +
+        '<td style="color:#7a9acc">' + escHtml(e.source || '') + '</td>' +
+        '<td>' + escHtml(e.msg || '') + '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  /* ── Event Log presets (localStorage persistence) ── */
+  function _loadEvtPresets() {
+    try { return JSON.parse(localStorage.getItem(EVT_PRESET_KEY) || '[]'); } catch(e){ return []; }
+  }
+  function _saveEvtPresets(arr) {
+    try { localStorage.setItem(EVT_PRESET_KEY, JSON.stringify(arr)); } catch(e){ }
+  }
+  function renderEvtPresets() {
+    var wrap = document.getElementById('evtPresetList');
+    if (!wrap) { return; }
+    var presets = _loadEvtPresets();
+    wrap.innerHTML = '';
+    for (var i = 0; i < presets.length; i++) {
+      (function(p, idx) {
+        var span = document.createElement('span');
+        span.className = 'evt-preset';
+        span.setAttribute('data-tip', 'src:' + (p.source||'all') + '  lvl:' + (p.level||'all') + '  q:' + (p.search||''));
+        span.innerHTML = escHtml(p.name) + '<span class="del" onclick="deleteEvtPreset(' + idx + ')" data-tip="Delete this preset">&#x2715;</span>';
+        span.addEventListener('click', function(ev) {
+          if (ev.target.className === 'del') { return; }
+          _applyPreset(p);
+        });
+        wrap.appendChild(span);
+      })(presets[i], i);
+    }
+  }
+  window.renderEvtPresets = renderEvtPresets;
+
+  function _applyPreset(p) {
+    var se = document.getElementById('evtSearch');  if (se) { se.value = p.search  || ''; }
+    var so = document.getElementById('evtSource');  if (so) { so.value = p.source  || ''; }
+    var lv = document.getElementById('evtLevel');   if (lv) { lv.value = p.level   || ''; }
+    applyEvtFilter();
+  }
+
+  function saveEvtPreset() {
+    var name = window.prompt('Preset name:');
+    if (!name) { return; }
+    var search = (document.getElementById('evtSearch')  || {}).value || '';
+    var source = (document.getElementById('evtSource')  || {}).value || '';
+    var level  = (document.getElementById('evtLevel')   || {}).value || '';
+    var arr = _loadEvtPresets();
+    arr.push({ name: name, search: search, source: source, level: level });
+    _saveEvtPresets(arr);
+    renderEvtPresets();
+  }
+  window.saveEvtPreset = saveEvtPreset;
+
+  function deleteEvtPreset(idx) {
+    var arr = _loadEvtPresets();
+    arr.splice(idx, 1);
+    _saveEvtPresets(arr);
+    renderEvtPresets();
+  }
+  window.deleteEvtPreset = deleteEvtPreset;
+
+  /* ── CSRF ── */
+  function fetchCsrf(cb) {
+    if (_csrfToken) { cb(_csrfToken); return; }
+    fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){ return r.json(); })
+      .then(function(d){ _csrfToken = d.csrfToken || d.token || ''; cb(_csrfToken); })
+      .catch(function(){ cb(''); });
+  }
+
+  /* ── Engine status indicator ── */
+  function updateEngineStatus(data) {
+    var dot = document.getElementById('wsDot');
+    var lbl = document.getElementById('engStatus');
+    if (!dot || !lbl) { return; }
+    if (!data || !data.running) {
+      dot.className = 'ws-dot err';
+      lbl.textContent = 'Engine offline';
+      return;
+    }
+    var upSec = data.uptime || 0;
+    var upTxt = upSec < 60 ? upSec + 's' : Math.floor(upSec / 60) + 'm';
+    if (data.responding) {
+      dot.className = 'ws-dot ok';
+      lbl.textContent = 'Engine up ' + upTxt;
+    } else {
+      dot.className = 'ws-dot warn';
+      lbl.textContent = 'Engine starting…';
+    }
+  }
+
+  function pollEngineStatus() {
+    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){ return r.json(); })
+      .then(function(d){ updateEngineStatus(d); })
+      .catch(function(){ updateEngineStatus(null); });
+  }
+
+  function startEngine() {
+    setStatus('Starting engine&#x2026;', 'ok', 'right');
+    /* Engines are started via the service launcher script; the Hub can only
+       signal over HTTP if the engine is already up. Redirect to the service
+       status page instead, or open the MCP config page. */
+    fetch(ENGINE_BASE + '/api/engine/status')
+      .then(function(r){ if(r.ok){setStatus('&#x1F7E2; Engine is already running','ok','right');} else { throw new Error(); } })
+      .catch(function(){
+        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngineService.ps1 from terminal','warn','right');
+      });
+  }
+  window.startEngine = startEngine;
+
+  function stopEngine() {
+    fetchCsrf(function(tok) {
+      if (!tok) { setStatus('Cannot stop: engine offline', 'warn', 'right'); return; }
+      fetch(ENGINE_BASE + '/api/engine/stop', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
+        body: '{}'
+      }).then(function(){ setStatus('Engine stop requested', 'warn', 'right'); })
+        .catch(function(){ setStatus('Stop request failed', 'err', 'right'); });
+    });
+  }
+  window.stopEngine = stopEngine;
+
+  /* ── WS indicator ── */
+  function setWsDot(s) {
+    var d = document.getElementById('wsDot');
+    if (!d) { return; }
+    d.className = 'ws-dot ' + s;
+  }
+
+  function connectWs() {
+    if (typeof WebSocket === 'undefined') { return; }
+    try {
+      var ws = new WebSocket('ws://127.0.0.1:8042/ws');
+      _wsConn = ws;
+      ws.onopen  = function(){ _wsRetries = 0; setWsDot('ok'); setStatus('&#x1F7E2; Engine connected','ok','right'); };
+      ws.onmessage = function(ev) {
+        try {
+          var msg = JSON.parse(ev.data);
+          if (msg.type === 'scanProgress' && msg.phases) { updatePhasePills({ phases: msg.phases }); }
+          if (msg.progress !== undefined) {
+            var pgEl = document.getElementById('scanPgHub');
+            if (pgEl) { pgEl.style.width = Math.min(100, msg.progress) + '%'; }
+          }
+          if (msg.statusMessage) {
+            var msgEl = document.getElementById('scanMsgHub');
+            if (msgEl) { msgEl.textContent = msg.statusMessage; msgEl.style.color = ''; }
+          }
+        } catch(e) { /* non-JSON */ }
+      };
+      ws.onclose = function() {
+        setWsDot('warn');
+        if (_wsRetries < WS_MAX_RETRY) { _wsRetries++; setTimeout(connectWs, 3000); }
+        else { setWsDot('err'); setStatus('&#x1F534; Engine offline','warn','right'); }
+      };
+      ws.onerror = function(){ ws.close(); };
+    } catch(e) { setWsDot('err'); }
+  }
+
+  /* ── Poll fallback ── */
+  function startPoll() {
+    setInterval(function() {
+      if (_wsConn && _wsConn.readyState === 1) { return; }
+      loadScanStatus(TOOLS);
+    }, POLL_MS);
+  }
+
+  /* ── Status bar ── */
+  function setStatus(msg, level, side) {
+    var id = (side === 'left') ? 'sbarLeft' : 'sbarRight';
+    var el = document.getElementById(id);
+    if (!el) { return; }
+    el.innerHTML = msg;
+    el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
+  }
+
+  /* ── Escape helpers ── */
+  function escHtml(s) {
+    if (!s) { return ''; }
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escAttr(s) {
+    if (!s) { return ''; }
+    return escHtml(s).replace(/"/g,'&quot;');
+  }
+
+  /* ── Init ── */
+  document.addEventListener('DOMContentLoaded', function() {
+    connectWs();
+    startPoll();
+    renderToolCards(null);
+    renderEvtPresets();
+    setStatus('Initialising&#x2026;', 'ok', 'right');
+    pollEngineStatus();
+    setInterval(pollEngineStatus, 15000);
+    /* try to update stats strip from last scan data */
+    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){ return r.json(); })
+      .then(function(d){ _updateStatsStrip(d); }).catch(function(){});
+  });
+
+  })();
+  //]]>
+  </script>
+</body>
+</html>

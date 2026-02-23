@@ -1,0 +1,43 @@
+{
+  "sin_id": "SIN-20260330-SCANDASH-PARAMAPI",
+  "title": "Smoke test calls Get-ScanFiles/Get-ScansetDiskSize with wrong parameter names",
+  "description": "Widget smoke tests (Invoke-WidgetSmokeTests.Tests.ps1 section 14) called Get-ScanFiles with -BasePath/-Prefix and Get-ScansetDiskSize with -Files, but the actual function signatures in Show-ScanDashboard.ps1 use -Def (hashtable) and -ReportPath (string). This parameter mismatch causes CommandNotFoundException-adjacent failures: the call binds to no valid parameter set, PowerShell throws a ParameterBindingException which manifests as a test failure indistinguishable from CommandNotFoundException in smoke test output.",
+  "category": "api-mismatch",
+  "severity": "HIGH",
+  "file_path": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+  "line_number": 675,
+  "function_name": "Get-ScanFiles, Get-ScansetDiskSize",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "is_resolved": true,
+  "occurrence_count": 1,
+  "regression_count": 0,
+  "created_at": "2026-03-30T12:00:00Z",
+  "last_seen_at": "2026-03-30T12:00:00Z",
+  "detection_method": "Manual code review of scan dashboard button handlers vs smoke test expectations",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "sessionModCount": 1,
+  "fix_applied": {
+    "fix_id": "FIX-20260330-SCANDASH-PARAMAPI",
+    "description": "Updated smoke tests to use correct parameter signatures: Get-ScanFiles -Def $hashtable -ReportPath $path and Get-ScansetDiskSize -Def $hashtable -ReportPath $path. Added Extract-Timestamp test and ScanSetDefs existence validation test.",
+    "files_modified": [
+      "tests/Invoke-WidgetSmokeTests.Tests.ps1"
+    ],
+    "pattern": "Match smoke test call signatures to actual function param blocks",
+    "trust_level": "pilot",
+    "pilot_count": 1,
+    "verified_at": "2026-03-30T12:00:00Z"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

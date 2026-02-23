@@ -1,0 +1,32 @@
+{
+  "linkedBugs": [],
+  "sessionModCount": 1,
+  "completedAt": null,
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1"
+  ],
+  "source": "BugTracker",
+  "executionAgent": "",
+  "category": "error-handling",
+  "title": "FIX: 3 functions with no try/catch blocks",
+  "description": "Fix for bug Bug-20260328160236-5ca2f65a: Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+  "linkedFeatures": [],
+  "id": "Bugs2FIX-20260328160237-16ec1723",
+  "executionMethod": "",
+  "status": "DEFERRED",
+  "parentId": "Bug-20260328160236-5ca2f65a",
+  "suggestedBy": "CronAiAthon",
+  "modified": "2026-03-28T08:02:37.1588221Z",
+  "created": "2026-03-28T08:02:37.1587647Z",
+  "notes": "",
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "executedAt": null,
+  "tags": [],
+  "sinId": "",
+  "priority": "MEDIUM",
+  "result": null,
+  "type": "Bugs2FIX",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase — catch-block hardening queued for dedicated remediation sprint. See SIN-PATTERN-002 for guidance."
+}

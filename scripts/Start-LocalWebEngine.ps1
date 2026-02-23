@@ -1,0 +1,826 @@
+﻿# VersionTag: 2604.B1.V32.5
+# Start-LocalWebEngine.ps1
+# Loopback HTTP/WebSocket server for PowerShellGUI workspace tools.
+# Listens on http://127.0.0.1:8042/ — serves XHTML pages, APIs, and WebSocket progress.
+# Security: loopback-only, CSRF token, Content Security Policy headers.
+#Requires -Version 5.1
+
+<#
+.SYNOPSIS
+    Starts the PowerShellGUI Local Web Engine on localhost.
+.DESCRIPTION
+    Loopback-only HttpListener server on http://127.0.0.1:<Port>/
+    Serves XHTML pages, REST API, and WebSocket progress for PowerShellGUI tools.
+.PARAMETER Port
+    TCP port to listen on (default: 8042).
+.PARAMETER WorkspacePath
+    Root of the PowerShellGUI workspace. Defaults to the parent of this script folder.
+.PARAMETER NoLaunchBrowser
+    Suppress automatic browser launch on start.
+.PARAMETER Help
+    Display this help text and exit.
+.EXAMPLE
+    .\Start-LocalWebEngine.ps1
+    .\Start-LocalWebEngine.ps1 -Port 9000 -NoLaunchBrowser
+    .\Start-LocalWebEngine.ps1 -Help
+#>
+[CmdletBinding()]
+param(
+    [int]$Port              = 8042,
+    [string]$WorkspacePath  = '',
+    [switch]$NoLaunchBrowser,
+    [switch]$Help
+)
+
+if ($Help) {
+    Get-Help $MyInvocation.MyCommand.Path -Detailed
+    exit 0
+}
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Continue'
+
+# ─── Engine stop flag (file-based signal; ThreadPool cannot reach $script: scope) ──
+$script:_EngineStop = $false
+
+# ─── Paths ─────────────────────────────────────────────────────────────────────
+$ScriptDir = $PSScriptRoot
+if ([string]::IsNullOrEmpty($WorkspacePath)) {
+    $WorkspacePath = Split-Path $ScriptDir -Parent
+}
+
+$ConfigFile = Join-Path $WorkspacePath 'config'
+$ConfigFile = Join-Path $ConfigFile 'dependency-scan-config.json'
+
+# ─── Log file paths ───────────────────────────────────────────────────────────
+$script:EngineLogFile    = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
+$script:BootstrapLogFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
+$script:CrashLogFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
+$script:_ExitClean       = $false   # set $true on graceful stop; $false = dirty exit
+$script:_BootstrapErrors = [System.Collections.ArrayList]@()
+
+function Write-EngineLog {
+    param([string]$Msg, [string]$Level = 'DEBUG')
+    $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $line = "[$ts][$Level] $Msg"
+    Write-Host $line
+    try { Add-Content -LiteralPath $script:EngineLogFile -Value $line -Encoding UTF8 } catch { }
+}
+
+# Bootstrap log: written BEFORE HttpListener starts — survives engine non-start
+function Write-BootstrapLog {
+    param([string]$Msg, [string]$Level = 'INFO')
+    $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $line = "[$ts][BOOT][$Level] $Msg"
+    Write-Host $line
+    try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { }
+    if ($Level -eq 'ERROR' -or $Level -eq 'WARN') {
+        $null = $script:_BootstrapErrors.Add([pscustomobject]@{ ts = $ts; level = $Level; msg = $Msg })
+    }
+}
+
+# ─── Pre-start bootstrap sequence ─────────────────────────────────────────────
+Write-BootstrapLog "=== Engine Bootstrap Start ==="
+Write-BootstrapLog "PID=$PID  PSVersion=$($PSVersionTable.PSVersion)  Host=$($Host.Name)" 'INFO'
+Write-BootstrapLog "WorkspacePath=$WorkspacePath"
+
+# Port availability pre-check
+try {
+    $tcpTest = New-Object System.Net.Sockets.TcpClient
+    $conn = $tcpTest.BeginConnect('127.0.0.1', $Port, $null, $null)
+    $portInUse = $conn.AsyncWaitHandle.WaitOne(300)
+    if ($portInUse) {
+        try { $tcpTest.EndConnect($conn) } catch { }
+        Write-BootstrapLog "Port $Port may already be in use" 'WARN'
+    } else {
+        Write-BootstrapLog "Port $Port is available" 'INFO'
+    }
+    $tcpTest.Close()
+} catch { Write-BootstrapLog "Port check error: $_" 'WARN' }
+
+# ─── Load config ───────────────────────────────────────────────────────────────
+$cfg = $null
+try {
+    if (Test-Path -LiteralPath $ConfigFile) {
+        $raw = Get-Content -LiteralPath $ConfigFile -Raw -Encoding UTF8
+        if (-not [string]::IsNullOrEmpty($raw)) {
+            $cfg = $raw | ConvertFrom-Json
+            Write-BootstrapLog "Config loaded: $ConfigFile" 'INFO'
+        }
+    } else {
+        Write-BootstrapLog "Config file not found at: $ConfigFile — using defaults" 'WARN'
+    }
+} catch {
+    Write-BootstrapLog "Config parse error: $_ — using defaults" 'WARN'
+}
+
+if ($null -ne $cfg -and $null -ne $cfg.port) { $Port = [int]$cfg.port }
+
+# ─── Import core module ────────────────────────────────────────────────────────
+$coreModPath = Join-Path $WorkspacePath 'modules'
+$coreModPath = Join-Path $coreModPath 'PwShGUICore.psm1'
+if (Test-Path -LiteralPath $coreModPath) {
+    try {
+        Import-Module $coreModPath -Force
+        Write-BootstrapLog 'PwShGUICore.psm1 imported successfully' 'INFO'
+    } catch {
+        Write-BootstrapLog "PwShGUICore.psm1 import failed: $_" 'ERROR'
+    }
+} else {
+    Write-BootstrapLog "PwShGUICore.psm1 not found at: $coreModPath" 'WARN'
+}
+
+# ─── Generate CSRF session token ───────────────────────────────────────────────
+$rng          = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$tokenBytes   = New-Object byte[] 32
+$rng.GetBytes($tokenBytes)
+$SessionToken = [Convert]::ToBase64String($tokenBytes)
+$rng.Dispose()
+
+# ─── WebSocket client registry ─────────────────────────────────────────────────
+$WsClients = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
+
+function Broadcast-WsMessage {
+    [CmdletBinding()]
+    param([string]$JsonMessage)
+    $encodedBytes = [System.Text.Encoding]::UTF8.GetBytes($JsonMessage)
+    $segment      = [System.ArraySegment[byte]]::new($encodedBytes)
+    $deadKeys     = [System.Collections.ArrayList]@()
+    foreach ($kvp in $WsClients.GetEnumerator()) {
+        $ws = $kvp.Value
+        try {
+            if ($null -ne $ws -and $ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+                $ws.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
+                    [System.Threading.CancellationToken]::None).Wait(2000) | Out-Null
+            } else {
+                $null = $deadKeys.Add($kvp.Key)
+            }
+        } catch {
+            $null = $deadKeys.Add($kvp.Key)
+        }
+    }
+    foreach ($dk in $deadKeys) {
+        $removed = $null
+        $WsClients.TryRemove($dk, [ref]$removed) | Out-Null
+    }
+}
+
+# ─── Helper: safe file read ────────────────────────────────────────────────────
+function Read-WorkspaceFile {
+    [CmdletBinding()]
+    param([string]$RelativePath)
+    # P009: validate path before joining
+    if ([string]::IsNullOrEmpty($RelativePath)) { return $null }
+    $cleanRel = $RelativePath.TrimStart('/', '\').Replace('/', '\')
+    # Block path traversal
+    if ($cleanRel -match '\.\.') { return $null }
+    $fullPath = Join-Path $WorkspacePath $cleanRel
+    # Ensure resolved path is still within workspace
+    $resolved = try { [System.IO.Path]::GetFullPath($fullPath) } catch { return $null }
+    $wsResolved = try { [System.IO.Path]::GetFullPath($WorkspacePath) } catch { return $null }
+    if (-not $resolved.StartsWith($wsResolved)) { return $null }
+    if (-not (Test-Path -LiteralPath $resolved -PathType Leaf)) { return $null }
+    try { return Get-Content -LiteralPath $resolved -Raw -Encoding UTF8 } catch { return $null }
+}
+
+# ─── Helper: build HTTP response ──────────────────────────────────────────────
+function Send-Response {
+    [CmdletBinding()]
+    param(
+        [System.Net.HttpListenerContext]$Context,
+        [int]$StatusCode      = 200,
+        [string]$ContentType  = 'application/json; charset=utf-8',
+        [string]$Body         = '',
+        [hashtable]$ExtraHeaders = @{}
+    )
+    $resp = $Context.Response
+    $resp.StatusCode    = $StatusCode
+    $resp.ContentType   = $ContentType
+    # Security headers
+    $resp.Headers.Set('X-Content-Type-Options', 'nosniff')
+    $resp.Headers.Set('X-Frame-Options', 'SAMEORIGIN')
+    $resp.Headers.Set('Content-Security-Policy',
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
+    $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
+    $resp.ContentLength64 = $bytes.Length
+    try {
+        $resp.OutputStream.Write($bytes, 0, $bytes.Length)
+        $resp.OutputStream.Close()
+    } catch { <# client disconnected #> }
+}
+
+function Send-Json {
+    [CmdletBinding()]
+    param($Context, $Object, [int]$StatusCode = 200)
+    $json = $Object | ConvertTo-Json -Depth 5
+    Send-Response -Context $Context -StatusCode $StatusCode -ContentType 'application/json; charset=utf-8' -Body $json
+}
+
+function Send-Error {
+    [CmdletBinding()]
+    param($Context, [int]$StatusCode = 400, [string]$Message = 'Bad Request')
+    Send-Json -Context $Context -Object @{ error = $Message; code = $StatusCode } -StatusCode $StatusCode
+}
+
+# ─── Route: GET /api/scan/status ──────────────────────────────────────────────
+function Handle-ScanStatus {
+    [CmdletBinding()]
+    param($Context)
+    $cpSub  = if ($null -ne $cfg -and $null -ne $cfg.paths -and
+                  $cfg.paths.PSObject.Properties.Name -contains 'checkpointFile') {
+                  $cfg.paths.checkpointFile
+              } else { Join-Path 'checkpoints' 'dependency-scan-checkpoint.json' }
+    $pgSub  = if ($null -ne $cfg -and $null -ne $cfg.paths -and
+                  $cfg.paths.PSObject.Properties.Name -contains 'scanProgressLog') {
+                  $cfg.paths.scanProgressLog
+              } else { Join-Path 'logs' 'scan-progress.json' }
+    $cpFile = Join-Path $WorkspacePath $cpSub
+    $pgFile = Join-Path $WorkspacePath $pgSub
+
+    $checkpoint = $null
+    $progress   = $null
+    if (Test-Path -LiteralPath $cpFile) {
+        try { $checkpoint = (Get-Content -LiteralPath $cpFile -Raw -Encoding UTF8) | ConvertFrom-Json } catch { <# non-fatal #> }
+    }
+    if (Test-Path -LiteralPath $pgFile) {
+        try { $progress = (Get-Content -LiteralPath $pgFile -Raw -Encoding UTF8) | ConvertFrom-Json } catch { <# non-fatal #> }
+    }
+    Send-Json -Context $Context -Object @{ checkpoint = $checkpoint; progress = $progress; serverTime = (Get-Date -Format 'o') }
+}
+
+# ─── Route: GET /api/scan/crashes ─────────────────────────────────────────────
+function Handle-ScanCrashes {
+    [CmdletBinding()]
+    param($Context)
+    $crashSub = if ($null -ne $cfg -and $null -ne $cfg.paths -and
+                    $cfg.paths.PSObject.Properties.Name -contains 'crashDumpDir') {
+                    $cfg.paths.crashDumpDir
+                } else { Join-Path 'logs' 'crash-dumps' }
+    $crashDir = Join-Path $WorkspacePath $crashSub
+    $dumps = [System.Collections.ArrayList]@()
+    if (Test-Path $crashDir) {
+        $files = @(Get-ChildItem -Path $crashDir -Filter 'crash-*.json' -File | Sort-Object LastWriteTime -Descending | Select-Object -First 50)
+        foreach ($f in $files) {
+            try {
+                $raw = Get-Content -LiteralPath $f.FullName -Raw -Encoding UTF8
+                if (-not [string]::IsNullOrEmpty($raw)) {
+                    $obj = $raw | ConvertFrom-Json
+                    $null = $dumps.Add($obj)
+                }
+            } catch { <# non-fatal — skip unreadable dump #> }
+        }
+    }
+    Send-Json -Context $Context -Object @{ crashes = @($dumps); count = @($dumps).Count }
+}
+
+# ─── Route: GET /api/engine/status ───────────────────────────────────────────
+function Handle-EngineStatus {
+    [CmdletBinding()]
+    param($Context)
+    Send-Json -Context $Context -Object @{
+        running    = $true
+        responding = $true
+        pid        = $PID
+        port       = $Port
+        startedAt  = $script:_EngineStartTime
+        uptime     = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+$script:_EngineStartTime  = (Get-Date -Format 'o')
+$script:_EngineStartEpoch = [System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency
+
+# ─── Route: GET /api/engine/log?name=stdout|stderr|service ───────────────────
+function Handle-EngineLog {
+    [CmdletBinding()]
+    param($Context)
+    # Allowed log file names only — prevent path traversal
+    $nameParam = $Context.Request.QueryString['name']
+    $allowedNames = @{ stdout = 'engine-stdout.log'; stderr = 'engine-stderr.log'; service = 'engine-service.log'; bootstrap = 'engine-bootstrap.log'; crash = 'engine-crash.log' }
+    $logKey = if ($null -ne $nameParam -and $allowedNames.ContainsKey($nameParam)) { $nameParam } else { 'stdout' }
+    $logFile = Join-Path $WorkspacePath (Join-Path 'logs' $allowedNames[$logKey])
+    $lines = @()
+    if (Test-Path -LiteralPath $logFile) {
+        $lines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -Tail 50 -ErrorAction SilentlyContinue)
+    }
+    Send-Json -Context $Context -Object @{
+        logName  = $logKey
+        logFile  = $logFile
+        lines    = $lines
+        lineCount = @($lines).Count
+    }
+}
+
+# ─── Route: GET /api/engine/events  (aggregated structured event log) ────────
+function Handle-EngineEvents {
+    [CmdletBinding()]
+    param($Context)
+    $tailParam = $Context.Request.QueryString['tail']
+    $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 200 }
+    if ($tail -gt 2000) { $tail = 2000 }
+    $logMap = @{
+        bootstrap = 'engine-bootstrap.log'
+        stdout    = 'engine-stdout.log'
+        service   = 'engine-service.log'
+        crash     = 'engine-crash.log'
+    }
+    $events = [System.Collections.ArrayList]@()
+    foreach ($kv in $logMap.GetEnumerator()) {
+        $logFile = Join-Path (Join-Path $WorkspacePath 'logs') $kv.Value
+        if (-not (Test-Path -LiteralPath $logFile)) { continue }
+        try {
+            $fileLines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -ErrorAction SilentlyContinue)
+            foreach ($ln in $fileLines) {
+                if ([string]::IsNullOrWhiteSpace($ln)) { continue }
+                # Parse: [yyyy-MM-dd HH:mm:ss][LEVEL] msg  or  JSON crash line
+                $level = 'INFO'
+                $ts    = ''
+                $msg   = $ln
+                if ($ln -match '^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\[([A-Z_]+)\]\s*(.*)$') {
+                    $ts  = $Matches[1]; $level = $Matches[2]; $msg = $Matches[3]
+                } elseif ($ln -match '^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\[BOOT\]\[([A-Z]+)\]\s*(.*)$') {
+                    $ts  = $Matches[1]; $level = $Matches[2]; $msg = $Matches[3]
+                } elseif ($ln.TrimStart().StartsWith('{')) {
+                    $level = 'CRASH'; $msg = $ln
+                }
+                $null = $events.Add([pscustomobject]@{
+                    source = $kv.Key; ts = $ts; level = $level; msg = $msg
+                })
+            }
+        } catch { <# non-fatal — skip unreadable log #> }
+    }
+    # Sort by ts if present, then return most-recent $tail
+    $sorted  = @($events | Sort-Object { if ($_.ts) { $_.ts } else { '' } })
+    $trimmed = if ($sorted.Count -gt $tail) { $sorted[($sorted.Count - $tail)..($sorted.Count - 1)] } else { $sorted }
+    Send-Json -Context $Context -Object @{
+        events    = $trimmed
+        total     = @($events).Count
+        returned  = @($trimmed).Count
+        logFiles  = @($logMap.Keys)
+        serverTime= (Get-Date -Format 'o')
+    }
+}
+
+# ─── Route: GET /api/engine/logs/list ────────────────────────────────────────
+function Handle-EngineLogsList {
+    [CmdletBinding()]
+    param($Context)
+    $logsDir = Join-Path $WorkspacePath 'logs'
+    $knownNames = @{ stdout='engine-stdout.log'; stderr='engine-stderr.log'; service='engine-service.log'; bootstrap='engine-bootstrap.log'; crash='engine-crash.log' }
+    $result = [System.Collections.ArrayList]@()
+    foreach ($kv in $knownNames.GetEnumerator()) {
+        $lp = Join-Path $logsDir $kv.Value
+        $exists = Test-Path -LiteralPath $lp
+        $sizeBytes = if ($exists) { (Get-Item -LiteralPath $lp).Length } else { 0 }
+        $null = $result.Add([pscustomobject]@{
+            name     = $kv.Key
+            filename = $kv.Value
+            exists   = $exists
+            sizeKB   = [Math]::Round($sizeBytes / 1KB, 1)
+        })
+    }
+    Send-Json -Context $Context -Object @{ logs = @($result) }
+}
+
+# ─── Route: POST /api/scan/full | /api/scan/incremental ───────────────────────
+function Handle-TriggerScan {
+    [CmdletBinding()]
+    param($Context, [string]$ScanMode)
+    # CSRF check — token must match header X-CSRF-Token
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    $managerScript = Join-Path $WorkspacePath 'scripts'
+    $managerScript = Join-Path $managerScript 'Invoke-DependencyScanManager.ps1'
+    if (-not (Test-Path -LiteralPath $managerScript)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'DependencyScanManager.ps1 not found'
+        return
+    }
+    # Launch background job (P010: & operator, not iex)
+    $null = Start-Job -ScriptBlock {
+        param($script, $mode, $ws)
+        & powershell.exe -NoProfile -NonInteractive -File $script -Mode $mode -WorkspacePath $ws
+    } -ArgumentList $managerScript, $ScanMode, $WorkspacePath
+    $msg = [ordered]@{ event = 'scan_started'; mode = $ScanMode; timestamp = (Get-Date -Format 'o') }
+    Broadcast-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
+    Send-Json -Context $Context -Object @{ accepted = $true; mode = $ScanMode } -StatusCode 202
+}
+
+# ─── Route: POST /api/scan/static ────────────────────────────────────────────
+function Handle-TriggerStaticScan {
+    [CmdletBinding()]
+    param($Context)
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    $staticScript = Join-Path $WorkspacePath 'scripts'
+    $staticScript = Join-Path $staticScript 'Invoke-StaticWorkspaceScan.ps1'
+    if (-not (Test-Path -LiteralPath $staticScript)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'Invoke-StaticWorkspaceScan.ps1 not found'
+        return
+    }
+    # Launch background job (P010: & operator, not iex)
+    $null = Start-Job -ScriptBlock {
+        param($script, $ws)
+        & powershell.exe -NoProfile -NonInteractive -File $script -WorkspacePath $ws
+    } -ArgumentList $staticScript, $WorkspacePath
+    $msg = [ordered]@{ event = 'scan_started'; mode = 'Static'; timestamp = (Get-Date -Format 'o') }
+    Broadcast-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
+    Send-Json -Context $Context -Object @{ accepted = $true; mode = 'Static' } -StatusCode 202
+}
+
+# ─── Route: GET /api/agent/stats ──────────────────────────────────────────────
+function Handle-AgentStats {
+    [CmdletBinding()]
+    param($Context)
+    # Try live stats file first; compute 24h/7d counts from JSONL logs
+    $statsFile = Join-Path $WorkspacePath 'config'
+    $statsFile = Join-Path $statsFile 'agent-call-stats.json'
+    $statsData = $null
+    if (Test-Path -LiteralPath $statsFile) {
+        try { $statsData = Get-Content -LiteralPath $statsFile -Raw -Encoding UTF8 | ConvertFrom-Json } catch { <# non-fatal #> }
+    }
+    # If Invoke-AgentCallStats.ps1 exists, attempt a fast in-process update
+    $agCalcScript = Join-Path $WorkspacePath 'scripts'
+    $agCalcScript = Join-Path $agCalcScript 'Invoke-AgentCallStats.ps1'
+    if (Test-Path -LiteralPath $agCalcScript) {
+        try {
+            $updated = & powershell.exe -NoProfile -NonInteractive -File $agCalcScript `
+                -WorkspacePath $WorkspacePath -PassThru -ErrorAction Stop
+            if ($null -ne $updated) {
+                if (Test-Path -LiteralPath $statsFile) {
+                    try { $statsData = Get-Content -LiteralPath $statsFile -Raw -Encoding UTF8 | ConvertFrom-Json } catch { <# non-fatal #> }
+                }
+            }
+        } catch { <# Intentional: non-fatal if stats script fails #> }
+    }
+    if ($null -eq $statsData) {
+        Send-Json -Context $Context -Object @{ error = 'stats_unavailable'; stats = @{} } -StatusCode 200
+    } else {
+        Send-Json -Context $Context -Object $statsData
+    }
+}
+
+# ─── Route: GET /api/config/menus ─────────────────────────────────────────────
+function Handle-GetMenus {
+    [CmdletBinding()]
+    param($Context)
+    $menuFile = Join-Path $WorkspacePath 'config'
+    $menuFile = Join-Path $menuFile 'menu-layout.json'
+    $obj = $null
+    if (Test-Path -LiteralPath $menuFile) {
+        try { $obj = (Get-Content -LiteralPath $menuFile -Raw -Encoding UTF8) | ConvertFrom-Json } catch { <# non-fatal #> }
+    }
+    Send-Json -Context $Context -Object $obj
+}
+
+# ─── Route: POST /api/config/menus ────────────────────────────────────────────
+function Handle-SaveMenus {
+    [CmdletBinding()]
+    param($Context)
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    try {
+        $bodyBytes = New-Object byte[] 65536
+        $read = $Context.Request.InputStream.Read($bodyBytes, 0, 65536)
+        $bodyStr = [System.Text.Encoding]::UTF8.GetString($bodyBytes, 0, $read)
+        $parsed = $bodyStr | ConvertFrom-Json
+        $menuFile = Join-Path $WorkspacePath 'config'
+        $menuFile = Join-Path $menuFile 'menu-layout.json'
+        Set-Content -LiteralPath $menuFile -Value ($parsed | ConvertTo-Json -Depth 8) -Encoding UTF8 -Force
+        Send-Json -Context $Context -Object @{ saved = $true }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
+    }
+}
+
+# ─── Route: static file serve ─────────────────────────────────────────────────
+function Handle-StaticFile {
+    [CmdletBinding()]
+    param($Context, [string]$RelPath)
+    $content = Read-WorkspaceFile -RelativePath $RelPath
+    if ($null -eq $content) {
+        Send-Error -Context $Context -StatusCode 404 -Message "Not found: $RelPath"
+        return
+    }
+    $ext = [System.IO.Path]::GetExtension($RelPath).ToLower()
+    $ct = switch ($ext) {
+        '.html'  { 'text/html; charset=utf-8'              }
+        '.xhtml' { 'application/xhtml+xml; charset=utf-8'  }
+        '.js'    { 'application/javascript; charset=utf-8' }
+        '.css'   { 'text/css; charset=utf-8'               }
+        '.json'  { 'application/json; charset=utf-8'       }
+        default  { 'text/plain; charset=utf-8'             }
+    }
+    Send-Response -Context $Context -StatusCode 200 -ContentType $ct -Body $content
+}
+
+# ─── WebSocket handler (runs in scriptblock via background runspace) ───────────
+function Handle-WebSocket {
+    [CmdletBinding()]
+    param([System.Net.HttpListenerContext]$Context)
+    try {
+        $wsCtx = $Context.AcceptWebSocketAsync('').GetAwaiter().GetResult()
+        $ws    = $wsCtx.WebSocket
+        $wsId  = [System.Guid]::NewGuid().ToString()
+        $WsClients.TryAdd($wsId, $ws) | Out-Null
+
+        # Send hello + CSRF token
+        $hello = @{ event = 'connected'; wsId = $wsId; csrfToken = $SessionToken; serverTime = (Get-Date -Format 'o') }
+        $helloBytes = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
+        $ws.SendAsync([System.ArraySegment[byte]]::new($helloBytes), `
+            [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
+            [System.Threading.CancellationToken]::None).Wait(3000) | Out-Null
+
+        # Read loop
+        $buf = New-Object byte[] 4096
+        while ($ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+            $result = $ws.ReceiveAsync([System.ArraySegment[byte]]::new($buf), `
+                [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+            if ($result.MessageType -eq [System.Net.WebSockets.WebSocketMessageType]::Close) { break }
+            # Ping/keepalive — echo back
+            $msgStr = [System.Text.Encoding]::UTF8.GetString($buf, 0, $result.Count)
+            if ($msgStr -match '"type":"ping"') {
+                $pong = [System.Text.Encoding]::UTF8.GetBytes('{"type":"pong"}')
+                $ws.SendAsync([System.ArraySegment[byte]]::new($pong), `
+                    [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
+                    [System.Threading.CancellationToken]::None).Wait(1000) | Out-Null
+            }
+        }
+    } catch { <# client disconnected #> }
+    finally {
+        $removed = $null
+        $WsClients.TryRemove($wsId, [ref]$removed) | Out-Null
+        try { $ws.Dispose() } catch { <# non-fatal #> }
+    }
+}
+
+# ─── Main listener loop ────────────────────────────────────────────────────────
+$listener = [System.Net.HttpListener]::new()
+$listener.Prefixes.Add("http://127.0.0.1:$Port/")
+Write-BootstrapLog "HttpListener initialising on http://127.0.0.1:$Port/" 'INFO'
+try {
+    $listener.Start()
+    Write-Host ""
+    Write-Host "  PowerShellGUI Local Web Engine" -ForegroundColor Cyan
+    Write-Host "  Listening on http://127.0.0.1:$Port/" -ForegroundColor Cyan
+    Write-Host "  Press Ctrl+C to stop." -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-BootstrapLog "=== Bootstrap Complete — HttpListener active on port $Port ===" 'INFO'
+    Write-EngineLog "Engine started on port $Port, workspace: $WorkspacePath" -Level 'INFO'
+} catch {
+    Write-BootstrapLog "FATAL: HttpListener failed to start on port $Port — $_" 'ERROR'
+    Write-EngineLog "Failed to start HttpListener on port $Port — $_" -Level 'ERROR'
+    Write-Error "Failed to start HttpListener on port $Port. $_"
+    exit 1
+}
+
+if (-not $NoLaunchBrowser) {
+    Start-Process "http://127.0.0.1:$Port/"
+}
+
+# Progress file path — polled in the main loop idle tick to broadcast to WS clients
+$pgScanSub = if ($null -ne $cfg -and $null -ne $cfg.paths -and
+                 $cfg.paths.PSObject.Properties.Name -contains 'scanProgressLog') {
+                 $cfg.paths.scanProgressLog
+             } else { Join-Path 'logs' 'scan-progress.json' }
+$pgPath    = Join-Path $WorkspacePath $pgScanSub
+$script:lastProgressContent = ''
+
+try {
+    while ($listener.IsListening) {
+        $context = $null
+        try {
+            $asyncResult = $listener.BeginGetContext($null, $null)
+            # Wait with timeout to allow graceful shutdown
+            $asyncResult.AsyncWaitHandle.WaitOne(500) | Out-Null
+            if (-not $asyncResult.IsCompleted) {
+                # Check for graceful stop signal written by /api/engine/stop
+                $stopSig = Join-Path $WorkspacePath 'logs'
+                $stopSig = Join-Path $stopSig 'engine.stop'
+                if (Test-Path -LiteralPath $stopSig) {
+                    Remove-Item -LiteralPath $stopSig -Force -ErrorAction SilentlyContinue
+                    Write-EngineLog 'Stop signal file detected — shutting down' -Level 'INFO'
+                    $script:_ExitClean = $true
+                    break
+                }
+                # Idle tick — broadcast any new scan-progress data to WebSocket clients
+                try {
+                    if (Test-Path -LiteralPath $pgPath) {
+                        $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
+                        if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
+                            $script:lastProgressContent = $raw
+                            Broadcast-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                        }
+                    }
+                } catch { <# non-fatal — progress file may not exist yet #> }
+                continue
+            }
+            $context = $listener.EndGetContext($asyncResult)
+        } catch [System.Net.HttpListenerException] {
+            break  # Listener stopped
+        } catch {
+            continue
+        }
+
+        $req    = $context.Request
+        $method = $req.HttpMethod.ToUpper()
+        $url    = $req.Url.AbsolutePath.TrimEnd('/')
+        if ([string]::IsNullOrEmpty($url)) { $url = '/' }
+
+        # ── WebSocket upgrade ────────────────────────────────────────────
+        if ($req.IsWebSocketRequest -and $url -eq '/ws') {
+            # Start-Job creates a new process without script functions — use a runspace instead
+            $wsCtxRef  = $context
+            $wsClRef   = $WsClients
+            $wsTokRef  = $SessionToken
+            $wsPsInst  = [System.Management.Automation.PowerShell]::Create()
+            $null = $wsPsInst.AddScript({
+                param($wsCtx, $wsClients, $csrfToken)
+                $wsId = $null
+                $ws   = $null
+                try {
+                    $acc    = $wsCtx.AcceptWebSocketAsync('').GetAwaiter().GetResult()
+                    $ws     = $acc.WebSocket
+                    $wsId   = [System.Guid]::NewGuid().ToString()
+                    $wsClients.TryAdd($wsId, $ws) | Out-Null
+                    $hello  = @{ event='connected'; wsId=$wsId; csrfToken=$csrfToken; serverTime=(Get-Date -Format 'o') }
+                    $helloB = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
+                    $ws.SendAsync(
+                        [System.ArraySegment[byte]]::new($helloB),
+                        [System.Net.WebSockets.WebSocketMessageType]::Text,
+                        $true,
+                        [System.Threading.CancellationToken]::None
+                    ).Wait(3000) | Out-Null
+                    $buf = New-Object byte[] 4096
+                    while ($ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+                        $rcv = $ws.ReceiveAsync(
+                            [System.ArraySegment[byte]]::new($buf),
+                            [System.Threading.CancellationToken]::None
+                        ).GetAwaiter().GetResult()
+                        if ($rcv.MessageType -eq [System.Net.WebSockets.WebSocketMessageType]::Close) { break }
+                        $msg = [System.Text.Encoding]::UTF8.GetString($buf, 0, $rcv.Count)
+                        if ($msg -match '"type":"ping"') {
+                            $pongB = [System.Text.Encoding]::UTF8.GetBytes('{"type":"pong"}')
+                            $ws.SendAsync(
+                                [System.ArraySegment[byte]]::new($pongB),
+                                [System.Net.WebSockets.WebSocketMessageType]::Text,
+                                $true,
+                                [System.Threading.CancellationToken]::None
+                            ).Wait(1000) | Out-Null
+                        }
+                    }
+                } catch { <# client disconnected #> }
+                finally {
+                    $removed = $null
+                    if ($null -ne $wsId -and $null -ne $wsClients) {
+                        $wsClients.TryRemove($wsId, [ref]$removed) | Out-Null
+                    }
+                    if ($null -ne $ws) { try { $ws.Dispose() } catch { } }
+                }
+            }).AddArgument($wsCtxRef).AddArgument($wsClRef).AddArgument($wsTokRef)
+            $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
+            continue
+        }
+
+        # ── API routes ───────────────────────────────────────────────────
+        switch -Regex ($url) {
+            '^/api/scan/status$' {
+                if ($method -eq 'GET') { Handle-ScanStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/scan/crashes$' {
+                if ($method -eq 'GET') { Handle-ScanCrashes -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/scan/full$' {
+                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Full' } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/scan/incremental$' {
+                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Incremental' } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/scan/static$' {
+                if ($method -eq 'POST') { Handle-TriggerStaticScan -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/agent/stats$' {
+                if ($method -eq 'GET') { Handle-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/menus$' {
+                if ($method -eq 'GET')      { Handle-GetMenus  -Context $context }
+                elseif ($method -eq 'POST') { Handle-SaveMenus -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/csrf-token$' {
+                Send-Json -Context $context -Object @{ csrfToken = $SessionToken }
+                break
+            }
+            '^/api/engine/status$' {
+                if ($method -eq 'GET') { Handle-EngineStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/engine/log$' {
+                if ($method -eq 'GET') { Handle-EngineLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/engine/events$' {
+                if ($method -eq 'GET') { Handle-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/engine/logs/list$' {
+                if ($method -eq 'GET') { Handle-EngineLogsList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/engine/stop$' {
+                if ($method -eq 'POST') {
+                    $tok = $context.Request.Headers['X-CSRF-Token']
+                    if ($null -eq $tok -or $tok -ne $SessionToken) {
+                        Send-Error -Context $context -StatusCode 403 -Message 'CSRF token mismatch'
+                    } else {
+                        Send-Json -Context $context -Object @{ stopping = $true }
+                        # Write stop-signal file (ThreadPool workitems cannot reach $script: scope)
+                        $stopSig = Join-Path $WorkspacePath 'logs'
+                        $stopSig = Join-Path $stopSig 'engine.stop'
+                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { }
+                        Write-EngineLog 'Stop requested via /api/engine/stop' -Level 'INFO'
+                        $script:_ExitClean = $true
+                    }
+                } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            # ── Page routes ──────────────────────────────────────────────
+            '^/$' {
+                Handle-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
+                break
+            }
+            '^/pages/dependency-vis$' {
+                Handle-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
+                break
+            }
+            '^/pages/menu-builder$' {
+                Handle-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
+                break
+            }
+            '^/pages/bw-vault$' {
+                Handle-StaticFile -Context $context -RelPath 'BW-Vault-Checklist.xhtml'
+                break
+            }
+            # ── Static assets ────────────────────────────────────────────
+            '^/styles/(.+)$' {
+                $file = $Matches[1]
+                Handle-StaticFile -Context $context -RelPath "styles\$file"
+                break
+            }
+            '^/scripts/(.+)$' {
+                $file = $Matches[1]
+                Handle-StaticFile -Context $context -RelPath "scripts\$file"
+                break
+            }
+            default {
+                Send-Error -Context $context -StatusCode 404 -Message "Route not found: $url"
+            }
+        }
+    }
+} finally {
+    $listener.Stop()
+    $listener.Close()
+    $exitKind = if ($script:_ExitClean) { 'CLEAN_STOP' } else { 'DIRTY_EXIT' }
+    $exitMsg  = "Engine exited [$exitKind] at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    Write-Host $exitMsg -ForegroundColor DarkCyan
+    Write-EngineLog $exitMsg -Level 'INFO'
+    # Write structured crash event on dirty exit
+    if (-not $script:_ExitClean) {
+        $crashEvent = [pscustomobject]@{
+            exitKind     = $exitKind
+            timestamp    = (Get-Date -Format 'o')
+            pid          = $PID
+            port         = $Port
+            workspacePath= $WorkspacePath
+            lastLogLine  = try {
+                @(Get-Content -LiteralPath $script:EngineLogFile -Encoding UTF8 -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
+            } catch { 'unavailable' }
+        }
+        try {
+            $crashJson = $crashEvent | ConvertTo-Json -Depth 4
+            Add-Content -LiteralPath $script:CrashLogFile -Value $crashJson -Encoding UTF8
+        } catch { }
+        # Invoke crash cleanup script if it exists
+        $cleanupScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-EngineCrashCleanup.ps1'
+        if (Test-Path -LiteralPath $cleanupScript) {
+            try { & $cleanupScript -WorkspacePath $WorkspacePath -Silent } catch { }
+        }
+    }
+}

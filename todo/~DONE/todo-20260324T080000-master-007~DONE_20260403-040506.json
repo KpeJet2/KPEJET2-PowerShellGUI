@@ -1,0 +1,15 @@
+{
+  "id": "master-007",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "high",
+  "status": "DONE",
+  "title": "Add error handling to PwShGUI-Theme.psm1 styling functions",
+  "description": "Theme module has zero try-catch blocks. If a null or disposed control is passed to Set-ModernFormStyle etc, it crashes silently. Add try-catch with Write-AppLog fallback on all Set-Modern* and New-* functions.",
+  "files": [
+    "modules/PwShGUI-Theme.psm1"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:24:48.1987919+08:00",
+  "resolution": "FIXED - try-catch added to 4 styling functions"
+}

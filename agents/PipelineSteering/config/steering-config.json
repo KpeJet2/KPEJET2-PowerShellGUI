@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "agent": "PipelineSteering",
+  "description": "Tunable parameters for the PipelineSteering workspace conformance agent.",
+  "scan": {
+    "includeExtensions": [ ".ps1", ".psm1" ],
+    "excludePathSegments": [
+      ".git",
+      ".history",
+      "node_modules",
+      "__pycache__",
+      "~DOWNLOADS",
+      "CarGame",
+      "focalpoint-null"
+    ],
+    "functionHelpLookaheadLines": 5
+  },
+  "headers": {
+    "requireOutline": true,
+    "requireProblems": true,
+    "requireTodo": true,
+    "injectStubsOnApply": true
+  },
+  "dotfiles": {
+    "propagate": true,
+    "filenames": [ ".outline", ".problems", ".todo" ],
+    "onlyInDirsWithPsFiles": true
+  },
+  "versioning": {
+    "bumpMinorOnApply": true,
+    "versionTagPattern": "^(\\d{4}\\.\\w+\\.v\\d+\\.)(\\d+)$"
+  },
+  "reporting": {
+    "outputDir": "~REPORTS/PipelineSteering",
+    "retainDays": 30
+  },
+  "postScan": {
+    "runBugScan": true,
+    "runCoverageAudit": true
+  }
+}
+

@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-001-20260408",
+  "title": "Context-Aware SIN Scanner",
+  "description": "Reduce false positives by adding 2-line context window guards before flagging P021/P022/P008. Target: <50 actionable findings from 702 matches.",
+  "status": "PENDING_APPROVAL",
+  "priority": "HIGH",
+  "effort": "4-6h",
+  "affectedFiles": "tests/Invoke-SINPatternScanner.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

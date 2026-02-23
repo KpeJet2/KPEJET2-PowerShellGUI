@@ -1,0 +1,59 @@
+{
+  "sin_id": "SIN-20260330-SCANDASH-SILENTIMPORT",
+  "title": "Scan scripts use -ErrorAction SilentlyContinue on module imports masking CommandNotFoundException",
+  "description": "Multiple scan scripts import PwShGUICore.psm1 with '-ErrorAction SilentlyContinue' and a bare catch block (e.g. Invoke-PSEnvironmentScanner.ps1 line 56). If the module import fails, subsequent calls to module functions like Write-AppLog will throw System.Management.Automation.CommandNotFoundException. The silent suppression makes root cause diagnosis extremely difficult — the user sees 'CommandNotFoundException: Write-AppLog is not recognized' but the real cause is a failed module import. This pattern appears in at least 3 scan scripts.",
+  "category": "error-handling",
+  "severity": "HIGH",
+  "file_path": "scripts/Invoke-PSEnvironmentScanner.ps1",
+  "line_number": 56,
+  "function_name": "Module import block",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "is_resolved": false,
+  "occurrence_count": 3,
+  "regression_count": 0,
+  "created_at": "2026-03-30T12:00:00Z",
+  "last_seen_at": "2026-03-30T12:00:00Z",
+  "detection_method": "Code review of module import patterns across all scan scripts",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "sessionModCount": 1,
+  "affected_scripts": [
+    "scripts/Invoke-PSEnvironmentScanner.ps1",
+    "scripts/Show-CronAiAthonTool.ps1",
+    "scripts/Show-ScanDashboard.ps1"
+  ],
+  "remedy_tracking": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "timestamp": "2026-04-04T20:40:00.8872635Z",
+        "method": "manual-remedy-pending",
+        "success": false,
+        "notes": "No automated fix. Remedy instructions: No remedy defined"
+      },
+      {
+        "attempt_number": 2,
+        "timestamp": "2026-04-04T20:41:35.1956879Z",
+        "method": "known-fix:FIX-202604050440-1713",
+        "success": false,
+        "notes": "Known fix available (FIX-202604050440-1713: Auto-detected resolution of unknown at C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1:?). Manual application required."
+      },
+      {
+        "attempt_number": 3,
+        "timestamp": "2026-04-04T20:44:09.9697990Z",
+        "method": "known-fix:FIX-202604050440-1713",
+        "success": false,
+        "notes": "Known fix available (FIX-202604050440-1713: Auto-detected resolution of unknown at C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1:?). Manual application required."
+      }
+    ],
+    "last_attempt_at": "2026-04-04T20:44:09.9697990Z",
+    "total_attempts": 3,
+    "successful_count": 0,
+    "failed_count": 3,
+    "status": "ESCALATED",
+    "auto_retry": false
+  }
+}

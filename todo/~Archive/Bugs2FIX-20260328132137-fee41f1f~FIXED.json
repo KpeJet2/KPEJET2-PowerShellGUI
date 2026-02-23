@@ -1,0 +1,39 @@
+﻿{
+  "sessionModCount": 1,
+  "tags": [],
+  "executionAgent": "",
+  "notes": "",
+  "type": "Bugs2FIX",
+  "acknowledged": null,
+  "executedAt": null,
+  "plannedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1"
+  ],
+  "sinId": "",
+  "id": "Bugs2FIX-20260328132137-fee41f1f",
+  "title": "FIX: Missing module reference: path/to/module/updateMods",
+  "executionMethod": "",
+  "created": "2026-03-28T05:21:37.1750261Z",
+  "description": "Fix for bug Bug-20260328132136-86d4193c: Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+  "category": "dependency",
+  "status": "DONE",
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "linkedBugs": [],
+  "modified": "2026-03-28T05:21:37.1750647Z",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260328132136-86d4193c",
+  "priority": "HIGH",
+  "result": null,
+  "createdAt": "2026-03-28T00:00:00Z",
+  "completedAt": "2026-03-31T01:20:08.3691961+08:00",
+  "resolution": "FALSE POSITIVE - path/to/module/updateMods is in .DESCRIPTION help comment, not executable code",
+  "archiveMetadata": {
+    "archivedAt": "2026-04-03T04:05:08",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

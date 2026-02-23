@@ -1,0 +1,34 @@
+{
+  "status": "PLANNED",
+  "suggestedBy": "GitHub-Copilot-Session4",
+  "tags": [
+    "session4-audit"
+  ],
+  "description": "Convert to 2-arg Join-Path with pre-resolved intermediate variables for PS 5.1 compatibility",
+  "linkedFeatures": [],
+  "completedAt": null,
+  "result": null,
+  "category": "style-remediation",
+  "type": "ToDo",
+  "linkedBugs": [],
+  "id": "ToDo-20260330204319-37590297",
+  "executionAgent": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "parentId": "",
+  "sinId": "",
+  "source": "Manual",
+  "priority": "HIGH",
+  "title": "Fix 175 potential 3-arg Join-Path calls",
+  "notes": "",
+  "createdAt": "2026-03-30T12:43:19.325718Z",
+  "executedAt": null,
+  "modified": "2026-03-30T12:43:19.325718Z",
+  "created": "2026-03-30T12:43:19.325718Z",
+  "acknowledged": null,
+  "affectedFiles": [
+    "modules/CronAiAthon-Scheduler.psm1",
+    "modules/AssistedSASC.psm1"
+  ],
+  "plannedAt": "2026-03-31T01:25:34.4086159+08:00"
+}

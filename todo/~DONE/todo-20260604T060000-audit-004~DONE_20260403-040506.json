@@ -1,0 +1,15 @@
+{
+  "category": "hardcoded-paths",
+  "id": "audit-004",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "Lines 1117-1121 hardcode ConfigPath, DefaultFolder, TempFolder, ReportFolder, DownloadFolder.",
+  "files": [
+    "temp/Main-GUI-CLEAN-FROM-GIT.ps1"
+  ],
+  "priority": "high",
+  "title": "Replace 5 hardcoded paths in Main-GUI-CLEAN-FROM-GIT.ps1",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Replaced 5 hardcoded paths in temp/Main-GUI-CLEAN-FROM-GIT.ps1 with $PSScriptRoot",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

@@ -1,0 +1,72 @@
+# VersionTag: 2604.B0.v1
+/* Layout: kpe-CSS_MasterTight-wLeftMENU | v2603.B0.v27.0
+   Source: XHTML-MasterToDo.xhtml  (GLOBAL DEFAULT)
+   Pattern: Gradient top-bar + left sidebar nav + right content area + tight card layout
+   Import: pwshgui-base.css → this layout → accent-*.css */
+
+/* ── full-height flex column ── */
+body{display:flex;flex-direction:column;height:100vh;margin:0}
+
+/* ── gradient top bar ── */
+#topBar{background:linear-gradient(135deg,#1a3a5c,var(--accent,#007acc));color:#fff;
+  padding:10px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.ver-badge{background:rgba(255,255,255,.18);padding:3px 10px;border-radius:10px;font-size:11px}
+
+/* ── filter / summary bars ── */
+#filterBar,#summaryBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:8px 12px;background:var(--panel,#252526);border-bottom:1px solid var(--border);flex-shrink:0}
+#filterBar select,#filterBar input{background:var(--bg);color:var(--fg);
+  border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:12px}
+
+/* ── two-column main ── */
+#main{display:flex;flex:1;min-height:0;overflow:hidden}
+
+/* ── left navigation pane ── */
+#leftPane{width:260px;min-width:180px;background:var(--panel,#252526);
+  border-right:1px solid var(--border);padding:12px;overflow:auto;flex-shrink:0}
+.sec-hdr{font-size:13px;font-weight:700;color:var(--accent,#007acc);margin:0 0 8px}
+.nav-list{list-style:none;padding:0;margin:0 0 12px}
+.nav-list li{margin:3px 0}
+.nav-list a{color:#9cdcfe;text-decoration:none;font-size:12px}
+.nav-list a:hover{text-decoration:underline}
+
+/* ── right content pane ── */
+#rightPane{flex:1;padding:14px;overflow:auto}
+
+/* ── todo / task cards (tight) ── */
+.todo-card{background:var(--bg-alt,#2d2d2d);border:1px solid var(--border);
+  border-radius:8px;padding:14px;margin-bottom:10px}
+.todo-card h3{font-size:14px;color:var(--pass,#4ec9b0);margin:0 0 6px}
+.meta{font-size:11px;color:#888;margin-bottom:8px}
+.affects,.notes{font-size:11px;color:#aaa;margin-top:6px}
+.notes{background:var(--bg);border-left:3px solid var(--warn,#ce9140);padding:6px 8px;
+  border-radius:4px;color:var(--warn,#ce9140)}
+
+/* ── count badges ── */
+.cnt{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff}
+.cnt-total{background:var(--accent,#007acc)}
+.cnt-open{background:#e74c3c}
+.cnt-completed{background:#27ae60}
+.cnt-progress{background:#f1c40f;color:#111}
+.cnt-crit{background:#c0392b}
+.cnt-high{background:#e67e22}
+.cnt-med{background:#3498db}
+.cnt-low{background:#95a5a6}
+
+/* ── empty state ── */
+.empty-state{color:#666;padding:40px;text-align:center}
+
+/* ── footer ── */
+#footer{background:var(--panel,#252526);color:#666;text-align:center;padding:4px;
+  font-size:10px;border-top:1px solid var(--border);flex-shrink:0}
+
+/* ── responsive ── */
+@media(max-width:768px){
+  #leftPane{width:180px;padding:8px}
+  .todo-card{padding:10px}
+}
+@media(max-width:480px){
+  #main{flex-direction:column}
+  #leftPane{width:100%;border-right:none;border-bottom:1px solid var(--border);max-height:180px}
+}
+

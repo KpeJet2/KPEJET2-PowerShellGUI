@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B0.v1 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>PwShGUI -- Central Master To-Do</title>
+  <!-- External CSS: base → responsive → layout → accent -->
+  <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="../../styles/layout-mastertight-wleftmenu.css" />
+  <link rel="stylesheet" href="../../styles/accent-master-todo.css" />
+  <style type="text/css">
+    body{font-family:'Segoe UI',Arial,sans-serif;background:#1e1e1e;color:#d4d4d4;margin:0;display:flex;flex-direction:column;height:100vh}
+    #topBar{background:linear-gradient(135deg,#1a3a5c,#007acc);color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+    .ver-badge{background:rgba(255,255,255,.18);padding:3px 10px;border-radius:10px;font-size:11px}
+    #filterBar,#summaryBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;background:#252526;border-bottom:1px solid #3c3c3c}
+    #filterBar select,#filterBar input{background:#1e1e1e;color:#d4d4d4;border:1px solid #3c3c3c;border-radius:4px;padding:4px 8px;font-size:12px}
+    #main{display:flex;flex:1;min-height:0}
+    #leftPane{width:260px;background:#252526;border-right:1px solid #3c3c3c;padding:12px;overflow:auto}
+    #rightPane{flex:1;padding:14px;overflow:auto}
+    .sec-hdr{font-size:13px;font-weight:700;color:#007acc;margin:0 0 8px 0}
+    .nav-list{list-style:none;padding:0;margin:0 0 12px 0}
+    .nav-list li{margin:3px 0}
+    .nav-list a{color:#9cdcfe;text-decoration:none;font-size:12px}
+    .cnt{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff}
+    .cnt-total{background:#007acc}.cnt-open{background:#e74c3c}.cnt-completed{background:#27ae60}.cnt-progress{background:#f1c40f;color:#111}.cnt-crit{background:#c0392b}.cnt-high{background:#e67e22}.cnt-med{background:#3498db}.cnt-low{background:#95a5a6}
+    .todo-card{background:#2d2d2d;border:1px solid #3c3c3c;border-radius:8px;padding:14px;margin-bottom:10px}
+    .todo-card h3{font-size:14px;color:#4ec9b0;margin:0 0 6px 0}
+    .meta{font-size:11px;color:#888;margin-bottom:8px}
+    .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff;text-transform:uppercase}
+    .badge-open{background:#e74c3c}.badge-completed{background:#27ae60}.badge-in-progress{background:#f1c40f;color:#111}.badge-closed{background:#95a5a6}.badge-critical{background:#c0392b}.badge-high{background:#e67e22}.badge-medium{background:#3498db}.badge-low{background:#95a5a6}.badge-cat{background:#3c3c3c;color:#d4d4d4;text-transform:none}
+    .affects,.notes{font-size:11px;color:#aaa;margin-top:6px}
+    .notes{background:#1e1e1e;border-left:3px solid #ce9140;padding:6px 8px;border-radius:4px;color:#ce9140}
+    .empty-state{color:#666;padding:40px;text-align:center}
+    #footer{background:#252526;color:#666;text-align:center;padding:4px;font-size:10px;border-top:1px solid #3c3c3c}
+  </style>
+</head>
+<body>
+<div id="topBar">
+  <div>PwShGUI -- Central Master To-Do <span class="ver-badge" id="verBadge">v--</span></div>
+  <div style="font-size:11px;opacity:.75">Normalized todo index and workspace view</div>
+</div>
+<div id="filterBar">
+  <label>Status:<select id="fltStatus"><option value="ALL">All</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="completed">Completed</option><option value="closed">Closed</option></select></label>
+  <label>Category:<select id="fltCategory"><option value="ALL">All Categories</option></select></label>
+  <label>Priority:<select id="fltPriority"><option value="ALL">All</option><option value="CRITICAL">Critical</option><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select></label>
+  <label>Search:<input type="text" id="fltSearch" value="" /></label>
+  <button type="button" id="btnRefresh">Refresh</button>
+  <button type="button" id="btnExportCsv">Export CSV</button>
+</div>
+<div id="summaryBar">
+  <span>Total: <span class="cnt cnt-total" id="cntTotal">0</span></span>
+  <span>Open: <span class="cnt cnt-open" id="cntOpen">0</span></span>
+  <span>Completed: <span class="cnt cnt-completed" id="cntCompleted">0</span></span>
+  <span>In Progress: <span class="cnt cnt-progress" id="cntProgress">0</span></span>
+  <span style="margin-left:auto">Critical: <span class="cnt cnt-crit" id="cntCrit">0</span></span>
+  <span>High: <span class="cnt cnt-high" id="cntHigh">0</span></span>
+  <span>Medium: <span class="cnt cnt-med" id="cntMed">0</span></span>
+  <span>Low: <span class="cnt cnt-low" id="cntLow">0</span></span>
+</div>
+<div id="main">
+  <div id="leftPane">
+    <div class="sec-hdr">Quick Filters</div>
+    <ul class="nav-list" id="catNav"></ul>
+    <div class="sec-hdr">Systematic Routines</div>
+    <ul class="nav-list">
+      <li><a href="#" onclick="alert('Run: powershell -File scripts/Invoke-TodoManager.ps1 -Reindex');return false;">Reindex ToDos</a></li>
+      <li><a href="#" onclick="alert('Run: powershell -File scripts/Invoke-TodoManager.ps1 -Validate');return false;">Validate ToDos</a></li>
+      <li><a href="#" onclick="alert('Run: tests/Invoke-GUISmokeTest.ps1 -RunShellMatrix');return false;">Smoke Test Matrix</a></li>
+    </ul>
+  </div>
+  <div id="rightPane"><div id="todoCards"><div class="empty-state">Loading to-do items...</div></div></div>
+</div>
+<div id="footer">PwShGUI Central Master To-Do -- Loaded from todo/_index.json</div>
+<script type="text/javascript">
+//<![CDATA[
+var TODO_FOLDER='../../todo/';
+var allTodos=[];
+function esc(s){var d=document.createElement('div');d.appendChild(document.createTextNode(String(s||'')));return d.innerHTML;}
+function getValue(todo,names,fallback){for(var i=0;i<names.length;i++){var v=todo[names[i]];if(v!==undefined&&v!==null&&v!==''){return v;}}return fallback;}
+function normalizeStatus(value){var s=String(value||'open').toLowerCase();if(s==='implemented'||s==='done'||s==='fixed'||s==='released'){return'completed';}if(s==='in_progress'){return'in-progress';}return s;}
+function normalizeType(value){var t=String(value||'todo').toLowerCase();if(t==='bugs2fix')return'bug';if(t==='featurerequest')return'feature';if(t==='items2add')return'todo';return(t==='bug'||t==='feature')?t:'todo';}
+function normalizeTodo(todo){return{id:String(getValue(todo,['id','todo_id'],'')),type:normalizeType(getValue(todo,['type'],'todo')),title:String(getValue(todo,['title'],'(untitled)')),description:String(getValue(todo,['description'],'')),status:normalizeStatus(getValue(todo,['status'],'open')),priority:String(getValue(todo,['priority'],'LOW')).toUpperCase(),category:String(getValue(todo,['category'],'general')).toLowerCase(),createdAt:String(getValue(todo,['createdAt','created_at','created'],'')),acknowledgedAt:String(getValue(todo,['acknowledgedAt','acknowledged_at'],'')),suggestedBy:String(getValue(todo,['suggestedBy','suggested_by','source'],'')),affects:getValue(todo,['affects','affectedFiles'],[])||[],fileRefs:getValue(todo,['fileRefs','file_refs'],[])||[],notes:String(getValue(todo,['notes'],''))};}
+function updateSummary(list){var total=list.length,open=0,completed=0,progress=0,crit=0,high=0,med=0,low=0,catCounts={};for(var i=0;i<list.length;i++){var t=list[i];var s=normalizeStatus(t.status);if(s==='open'){open++;}else if(s==='completed'){completed++;}else if(s==='in-progress'){progress++;}var p=(t.priority||'').toUpperCase();if(p==='CRITICAL'){crit++;}else if(p==='HIGH'){high++;}else if(p==='MEDIUM'){med++;}else if(p==='LOW'){low++;}var c=(t.category||'general').toLowerCase();catCounts[c]=(catCounts[c]||0)+1;}document.getElementById('cntTotal').textContent=total;document.getElementById('cntOpen').textContent=open;document.getElementById('cntCompleted').textContent=completed;document.getElementById('cntProgress').textContent=progress;document.getElementById('cntCrit').textContent=crit;document.getElementById('cntHigh').textContent=high;document.getElementById('cntMed').textContent=med;document.getElementById('cntLow').textContent=low;var sel=document.getElementById('fltCategory');var cur=sel.value;while(sel.options.length>1){sel.remove(1);}var nav='';Object.keys(catCounts).sort().forEach(function(cat){var o=document.createElement('option');o.value=cat;o.textContent=cat+' ('+catCounts[cat]+')';sel.appendChild(o);nav+='<li><a href="#" data-cat="'+esc(cat)+'">'+esc(cat)+' ('+catCounts[cat]+')</a></li>';});sel.value=cur;document.getElementById('catNav').innerHTML='<li><a href="#" data-cat="ALL">All Items ('+total+')</a></li>'+nav;}
+function getFiltered(){var st=document.getElementById('fltStatus').value;var cat=document.getElementById('fltCategory').value;var pri=document.getElementById('fltPriority').value;var search=document.getElementById('fltSearch').value.toLowerCase();var out=[];for(var i=0;i<allTodos.length;i++){var t=allTodos[i];if(st!=='ALL'&&normalizeStatus(t.status)!==st){continue;}if(cat!=='ALL'&&(t.category||'').toLowerCase()!==cat.toLowerCase()){continue;}if(pri!=='ALL'&&(t.priority||'').toUpperCase()!==pri){continue;}if(search){var hay=((t.title||'')+' '+(t.description||'')+' '+(t.notes||'')+' '+(t.category||'')+' '+(t.affects||[]).join(' ')+' '+(t.fileRefs||[]).join(' ')).toLowerCase();if(hay.indexOf(search)<0){continue;}}out.push(t);}out.sort(function(a,b){var order={'CRITICAL':0,'HIGH':1,'MEDIUM':2,'LOW':3};var pa=(order[(a.priority||'LOW').toUpperCase()]!==undefined)?order[(a.priority||'LOW').toUpperCase()]:9;var pb=(order[(b.priority||'LOW').toUpperCase()]!==undefined)?order[(b.priority||'LOW').toUpperCase()]:9;if(pa!==pb){return pa-pb;}return (a.title||'').localeCompare(b.title||'');});return out;}
+function renderTodos(){var list=getFiltered();updateSummary(allTodos);var c=document.getElementById('todoCards');if(!list.length){c.innerHTML='<div class="empty-state">No to-do items match the current filters.</div>';return;}var h='';for(var i=0;i<list.length;i++){var t=list[i];var status=normalizeStatus(t.status);var priCls='badge-'+(t.priority||'low').toLowerCase();var stCls='badge-'+status;h+='<div class="todo-card"><h3>'+esc(t.title)+'</h3><div class="meta"><span class="badge '+stCls+'">'+esc(status)+'</span> <span class="badge '+priCls+'">'+esc(t.priority)+'</span> <span class="badge badge-cat">'+esc(t.category)+'</span> ID: <strong>'+esc(t.id)+'</strong> | Created: '+esc(t.createdAt)+' | By: '+esc(t.suggestedBy)+'</div><p>'+esc(t.description)+'</p>';if(t.affects.length){h+='<div class="affects"><strong>Affects:</strong> '+esc(t.affects.join(', '))+'</div>';}if(t.fileRefs.length){h+='<div class="affects"><strong>Refs:</strong> '+esc(t.fileRefs.join(', '))+'</div>';}if(t.notes){h+='<div class="notes"><strong>Notes:</strong> '+esc(t.notes)+'</div>';}h+='</div>';}
+c.innerHTML=h;}
+function loadVersion(){var x=new XMLHttpRequest();x.open('GET','../../config/system-variables.xml?t='+Date.now(),true);x.onreadystatechange=function(){if(x.readyState!==4){return;}if(x.status===200||x.status===0){var xml=x.responseText||'';var major=(xml.match(/<Major>([^<]+)<\/Major>/)||[null,'2603'])[1];var minor=(xml.match(/<Minor>([^<]+)<\/Minor>/)||[null,'B0'])[1];var build=(xml.match(/<Build>([^<]+)<\/Build>/)||[null,'27'])[1];document.getElementById('verBadge').textContent=major+'.'+minor+'.v'+build;}};x.send(null);}
+function loadTodos(){document.getElementById('todoCards').innerHTML='<div class="empty-state">Loading todo index...</div>';var x=new XMLHttpRequest();x.open('GET',TODO_FOLDER+'_index.json?t='+Date.now(),true);x.onreadystatechange=function(){if(x.readyState!==4){return;}var fileList=[];if(x.status===200||x.status===0){try{fileList=(JSON.parse(x.responseText).files)||[];}catch(e){}}if(!fileList.length){document.getElementById('todoCards').innerHTML='<div class="empty-state">No todo items found. Run scripts/Invoke-TodoManager.ps1 -Reindex to rebuild the index.</div>';allTodos=[];updateSummary(allTodos);return;}allTodos=[];var pending=fileList.length;for(var i=0;i<fileList.length;i++){(function(fn){var r=new XMLHttpRequest();r.open('GET',TODO_FOLDER+fn+'?t='+Date.now(),true);r.onreadystatechange=function(){if(r.readyState!==4){return;}if(r.status===200||r.status===0){try{allTodos.push(normalizeTodo(JSON.parse(r.responseText)));}catch(e){}}pending--;if(pending<=0){renderTodos();}};r.send(null);})(fileList[i]);}};x.send(null);}
+function exportCsv(){var list=getFiltered();var rows=['id,type,status,priority,category,title,createdAt,affects,fileRefs,description,notes'];for(var i=0;i<list.length;i++){var t=list[i];var q=function(s){return '"'+String(s||'').replace(/"/g,'""')+'"';};rows.push([q(t.id),q(t.type),q(normalizeStatus(t.status)),q(t.priority),q(t.category),q(t.title),q(t.createdAt),q((t.affects||[]).join('; ')),q((t.fileRefs||[]).join('; ')),q(t.description),q(t.notes)].join(','));}var blob=new Blob([rows.join('\r\n')],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='PwShGUI-MasterToDo-'+new Date().toISOString().slice(0,10)+'.csv';a.click();}
+document.getElementById('fltStatus').addEventListener('change',renderTodos);document.getElementById('fltCategory').addEventListener('change',renderTodos);document.getElementById('fltPriority').addEventListener('change',renderTodos);document.getElementById('fltSearch').addEventListener('input',renderTodos);document.getElementById('btnRefresh').addEventListener('click',loadTodos);document.getElementById('btnExportCsv').addEventListener('click',exportCsv);document.getElementById('catNav').addEventListener('click',function(ev){var a=ev.target;if(a && a.getAttribute('data-cat')){ev.preventDefault();document.getElementById('fltCategory').value=a.getAttribute('data-cat');renderTodos();}});
+loadVersion();loadTodos();
+//]]>
+</script>
+</body>
+</html>
+

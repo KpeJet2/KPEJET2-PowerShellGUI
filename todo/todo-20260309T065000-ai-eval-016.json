@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-016",
+  "category": "optimization",
+  "title": "Async/Parallel Script Execution Helper",
+  "description": "Create Invoke-ScriptAsync helper in PwShGUICore with job tracking UI, timeout handling, and cancellation token support. Replace manual Start-Job patterns.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "modules/PwShGUICore.psm1",
+    "Main-GUI.ps1"
+  ],
+  "notes": null,
+  "id": "ai-eval-016",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.4796952Z"
+}

@@ -1,0 +1,22 @@
+{
+  "todo_id": "gap-2604-001",
+  "id": "gap-2604-001",
+  "category": "enhancement",
+  "title": "koe-RumA milestone event not scheduled -- add TASK-MonthlyMilestone cron task",
+  "description": "koe-RumA has Invoke-MilestoneEvent and Test-MilestoneSchedule functions (koe-RumA.psm1) but no corresponding cron task fires them. The EnhancementsLogPath is never passed in. Add TASK-MonthlyMilestone (type: KoeRumaMilestone, frequency: 43200 ~monthly) to cron-aiathon-schedule.json and a matching switch case to CronAiAthon-Scheduler.psm1 that calls Invoke-MilestoneEvent -WorkspacePath -EnhancementsLogPath.",
+  "suggested_by": "FullSystemsScan gap-detection pass 2026-04-03",
+  "priority": "MEDIUM",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:00Z",
+  "createdAt": "2026-04-03T00:00:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "agents/koe-RumA/core/koe-RumA.psm1",
+    "modules/CronAiAthon-Scheduler.psm1",
+    "config/cron-aiathon-schedule.json"
+  ],
+  "notes": "koe-RumA exports: Open-RumAPipeline, Close-RumAPipeline, Invoke-MilestoneEvent, Test-MilestoneSchedule, Invoke-KoeRumASession. All are manual-only currently.",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.7592111Z"
+}

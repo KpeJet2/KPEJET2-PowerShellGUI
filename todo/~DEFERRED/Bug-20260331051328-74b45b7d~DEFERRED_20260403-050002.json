@@ -1,0 +1,33 @@
+{
+  "notes": "Matched existing sin: 3 functions with no try/catch blocks",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bug-20260331051328-74b45b7d",
+  "sessionModCount": 1,
+  "parentId": "",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bug",
+  "priority": "MEDIUM",
+  "title": "3 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:13:28.7721018Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:13:28.7721537Z",
+  "sinId": "SIN-20260328082050-e8b92387"
+}

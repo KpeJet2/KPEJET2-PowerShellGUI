@@ -1,0 +1,49 @@
+{
+  "sin_id": "SIN-PATTERN-005-PS7ONLY-OPERATORS_202604042257",
+  "title": "PowerShell 7-only operators (??, ?., ??=) break PS 5.1 compatibility",
+  "description": "Null-coalescing (??), null-conditional (?.), and null-coalescing assignment (??=) operators were introduced in PS 7. Using them in code that must run under PS 5.1 causes parse errors. Already checked by SyntaxGuard (check #5) but this SIN formalises the scan-and-fix pattern.",
+  "severity": "MEDIUM",
+  "category": "compatibility",
+  "vector": "ps7-only-syntax",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T03:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for ?? and ?. operators outside of comment/string contexts",
+  "is_security_related": false,
+  "preventionRule": "All code must remain PS 5.1 compatible. Use if ($null -ne $x) { $x } else { $default } instead of $x ?? $default.",
+  "scan_regex": "(?<!\\?)\\?\\?(?!=)|\\?\\.(?!\\*)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Replace ?? with ternary if/else: if ($null -ne $val) { $val } else { $fallback }. Replace ?. with: if ($null -ne $obj) { $obj.Prop }.",
+  "tags": [
+    "ps51",
+    "compatibility",
+    "null-coalescing",
+    "syntax",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-005-PS7ONLY-OPERATORS",
+    "previous_file": "SIN-PATTERN-005-PS7ONLY-OPERATORS.json",
+    "reindexed_at": "2026-04-04T14:57:30.626388Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|templates|SyntaxGuard|Test-PowerShellVersions",
+  "context_guard_regex": "-notlike|Invoke-Expression|SIN-PATTERN|operators\\s*=|PS7|no\\s+\\?\\.|or\\s+\\?\\.|marked\\s+[!?]|MessageBox|or\\s+\\?\\.|marked\\s+[!?]|MessageBox",
+  "context_guard_lines": 0,
+  "context_guard_direction": "above"
+}

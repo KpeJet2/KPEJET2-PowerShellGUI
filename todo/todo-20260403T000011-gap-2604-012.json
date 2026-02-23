@@ -1,0 +1,22 @@
+{
+  "todo_id": "gap-2604-012",
+  "id": "gap-2604-012",
+  "category": "documentation",
+  "title": "VERSION-UPDATES.md deprecated but not formally archived -- add redirect and move to T3",
+  "description": "~README.md/VERSION-UPDATES.md is classified T3 (deprecated) per WORKSPACE-INVENTORY-CANONICAL.md because ENHANCEMENTS-LOG.md is the replacement. However, VERSION-UPDATES.md has not been archived to ~REPORTS/archive/ and still appears in the checklist footer link. Actions: (1) Prepend a redirect notice to VERSION-UPDATES.md pointing to ENHANCEMENTS-LOG.md, (2) Move the file to ~REPORTS/archive/VERSION-UPDATES-archived.md, (3) Update the footer link in PwShGUI-Checklists.xhtml to point to ENHANCEMENTS-LOG.md.",
+  "suggested_by": "documentation consolidation audit 2026-04-03",
+  "priority": "LOW",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:11Z",
+  "createdAt": "2026-04-03T00:00:11Z",
+  "acknowledged_at": null,
+  "affects": [
+    "~README.md/VERSION-UPDATES.md",
+    "~README.md/ENHANCEMENTS-LOG.md",
+    "~README.md/PwShGUI-Checklists.xhtml"
+  ],
+  "notes": "Per T0/T3 hierarchy: VERSION-UPDATES.md is T3 (deprecated/archived). Canonical change history is ENHANCEMENTS-LOG.md (T2, agent-curated).",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.8553880Z"
+}

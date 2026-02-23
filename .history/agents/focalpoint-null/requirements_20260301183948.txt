@@ -1,0 +1,57 @@
+# FocalPoint-null Agent System
+# Pin versions to avoid breaking changes in agent-framework preview SDK
+# Python 3.10+ required
+
+# Microsoft Agent Framework (pin to avoid breaking renaming changes)
+agent-framework-azure-ai==1.0.0b260107
+agent-framework-core==1.0.0b260107
+
+# HTTP server for agent
+azure-ai-agentserver-core==1.0.0b10
+azure-ai-agentserver-agentframework==1.0.0b10
+
+# Azure identity for Foundry / Azure AI access
+azure-identity>=1.19.0
+
+# OpenAI SDK (for GitHub Models / OpenAI direct inference)
+openai>=1.54.0
+
+# Pydantic for data models and validation
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+
+# Cryptography for PKI (RSA-2048 agent identities, SHA256 signing)
+cryptography>=43.0.0
+
+# YAML for config files
+PyYAML>=6.0.2
+
+# Structured logging
+structlog>=24.4.0
+
+# File and archive utilities
+aiofiles>=24.1.0
+
+# HTTP client for inter-agent communication
+httpx>=0.27.0
+
+# Async utilities
+anyio>=4.6.0
+
+# Env file loading
+python-dotenv>=1.0.1
+
+# Debugging
+debugpy>=1.8.0
+
+# Agent dev CLI for AI Toolkit inspector integration (pre-release)
+agent-dev-cli
+
+# OpenTelemetry — pin to match agent-framework compat shim requirements
+opentelemetry-api==1.39.0
+opentelemetry-sdk==1.39.0
+opentelemetry-semantic-conventions==0.60b0
+opentelemetry-semantic-conventions-ai==0.4.14
+
+# Optional: CBOR for efficient checkpoint encoding
+# cbor2>=5.6.0

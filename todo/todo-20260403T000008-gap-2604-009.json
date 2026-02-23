@@ -1,0 +1,24 @@
+{
+  "todo_id": "gap-2604-009",
+  "id": "gap-2604-009",
+  "category": "enhancement",
+  "title": "ConfigCoverageAudit -- add ConvoVault, PipelineSteering, IntegrityCore, FullSystemsScan to pattern list",
+  "description": "Invoke-ConfigCoverageAudit.ps1 checks whether key features/modules are represented in config/. With the addition of PwShGUI-ConvoVault.psm1, PwShGUI-IntegrityCore.psm1, PipelineSteering agent, and Invoke-FullSystemsScan.ps1, the audit's feature coverage list may not include these. Update ConfigCoverageAudit to verify: (1) agents/convo-vault-key vault entry exists, (2) config/cron-aiathon-schedule.json has TASK-FullSystemsScan and TASK-ConvoVaultExchange, (3) agentic-manifest includes PwShGUI-ConvoVault and PwShGUI-IntegrityCore exports.",
+  "suggested_by": "coverage gap analysis 2026-04-03",
+  "priority": "MEDIUM",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:08Z",
+  "createdAt": "2026-04-03T00:00:08Z",
+  "acknowledged_at": null,
+  "affects": [
+    "scripts/Invoke-ConfigCoverageAudit.ps1",
+    "modules/PwShGUI-ConvoVault.psm1",
+    "modules/PwShGUI-IntegrityCore.psm1",
+    "agents/PipelineSteering/",
+    "scripts/Invoke-FullSystemsScan.ps1"
+  ],
+  "notes": "Run Invoke-ConfigCoverageAudit after update to confirm coverage %. Target: 100% of active modules represented in config coverage check.",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.8262323Z"
+}

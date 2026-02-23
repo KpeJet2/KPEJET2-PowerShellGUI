@@ -1,0 +1,73 @@
+{
+  "templateName": "Security & IT Admin",
+  "description": "Security tools and IT administration utilities",
+  "version": "1.0",
+  "created": "2026-03-09",
+  "scope": "allUsers",
+  "applications": [
+    {
+      "name": "Bitwarden CLI",
+      "wingetId": "Bitwarden.CLI",
+      "publisher": "Bitwarden",
+      "minVersion": "2026.2.0",
+      "category": "Security",
+      "required": true
+    },
+    {
+      "name": "Bitwarden Desktop",
+      "wingetId": "Bitwarden.Bitwarden",
+      "publisher": "Bitwarden",
+      "minVersion": "",
+      "category": "Security",
+      "required": false
+    },
+    {
+      "name": "WinSCP",
+      "wingetId": "WinSCP.WinSCP",
+      "publisher": "Martin Prikryl",
+      "minVersion": "6.3",
+      "category": "RemoteAccess",
+      "required": false
+    },
+    {
+      "name": "PuTTY",
+      "wingetId": "PuTTY.PuTTY",
+      "publisher": "Simon Tatham",
+      "minVersion": "0.81",
+      "category": "RemoteAccess",
+      "required": false
+    },
+    {
+      "name": "mRemoteNG",
+      "wingetId": "mRemoteNG.mRemoteNG",
+      "publisher": "mRemoteNG",
+      "minVersion": "1.77",
+      "category": "RemoteAccess",
+      "required": false
+    },
+    {
+      "name": "Wireshark",
+      "wingetId": "WiresharkFoundation.Wireshark",
+      "publisher": "Wireshark Foundation",
+      "minVersion": "4.2",
+      "category": "NetworkAnalysis",
+      "required": false
+    },
+    {
+      "name": "Sysinternals Suite",
+      "wingetId": "Microsoft.Sysinternals.Suite",
+      "publisher": "Microsoft",
+      "minVersion": "",
+      "category": "SystemAdmin",
+      "required": false
+    },
+    {
+      "name": "Dell Command Update",
+      "wingetId": "Dell.CommandUpdate",
+      "publisher": "Dell",
+      "minVersion": "",
+      "category": "Driver",
+      "required": false
+    }
+  ]
+}

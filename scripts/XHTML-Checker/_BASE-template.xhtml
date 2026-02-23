@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2604.B1.V32.0 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--
+  _BASE-template.xhtml  —  Shared scaffold for all PwShGUI XHTML tools
+  VersionTag: 2604.B1.V32.0
+
+  Copy this file to create a new tool.  Search for all TEMPLATE_ markers and
+  replace them with your tool-specific content:
+
+    TEMPLATE_TITLE          →  window title / header text
+    TEMPLATE_ICON           →  header emoji / icon entity
+    TEMPLATE_VER            →  VersionTag of the new tool
+    TEMPLATE_STYLES         →  additional <style> rules
+    TEMPLATE_CONTENT        →  main body HTML
+    TEMPLATE_SCRIPTS        →  tool-specific JavaScript (inside CDATA)
+
+  The base already provides:
+    • Dark VS-Code-inspired CSS variables
+    • .app-header, .app-content, .app-status layout shell
+    • WebSocket status indicator (right side of header)
+    • Menu-loader: auto-loads menu from LocalWebEngine /api/config/menus
+    • setStatus(msg, level)  — update footer status bar  (ok / warn / err)
+    • fetchCsrf(cb)          — get CSRF token from engine
+-->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEMPLATE_TITLE - PwShGUI</title>
+  <style type="text/css">
+    /* ── Base CSS variables ── */
+    :root{
+      --bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;
+      --control:#333337;--control-fg:#dcdcdc;
+      --accent:#007acc;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;--info:#569cd6;
+      --fg:#d4d4d4;--fg-sub:#969696;--border:#3f3f46;
+      --btn:#37373c;--btn-hover:#46464e;--btn-fg:#e6e6e6;
+      --radius:5px;--gap:10px;--pad:14px;
+      --font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      --font-mono:'Cascadia Code','Consolas',monospace;
+      --fs:13px;--fs-sm:11px;--fs-hdr:15px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font);font-size:var(--fs);
+         background:var(--bg);color:var(--fg);
+         min-height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    /* ── App header ── */
+    .app-header{
+      background:var(--accent);color:#fff;flex-shrink:0;
+      padding:8px var(--pad);display:flex;align-items:center;gap:var(--gap);
+      font-size:var(--fs-hdr);font-weight:600;
+    }
+    .app-header .hdr-icon{font-size:18px}
+    .app-header .hdr-title{flex:1}
+    .app-header .hdr-ver{font-size:var(--fs-sm);opacity:.65}
+    /* ── WebSocket status dot ── */
+    .ws-dot{
+      width:10px;height:10px;border-radius:50%;background:#666;
+      flex-shrink:0;transition:background .4s;
+    }
+    .ws-dot.ok{background:var(--pass)}
+    .ws-dot.warn{background:var(--warn)}
+    .ws-dot.err{background:var(--fail)}
+    /* ── Dynamic nav menu (loaded from engine) ── */
+    .app-nav{
+      background:var(--panel);border-bottom:1px solid var(--border);
+      padding:4px var(--pad);display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;
+      min-height:34px;
+    }
+    .nav-item{
+      padding:4px 12px;border-radius:var(--radius);font-size:var(--fs-sm);
+      cursor:pointer;border:1px solid var(--border);
+      background:var(--btn);color:var(--btn-fg);text-decoration:none;
+      display:inline-block;
+    }
+    .nav-item:hover{background:var(--btn-hover)}
+    /* ── Main content shell ── */
+    .app-content{flex:1;overflow:auto;padding:var(--pad)}
+    /* ── Common utility classes ── */
+    table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+    thead th{
+      background:var(--control);color:var(--fg);padding:6px 10px;
+      text-align:left;font-weight:600;border-bottom:2px solid var(--border);
+      position:sticky;top:0;
+    }
+    tbody td{padding:5px 10px;border-bottom:1px solid var(--border)}
+    tbody tr:nth-child(even){background:var(--bg-alt)}
+    tbody tr:hover{background:var(--control)}
+    .btn{
+      font-family:var(--font);font-size:var(--fs-sm);
+      background:var(--btn);color:var(--btn-fg);
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:5px 12px;cursor:pointer;
+    }
+    .btn:hover{background:var(--btn-hover)}
+    .btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn-pass{background:var(--pass);color:#1e1e1e;border-color:var(--pass)}
+    .btn-fail{background:var(--fail);color:#fff;border-color:var(--fail)}
+    .card{
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap);
+    }
+    .badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+    .badge-ok{background:var(--pass);color:#1e1e1e}
+    .badge-warn{background:var(--warn);color:#1e1e1e}
+    .badge-err{background:var(--fail);color:#fff}
+    .badge-info{background:var(--info);color:#fff}
+    .badge-grey{background:#444;color:#ccc}
+    .nodata{color:var(--fg-sub);font-size:var(--fs-sm);padding:20px;text-align:center}
+    input.txt,select.sel,textarea.ta{
+      font-family:var(--font);font-size:var(--fs);
+      background:var(--control);color:var(--control-fg);
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:6px 9px;
+    }
+    input.txt:focus,select.sel:focus,textarea.ta:focus{
+      outline:none;border-color:var(--accent);
+    }
+    select.sel option{background:var(--control);color:var(--control-fg)}
+    /* ── Status bar ── */
+    .app-status{
+      background:var(--panel);border-top:1px solid var(--border);
+      padding:4px var(--pad);font-size:var(--fs-sm);color:var(--fg-sub);
+      display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+    }
+    .st-ok{color:var(--pass)}
+    .st-warn{color:var(--warn)}
+    .st-err{color:var(--fail)}
+    /* ── TEMPLATE_STYLES start ── */
+    /* TEMPLATE_STYLES */
+    /* ── TEMPLATE_STYLES end ── */
+  </style>
+</head>
+<body>
+  <!-- ── App header ── -->
+  <div class="app-header">
+    <span class="hdr-icon">TEMPLATE_ICON</span>
+    <span class="hdr-title">TEMPLATE_TITLE</span>
+    <span class="hdr-ver">TEMPLATE_VER</span>
+    <div class="ws-dot" id="wsDot" title="LocalWebEngine: checking&#x2026;"></div>
+  </div>
+
+  <!-- ── Dynamic navigation (populated by menu-loader) ── -->
+  <nav class="app-nav" id="appNav"></nav>
+
+  <!-- ── TEMPLATE_CONTENT start ── -->
+  <div class="app-content" id="appContent">
+    <!-- TEMPLATE_CONTENT -->
+  </div>
+  <!-- ── TEMPLATE_CONTENT end ── -->
+
+  <!-- ── Status bar ── -->
+  <div class="app-status">
+    <span id="statusLeft">Ready</span>
+    <span id="statusRight" class="st-ok">&#x2714; LocalEngine: checking&#x2026;</span>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+  'use strict';
+
+  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var _csrfToken  = '';
+  var _wsConn     = null;
+  var _wsRetries  = 0;
+  var WS_MAX_RETRY = 5;
+
+  /* ── Public API ── */
+  window.BASE = {
+    setStatus:  setStatus,
+    fetchCsrf:  fetchCsrf,
+    engineBase: ENGINE_BASE
+  };
+
+  /* ── Status bar ── */
+  function setStatus(msg, level, side) {
+    var id = (side === 'left') ? 'statusLeft' : 'statusRight';
+    var el = document.getElementById(id);
+    if (!el) { return; }
+    el.innerHTML = msg;
+    el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
+  }
+  window.setStatus = setStatus;
+
+  /* ── CSRF helper ── */
+  function fetchCsrf(cb) {
+    if (_csrfToken) { cb(_csrfToken); return; }
+    fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){ return r.json(); })
+      .then(function(d){ _csrfToken = d.token || ''; cb(_csrfToken); })
+      .catch(function(){ cb(''); });
+  }
+  window.fetchCsrf = fetchCsrf;
+
+  /* ── WS dot indicator ── */
+  function setWsDot(state) {
+    var dot = document.getElementById('wsDot');
+    if (!dot) { return; }
+    dot.className = 'ws-dot ' + state;
+    dot.title = 'LocalWebEngine: ' + (state === 'ok' ? 'connected' : state === 'warn' ? 'reconnecting' : 'offline');
+  }
+
+  /* ── WebSocket connection ── */
+  function connectWs() {
+    if (typeof WebSocket === 'undefined') { return; }
+    try {
+      var ws = new WebSocket('ws://127.0.0.1:8042/ws');
+      _wsConn = ws;
+      ws.onopen = function() {
+        _wsRetries = 0;
+        setWsDot('ok');
+        setStatus('&#x1F7E2; LocalEngine: connected', 'ok', 'right');
+      };
+      ws.onmessage = function(ev) {
+        try {
+          var msg = JSON.parse(ev.data);
+          if (typeof window.onEngineMessage === 'function') {
+            window.onEngineMessage(msg);
+          }
+        } catch(e) { /* non-JSON message, ignore */ }
+      };
+      ws.onclose = function() {
+        setWsDot('warn');
+        if (_wsRetries < WS_MAX_RETRY) {
+          _wsRetries++;
+          setTimeout(connectWs, 3000);
+        } else {
+          setWsDot('err');
+          setStatus('&#x1F534; LocalEngine: offline', 'warn', 'right');
+        }
+      };
+      ws.onerror = function() { ws.close(); };
+    } catch(e) {
+      setWsDot('err');
+    }
+  }
+
+  /* ── Menu loader ── */
+  function loadNav() {
+    fetch(ENGINE_BASE + '/api/config/menus').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      var menuItems = Array.isArray(data) ? data : (data.items || []);
+      var nav = document.getElementById('appNav');
+      if (!nav) { return; }
+      nav.innerHTML = '';
+      for (var i = 0; i < menuItems.length; i++) {
+        var it = menuItems[i];
+        if (!it.visible) { continue; }
+        var a = document.createElement('a');
+        a.className = 'nav-item';
+        a.href = it.href || '#';
+        if (!it.href || it.href === '#') { a.href = 'javascript:void(0)'; }
+        if (it.action) {
+          /* store action in data attr then eval via onclick — safer than inline iex */
+          a.setAttribute('data-action', it.action);
+          a.onclick = function() {
+            var act = this.getAttribute('data-action');
+            if (act && typeof window[act.split('(')[0]] === 'function') {
+              try { eval(act); } catch(e2) { /* ignore */ } /* jshint ignore:line */
+            }
+            return false;
+          };
+        }
+        if (it.color) { a.style.borderColor = it.color; }
+        a.innerHTML = (it.icon ? it.icon + ' ' : '') + it.title;
+        nav.appendChild(a);
+      }
+      if (menuItems.length === 0) {
+        nav.innerHTML = '<span style="color:var(--fg-sub);font-size:11px;padding:4px 0">No menu items configured</span>';
+      }
+    }).catch(function() {
+      var nav = document.getElementById('appNav');
+      if (nav) {
+        nav.innerHTML = '<span style="color:var(--fg-sub);font-size:11px;padding:4px 0">Engine offline &#x2014; menu unavailable</span>';
+      }
+    });
+  }
+
+  /* ── Init ── */
+  document.addEventListener('DOMContentLoaded', function() {
+    connectWs();
+    loadNav();
+    if (typeof window.onBaseReady === 'function') {
+      window.onBaseReady();
+    }
+  });
+
+  })();
+
+  /* ── TEMPLATE_SCRIPTS start ── */
+  /* TEMPLATE_SCRIPTS */
+  /* ── TEMPLATE_SCRIPTS end ── */
+  //]]>
+  </script>
+</body>
+</html>

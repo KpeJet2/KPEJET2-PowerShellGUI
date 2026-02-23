@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Rollback archive location registry. Each entry defines a local or remote archive target with per-location encryption keys and access tiers.",
+  "locations": [
+    {
+      "id": "LOC-001",
+      "label": "Local Test Archive",
+      "description": "Default local archive target for testing rollback functionality.",
+      "path": "C:\\TEST",
+      "type": "local",
+      "enabled": true,
+      "accessMode": "read-write",
+      "adminKeyVaultEntry": "rollback/loc-001-admin-key",
+      "readOnlyKeyVaultEntry": "rollback/loc-001-readonly-key",
+      "encryptionAlgorithm": "AES256",
+      "compressBeforeEncrypt": true,
+      "retainArchiveCount": 10,
+      "autoCleanup": false,
+      "notes": "Default test location. Replace path and vault entries before production use."
+    },
+    {
+      "id": "LOC-002",
+      "label": "Local Workspace Archive",
+      "description": "Primary local rollback archive alongside the workspace.",
+      "path": "C:\\PowerShellGUI\\~DOWNLOADS\\rollback-archives",
+      "type": "local",
+      "enabled": false,
+      "accessMode": "read-write",
+      "adminKeyVaultEntry": "rollback/loc-002-admin-key",
+      "readOnlyKeyVaultEntry": "rollback/loc-002-readonly-key",
+      "encryptionAlgorithm": "AES256",
+      "compressBeforeEncrypt": true,
+      "retainArchiveCount": 20,
+      "autoCleanup": true,
+      "notes": "Enable and set vault entries before first use."
+    },
+    {
+      "id": "LOC-003",
+      "label": "Remote Network Share",
+      "description": "UNC path remote archive for off-machine disaster recovery.",
+      "path": "\\\\FILESERVER\\backups\\PowerShellGUI",
+      "type": "remote-unc",
+      "enabled": false,
+      "accessMode": "read-write",
+      "adminKeyVaultEntry": "rollback/loc-003-admin-key",
+      "readOnlyKeyVaultEntry": "rollback/loc-003-readonly-key",
+      "encryptionAlgorithm": "AES256",
+      "compressBeforeEncrypt": true,
+      "retainArchiveCount": 10,
+      "autoCleanup": false,
+      "remoteValidation": {
+        "enabled": true,
+        "validateOnExport": false,
+        "validateOnCleanupAdvice": true
+      },
+      "notes": "Remote UNC share. Requires network access and drive mapping. Disable if not connected."
+    }
+  ],
+  "defaults": {
+    "encryptionAlgorithm": "AES256",
+    "compressBeforeEncrypt": true,
+    "archiveExtension": ".zip",
+    "encryptedExtension": ".enc.zip",
+    "manifestFileName": "rollback-manifest.json",
+    "readOnlyFavoredForRecovery": true,
+    "adminRequiredForDelete": true
+  }
+}

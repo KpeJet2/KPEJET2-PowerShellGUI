@@ -1,0 +1,64 @@
+# VersionTag: 2604.B0.v1
+/* Layout: kpe-CSS_PageBlack-TechnicalUI | v2603.B0.v27.0
+   Source: SECURITY-SETUP-GUIDE.xhtml
+   Pattern: Single-page document with generous padding, technical headings, tables, code blocks
+   Import: pwshgui-base.css → this layout → accent-*.css
+   NOTE: Monospace-influenced body font, single-column reading layout with no sidebar. */
+
+/* ── typography override for technical docs ── */
+body{font-family:'Segoe UI',Consolas,'Cascadia Code',monospace;background:var(--bg,#1E1E1E);
+  color:var(--fg,#D4D4D4);line-height:1.6;padding:2em 3em}
+
+/* ── headings with coloured left-border accents ── */
+h1{color:var(--accent,#007ACC);border-bottom:2px solid var(--accent,#007ACC);
+  padding-bottom:.3em;margin-bottom:.8em;font-size:1.8em}
+h2{color:var(--pass,#4EC9B0);margin:1.5em 0 .5em;font-size:1.3em;
+  border-left:4px solid var(--pass,#4EC9B0);padding-left:.6em}
+h3{color:var(--warn,#CE9140);margin:1em 0 .4em;font-size:1.1em}
+p,li{margin:.3em 0}
+ul,ol{margin-left:1.5em}
+
+/* ── code ── */
+code{background:var(--bg-alt,#2D2D2D);color:#DCDCAA;padding:.15em .4em;border-radius:3px;font-size:.95em}
+pre{background:#1A1A2E;border:1px solid var(--border,#333);border-radius:5px;
+  padding:1em;overflow-x:auto;margin:.8em 0;font-size:.9em;color:var(--fg,#D4D4D4)}
+
+/* ── links ── */
+a{color:var(--info,#569CD6);text-decoration:none}
+a:hover{text-decoration:underline;color:#9CDCFE}
+
+/* ── data tables ── */
+table{border-collapse:collapse;width:100%;margin:.8em 0}
+th{background:#264F78;color:#fff;padding:.6em .8em;text-align:left;font-weight:600}
+td{background:var(--panel,#252526);border:1px solid var(--border,#3C3C3C);padding:.5em .8em}
+tr:nth-child(even) td{background:var(--bg-alt,#2D2D2D)}
+
+/* ── section container ── */
+.section{background:var(--panel,#252526);border:1px solid var(--border,#3C3C3C);
+  border-radius:6px;padding:1.2em;margin:1em 0}
+
+/* ── tier chain diagram (PKI / architecture) ── */
+.chain-diagram{text-align:center;margin:1.5em 0;padding:1em;background:#1A1A2E;border-radius:6px}
+.chain-diagram .tier{display:inline-block;padding:.6em 1.2em;margin:.3em;border-radius:4px;font-weight:600}
+.tier-root{background:#264F78;color:#9CDCFE;border:2px solid #569CD6}
+.tier-sub{background:#2D5F2D;color:#4EC9B0;border:2px solid #4EC9B0}
+.tier-cs{background:#5F3D1A;color:#CE9140;border:2px solid #CE9140}
+.arrow{color:#808080;font-size:1.4em;vertical-align:middle;margin:0 .3em}
+
+/* ── footer ── */
+footer{margin-top:3em;padding-top:1em;border-top:1px solid var(--border,#3C3C3C);
+  color:#808080;font-size:.85em}
+
+/* ── responsive ── */
+@media(max-width:768px){
+  body{padding:1em 1.5em}
+  h1{font-size:1.5em}
+  h2{font-size:1.1em}
+  .chain-diagram .tier{display:block;margin:.4em auto;max-width:260px}
+}
+@media(max-width:480px){
+  body{padding:.8em 1em;font-size:12px}
+  table{font-size:11px}
+  th,td{padding:.4em .5em}
+}
+

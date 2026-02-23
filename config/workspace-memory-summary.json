@@ -1,0 +1,136 @@
+{
+  "$schema": "PwShGUI-WorkspaceMemory/1.0",
+  "lastUpdated": "2026-04-08T12:00:00",
+  "lastUpdatedBy": "RE-memorAiZ",
+  "sessionId": "initial",
+  "projectName": "PowerShellGUI",
+  "projectRoot": "C:\\PowerShellGUI",
+  "targetRuntime": "PowerShell 5.1",
+  "versionTagFormat": "YYMM.B<build>.V<major>.<minor>",
+  "currentVersionTag": "2604.B2.V31.1",
+  "inventory": {
+    "modules": 22,
+    "scripts": 79,
+    "tests": 43,
+    "sinPatterns": 91,
+    "agents": 4,
+    "agentNames": ["focalpoint-null", "H-Ai-Nikr-Agi", "koe-RumA", "PipelineSteering"]
+  },
+  "moduleRegistry": {
+    "coreInfrastructure": [
+      "PwShGUICore.psm1",
+      "PwShGUI-IntegrityCore.psm1",
+      "PwShGUI-Theme.psm1",
+      "PwShGUI-VersionManager.psm1",
+      "PwShGUI-TrayHost.psm1",
+      "PwShGUI-PSVersionStandards.psm1",
+      "Get-LaunchTelemetry.psm1"
+    ],
+    "pipelineAutomation": [
+      "CronAiAthon-Pipeline.psm1",
+      "CronAiAthon-Scheduler.psm1",
+      "CronAiAthon-EventLog.psm1",
+      "CronAiAthon-BugTracker.psm1",
+      "SINGovernance.psm1",
+      "RE-memorAiZ.psm1"
+    ],
+    "securityCredentials": [
+      "AssistedSASC.psm1",
+      "SASC-Adapters.psm1",
+      "PKIChainManager.psm1"
+    ],
+    "userProfile": [
+      "UserProfileManager.psm1"
+    ],
+    "networking": [
+      "AVPN-Tracker.psm1",
+      "NetworkDiagnostics.psm1"
+    ],
+    "workspaceGovernance": [
+      "WorkspaceIntentReview.psm1"
+    ]
+  },
+  "keyScripts": {
+    "pipeline": [
+      "Invoke-CronProcessor.ps1",
+      "Invoke-ErrorHandlingContinuousLoop.ps1",
+      "Invoke-FullSystemsScan.ps1"
+    ],
+    "build": [
+      "Build-AgenticManifest.ps1",
+      "Invoke-VersionAlignmentTool.ps1"
+    ],
+    "scanning": [
+      "Invoke-ScriptDependencyMatrix.ps1",
+      "Invoke-OrphanAudit.ps1",
+      "Invoke-SINPatternScanner.ps1",
+      "Invoke-ReferenceIntegrityCheck.ps1"
+    ],
+    "gui": [
+      "Show-ScanDashboard.ps1",
+      "Show-CronAiAthonTool.ps1",
+      "Show-CertificateManager.ps1",
+      "Show-WorkspaceIntentReview.ps1"
+    ]
+  },
+  "sinGovernance": {
+    "blockingPatterns": 27,
+    "advisoryPatterns": 7,
+    "registryPath": "sin_registry/",
+    "criticalPatterns": [
+      "P001 No hardcoded credentials",
+      "P005 No PS7-only operators",
+      "P006 UTF-8 WITH BOM for Unicode",
+      "P007 Include VersionTag",
+      "P014 Always -Depth on ConvertTo-Json",
+      "P022 Null guard before method calls"
+    ]
+  },
+  "configFiles": {
+    "agenticManifest": "config/agentic-manifest.json",
+    "pipelineRegistry": "config/cron-aiathon-pipeline.json",
+    "cronSchedule": "config/cron-aiathon-schedule.json",
+    "baseConfig": "config/pwsh-app-config-BASE.json",
+    "prerequisites": "config/prerequisites-baseline.json",
+    "workspaceMemory": "config/workspace-memory-summary.json"
+  },
+  "developmentIntent": {
+    "chiefDirective": "Build a comprehensive PowerShell 5.1 WinForms application management suite with full lifecycle tooling",
+    "coreCapabilities": [
+      "WinForms GUI application management",
+      "Credential and secret lifecycle management (SASC/Bitwarden)",
+      "Pipeline automation (CronAiAthon)",
+      "Code quality governance (SIN patterns)",
+      "Workspace integrity scanning",
+      "Version management with CPSR reporting",
+      "Agent-based code steering and review",
+      "Workspace intent review and sealing"
+    ],
+    "codingStandards": [
+      "PS 5.1 strict mode (no PS7-only operators)",
+      "UTF-8 WITH BOM for Unicode files",
+      "VersionTag on every script/module",
+      "SIN governance compliance (27 blocking + 7 advisory patterns)",
+      "@() force-array before .Count",
+      "try/catch on Import-Module (no SilentlyContinue)",
+      "-Encoding UTF8 on all file writes",
+      "Join-Path max 2 args in PS 5.1",
+      "CmdletBinding on all functions",
+      "Write-AppLog for application logging",
+      "Write-CronLog for pipeline/scheduled task logging"
+    ],
+    "recentEnhancements": [
+      "SIN-PATTERN-027 Null Array Indexing guard",
+      "RE-memorAiZ pipeline completeness enforcement",
+      "WorkspaceIntentReview module with intent sealing"
+    ]
+  },
+  "continuityNotes": {
+    "resumeInstructions": "Load this file to restore full workspace context. Check handbackRegistry for pending agent work. Review lastSessionPhases for pipeline state.",
+    "interruptRecovery": "If session was interrupted, re-run Invoke-REmemorAiZ with -ResumeFrom to pick up from last completed phase.",
+    "intentSealing": "Use Show-WorkspaceIntentReview.ps1 to view/seal development intent. Sealed intents are pinned and cannot be overridden without explicit unseal.",
+    "quickStart": "Import-Module modules\\RE-memorAiZ.psm1; Invoke-REmemorAiZ -WorkspacePath C:\\PowerShellGUI"
+  },
+  "handbackRegistry": {},
+  "lastSessionPhases": {}
+}

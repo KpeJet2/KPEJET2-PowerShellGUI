@@ -1,0 +1,49 @@
+{
+  "sin_id": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257",
+  "title": "Hardcoded absolute paths reduce portability and break on other machines",
+  "description": "Hardcoded absolute paths like 'C:\\PowerShellGUI' create machine-specific dependencies that break when the project is cloned, moved, or run on another system. This violates portability principles and makes CI/CD impossible. Use $PSScriptRoot, $WorkspacePath parameters, or Join-Path with variables instead. Test files are the most common offenders.",
+  "severity": "MEDIUM",
+  "category": "portability",
+  "vector": "hardcoded-dependency",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T12:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for string literals containing absolute drive paths to the workspace",
+  "is_security_related": false,
+  "preventionRule": "Never hardcode absolute paths. Use $PSScriptRoot for script-relative paths, $WorkspacePath parameters for functions, or resolve via Join-Path with environment variables.",
+  "scan_regex": "['\"][A-Za-z]:\\\\(?:PowerShellGUI|Users\\\\[^'\"]+\\\\PowerShellGUI)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude_patterns": [
+    "#.*C:\\\\",
+    "description.*C:\\\\"
+  ],
+  "remedy": "Replace hardcoded paths with $PSScriptRoot, $WorkspacePath, or $script:WS variable. For test files, use BeforeAll { $script:WS = $PSScriptRoot | Split-Path } or a parameter.",
+  "tags": [
+    "portability",
+    "hardcoded",
+    "path",
+    "ci-cd",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH",
+    "previous_file": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH.json",
+    "reindexed_at": "2026-04-04T14:57:30.7118168Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

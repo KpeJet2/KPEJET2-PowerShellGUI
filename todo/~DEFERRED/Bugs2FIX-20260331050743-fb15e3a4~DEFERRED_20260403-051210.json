@@ -1,0 +1,33 @@
+{
+  "result": null,
+  "linkedFeatures": [],
+  "executedAt": null,
+  "executionAgent": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "modified": "2026-03-30T21:07:43.4388162Z",
+  "sessionModCount": 1,
+  "executionMethod": "",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "category": "error-handling",
+  "suggestedBy": "CronAiAthon",
+  "priority": "MEDIUM",
+  "parentId": "Bug-20260331050740-62ede511",
+  "acknowledged": null,
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331050743-fb15e3a4",
+  "linkedBugs": [],
+  "notes": "",
+  "title": "FIX: 12 functions with no try/catch blocks",
+  "tags": [],
+  "completedAt": null,
+  "created": "2026-03-30T21:07:43.4387686Z",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\agents\\koe-RumA\\core\\koe-RumA.psm1"
+  ],
+  "sinId": "",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "type": "Bugs2FIX",
+  "description": "Fix for bug Bug-20260331050740-62ede511: Script koe-RumA.psm1 has 12 functions but zero try/catch blocks"
+}

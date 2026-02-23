@@ -1,0 +1,22 @@
+{
+  "line": "1887-1890",
+  "fix": "Replaced local variable assignment with .Clear() + foreach .Add() to mutate the existing outer-scope ArrayLists. Removed unnecessary null=.Count validation lines.",
+  "severity": "HIGH",
+  "file": "modules/AVPN-Tracker.psm1",
+  "batch": "Post-campaign hotfix",
+  "status": "FIXED",
+  "rootCause": "Load button event handler assigned imported data to local-scope variables instead of updating the outer ArrayList, then called .Count on potentially-null results (PS 5.1 throws on null.Count). The local assignment also meant the UI refresh read stale data from the outer-scope ArrayLists.",
+  "error": "System.Management.Automation.PropertyNotFoundException: The property 'Count' cannot be found on this object.",
+  "created": "2026-03-28T15:05:00+08:00",
+  "title": "AVPN-Tracker CSV Load: .Count PropertyNotFoundException on null + scoping bug",
+  "id": "SIN-20260328-AVPN-Count",
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

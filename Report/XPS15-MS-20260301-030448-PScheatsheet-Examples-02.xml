@@ -1,0 +1,4526 @@
+<!-- VersionTag: 2604.B0.v1 -->
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <I32 N="LineNo">1</I32>
+      <S N="Content">**********************</S>
+    </MS>
+  </Obj>
+  <Obj RefId="1">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">2</I32>
+      <S N="Content">PowerShell transcript start</S>
+    </MS>
+  </Obj>
+  <Obj RefId="2">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">3</I32>
+      <S N="Content">Start time: 20260301030448</S>
+    </MS>
+  </Obj>
+  <Obj RefId="3">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">4</I32>
+      <S N="Content">Username: XPS15-MS\msaib</S>
+    </MS>
+  </Obj>
+  <Obj RefId="4">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">5</I32>
+      <S N="Content">RunAs User: XPS15-MS\msaib</S>
+    </MS>
+  </Obj>
+  <Obj RefId="5">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">6</I32>
+      <S N="Content">Configuration Name: </S>
+    </MS>
+  </Obj>
+  <Obj RefId="6">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">7</I32>
+      <S N="Content">Machine: XPS15-MS (Microsoft Windows NT 10.0.26100.0)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="7">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">8</I32>
+      <S N="Content">Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\msaib\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.4.0' -BundledModulesPath 'c:\Users\msaib\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.4.0</S>
+    </MS>
+  </Obj>
+  <Obj RefId="8">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">9</I32>
+      <S N="Content">Copyright (c) Microsoft Corporation.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="9">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">10</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="10">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">11</I32>
+      <S N="Content">https://aka.ms/vscode-powershell</S>
+    </MS>
+  </Obj>
+  <Obj RefId="11">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">12</I32>
+      <S N="Content">Type 'help' to get help.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="12">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">13</I32>
+      <S N="Content">" -LogLevel 'Warning' -LogPath 'c:\Users\msaib\AppData\Roaming\Code\logs\20260228T151436\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\msaib\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-65224-240511.json' -FeatureFlags @() </S>
+    </MS>
+  </Obj>
+  <Obj RefId="13">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">14</I32>
+      <S N="Content">Process ID: 83408</S>
+    </MS>
+  </Obj>
+  <Obj RefId="14">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">15</I32>
+      <S N="Content">PSVersion: 7.5.4</S>
+    </MS>
+  </Obj>
+  <Obj RefId="15">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">16</I32>
+      <S N="Content">PSEdition: Core</S>
+    </MS>
+  </Obj>
+  <Obj RefId="16">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">17</I32>
+      <S N="Content">GitCommitId: 7.5.4</S>
+    </MS>
+  </Obj>
+  <Obj RefId="17">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">18</I32>
+      <S N="Content">OS: Microsoft Windows 10.0.26100</S>
+    </MS>
+  </Obj>
+  <Obj RefId="18">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">19</I32>
+      <S N="Content">Platform: Win32NT</S>
+    </MS>
+  </Obj>
+  <Obj RefId="19">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">20</I32>
+      <S N="Content">PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0</S>
+    </MS>
+  </Obj>
+  <Obj RefId="20">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">21</I32>
+      <S N="Content">PSRemotingProtocolVersion: 2.3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="21">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">22</I32>
+      <S N="Content">SerializationVersion: 1.1.0.1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="22">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">23</I32>
+      <S N="Content">WSManStackVersion: 3.0</S>
+    </MS>
+  </Obj>
+  <Obj RefId="23">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">24</I32>
+      <S N="Content">**********************</S>
+    </MS>
+  </Obj>
+  <Obj RefId="24">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">25</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="25">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">26</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="26">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">27</I32>
+      <S N="Content">  1. String Manipulation</S>
+    </MS>
+  </Obj>
+  <Obj RefId="27">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">28</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="28">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">29</I32>
+      <S N="Content">  &gt;&gt; Basic string operations</S>
+    </MS>
+  </Obj>
+  <Obj RefId="29">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">30</I32>
+      <S N="Content">Original     : '  Hello, PowerShell World!  '</S>
+    </MS>
+  </Obj>
+  <Obj RefId="30">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">31</I32>
+      <S N="Content">Trimmed      : 'Hello, PowerShell World!'</S>
+    </MS>
+  </Obj>
+  <Obj RefId="31">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">32</I32>
+      <S N="Content">ToUpper      : HELLO, POWERSHELL WORLD!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="32">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">33</I32>
+      <S N="Content">ToLower      : hello, powershell world!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="33">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">34</I32>
+      <S N="Content">Replace      : Hello, PowerShell Universe!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="34">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">35</I32>
+      <S N="Content">StartsWith H : True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="35">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">36</I32>
+      <S N="Content">Contains Pow : True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="36">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">37</I32>
+      <S N="Content">IndexOf ,    : 5</S>
+    </MS>
+  </Obj>
+  <Obj RefId="37">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">38</I32>
+      <S N="Content">Substring 7  : PowerShell</S>
+    </MS>
+  </Obj>
+  <Obj RefId="38">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">39</I32>
+      <S N="Content">Length       : 24</S>
+    </MS>
+  </Obj>
+  <Obj RefId="39">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">40</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="40">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">41</I32>
+      <S N="Content">  &gt;&gt; String formatting</S>
+    </MS>
+  </Obj>
+  <Obj RefId="41">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">42</I32>
+      <S N="Content">Name: Alice      Score: 98.60</S>
+    </MS>
+  </Obj>
+  <Obj RefId="42">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">43</I32>
+      <S N="Content">Name: Alice  Score: 98.6</S>
+    </MS>
+  </Obj>
+  <Obj RefId="43">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">44</I32>
+      <S N="Content">Line 1: Alice</S>
+    </MS>
+  </Obj>
+  <Obj RefId="44">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">45</I32>
+      <S N="Content">Line 2: Score = 98.6</S>
+    </MS>
+  </Obj>
+  <Obj RefId="45">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">46</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="46">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">47</I32>
+      <S N="Content">  &gt;&gt; Split and Join</S>
+    </MS>
+  </Obj>
+  <Obj RefId="47">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">48</I32>
+      <S N="Content">Split  : alpha | beta | gamma | delta</S>
+    </MS>
+  </Obj>
+  <Obj RefId="48">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">49</I32>
+      <S N="Content">Joined : alpha::beta::gamma::delta</S>
+    </MS>
+  </Obj>
+  <Obj RefId="49">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">50</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="50">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">51</I32>
+      <S N="Content">  &gt;&gt; Regex replace and extract</S>
+    </MS>
+  </Obj>
+  <Obj RefId="51">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">52</I32>
+      <S N="Content">Masked phones : My phone is ***-**** and backup is ***-****</S>
+    </MS>
+  </Obj>
+  <Obj RefId="52">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">53</I32>
+      <S N="Content">Extracted     : 555-1234, 555-9876</S>
+    </MS>
+  </Obj>
+  <Obj RefId="53">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">54</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="54">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">55</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="55">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">56</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="56">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">57</I32>
+      <S N="Content">  2. Arrays &amp; Collections</S>
+    </MS>
+  </Obj>
+  <Obj RefId="57">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">58</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="58">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">59</I32>
+      <S N="Content">  &gt;&gt; Array basics</S>
+    </MS>
+  </Obj>
+  <Obj RefId="59">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">60</I32>
+      <S N="Content">Array        : 10 20 30 40 50</S>
+    </MS>
+  </Obj>
+  <Obj RefId="60">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">61</I32>
+      <S N="Content">Count        : 5</S>
+    </MS>
+  </Obj>
+  <Obj RefId="61">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">62</I32>
+      <S N="Content">First        : 10</S>
+    </MS>
+  </Obj>
+  <Obj RefId="62">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">63</I32>
+      <S N="Content">Last         : 50</S>
+    </MS>
+  </Obj>
+  <Obj RefId="63">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">64</I32>
+      <S N="Content">Slice [1..3] : 20 30 40</S>
+    </MS>
+  </Obj>
+  <Obj RefId="64">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">65</I32>
+      <S N="Content">After append : 10 20 30 40 50 60</S>
+    </MS>
+  </Obj>
+  <Obj RefId="65">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">66</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="66">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">67</I32>
+      <S N="Content">  &gt;&gt; ArrayList (mutable, efficient)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="67">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">68</I32>
+      <S N="Content">ArrayList: Alpha, Gamma</S>
+    </MS>
+  </Obj>
+  <Obj RefId="68">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">69</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="69">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">70</I32>
+      <S N="Content">  &gt;&gt; Generic List[T] (strongly typed)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="70">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">71</I32>
+      <S N="Content">True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="71">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">72</I32>
+      <S N="Content">List[int]: 1, 2, 4, 5</S>
+    </MS>
+  </Obj>
+  <Obj RefId="72">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">73</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="73">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">74</I32>
+      <S N="Content">  &gt;&gt; Stack and Queue</S>
+    </MS>
+  </Obj>
+  <Obj RefId="74">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">75</I32>
+      <S N="Content">Stack Pop: Third</S>
+    </MS>
+  </Obj>
+  <Obj RefId="75">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">76</I32>
+      <S N="Content">Queue Dequeue: A</S>
+    </MS>
+  </Obj>
+  <Obj RefId="76">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">77</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="77">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">78</I32>
+      <S N="Content">  &gt;&gt; Array filtering, mapping, and reducing</S>
+    </MS>
+  </Obj>
+  <Obj RefId="78">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">79</I32>
+      <S N="Content">Even    : 2, 4, 6, 8, 10</S>
+    </MS>
+  </Obj>
+  <Obj RefId="79">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">80</I32>
+      <S N="Content">Squared : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100</S>
+    </MS>
+  </Obj>
+  <Obj RefId="80">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">81</I32>
+      <S N="Content">Sum 1-10: 55</S>
+    </MS>
+  </Obj>
+  <Obj RefId="81">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">82</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="82">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">83</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="83">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">84</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="84">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">85</I32>
+      <S N="Content">  3. Error Handling</S>
+    </MS>
+  </Obj>
+  <Obj RefId="85">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">86</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="86">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">87</I32>
+      <S N="Content">  &gt;&gt; try / catch / finally</S>
+    </MS>
+  </Obj>
+  <Obj RefId="87">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">88</I32>
+      <S N="Content">Caught DivideByZeroException: Attempted to divide by zero.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="88">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">89</I32>
+      <S N="Content">finally block ran.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="89">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">90</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="90">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">91</I32>
+      <S N="Content">  &gt;&gt; Non-terminating error with ErrorAction</S>
+    </MS>
+  </Obj>
+  <Obj RefId="91">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">92</I32>
+      <S N="Content">PS&gt;TerminatingError(Get-Item): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'C:\DoesNotExist\file.txt' because it does not exist."</S>
+    </MS>
+  </Obj>
+  <Obj RefId="92">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">93</I32>
+      <S N="Content">Caught non-terminating (promoted to terminating): Cannot find path 'C:\DoesNotExist\file.txt' because it does not exist.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="93">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">94</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="94">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">95</I32>
+      <S N="Content">  &gt;&gt; $Error automatic variable</S>
+    </MS>
+  </Obj>
+  <Obj RefId="95">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">96</I32>
+      <S N="Content">Last error: Cannot find drive. A drive with the name 'Z' does not exist.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="96">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">97</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="97">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">98</I32>
+      <S N="Content">  &gt;&gt; trap statement (legacy error handling)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="98">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">99</I32>
+      <S N="Content">trap caught: Cannot convert value "not-a-number" to type "System.Int32". Error: "The input string 'not-a-number' was not in a correct format."</S>
+    </MS>
+  </Obj>
+  <Obj RefId="99">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">100</I32>
+      <S N="Content">Execution continued after trap.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="100">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">101</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="101">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">102</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="102">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">103</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="103">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">104</I32>
+      <S N="Content">  4. Pipeline Deep-Dive</S>
+    </MS>
+  </Obj>
+  <Obj RefId="104">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">105</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="105">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">106</I32>
+      <S N="Content">  &gt;&gt; ForEach-Object with -Begin / -Process / -End</S>
+    </MS>
+  </Obj>
+  <Obj RefId="106">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">107</I32>
+      <S N="Content">[Begin]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="107">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">108</I32>
+      <S N="Content">  Processing: 1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="108">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">109</I32>
+      <S N="Content">  Processing: 2</S>
+    </MS>
+  </Obj>
+  <Obj RefId="109">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">110</I32>
+      <S N="Content">  Processing: 3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="110">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">111</I32>
+      <S N="Content">  Processing: 4</S>
+    </MS>
+  </Obj>
+  <Obj RefId="111">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">112</I32>
+      <S N="Content">  Processing: 5</S>
+    </MS>
+  </Obj>
+  <Obj RefId="112">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">113</I32>
+      <S N="Content">[End]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="113">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">114</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="114">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">115</I32>
+      <S N="Content">  &gt;&gt; Select-Object — property projection &amp; computed properties</S>
+    </MS>
+  </Obj>
+  <Obj RefId="115">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">116</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="116">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">117</I32>
+      <S N="Content">Name              Id MemMB NameLen</S>
+    </MS>
+  </Obj>
+  <Obj RefId="117">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">118</I32>
+      <S N="Content">----              -- ----- -------</S>
+    </MS>
+  </Obj>
+  <Obj RefId="118">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">119</I32>
+      <S N="Content">action1_agent   4936 80.00      13</S>
+    </MS>
+  </Obj>
+  <Obj RefId="119">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">120</I32>
+      <S N="Content">aesm_service   27612  5.80      12</S>
+    </MS>
+  </Obj>
+  <Obj RefId="120">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">121</I32>
+      <S N="Content">AggregatorHost 11160 10.50      14</S>
+    </MS>
+  </Obj>
+  <Obj RefId="121">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">122</I32>
+      <S N="Content">AppActions     36248 19.40      10</S>
+    </MS>
+  </Obj>
+  <Obj RefId="122">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">123</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="123">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">124</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="124">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">125</I32>
+      <S N="Content">  &gt;&gt; Tee-Object — branch the pipeline without interrupting it</S>
+    </MS>
+  </Obj>
+  <Obj RefId="125">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">126</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="126">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">127</I32>
+      <S N="Content">Name</S>
+    </MS>
+  </Obj>
+  <Obj RefId="127">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">128</I32>
+      <S N="Content">----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="128">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">129</I32>
+      <S N="Content">action1_agent</S>
+    </MS>
+  </Obj>
+  <Obj RefId="129">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">130</I32>
+      <S N="Content">aesm_service</S>
+    </MS>
+  </Obj>
+  <Obj RefId="130">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">131</I32>
+      <S N="Content">AggregatorHost</S>
+    </MS>
+  </Obj>
+  <Obj RefId="131">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">132</I32>
+      <S N="Content">AppActions</S>
+    </MS>
+  </Obj>
+  <Obj RefId="132">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">133</I32>
+      <S N="Content">ApplicationFrameHost</S>
+    </MS>
+  </Obj>
+  <Obj RefId="133">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">134</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="134">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">135</I32>
+      <S N="Content">Tee captured 5 objects.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="135">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">136</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="136">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">137</I32>
+      <S N="Content">  &gt;&gt; Measure-Object</S>
+    </MS>
+  </Obj>
+  <Obj RefId="137">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">138</I32>
+      <S N="Content">Process WorkingSet stats:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="138">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">139</I32>
+      <S N="Content">  Count  : 483</S>
+    </MS>
+  </Obj>
+  <Obj RefId="139">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">140</I32>
+      <S N="Content">  Sum MB : 27767.3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="140">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">141</I32>
+      <S N="Content">  Avg MB : 57.5</S>
+    </MS>
+  </Obj>
+  <Obj RefId="141">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">142</I32>
+      <S N="Content">  Max MB : 3343.7</S>
+    </MS>
+  </Obj>
+  <Obj RefId="142">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">143</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="143">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">144</I32>
+      <S N="Content">  &gt;&gt; Group-Object &amp; Sort-Object</S>
+    </MS>
+  </Obj>
+  <Obj RefId="144">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">145</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="145">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">146</I32>
+      <S N="Content">Name    Count</S>
+    </MS>
+  </Obj>
+  <Obj RefId="146">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">147</I32>
+      <S N="Content">----    -----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="147">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">148</I32>
+      <S N="Content">msedge    116</S>
+    </MS>
+  </Obj>
+  <Obj RefId="148">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">149</I32>
+      <S N="Content">svchost   106</S>
+    </MS>
+  </Obj>
+  <Obj RefId="149">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">150</I32>
+      <S N="Content">pwsh       26</S>
+    </MS>
+  </Obj>
+  <Obj RefId="150">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">151</I32>
+      <S N="Content">conhost    26</S>
+    </MS>
+  </Obj>
+  <Obj RefId="151">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">152</I32>
+      <S N="Content">Code       24</S>
+    </MS>
+  </Obj>
+  <Obj RefId="152">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">153</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="153">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">154</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="154">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">155</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="155">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">156</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="156">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">157</I32>
+      <S N="Content">  5. Output Methods</S>
+    </MS>
+  </Obj>
+  <Obj RefId="157">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">158</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="158">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">159</I32>
+      <S N="Content">  &gt;&gt; Write-* family</S>
+    </MS>
+  </Obj>
+  <Obj RefId="159">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">160</I32>
+      <S N="Content">Write-Host    — displays to console (not pipeline)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="160">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">161</I32>
+      <S N="Content">Write-Output  — sends to pipeline (default behaviour)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="161">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">162</I32>
+      <S N="Content">VERBOSE: Write-Verbose — visible only when -Verbose switch is set</S>
+    </MS>
+  </Obj>
+  <Obj RefId="162">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">163</I32>
+      <S N="Content">WARNING: Write-Warning — yellow warning stream</S>
+    </MS>
+  </Obj>
+  <Obj RefId="163">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">164</I32>
+      <S N="Content">Write-Information — information stream (stream 6)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="164">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">165</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="165">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">166</I32>
+      <S N="Content">  &gt;&gt; Format-* cmdlets</S>
+    </MS>
+  </Obj>
+  <Obj RefId="166">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">167</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="167">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">168</I32>
+      <S N="Content">Name              Id CPU</S>
+    </MS>
+  </Obj>
+  <Obj RefId="168">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">169</I32>
+      <S N="Content">----              -- ---</S>
+    </MS>
+  </Obj>
+  <Obj RefId="169">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">170</I32>
+      <S N="Content">action1_agent   4936</S>
+    </MS>
+  </Obj>
+  <Obj RefId="170">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">171</I32>
+      <S N="Content">aesm_service   27612</S>
+    </MS>
+  </Obj>
+  <Obj RefId="171">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">172</I32>
+      <S N="Content">AggregatorHost 11160</S>
+    </MS>
+  </Obj>
+  <Obj RefId="172">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">173</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="173">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">174</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="174">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">175</I32>
+      <S N="Content">Name : action1_agent</S>
+    </MS>
+  </Obj>
+  <Obj RefId="175">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">176</I32>
+      <S N="Content">Id   : 4936</S>
+    </MS>
+  </Obj>
+  <Obj RefId="176">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">177</I32>
+      <S N="Content">Path : </S>
+    </MS>
+  </Obj>
+  <Obj RefId="177">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">178</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="178">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">179</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="179">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">180</I32>
+      <S N="Content">action1_agent                                         aesm_service                                          AggregatorHost</S>
+    </MS>
+  </Obj>
+  <Obj RefId="180">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">181</I32>
+      <S N="Content">AppActions                                            ApplicationFrameHost                                  AppVShNotify</S>
+    </MS>
+  </Obj>
+  <Obj RefId="181">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">182</I32>
+      <S N="Content">audiodg                                               backgroundTaskHost                                    backgroundTaskHost</S>
+    </MS>
+  </Obj>
+  <Obj RefId="182">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">183</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="183">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">184</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="184">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">185</I32>
+      <S N="Content">  &gt;&gt; Out-* cmdlets</S>
+    </MS>
+  </Obj>
+  <Obj RefId="185">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">186</I32>
+      <S N="Content">Out-File wrote 9 lines to C:\Users\msaib\AppData\Local\Temp\cheatsheet_out.txt</S>
+    </MS>
+  </Obj>
+  <Obj RefId="186">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">187</I32>
+      <S N="Content">Out-String length: 255 chars</S>
+    </MS>
+  </Obj>
+  <Obj RefId="187">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">188</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="188">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">189</I32>
+      <S N="Content">  &gt;&gt; Export-* cmdlets</S>
+    </MS>
+  </Obj>
+  <Obj RefId="189">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">190</I32>
+      <S N="Content">CSV  written : C:\Users\msaib\AppData\Local\Temp\cheatsheet_procs.csv  (141 bytes)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="190">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">191</I32>
+      <S N="Content">JSON written : C:\Users\msaib\AppData\Local\Temp\cheatsheet_procs.json (298 bytes)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="191">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">192</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="192">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">193</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="193">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">194</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="194">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">195</I32>
+      <S N="Content">  6. JSON &amp; XML</S>
+    </MS>
+  </Obj>
+  <Obj RefId="195">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">196</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="196">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">197</I32>
+      <S N="Content">  &gt;&gt; JSON — ConvertTo/From</S>
+    </MS>
+  </Obj>
+  <Obj RefId="197">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">198</I32>
+      <S N="Content">JSON output:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="198">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">199</I32>
+      <S N="Content">{</S>
+    </MS>
+  </Obj>
+  <Obj RefId="199">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">200</I32>
+      <S N="Content">  "Name": "PowerShell",</S>
+    </MS>
+  </Obj>
+  <Obj RefId="200">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">201</I32>
+      <S N="Content">  "Version": 7,</S>
+    </MS>
+  </Obj>
+  <Obj RefId="201">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">202</I32>
+      <S N="Content">  "Tags": [</S>
+    </MS>
+  </Obj>
+  <Obj RefId="202">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">203</I32>
+      <S N="Content">    "shell",</S>
+    </MS>
+  </Obj>
+  <Obj RefId="203">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">204</I32>
+      <S N="Content">    "scripting"</S>
+    </MS>
+  </Obj>
+  <Obj RefId="204">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">205</I32>
+      <S N="Content">  ]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="205">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">206</I32>
+      <S N="Content">}</S>
+    </MS>
+  </Obj>
+  <Obj RefId="206">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">207</I32>
+      <S N="Content">Round-trip Name: PowerShell  Tags: shell,scripting</S>
+    </MS>
+  </Obj>
+  <Obj RefId="207">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">208</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="208">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">209</I32>
+      <S N="Content">  &gt;&gt; XML — [xml] type accelerator</S>
+    </MS>
+  </Obj>
+  <Obj RefId="209">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">210</I32>
+      <S N="Content">Server: web01  IP: 10.0.0.1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="210">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">211</I32>
+      <S N="Content">Server: db01  IP: 10.0.0.2</S>
+    </MS>
+  </Obj>
+  <Obj RefId="211">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">212</I32>
+      <S N="Content">After add: 3 servers</S>
+    </MS>
+  </Obj>
+  <Obj RefId="212">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">213</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="213">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">214</I32>
+      <S N="Content">  &gt;&gt; Import/Export CSV</S>
+    </MS>
+  </Obj>
+  <Obj RefId="214">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">215</I32>
+      <S N="Content">9_000_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:474:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="215">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">216</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="216">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">217</I32>
+      <S N="Content"> 474 |          [PSCustomObject]@{ City = 'London';   Pop = 9_000_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="217">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">218</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="218">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">219</I32>
+      <S N="Content">     | The term '9_000_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="219">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">220</I32>
+      <S N="Content">9_000_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:474:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="220">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">221</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="221">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">222</I32>
+      <S N="Content"> 474 |          [PSCustomObject]@{ City = 'London';   Pop = 9_000_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="222">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">223</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="223">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">224</I32>
+      <S N="Content">     | The term '9_000_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path</S>
+    </MS>
+  </Obj>
+  <Obj RefId="224">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">225</I32>
+      <S N="Content">     | was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="225">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">226</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="226">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">227</I32>
+      <S N="Content">8_300_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:475:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="227">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">228</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="228">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">229</I32>
+      <S N="Content"> 475 |          [PSCustomObject]@{ City = 'New York'; Pop = 8_300_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="229">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">230</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="230">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">231</I32>
+      <S N="Content">     | The term '8_300_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="231">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">232</I32>
+      <S N="Content">8_300_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:475:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="232">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">233</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="233">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">234</I32>
+      <S N="Content"> 475 |          [PSCustomObject]@{ City = 'New York'; Pop = 8_300_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="234">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">235</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="235">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">236</I32>
+      <S N="Content">     | The term '8_300_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path</S>
+    </MS>
+  </Obj>
+  <Obj RefId="236">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">237</I32>
+      <S N="Content">     | was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="237">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">238</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="238">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">239</I32>
+      <S N="Content">13_900_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:476:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="239">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">240</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="240">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">241</I32>
+      <S N="Content"> 476 |          [PSCustomObject]@{ City = 'Tokyo';    Pop = 13_900_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="241">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">242</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="242">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">243</I32>
+      <S N="Content">     | The term '13_900_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="243">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">244</I32>
+      <S N="Content">13_900_000: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:476:53</S>
+    </MS>
+  </Obj>
+  <Obj RefId="244">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">245</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="245">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">246</I32>
+      <S N="Content"> 476 |          [PSCustomObject]@{ City = 'Tokyo';    Pop = 13_900_000 }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="246">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">247</I32>
+      <S N="Content">     |                                                      ~~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="247">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">248</I32>
+      <S N="Content">     | The term '13_900_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path</S>
+    </MS>
+  </Obj>
+  <Obj RefId="248">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">249</I32>
+      <S N="Content">     | was included, verify that the path is correct and try again.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="249">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">250</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="250">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">251</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="251">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">252</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="252">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">253</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="253">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">254</I32>
+      <S N="Content">  7. Environment Variables</S>
+    </MS>
+  </Obj>
+  <Obj RefId="254">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">255</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="255">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">256</I32>
+      <S N="Content">  &gt;&gt; Read, write, and remove env vars</S>
+    </MS>
+  </Obj>
+  <Obj RefId="256">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">257</I32>
+      <S N="Content">PATH first entry : C:\Program Files\PowerShell\7</S>
+    </MS>
+  </Obj>
+  <Obj RefId="257">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">258</I32>
+      <S N="Content">USERNAME         : msaib</S>
+    </MS>
+  </Obj>
+  <Obj RefId="258">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">259</I32>
+      <S N="Content">COMPUTERNAME     : XPS15-MS</S>
+    </MS>
+  </Obj>
+  <Obj RefId="259">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">260</I32>
+      <S N="Content">OS               : Windows_NT</S>
+    </MS>
+  </Obj>
+  <Obj RefId="260">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">261</I32>
+      <S N="Content">Custom env var   : HelloV2</S>
+    </MS>
+  </Obj>
+  <Obj RefId="261">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">262</I32>
+      <S N="Content">After remove     : (gone)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="262">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">263</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="263">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">264</I32>
+      <S N="Content">  &gt;&gt; Enumerate all env vars</S>
+    </MS>
+  </Obj>
+  <Obj RefId="264">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">265</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="265">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">266</I32>
+      <S N="Content">Name                      Value</S>
+    </MS>
+  </Obj>
+  <Obj RefId="266">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">267</I32>
+      <S N="Content">----                      -----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="267">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">268</I32>
+      <S N="Content">ALLUSERSPROFILE           C:\ProgramData</S>
+    </MS>
+  </Obj>
+  <Obj RefId="268">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">269</I32>
+      <S N="Content">APPDATA                   C:\Users\msaib\AppData\Roaming</S>
+    </MS>
+  </Obj>
+  <Obj RefId="269">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">270</I32>
+      <S N="Content">BUN_INSPECT_CONNECT_TO    tcp://127.0.0.1:57467</S>
+    </MS>
+  </Obj>
+  <Obj RefId="270">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">271</I32>
+      <S N="Content">BUNDLED_DEBUGPY_PATH      c:\Users\msaib\.vscode\extensions\ms-python.debugpy-2025.18.0-win32-x64\bundled\libs\debugpy</S>
+    </MS>
+  </Obj>
+  <Obj RefId="271">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">272</I32>
+      <S N="Content">ChocolateyInstall         C:\ProgramData\chocolatey</S>
+    </MS>
+  </Obj>
+  <Obj RefId="272">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">273</I32>
+      <S N="Content">ChocolateyLastPathUpdate  133717484005159128</S>
+    </MS>
+  </Obj>
+  <Obj RefId="273">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">274</I32>
+      <S N="Content">CHROME_CRASHPAD_PIPE_NAME \\.\pipe\crashpad_65224_AHLMUZFRTQWVMDRV</S>
+    </MS>
+  </Obj>
+  <Obj RefId="274">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">275</I32>
+      <S N="Content">CLAUDE_CODE_SSE_PORT      60717</S>
+    </MS>
+  </Obj>
+  <Obj RefId="275">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">276</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="276">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">277</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="277">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">278</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="278">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">279</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="279">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">280</I32>
+      <S N="Content">  8. Date &amp; Time</S>
+    </MS>
+  </Obj>
+  <Obj RefId="280">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">281</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="281">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">282</I32>
+      <S N="Content">  &gt;&gt; DateTime basics</S>
+    </MS>
+  </Obj>
+  <Obj RefId="282">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">283</I32>
+      <S N="Content">Now              : 03/01/2026 03:04:50</S>
+    </MS>
+  </Obj>
+  <Obj RefId="283">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">284</I32>
+      <S N="Content">UTC              : 02/28/2026 19:04:50</S>
+    </MS>
+  </Obj>
+  <Obj RefId="284">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">285</I32>
+      <S N="Content">ISO 8601         : 2026-03-01T03:04:50Z</S>
+    </MS>
+  </Obj>
+  <Obj RefId="285">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">286</I32>
+      <S N="Content">Day of week      : Sunday</S>
+    </MS>
+  </Obj>
+  <Obj RefId="286">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">287</I32>
+      <S N="Content">Day of year      : 60</S>
+    </MS>
+  </Obj>
+  <Obj RefId="287">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">288</I32>
+      <S N="Content">+30 days         : 31/03/2026</S>
+    </MS>
+  </Obj>
+  <Obj RefId="288">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">289</I32>
+      <S N="Content">TimeSpan days    : 30</S>
+    </MS>
+  </Obj>
+  <Obj RefId="289">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">290</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="290">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">291</I32>
+      <S N="Content">  &gt;&gt; Measuring execution time</S>
+    </MS>
+  </Obj>
+  <Obj RefId="291">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">292</I32>
+      <S N="Content">Elapsed: 163 ms</S>
+    </MS>
+  </Obj>
+  <Obj RefId="292">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">293</I32>
+      <S N="Content">Measure-Command: 115.2608 ms</S>
+    </MS>
+  </Obj>
+  <Obj RefId="293">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">294</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="294">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">295</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="295">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">296</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="296">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">297</I32>
+      <S N="Content">  9. Background Jobs</S>
+    </MS>
+  </Obj>
+  <Obj RefId="297">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">298</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="298">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">299</I32>
+      <S N="Content">  &gt;&gt; Start-Job / Receive-Job</S>
+    </MS>
+  </Obj>
+  <Obj RefId="299">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">300</I32>
+      <S N="Content">Job state (running): Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="300">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">301</I32>
+      <S N="Content">Job state (done)   : Completed</S>
+    </MS>
+  </Obj>
+  <Obj RefId="301">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">302</I32>
+      <S N="Content">Output             : Job result: 3.14159265358979</S>
+    </MS>
+  </Obj>
+  <Obj RefId="302">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">303</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="303">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">304</I32>
+      <S N="Content">  &gt;&gt; ForEach-Object -Parallel (thread-based, PS7+)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="304">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">305</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="305">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">306</I32>
+      <S N="Content">Input Square Thread</S>
+    </MS>
+  </Obj>
+  <Obj RefId="306">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">307</I32>
+      <S N="Content">----- ------ ------</S>
+    </MS>
+  </Obj>
+  <Obj RefId="307">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">308</I32>
+      <S N="Content">    1      1     80</S>
+    </MS>
+  </Obj>
+  <Obj RefId="308">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">309</I32>
+      <S N="Content">    2      4     15</S>
+    </MS>
+  </Obj>
+  <Obj RefId="309">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">310</I32>
+      <S N="Content">    3      9     64</S>
+    </MS>
+  </Obj>
+  <Obj RefId="310">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">311</I32>
+      <S N="Content">    4     16     38</S>
+    </MS>
+  </Obj>
+  <Obj RefId="311">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">312</I32>
+      <S N="Content">    5     25     55</S>
+    </MS>
+  </Obj>
+  <Obj RefId="312">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">313</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="313">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">314</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="314">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">315</I32>
+      <S N="Content">  &gt;&gt; Start-ThreadJob (lighter than Start-Job)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="315">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">316</I32>
+      <S N="Content">ThreadJob returned PID: 83408</S>
+    </MS>
+  </Obj>
+  <Obj RefId="316">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">317</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="317">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">318</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="318">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">319</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="319">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">320</I32>
+      <S N="Content">  10. Processes &amp; Services</S>
+    </MS>
+  </Obj>
+  <Obj RefId="320">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">321</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="321">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">322</I32>
+      <S N="Content">  &gt;&gt; Get-Process</S>
+    </MS>
+  </Obj>
+  <Obj RefId="322">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">323</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="323">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">324</I32>
+      <S N="Content">Name                  Id   MemMB</S>
+    </MS>
+  </Obj>
+  <Obj RefId="324">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">325</I32>
+      <S N="Content">----                  --   -----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="325">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">326</I32>
+      <S N="Content">Memory Compression  4172 3343.80</S>
+    </MS>
+  </Obj>
+  <Obj RefId="326">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">327</I32>
+      <S N="Content">pwsh               83408 3008.00</S>
+    </MS>
+  </Obj>
+  <Obj RefId="327">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">328</I32>
+      <S N="Content">Code               64020 1330.60</S>
+    </MS>
+  </Obj>
+  <Obj RefId="328">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">329</I32>
+      <S N="Content">Code               67032  889.50</S>
+    </MS>
+  </Obj>
+  <Obj RefId="329">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">330</I32>
+      <S N="Content">msedge             19532  725.10</S>
+    </MS>
+  </Obj>
+  <Obj RefId="330">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">331</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="331">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">332</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="332">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">333</I32>
+      <S N="Content">  &gt;&gt; Start and stop a process</S>
+    </MS>
+  </Obj>
+  <Obj RefId="333">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">334</I32>
+      <S N="Content">Started Notepad PID: 59640</S>
+    </MS>
+  </Obj>
+  <Obj RefId="334">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">335</I32>
+      <S N="Content">Notepad stopped.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="335">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">336</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="336">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">337</I32>
+      <S N="Content">  &gt;&gt; Get-Service</S>
+    </MS>
+  </Obj>
+  <Obj RefId="337">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">338</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="338">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">339</I32>
+      <S N="Content">Name        DisplayName                        Status</S>
+    </MS>
+  </Obj>
+  <Obj RefId="339">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">340</I32>
+      <S N="Content">----        -----------                        ------</S>
+    </MS>
+  </Obj>
+  <Obj RefId="340">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">341</I32>
+      <S N="Content">A1Agent     Action1 Agent                     Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="341">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">342</I32>
+      <S N="Content">AESMService Intel® SGX AESM                   Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="342">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">343</I32>
+      <S N="Content">Appinfo     Application Information           Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="343">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">344</I32>
+      <S N="Content">AppMgmt     Application Management            Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="344">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">345</I32>
+      <S N="Content">AppXSvc     AppX Deployment Service (AppXSVC) Running</S>
+    </MS>
+  </Obj>
+  <Obj RefId="345">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">346</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="346">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">347</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="347">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">348</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="348">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">349</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="349">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">350</I32>
+      <S N="Content">  11. Registry (Windows only)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="350">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">351</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="351">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">352</I32>
+      <S N="Content">  &gt;&gt; Read registry values</S>
+    </MS>
+  </Obj>
+  <Obj RefId="352">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">353</I32>
+      <S N="Content">ProductName   : Windows 10 Pro for Workstations</S>
+    </MS>
+  </Obj>
+  <Obj RefId="353">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">354</I32>
+      <S N="Content">CurrentBuild  : 26100</S>
+    </MS>
+  </Obj>
+  <Obj RefId="354">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">355</I32>
+      <S N="Content">ReleaseId     : 2009</S>
+    </MS>
+  </Obj>
+  <Obj RefId="355">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">356</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="356">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">357</I32>
+      <S N="Content">  &gt;&gt; Create, update, and delete registry values (HKCU)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="357">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">358</I32>
+      <S N="Content">Read back TestValue: 42</S>
+    </MS>
+  </Obj>
+  <Obj RefId="358">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">359</I32>
+      <S N="Content">Test registry key removed.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="359">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">360</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="360">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">361</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="361">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">362</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="362">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">363</I32>
+      <S N="Content">  12. Network Utilities</S>
+    </MS>
+  </Obj>
+  <Obj RefId="363">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">364</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="364">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">365</I32>
+      <S N="Content">  &gt;&gt; Test-Connection (ping)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="365">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">366</I32>
+      <S N="Content">8.8.8.8 reachable: True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="366">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">367</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="367">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">368</I32>
+      <S N="Content">  &gt;&gt; DNS resolution</S>
+    </MS>
+  </Obj>
+  <Obj RefId="368">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">369</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="369">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">370</I32>
+      <S N="Content">Name       Type IPAddress</S>
+    </MS>
+  </Obj>
+  <Obj RefId="370">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">371</I32>
+      <S N="Content">----       ---- ---------</S>
+    </MS>
+  </Obj>
+  <Obj RefId="371">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">372</I32>
+      <S N="Content">github.com    A 4.237.22.38</S>
+    </MS>
+  </Obj>
+  <Obj RefId="372">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">373</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="373">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">374</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="374">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">375</I32>
+      <S N="Content">  &gt;&gt; Invoke-WebRequest — parse a web page</S>
+    </MS>
+  </Obj>
+  <Obj RefId="375">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">376</I32>
+      <S N="Content">HTTP status  : 200</S>
+    </MS>
+  </Obj>
+  <Obj RefId="376">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">377</I32>
+      <S N="Content">Content-Type : application/json; charset=utf-8</S>
+    </MS>
+  </Obj>
+  <Obj RefId="377">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">378</I32>
+      <S N="Content">Body snippet : authorizations_url, code_search_url, commit_search_url</S>
+    </MS>
+  </Obj>
+  <Obj RefId="378">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">379</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="379">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">380</I32>
+      <S N="Content">  &gt;&gt; Test-NetConnection (port check)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="380">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">381</I32>
+      <S N="Content">github.com:443 open: True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="381">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">382</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="382">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">383</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="383">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">384</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="384">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">385</I32>
+      <S N="Content">  13. Credential Handling</S>
+    </MS>
+  </Obj>
+  <Obj RefId="385">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">386</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="386">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">387</I32>
+      <S N="Content">  &gt;&gt; PSCredential — build without a GUI prompt</S>
+    </MS>
+  </Obj>
+  <Obj RefId="387">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">388</I32>
+      <S N="Content">Username : DOMAIN\Alice</S>
+    </MS>
+  </Obj>
+  <Obj RefId="388">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">389</I32>
+      <S N="Content">Password is SecureString: True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="389">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">390</I32>
+      <S N="Content">Plain-text (demo): P@ssw0rd!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="390">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">391</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="391">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">392</I32>
+      <S N="Content">  &gt;&gt; Export and import encrypted credentials (Windows DPAPI)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="392">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">393</I32>
+      <S N="Content">Round-trip password: Secret123!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="393">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">394</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="394">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">395</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="395">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">396</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="396">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">397</I32>
+      <S N="Content">  14. Script Blocks &amp; Closures</S>
+    </MS>
+  </Obj>
+  <Obj RefId="397">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">398</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="398">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">399</I32>
+      <S N="Content">  &gt;&gt; Script block basics</S>
+    </MS>
+  </Obj>
+  <Obj RefId="399">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">400</I32>
+      <S N="Content">Hello, World!</S>
+    </MS>
+  </Obj>
+  <Obj RefId="400">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">401</I32>
+      <S N="Content">10 + 32 = 42</S>
+    </MS>
+  </Obj>
+  <Obj RefId="401">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">402</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="402">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">403</I32>
+      <S N="Content">  &gt;&gt; Closure — GetNewClosure() captures outer variables</S>
+    </MS>
+  </Obj>
+  <Obj RefId="403">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">404</I32>
+      <S N="Content">Closure still uses captured value: 35</S>
+    </MS>
+  </Obj>
+  <Obj RefId="404">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">405</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="405">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">406</I32>
+      <S N="Content">  &gt;&gt; Passing script blocks to functions</S>
+    </MS>
+  </Obj>
+  <Obj RefId="406">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">407</I32>
+      <S N="Content">Iteration 1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="407">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">408</I32>
+      <S N="Content">Iteration 2</S>
+    </MS>
+  </Obj>
+  <Obj RefId="408">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">409</I32>
+      <S N="Content">Iteration 3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="409">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">410</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="410">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">411</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="411">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">412</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="412">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">413</I32>
+      <S N="Content">  15. Splatting</S>
+    </MS>
+  </Obj>
+  <Obj RefId="413">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">414</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="414">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">415</I32>
+      <S N="Content">  &gt;&gt; HashTable splatting (@)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="415">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">416</I32>
+      <S N="Content">Found 5 .tmp files in C:\Users\msaib\AppData\Local\Temp (showing up to 5).</S>
+    </MS>
+  </Obj>
+  <Obj RefId="416">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">417</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="417">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">418</I32>
+      <S N="Content">  &gt;&gt; Array splatting (@) for positional parameters</S>
+    </MS>
+  </Obj>
+  <Obj RefId="418">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">419</I32>
+      <S N="Content">X=10  Y=20  Z=30</S>
+    </MS>
+  </Obj>
+  <Obj RefId="419">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">420</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="420">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">421</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="421">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">422</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="422">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">423</I32>
+      <S N="Content">  16. Custom Objects</S>
+    </MS>
+  </Obj>
+  <Obj RefId="423">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">424</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="424">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">425</I32>
+      <S N="Content">  &gt;&gt; Create and use PSCustomObject</S>
+    </MS>
+  </Obj>
+  <Obj RefId="425">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">426</I32>
+      <S N="Content">Name  : SRV-PROD-01</S>
+    </MS>
+  </Obj>
+  <Obj RefId="426">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">427</I32>
+      <S N="Content">Online: True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="427">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">428</I32>
+      <S N="Content">OS    : Windows Server 2022</S>
+    </MS>
+  </Obj>
+  <Obj RefId="428">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">429</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="429">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">430</I32>
+      <S N="Content">  &gt;&gt; Array of custom objects + pipeline</S>
+    </MS>
+  </Obj>
+  <Obj RefId="430">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">431</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="431">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">432</I32>
+      <S N="Content">Name  CPU MemGB</S>
+    </MS>
+  </Obj>
+  <Obj RefId="432">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">433</I32>
+      <S N="Content">----  --- -----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="433">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">434</I32>
+      <S N="Content">SRV03  88    16</S>
+    </MS>
+  </Obj>
+  <Obj RefId="434">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">435</I32>
+      <S N="Content">SRV01  45    32</S>
+    </MS>
+  </Obj>
+  <Obj RefId="435">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">436</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="436">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">437</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="437">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">438</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="438">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">439</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="439">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">440</I32>
+      <S N="Content">  17. Enums</S>
+    </MS>
+  </Obj>
+  <Obj RefId="440">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">441</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="441">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">442</I32>
+      <S N="Content">  &gt;&gt; Define and use a custom Enum</S>
+    </MS>
+  </Obj>
+  <Obj RefId="442">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">443</I32>
+      <S N="Content">Alert severity : High (3)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="443">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">444</I32>
+      <S N="Content">Is Critical?   : False</S>
+    </MS>
+  </Obj>
+  <Obj RefId="444">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">445</I32>
+      <S N="Content">  Low = 1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="445">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">446</I32>
+      <S N="Content">  Medium = 2</S>
+    </MS>
+  </Obj>
+  <Obj RefId="446">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">447</I32>
+      <S N="Content">  High = 3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="447">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">448</I32>
+      <S N="Content">  Critical = 4</S>
+    </MS>
+  </Obj>
+  <Obj RefId="448">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">449</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="449">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">450</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="450">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">451</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="451">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">452</I32>
+      <S N="Content">  18. Strongly Typed Generics</S>
+    </MS>
+  </Obj>
+  <Obj RefId="452">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">453</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="453">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">454</I32>
+      <S N="Content">  &gt;&gt; Dictionary[K,V]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="454">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">455</I32>
+      <S N="Content">Contains 'beta': True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="455">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">456</I32>
+      <S N="Content">Value of alpha : 1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="456">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">457</I32>
+      <S N="Content">True</S>
+    </MS>
+  </Obj>
+  <Obj RefId="457">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">458</I32>
+      <S N="Content">After remove   : alpha, gamma</S>
+    </MS>
+  </Obj>
+  <Obj RefId="458">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">459</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="459">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">460</I32>
+      <S N="Content">  &gt;&gt; HashSet[T] — unique values</S>
+    </MS>
+  </Obj>
+  <Obj RefId="460">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">461</I32>
+      <S N="Content">HashSet (unique): red, green, blue</S>
+    </MS>
+  </Obj>
+  <Obj RefId="461">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">462</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="462">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">463</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="463">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">464</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="464">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">465</I32>
+      <S N="Content">  19. File Parsing</S>
+    </MS>
+  </Obj>
+  <Obj RefId="465">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">466</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="466">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">467</I32>
+      <S N="Content">  &gt;&gt; Read and write text files</S>
+    </MS>
+  </Obj>
+  <Obj RefId="467">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">468</I32>
+      <S N="Content">  Read: Line one</S>
+    </MS>
+  </Obj>
+  <Obj RefId="468">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">469</I32>
+      <S N="Content">  Read: Line two</S>
+    </MS>
+  </Obj>
+  <Obj RefId="469">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">470</I32>
+      <S N="Content">  Read: Line three</S>
+    </MS>
+  </Obj>
+  <Obj RefId="470">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">471</I32>
+      <S N="Content">  Read: Line four</S>
+    </MS>
+  </Obj>
+  <Obj RefId="471">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">472</I32>
+      <S N="Content">Total lines: 4</S>
+    </MS>
+  </Obj>
+  <Obj RefId="472">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">473</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="473">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">474</I32>
+      <S N="Content">  &gt;&gt; Get-Content -Raw vs line-by-line</S>
+    </MS>
+  </Obj>
+  <Obj RefId="474">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">475</I32>
+      <S N="Content">As lines  type: Object[]  count: 3</S>
+    </MS>
+  </Obj>
+  <Obj RefId="475">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">476</I32>
+      <S N="Content">As string type: String length: 20</S>
+    </MS>
+  </Obj>
+  <Obj RefId="476">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">477</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="477">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">478</I32>
+      <S N="Content">  &gt;&gt; Import-Csv / ConvertFrom-Csv</S>
+    </MS>
+  </Obj>
+  <Obj RefId="478">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">479</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="479">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">480</I32>
+      <S N="Content">Name  Department  Salary</S>
+    </MS>
+  </Obj>
+  <Obj RefId="480">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">481</I32>
+      <S N="Content">----  ----------  ------</S>
+    </MS>
+  </Obj>
+  <Obj RefId="481">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">482</I32>
+      <S N="Content">Alice Engineering 95000</S>
+    </MS>
+  </Obj>
+  <Obj RefId="482">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">483</I32>
+      <S N="Content">Bob   Marketing   72000</S>
+    </MS>
+  </Obj>
+  <Obj RefId="483">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">484</I32>
+      <S N="Content">Carol Engineering 105000</S>
+    </MS>
+  </Obj>
+  <Obj RefId="484">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">485</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="485">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">486</I32>
+      <S N="Content">Avg salary: 90666.6666666667</S>
+    </MS>
+  </Obj>
+  <Obj RefId="486">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">487</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="487">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">488</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="488">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">489</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="489">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">490</I32>
+      <S N="Content">  20. Module Authoring Skeleton</S>
+    </MS>
+  </Obj>
+  <Obj RefId="490">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">491</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="491">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">492</I32>
+      <S N="Content">  &gt;&gt; Inline module with manifest-style comment</S>
+    </MS>
+  </Obj>
+  <Obj RefId="492">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">493</I32>
+      <S N="Content">Module skeleton (would be saved as MyModule.psm1):</S>
+    </MS>
+  </Obj>
+  <Obj RefId="493">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">494</I32>
+      <S N="Content"># MyModule.psm1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="494">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">495</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="495">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">496</I32>
+      <S N="Content">function Get-Greeting {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="496">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">497</I32>
+      <S N="Content">    &lt;#</S>
+    </MS>
+  </Obj>
+  <Obj RefId="497">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">498</I32>
+      <S N="Content">    .SYNOPSIS  Returns a greeting string.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="498">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">499</I32>
+      <S N="Content">    .PARAMETER Name  The name to greet.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="499">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">500</I32>
+      <S N="Content">    #&gt;</S>
+    </MS>
+  </Obj>
+  <Obj RefId="500">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">501</I32>
+      <S N="Content">    [CmdletBinding()]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="501">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">502</I32>
+      <S N="Content">    param([string]$Name = 'World')</S>
+    </MS>
+  </Obj>
+  <Obj RefId="502">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">503</I32>
+      <S N="Content">    "Hello, $Name!"</S>
+    </MS>
+  </Obj>
+  <Obj RefId="503">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">504</I32>
+      <S N="Content">}</S>
+    </MS>
+  </Obj>
+  <Obj RefId="504">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">505</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="505">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">506</I32>
+      <S N="Content">function Set-Greeting { Write-Host "Placeholder for a setter command." }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="506">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">507</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="507">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">508</I32>
+      <S N="Content"># Export only the functions you want consumers to see</S>
+    </MS>
+  </Obj>
+  <Obj RefId="508">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">509</I32>
+      <S N="Content">Export-ModuleMember -Function Get-Greeting, Set-Greeting</S>
+    </MS>
+  </Obj>
+  <Obj RefId="509">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">510</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="510">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">511</I32>
+      <S N="Content">  &gt;&gt; New-ModuleManifest fields</S>
+    </MS>
+  </Obj>
+  <Obj RefId="511">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">512</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="512">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">513</I32>
+      <S N="Content">Name              Value</S>
+    </MS>
+  </Obj>
+  <Obj RefId="513">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">514</I32>
+      <S N="Content">----              -----</S>
+    </MS>
+  </Obj>
+  <Obj RefId="514">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">515</I32>
+      <S N="Content">Author            Your Name</S>
+    </MS>
+  </Obj>
+  <Obj RefId="515">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">516</I32>
+      <S N="Content">Description       A helpful module.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="516">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">517</I32>
+      <S N="Content">FunctionsToExport {Get-Greeting, Set-Greeting}</S>
+    </MS>
+  </Obj>
+  <Obj RefId="517">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">518</I32>
+      <S N="Content">ModuleVersion     1.0.0</S>
+    </MS>
+  </Obj>
+  <Obj RefId="518">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">519</I32>
+      <S N="Content">PowerShellVersion 7.0</S>
+    </MS>
+  </Obj>
+  <Obj RefId="519">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">520</I32>
+      <S N="Content">RootModule        MyModule.psm1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="520">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">521</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="521">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">522</I32>
+      <S N="Content">Use: New-ModuleManifest -Path .\MyModule.psd1 @manifestFields</S>
+    </MS>
+  </Obj>
+  <Obj RefId="522">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">523</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="523">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">524</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="524">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">525</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="525">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">526</I32>
+      <S N="Content">  21. Pester Testing Skeleton</S>
+    </MS>
+  </Obj>
+  <Obj RefId="526">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">527</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="527">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">528</I32>
+      <S N="Content">  &gt;&gt; Pester test structure</S>
+    </MS>
+  </Obj>
+  <Obj RefId="528">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">529</I32>
+      <S N="Content">Pester skeleton (save as tests\MyModule.Tests.ps1):</S>
+    </MS>
+  </Obj>
+  <Obj RefId="529">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">530</I32>
+      <S N="Content"># tests/MyModule.Tests.ps1</S>
+    </MS>
+  </Obj>
+  <Obj RefId="530">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">531</I32>
+      <S N="Content"># Run with: Invoke-Pester -Path .\tests\ -Output Detailed</S>
+    </MS>
+  </Obj>
+  <Obj RefId="531">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">532</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="532">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">533</I32>
+      <S N="Content">Describe 'Get-Greeting' {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="533">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">534</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="534">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">535</I32>
+      <S N="Content">    BeforeAll {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="535">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">536</I32>
+      <S N="Content">        Import-Module "$PSScriptRoot\..\MyModule.psm1" -Force</S>
+    </MS>
+  </Obj>
+  <Obj RefId="536">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">537</I32>
+      <S N="Content">    }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="537">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">538</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="538">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">539</I32>
+      <S N="Content">    It 'returns a string' {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="539">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">540</I32>
+      <S N="Content">        Get-Greeting | Should -BeOfType [string]</S>
+    </MS>
+  </Obj>
+  <Obj RefId="540">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">541</I32>
+      <S N="Content">    }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="541">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">542</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="542">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">543</I32>
+      <S N="Content">    It 'uses default name "World"' {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="543">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">544</I32>
+      <S N="Content">        Get-Greeting | Should -Be 'Hello, World!'</S>
+    </MS>
+  </Obj>
+  <Obj RefId="544">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">545</I32>
+      <S N="Content">    }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="545">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">546</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="546">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">547</I32>
+      <S N="Content">    It 'accepts a custom name' {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="547">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">548</I32>
+      <S N="Content">        Get-Greeting -Name 'Alice' | Should -Be 'Hello, Alice!'</S>
+    </MS>
+  </Obj>
+  <Obj RefId="548">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">549</I32>
+      <S N="Content">    }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="549">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">550</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="550">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">551</I32>
+      <S N="Content">    AfterAll {</S>
+    </MS>
+  </Obj>
+  <Obj RefId="551">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">552</I32>
+      <S N="Content">        Remove-Module MyModule -ErrorAction SilentlyContinue</S>
+    </MS>
+  </Obj>
+  <Obj RefId="552">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">553</I32>
+      <S N="Content">    }</S>
+    </MS>
+  </Obj>
+  <Obj RefId="553">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">554</I32>
+      <S N="Content">}</S>
+    </MS>
+  </Obj>
+  <Obj RefId="554">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">555</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="555">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">556</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="556">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">557</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="557">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">558</I32>
+      <S N="Content">  22. Miscellaneous Tips</S>
+    </MS>
+  </Obj>
+  <Obj RefId="558">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">559</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="559">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">560</I32>
+      <S N="Content">  &gt;&gt; Null coalescing (??) and null conditional (?.) — PS7+</S>
+    </MS>
+  </Obj>
+  <Obj RefId="560">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">561</I32>
+      <S N="Content">Null coalesce: default value</S>
+    </MS>
+  </Obj>
+  <Obj RefId="561">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">562</I32>
+      <S N="Content">Null conditional:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="562">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">563</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="563">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">564</I32>
+      <S N="Content">  &gt;&gt; Fully qualified .NET type names vs type accelerators</S>
+    </MS>
+  </Obj>
+  <Obj RefId="564">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">565</I32>
+      <S N="Content">Full-name List[string]: Hello World</S>
+    </MS>
+  </Obj>
+  <Obj RefId="565">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">566</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="566">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">567</I32>
+      <S N="Content">  &gt;&gt; Write-Progress — progress bar</S>
+    </MS>
+  </Obj>
+  <Obj RefId="567">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">568</I32>
+      <S N="Content">Progress bar demo complete.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="568">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">569</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="569">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">570</I32>
+      <S N="Content">  &gt;&gt; Invoke-Expression (use with caution)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="570">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">571</I32>
+      <S N="Content">Invoke-Expression result: 2026-03-01</S>
+    </MS>
+  </Obj>
+  <Obj RefId="571">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">572</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="572">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">573</I32>
+      <S N="Content">  &gt;&gt; Here-String types (@' ' vs " ")</S>
+    </MS>
+  </Obj>
+  <Obj RefId="573">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">574</I32>
+      <S N="Content">Single-quoted here-string:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="574">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">575</I32>
+      <S N="Content">Path: $env:TEMP</S>
+    </MS>
+  </Obj>
+  <Obj RefId="575">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">576</I32>
+      <S N="Content">No expansion here.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="576">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">577</I32>
+      <S N="Content">Double-quoted here-string:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="577">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">578</I32>
+      <S N="Content">Path: C:\Users\msaib\AppData\Local\Temp</S>
+    </MS>
+  </Obj>
+  <Obj RefId="578">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">579</I32>
+      <S N="Content">Variables ARE expanded here.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="579">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">580</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="580">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">581</I32>
+      <S N="Content">  &gt;&gt; Calculated sort &amp; unique</S>
+    </MS>
+  </Obj>
+  <Obj RefId="581">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">582</I32>
+      <S N="Content">blueberry</S>
+    </MS>
+  </Obj>
+  <Obj RefId="582">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">583</I32>
+      <S N="Content">apricot</S>
+    </MS>
+  </Obj>
+  <Obj RefId="583">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">584</I32>
+      <S N="Content">banana</S>
+    </MS>
+  </Obj>
+  <Obj RefId="584">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">585</I32>
+      <S N="Content">cherry</S>
+    </MS>
+  </Obj>
+  <Obj RefId="585">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">586</I32>
+      <S N="Content">apple</S>
+    </MS>
+  </Obj>
+  <Obj RefId="586">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">587</I32>
+      <S N="Content">apple</S>
+    </MS>
+  </Obj>
+  <Obj RefId="587">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">588</I32>
+      <S N="Content">apricot</S>
+    </MS>
+  </Obj>
+  <Obj RefId="588">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">589</I32>
+      <S N="Content">banana</S>
+    </MS>
+  </Obj>
+  <Obj RefId="589">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">590</I32>
+      <S N="Content">blueberry</S>
+    </MS>
+  </Obj>
+  <Obj RefId="590">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">591</I32>
+      <S N="Content">cherry</S>
+    </MS>
+  </Obj>
+  <Obj RefId="591">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">592</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="592">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">593</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="593">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">594</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="594">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">595</I32>
+      <S N="Content">  Cheat Sheet V2 Complete</S>
+    </MS>
+  </Obj>
+  <Obj RefId="595">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">596</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="596">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">597</I32>
+      <S N="Content">All V2 sections executed successfully.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="597">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">598</I32>
+      <S N="Content">Sections covered:</S>
+    </MS>
+  </Obj>
+  <Obj RefId="598">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">599</I32>
+      <S N="Content">   1. String Manipulation</S>
+    </MS>
+  </Obj>
+  <Obj RefId="599">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">600</I32>
+      <S N="Content">   2. Arrays &amp; Collections</S>
+    </MS>
+  </Obj>
+  <Obj RefId="600">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">601</I32>
+      <S N="Content">   3. Error Handling</S>
+    </MS>
+  </Obj>
+  <Obj RefId="601">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">602</I32>
+      <S N="Content">   4. Pipeline Deep-Dive</S>
+    </MS>
+  </Obj>
+  <Obj RefId="602">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">603</I32>
+      <S N="Content">   5. Output Methods</S>
+    </MS>
+  </Obj>
+  <Obj RefId="603">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">604</I32>
+      <S N="Content">   6. JSON &amp; XML</S>
+    </MS>
+  </Obj>
+  <Obj RefId="604">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">605</I32>
+      <S N="Content">   7. Environment Variables</S>
+    </MS>
+  </Obj>
+  <Obj RefId="605">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">606</I32>
+      <S N="Content">   8. Date &amp; Time</S>
+    </MS>
+  </Obj>
+  <Obj RefId="606">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">607</I32>
+      <S N="Content">   9. Background Jobs</S>
+    </MS>
+  </Obj>
+  <Obj RefId="607">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">608</I32>
+      <S N="Content">   10. Processes &amp; Services</S>
+    </MS>
+  </Obj>
+  <Obj RefId="608">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">609</I32>
+      <S N="Content">   11. Registry (Windows)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="609">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">610</I32>
+      <S N="Content">   12. Network Utilities</S>
+    </MS>
+  </Obj>
+  <Obj RefId="610">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">611</I32>
+      <S N="Content">   13. Credential Handling</S>
+    </MS>
+  </Obj>
+  <Obj RefId="611">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">612</I32>
+      <S N="Content">   14. Script Blocks &amp; Closures</S>
+    </MS>
+  </Obj>
+  <Obj RefId="612">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">613</I32>
+      <S N="Content">   15. Splatting</S>
+    </MS>
+  </Obj>
+  <Obj RefId="613">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">614</I32>
+      <S N="Content">   16. Custom Objects</S>
+    </MS>
+  </Obj>
+  <Obj RefId="614">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">615</I32>
+      <S N="Content">   17. Enums</S>
+    </MS>
+  </Obj>
+  <Obj RefId="615">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">616</I32>
+      <S N="Content">   18. Generics</S>
+    </MS>
+  </Obj>
+  <Obj RefId="616">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">617</I32>
+      <S N="Content">   19. File Parsing</S>
+    </MS>
+  </Obj>
+  <Obj RefId="617">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">618</I32>
+      <S N="Content">   20. Module Authoring</S>
+    </MS>
+  </Obj>
+  <Obj RefId="618">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">619</I32>
+      <S N="Content">   21. Pester Testing Skeleton</S>
+    </MS>
+  </Obj>
+  <Obj RefId="619">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">620</I32>
+      <S N="Content">   22. Miscellaneous Tips</S>
+    </MS>
+  </Obj>
+  <Obj RefId="620">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">621</I32>
+      <S N="Content">   23. WinForms GUI Elements</S>
+    </MS>
+  </Obj>
+  <Obj RefId="621">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">622</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="622">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">623</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="623">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">624</I32>
+      <S N="Content">  23. WinForms GUI — Every Form Element</S>
+    </MS>
+  </Obj>
+  <Obj RefId="624">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">625</I32>
+      <S N="Content">======================================================================</S>
+    </MS>
+  </Obj>
+  <Obj RefId="625">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">626</I32>
+      <S N="Content">  &gt;&gt; Launch full WinForms demo (Windows only)</S>
+    </MS>
+  </Obj>
+  <Obj RefId="626">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">627</I32>
+      <S N="Content">MethodException: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:1116:9</S>
+    </MS>
+  </Obj>
+  <Obj RefId="627">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">628</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="628">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">629</I32>
+      <S N="Content">1116 |          [System.Windows.Forms.Label]@{</S>
+    </MS>
+  </Obj>
+  <Obj RefId="629">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">630</I32>
+      <S N="Content">     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="630">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">631</I32>
+      <S N="Content">     | Cannot convert argument "x", with value: "+", for ".ctor" to type "System.Int32": "Cannot convert value "+" to type "System.Int32". Error: "The input string '+' was not in a correct format.""</S>
+    </MS>
+  </Obj>
+  <Obj RefId="631">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">632</I32>
+      <S N="Content">MethodException: C:\PowerShellGUI\scripts\PS-CheatSheet-EXAMPLES-V2.ps1:1116:9</S>
+    </MS>
+  </Obj>
+  <Obj RefId="632">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">633</I32>
+      <S N="Content">Line |</S>
+    </MS>
+  </Obj>
+  <Obj RefId="633">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">634</I32>
+      <S N="Content">1116 |          [System.Windows.Forms.Label]@{</S>
+    </MS>
+  </Obj>
+  <Obj RefId="634">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">635</I32>
+      <S N="Content">     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</S>
+    </MS>
+  </Obj>
+  <Obj RefId="635">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">636</I32>
+      <S N="Content">     | Cannot convert argument "x", with value: "+", for ".ctor" to type "System.Int32": "Cannot convert value "+" to type "System.Int32". Error: "The input</S>
+    </MS>
+  </Obj>
+  <Obj RefId="636">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">637</I32>
+      <S N="Content">     | string '+' was not in a correct format.""</S>
+    </MS>
+  </Obj>
+  <Obj RefId="637">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">638</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="638">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">639</I32>
+      <S N="Content">  Launching WinForms GUI — close the window to continue.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="639">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">640</I32>
+      <S N="Content">  WinForms demo closed.</S>
+    </MS>
+  </Obj>
+  <Obj RefId="640">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">641</I32>
+      <S N="Content"></S>
+    </MS>
+  </Obj>
+  <Obj RefId="641">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">642</I32>
+      <S N="Content">**********************</S>
+    </MS>
+  </Obj>
+  <Obj RefId="642">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">643</I32>
+      <S N="Content">PowerShell transcript end</S>
+    </MS>
+  </Obj>
+  <Obj RefId="643">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">644</I32>
+      <S N="Content">End time: 20260301030502</S>
+    </MS>
+  </Obj>
+  <Obj RefId="644">
+    <TNRef RefId="0" />
+    <MS>
+      <I32 N="LineNo">645</I32>
+      <S N="Content">**********************</S>
+    </MS>
+  </Obj>
+</Objs>
+
+
+
+
+

@@ -1,0 +1,39 @@
+﻿{
+  "plannedAt": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "id": "Bug-20260328082052-dc45d4fe",
+  "notes": "New sin created: SIN-20260328082052-d834b6ff",
+  "executedAt": null,
+  "category": "dependency",
+  "modified": "2026-03-28T00:20:52.3846167Z",
+  "result": null,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "acknowledged": null,
+  "description": "Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+  "created": "2026-03-28T00:20:52.3845531Z",
+  "linkedFeatures": [],
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1"
+  ],
+  "linkedBugs": [],
+  "tags": [],
+  "executionAgent": "",
+  "parentId": "",
+  "title": "Missing module reference: path/to/module/updateMods",
+  "sinId": "SIN-20260328082052-d834b6ff",
+  "type": "Bug",
+  "executionMethod": "",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "completedAt": "2026-03-31T01:20:08.3691961+08:00",
+  "resolution": "FALSE POSITIVE - path/to/module/updateMods is in .DESCRIPTION help comment, not executable code",
+  "archiveMetadata": {
+    "archivedAt": "2026-04-03T04:05:06",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

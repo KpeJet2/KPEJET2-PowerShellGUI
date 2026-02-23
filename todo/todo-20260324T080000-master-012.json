@@ -1,0 +1,17 @@
+{
+  "id": "master-012",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "optimization",
+  "priority": "medium",
+  "status": "PLANNED",
+  "title": "Wire dependency matrix and orphan audit into build pipeline",
+  "description": "Invoke-ScriptDependencyMatrix.ps1 and Invoke-OrphanAudit.ps1 exist but require manual invocation. Reports in ~REPORTS/ are 15 days stale. Create automation to run these on version bump and archive old results.",
+  "files": [
+    "scripts/Invoke-ScriptDependencyMatrix.ps1",
+    "scripts/Invoke-OrphanAudit.ps1"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6384020Z"
+}

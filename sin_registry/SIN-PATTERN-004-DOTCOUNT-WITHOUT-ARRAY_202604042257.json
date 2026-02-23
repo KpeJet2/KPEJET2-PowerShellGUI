@@ -1,0 +1,45 @@
+{
+  "sin_id": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY_202604042257",
+  "title": ".Count accessed on potentially null or non-array ConvertFrom-Json result",
+  "description": "PowerShell 5.1 ConvertFrom-Json returns $null for empty arrays and a bare object for single-element arrays. Accessing .Count on these under StrictMode throws 'property Count cannot be found'. Must always wrap with @() to force array context before .Count access. Already tracked as SIN-20260328090001-a1b2c3d4 but this formalises continuous scanning.",
+  "severity": "HIGH",
+  "category": "compatibility",
+  "vector": "ps51-array-unwrap",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T03:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for ConvertFrom-Json result immediately followed by .Count without @() wrapping",
+  "is_security_related": false,
+  "preventionRule": "Always wrap ConvertFrom-Json results with @() before accessing .Count or iterating. Pattern: @(... | ConvertFrom-Json).Count",
+  "scan_regex": "ConvertFrom-Json\\)?\\s*\\.Count",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Wrap the ConvertFrom-Json call in @(): @($json | ConvertFrom-Json).Count",
+  "tags": [
+    "ps51",
+    "compatibility",
+    "array-unwrap",
+    "null-ref",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY",
+    "previous_file": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY.json",
+    "reindexed_at": "2026-04-04T14:57:30.6168309Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

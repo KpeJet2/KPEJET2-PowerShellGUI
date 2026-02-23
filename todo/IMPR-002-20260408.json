@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-002-20260408",
+  "title": "Test Coverage Enforcement Gate",
+  "description": "Add Invoke-TestCoverageGateCheck.ps1. Fail pipeline if scripts/ has >10% gap vs tests/. Output gap report.",
+  "status": "PENDING_APPROVAL",
+  "priority": "HIGH",
+  "effort": "2-3h",
+  "affectedFiles": "scripts/Invoke-TestCoverageGateCheck.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

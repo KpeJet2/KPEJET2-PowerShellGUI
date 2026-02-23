@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\SINGovernance.psm1"
+  ],
+  "priority": "MEDIUM",
+  "linkedBugs": [],
+  "notes": "",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "FIX: 6 functions with no try/catch blocks",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "created": "2026-03-30T20:56:28.0810707Z",
+  "linkedFeatures": [],
+  "category": "error-handling",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bugs2FIX-20260331045628-6194e049",
+  "parentId": "Bug-20260331045625-d9af2979",
+  "sessionModCount": 1,
+  "description": "Fix for bug Bug-20260331045625-d9af2979: Script SINGovernance.psm1 has 6 functions but zero try/catch blocks",
+  "modified": "2026-03-30T20:56:28.0811294Z",
+  "type": "Bugs2FIX"
+}

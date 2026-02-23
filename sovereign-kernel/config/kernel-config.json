@@ -1,0 +1,53 @@
+{
+    "_comment": "Sovereign Kernel runtime configuration -- SK.v15.c8.config.1",
+    "kernel_root": "sovereign-kernel",
+    "manifest_path": "manifest/sovereign-kernel.json",
+    "schema_path": "manifest/sovereign-kernel.schema.json",
+    "crypto": {
+        "passphrase_env_var": "SK_PASSPHRASE",
+        "pbkdf2_iterations": 600000,
+        "min_cipher_score": 80
+    },
+    "ledger": {
+        "base_dir": "ledger",
+        "replica_count": 3,
+        "quorum_required": 2,
+        "max_entry_size_kb": 256
+    },
+    "sandbox": {
+        "default_language_mode": "ConstrainedLanguage",
+        "max_sandbox_depth": 3,
+        "default_timeout_seconds": 300,
+        "para_virtualization": {
+            "isolation_layers": ["environment", "runspace", "filesystem", "network"],
+            "resource_limits": {
+                "max_memory_mb": 512,
+                "max_cpu_percent": 25,
+                "max_threads": 8,
+                "max_execution_seconds": 300
+            }
+        }
+    },
+    "watchdog": {
+        "sweep_interval_seconds": 60,
+        "min_health_score": 0.6,
+        "auto_vote_on_sweep": true
+    },
+    "self_healing": {
+        "auto_restart": true,
+        "max_retries": 3,
+        "degraded_mode": "continue_limited",
+        "heal_cycle_interval_seconds": 120
+    },
+    "cycle": {
+        "rollback_depth": 3,
+        "max_drift_cycles": 2,
+        "allow_divergence": false,
+        "max_snapshots": 10
+    },
+    "logging": {
+        "level": "INFO",
+        "console_output": true,
+        "log_dir": "logs"
+    }
+}

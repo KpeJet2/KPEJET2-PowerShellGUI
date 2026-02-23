@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "schema": "SelfReviewConfig/1.0",
+    "created": "2026-04-04T15:15:13.2372618Z",
+    "description": "Controls all tunable values for the Self-Review Cycle engine. Edit values here to adjust thresholds and weights. Set suggested_overrides[].status to ACCEPTED to apply a system-generated suggestion on the next engine run."
+  },
+  "enabled": true,
+  "fullFrequencyMinutes": 360,
+  "dimensions": {
+    "SINCompliance": {
+      "enabled": true,
+      "weight": 0.2,
+      "alertOnDrop": true,
+      "escalateBelow": 0.5
+    },
+    "PipelineVelocity": {
+      "enabled": true,
+      "weight": 0.15,
+      "alertOnDrop": true,
+      "escalateBelow": 0.4
+    },
+    "ErrorRate": {
+      "enabled": true,
+      "weight": 0.15,
+      "alertOnDrop": true,
+      "escalateBelow": 0.5
+    },
+    "CodeStyle": {
+      "enabled": true,
+      "weight": 0.1,
+      "alertOnDrop": false,
+      "escalateBelow": 0.3
+    },
+    "FormatCongruency": {
+      "enabled": true,
+      "weight": 0.1,
+      "alertOnDrop": false,
+      "escalateBelow": 0.4
+    },
+    "DocFreshness": {
+      "enabled": true,
+      "weight": 0.1,
+      "alertOnDrop": false,
+      "escalateBelow": 0.3
+    },
+    "TestCoverage": {
+      "enabled": true,
+      "weight": 0.1,
+      "alertOnDrop": true,
+      "escalateBelow": 0.5
+    },
+    "KernelHealth": {
+      "enabled": true,
+      "weight": 0.1,
+      "alertOnDrop": true,
+      "escalateBelow": 0.5
+    }
+  },
+  "thresholds": {
+    "blockingThreshold": 0.6,
+    "escalationThreshold": 0.5,
+    "dropAlertFraction": 0.1,
+    "improvementFraction": 0.15,
+    "trendWindow": 5,
+    "balthazarConsecutiveDrops": 3,
+    "kernelScoreWarningBelow": 0.7,
+    "kernelScoreBlockBelow": 0.6
+  },
+  "quickMode": {
+    "enabled": true,
+    "dimensions": [
+      "SINCompliance",
+      "PipelineVelocity",
+      "ErrorRate"
+    ]
+  },
+  "suggestions": {
+    "enabled": true,
+    "minRunsForWeightRebalance": 5,
+    "minRunsForThresholdTighten": 10,
+    "minRunsForDimensionDisable": 20,
+    "suppressRejectedForDays": 30
+  },
+  "suggested_overrides": []
+}

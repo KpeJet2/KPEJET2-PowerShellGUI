@@ -1,0 +1,22 @@
+{
+  "todo_id": "gap-2604-005",
+  "id": "gap-2604-005",
+  "category": "maintenance",
+  "title": "Delete legacy Script-F-Copy variants -- Script-F-Copy.ps1, Script-F-Copy2.ps1, Script-F-ClonedFrom_MainGUI.ps1",
+  "description": "Three Script-F legacy/copy files exist in scripts/ and are no longer needed: Script-F-Copy.ps1, Script-F-Copy2.ps1, Script-F-ClonedFrom_MainGUI.ps1. These create duplicate function names (P011) and inflate manifest/scan output. Confirm they are not referenced by any import or test, then delete. Check OrphanAudit report to confirm they appear as orphans before removing.",
+  "suggested_by": "redundancy audit 2026-04-03",
+  "priority": "MEDIUM",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:04Z",
+  "createdAt": "2026-04-03T00:00:04Z",
+  "acknowledged_at": null,
+  "affects": [
+    "scripts/Script-F-Copy.ps1",
+    "scripts/Script-F-Copy2.ps1",
+    "scripts/Script-F-ClonedFrom_MainGUI.ps1"
+  ],
+  "notes": "Verify: Select-String -Path **/*.ps1,**/*.psm1 -Pattern 'Script-F-Copy' before deletion. Check OrphanAudit report first.",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.7913778Z"
+}

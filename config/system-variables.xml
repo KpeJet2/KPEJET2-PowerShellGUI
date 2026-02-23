@@ -1,0 +1,76 @@
+<!-- VersionTag: 2604.B0.v1 -->
+<SystemVariables>
+  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
+  <Windows>
+  </Windows>
+  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <SystemRoot>C:\WINDOWS</SystemRoot>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ComputerName>XPS15-MS</ComputerName>
+  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
+  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
+  <ProgramFiles>C:\Program Files</ProgramFiles>
+  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
+  <ExecutionDate>2026-03-29 00:24:12</ExecutionDate>
+  <ProcessorCount>
+  </ProcessorCount>
+  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
+  <PowerShellVersion>7</PowerShellVersion>
+  <PSVersion>7.5.5</PSVersion>
+  <UserDomain>XPS15-MS</UserDomain>
+  <UserName>msaib</UserName>
+  <Version>
+    <Major>2604</Major>
+    <Minor>B0</Minor>
+    <Build>1</Build>
+  </Version>
+  <Do-Not-VersionTag-FoldersFiles>
+    <Folder>~BACKUPS</Folder>
+    <Folder>FOLDER-ROOT</Folder>
+    <Folder>logs</Folder>
+    <Folder>~REPORTS</Folder>
+    <Folder>~DOWNLOADS</Folder>
+    <Folder>temp</Folder>
+    <Folder>.logs</Folder>
+    <Folder>AutoIssueFinder-Logs</Folder>
+    <Folder>.history</Folder>
+    <Folder>.vscode</Folder>
+  </Do-Not-VersionTag-FoldersFiles>
+  <Buttons>
+    <LeftColumn>
+      <Button>
+        <ScriptName>Script5</ScriptName>
+        <DisplayName>Backup Operations</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script6</ScriptName>
+        <DisplayName>Configuration Sync</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script1</ScriptName>
+        <DisplayName>Database Maintenance</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script3</ScriptName>
+        <DisplayName>Network Diagnostics</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script2</ScriptName>
+        <DisplayName>System Cleanup</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script4</ScriptName>
+        <DisplayName>Access - User and Group Management</DisplayName>
+      </Button>
+    </LeftColumn>
+    <RightColumn>
+      <Button>
+        <ScriptName>PWShQuickApp</ScriptName>
+        <DisplayName>PWSH-Quick-App (PWSH7 Prompt - Script Runner)</DisplayName>
+        <ScriptPath>~PWSH_Quick-APP3.ps1</ScriptPath>
+      </Button>
+    </RightColumn>
+  </Buttons>
+</SystemVariables>

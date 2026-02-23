@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1"
+  ],
+  "executionAgent": "",
+  "type": "Bugs2FIX",
+  "sinId": "",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "",
+  "executionMethod": "",
+  "priority": "HIGH",
+  "category": "dependency",
+  "tags": [],
+  "created": "2026-03-30T21:13:35.4136537Z",
+  "description": "Fix for bug Bug-20260331051330-d7c7189a: Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+  "modified": "2026-03-30T21:13:35.4137159Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260331051330-d7c7189a",
+  "title": "FIX: Missing module reference: path/to/module/updateMods",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051335-73c01c3e"
+}

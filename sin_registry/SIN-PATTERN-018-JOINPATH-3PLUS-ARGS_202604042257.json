@@ -1,0 +1,47 @@
+{
+  "sin_id": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257",
+  "title": "Join-Path with 3+ positional args fails in PS 5.1",
+  "description": "PowerShell 5.1 Join-Path only accepts two positional parameters: -Path and -ChildPath. The -AdditionalChildPath parameter was added in PS 6.0+. Using Join-Path with 3 or more positional arguments (e.g. Join-Path $dir 'sub' 'file.txt') causes a hard failure: 'A positional parameter cannot be found that accepts argument'. This code works silently in PS 7 but crashes in PS 5.1.",
+  "severity": "HIGH",
+  "category": "compatibility",
+  "vector": "ps51-runtime-failure",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T19:30:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Join-Path with 3+ whitespace-separated arguments not already nested in parentheses",
+  "is_security_related": false,
+  "preventionRule": "Never pass more than 2 arguments to Join-Path. Nest calls: Join-Path (Join-Path $a $b) $c. PS 5.1 only supports -Path and -ChildPath.",
+  "scan_regex": "Join-Path\\s+\\$\\w+\\s+'[^']*'\\s+'[^']*'",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;__pycache__;.venv;.venv-pygame312;node_modules;checkpoints",
+  "remedy": "Nest Join-Path calls for 3+ segments: Join-Path (Join-Path $dir 'sub') 'file.txt' instead of Join-Path $dir 'sub' 'file.txt'",
+  "tags": [
+    "sin-pattern",
+    "compatibility",
+    "join-path",
+    "ps51",
+    "ps7-only",
+    "runtime-failure"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS",
+    "previous_file": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS.json",
+    "reindexed_at": "2026-04-04T14:57:30.7386358Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

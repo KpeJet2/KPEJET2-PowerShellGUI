@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "schema": "PwShGUI-ActionLog/1.0",
+    "description": "Append-only chronological action history for todo/bug/feature status changes."
+  },
+  "actions": []
+}

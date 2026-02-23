@@ -1,0 +1,365 @@
+{
+  "$schema": "PwShGUI-WidgetToolsInventory/1.0",
+  "meta": {
+    "version": "2604.B1.v1.0",
+    "generated": "2026-04-04T00:00:00Z",
+    "purpose": "Centralized registry of all widget tools (Show-* scripts) for consistent maintenance, integration tracking, and manifest synchronization",
+    "maintainer": "The Establishment",
+    "updateFrequency": "On tool addition/modification",
+    "totalTools": 8
+  },
+  "tools": [
+    {
+      "id": "tool-001",
+      "name": "Cron-Ai-Athon Tool",
+      "scriptName": "Show-CronAiAthonTool.ps1",
+      "functionName": "Show-CronAiAthonTool",
+      "path": "scripts/Show-CronAiAthonTool.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Pipeline & Automation",
+      "status": "ACTIVE",
+      "menuPath": "Tools > Cron-Ai-Athon Tool",
+      "menuLabel": "Cron-Ai-Athon &Tool",
+      "description": "Multi-tab dashboard for pipeline management, job scheduling, bug tracking, event logging, and SYSLOG config. Manages FeatureRequests, Bugs, ToDo items, Items2ADD, and Bugs2FIX.",
+      "features": [
+        "Dashboard overview with stats",
+        "Task schedule management",
+        "Pre-requisite checks",
+        "Manual job runner",
+        "Pipeline queue editor",
+        "Bug tracker integration",
+        "Master ToDo aggregation",
+        "Statistics & reporting",
+        "Subagent tally",
+        "Event log & SYSLOG config"
+      ],
+      "dependencies": [
+        "CronAiAthon-Pipeline.psm1",
+        "CronAiAthon-BugTracker.psm1",
+        "CronAiAthon-Scheduler.psm1",
+        "CronAiAthon-EventLog.psm1",
+        "PwShGUI-Theme.psm1"
+      ],
+      "launchMode": "inline",
+      "singleInstance": false,
+      "requiresElevation": false,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-002",
+      "name": "Scan Dashboard",
+      "scriptName": "Show-ScanDashboard.ps1",
+      "functionName": "Show-ScanDashboard",
+      "path": "scripts/Show-ScanDashboard.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Code Quality & Analysis",
+      "status": "ACTIVE",
+      "menuPath": "Tools > Scan Dashboard",
+      "menuLabel": "Scan &Dashboard...",
+      "description": "Unified dashboard for code quality scans: SIN pattern scanner, CPSR (Code-Parser-Structure-Report), bug detection, and PSScriptAnalyzer integration.",
+      "features": [
+        "SIN pattern scan (18 blocking patterns)",
+        "SemiSin penance scan (6 advisory warnings)",
+        "CPSR report generation",
+        "Bug scan with severity classification",
+        "Real-time scan progress",
+        "Results export"
+      ],
+      "dependencies": [
+        "PwShGUI-Theme.psm1"
+      ],
+      "launchMode": "inline",
+      "singleInstance": false,
+      "requiresElevation": false,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-003",
+      "name": "Event Log Viewer",
+      "scriptName": "Show-EventLogViewer.ps1",
+      "functionName": "Show-EventLogViewer",
+      "path": "scripts/Show-EventLogViewer.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Logging & Monitoring",
+      "status": "ACTIVE",
+      "menuPath": "Tools > Event Log Viewer",
+      "menuLabel": "Event Log &Viewer",
+      "description": "Viewer for the centralized event log system. Displays 6-level canonical logs (Debug/Info/Warning/Error/Critical/Audit) with filtering, search, and export.",
+      "features": [
+        "Real-time log display",
+        "Severity filtering",
+        "Search & highlight",
+        "Export to CSV/JSON",
+        "Auto-refresh"
+      ],
+      "dependencies": [
+        "CronAiAthon-EventLog.psm1",
+        "PwShGUI-Theme.psm1"
+      ],
+      "launchMode": "menu-script-safely",
+      "singleInstance": false,
+      "requiresElevation": false,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-004",
+      "name": "MCP Service Config",
+      "scriptName": "Show-MCPServiceConfig.ps1",
+      "functionName": "Show-MCPServiceConfig",
+      "path": "scripts/Show-MCPServiceConfig.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Configuration & Services",
+      "status": "ACTIVE",
+      "menuPath": "Tools > MCP Service Config",
+      "menuLabel": "&MCP Service Config",
+      "description": "Configuration manager for MCP (Model Context Protocol) services. Manage service URLs, authentication, MCP server registrations, and integration settings.",
+      "features": [
+        "Service registration",
+        "URL & auth config",
+        "Connection testing",
+        "Service health checks"
+      ],
+      "dependencies": [
+        "PwShGUI-Theme.psm1"
+      ],
+      "launchMode": "inline",
+      "singleInstance": false,
+      "requiresElevation": false,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-005",
+      "name": "Certificate Manager",
+      "scriptName": "Show-CertificateManager.ps1",
+      "functionName": "Show-CertificateManager",
+      "path": "scripts/Show-CertificateManager.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Security & PKI",
+      "status": "ACTIVE",
+      "menuPath": null,
+      "menuLabel": null,
+      "description": "PKI certificate management tool. Browse, import, export, and validate X.509 certificates across user/machine stores.",
+      "features": [
+        "Certificate store browser",
+        "Import/Export PFX/CER",
+        "Expiration warnings",
+        "Thumbprint lookup",
+        "Private key detection"
+      ],
+      "dependencies": [
+        "PwShGUI-Theme.psm1"
+      ],
+      "launchMode": "standalone",
+      "singleInstance": false,
+      "requiresElevation": true,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-006",
+      "name": "WinRemote PS Tool",
+      "scriptName": "WinRemote-PSTool.ps1",
+      "functionName": null,
+      "path": "scripts/WinRemote-PSTool.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "Networking & Remote Management",
+      "status": "ACTIVE",
+      "menuPath": "Tools > WinRemote PS Tool",
+      "menuLabel": "Win&Remote PS Tool",
+      "description": "Network diagnostics and remote PowerShell session management. Handles PSRemoting, CredSSP, network details, and connection troubleshooting.",
+      "features": [
+        "Network adapter details",
+        "PSRemoting session manager",
+        "CredSSP configuration",
+        "Port testing",
+        "DNS lookups"
+      ],
+      "dependencies": [],
+      "launchMode": "menu-script-safely-newprocess",
+      "singleInstance": true,
+      "requiresElevation": false,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-007",
+      "name": "User Profile Manager",
+      "scriptName": "UserProfile-Manager.ps1",
+      "functionName": null,
+      "path": "UPM/UserProfile-Manager.ps1",
+      "version": "2604.B1.V1.0",
+      "category": "System Administration",
+      "status": "ACTIVE",
+      "menuPath": "Tools > User Profile Manager",
+      "menuLabel": "&User Profile Manager",
+      "description": "Windows user profile management: list, backup, restore, and cleanup user profiles. Handles orphaned profiles and ProfileImagePath registry cleanup.",
+      "features": [
+        "Profile inventory",
+        "Backup/Restore profiles",
+        "Orphaned profile detection",
+        "Disk usage analysis",
+        "Registry cleanup"
+      ],
+      "dependencies": [],
+      "launchMode": "menu-script-safely-newprocess",
+      "singleInstance": true,
+      "requiresElevation": true,
+      "batchLauncher": null,
+      "readme": null,
+      "lastUpdated": "2026-03-28",
+      "maintainer": "The Establishment"
+    },
+    {
+      "id": "tool-008",
+      "name": "Interactive Sandbox Test",
+      "scriptName": "Show-SandboxTestTool.ps1",
+      "functionName": "Show-SandboxTestTool",
+      "path": "scripts/Show-SandboxTestTool.ps1",
+      "version": "2604.B1.v1.0",
+      "category": "Testing & Quality Assurance",
+      "status": "ACTIVE",
+      "menuPath": "Tools > Interactive Sandbox Test",
+      "menuLabel": "Interactive &Sandbox Test",
+      "description": "Iterative GUI testing in total system isolation using Windows Sandbox. Sync code, run tests, launch GUI—all in a disposable VM environment.",
+      "features": [
+        "Total isolation (network/filesystem/state)",
+        "Iterative workflow (sync+test+GUI)",
+        "Real-time session monitoring",
+        "Result collection & viewing",
+        "Chaos test integration",
+        "Custom command execution",
+        "Dashboard with quick actions"
+      ],
+      "dependencies": [
+        "tests/sandbox/Start-InteractiveSandbox.ps1",
+        "tests/sandbox/Invoke-SandboxBootstrap.ps1",
+        "tests/sandbox/Send-SandboxCommand.ps1"
+      ],
+      "launchMode": "inline",
+      "singleInstance": false,
+      "requiresElevation": false,
+      "batchLauncher": "Launch-SandboxInteractive.bat",
+      "readme": "tests/sandbox/README.md",
+      "lastUpdated": "2026-04-04",
+      "maintainer": "The Establishment"
+    }
+  ],
+  "categories": {
+    "Pipeline & Automation": {
+      "description": "Tools for workflow automation, pipeline management, and task scheduling",
+      "tools": ["tool-001"]
+    },
+    "Code Quality & Analysis": {
+      "description": "Code scanning, linting, pattern detection, and quality metrics",
+      "tools": ["tool-002"]
+    },
+    "Logging & Monitoring": {
+      "description": "Event logs, telemetry viewers, and system monitoring",
+      "tools": ["tool-003"]
+    },
+    "Configuration & Services": {
+      "description": "Service configuration, settings management, and integration config",
+      "tools": ["tool-004"]
+    },
+    "Security & PKI": {
+      "description": "Certificate management, secret vaults, and security tools",
+      "tools": ["tool-005"]
+    },
+    "Networking & Remote Management": {
+      "description": "Network diagnostics, remote sessions, and connectivity tools",
+      "tools": ["tool-006"]
+    },
+    "System Administration": {
+      "description": "OS-level administration, profiles, and system maintenance",
+      "tools": ["tool-007"]
+    },
+    "Testing & Quality Assurance": {
+      "description": "Testing frameworks, isolation environments, and QA automation",
+      "tools": ["tool-008"]
+    }
+  },
+  "launchModes": {
+    "inline": {
+      "description": "Dot-sourced and invoked directly in Main-GUI context",
+      "example": ". $script; FunctionName -Params"
+    },
+    "menu-script-safely": {
+      "description": "Launched via Invoke-MenuScriptSafely helper (single-instance tracking)",
+      "example": "Invoke-MenuScriptSafely -MenuLabel 'Name' -RelativeCandidates @('path.ps1')"
+    },
+    "menu-script-safely-newprocess": {
+      "description": "Launched in new process via Invoke-MenuScriptSafely with -UseNewProcess",
+      "example": "Invoke-MenuScriptSafely -MenuLabel 'Name' -RelativeCandidates @('path.ps1') -UseNewProcess"
+    },
+    "standalone": {
+      "description": "Not menu-integrated; launched independently or via direct script call",
+      "example": "Manual invocation from scripts/ folder"
+    }
+  },
+  "maintenance": {
+    "onNewTool": [
+      "1. Create Show-*.ps1 script in scripts/ folder",
+      "2. Add menu entry to Main-GUI.ps1 $toolsMenu section",
+      "3. Add entry to this inventory (config/widget-tools-inventory.json)",
+      "4. Create README.md if tool has multiple components",
+      "5. Create batch launcher if tool benefits from standalone launch",
+      "6. Run Build-AgenticManifest.ps1 to rebuild agentic-manifest.json",
+      "7. Add pipeline item if tool has ongoing development/features",
+      "8. Update ENHANCEMENTS-LOG.md with tool addition"
+    ],
+    "onToolUpdate": [
+      "1. Update version in tool script header (VersionTag)",
+      "2. Update lastUpdated field in this inventory",
+      "3. Update README.md if features changed",
+      "4. Re-run Build-AgenticManifest.ps1",
+      "5. Log update in ENHANCEMENTS-LOG.md"
+    ],
+    "consistencyChecks": [
+      "All Show-*.ps1 scripts have corresponding inventory entry",
+      "All menu entries match menuPath/menuLabel in inventory",
+      "All tools with batchLauncher have corresponding .bat file in root",
+      "All tools with readme have corresponding README.md file",
+      "Version tags match between script and inventory",
+      "Dependencies list matches actual module imports in script"
+    ]
+  },
+  "statistics": {
+    "totalActive": 8,
+    "totalInactive": 0,
+    "byCategory": {
+      "Pipeline & Automation": 1,
+      "Code Quality & Analysis": 1,
+      "Logging & Monitoring": 1,
+      "Configuration & Services": 1,
+      "Security & PKI": 1,
+      "Networking & Remote Management": 1,
+      "System Administration": 1,
+      "Testing & Quality Assurance": 1
+    },
+    "byLaunchMode": {
+      "inline": 5,
+      "menu-script-safely": 1,
+      "menu-script-safely-newprocess": 2,
+      "standalone": 1
+    },
+    "withBatchLauncher": 1,
+    "withReadme": 1,
+    "requireElevation": 2
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "status": "PLANNED",
+  "suggestedBy": "GitHub-Copilot-Session4",
+  "tags": [
+    "session4-audit"
+  ],
+  "description": "Auto-create SIN registry entries from BugTracker/SyntaxGuard scan results",
+  "linkedFeatures": [],
+  "completedAt": null,
+  "result": null,
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "category": "tooling",
+  "type": "ToDo",
+  "linkedBugs": [],
+  "id": "ToDo-20260330204319-5fc40208",
+  "executionAgent": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "parentId": "",
+  "sinId": "",
+  "source": "Manual",
+  "priority": "MEDIUM",
+  "title": "Build New-SINFromScan tool",
+  "notes": "",
+  "createdAt": "2026-03-30T12:43:19.325718Z",
+  "executedAt": null,
+  "modified": "2026-03-30T12:43:19.325718Z",
+  "created": "2026-03-30T12:43:19.325718Z",
+  "acknowledged": null,
+  "affectedFiles": [
+    "modules/SINGovernance.psm1"
+  ]
+}

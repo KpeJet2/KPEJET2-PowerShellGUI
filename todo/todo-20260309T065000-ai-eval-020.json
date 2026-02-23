@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-020",
+  "category": "ux",
+  "title": "Script Preview Mode / Dry-Run Enhancement",
+  "description": "Add Show-ScriptPreviewDialog that parses a script to display affected files/paths/registry keys before execution. Enhances -WhatIf with visual preview.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "Main-GUI.ps1",
+    "modules/PwShGUICore.psm1"
+  ],
+  "notes": null,
+  "id": "ai-eval-020",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.5176327Z"
+}

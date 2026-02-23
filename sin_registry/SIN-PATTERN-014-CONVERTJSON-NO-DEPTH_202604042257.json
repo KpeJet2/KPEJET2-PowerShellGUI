@@ -1,0 +1,46 @@
+{
+  "sin_id": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257",
+  "title": "ConvertTo-Json without -Depth silently truncates nested objects",
+  "description": "ConvertTo-Json defaults to -Depth 2, which silently converts nested objects beyond that depth into their .ToString() representation (e.g. 'System.Collections.Hashtable'). This causes data loss in pipeline registries, config files, and API payloads without any error or warning. Particularly dangerous when serializing PSCustomObjects, ordered dictionaries, or deeply nested scan results.",
+  "severity": "MEDIUM",
+  "category": "data-integrity",
+  "vector": "silent-truncation",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T12:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for ConvertTo-Json calls without -Depth parameter",
+  "is_security_related": false,
+  "preventionRule": "All ConvertTo-Json calls must include -Depth with a value of 5 or higher. Use -Depth 10 for complex nested structures.",
+  "scan_regex": "ConvertTo-Json(?!\\s+.*-Depth)\\s*[^|]*(?:\\||$|\\))",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Add -Depth 5 (or higher) to the ConvertTo-Json call. Example: ConvertTo-Json -Depth 5",
+  "tags": [
+    "json",
+    "serialization",
+    "data-loss",
+    "depth",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH",
+    "previous_file": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH.json",
+    "reindexed_at": "2026-04-04T14:57:30.7014436Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|Show-CronAiAthonTool|Test-ErrorHandlingCompliance"
+}

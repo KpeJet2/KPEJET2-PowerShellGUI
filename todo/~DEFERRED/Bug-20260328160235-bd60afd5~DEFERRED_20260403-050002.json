@@ -1,0 +1,32 @@
+{
+  "executionAgent": "",
+  "result": null,
+  "acknowledged": null,
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "MEDIUM",
+  "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "executionMethod": "",
+  "linkedBugs": [],
+  "parentId": "",
+  "title": "7 functions with no try/catch blocks",
+  "tags": [],
+  "completedAt": null,
+  "linkedFeatures": [],
+  "source": "BugTracker",
+  "modified": "2026-03-28T08:02:35.0009655Z",
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1"
+  ],
+  "sessionModCount": 1,
+  "sinId": "SIN-20260328082049-dbcb8434",
+  "category": "error-handling",
+  "created": "2026-03-28T08:02:35.0008974Z",
+  "type": "Bug",
+  "id": "Bug-20260328160235-bd60afd5",
+  "status": "DEFERRED",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase -- try/catch hardening deferred to dedicated error-handling sprint. All functions will be covered as part of bulk P002 remediation pass."
+}

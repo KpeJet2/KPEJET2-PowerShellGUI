@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2604.B1.V32.0 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Builder - PwShGUI</title>
+  <style type="text/css">
+    :root{
+      --bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;--control:#333337;
+      --accent:#007acc;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;
+      --fg:#d4d4d4;--fg-sub:#969696;--border:#3f3f46;
+      --btn:#37373c;--btn-hover:#46464e;--radius:5px;--gap:10px;--pad:14px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Tahoma,sans-serif;font-size:13px;
+         background:var(--bg);color:var(--fg);height:100vh;
+         display:flex;flex-direction:column;overflow:hidden}
+    /* ── Header ── */
+    .hdr{background:var(--accent);color:#fff;padding:8px var(--pad);
+         display:flex;align-items:center;gap:var(--gap);font-size:15px;font-weight:600;flex-shrink:0}
+    .hdr .ver{font-size:11px;opacity:.7;margin-left:auto}
+    .hdr .hdr-btn{font-size:12px;padding:4px 10px;border:none;border-radius:var(--radius);
+                  cursor:pointer;font-family:inherit}
+    .hdr-btn.imp{background:#2a5a7a;color:#fff}
+    .hdr-btn.imp:hover{background:#2f6a8a}
+    .hdr-btn.exp{background:#1f7a4f;color:#fff}
+    .hdr-btn.exp:hover{background:#248a5a}
+    /* ── 3-column layout ── */
+    .workspace{display:flex;flex:1;overflow:hidden;gap:2px;background:var(--border)}
+    .col{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+    .col-list{width:260px;min-width:220px;flex-shrink:0}
+    .col-props{flex:1;min-width:280px}
+    .col-preview{width:320px;min-width:280px;flex-shrink:0}
+    .col-hdr{background:var(--panel);color:var(--warn);font-size:11px;font-weight:600;
+             letter-spacing:.06em;padding:6px var(--pad);border-bottom:1px solid var(--border);flex-shrink:0}
+    /* ── Item list ── */
+    .item-list{flex:1;overflow-y:auto;padding:6px}
+    .item-row{display:flex;align-items:center;gap:6px;padding:6px 8px;
+              border-radius:var(--radius);border:1px solid transparent;cursor:pointer;
+              user-select:none;margin-bottom:3px}
+    .item-row:hover{background:var(--control);border-color:var(--border)}
+    .item-row.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .item-row.dragging{opacity:.4}
+    .item-row.drag-over{border-top:2px solid var(--pass)}
+    .drag-handle{cursor:grab;opacity:.5;font-size:14px;flex-shrink:0}
+    .item-row.selected .drag-handle{opacity:.8}
+    .item-icon{font-size:15px;flex-shrink:0}
+    .item-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .item-vis{font-size:10px;opacity:.6}
+    .list-actions{display:flex;gap:4px;padding:6px;border-top:1px solid var(--border);flex-shrink:0}
+    .la-btn{flex:1;padding:5px;border:1px solid var(--border);border-radius:var(--radius);
+            background:var(--btn);color:var(--fg);cursor:pointer;font-size:11px;font-family:inherit}
+    .la-btn:hover{background:var(--btn-hover)}
+    .la-btn.danger{border-color:var(--fail);color:var(--fail)}
+    .la-btn.danger:hover{background:rgba(244,71,71,.15)}
+    /* ── Props panel ── */
+    .props-body{flex:1;overflow-y:auto;padding:var(--pad)}
+    .prop-group{margin-bottom:12px}
+    .prop-label{font-size:11px;color:var(--fg-sub);margin-bottom:4px;display:block}
+    .prop-input{width:100%;padding:7px 9px;background:var(--control);color:var(--fg);
+                border:1px solid var(--border);border-radius:var(--radius);
+                font-family:inherit;font-size:13px}
+    .prop-input:focus{outline:none;border-color:var(--accent)}
+    .prop-row{display:flex;gap:var(--gap)}
+    .prop-row .prop-group{flex:1}
+    select.prop-input option{background:var(--control);color:var(--fg)}
+    .prop-check-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .prop-check-row label{font-size:12px}
+    .swatch-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+    .swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;
+            border:2px solid transparent;flex-shrink:0}
+    .swatch:hover,.swatch.active{border-color:#fff}
+    .props-placeholder{display:flex;align-items:center;justify-content:center;
+                       flex:1;color:var(--fg-sub);font-size:12px;text-align:center;padding:20px}
+    /* ── JSON Preview ── */
+    .json-wrap{flex:1;overflow:auto;padding:var(--pad)}
+    pre#jsonOut{font-family:'Cascadia Code',Consolas,monospace;font-size:11px;
+                color:var(--pass);white-space:pre;word-break:break-all}
+    /* ── Status bar ── */
+    .sbar{background:var(--panel);border-top:1px solid var(--border);
+          padding:4px var(--pad);font-size:11px;color:var(--fg-sub);
+          display:flex;justify-content:space-between;flex-shrink:0}
+    .sbar-ok{color:var(--pass)}
+    .sbar-err{color:var(--fail)}
+    .sbar-warn{color:var(--warn)}
+  </style>
+</head>
+<body>
+  <div class="hdr">
+    &#x1F4CB; Menu Builder
+    <button class="hdr-btn imp" onclick="importFromEngine()" title="Load menu layout from LocalWebEngine">&#x2B07; Import</button>
+    <button class="hdr-btn exp" onclick="exportToEngine()" title="Save menu layout to LocalWebEngine">&#x2B06; Export</button>
+    <span class="ver">2604.B1.V32.0</span>
+  </div>
+
+  <div class="workspace">
+    <!-- ── Column 1: Item List ── -->
+    <div class="col col-list">
+      <div class="col-hdr">MENU ITEMS</div>
+      <div class="item-list" id="itemList"></div>
+      <div class="list-actions">
+        <button class="la-btn" onclick="addItem()">+ Add</button>
+        <button class="la-btn" onclick="moveUp()" title="Move selected up">&#x25B2;</button>
+        <button class="la-btn" onclick="moveDown()" title="Move selected down">&#x25BC;</button>
+        <button class="la-btn danger" onclick="deleteItem()">&#x2715; Del</button>
+      </div>
+    </div>
+
+    <!-- ── Column 2: Properties ── -->
+    <div class="col col-props">
+      <div class="col-hdr">PROPERTIES</div>
+      <div id="propsPanel">
+        <div class="props-placeholder">Select an item to edit its properties</div>
+      </div>
+    </div>
+
+    <!-- ── Column 3: JSON Preview ── -->
+    <div class="col col-preview">
+      <div class="col-hdr">JSON PREVIEW</div>
+      <div class="json-wrap">
+        <pre id="jsonOut">// Select or add items to see JSON</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="sbar">
+    <span id="sbarLeft">0 items</span>
+    <span id="sbarRight" class="sbar-ok">Ready</span>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+  'use strict';
+
+  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var SWATCHES = ['#007acc','#4ec9b0','#dcdcaa','#f44747','#569cd6',
+                  '#c586c0','#ce9178','#6a9955','#d7ba7d','#9cdcfe'];
+
+  /* ── State ── */
+  var items = [];
+  var selectedIdx = -1;
+  var csrfToken = '';
+  var dragSrc = -1;
+
+  /* ── Default item factory ── */
+  function makeItem() {
+    return {
+      id: 'item_' + Date.now(),
+      title: 'New Item',
+      icon: '&#x1F4C4;',
+      href: '',
+      action: '',
+      visible: true,
+      color: '#007acc'
+    };
+  }
+
+  /* ── Render item list ── */
+  function renderList() {
+    var el = document.getElementById('itemList');
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var selCls = (i === selectedIdx) ? ' selected' : '';
+      html += '<div class="item-row' + selCls + '" ' +
+              'draggable="true" ' +
+              'data-idx="' + i + '" ' +
+              'onclick="selectItem(' + i + ')" ' +
+              'ondragstart="onDragStart(event,' + i + ')" ' +
+              'ondragover="onDragOver(event,' + i + ')" ' +
+              'ondrop="onDrop(event,' + i + ')" ' +
+              'ondragend="onDragEnd(event)">' +
+        '<span class="drag-handle">&#x2630;</span>' +
+        '<span class="item-icon">' + (it.icon || '&#x25A0;') + '</span>' +
+        '<span class="item-title">' + escHtml(it.title) + '</span>' +
+        '<span class="item-vis">' + (it.visible ? '&#x1F441;' : '&#x1F648;') + '</span>' +
+        '</div>';
+    }
+    el.innerHTML = html;
+    document.getElementById('sbarLeft').textContent = items.length + ' item' + (items.length === 1 ? '' : 's');
+    updateJson();
+  }
+
+  /* ── Render property panel ── */
+  function renderProps() {
+    var panel = document.getElementById('propsPanel');
+    if (selectedIdx < 0 || selectedIdx >= items.length) {
+      panel.innerHTML = '<div class="props-placeholder">Select an item to edit its properties</div>';
+      return;
+    }
+    var it = items[selectedIdx];
+    var swatchHtml = '';
+    for (var s = 0; s < SWATCHES.length; s++) {
+      var isAct = (it.color === SWATCHES[s]) ? ' active' : '';
+      swatchHtml += '<div class="swatch' + isAct + '" title="' + SWATCHES[s] + '" ' +
+                    'style="background:' + SWATCHES[s] + '" ' +
+                    'onclick="setColor(\'' + SWATCHES[s] + '\')"></div>';
+    }
+    panel.innerHTML =
+      '<div class="props-body">' +
+        '<div class="prop-group">' +
+          '<label class="prop-label" for="pTitle">Title</label>' +
+          '<input class="prop-input" id="pTitle" type="text" value="' + escAttr(it.title) + '" oninput="setProp(\'title\',this.value)" />' +
+        '</div>' +
+        '<div class="prop-row">' +
+          '<div class="prop-group">' +
+            '<label class="prop-label" for="pIcon">Icon / Emoji</label>' +
+            '<input class="prop-input" id="pIcon" type="text" value="' + escAttr(it.icon) + '" oninput="setProp(\'icon\',this.value)" />' +
+          '</div>' +
+          '<div class="prop-group">' +
+            '<label class="prop-label" for="pVis">Visibility</label>' +
+            '<select class="prop-input" id="pVis" onchange="setProp(\'visible\',this.value===\'true\')">' +
+              '<option value="true"' + (it.visible ? ' selected="selected"' : '') + '>Visible</option>' +
+              '<option value="false"' + (!it.visible ? ' selected="selected"' : '') + '>Hidden</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div class="prop-group">' +
+          '<label class="prop-label" for="pHref">Link / URL</label>' +
+          '<input class="prop-input" id="pHref" type="text" value="' + escAttr(it.href) + '" oninput="setProp(\'href\',this.value)" placeholder="e.g. scripts/dep-vis.html or http://127.0.0.1:8042" />' +
+        '</div>' +
+        '<div class="prop-group">' +
+          '<label class="prop-label" for="pAction">JS Action (optional)</label>' +
+          '<input class="prop-input" id="pAction" type="text" value="' + escAttr(it.action) + '" oninput="setProp(\'action\',this.value)" placeholder="e.g. triggerScan(\'full\')" />' +
+        '</div>' +
+        '<div class="prop-group">' +
+          '<label class="prop-label">Accent Colour</label>' +
+          '<div class="swatch-row">' + swatchHtml + '</div>' +
+          '<input class="prop-input" id="pColor" type="text" value="' + escAttr(it.color) + '" oninput="setProp(\'color\',this.value)" style="margin-top:6px" />' +
+        '</div>' +
+        '<div class="prop-group">' +
+          '<label class="prop-label" for="pId">ID (read-only)</label>' +
+          '<input class="prop-input" id="pId" type="text" value="' + escAttr(it.id) + '" readonly="readonly" style="opacity:.5;cursor:default" />' +
+        '</div>' +
+      '</div>';
+  }
+
+  /* ── Update JSON preview ── */
+  function updateJson() {
+    var out = document.getElementById('jsonOut');
+    if (items.length === 0) { out.textContent = '// No items'; return; }
+    try {
+      out.textContent = JSON.stringify(items, null, 2);
+    } catch(e) {
+      out.textContent = '// JSON error: ' + e.message;
+    }
+  }
+
+  /* ── Item operations ── */
+  function selectItem(idx) {
+    selectedIdx = idx;
+    renderList();
+    renderProps();
+  }
+
+  function addItem() {
+    items.push(makeItem());
+    selectedIdx = items.length - 1;
+    renderList();
+    renderProps();
+    setStatus('Item added', 'ok');
+  }
+
+  function deleteItem() {
+    if (selectedIdx < 0 || selectedIdx >= items.length) { return; }
+    items.splice(selectedIdx, 1);
+    if (selectedIdx >= items.length) { selectedIdx = items.length - 1; }
+    renderList();
+    renderProps();
+    setStatus('Item deleted', 'warn');
+  }
+
+  function moveUp() {
+    if (selectedIdx <= 0) { return; }
+    var tmp = items[selectedIdx]; items[selectedIdx] = items[selectedIdx - 1]; items[selectedIdx - 1] = tmp;
+    selectedIdx--;
+    renderList();
+    renderProps();
+  }
+
+  function moveDown() {
+    if (selectedIdx < 0 || selectedIdx >= items.length - 1) { return; }
+    var tmp = items[selectedIdx]; items[selectedIdx] = items[selectedIdx + 1]; items[selectedIdx + 1] = tmp;
+    selectedIdx++;
+    renderList();
+    renderProps();
+  }
+
+  function setProp(key, val) {
+    if (selectedIdx < 0 || selectedIdx >= items.length) { return; }
+    items[selectedIdx][key] = val;
+    /* refresh list label/icon live without full re-render */
+    updateJson();
+    var rows = document.getElementById('itemList').querySelectorAll('.item-row');
+    if (rows[selectedIdx]) {
+      var itEl = rows[selectedIdx];
+      var iconEl = itEl.querySelector('.item-icon');
+      var titleEl = itEl.querySelector('.item-title');
+      var visEl = itEl.querySelector('.item-vis');
+      if (iconEl && key === 'icon') { iconEl.innerHTML = val; }
+      if (titleEl && key === 'title') { titleEl.textContent = val; }
+      if (visEl && key === 'visible') { visEl.innerHTML = val ? '&#x1F441;' : '&#x1F648;'; }
+    }
+    document.getElementById('sbarLeft').textContent = items.length + ' item' + (items.length === 1 ? '' : 's');
+  }
+
+  function setColor(hex) {
+    setProp('color', hex);
+    var pColor = document.getElementById('pColor');
+    if (pColor) { pColor.value = hex; }
+    /* update swatch highlights */
+    var swatches = document.querySelectorAll('.swatch');
+    for (var s = 0; s < swatches.length; s++) {
+      if (swatches[s].title === hex) { swatches[s].className = 'swatch active'; }
+      else { swatches[s].className = 'swatch'; }
+    }
+  }
+  window.setColor = setColor;
+
+  /* ── Drag-and-drop reordering ── */
+  function onDragStart(e, idx) {
+    dragSrc = idx;
+    e.dataTransfer.effectAllowed = 'move';
+    var rows = document.getElementById('itemList').querySelectorAll('.item-row');
+    if (rows[idx]) { rows[idx].className = (rows[idx].className + ' dragging').trim(); }
+  }
+
+  function onDragOver(e, idx) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    var rows = document.getElementById('itemList').querySelectorAll('.item-row');
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].className = rows[i].className.replace(' drag-over','');
+    }
+    if (rows[idx] && idx !== dragSrc) {
+      rows[idx].className = (rows[idx].className + ' drag-over').trim();
+    }
+  }
+
+  function onDrop(e, idx) {
+    e.preventDefault();
+    if (dragSrc < 0 || dragSrc === idx) { return; }
+    var moved = items.splice(dragSrc, 1)[0];
+    var newIdx = (idx > dragSrc) ? idx - 1 : idx;
+    items.splice(newIdx, 0, moved);
+    selectedIdx = newIdx;
+    renderList();
+    renderProps();
+  }
+
+  function onDragEnd() {
+    dragSrc = -1;
+    var rows = document.getElementById('itemList').querySelectorAll('.item-row');
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].className = rows[i].className.replace(' dragging','').replace(' drag-over','');
+    }
+  }
+
+  /* ── CSRF token fetch ── */
+  function fetchCsrf(cb) {
+    if (csrfToken) { cb(csrfToken); return; }
+    fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){
+      return r.json();
+    }).then(function(d){
+      csrfToken = d.token || '';
+      cb(csrfToken);
+    }).catch(function(){
+      cb('');
+    });
+  }
+
+  /* ── Import from LocalWebEngine ── */
+  function importFromEngine() {
+    setStatus('Importing from LocalWebEngine&#x2026;', 'ok');
+    fetch(ENGINE_BASE + '/api/config/menus').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      if (Array.isArray(data)) {
+        items = data;
+      } else if (data && Array.isArray(data.items)) {
+        items = data.items;
+      } else {
+        throw new Error('Unexpected response format');
+      }
+      selectedIdx = items.length > 0 ? 0 : -1;
+      renderList();
+      renderProps();
+      setStatus('Imported ' + items.length + ' items from engine', 'ok');
+    }).catch(function(err){
+      setStatus('Import failed: ' + err.message, 'err');
+    });
+  }
+
+  /* ── Export to LocalWebEngine ── */
+  function exportToEngine() {
+    if (items.length === 0) { setStatus('Nothing to export', 'warn'); return; }
+    setStatus('Fetching CSRF token&#x2026;', 'ok');
+    fetchCsrf(function(tok) {
+      if (!tok) {
+        setStatus('Engine offline or no CSRF token', 'err');
+        return;
+      }
+      var payload = JSON.stringify({ items: items });
+      fetch(ENGINE_BASE + '/api/config/menus', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': tok
+        },
+        body: payload
+      }).then(function(r){
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(){
+        setStatus('Exported ' + items.length + ' items to engine', 'ok');
+      }).catch(function(err){
+        setStatus('Export failed: ' + err.message, 'err');
+      });
+    });
+  }
+
+  /* ── Status bar helper ── */
+  function setStatus(msg, level) {
+    var el = document.getElementById('sbarRight');
+    if (!el) { return; }
+    el.innerHTML = msg;
+    el.className = level === 'err' ? 'sbar-err' : level === 'warn' ? 'sbar-warn' : 'sbar-ok';
+  }
+
+  /* ── HTML escape helpers ── */
+  function escHtml(s) {
+    if (!s) { return ''; }
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+  function escAttr(s) {
+    if (!s) { return ''; }
+    return escHtml(s).replace(/"/g, '&quot;');
+  }
+
+  /* ── Expose globals for onclick= attrs ── */
+  window.selectItem  = selectItem;
+  window.addItem     = addItem;
+  window.deleteItem  = deleteItem;
+  window.moveUp      = moveUp;
+  window.moveDown    = moveDown;
+  window.setProp     = setProp;
+  window.importFromEngine = importFromEngine;
+  window.exportToEngine   = exportToEngine;
+  window.onDragStart = onDragStart;
+  window.onDragOver  = onDragOver;
+  window.onDrop      = onDrop;
+  window.onDragEnd   = onDragEnd;
+
+  /* ── Seed with 3 example items ── */
+  items = [
+    { id:'item_1', title:'Dependency Visualizer', icon:'&#x1F578;', href:'..\\..\\~README.md\\Dependency-Visualisation.html', action:'', visible:true,  color:'#007acc' },
+    { id:'item_2', title:'Workspace Hub',         icon:'&#x1F3E0;', href:'..\\..\\XHTML-WorkspaceHub.xhtml',                  action:'', visible:true,  color:'#4ec9b0' },
+    { id:'item_3', title:'Scan Control',          icon:'&#x26A1;',  href:'',                                                 action:"swTab('ScanCtrl')", visible:true, color:'#dcdcaa' }
+  ];
+  selectedIdx = 0;
+  renderList();
+  renderProps();
+
+  })();
+  //]]>
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate prerequisites",
+      "type": "aitk",
+      "command": "debug-check-prerequisites",
+      "args": {
+        "portOccupancy": [5679, 8087]
+      }
+    },
+    {
+      "label": "Run FocalPoint-null HTTP Server",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m debugpy --listen 127.0.0.1:5679 -m agentdev run main.py --verbose --port 8087 -- --server",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/agents/focalpoint-null"
+      },
+      "dependsOn": ["Validate prerequisites"],
+      "problemMatcher": {
+        "pattern": [{"regexp": "^.*$", "file": 0, "location": 1, "message": 2}],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Application startup complete|running on|Started server process"
+        }
+      }
+    },
+    {
+      "label": "Open FocalPoint Agent Inspector",
+      "type": "shell",
+      "command": "echo '${input:openAgentInspector}'",
+      "presentation": {"reveal": "never"},
+      "dependsOn": ["Run FocalPoint-null HTTP Server"]
+    },
+    {
+      "label": "Run FocalPoint-null CLI",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m debugpy --listen 127.0.0.1:5679 main.py --cli",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/agents/focalpoint-null"
+      },
+      "problemMatcher": {
+        "pattern": [{"regexp": "^.*$", "file": 0, "location": 1, "message": 2}],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "\\[FocalPoint-null-00\\]|Enter request:"
+        }
+      }
+    },
+    {
+      "label": "Install FocalPoint-null Dependencies",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m pip install -r requirements.txt --pre",
+      "options": {
+        "cwd": "${workspaceFolder}/agents/focalpoint-null"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "openAgentInspector",
+      "type": "command",
+      "command": "ai-mlstudio.openTestTool",
+      "args": {"triggeredFrom": "tasks", "port": 8087}
+    },
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    }
+  ]
+}

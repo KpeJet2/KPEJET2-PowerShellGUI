@@ -1,0 +1,2582 @@
+[
+  {
+    "LineNo": 1,
+    "Content": "**********************"
+  },
+  {
+    "LineNo": 2,
+    "Content": "PowerShell transcript start"
+  },
+  {
+    "LineNo": 3,
+    "Content": "Start time: 20260301030448"
+  },
+  {
+    "LineNo": 4,
+    "Content": "Username: XPS15-MS\\msaib"
+  },
+  {
+    "LineNo": 5,
+    "Content": "RunAs User: XPS15-MS\\msaib"
+  },
+  {
+    "LineNo": 6,
+    "Content": "Configuration Name: "
+  },
+  {
+    "LineNo": 7,
+    "Content": "Machine: XPS15-MS (Microsoft Windows NT 10.0.26100.0)"
+  },
+  {
+    "LineNo": 8,
+    "Content": "Host Application: C:\\Program Files\\PowerShell\\7\\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\\Users\\msaib\\.vscode\\extensions\\ms-vscode.powershell-2025.4.0\\modules\\PowerShellEditorServices\\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.4.0' -BundledModulesPath 'c:\\Users\\msaib\\.vscode\\extensions\\ms-vscode.powershell-2025.4.0\\modules' -EnableConsoleRepl -StartupBanner \"PowerShell Extension v2025.4.0"
+  },
+  {
+    "LineNo": 9,
+    "Content": "Copyright (c) Microsoft Corporation."
+  },
+  {
+    "LineNo": 10,
+    "Content": ""
+  },
+  {
+    "LineNo": 11,
+    "Content": "https://aka.ms/vscode-powershell"
+  },
+  {
+    "LineNo": 12,
+    "Content": "Type 'help' to get help."
+  },
+  {
+    "LineNo": 13,
+    "Content": "\" -LogLevel 'Warning' -LogPath 'c:\\Users\\msaib\\AppData\\Roaming\\Code\\logs\\20260228T151436\\window1\\exthost\\ms-vscode.powershell' -SessionDetailsPath 'c:\\Users\\msaib\\AppData\\Roaming\\Code\\User\\globalStorage\\ms-vscode.powershell\\sessions\\PSES-VSCode-65224-240511.json' -FeatureFlags @() "
+  },
+  {
+    "LineNo": 14,
+    "Content": "Process ID: 83408"
+  },
+  {
+    "LineNo": 15,
+    "Content": "PSVersion: 7.5.4"
+  },
+  {
+    "LineNo": 16,
+    "Content": "PSEdition: Core"
+  },
+  {
+    "LineNo": 17,
+    "Content": "GitCommitId: 7.5.4"
+  },
+  {
+    "LineNo": 18,
+    "Content": "OS: Microsoft Windows 10.0.26100"
+  },
+  {
+    "LineNo": 19,
+    "Content": "Platform: Win32NT"
+  },
+  {
+    "LineNo": 20,
+    "Content": "PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0"
+  },
+  {
+    "LineNo": 21,
+    "Content": "PSRemotingProtocolVersion: 2.3"
+  },
+  {
+    "LineNo": 22,
+    "Content": "SerializationVersion: 1.1.0.1"
+  },
+  {
+    "LineNo": 23,
+    "Content": "WSManStackVersion: 3.0"
+  },
+  {
+    "LineNo": 24,
+    "Content": "**********************"
+  },
+  {
+    "LineNo": 25,
+    "Content": ""
+  },
+  {
+    "LineNo": 26,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 27,
+    "Content": "  1. String Manipulation"
+  },
+  {
+    "LineNo": 28,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 29,
+    "Content": "  >> Basic string operations"
+  },
+  {
+    "LineNo": 30,
+    "Content": "Original     : '  Hello, PowerShell World!  '"
+  },
+  {
+    "LineNo": 31,
+    "Content": "Trimmed      : 'Hello, PowerShell World!'"
+  },
+  {
+    "LineNo": 32,
+    "Content": "ToUpper      : HELLO, POWERSHELL WORLD!"
+  },
+  {
+    "LineNo": 33,
+    "Content": "ToLower      : hello, powershell world!"
+  },
+  {
+    "LineNo": 34,
+    "Content": "Replace      : Hello, PowerShell Universe!"
+  },
+  {
+    "LineNo": 35,
+    "Content": "StartsWith H : True"
+  },
+  {
+    "LineNo": 36,
+    "Content": "Contains Pow : True"
+  },
+  {
+    "LineNo": 37,
+    "Content": "IndexOf ,    : 5"
+  },
+  {
+    "LineNo": 38,
+    "Content": "Substring 7  : PowerShell"
+  },
+  {
+    "LineNo": 39,
+    "Content": "Length       : 24"
+  },
+  {
+    "LineNo": 40,
+    "Content": ""
+  },
+  {
+    "LineNo": 41,
+    "Content": "  >> String formatting"
+  },
+  {
+    "LineNo": 42,
+    "Content": "Name: Alice      Score: 98.60"
+  },
+  {
+    "LineNo": 43,
+    "Content": "Name: Alice  Score: 98.6"
+  },
+  {
+    "LineNo": 44,
+    "Content": "Line 1: Alice"
+  },
+  {
+    "LineNo": 45,
+    "Content": "Line 2: Score = 98.6"
+  },
+  {
+    "LineNo": 46,
+    "Content": ""
+  },
+  {
+    "LineNo": 47,
+    "Content": "  >> Split and Join"
+  },
+  {
+    "LineNo": 48,
+    "Content": "Split  : alpha | beta | gamma | delta"
+  },
+  {
+    "LineNo": 49,
+    "Content": "Joined : alpha::beta::gamma::delta"
+  },
+  {
+    "LineNo": 50,
+    "Content": ""
+  },
+  {
+    "LineNo": 51,
+    "Content": "  >> Regex replace and extract"
+  },
+  {
+    "LineNo": 52,
+    "Content": "Masked phones : My phone is ***-**** and backup is ***-****"
+  },
+  {
+    "LineNo": 53,
+    "Content": "Extracted     : 555-1234, 555-9876"
+  },
+  {
+    "LineNo": 54,
+    "Content": ""
+  },
+  {
+    "LineNo": 55,
+    "Content": ""
+  },
+  {
+    "LineNo": 56,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 57,
+    "Content": "  2. Arrays & Collections"
+  },
+  {
+    "LineNo": 58,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 59,
+    "Content": "  >> Array basics"
+  },
+  {
+    "LineNo": 60,
+    "Content": "Array        : 10 20 30 40 50"
+  },
+  {
+    "LineNo": 61,
+    "Content": "Count        : 5"
+  },
+  {
+    "LineNo": 62,
+    "Content": "First        : 10"
+  },
+  {
+    "LineNo": 63,
+    "Content": "Last         : 50"
+  },
+  {
+    "LineNo": 64,
+    "Content": "Slice [1..3] : 20 30 40"
+  },
+  {
+    "LineNo": 65,
+    "Content": "After append : 10 20 30 40 50 60"
+  },
+  {
+    "LineNo": 66,
+    "Content": ""
+  },
+  {
+    "LineNo": 67,
+    "Content": "  >> ArrayList (mutable, efficient)"
+  },
+  {
+    "LineNo": 68,
+    "Content": "ArrayList: Alpha, Gamma"
+  },
+  {
+    "LineNo": 69,
+    "Content": ""
+  },
+  {
+    "LineNo": 70,
+    "Content": "  >> Generic List[T] (strongly typed)"
+  },
+  {
+    "LineNo": 71,
+    "Content": "True"
+  },
+  {
+    "LineNo": 72,
+    "Content": "List[int]: 1, 2, 4, 5"
+  },
+  {
+    "LineNo": 73,
+    "Content": ""
+  },
+  {
+    "LineNo": 74,
+    "Content": "  >> Stack and Queue"
+  },
+  {
+    "LineNo": 75,
+    "Content": "Stack Pop: Third"
+  },
+  {
+    "LineNo": 76,
+    "Content": "Queue Dequeue: A"
+  },
+  {
+    "LineNo": 77,
+    "Content": ""
+  },
+  {
+    "LineNo": 78,
+    "Content": "  >> Array filtering, mapping, and reducing"
+  },
+  {
+    "LineNo": 79,
+    "Content": "Even    : 2, 4, 6, 8, 10"
+  },
+  {
+    "LineNo": 80,
+    "Content": "Squared : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100"
+  },
+  {
+    "LineNo": 81,
+    "Content": "Sum 1-10: 55"
+  },
+  {
+    "LineNo": 82,
+    "Content": ""
+  },
+  {
+    "LineNo": 83,
+    "Content": ""
+  },
+  {
+    "LineNo": 84,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 85,
+    "Content": "  3. Error Handling"
+  },
+  {
+    "LineNo": 86,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 87,
+    "Content": "  >> try / catch / finally"
+  },
+  {
+    "LineNo": 88,
+    "Content": "Caught DivideByZeroException: Attempted to divide by zero."
+  },
+  {
+    "LineNo": 89,
+    "Content": "finally block ran."
+  },
+  {
+    "LineNo": 90,
+    "Content": ""
+  },
+  {
+    "LineNo": 91,
+    "Content": "  >> Non-terminating error with ErrorAction"
+  },
+  {
+    "LineNo": 92,
+    "Content": "PS>TerminatingError(Get-Item): \"The running command stopped because the preference variable \"ErrorActionPreference\" or common parameter is set to Stop: Cannot find path 'C:\\DoesNotExist\\file.txt' because it does not exist.\""
+  },
+  {
+    "LineNo": 93,
+    "Content": "Caught non-terminating (promoted to terminating): Cannot find path 'C:\\DoesNotExist\\file.txt' because it does not exist."
+  },
+  {
+    "LineNo": 94,
+    "Content": ""
+  },
+  {
+    "LineNo": 95,
+    "Content": "  >> $Error automatic variable"
+  },
+  {
+    "LineNo": 96,
+    "Content": "Last error: Cannot find drive. A drive with the name 'Z' does not exist."
+  },
+  {
+    "LineNo": 97,
+    "Content": ""
+  },
+  {
+    "LineNo": 98,
+    "Content": "  >> trap statement (legacy error handling)"
+  },
+  {
+    "LineNo": 99,
+    "Content": "trap caught: Cannot convert value \"not-a-number\" to type \"System.Int32\". Error: \"The input string 'not-a-number' was not in a correct format.\""
+  },
+  {
+    "LineNo": 100,
+    "Content": "Execution continued after trap."
+  },
+  {
+    "LineNo": 101,
+    "Content": ""
+  },
+  {
+    "LineNo": 102,
+    "Content": ""
+  },
+  {
+    "LineNo": 103,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 104,
+    "Content": "  4. Pipeline Deep-Dive"
+  },
+  {
+    "LineNo": 105,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 106,
+    "Content": "  >> ForEach-Object with -Begin / -Process / -End"
+  },
+  {
+    "LineNo": 107,
+    "Content": "[Begin]"
+  },
+  {
+    "LineNo": 108,
+    "Content": "  Processing: 1"
+  },
+  {
+    "LineNo": 109,
+    "Content": "  Processing: 2"
+  },
+  {
+    "LineNo": 110,
+    "Content": "  Processing: 3"
+  },
+  {
+    "LineNo": 111,
+    "Content": "  Processing: 4"
+  },
+  {
+    "LineNo": 112,
+    "Content": "  Processing: 5"
+  },
+  {
+    "LineNo": 113,
+    "Content": "[End]"
+  },
+  {
+    "LineNo": 114,
+    "Content": ""
+  },
+  {
+    "LineNo": 115,
+    "Content": "  >> Select-Object — property projection & computed properties"
+  },
+  {
+    "LineNo": 116,
+    "Content": ""
+  },
+  {
+    "LineNo": 117,
+    "Content": "Name              Id MemMB NameLen"
+  },
+  {
+    "LineNo": 118,
+    "Content": "----              -- ----- -------"
+  },
+  {
+    "LineNo": 119,
+    "Content": "action1_agent   4936 80.00      13"
+  },
+  {
+    "LineNo": 120,
+    "Content": "aesm_service   27612  5.80      12"
+  },
+  {
+    "LineNo": 121,
+    "Content": "AggregatorHost 11160 10.50      14"
+  },
+  {
+    "LineNo": 122,
+    "Content": "AppActions     36248 19.40      10"
+  },
+  {
+    "LineNo": 123,
+    "Content": ""
+  },
+  {
+    "LineNo": 124,
+    "Content": ""
+  },
+  {
+    "LineNo": 125,
+    "Content": "  >> Tee-Object — branch the pipeline without interrupting it"
+  },
+  {
+    "LineNo": 126,
+    "Content": ""
+  },
+  {
+    "LineNo": 127,
+    "Content": "Name"
+  },
+  {
+    "LineNo": 128,
+    "Content": "----"
+  },
+  {
+    "LineNo": 129,
+    "Content": "action1_agent"
+  },
+  {
+    "LineNo": 130,
+    "Content": "aesm_service"
+  },
+  {
+    "LineNo": 131,
+    "Content": "AggregatorHost"
+  },
+  {
+    "LineNo": 132,
+    "Content": "AppActions"
+  },
+  {
+    "LineNo": 133,
+    "Content": "ApplicationFrameHost"
+  },
+  {
+    "LineNo": 134,
+    "Content": ""
+  },
+  {
+    "LineNo": 135,
+    "Content": "Tee captured 5 objects."
+  },
+  {
+    "LineNo": 136,
+    "Content": ""
+  },
+  {
+    "LineNo": 137,
+    "Content": "  >> Measure-Object"
+  },
+  {
+    "LineNo": 138,
+    "Content": "Process WorkingSet stats:"
+  },
+  {
+    "LineNo": 139,
+    "Content": "  Count  : 483"
+  },
+  {
+    "LineNo": 140,
+    "Content": "  Sum MB : 27767.3"
+  },
+  {
+    "LineNo": 141,
+    "Content": "  Avg MB : 57.5"
+  },
+  {
+    "LineNo": 142,
+    "Content": "  Max MB : 3343.7"
+  },
+  {
+    "LineNo": 143,
+    "Content": ""
+  },
+  {
+    "LineNo": 144,
+    "Content": "  >> Group-Object & Sort-Object"
+  },
+  {
+    "LineNo": 145,
+    "Content": ""
+  },
+  {
+    "LineNo": 146,
+    "Content": "Name    Count"
+  },
+  {
+    "LineNo": 147,
+    "Content": "----    -----"
+  },
+  {
+    "LineNo": 148,
+    "Content": "msedge    116"
+  },
+  {
+    "LineNo": 149,
+    "Content": "svchost   106"
+  },
+  {
+    "LineNo": 150,
+    "Content": "pwsh       26"
+  },
+  {
+    "LineNo": 151,
+    "Content": "conhost    26"
+  },
+  {
+    "LineNo": 152,
+    "Content": "Code       24"
+  },
+  {
+    "LineNo": 153,
+    "Content": ""
+  },
+  {
+    "LineNo": 154,
+    "Content": ""
+  },
+  {
+    "LineNo": 155,
+    "Content": ""
+  },
+  {
+    "LineNo": 156,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 157,
+    "Content": "  5. Output Methods"
+  },
+  {
+    "LineNo": 158,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 159,
+    "Content": "  >> Write-* family"
+  },
+  {
+    "LineNo": 160,
+    "Content": "Write-Host    — displays to console (not pipeline)"
+  },
+  {
+    "LineNo": 161,
+    "Content": "Write-Output  — sends to pipeline (default behaviour)"
+  },
+  {
+    "LineNo": 162,
+    "Content": "VERBOSE: Write-Verbose — visible only when -Verbose switch is set"
+  },
+  {
+    "LineNo": 163,
+    "Content": "WARNING: Write-Warning — yellow warning stream"
+  },
+  {
+    "LineNo": 164,
+    "Content": "Write-Information — information stream (stream 6)"
+  },
+  {
+    "LineNo": 165,
+    "Content": ""
+  },
+  {
+    "LineNo": 166,
+    "Content": "  >> Format-* cmdlets"
+  },
+  {
+    "LineNo": 167,
+    "Content": ""
+  },
+  {
+    "LineNo": 168,
+    "Content": "Name              Id CPU"
+  },
+  {
+    "LineNo": 169,
+    "Content": "----              -- ---"
+  },
+  {
+    "LineNo": 170,
+    "Content": "action1_agent   4936"
+  },
+  {
+    "LineNo": 171,
+    "Content": "aesm_service   27612"
+  },
+  {
+    "LineNo": 172,
+    "Content": "AggregatorHost 11160"
+  },
+  {
+    "LineNo": 173,
+    "Content": ""
+  },
+  {
+    "LineNo": 174,
+    "Content": ""
+  },
+  {
+    "LineNo": 175,
+    "Content": "Name : action1_agent"
+  },
+  {
+    "LineNo": 176,
+    "Content": "Id   : 4936"
+  },
+  {
+    "LineNo": 177,
+    "Content": "Path : "
+  },
+  {
+    "LineNo": 178,
+    "Content": ""
+  },
+  {
+    "LineNo": 179,
+    "Content": ""
+  },
+  {
+    "LineNo": 180,
+    "Content": "action1_agent                                         aesm_service                                          AggregatorHost"
+  },
+  {
+    "LineNo": 181,
+    "Content": "AppActions                                            ApplicationFrameHost                                  AppVShNotify"
+  },
+  {
+    "LineNo": 182,
+    "Content": "audiodg                                               backgroundTaskHost                                    backgroundTaskHost"
+  },
+  {
+    "LineNo": 183,
+    "Content": ""
+  },
+  {
+    "LineNo": 184,
+    "Content": ""
+  },
+  {
+    "LineNo": 185,
+    "Content": "  >> Out-* cmdlets"
+  },
+  {
+    "LineNo": 186,
+    "Content": "Out-File wrote 9 lines to C:\\Users\\msaib\\AppData\\Local\\Temp\\cheatsheet_out.txt"
+  },
+  {
+    "LineNo": 187,
+    "Content": "Out-String length: 255 chars"
+  },
+  {
+    "LineNo": 188,
+    "Content": ""
+  },
+  {
+    "LineNo": 189,
+    "Content": "  >> Export-* cmdlets"
+  },
+  {
+    "LineNo": 190,
+    "Content": "CSV  written : C:\\Users\\msaib\\AppData\\Local\\Temp\\cheatsheet_procs.csv  (141 bytes)"
+  },
+  {
+    "LineNo": 191,
+    "Content": "JSON written : C:\\Users\\msaib\\AppData\\Local\\Temp\\cheatsheet_procs.json (298 bytes)"
+  },
+  {
+    "LineNo": 192,
+    "Content": ""
+  },
+  {
+    "LineNo": 193,
+    "Content": ""
+  },
+  {
+    "LineNo": 194,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 195,
+    "Content": "  6. JSON & XML"
+  },
+  {
+    "LineNo": 196,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 197,
+    "Content": "  >> JSON — ConvertTo/From"
+  },
+  {
+    "LineNo": 198,
+    "Content": "JSON output:"
+  },
+  {
+    "LineNo": 199,
+    "Content": "{"
+  },
+  {
+    "LineNo": 200,
+    "Content": "  \"Name\": \"PowerShell\","
+  },
+  {
+    "LineNo": 201,
+    "Content": "  \"Version\": 7,"
+  },
+  {
+    "LineNo": 202,
+    "Content": "  \"Tags\": ["
+  },
+  {
+    "LineNo": 203,
+    "Content": "    \"shell\","
+  },
+  {
+    "LineNo": 204,
+    "Content": "    \"scripting\""
+  },
+  {
+    "LineNo": 205,
+    "Content": "  ]"
+  },
+  {
+    "LineNo": 206,
+    "Content": "}"
+  },
+  {
+    "LineNo": 207,
+    "Content": "Round-trip Name: PowerShell  Tags: shell,scripting"
+  },
+  {
+    "LineNo": 208,
+    "Content": ""
+  },
+  {
+    "LineNo": 209,
+    "Content": "  >> XML — [xml] type accelerator"
+  },
+  {
+    "LineNo": 210,
+    "Content": "Server: web01  IP: 10.0.0.1"
+  },
+  {
+    "LineNo": 211,
+    "Content": "Server: db01  IP: 10.0.0.2"
+  },
+  {
+    "LineNo": 212,
+    "Content": "After add: 3 servers"
+  },
+  {
+    "LineNo": 213,
+    "Content": ""
+  },
+  {
+    "LineNo": 214,
+    "Content": "  >> Import/Export CSV"
+  },
+  {
+    "LineNo": 215,
+    "Content": "9_000_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:474:53"
+  },
+  {
+    "LineNo": 216,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 217,
+    "Content": " 474 |          [PSCustomObject]@{ City = 'London';   Pop = 9_000_000 }"
+  },
+  {
+    "LineNo": 218,
+    "Content": "     |                                                      ~~~~~~~~~"
+  },
+  {
+    "LineNo": 219,
+    "Content": "     | The term '9_000_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 220,
+    "Content": "9_000_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:474:53"
+  },
+  {
+    "LineNo": 221,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 222,
+    "Content": " 474 |          [PSCustomObject]@{ City = 'London';   Pop = 9_000_000 }"
+  },
+  {
+    "LineNo": 223,
+    "Content": "     |                                                      ~~~~~~~~~"
+  },
+  {
+    "LineNo": 224,
+    "Content": "     | The term '9_000_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path"
+  },
+  {
+    "LineNo": 225,
+    "Content": "     | was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 226,
+    "Content": ""
+  },
+  {
+    "LineNo": 227,
+    "Content": "8_300_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:475:53"
+  },
+  {
+    "LineNo": 228,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 229,
+    "Content": " 475 |          [PSCustomObject]@{ City = 'New York'; Pop = 8_300_000 }"
+  },
+  {
+    "LineNo": 230,
+    "Content": "     |                                                      ~~~~~~~~~"
+  },
+  {
+    "LineNo": 231,
+    "Content": "     | The term '8_300_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 232,
+    "Content": "8_300_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:475:53"
+  },
+  {
+    "LineNo": 233,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 234,
+    "Content": " 475 |          [PSCustomObject]@{ City = 'New York'; Pop = 8_300_000 }"
+  },
+  {
+    "LineNo": 235,
+    "Content": "     |                                                      ~~~~~~~~~"
+  },
+  {
+    "LineNo": 236,
+    "Content": "     | The term '8_300_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path"
+  },
+  {
+    "LineNo": 237,
+    "Content": "     | was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 238,
+    "Content": ""
+  },
+  {
+    "LineNo": 239,
+    "Content": "13_900_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:476:53"
+  },
+  {
+    "LineNo": 240,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 241,
+    "Content": " 476 |          [PSCustomObject]@{ City = 'Tokyo';    Pop = 13_900_000 }"
+  },
+  {
+    "LineNo": 242,
+    "Content": "     |                                                      ~~~~~~~~~~"
+  },
+  {
+    "LineNo": 243,
+    "Content": "     | The term '13_900_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 244,
+    "Content": "13_900_000: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:476:53"
+  },
+  {
+    "LineNo": 245,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 246,
+    "Content": " 476 |          [PSCustomObject]@{ City = 'Tokyo';    Pop = 13_900_000 }"
+  },
+  {
+    "LineNo": 247,
+    "Content": "     |                                                      ~~~~~~~~~~"
+  },
+  {
+    "LineNo": 248,
+    "Content": "     | The term '13_900_000' is not recognized as a name of a cmdlet, function, script file, or executable program. Check the spelling of the name, or if a path"
+  },
+  {
+    "LineNo": 249,
+    "Content": "     | was included, verify that the path is correct and try again."
+  },
+  {
+    "LineNo": 250,
+    "Content": ""
+  },
+  {
+    "LineNo": 251,
+    "Content": ""
+  },
+  {
+    "LineNo": 252,
+    "Content": ""
+  },
+  {
+    "LineNo": 253,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 254,
+    "Content": "  7. Environment Variables"
+  },
+  {
+    "LineNo": 255,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 256,
+    "Content": "  >> Read, write, and remove env vars"
+  },
+  {
+    "LineNo": 257,
+    "Content": "PATH first entry : C:\\Program Files\\PowerShell\\7"
+  },
+  {
+    "LineNo": 258,
+    "Content": "USERNAME         : msaib"
+  },
+  {
+    "LineNo": 259,
+    "Content": "COMPUTERNAME     : XPS15-MS"
+  },
+  {
+    "LineNo": 260,
+    "Content": "OS               : Windows_NT"
+  },
+  {
+    "LineNo": 261,
+    "Content": "Custom env var   : HelloV2"
+  },
+  {
+    "LineNo": 262,
+    "Content": "After remove     : (gone)"
+  },
+  {
+    "LineNo": 263,
+    "Content": ""
+  },
+  {
+    "LineNo": 264,
+    "Content": "  >> Enumerate all env vars"
+  },
+  {
+    "LineNo": 265,
+    "Content": ""
+  },
+  {
+    "LineNo": 266,
+    "Content": "Name                      Value"
+  },
+  {
+    "LineNo": 267,
+    "Content": "----                      -----"
+  },
+  {
+    "LineNo": 268,
+    "Content": "ALLUSERSPROFILE           C:\\ProgramData"
+  },
+  {
+    "LineNo": 269,
+    "Content": "APPDATA                   C:\\Users\\msaib\\AppData\\Roaming"
+  },
+  {
+    "LineNo": 270,
+    "Content": "BUN_INSPECT_CONNECT_TO    tcp://127.0.0.1:57467"
+  },
+  {
+    "LineNo": 271,
+    "Content": "BUNDLED_DEBUGPY_PATH      c:\\Users\\msaib\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\libs\\debugpy"
+  },
+  {
+    "LineNo": 272,
+    "Content": "ChocolateyInstall         C:\\ProgramData\\chocolatey"
+  },
+  {
+    "LineNo": 273,
+    "Content": "ChocolateyLastPathUpdate  133717484005159128"
+  },
+  {
+    "LineNo": 274,
+    "Content": "CHROME_CRASHPAD_PIPE_NAME \\\\.\\pipe\\crashpad_65224_AHLMUZFRTQWVMDRV"
+  },
+  {
+    "LineNo": 275,
+    "Content": "CLAUDE_CODE_SSE_PORT      60717"
+  },
+  {
+    "LineNo": 276,
+    "Content": ""
+  },
+  {
+    "LineNo": 277,
+    "Content": ""
+  },
+  {
+    "LineNo": 278,
+    "Content": ""
+  },
+  {
+    "LineNo": 279,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 280,
+    "Content": "  8. Date & Time"
+  },
+  {
+    "LineNo": 281,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 282,
+    "Content": "  >> DateTime basics"
+  },
+  {
+    "LineNo": 283,
+    "Content": "Now              : 03/01/2026 03:04:50"
+  },
+  {
+    "LineNo": 284,
+    "Content": "UTC              : 02/28/2026 19:04:50"
+  },
+  {
+    "LineNo": 285,
+    "Content": "ISO 8601         : 2026-03-01T03:04:50Z"
+  },
+  {
+    "LineNo": 286,
+    "Content": "Day of week      : Sunday"
+  },
+  {
+    "LineNo": 287,
+    "Content": "Day of year      : 60"
+  },
+  {
+    "LineNo": 288,
+    "Content": "+30 days         : 31/03/2026"
+  },
+  {
+    "LineNo": 289,
+    "Content": "TimeSpan days    : 30"
+  },
+  {
+    "LineNo": 290,
+    "Content": ""
+  },
+  {
+    "LineNo": 291,
+    "Content": "  >> Measuring execution time"
+  },
+  {
+    "LineNo": 292,
+    "Content": "Elapsed: 163 ms"
+  },
+  {
+    "LineNo": 293,
+    "Content": "Measure-Command: 115.2608 ms"
+  },
+  {
+    "LineNo": 294,
+    "Content": ""
+  },
+  {
+    "LineNo": 295,
+    "Content": ""
+  },
+  {
+    "LineNo": 296,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 297,
+    "Content": "  9. Background Jobs"
+  },
+  {
+    "LineNo": 298,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 299,
+    "Content": "  >> Start-Job / Receive-Job"
+  },
+  {
+    "LineNo": 300,
+    "Content": "Job state (running): Running"
+  },
+  {
+    "LineNo": 301,
+    "Content": "Job state (done)   : Completed"
+  },
+  {
+    "LineNo": 302,
+    "Content": "Output             : Job result: 3.14159265358979"
+  },
+  {
+    "LineNo": 303,
+    "Content": ""
+  },
+  {
+    "LineNo": 304,
+    "Content": "  >> ForEach-Object -Parallel (thread-based, PS7+)"
+  },
+  {
+    "LineNo": 305,
+    "Content": ""
+  },
+  {
+    "LineNo": 306,
+    "Content": "Input Square Thread"
+  },
+  {
+    "LineNo": 307,
+    "Content": "----- ------ ------"
+  },
+  {
+    "LineNo": 308,
+    "Content": "    1      1     80"
+  },
+  {
+    "LineNo": 309,
+    "Content": "    2      4     15"
+  },
+  {
+    "LineNo": 310,
+    "Content": "    3      9     64"
+  },
+  {
+    "LineNo": 311,
+    "Content": "    4     16     38"
+  },
+  {
+    "LineNo": 312,
+    "Content": "    5     25     55"
+  },
+  {
+    "LineNo": 313,
+    "Content": ""
+  },
+  {
+    "LineNo": 314,
+    "Content": ""
+  },
+  {
+    "LineNo": 315,
+    "Content": "  >> Start-ThreadJob (lighter than Start-Job)"
+  },
+  {
+    "LineNo": 316,
+    "Content": "ThreadJob returned PID: 83408"
+  },
+  {
+    "LineNo": 317,
+    "Content": ""
+  },
+  {
+    "LineNo": 318,
+    "Content": ""
+  },
+  {
+    "LineNo": 319,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 320,
+    "Content": "  10. Processes & Services"
+  },
+  {
+    "LineNo": 321,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 322,
+    "Content": "  >> Get-Process"
+  },
+  {
+    "LineNo": 323,
+    "Content": ""
+  },
+  {
+    "LineNo": 324,
+    "Content": "Name                  Id   MemMB"
+  },
+  {
+    "LineNo": 325,
+    "Content": "----                  --   -----"
+  },
+  {
+    "LineNo": 326,
+    "Content": "Memory Compression  4172 3343.80"
+  },
+  {
+    "LineNo": 327,
+    "Content": "pwsh               83408 3008.00"
+  },
+  {
+    "LineNo": 328,
+    "Content": "Code               64020 1330.60"
+  },
+  {
+    "LineNo": 329,
+    "Content": "Code               67032  889.50"
+  },
+  {
+    "LineNo": 330,
+    "Content": "msedge             19532  725.10"
+  },
+  {
+    "LineNo": 331,
+    "Content": ""
+  },
+  {
+    "LineNo": 332,
+    "Content": ""
+  },
+  {
+    "LineNo": 333,
+    "Content": "  >> Start and stop a process"
+  },
+  {
+    "LineNo": 334,
+    "Content": "Started Notepad PID: 59640"
+  },
+  {
+    "LineNo": 335,
+    "Content": "Notepad stopped."
+  },
+  {
+    "LineNo": 336,
+    "Content": ""
+  },
+  {
+    "LineNo": 337,
+    "Content": "  >> Get-Service"
+  },
+  {
+    "LineNo": 338,
+    "Content": ""
+  },
+  {
+    "LineNo": 339,
+    "Content": "Name        DisplayName                        Status"
+  },
+  {
+    "LineNo": 340,
+    "Content": "----        -----------                        ------"
+  },
+  {
+    "LineNo": 341,
+    "Content": "A1Agent     Action1 Agent                     Running"
+  },
+  {
+    "LineNo": 342,
+    "Content": "AESMService Intel® SGX AESM                   Running"
+  },
+  {
+    "LineNo": 343,
+    "Content": "Appinfo     Application Information           Running"
+  },
+  {
+    "LineNo": 344,
+    "Content": "AppMgmt     Application Management            Running"
+  },
+  {
+    "LineNo": 345,
+    "Content": "AppXSvc     AppX Deployment Service (AppXSVC) Running"
+  },
+  {
+    "LineNo": 346,
+    "Content": ""
+  },
+  {
+    "LineNo": 347,
+    "Content": ""
+  },
+  {
+    "LineNo": 348,
+    "Content": ""
+  },
+  {
+    "LineNo": 349,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 350,
+    "Content": "  11. Registry (Windows only)"
+  },
+  {
+    "LineNo": 351,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 352,
+    "Content": "  >> Read registry values"
+  },
+  {
+    "LineNo": 353,
+    "Content": "ProductName   : Windows 10 Pro for Workstations"
+  },
+  {
+    "LineNo": 354,
+    "Content": "CurrentBuild  : 26100"
+  },
+  {
+    "LineNo": 355,
+    "Content": "ReleaseId     : 2009"
+  },
+  {
+    "LineNo": 356,
+    "Content": ""
+  },
+  {
+    "LineNo": 357,
+    "Content": "  >> Create, update, and delete registry values (HKCU)"
+  },
+  {
+    "LineNo": 358,
+    "Content": "Read back TestValue: 42"
+  },
+  {
+    "LineNo": 359,
+    "Content": "Test registry key removed."
+  },
+  {
+    "LineNo": 360,
+    "Content": ""
+  },
+  {
+    "LineNo": 361,
+    "Content": ""
+  },
+  {
+    "LineNo": 362,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 363,
+    "Content": "  12. Network Utilities"
+  },
+  {
+    "LineNo": 364,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 365,
+    "Content": "  >> Test-Connection (ping)"
+  },
+  {
+    "LineNo": 366,
+    "Content": "8.8.8.8 reachable: True"
+  },
+  {
+    "LineNo": 367,
+    "Content": ""
+  },
+  {
+    "LineNo": 368,
+    "Content": "  >> DNS resolution"
+  },
+  {
+    "LineNo": 369,
+    "Content": ""
+  },
+  {
+    "LineNo": 370,
+    "Content": "Name       Type IPAddress"
+  },
+  {
+    "LineNo": 371,
+    "Content": "----       ---- ---------"
+  },
+  {
+    "LineNo": 372,
+    "Content": "github.com    A 4.237.22.38"
+  },
+  {
+    "LineNo": 373,
+    "Content": ""
+  },
+  {
+    "LineNo": 374,
+    "Content": ""
+  },
+  {
+    "LineNo": 375,
+    "Content": "  >> Invoke-WebRequest — parse a web page"
+  },
+  {
+    "LineNo": 376,
+    "Content": "HTTP status  : 200"
+  },
+  {
+    "LineNo": 377,
+    "Content": "Content-Type : application/json; charset=utf-8"
+  },
+  {
+    "LineNo": 378,
+    "Content": "Body snippet : authorizations_url, code_search_url, commit_search_url"
+  },
+  {
+    "LineNo": 379,
+    "Content": ""
+  },
+  {
+    "LineNo": 380,
+    "Content": "  >> Test-NetConnection (port check)"
+  },
+  {
+    "LineNo": 381,
+    "Content": "github.com:443 open: True"
+  },
+  {
+    "LineNo": 382,
+    "Content": ""
+  },
+  {
+    "LineNo": 383,
+    "Content": ""
+  },
+  {
+    "LineNo": 384,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 385,
+    "Content": "  13. Credential Handling"
+  },
+  {
+    "LineNo": 386,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 387,
+    "Content": "  >> PSCredential — build without a GUI prompt"
+  },
+  {
+    "LineNo": 388,
+    "Content": "Username : DOMAIN\\Alice"
+  },
+  {
+    "LineNo": 389,
+    "Content": "Password is SecureString: True"
+  },
+  {
+    "LineNo": 390,
+    "Content": "Plain-text (demo): P@ssw0rd!"
+  },
+  {
+    "LineNo": 391,
+    "Content": ""
+  },
+  {
+    "LineNo": 392,
+    "Content": "  >> Export and import encrypted credentials (Windows DPAPI)"
+  },
+  {
+    "LineNo": 393,
+    "Content": "Round-trip password: Secret123!"
+  },
+  {
+    "LineNo": 394,
+    "Content": ""
+  },
+  {
+    "LineNo": 395,
+    "Content": ""
+  },
+  {
+    "LineNo": 396,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 397,
+    "Content": "  14. Script Blocks & Closures"
+  },
+  {
+    "LineNo": 398,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 399,
+    "Content": "  >> Script block basics"
+  },
+  {
+    "LineNo": 400,
+    "Content": "Hello, World!"
+  },
+  {
+    "LineNo": 401,
+    "Content": "10 + 32 = 42"
+  },
+  {
+    "LineNo": 402,
+    "Content": ""
+  },
+  {
+    "LineNo": 403,
+    "Content": "  >> Closure — GetNewClosure() captures outer variables"
+  },
+  {
+    "LineNo": 404,
+    "Content": "Closure still uses captured value: 35"
+  },
+  {
+    "LineNo": 405,
+    "Content": ""
+  },
+  {
+    "LineNo": 406,
+    "Content": "  >> Passing script blocks to functions"
+  },
+  {
+    "LineNo": 407,
+    "Content": "Iteration 1"
+  },
+  {
+    "LineNo": 408,
+    "Content": "Iteration 2"
+  },
+  {
+    "LineNo": 409,
+    "Content": "Iteration 3"
+  },
+  {
+    "LineNo": 410,
+    "Content": ""
+  },
+  {
+    "LineNo": 411,
+    "Content": ""
+  },
+  {
+    "LineNo": 412,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 413,
+    "Content": "  15. Splatting"
+  },
+  {
+    "LineNo": 414,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 415,
+    "Content": "  >> HashTable splatting (@)"
+  },
+  {
+    "LineNo": 416,
+    "Content": "Found 5 .tmp files in C:\\Users\\msaib\\AppData\\Local\\Temp (showing up to 5)."
+  },
+  {
+    "LineNo": 417,
+    "Content": ""
+  },
+  {
+    "LineNo": 418,
+    "Content": "  >> Array splatting (@) for positional parameters"
+  },
+  {
+    "LineNo": 419,
+    "Content": "X=10  Y=20  Z=30"
+  },
+  {
+    "LineNo": 420,
+    "Content": ""
+  },
+  {
+    "LineNo": 421,
+    "Content": ""
+  },
+  {
+    "LineNo": 422,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 423,
+    "Content": "  16. Custom Objects"
+  },
+  {
+    "LineNo": 424,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 425,
+    "Content": "  >> Create and use PSCustomObject"
+  },
+  {
+    "LineNo": 426,
+    "Content": "Name  : SRV-PROD-01"
+  },
+  {
+    "LineNo": 427,
+    "Content": "Online: True"
+  },
+  {
+    "LineNo": 428,
+    "Content": "OS    : Windows Server 2022"
+  },
+  {
+    "LineNo": 429,
+    "Content": ""
+  },
+  {
+    "LineNo": 430,
+    "Content": "  >> Array of custom objects + pipeline"
+  },
+  {
+    "LineNo": 431,
+    "Content": ""
+  },
+  {
+    "LineNo": 432,
+    "Content": "Name  CPU MemGB"
+  },
+  {
+    "LineNo": 433,
+    "Content": "----  --- -----"
+  },
+  {
+    "LineNo": 434,
+    "Content": "SRV03  88    16"
+  },
+  {
+    "LineNo": 435,
+    "Content": "SRV01  45    32"
+  },
+  {
+    "LineNo": 436,
+    "Content": ""
+  },
+  {
+    "LineNo": 437,
+    "Content": ""
+  },
+  {
+    "LineNo": 438,
+    "Content": ""
+  },
+  {
+    "LineNo": 439,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 440,
+    "Content": "  17. Enums"
+  },
+  {
+    "LineNo": 441,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 442,
+    "Content": "  >> Define and use a custom Enum"
+  },
+  {
+    "LineNo": 443,
+    "Content": "Alert severity : High (3)"
+  },
+  {
+    "LineNo": 444,
+    "Content": "Is Critical?   : False"
+  },
+  {
+    "LineNo": 445,
+    "Content": "  Low = 1"
+  },
+  {
+    "LineNo": 446,
+    "Content": "  Medium = 2"
+  },
+  {
+    "LineNo": 447,
+    "Content": "  High = 3"
+  },
+  {
+    "LineNo": 448,
+    "Content": "  Critical = 4"
+  },
+  {
+    "LineNo": 449,
+    "Content": ""
+  },
+  {
+    "LineNo": 450,
+    "Content": ""
+  },
+  {
+    "LineNo": 451,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 452,
+    "Content": "  18. Strongly Typed Generics"
+  },
+  {
+    "LineNo": 453,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 454,
+    "Content": "  >> Dictionary[K,V]"
+  },
+  {
+    "LineNo": 455,
+    "Content": "Contains 'beta': True"
+  },
+  {
+    "LineNo": 456,
+    "Content": "Value of alpha : 1"
+  },
+  {
+    "LineNo": 457,
+    "Content": "True"
+  },
+  {
+    "LineNo": 458,
+    "Content": "After remove   : alpha, gamma"
+  },
+  {
+    "LineNo": 459,
+    "Content": ""
+  },
+  {
+    "LineNo": 460,
+    "Content": "  >> HashSet[T] — unique values"
+  },
+  {
+    "LineNo": 461,
+    "Content": "HashSet (unique): red, green, blue"
+  },
+  {
+    "LineNo": 462,
+    "Content": ""
+  },
+  {
+    "LineNo": 463,
+    "Content": ""
+  },
+  {
+    "LineNo": 464,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 465,
+    "Content": "  19. File Parsing"
+  },
+  {
+    "LineNo": 466,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 467,
+    "Content": "  >> Read and write text files"
+  },
+  {
+    "LineNo": 468,
+    "Content": "  Read: Line one"
+  },
+  {
+    "LineNo": 469,
+    "Content": "  Read: Line two"
+  },
+  {
+    "LineNo": 470,
+    "Content": "  Read: Line three"
+  },
+  {
+    "LineNo": 471,
+    "Content": "  Read: Line four"
+  },
+  {
+    "LineNo": 472,
+    "Content": "Total lines: 4"
+  },
+  {
+    "LineNo": 473,
+    "Content": ""
+  },
+  {
+    "LineNo": 474,
+    "Content": "  >> Get-Content -Raw vs line-by-line"
+  },
+  {
+    "LineNo": 475,
+    "Content": "As lines  type: Object[]  count: 3"
+  },
+  {
+    "LineNo": 476,
+    "Content": "As string type: String length: 20"
+  },
+  {
+    "LineNo": 477,
+    "Content": ""
+  },
+  {
+    "LineNo": 478,
+    "Content": "  >> Import-Csv / ConvertFrom-Csv"
+  },
+  {
+    "LineNo": 479,
+    "Content": ""
+  },
+  {
+    "LineNo": 480,
+    "Content": "Name  Department  Salary"
+  },
+  {
+    "LineNo": 481,
+    "Content": "----  ----------  ------"
+  },
+  {
+    "LineNo": 482,
+    "Content": "Alice Engineering 95000"
+  },
+  {
+    "LineNo": 483,
+    "Content": "Bob   Marketing   72000"
+  },
+  {
+    "LineNo": 484,
+    "Content": "Carol Engineering 105000"
+  },
+  {
+    "LineNo": 485,
+    "Content": ""
+  },
+  {
+    "LineNo": 486,
+    "Content": "Avg salary: 90666.6666666667"
+  },
+  {
+    "LineNo": 487,
+    "Content": ""
+  },
+  {
+    "LineNo": 488,
+    "Content": ""
+  },
+  {
+    "LineNo": 489,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 490,
+    "Content": "  20. Module Authoring Skeleton"
+  },
+  {
+    "LineNo": 491,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 492,
+    "Content": "  >> Inline module with manifest-style comment"
+  },
+  {
+    "LineNo": 493,
+    "Content": "Module skeleton (would be saved as MyModule.psm1):"
+  },
+  {
+    "LineNo": 494,
+    "Content": "# MyModule.psm1"
+  },
+  {
+    "LineNo": 495,
+    "Content": ""
+  },
+  {
+    "LineNo": 496,
+    "Content": "function Get-Greeting {"
+  },
+  {
+    "LineNo": 497,
+    "Content": "    <#"
+  },
+  {
+    "LineNo": 498,
+    "Content": "    .SYNOPSIS  Returns a greeting string."
+  },
+  {
+    "LineNo": 499,
+    "Content": "    .PARAMETER Name  The name to greet."
+  },
+  {
+    "LineNo": 500,
+    "Content": "    #>"
+  },
+  {
+    "LineNo": 501,
+    "Content": "    [CmdletBinding()]"
+  },
+  {
+    "LineNo": 502,
+    "Content": "    param([string]$Name = 'World')"
+  },
+  {
+    "LineNo": 503,
+    "Content": "    \"Hello, $Name!\""
+  },
+  {
+    "LineNo": 504,
+    "Content": "}"
+  },
+  {
+    "LineNo": 505,
+    "Content": ""
+  },
+  {
+    "LineNo": 506,
+    "Content": "function Set-Greeting { Write-Host \"Placeholder for a setter command.\" }"
+  },
+  {
+    "LineNo": 507,
+    "Content": ""
+  },
+  {
+    "LineNo": 508,
+    "Content": "# Export only the functions you want consumers to see"
+  },
+  {
+    "LineNo": 509,
+    "Content": "Export-ModuleMember -Function Get-Greeting, Set-Greeting"
+  },
+  {
+    "LineNo": 510,
+    "Content": ""
+  },
+  {
+    "LineNo": 511,
+    "Content": "  >> New-ModuleManifest fields"
+  },
+  {
+    "LineNo": 512,
+    "Content": ""
+  },
+  {
+    "LineNo": 513,
+    "Content": "Name              Value"
+  },
+  {
+    "LineNo": 514,
+    "Content": "----              -----"
+  },
+  {
+    "LineNo": 515,
+    "Content": "Author            Your Name"
+  },
+  {
+    "LineNo": 516,
+    "Content": "Description       A helpful module."
+  },
+  {
+    "LineNo": 517,
+    "Content": "FunctionsToExport {Get-Greeting, Set-Greeting}"
+  },
+  {
+    "LineNo": 518,
+    "Content": "ModuleVersion     1.0.0"
+  },
+  {
+    "LineNo": 519,
+    "Content": "PowerShellVersion 7.0"
+  },
+  {
+    "LineNo": 520,
+    "Content": "RootModule        MyModule.psm1"
+  },
+  {
+    "LineNo": 521,
+    "Content": ""
+  },
+  {
+    "LineNo": 522,
+    "Content": "Use: New-ModuleManifest -Path .\\MyModule.psd1 @manifestFields"
+  },
+  {
+    "LineNo": 523,
+    "Content": ""
+  },
+  {
+    "LineNo": 524,
+    "Content": ""
+  },
+  {
+    "LineNo": 525,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 526,
+    "Content": "  21. Pester Testing Skeleton"
+  },
+  {
+    "LineNo": 527,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 528,
+    "Content": "  >> Pester test structure"
+  },
+  {
+    "LineNo": 529,
+    "Content": "Pester skeleton (save as tests\\MyModule.Tests.ps1):"
+  },
+  {
+    "LineNo": 530,
+    "Content": "# tests/MyModule.Tests.ps1"
+  },
+  {
+    "LineNo": 531,
+    "Content": "# Run with: Invoke-Pester -Path .\\tests\\ -Output Detailed"
+  },
+  {
+    "LineNo": 532,
+    "Content": ""
+  },
+  {
+    "LineNo": 533,
+    "Content": "Describe 'Get-Greeting' {"
+  },
+  {
+    "LineNo": 534,
+    "Content": ""
+  },
+  {
+    "LineNo": 535,
+    "Content": "    BeforeAll {"
+  },
+  {
+    "LineNo": 536,
+    "Content": "        Import-Module \"$PSScriptRoot\\..\\MyModule.psm1\" -Force"
+  },
+  {
+    "LineNo": 537,
+    "Content": "    }"
+  },
+  {
+    "LineNo": 538,
+    "Content": ""
+  },
+  {
+    "LineNo": 539,
+    "Content": "    It 'returns a string' {"
+  },
+  {
+    "LineNo": 540,
+    "Content": "        Get-Greeting | Should -BeOfType [string]"
+  },
+  {
+    "LineNo": 541,
+    "Content": "    }"
+  },
+  {
+    "LineNo": 542,
+    "Content": ""
+  },
+  {
+    "LineNo": 543,
+    "Content": "    It 'uses default name \"World\"' {"
+  },
+  {
+    "LineNo": 544,
+    "Content": "        Get-Greeting | Should -Be 'Hello, World!'"
+  },
+  {
+    "LineNo": 545,
+    "Content": "    }"
+  },
+  {
+    "LineNo": 546,
+    "Content": ""
+  },
+  {
+    "LineNo": 547,
+    "Content": "    It 'accepts a custom name' {"
+  },
+  {
+    "LineNo": 548,
+    "Content": "        Get-Greeting -Name 'Alice' | Should -Be 'Hello, Alice!'"
+  },
+  {
+    "LineNo": 549,
+    "Content": "    }"
+  },
+  {
+    "LineNo": 550,
+    "Content": ""
+  },
+  {
+    "LineNo": 551,
+    "Content": "    AfterAll {"
+  },
+  {
+    "LineNo": 552,
+    "Content": "        Remove-Module MyModule -ErrorAction SilentlyContinue"
+  },
+  {
+    "LineNo": 553,
+    "Content": "    }"
+  },
+  {
+    "LineNo": 554,
+    "Content": "}"
+  },
+  {
+    "LineNo": 555,
+    "Content": ""
+  },
+  {
+    "LineNo": 556,
+    "Content": ""
+  },
+  {
+    "LineNo": 557,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 558,
+    "Content": "  22. Miscellaneous Tips"
+  },
+  {
+    "LineNo": 559,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 560,
+    "Content": "  >> Null coalescing (??) and null conditional (?.) — PS7+"
+  },
+  {
+    "LineNo": 561,
+    "Content": "Null coalesce: default value"
+  },
+  {
+    "LineNo": 562,
+    "Content": "Null conditional:"
+  },
+  {
+    "LineNo": 563,
+    "Content": ""
+  },
+  {
+    "LineNo": 564,
+    "Content": "  >> Fully qualified .NET type names vs type accelerators"
+  },
+  {
+    "LineNo": 565,
+    "Content": "Full-name List[string]: Hello World"
+  },
+  {
+    "LineNo": 566,
+    "Content": ""
+  },
+  {
+    "LineNo": 567,
+    "Content": "  >> Write-Progress — progress bar"
+  },
+  {
+    "LineNo": 568,
+    "Content": "Progress bar demo complete."
+  },
+  {
+    "LineNo": 569,
+    "Content": ""
+  },
+  {
+    "LineNo": 570,
+    "Content": "  >> Invoke-Expression (use with caution)"
+  },
+  {
+    "LineNo": 571,
+    "Content": "Invoke-Expression result: 2026-03-01"
+  },
+  {
+    "LineNo": 572,
+    "Content": ""
+  },
+  {
+    "LineNo": 573,
+    "Content": "  >> Here-String types (@' ' vs \" \")"
+  },
+  {
+    "LineNo": 574,
+    "Content": "Single-quoted here-string:"
+  },
+  {
+    "LineNo": 575,
+    "Content": "Path: $env:TEMP"
+  },
+  {
+    "LineNo": 576,
+    "Content": "No expansion here."
+  },
+  {
+    "LineNo": 577,
+    "Content": "Double-quoted here-string:"
+  },
+  {
+    "LineNo": 578,
+    "Content": "Path: C:\\Users\\msaib\\AppData\\Local\\Temp"
+  },
+  {
+    "LineNo": 579,
+    "Content": "Variables ARE expanded here."
+  },
+  {
+    "LineNo": 580,
+    "Content": ""
+  },
+  {
+    "LineNo": 581,
+    "Content": "  >> Calculated sort & unique"
+  },
+  {
+    "LineNo": 582,
+    "Content": "blueberry"
+  },
+  {
+    "LineNo": 583,
+    "Content": "apricot"
+  },
+  {
+    "LineNo": 584,
+    "Content": "banana"
+  },
+  {
+    "LineNo": 585,
+    "Content": "cherry"
+  },
+  {
+    "LineNo": 586,
+    "Content": "apple"
+  },
+  {
+    "LineNo": 587,
+    "Content": "apple"
+  },
+  {
+    "LineNo": 588,
+    "Content": "apricot"
+  },
+  {
+    "LineNo": 589,
+    "Content": "banana"
+  },
+  {
+    "LineNo": 590,
+    "Content": "blueberry"
+  },
+  {
+    "LineNo": 591,
+    "Content": "cherry"
+  },
+  {
+    "LineNo": 592,
+    "Content": ""
+  },
+  {
+    "LineNo": 593,
+    "Content": ""
+  },
+  {
+    "LineNo": 594,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 595,
+    "Content": "  Cheat Sheet V2 Complete"
+  },
+  {
+    "LineNo": 596,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 597,
+    "Content": "All V2 sections executed successfully."
+  },
+  {
+    "LineNo": 598,
+    "Content": "Sections covered:"
+  },
+  {
+    "LineNo": 599,
+    "Content": "   1. String Manipulation"
+  },
+  {
+    "LineNo": 600,
+    "Content": "   2. Arrays & Collections"
+  },
+  {
+    "LineNo": 601,
+    "Content": "   3. Error Handling"
+  },
+  {
+    "LineNo": 602,
+    "Content": "   4. Pipeline Deep-Dive"
+  },
+  {
+    "LineNo": 603,
+    "Content": "   5. Output Methods"
+  },
+  {
+    "LineNo": 604,
+    "Content": "   6. JSON & XML"
+  },
+  {
+    "LineNo": 605,
+    "Content": "   7. Environment Variables"
+  },
+  {
+    "LineNo": 606,
+    "Content": "   8. Date & Time"
+  },
+  {
+    "LineNo": 607,
+    "Content": "   9. Background Jobs"
+  },
+  {
+    "LineNo": 608,
+    "Content": "   10. Processes & Services"
+  },
+  {
+    "LineNo": 609,
+    "Content": "   11. Registry (Windows)"
+  },
+  {
+    "LineNo": 610,
+    "Content": "   12. Network Utilities"
+  },
+  {
+    "LineNo": 611,
+    "Content": "   13. Credential Handling"
+  },
+  {
+    "LineNo": 612,
+    "Content": "   14. Script Blocks & Closures"
+  },
+  {
+    "LineNo": 613,
+    "Content": "   15. Splatting"
+  },
+  {
+    "LineNo": 614,
+    "Content": "   16. Custom Objects"
+  },
+  {
+    "LineNo": 615,
+    "Content": "   17. Enums"
+  },
+  {
+    "LineNo": 616,
+    "Content": "   18. Generics"
+  },
+  {
+    "LineNo": 617,
+    "Content": "   19. File Parsing"
+  },
+  {
+    "LineNo": 618,
+    "Content": "   20. Module Authoring"
+  },
+  {
+    "LineNo": 619,
+    "Content": "   21. Pester Testing Skeleton"
+  },
+  {
+    "LineNo": 620,
+    "Content": "   22. Miscellaneous Tips"
+  },
+  {
+    "LineNo": 621,
+    "Content": "   23. WinForms GUI Elements"
+  },
+  {
+    "LineNo": 622,
+    "Content": ""
+  },
+  {
+    "LineNo": 623,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 624,
+    "Content": "  23. WinForms GUI — Every Form Element"
+  },
+  {
+    "LineNo": 625,
+    "Content": "======================================================================"
+  },
+  {
+    "LineNo": 626,
+    "Content": "  >> Launch full WinForms demo (Windows only)"
+  },
+  {
+    "LineNo": 627,
+    "Content": "MethodException: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:1116:9"
+  },
+  {
+    "LineNo": 628,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 629,
+    "Content": "1116 |          [System.Windows.Forms.Label]@{"
+  },
+  {
+    "LineNo": 630,
+    "Content": "     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  },
+  {
+    "LineNo": 631,
+    "Content": "     | Cannot convert argument \"x\", with value: \"+\", for \".ctor\" to type \"System.Int32\": \"Cannot convert value \"+\" to type \"System.Int32\". Error: \"The input string '+' was not in a correct format.\"\""
+  },
+  {
+    "LineNo": 632,
+    "Content": "MethodException: C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1:1116:9"
+  },
+  {
+    "LineNo": 633,
+    "Content": "Line |"
+  },
+  {
+    "LineNo": 634,
+    "Content": "1116 |          [System.Windows.Forms.Label]@{"
+  },
+  {
+    "LineNo": 635,
+    "Content": "     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  },
+  {
+    "LineNo": 636,
+    "Content": "     | Cannot convert argument \"x\", with value: \"+\", for \".ctor\" to type \"System.Int32\": \"Cannot convert value \"+\" to type \"System.Int32\". Error: \"The input"
+  },
+  {
+    "LineNo": 637,
+    "Content": "     | string '+' was not in a correct format.\"\""
+  },
+  {
+    "LineNo": 638,
+    "Content": ""
+  },
+  {
+    "LineNo": 639,
+    "Content": "  Launching WinForms GUI — close the window to continue."
+  },
+  {
+    "LineNo": 640,
+    "Content": "  WinForms demo closed."
+  },
+  {
+    "LineNo": 641,
+    "Content": ""
+  },
+  {
+    "LineNo": 642,
+    "Content": "**********************"
+  },
+  {
+    "LineNo": 643,
+    "Content": "PowerShell transcript end"
+  },
+  {
+    "LineNo": 644,
+    "Content": "End time: 20260301030502"
+  },
+  {
+    "LineNo": 645,
+    "Content": "**********************"
+  }
+]

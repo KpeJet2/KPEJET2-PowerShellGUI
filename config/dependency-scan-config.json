@@ -1,0 +1,46 @@
+{
+  "_schema": "dependency-scan-config-v1",
+  "meta": { "description": "Dependency Scan Manager configuration", "version": "1.0", "created": "2026-04-08T00:00:00" },
+  "port": 8042,
+  "host": "127.0.0.1",
+  "staleness": {
+    "greenMaxMinutes":  60,
+    "yellowMaxMinutes": 1440,
+    "redThresholdMinutes": 1441,
+    "commentGreen":  "less than 1 hour",
+    "commentYellow": "1 hour to 24 hours",
+    "commentRed":    "more than 24 hours"
+  },
+  "scan": {
+    "maxRetries": 3,
+    "retryDelaySeconds": 5,
+    "scanScriptPath": "scripts\\Invoke-WorkspaceDependencyMap.ps1",
+    "depScanManagerPath": "scripts\\Invoke-DependencyScanManager.ps1"
+  },
+  "paths": {
+    "checkpointFile":  "checkpoints\\dependency-scan-checkpoint.json",
+    "crashDumpDir":    "logs\\crash-dumps",
+    "scanProgressLog": "logs\\scan-progress.json",
+    "reportsDir":      "~REPORTS",
+    "pointerFile":     "~REPORTS\\workspace-dependency-map-pointer.json"
+  },
+  "phases": [
+    { "id": "folders",        "label": "Folders",  "order": 1, "critical": true  },
+    { "id": "modules",        "label": "Modules",  "order": 2, "critical": true  },
+    { "id": "scripts",        "label": "Scripts",  "order": 3, "critical": true  },
+    { "id": "configs",        "label": "Configs",  "order": 4, "critical": false },
+    { "id": "urls_ips",       "label": "URLs/IPs", "order": 5, "critical": false },
+    { "id": "dns_resolution", "label": "DNS",      "order": 6, "critical": false }
+  ],
+  "excludeFolders": [
+    ".git", ".history", ".venv", ".venv-pygame312",
+    "archive", "temp", "__pycache__", "node_modules",
+    "~DOWNLOADS", "ssh-downloads"
+  ],
+  "webEngine": {
+    "csrfTokenLength": 32,
+    "maxRequestBodyKb": 64,
+    "corsAllowedOrigins": ["http://127.0.0.1:8042", "http://localhost:8042"],
+    "staticDirs": ["styles", "scripts", "~README.md"]
+  }
+}

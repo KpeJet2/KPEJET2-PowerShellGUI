@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-018",
+  "category": "testing",
+  "title": "Module Health Check Report Tool",
+  "description": "Create Test-ModuleHealth in PwShGUICore: checks for orphaned functions, circular dependencies, missing help, syntax errors; output to HTML report.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "modules/PwShGUICore.psm1",
+    "tests/ (new test)"
+  ],
+  "notes": null,
+  "id": "ai-eval-018",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.4972860Z"
+}

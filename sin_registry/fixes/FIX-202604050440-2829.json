@@ -1,0 +1,9 @@
+{
+  "fix_id": "FIX-202604050440-2829",
+  "parent_pattern": "unknown",
+  "method": "external-fix",
+  "description": "Auto-detected resolution of unknown at C:\\PowerShellGUI\\scripts\\~REPORTS\\XPS15-MS_20260216-0712_Quick-APP-REPAIR.xhtml:?",
+  "created_at": "2026-04-04T20:40:00.8872635Z",
+  "reuse_count": 0,
+  "verified": true
+}

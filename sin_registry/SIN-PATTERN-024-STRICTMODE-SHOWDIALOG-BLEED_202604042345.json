@@ -1,0 +1,56 @@
+{
+  "sin_id": "SIN-PATTERN-024-STRICTMODE-SHOWDIALOG-BLEED_202604042345",
+  "title": "Set-StrictMode -Version Latest bleeds into parent event handlers during ShowDialog",
+  "description": "When a child script called via & sets Set-StrictMode -Version Latest, then calls $form.ShowDialog(), the WinForms message pump dispatches parent-scope event handlers (timer ticks, FormClosing, Resize) within the child scripts strict-mode context. Any $script:-scoped variable in those handlers that is not set in the child scripts scope throws 'The variable cannot be retrieved because it has not been set.' This causes: (1) Timer tick handlers to error on every tick, (2) FormClosing handlers to crash, preventing graceful close/minimize-to-tray, (3) Child form ShowDialog to throw, breaking the child tool entirely.",
+  "severity": "HIGH",
+  "category": "scope-safety",
+  "vector": "strictmode-scope-bleed",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 2,
+  "created_at": "2026-04-04T23:45:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Scan for scripts that contain both Set-StrictMode -Version Latest and .ShowDialog() calls. Cross-reference with parent scripts that have event handlers referencing $script: variables.",
+  "is_security_related": false,
+  "is_version_related": true,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "known_instances": [
+    "Invoke-PSEnvironmentScanner.ps1: ShowDialog caused $script:_ForceClose and $script:_ServiceTimer errors in Main-GUI.ps1 event handlers"
+  ],
+  "exception_message": "The variable '$script:_ForceClose' cannot be retrieved because it has not been set.",
+  "preventionRule": "1. Before calling ShowDialog() in any child script that uses Set-StrictMode -Version Latest, temporarily relax strict mode: Set-StrictMode -Off before ShowDialog, restore after.\n2. In parent event handlers (timer ticks, FormClosing), wrap $script: variable access in try/catch with sensible defaults: $val = try { $script:_MyVar } catch { $defaultValue }.\n3. Never assume $script: variables from a parent script will be accessible under strict mode in WinForms event handlers fired during a child scripts ShowDialog().",
+  "scan_regex": "Set-StrictMode\\s+-Version\\s+Latest[\\s\\S]*?\\.ShowDialog\\(",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;__pycache__;.venv;node_modules;checkpoints",
+  "remedy": "# In child script, before ShowDialog:\nSet-StrictMode -Off\n$form.ShowDialog() | Out-Null\nSet-StrictMode -Version Latest\n\n# In parent event handlers, guard $script: access:\n$forceClose = try { $script:_ForceClose } catch { $false }\n$timer = try { $script:_ServiceTimer } catch { $null }\nif ($null -eq $timer) { return }",
+  "trusted_fix_count": 3,
+  "trusted_fix_status": "verified",
+  "trusted_fix_notes": "Applied to Invoke-PSEnvironmentScanner.ps1 (StrictMode toggle) and Main-GUI.ps1 (null-guard in timer tick + try/catch in FormClosing).",
+  "tags": [
+    "strictmode",
+    "scope-bleed",
+    "winforms",
+    "showdialog",
+    "event-handler",
+    "ps51-compatible",
+    "pipeline-scan"
+  ],
+  "remedy_tracking": {
+    "attempts": [
+      {
+        "timestamp": "2026-04-04T23:45:00Z",
+        "action": "Added StrictMode toggle in scanner, null-guards in Main-GUI handlers",
+        "result": "SUCCESS",
+        "files_fixed": 2
+      }
+    ],
+    "last_attempt_at": "2026-04-04T23:45:00Z",
+    "total_attempts": 1,
+    "successful_count": 2,
+    "failed_count": 0,
+    "status": "RESOLVED",
+    "auto_retry": true
+  }
+}

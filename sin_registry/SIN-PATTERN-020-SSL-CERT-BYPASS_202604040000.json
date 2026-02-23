@@ -1,0 +1,48 @@
+{
+  "sin_id": "SIN-PATTERN-020-SSL-CERT-BYPASS_202604040000",
+  "title": "SSL/TLS certificate validation bypass via ServerCertificateValidationCallback",
+  "description": "Assigning a callback to [Net.ServicePointManager]::ServerCertificateValidationCallback that unconditionally returns $true disables certificate validation entirely. This is an OWASP A02:2021 Cryptographic Failures vulnerability that exposes all HTTPS traffic to man-in-the-middle attacks. Common workaround pattern in dev scripts that was never reverted before production use.",
+  "severity": "CRITICAL",
+  "category": "security",
+  "vector": "tls-certificate-bypass",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-04-04T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for ServicePointManager ServerCertificateValidationCallback assignment",
+  "is_security_related": true,
+  "preventionRule": "Never assign a custom ServerCertificateValidationCallback. Use proper certificate trust chains or import self-signed certs into the trust store. If a specific cert fingerprint must be accepted, verify the thumbprint explicitly instead of returning $true unconditionally. Mark intentional exceptions with #SIN-EXEMPT: and document the justification.",
+  "scan_regex": "ServerCertificateValidationCallback\\s*[=\\+]",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": null,
+  "remedy": "Remove or restrict the callback. If testing against a self-signed certificate, use -SkipCertificateCheck (PS 7+) or add a thumbprint validation: { param($s,$c,$ch,$err); $c.Thumbprint -eq '<expected>' }. Never use { $true } in production code.",
+  "tags": [
+    "security",
+    "ssl",
+    "tls",
+    "certificate",
+    "mitm",
+    "owasp-a02",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-020-SSL-CERT-BYPASS",
+    "previous_file": "SIN-PATTERN-020-SSL-CERT-BYPASS.json",
+    "reindexed_at": "2026-04-04T14:57:30.7563668Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

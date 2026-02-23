@@ -1,0 +1,310 @@
+{
+  "version": "1.0.0",
+  "description": "FocalPoint-null Admin TO-DO List — for human oversight only. Completely separated from code project.",
+  "categories": {
+    "new_agents": "Recommendations for new agent roles",
+    "agent_changes": "Recommended changes to existing agents",
+    "human_oversight_required": "Items requiring human admin review or approval",
+    "standards_updates": "Recommended standards document updates",
+    "security_recommendations": "Security improvements identified by agents"
+  },
+  "priority_levels": {
+    "CRITICAL": "Must be reviewed immediately",
+    "HIGH": "Review within 24 hours",
+    "MEDIUM": "Review within 1 week",
+    "LOW": "Review at next scheduled maintenance"
+  },
+  "items": [
+    {
+      "todo_id": "initial-001",
+      "category": "human_oversight_required",
+      "title": "Initial system activation review",
+      "description": "FocalPoint-null-00 has been bootstrapped for the first time. Admin should review: 1) PKI certificates generated for all agents in pki/, 2) .env configuration is correct, 3) ALLOW_AUTONOMOUS_ORGANIC_GROWTH flag is set intentionally, 4) Model credentials are configured correctly.",
+      "suggested_by": "FocalPoint-null-00",
+      "priority": "HIGH",
+      "status": "OPEN",
+      "created_at": "2026-03-01T00:00:00Z",
+      "notes": "Review config/.env.example and set .env before first run."
+    },
+    {
+      "todo_id": "initial-002",
+      "category": "standards_updates",
+      "title": "Define inter-agent communication protocol version",
+      "description": "Establish a versioned protocol specification for all inter-agent messages brokered by FocalPoint-null-00. Current implementation uses JSON + RSA-2048 PKI signatures. Recommend formalising as a versioned schema in config/standards/.",
+      "suggested_by": "FocalPoint-null-00",
+      "priority": "MEDIUM",
+      "status": "OPEN",
+      "created_at": "2026-03-01T00:00:00Z",
+      "notes": null
+    },
+    {
+      "todo_id": "initial-003",
+      "category": "new_agents",
+      "title": "Evaluate need for ReplayLog-Agent",
+      "description": "Consider creating a dedicated ReplayLog-Agent to manage replay log generation, validation, and integration with FocalPoint-null checkpoint resume. Currently handled inline in checkpoint_manager.py. A dedicated agent would improve separation of concerns.",
+      "suggested_by": "FocalPoint-null-00",
+      "priority": "LOW",
+      "status": "OPEN",
+      "created_at": "2026-03-01T00:00:00Z",
+      "notes": null
+    },
+    {
+      "todo_id": "initial-004",
+      "category": "security_recommendations",
+      "title": "Rotate PKI master secret in production",
+      "description": "The PKI_MASTER_SECRET in .env.example is a placeholder. Before any production use, this must be replaced with a cryptographically strong secret (32+ chars) preferably managed by an HSM or Azure Key Vault.",
+      "suggested_by": "FocalPoint-null-00",
+      "priority": "CRITICAL",
+      "status": "OPEN",
+      "created_at": "2026-03-01T00:00:00Z",
+      "notes": "See: NIST SP 800-57 for key management guidance."
+    }
+  ],
+  "ai_suggested_improvements": {
+    "description": "Post-smoke-test AI-evaluated feature and functional improvement suggestions. Each item includes the agent model that produced the suggestion.",
+    "evaluation_trigger": "Smoke Test PASS — 33 PASS / 0 FAIL / 1 WARN — 2026-03-09",
+    "project_version": "2603.B0.v18",
+    "items": [
+      {
+        "todo_id": "ai-eval-001",
+        "category": "security",
+        "title": "Input Validation in WinForms",
+        "description": "Forms including password fields and path inputs lack comprehensive validation. Implement validators for empty fields, path existence, regex patterns, and injection prevention in textbox inputs before processing.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["Main-GUI.ps1", "Show-AppTemplateManager.ps1", "WinRemote-PSTool.ps1"],
+        "notes": "Security hardening — OWASP input validation best practices"
+      },
+      {
+        "todo_id": "ai-eval-002",
+        "category": "maintenance",
+        "title": "JSON Schema Validation for Config Files",
+        "description": "Config files lack JSON schema definitions. Create .schema.json files with $schema references and validate on load to catch config drift early.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["config/pwsh-app-config-BASE.json", "config/AVPN_device-types.json", "config/sasc-vault-config.json"],
+        "notes": "Prevents silent config corruption"
+      },
+      {
+        "todo_id": "ai-eval-003",
+        "category": "testing",
+        "title": "Pester Unit Test Framework",
+        "description": "Project has smoke tests but no Pester unit tests. Create tests/Modules.Tests.ps1 for PwShGUICore, AssistedSASC, SASC-Adapters modules with mock-based assertions and coverage tracking.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["tests/ (new files)", "modules/*.psm1"],
+        "notes": "Pester v5+ with -CodeCoverage; integrate into smoke test pipeline"
+      },
+      {
+        "todo_id": "ai-eval-004",
+        "category": "ux",
+        "title": "Form Accessibility (Tab Order & Screen Reader)",
+        "description": "WinForms GUI lacks accessibility features. Add Tab key navigation order, KeyDown handlers for keyboard shortcuts, screen-reader labels via AccessibleName/Description properties on all controls.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["Main-GUI.ps1", "Show-AppTemplateManager.ps1", "Show-ScanDashboard.ps1", "WinRemote-PSTool.ps1"],
+        "notes": "WCAG 2.1 keyboard operability"
+      },
+      {
+        "todo_id": "ai-eval-005",
+        "category": "security",
+        "title": "Centralized Secure Credential Prompt Handler",
+        "description": "Create New-SecureCredentialDialog helper in PwShGUICore that uses [SecureString] internally, clears memory on close, and provides DPAPI encryption option. Replace ad-hoc password textboxes.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "Main-GUI.ps1"],
+        "notes": "CWE-316 cleartext credential storage in memory"
+      },
+      {
+        "todo_id": "ai-eval-006",
+        "category": "maintenance",
+        "title": "Automated Config Backup Rotation",
+        "description": "Add Initialize-ConfigBackupRotation to PwShGUICore that auto-backs up system-variables.xml daily, keeps last 30 days, exports to ZIP weekly.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "config/"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-007",
+        "category": "integration",
+        "title": "Dependency Resolution CLI Tool",
+        "description": "Create scripts/Invoke-DependencyResolution.ps1 to trace module-to-function-to-script dependencies and detect orphans. Output a force-directed graph JSON compatible with Dependency-Visualisation.html.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["scripts/ (new)", "modules/", "~README.md/Dependency-Visualisation.html"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-008",
+        "category": "feature",
+        "title": "Real-time Log Viewer Panel",
+        "description": "Add -ShowLiveLog toggle in Main-GUI Help menu that opens a real-time log tail form using FileSystemWatcher and RichTextBox with color-coded severity levels.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["Main-GUI.ps1", "modules/PwShGUICore.psm1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-009",
+        "category": "maintenance",
+        "title": "Script Execution Audit Log (Structured JSON)",
+        "description": "Extend Write-AppLog to include user SID, privilege level, script hash (SHA256), and structured JSON entries for audit compliance. Supports forensic correlation.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "Main-GUI.ps1"],
+        "notes": "ISO 27001 A.12.4.1 event logging"
+      },
+      {
+        "todo_id": "ai-eval-010",
+        "category": "optimization",
+        "title": "Performance Baseline & Profiling Dashboard",
+        "description": "Create Measure-AppStartupPerformance helper; log results to JSON; add Performance tab in Scan Dashboard to display startup time trends.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["scripts/Show-ScanDashboard.ps1", "modules/PwShGUICore.psm1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-011",
+        "category": "feature",
+        "title": "Health Check Dashboard (System Readiness)",
+        "description": "Create scripts/Show-HealthDashboard.ps1 that tests disk space, module imports, config accessibility, network connectivity, logging permissions with color-coded status grid.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["scripts/ (new)", "modules/PwShGUICore.psm1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-012",
+        "category": "documentation",
+        "title": "Extension Developer Guide",
+        "description": "Create ~README.md/EXTENSION-DEVELOPER-GUIDE.md covering module architecture, adding custom menu items, button registration, logging conventions, form integration patterns.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["~README.md/ (new file)"],
+        "notes": "Enables community/internal contributors"
+      },
+      {
+        "todo_id": "ai-eval-013",
+        "category": "feature",
+        "title": "Data Export Formats (CSV/JSON/HTML)",
+        "description": "Test/scan reports lack export options. Add -ExportFormat parameter to Invoke-TestRoutine.ps1 and test runners; export to CSV/JSON/HTML with formatting.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["scripts/Invoke-TestRoutine.ps1", "tests/Invoke-AutomatedTests.ps1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-014",
+        "category": "optimization",
+        "title": "Parameter Validation Framework",
+        "description": "Create New-ValidatorSet helper in PwShGUICore that provides reusable templates for common parameter types (paths, versions, IPs, emails) and wraps ValidateSet/ValidateRange/ValidatePattern.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "Main-GUI.ps1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-015",
+        "category": "maintenance",
+        "title": "Hardcoded Path Elimination Audit",
+        "description": "Paths like C:\\PowerShellGUI appear in config examples and some scripts. Complete audit and replace with environment-driven values for deployment flexibility.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "LOW",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["config/links.xml", "config/pwsh-app-config-BASE.json", "Main-GUI.ps1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-016",
+        "category": "optimization",
+        "title": "Async/Parallel Script Execution Helper",
+        "description": "Create Invoke-ScriptAsync helper in PwShGUICore with job tracking UI, timeout handling, and cancellation token support. Replace manual Start-Job patterns.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "Main-GUI.ps1"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-017",
+        "category": "documentation",
+        "title": "Troubleshooting Flowchart with Mermaid Diagrams",
+        "description": "Create ~README.md/TROUBLESHOOTING-FLOWCHART.md with mermaid diagrams for common issues: Script won't run -> check elevation/safety score/permissions decision trees.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["~README.md/ (new file)", "~README.md/SETUP-GUIDE.md"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-018",
+        "category": "testing",
+        "title": "Module Health Check Report Tool",
+        "description": "Create Test-ModuleHealth in PwShGUICore: checks for orphaned functions, circular dependencies, missing help, syntax errors; output to HTML report.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "tests/ (new test)"],
+        "notes": null
+      },
+      {
+        "todo_id": "ai-eval-019",
+        "category": "maintenance",
+        "title": "Config Drift Detection & Auto-Recovery",
+        "description": "Add Compare-ConfigIntegrity helper that checksums config files, detects unexpected changes, triggers automatic rollback to last good backup.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["modules/PwShGUICore.psm1", "config/"],
+        "notes": "Could integrate with sasc-integrity.sha256.json"
+      },
+      {
+        "todo_id": "ai-eval-020",
+        "category": "ux",
+        "title": "Script Preview Mode (Dry-Run Enhancement)",
+        "description": "Add Show-ScriptPreviewDialog that parses a script to display affected files/paths/registry keys before execution. Enhances -WhatIf with visual preview.",
+        "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+        "priority": "MEDIUM",
+        "status": "OPEN",
+        "created_at": "2026-03-09T06:50:00Z",
+        "affects": ["Main-GUI.ps1", "modules/PwShGUICore.psm1"],
+        "notes": null
+      }
+    ]
+  }
+}

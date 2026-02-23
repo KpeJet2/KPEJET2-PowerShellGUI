@@ -1,0 +1,33 @@
+{
+  "status": "PLANNED",
+  "suggestedBy": "GitHub-Copilot-Session4",
+  "tags": [
+    "session4-audit"
+  ],
+  "description": "Use $PSScriptRoot or Initialize-CorePaths instead of hardcoded absolute paths",
+  "linkedFeatures": [],
+  "completedAt": null,
+  "result": null,
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "category": "style-remediation",
+  "type": "ToDo",
+  "linkedBugs": [],
+  "id": "ToDo-20260330204319-9f66935e",
+  "executionAgent": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "parentId": "",
+  "sinId": "",
+  "source": "Manual",
+  "priority": "MEDIUM",
+  "title": "Replace 88 hardcoded C:\\PowerShellGUI paths",
+  "notes": "",
+  "createdAt": "2026-03-30T12:43:19.325718Z",
+  "executedAt": null,
+  "modified": "2026-03-30T12:43:19.325718Z",
+  "created": "2026-03-30T12:43:19.325718Z",
+  "acknowledged": null,
+  "affectedFiles": [
+    "tests/Invoke-WidgetSmokeTests.Tests.ps1"
+  ]
+}

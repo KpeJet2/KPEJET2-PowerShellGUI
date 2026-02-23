@@ -1,0 +1,16 @@
+{
+  "id": "master-008",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "testing",
+  "priority": "high",
+  "status": "PLANNED",
+  "title": "Expand smoke test coverage for untested UI features",
+  "description": "Current smoke tests cover: form creation, menu/button clicks, dialog handling, log validation. NOT covered: AVPN device dialogs, service status lights, network diagnostics, safety scoring, UPM integration, WinRemote, Security Checklist, EventLog Viewer, Scan Dashboard. Add headless validation stubs.",
+  "files": [
+    "tests/Invoke-GUISmokeTest.ps1"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:25:48.3877203+08:00",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6144152Z"
+}

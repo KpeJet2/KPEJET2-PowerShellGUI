@@ -1,0 +1,100 @@
+{
+  "$schema": "https://pwshgui/schemas/agent-call-stats/v1",
+  "schemaVersion": "AgentCallStats/1.0",
+  "generatedAt": "2026-04-08T00:00:00Z",
+  "generatedBy": "manual-seed",
+  "note": "Seed data. Refresh via engine API /api/agent/stats or run scripts/Invoke-AgentCallStats.ps1",
+  "stats": {
+    "FocalPoint-null-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 20,
+      "lastCall": "2026-03-01T13:43:57Z",
+      "logSource": "agents/focalpoint-null/logs/"
+    },
+    "ViewPoint-init": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 20,
+      "lastCall": "2026-03-01T13:43:57Z",
+      "logSource": "agents/focalpoint-null/logs/"
+    },
+    "MultiModelProxy-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 20,
+      "lastCall": "2026-03-01T13:43:57Z",
+      "logSource": "agents/focalpoint-null/logs/"
+    },
+    "SecurityTriage-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "AgentReview-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "QualityControl-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "StandardsGuard-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "Code-B-iSmuth-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "Code-B-Tsted-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    },
+    "koe-RumA-00": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": "agents/koe-RumA/"
+    },
+    "H-Ai-Nikr-Agi": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": "agents/H-Ai-Nikr-Agi/"
+    },
+    "PipelineSteering": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 5,
+      "lastCall": "2026-04-05T05:39:53Z",
+      "logSource": "logs/cron-processor.log"
+    },
+    "ConvoVault": {
+      "calls24h": 0,
+      "calls7d": 0,
+      "callsTotal": 0,
+      "lastCall": null,
+      "logSource": null
+    }
+  }
+}

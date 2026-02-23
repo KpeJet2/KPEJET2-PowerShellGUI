@@ -1,0 +1,20 @@
+{
+  "id": "ecd5d0dd-b242-4f4e-9b75-a99c4493fc55",
+  "title": "Rename Proposal: scripts\\QUICK-APP\\FOLDER-ROOT\\test - Copy.ps1",
+  "description": "Script filename contains spaces: test - Copy.ps1 -- Suggested: test---Copy.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\QUICK-APP\\FOLDER-ROOT\\test - Copy.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.2687682+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "no-spaces",
+  "suggested_name": "test---Copy.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

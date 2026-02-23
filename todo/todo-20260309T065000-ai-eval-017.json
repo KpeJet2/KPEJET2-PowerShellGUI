@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-017",
+  "category": "documentation",
+  "title": "Troubleshooting Flowchart with Mermaid Diagrams",
+  "description": "Create ~README.md/TROUBLESHOOTING-FLOWCHART.md with mermaid diagrams for common issues: Script won't run -> check elevation/safety score/permissions decision trees.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "~README.md/ (new file)",
+    "~README.md/SETUP-GUIDE.md"
+  ],
+  "notes": null,
+  "id": "ai-eval-017",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.4878852Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "master-001",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "security",
+  "priority": "critical",
+  "status": "DONE",
+  "title": "Fix Brushes.White disposal crash in AVPN canvas paint",
+  "description": "System.Drawing.Brushes.White (static singleton) is disposed by cleanup code in AVPN-Tracker.psm1 canvas Add_Paint handler. Causes ArgumentException: Parameter is not valid on subsequent paint cycles. Replace with fresh SolidBrush instances.",
+  "files": [
+    "modules/AVPN-Tracker.psm1"
+  ],
+  "resolution": "FIXED 2026-03-24 - Replaced [System.Drawing.Brushes]::White with New-Object SolidBrush(Color.White)",
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:02:01.4737455+08:00"
+}

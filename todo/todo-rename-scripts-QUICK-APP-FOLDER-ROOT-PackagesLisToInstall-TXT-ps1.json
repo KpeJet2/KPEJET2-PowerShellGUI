@@ -1,0 +1,20 @@
+{
+  "id": "32c8d951-818e-42bf-b6f5-5486cfec5bef",
+  "title": "Rename Proposal: scripts\\QUICK-APP\\FOLDER-ROOT\\PackagesLisToInstall-TXT.ps1",
+  "description": "Script uses non-standard verb 'PackagesLisToInstall': PackagesLisToInstall-TXT.ps1 -- Suggested: PackagesLisToInstall-TXT.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\QUICK-APP\\FOLDER-ROOT\\PackagesLisToInstall-TXT.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.243149+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "PackagesLisToInstall-TXT.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

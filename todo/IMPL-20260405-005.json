@@ -1,0 +1,9 @@
+{
+  "type": "Bugs2FIX",
+  "category": "BugFix",
+  "id": "IMPL-20260405-005",
+  "status": "OPEN",
+  "title": "Create missing PwShGUI-NetworkTools.psm1",
+  "description": "Test-Prerequisites references it but module does not exist. Runtime failure.",
+  "priority": "HIGH"
+}

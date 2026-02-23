@@ -1,0 +1,32 @@
+{
+  "created": "2026-03-28T00:25:52.5441867Z",
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "notes": "",
+  "acknowledged": null,
+  "parentId": "Bug-20260328082552-489e03a6",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F.ps1"
+  ],
+  "description": "Fix for bug Bug-20260328082552-489e03a6: Script Script-F.ps1 has 1 functions but zero try/catch blocks",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "id": "Bugs2FIX-20260328082552-000c15c7",
+  "completedAt": null,
+  "source": "BugTracker",
+  "type": "Bugs2FIX",
+  "modified": "2026-03-28T00:25:52.5441867Z",
+  "executionAgent": "",
+  "sessionModCount": 1,
+  "tags": [],
+  "suggestedBy": "CronAiAthon",
+  "linkedFeatures": [],
+  "result": null,
+  "executionMethod": "",
+  "sinId": "",
+  "status": "DEFERRED",
+  "executedAt": null,
+  "linkedBugs": [],
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase — catch-block hardening queued for dedicated remediation sprint. See SIN-PATTERN-002 for guidance."
+}

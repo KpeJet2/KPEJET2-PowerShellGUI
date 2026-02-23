@@ -1,0 +1,194 @@
+# VersionTag: 2604.B0.v1
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)
+REM ============================================================
+REM  Launch-GUI.bat  |  PowerShell GUI Application Loader
+REM  Author   : The Establishment
+REM  Version  : 2603.B0.v27.0
+REM  Modified : 24 Mar 2026
+REM  Purpose  : Top-level launcher. Presents a numbered menu to
+REM             select quik_jnr, slow_snr, or any discovered
+REM             .bat / .ps1 / .html file in the root folder.
+REM  Usage    : Double-click or run from any prompt.
+REM             Default (7 s timeout): 1 = quik_jnr fast mode
+REM ============================================================
+@echo off
+
+setlocal enabledelayedexpansion
+
+set "scriptDir=%~dp0"
+set "quickLauncher=%scriptDir%Launch-GUI-quik_jnr.bat"
+set "slowLauncher=%scriptDir%Launch-GUI-slow_snr.bat"
+set "featureRequests=%scriptDir%scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml"
+set "PASSTHRU_ARGS="
+
+REM --- Parse /TASKTRAY switch and pass through ---
+for %%A in (%*) do (
+    if /I "%%~A"=="/TASKTRAY" set "PASSTHRU_ARGS=/TASKTRAY"
+)
+
+if not exist "%quickLauncher%" (
+    echo Error: Launch-GUI-quik_jnr.bat not found in %scriptDir%
+    pause
+    exit /b 1
+)
+
+if not exist "%slowLauncher%" (
+    echo Error: Launch-GUI-slow_snr.bat not found in %scriptDir%
+    pause
+    exit /b 1
+)
+
+REM ============================================================
+REM  DynamicMenuFolders - folders scanned for selectable files
+REM  Supported types : .bat  .ps1  .html  .xhtml
+REM  To add a folder : set "DynamicMenuFolder3=C:\your\path\"
+ REM                   set /a DynamicMenuFolderCount+=1
+REM ============================================================
+set "DynamicMenuFolder1=%scriptDir%"
+set "DynamicMenuFolder2=%scriptDir%scripts\QUICK-APP\"
+set "DynamicMenuFolderCount=2"
+
+cls
+echo ============================================================
+echo  PowerShell GUI Application Loader
+echo ============================================================
+echo.
+echo Select startup profile:
+echo.
+echo  1^) Launch-GUI-quik_jnr   ^(fast startup mode^)
+echo  2^) Launch-GUI-slow_snr   ^(full checks mode^)
+echo  3^) Feature Requests       ^(XHTML task pad^)
+echo.
+
+REM --- Letter lookup: dynamic item 1=A, 2=B, ... (add more rows for >26 files) ---
+set "_L1=A"  & set "_L2=B"  & set "_L3=C"  & set "_L4=D"  & set "_L5=E"
+set "_L6=F"  & set "_L7=G"  & set "_L8=H"  & set "_L9=I"  & set "_L10=J"
+set "_L11=K" & set "_L12=L" & set "_L13=M" & set "_L14=N" & set "_L15=O"
+set "_L16=P" & set "_L17=Q" & set "_L18=R" & set "_L19=S" & set "_L20=T"
+set "_L21=U" & set "_L22=V" & set "_L23=W" & set "_L24=X" & set "_L25=Y"
+set "_L26=Z"
+set "dynCount=0"
+set "choices=123"
+
+REM --- Dynamically list files from each DynamicMenuFolder ---
+for /L %%D in (1,1,%DynamicMenuFolderCount%) do (
+    call :scanFolder "!DynamicMenuFolder%%D!"
+)
+
+echo.
+echo Default in 7 seconds: 1 ^(quik_jnr^)
+echo.
+
+choice /C !choices! /N /T 7 /D 1 /M "Enter choice [1-3] or letter [A-Z]: "
+set "userChoice=!errorlevel!"
+
+REM --- Handle fixed selections ---
+if "!userChoice!"=="1" (
+    call "%quickLauncher%" !PASSTHRU_ARGS!
+    goto end
+)
+if "!userChoice!"=="2" (
+    call "%slowLauncher%" !PASSTHRU_ARGS!
+    goto end
+)
+if "!userChoice!"=="3" (
+    start "" "%featureRequests%"
+    goto end
+)
+
+REM --- Handle dynamic selections (errorlevel 3=A=dynCount 1, 4=B=dynCount 2 ...) ---
+set /a "dIdx=!userChoice!-3"
+if !dIdx! LSS 1 goto end
+if !dIdx! GTR !dynCount! goto end
+for /f %%I in ("!dIdx!") do (
+    call set "selectedFile=%%file%%I%%"
+    call set "selectedLabel=%%label%%I%%"
+)
+
+echo !selectedLabel! | findstr /I "\[PS1\]" >nul
+if !errorlevel!==0 (
+    powershell.exe -ExecutionPolicy Bypass -File "!selectedFile!"
+    goto end
+)
+echo !selectedLabel! | findstr /I "\[HTML\]\|\[XHTML\]" >nul
+if !errorlevel!==0 (
+    start "" "!selectedFile!"
+    goto end
+)
+REM Default: run as .bat
+call "!selectedFile!"
+goto end
+
+REM ============================================================
+REM  :scanFolder  <folderPath>
+REM  Scans one folder for .bat .ps1 .html .xhtml and appends
+REM  entries to the dynamic menu.  Called once per
+REM  DynamicMenuFolder variable.
+REM ============================================================
+:scanFolder
+set "scanDir=%~1"
+if not exist "!scanDir!" goto :eof
+for %%F in ("!scanDir!*.bat") do (
+    set "fname=%%~nxF"
+    if /I "!fname!" NEQ "Launch-GUI.bat" (
+        if /I "!fname!" NEQ "Launch-GUI-quik_jnr.bat" (
+            if /I "!fname!" NEQ "Launch-GUI-slow_snr.bat" (
+                set /a dynCount+=1
+                for /f %%K in ("!dynCount!") do call set "menuKey=%%_L%%K%%"
+                set "file!dynCount!=%%~fF"
+                set "label!dynCount!=!fname! [BAT]"
+                set "choices=!choices!!menuKey!"
+                echo  !menuKey!^) !fname!  [BAT]
+            )
+        )
+    )
+)
+for %%F in ("!scanDir!*.ps1") do (
+    set /a dynCount+=1
+    for /f %%K in ("!dynCount!") do call set "menuKey=%%_L%%K%%"
+    set "file!dynCount!=%%~fF"
+    set "label!dynCount!=%%~nxF [PS1]"
+    set "choices=!choices!!menuKey!"
+    echo  !menuKey!^) %%~nxF  [PS1]
+)
+for %%F in ("!scanDir!*.html") do (
+    set /a dynCount+=1
+    for /f %%K in ("!dynCount!") do call set "menuKey=%%_L%%K%%"
+    set "file!dynCount!=%%~fF"
+    set "label!dynCount!=%%~nxF [HTML]"
+    set "choices=!choices!!menuKey!"
+    echo  !menuKey!^) %%~nxF  [HTML]
+)
+for %%F in ("!scanDir!*.xhtml") do (
+    set /a dynCount+=1
+    for /f %%K in ("!dynCount!") do call set "menuKey=%%_L%%K%%"
+    set "file!dynCount!=%%~fF"
+    set "label!dynCount!=%%~nxF [XHTML]"
+    set "choices=!choices!!menuKey!"
+    echo  !menuKey!^) %%~nxF  [XHTML]
+)
+goto :eof
+
+:end
+endlocal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

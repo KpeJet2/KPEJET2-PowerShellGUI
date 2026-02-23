@@ -1,0 +1,156 @@
+{
+  "inputs": [
+    {
+      "id": "omada-base-url",
+      "type": "promptString",
+      "description": "Omada controller URL (e.g. https://omada.local)"
+    },
+    {
+      "id": "omada-client-id",
+      "type": "promptString",
+      "description": "Omada OAuth client ID (Platform Integration)"
+    },
+    {
+      "id": "omada-client-secret",
+      "type": "promptString",
+      "description": "Omada OAuth client secret",
+      "password": true
+    },
+    {
+      "id": "omada-omadac-id",
+      "type": "promptString",
+      "description": "Omada controller ID (omadacId)"
+    },
+    {
+      "id": "fing-api-key",
+      "type": "promptString",
+      "description": "Fing Local API key (Settings > Integrations > Local API)",
+      "password": true
+    },
+    {
+      "id": "fing-base-url",
+      "type": "promptString",
+      "description": "Fing agent base URL (default: http://localhost:49090/1)"
+    },
+    {
+      "id": "mikrotik-host",
+      "type": "promptString",
+      "description": "MikroTik device IP or hostname (e.g. 192.168.88.1)"
+    },
+    {
+      "id": "mikrotik-username",
+      "type": "promptString",
+      "description": "MikroTik SSH username"
+    },
+    {
+      "id": "mikrotik-password",
+      "type": "promptString",
+      "description": "MikroTik SSH password",
+      "password": true
+    },
+    {
+      "id": "lifx-api-token",
+      "type": "promptString",
+      "description": "LIFX personal access token (cloud.lifx.com/settings)",
+      "password": true
+    },
+    {
+      "id": "tapo-username",
+      "type": "promptString",
+      "description": "Tapo account email"
+    },
+    {
+      "id": "tapo-password",
+      "type": "promptString",
+      "description": "Tapo account password",
+      "password": true
+    },
+    {
+      "id": "tapo-discovery-target",
+      "type": "promptString",
+      "description": "Tapo network broadcast address (e.g. 192.168.1.255)"
+    },
+    {
+      "id": "tuya-access-id",
+      "type": "promptString",
+      "description": "Tuya developer platform Access ID"
+    },
+    {
+      "id": "tuya-access-secret",
+      "type": "promptString",
+      "description": "Tuya developer platform Access Secret",
+      "password": true
+    },
+    {
+      "id": "tuya-endpoint",
+      "type": "promptString",
+      "description": "Tuya MCP endpoint (from Tuya developer platform)"
+    }
+  ],
+  "servers": {
+    "tplink-omada-mcp": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "OMADA_BASE_URL="https://192.168.200.254/",
+        "-e", "OMADA_CLIENT_ID=7e3a70d0cefc4f7981454cfc0eb14919",
+        "-e", "OMADA_CLIENT_SECRET=fd4646ad1ac743fe98cd34a629031dd1}",
+        "-e", "OMADA_OMADAC_ID=3e097c20510f1966122b17efd3120ed3",
+        "-e", "OMADA_STRICT_SSL=False",
+        "jmtvms/tplink-omada-mcp:latest"
+      ]
+    },
+    "fing-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/../fing-mcp/dist/index.js"],
+      "env": {
+        "FING_API_KEY": "DnWgNKuRYaBZeSrWbMfgr2VS",
+        "FING_BASE_URL": "http://192.168.200.250:49090"
+        // "
+      }
+    },
+    "mikrotik-mcp": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "MIKROTIK_HOST=${input:mikrotik-host}",
+        "-e", "MIKROTIK_USERNAME=${input:mikrotik-username}",
+        "-e", "MIKROTIK_PASSWORD=${input:mikrotik-password}",
+        "-e", "MIKROTIK_PORT=22",
+        "mikrotik-mcp"
+      ]
+    },
+    "lifx-api-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "lifx-api-mcp-server@latest"],
+      "env": {
+        "CONFIG_API_TOKEN": "${input:lifx-api-token}"
+      }
+    },
+    "flipper-mcp": {
+      "type": "http",
+      "url": "http://flipper-mcp.local:8080/mcp"
+    },
+    "tapo-mcp": {
+      "type": "http",
+      "url": "http://127.0.0.1:3000/mcp",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    "tuya-mcp": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "examples", "all",
+        "--endpoint", "${input:tuya-endpoint}",
+        "--access-id", "${input:tuya-access-id}",
+        "--access-secret", "${input:tuya-access-secret}"
+      ],
+      "cwd": "${workspaceFolder}/../tuya-mcp-sdk/mcp-python"
+    }
+  }
+}

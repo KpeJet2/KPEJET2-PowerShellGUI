@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-007-20260408",
+  "title": "DPAPI Vault Auto-Lock on Idle",
+  "description": "Track last vault access; auto-lock after 15 min idle; show locked indicator in WinForms status bar.",
+  "status": "PENDING_APPROVAL",
+  "priority": "HIGH",
+  "effort": "4-6h",
+  "affectedFiles": "modules/vault-module,Main-GUI.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

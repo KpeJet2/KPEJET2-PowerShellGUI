@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-005-20260408",
+  "title": "Module Load-Time Profiling",
+  "description": "Wrap Import-Module in Main-GUI.ps1 with Stopwatch; write load profile to logs/; show in startup banner.",
+  "status": "PENDING_APPROVAL",
+  "priority": "MEDIUM",
+  "effort": "1-2h",
+  "affectedFiles": "Main-GUI.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

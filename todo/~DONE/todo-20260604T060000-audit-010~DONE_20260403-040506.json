@@ -1,0 +1,16 @@
+{
+  "category": "empty-stub-files",
+  "id": "audit-010",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "config/winremote-hosts.json(4 bytes) and scripts/config/AVPN-devices.json(0 bytes) are empty stubs.",
+  "files": [
+    "config/winremote-hosts.json",
+    "scripts/config/AVPN-devices.json"
+  ],
+  "priority": "low",
+  "title": "Fix empty/stub config files",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "winremote-hosts.json already valid []. scripts/config/AVPN-devices.json deleted (0 bytes)",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

@@ -1,0 +1,40 @@
+{
+  "sin_id": "SIN-PATTERN-025-FORECOLOR-NULL-ASSIGNMENT",
+  "title": "ForeColor assigned from if-expression that can return null",
+  "description": "Assigning .ForeColor = if ($condition) { $colorA } else { $colorB } is dangerous in PowerShell 5.1 because if the condition expression throws (e.g. accessing a property on a null object under StrictMode), the if-expression returns $null, which cannot be assigned to System.Drawing.Color. This produces 'Cannot convert null to type System.Drawing.Color'. The pattern occurs in Show-CronAiAthonTool.ps1 at lines 766 and 976, and could exist in any WinForms control property assignment using inline if-expressions.",
+  "severity": "MEDIUM",
+  "category": "winforms-runtime",
+  "vector": "null-assignment-to-valuetype",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 2,
+  "created_at": "2026-04-05T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Regex scan for '.ForeColor = if' or '.BackColor = if' or any WinForms Color/Font/Size property assigned from an if-expression.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "known_instances": [
+    "Show-CronAiAthonTool.ps1:766 — $lblPreReqSummary.ForeColor = if ($result.allPassed) { $accGreen } else { $accRed }",
+    "Show-CronAiAthonTool.ps1:976 — $lblBugCount.ForeColor = if (@($bugs).Count -eq 0) { $accGreen } else { $accOrange }"
+  ],
+  "exception_message": "Cannot convert null to type 'System.Drawing.Color'",
+  "scan_regex": "\\.(?:ForeColor|BackColor|Font|Size)\\s*=\\s*if\\s*\\(",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;checkpoints;~REPORTS/remediation-backups",
+  "remedy": "# Pre-evaluate the if-expression into a variable, then assign:\n$fc = if ($result.allPassed) { $accGreen } else { $accRed }\nif ($null -ne $fc) { $lbl.ForeColor = $fc }\n\n# Or use try/catch:\ntry { $lbl.ForeColor = if ($cond) { $c1 } else { $c2 } } catch { <# fallback #> }",
+  "preventionRule": "1. Never assign WinForms value-type properties (Color, Font, Size, Point) directly from if-expressions.\n2. Always pre-evaluate into a variable and null-check before assigning to value-type properties.\n3. Related to P022 (null guard before method calls) but specific to value-type property setters.",
+  "related_sins": ["SIN-PATTERN-022-NULL-METHOD-CALL"],
+  "tags": ["winforms", "forecolor", "null-assignment", "value-type", "if-expression"],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

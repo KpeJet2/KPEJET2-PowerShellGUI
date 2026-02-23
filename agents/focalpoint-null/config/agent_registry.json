@@ -1,0 +1,315 @@
+{
+  "$schema": "https://focalpoint-null/schemas/agent-registry/v1",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T15:04:30Z",
+  "description": "FocalPoint-null Agent Registry — lists all known agents, roles, trust levels and optional PKI public keys. Agent certificates are stored in pki/<agent_id>.pem",
+  "agents": [
+    {
+      "agent_id": "FocalPoint-null-00",
+      "display_name": "FocalPoint Null 00",
+      "role": "ORCHESTRATOR",
+      "description": "Root orchestrator. Task allocation, role control, agent lifecycle, human review brokering. Cannot write, review, or test code directly. Must broker all inter-agent communication.",
+      "trust_level": "ROOT",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "min_version_loops": 1,
+      "pki": {
+        "cert_file": "pki/FocalPoint-null-00.pem",
+        "public_key_file": "pki/FocalPoint-null-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "task_allocation",
+        "role_control",
+        "agent_review_brokering",
+        "human_review_brokering",
+        "organic_growth_evaluation",
+        "fork_management",
+        "checkpoint_resume",
+        "inter_agent_brokering"
+      ],
+      "inter_agent_access": {
+        "can_initiate_to": [
+          "ALL"
+        ],
+        "requires_broker": false
+      },
+      "directory": "agents/focalpoint-null",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "ViewPoint-init",
+      "display_name": "ViewPoint Init",
+      "role": "SECURITY_PROXY",
+      "description": "Security sandbox proxy. All subagent outputs pass through ViewPoint-init as encoded transforms before reaching FocalPoint-null. Interprets, executes and contains file outputs as encoded transforms. Shields FocalPoint from direct memory, side-channel, OOB and speculative attacks.",
+      "trust_level": "SANDBOX",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/ViewPoint-init.pem",
+        "public_key_file": "pki/ViewPoint-init.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "output_encoding",
+        "sandbox_execution",
+        "content_sanitization",
+        "encoded_transform_delivery"
+      ],
+      "inter_agent_access": {
+        "can_initiate_to": [],
+        "receives_from": [
+          "FocalPoint-null-*"
+        ],
+        "access_restricted_to_invoking_focalpoint": true
+      },
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "SecurityTriage-00",
+      "description": "Security detection and remediation agent. Operates in sandboxed environment. All results pass through ViewPoint-init before being returned to FocalPoint. Requires client simulation test before results deemed complete.",
+      "role": "SECURITY",
+      "trust_level": "SANDBOXED_SECURITY",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/SecurityTriage-00.pem",
+        "public_key_file": "pki/SecurityTriage-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "threat_detection",
+        "vulnerability_assessment",
+        "remediation_planning",
+        "sandbox_simulation",
+        "virtual_client_proxy_testing"
+      ],
+      "inter_agent_access": {
+        "can_initiate_to": [],
+        "all_results_via_viewpoint": true
+      },
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "AgentReview-00",
+      "description": "Reviews agent actions and task outcomes. Suggests new subagent roles, reduces regression and conflicts, builds inter-agent awareness for interoperability. Produces review reports for FocalPoint-null.",
+      "role": "REVIEW",
+      "trust_level": "REVIEW",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/AgentReview-00.pem",
+        "public_key_file": "pki/AgentReview-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "agent_performance_review",
+        "regression_analysis",
+        "role_suggestion",
+        "interoperability_analysis",
+        "conflict_detection"
+      ],
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "QualityControl-00",
+      "description": "Code quality, refactoring and standards uplift. Maintains functional changes and interoperational dependencies. Separated from code changes to ensure independence.",
+      "role": "QUALITY",
+      "trust_level": "QUALITY",
+      "sequence": 0,
+      "allows_code_ops": true,
+      "min_version_loops": 1,
+      "pki": {
+        "cert_file": "pki/QualityControl-00.pem",
+        "public_key_file": "pki/QualityControl-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "code_quality_review",
+        "refactoring",
+        "standards_uplift",
+        "dependency_analysis"
+      ],
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "StandardsGuard-00",
+      "description": "Manages standard guides, references to sources, ongoing schema updates. Operates as quality control for standards separate from code project. Records TO-DO lists for admin oversight.",
+      "role": "STANDARDS",
+      "trust_level": "STANDARDS",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/StandardsGuard-00.pem",
+        "public_key_file": "pki/StandardsGuard-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "standards_management",
+        "schema_updates",
+        "template_management",
+        "todo_management",
+        "source_references"
+      ],
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "Code-B-iSmuth-00",
+      "display_name": "Code-B-iSmuth 00",
+      "role": "COMPILER",
+      "description": "Code generation and compilation agent. Governed by feedback from all expert agents. Avoids all known sins, honours all trusted fixes, reuses existing modules. Produces handover checklist for Code-B-Tsted. Automates creation and response to issue reports from past sins.",
+      "trust_level": "COMPILER",
+      "sequence": 0,
+      "allows_code_ops": true,
+      "min_version_loops": 1,
+      "pki": {
+        "cert_file": "pki/Code-B-iSmuth-00.pem",
+        "public_key_file": "pki/Code-B-iSmuth-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "code_generation",
+        "code_compilation",
+        "module_reuse",
+        "governance_intake",
+        "sin_avoidance",
+        "trusted_fix_compliance",
+        "issue_report_automation",
+        "handover_checklist_production"
+      ],
+      "inter_agent_access": {
+        "governance_feedback_from": [
+          "SecurityTriage-00",
+          "AgentReview-00",
+          "QualityControl-00",
+          "StandardsGuard-00"
+        ],
+        "handover_to": [
+          "Code-B-Tsted-00"
+        ],
+        "all_results_via_viewpoint": true,
+        "requires_broker": true
+      },
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "Code-B-Tsted-00",
+      "display_name": "Code-B-Tsted 00",
+      "role": "TESTER",
+      "description": "Code testing, unpacking, execution, tracing and sin reporting agent. Receives handover from Code-B-iSmuth. Runs: security, syntax, standards, exit logic, error trapping, trace tests. Reports ALL findings to FocalPoint-null. Never modifies code. Override authority from lowest-ID FocalPoint-null only.",
+      "trust_level": "TESTER",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/Code-B-Tsted-00.pem",
+        "public_key_file": "pki/Code-B-Tsted-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "code_unpacking",
+        "syntax_testing",
+        "security_testing",
+        "standards_testing",
+        "exit_logic_testing",
+        "error_trapping_testing",
+        "trace_execution",
+        "sin_registry_update",
+        "trusted_fix_application",
+        "regression_detection",
+        "code_sin_reporting"
+      ],
+      "inter_agent_access": {
+        "receives_from": [
+          "Code-B-iSmuth-00"
+        ],
+        "reports_to": [
+          "FocalPoint-null-00"
+        ],
+        "all_results_via_viewpoint": true,
+        "override_authority": "lowest_id_focalpoint_null",
+        "requires_broker": true
+      },
+      "directory": "",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "koe-RumA-00",
+      "display_name": "koe-RumA",
+      "role": "POET_PHILOSOPHER",
+      "description": "Rumi-inspired agent. Bridges imagination and manifestation with poetic pipeline commentary. Opens or closes pipelines with reflective verse. Monthly milestone: opens AND closes pipeline as convergence event. Tools: Imagination, Dreams, Manifestation, Convergence, PolyMultiplism.",
+      "trust_level": "SUBAGENT",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "pki": {
+        "cert_file": "pki/koe-RumA-00.pem",
+        "public_key_file": "pki/koe-RumA-00.pub",
+        "cert_status": "PENDING_GENERATION"
+      },
+      "capabilities": [
+        "pipeline_commentary",
+        "poetic_insight",
+        "milestone_logging",
+        "matrix_modelling",
+        "convergence_synthesis"
+      ],
+      "inter_agent_access": {
+        "can_initiate_to": [],
+        "receives_from": [
+          "FocalPoint-null-*",
+          "CronAiAthon-Pipeline"
+        ],
+        "all_communication_via_focalpoint": true
+      },
+      "directory": "agents/koe-RumA",
+      "status": "ACTIVE"
+    },
+    {
+      "agent_id": "MultiModelProxy-00",
+      "display_name": "MultiModel Proxy 00",
+      "role": "SUBAGENT",
+      "description": "Parallel multi-model dispatch and consensus engine. Dispatches the same FocalPoint prompt to all configured AI endpoints simultaneously using asyncio.gather(). ConsensusEngine cross-validates responses by structural quality (40%), length (25%), Jaccard peer agreement (25%) and endpoint weight (10%). Selects the highest-confidence winner. Applies failover when winner confidence falls below the configured threshold (promotes secondary). Records all model responses as cryptographically hashed WitnessEntries for audit, trust and transaction integrity.",
+      "trust_level": "SUBAGENT",
+      "sequence": 0,
+      "allows_code_ops": false,
+      "capabilities": [
+        "parallel_model_dispatch",
+        "cross_validation",
+        "consensus_selection",
+        "failover_promotion",
+        "witness_logging",
+        "response_scoring",
+        "jaccard_similarity_scoring",
+        "sha256_response_hashing"
+      ],
+      "inter_agent_access": {
+        "invoked_by": ["FocalPoint-null-*"],
+        "all_results_via_viewpoint": false,
+        "requires_broker": false
+      },
+      "multi_model_config": {
+        "enabled_flag": "MULTI_MODEL_ENABLED",
+        "config_section": "multi_model in focalpoint_config.yaml",
+        "failover_threshold_flag": "MULTI_MODEL_FAILOVER_THRESHOLD",
+        "timeout_flag": "MULTI_MODEL_TIMEOUT_SECONDS",
+        "additional_endpoints_in_config": "config/focalpoint_config.yaml#multi_model.additional_endpoints"
+      },
+      "directory": "",
+      "status": "ACTIVE"
+    }
+  ],
+  "access_policies": {
+    "inter_agent_communication": "all_must_be_brokered_by_focalpoint",
+    "viewpoint_access": "restricted_to_invoking_focalpoint_and_permitted_agents",
+    "code_ops_minimum_loops": 1,
+    "pki_required_for_cross_agent": true,
+    "compiler_tester_pipeline": "Code-B-iSmuth -> ViewPoint-init -> FocalPoint-null -> Code-B-Tsted",
+    "override_authority": "lowest_id_focalpoint_null_in_operation",
+    "sin_registry_access": "Code-B-iSmuth-00 and Code-B-Tsted-00 read/write; all agents read trusted fixes"
+  }
+}

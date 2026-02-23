@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B0.v1 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>[TOOL_NAME] - PwShGUI</title>
+    <!-- Base Theme: Import shared CSS -->
+    <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
+    <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
+    <!-- Choose layout: layout-mastertight-wleftmenu | layout-tabs-black-checklist | layout-tabs-white-wleftmenu | layout-tabs-black-modernui | layout-page-black-technicalui -->
+    <link rel="stylesheet" href="../../styles/layout-mastertight-wleftmenu.css" />
+    <!-- <link rel="stylesheet" href="../../styles/accent-[TOOL_ACCENT].css" /> -->
+    <style>
+    /* VersionTag: v26 */
+    :root{--bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;--control:#333337;--control-fg:#dcdcdc;--accent:#007acc;--accent-green:#4ec9b0;--accent-orange:#ce913c;--heading:#007acc;--heading-fg:#fff;--fg:#d4d4d4;--fg-subtle:#969696;--border:#3f3f46;--btn-bg:#37373c;--btn-hover:#46464e;--btn-fg:#e6e6e6;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;--info:#569cd6;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--font-mono:'Cascadia Code','Consolas',monospace;--fs-base:14px;--fs-sm:12px;--fs-heading:18px;--gap:12px;--pad:16px;--radius:6px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font);font-size:var(--fs-base);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+    .app-header{background:var(--heading);color:var(--heading-fg);padding:var(--pad);font-size:var(--fs-heading);font-weight:600;display:flex;align-items:center;gap:var(--gap)}
+    .app-header .version-tag{font-size:var(--fs-sm);opacity:.7;margin-left:auto}
+    .filter-bar{display:flex;gap:var(--gap);padding:var(--pad);background:var(--bg-alt);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+    .filter-bar input,.filter-bar select{font-family:var(--font);font-size:var(--fs-base);background:var(--control);color:var(--control-fg);border:1px solid var(--border);border-radius:4px;padding:6px 10px}
+    .filter-bar input{flex:1;min-width:200px}
+    .filter-bar select{min-width:140px}
+    .content-area{flex:1;padding:var(--pad);overflow-y:auto}
+    table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+    thead th{background:var(--control);color:var(--fg);padding:8px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);position:sticky;top:0}
+    tbody td{padding:6px 12px;border-bottom:1px solid var(--border)}
+    tbody tr:nth-child(even){background:var(--bg-alt)}
+    tbody tr:hover{background:var(--control)}
+    button,.btn{font-family:var(--font);font-size:var(--fs-sm);background:var(--btn-bg);color:var(--btn-fg);border:1px solid var(--border);border-radius:4px;padding:6px 14px;cursor:pointer}
+    button:hover,.btn:hover{background:var(--btn-hover)}
+    .btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .status-bar{background:var(--accent);color:#fff;padding:4px var(--pad);font-size:var(--fs-sm);display:flex;justify-content:space-between;margin-top:auto}
+    .badge{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+    .badge-pass{background:var(--pass);color:#1e1e1e}
+    .badge-fail{background:var(--fail);color:#fff}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap)}
+    @media(max-width:600px){:root{--pad:8px;--gap:8px;--fs-base:12px}.filter-bar{flex-direction:column}.filter-bar input,.filter-bar select{width:100%;min-width:unset}}
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        [TOOL_NAME] <span class="version-tag">v26</span>
+    </div>
+
+    <div class="filter-bar">
+        <input type="text" id="filterInput" placeholder="Filter..." onkeyup="applyFilter()" />
+        <select id="statusFilter" onchange="applyFilter()">
+            <option value="">All Statuses</option>
+            <option value="OPEN">Open</option>
+            <option value="DONE">Done</option>
+        </select>
+        <button class="btn-accent" onclick="loadData()">Reload</button>
+    </div>
+
+    <div class="content-area" id="resultsArea">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                </tr>
+            </thead>
+            <tbody id="dataBody">
+                <!-- Rows populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="status-bar">
+        <span id="statusText">Ready</span>
+        <span id="countText">0 items</span>
+    </div>
+
+    <script>
+    //<![CDATA[
+    var allData = [];
+
+    function loadData() {
+        // TODO: Replace with actual JSON path
+        var path = '../../todo/_index.json';
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', path, true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                allData = JSON.parse(xhr.responseText);
+                renderTable(allData);
+                document.getElementById('statusText').textContent = 'Loaded';
+            }
+        };
+        xhr.onerror = function() {
+            document.getElementById('statusText').textContent = 'Load error';
+        };
+        xhr.send();
+    }
+
+    function renderTable(data) {
+        var body = document.getElementById('dataBody');
+        body.innerHTML = '';
+        for (var i = 0; i < data.length; i++) {
+            var row = data[i];
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + esc(row.id || '') + '</td>'
+                + '<td>' + esc(row.title || '') + '</td>'
+                + '<td><span class="badge ' + badgeClass(row.status) + '">' + esc(row.status || '') + '</span></td>'
+                + '<td>' + esc(row.priority || '') + '</td>';
+            body.appendChild(tr);
+        }
+        document.getElementById('countText').textContent = data.length + ' items';
+    }
+
+    function applyFilter() {
+        var q = document.getElementById('filterInput').value.toLowerCase();
+        var s = document.getElementById('statusFilter').value;
+        var filtered = allData.filter(function(r) {
+            var matchText = !q || (r.title || '').toLowerCase().indexOf(q) >= 0 || (r.id || '').toLowerCase().indexOf(q) >= 0;
+            var matchStatus = !s || r.status === s;
+            return matchText && matchStatus;
+        });
+        renderTable(filtered);
+    }
+
+    function badgeClass(status) {
+        if (status === 'DONE' || status === 'CLOSED') return 'badge-pass';
+        if (status === 'FAILED' || status === 'BLOCKED') return 'badge-fail';
+        return 'badge-open';
+    }
+
+    function esc(s) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(s));
+        return d.innerHTML;
+    }
+
+    // Auto-load on page open
+    loadData();
+    //]]>
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,20 @@
+{
+  "id": "bb33238d-98db-4584-b6f3-f9d81044a3c2",
+  "title": "Rename Proposal: scripts\\QUICK-APP\\HELP-FILES-MANAGER.ps1",
+  "description": "Script uses non-standard verb 'HELP': HELP-FILES-MANAGER.ps1 -- Suggested: HELP-FILES-MANAGER.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\QUICK-APP\\HELP-FILES-MANAGER.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.1744229+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "HELP-FILES-MANAGER.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

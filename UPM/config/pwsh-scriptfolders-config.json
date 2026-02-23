@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Script folder paths configuration for PowerShell GUI Application",
+    "lastModified": "2026-02-16T00:00:00Z",
+    "format": "JSON"
+  },
+  "customScriptFolders": [
+    {
+      "path": "C:\\PowerShellGUI\\scripts\\QUICK-APP",
+      "label": "QUICK-APP Scripts",
+      "enabled": true,
+      "addedDate": "2026-02-16"
+    },
+    {
+      "enabled": true,
+      "addedDate": "2026-02-24",
+      "path": "C:\\PowerShellGUI\\scripts",
+      "label": "scripts"
+    }
+  ]
+}

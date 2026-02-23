@@ -1,0 +1,16 @@
+{
+  "id": "master-014",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "security",
+  "priority": "medium",
+  "status": "PLANNED",
+  "title": "Harden PwShGUICore lock file and log file permissions",
+  "description": "Session lock files created without ACL restriction — potential tampering risk. Log files contain user activity data without restricted permissions. Apply Set-VaultFilePermissions equivalent (current-user-only ACL) to lock files and log files.",
+  "files": [
+    "modules/PwShGUICore.psm1"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6521564Z"
+}

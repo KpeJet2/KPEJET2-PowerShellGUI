@@ -1,0 +1,22 @@
+{
+  "todo_id": "gap-2604-004",
+  "id": "gap-2604-004",
+  "category": "maintenance",
+  "title": "9 redundant logging wrappers -- consolidate domain-specific Write-*Log functions to Write-CronLog -Source",
+  "description": "At least 9 modules define their own Write-*Log wrapper functions (Write-AppLog, Write-ScanLog, Write-PipeLog, etc.) that ultimately call Write-CronLog. This violates DRY and makes severity-level changes require edits in 9+ places. Consolidate: each module should directly call Write-CronLog -Severity ... -Source 'ModuleName' instead of wrapping. Advisory SEMI-SIN SS-003 (Write-Host in modules) may also apply to some wrappers.",
+  "suggested_by": "redundancy audit 2026-04-03",
+  "priority": "LOW",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:03Z",
+  "createdAt": "2026-04-03T00:00:03Z",
+  "acknowledged_at": null,
+  "affects": [
+    "modules/*.psm1",
+    "agents/**/*.psm1",
+    "scripts/*.ps1"
+  ],
+  "notes": "Use: Select-String -Path modules/*.psm1,agents/**/*.psm1 -Pattern 'function Write-' to get full list. Severity values must be: Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debug (NOT 'INFO').",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.7838422Z"
+}

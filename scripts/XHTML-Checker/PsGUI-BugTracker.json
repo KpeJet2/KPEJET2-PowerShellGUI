@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "lastModified": "2026-04-05T05:37:11.3439999+08:00",
+    "source": "CronProcessor"
+  },
+  "bugs": [
+    {
+      "id": 1,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.0334127+08:00",
+      "description": "Parse validation failed: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1"
+    },
+    {
+      "id": 2,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.103203+08:00",
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1"
+    },
+    {
+      "id": 3,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.4249165+08:00",
+      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "script": "config\\error-handling-templates.ps1"
+    },
+    {
+      "id": 4,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.1091887+08:00",
+      "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+    },
+    {
+      "id": 5,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.1363317+08:00",
+      "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+    },
+    {
+      "id": 6,
+      "status": "Open",
+      "created": "2026-04-05T04:38:50.1431441+08:00",
+      "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1"
+    }
+  ]
+}

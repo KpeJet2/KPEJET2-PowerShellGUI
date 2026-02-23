@@ -1,0 +1,20 @@
+{
+  "id": "0822e3a3-e53f-4193-86dc-3b926c2e03b1",
+  "title": "Rename Proposal: scripts\\PS-CheatSheet-EXAMPLES-V2.ps1",
+  "description": "Script uses non-standard verb 'PS': PS-CheatSheet-EXAMPLES-V2.ps1 -- Suggested: PS-CheatSheet-EXAMPLES-V2.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\PS-CheatSheet-EXAMPLES-V2.ps1"
+  ],
+  "created": "2026-03-28T05:14:50.9898971+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "PS-CheatSheet-EXAMPLES-V2.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

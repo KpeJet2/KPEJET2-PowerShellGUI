@@ -1,0 +1,41 @@
+# VersionTag: 2604.B2.V31.0
+# ignore log files and temporary data
+.history/ 
+logs/
+*.log
+temp/
+*.tmp
+*.temp
+# ignore ~DOWNLOADS, ~HISTORY, ~README.md, ~REPORTS, .venv
+~DOWNLOADS/
+~HISTORY/
+~README.md
+~REPORTS/
+.venv/
+# ignore PowerShell generated files
+*.ps1xml
+*.psd1
+# ignore system specific
+Thumbs.db
+ehthumbs.db
+# ignore user profile
+*.suo
+# exclude built manifest files? maybe include them
+# you might want to track config and manifest so not add them
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

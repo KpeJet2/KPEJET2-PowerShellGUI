@@ -1,0 +1,16 @@
+{
+  "id": "master-002",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "critical",
+  "status": "DONE",
+  "title": "Deduplicate stale VersionTag lines in .gitignore files",
+  "description": "Root .gitignore has 9 stale VersionTag history lines (v7-v16). agents/focalpoint-null/.gitignore has 4 duplicate identical tags. All should have exactly 1 current tag.",
+  "files": [
+    ".gitignore",
+    "agents/focalpoint-null/.gitignore"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:02:32.8089429+08:00",
+  "resolution": "FIXED - Deduplicated, updated v19->v27.0"
+}

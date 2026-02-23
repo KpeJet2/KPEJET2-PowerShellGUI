@@ -1,0 +1,20 @@
+{
+  "id": "758a7faa-7a4a-436e-8120-a22e8cf58ced",
+  "title": "Rename Proposal: scripts\\QUICK-APP\\PWSH-SETUP.ps1",
+  "description": "Script uses non-standard verb 'PWSH': PWSH-SETUP.ps1 -- Suggested: PWSH-SETUP.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\QUICK-APP\\PWSH-SETUP.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.1964996+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "PWSH-SETUP.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

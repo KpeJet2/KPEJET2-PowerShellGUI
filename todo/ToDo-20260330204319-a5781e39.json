@@ -1,0 +1,33 @@
+{
+  "status": "PLANNED",
+  "suggestedBy": "GitHub-Copilot-Session4",
+  "tags": [
+    "session4-audit"
+  ],
+  "description": "Create automated batch-fix tool that reads style-remediation-inventory.json and applies safe transformations",
+  "linkedFeatures": [],
+  "completedAt": null,
+  "result": null,
+  "category": "tooling",
+  "type": "ToDo",
+  "linkedBugs": [],
+  "id": "ToDo-20260330204319-a5781e39",
+  "executionAgent": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "parentId": "",
+  "sinId": "",
+  "source": "Manual",
+  "priority": "HIGH",
+  "title": "Build Invoke-AutoRemediate tool",
+  "notes": "",
+  "createdAt": "2026-03-30T12:43:19.325718Z",
+  "executedAt": null,
+  "modified": "2026-03-30T12:43:19.325718Z",
+  "created": "2026-03-30T12:43:19.325718Z",
+  "acknowledged": null,
+  "affectedFiles": [
+    "modules/CronAiAthon-BugTracker.psm1"
+  ],
+  "plannedAt": "2026-03-31T01:25:34.4086159+08:00"
+}

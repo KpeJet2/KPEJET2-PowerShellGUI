@@ -1,0 +1,49 @@
+{
+  "sin_id": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN_202604042257",
+  "title": "Join-Path or string concatenation with unvalidated user/external input for file paths",
+  "description": "Building file paths by directly concatenating user input or external data without sanitisation enables path traversal attacks (e.g. '../../../etc/passwd' or '..\\..\\system32'). All file path construction from external input must validate against directory traversal patterns.",
+  "severity": "CRITICAL",
+  "category": "security",
+  "vector": "path-traversal",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T03:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Manual review of Join-Path calls using variables sourced from user input, Read-Host, or external JSON/XML data without Resolve-Path validation",
+  "is_security_related": true,
+  "preventionRule": "All file paths constructed from external input must: (1) Use [System.IO.Path]::GetFullPath() to resolve, (2) Validate the resolved path starts with the expected base directory, (3) Reject paths containing '..' segments.",
+  "scan_regex": "Join-Path\\s+.*\\$_(\\.|\\[)|\\$[a-zA-Z]+Path\\s*=\\s*.*\\+.*\\$_",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Add path validation: $resolved = [IO.Path]::GetFullPath($userPath); if (-not $resolved.StartsWith($baseDir)) { throw 'Path traversal blocked' }",
+  "tags": [
+    "security",
+    "path-traversal",
+    "owasp",
+    "injection",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN",
+    "previous_file": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN.json",
+    "reindexed_at": "2026-04-04T14:57:30.6590529Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "context_guard_regex": "\\$_\\.FullName|\\$_\\.PSPath|\\$_\\.Name|\\$_\\.Value|\\$PSScriptRoot|\\$env:",
+  "context_guard_lines": 0,
+  "context_guard_direction": "above",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|Tests\\.ps1$"
+}

@@ -1,0 +1,17 @@
+{
+  "category": "missing-versiontag",
+  "id": "audit-007",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "Missing VersionTag in modules/_TEMPLATE-Module.psm1, scripts/Invoke-TodoManager.ps1, tests/CronAiAthon-BugTracker.Tests.ps1, tests/Invoke-SyntaxGuard.ps1, tests/Test-TrayHostLifecycle.ps1 and 8 more.",
+  "files": [
+    "modules/_TEMPLATE-Module.psm1",
+    "scripts/Invoke-TodoManager.ps1",
+    "tests/Invoke-SyntaxGuard.ps1"
+  ],
+  "priority": "medium",
+  "title": "Add VersionTag to 13 active PS files",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Added VersionTag 2603.B0.v27.0 to 11 active PS files (12 after venv exclusions)",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

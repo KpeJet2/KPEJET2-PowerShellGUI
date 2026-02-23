@@ -1,0 +1,743 @@
+# VersionTag: 2604.B0.v1
+"""Slipstream City - Vertical Slice (Neon Loop).
+
+Requires: pip install pygame
+Run game:    python CarGame
+Run selftest: python CarGame --self-test
+"""
+
+import argparse
+import math
+import subprocess
+import sys
+from pathlib import Path
+from dataclasses import dataclass
+
+try:
+    import pygame  # type: ignore[import-not-found]
+    HAS_PYGAME = True
+except ImportError:
+    HAS_PYGAME = False
+
+    class _MiniVector2:
+        def __init__(self, x=0.0, y=0.0):
+            self.x = float(x)
+            self.y = float(y)
+
+        def __add__(self, other):
+            return _MiniVector2(self.x + other.x, self.y + other.y)
+
+        def __sub__(self, other):
+            return _MiniVector2(self.x - other.x, self.y - other.y)
+
+        def __mul__(self, value):
+            return _MiniVector2(self.x * value, self.y * value)
+
+        def __rmul__(self, value):
+            return self.__mul__(value)
+
+        def __imul__(self, value):
+            self.x *= value
+            self.y *= value
+            return self
+
+        def copy(self):
+            return _MiniVector2(self.x, self.y)
+
+        def dot(self, other):
+            return self.x * other.x + self.y * other.y
+
+        def length(self):
+            return math.hypot(self.x, self.y)
+
+        def normalize(self):
+            L = self.length()
+            return _MiniVector2(0.0, 0.0) if L <= 1e-9 else _MiniVector2(self.x / L, self.y / L)
+
+        def scale_to_length(self, value):
+            L = self.length()
+            if L > 1e-9:
+                s = value / L
+                self.x *= s
+                self.y *= s
+
+        def lerp(self, other, t):
+            return _MiniVector2(self.x + (other.x - self.x) * t, self.y + (other.y - self.y) * t)
+
+    class _MiniPygame:
+        Vector2 = _MiniVector2
+        K_UP = 273
+        K_DOWN = 274
+        K_LEFT = 276
+        K_RIGHT = 275
+        K_SPACE = 32
+        K_ESCAPE = 27
+        K_RETURN = 13
+        K_r = 114
+
+    pygame = _MiniPygame()
+
+# -----------------------------
+# Config
+# -----------------------------
+W, H = 960, 640
+FPS = 60
+
+ROAD = (35, 35, 40)
+GRASS = (20, 90, 35)
+NEON = (80, 200, 255)
+NEON2 = (255, 80, 200)
+WHITE = (235, 235, 235)
+RED = (220, 60, 60)
+YELLOW = (240, 220, 80)
+BLUE = (80, 160, 255)
+
+FONT = None
+BIG = None
+screen = None
+clock = None
+
+# -----------------------------
+# Helpers
+# -----------------------------
+def clamp(x, a, b):
+    return a if x < a else b if x > b else x
+
+def v_from_angle(deg):
+    r = math.radians(deg)
+    return pygame.Vector2(math.cos(r), -math.sin(r))
+
+def dist_point_to_segment(p, a, b):
+    ap = p - a
+    ab = b - a
+    ab2 = ab.dot(ab)
+    if ab2 <= 1e-9:
+        return ap.length()
+    t = clamp(ap.dot(ab) / ab2, 0.0, 1.0)
+    proj = a + ab * t
+    return (p - proj).length()
+
+def nearest_on_polyline(p, pts):
+    best_d = 1e9
+    best_i = 0
+    best_t = 0.0
+    for i in range(len(pts) - 1):
+        a, b = pts[i], pts[i + 1]
+        ap = p - a
+        ab = b - a
+        ab2 = ab.dot(ab)
+        t = 0.0 if ab2 <= 1e-9 else clamp(ap.dot(ab) / ab2, 0.0, 1.0)
+        proj = a + ab * t
+        d = (p - proj).length()
+        if d < best_d:
+            best_d, best_i, best_t = d, i, t
+    return best_d, best_i, best_t
+
+def polyline_progress(pts, seg_i, t):
+    # returns distance along polyline
+    d = 0.0
+    for i in range(seg_i):
+        d += (pts[i + 1] - pts[i]).length()
+    d += (pts[seg_i + 1] - pts[seg_i]).length() * t
+    return d
+
+def polyline_total(pts):
+    return sum((pts[i + 1] - pts[i]).length() for i in range(len(pts) - 1))
+
+def point_at_progress(pts, s):
+    # s in [0,total)
+    total = polyline_total(pts)
+    s = s % total
+    for i in range(len(pts) - 1):
+        seg = (pts[i + 1] - pts[i])
+        L = seg.length()
+        if s <= L:
+            t = 0.0 if L <= 1e-9 else s / L
+            return pts[i] + seg * t, i, t
+        s -= L
+    return pts[-1], len(pts) - 2, 1.0
+
+# -----------------------------
+# Track: "Neon Loop"
+# Represented as a centerline polyline + width.
+# Collision is "distance to centerline <= width/2"
+# -----------------------------
+TRACK_W = 120  # base width
+NARROW_W = 86  # chicane width
+
+center = [
+    pygame.Vector2(180, 520),
+    pygame.Vector2(780, 520),  # long straight
+    pygame.Vector2(860, 420),  # wide drift corner
+    pygame.Vector2(780, 300),
+    pygame.Vector2(620, 260),  # approach chicane
+    pygame.Vector2(520, 300),
+    pygame.Vector2(420, 260),
+    pygame.Vector2(320, 300),  # chicane exit
+    pygame.Vector2(240, 260),
+    pygame.Vector2(160, 320),
+    pygame.Vector2(140, 420),
+    pygame.Vector2(180, 520),  # loop close
+]
+
+
+def build_track_cache(pts):
+    segments = []
+    lengths = []
+    lengths_sq = []
+    cumulative = [0.0]
+    total = 0.0
+    for i in range(len(pts) - 1):
+        seg = pts[i + 1] - pts[i]
+        seg_len = seg.length()
+        segments.append(seg)
+        lengths.append(seg_len)
+        lengths_sq.append(seg.dot(seg))
+        total += seg_len
+        cumulative.append(total)
+    return {
+        "segments": segments,
+        "lengths": lengths,
+        "lengths_sq": lengths_sq,
+        "cumulative": cumulative,
+        "total": total,
+    }
+
+
+TRACK_CACHE = build_track_cache(center)
+
+TOTAL_S = TRACK_CACHE["total"]
+
+# Start/finish line near first point
+START_POS = pygame.Vector2(200, 520)
+START_DIR = 0  # facing right
+
+# Checkpoints (progress distances along centerline)
+CP_S = [TOTAL_S * 0.25, TOTAL_S * 0.50, TOTAL_S * 0.75]
+CP_RADIUS = 55
+
+# Oil slick zone (a circle)
+OIL_POS = pygame.Vector2(720, 360)
+OIL_R = 55
+
+# Shortcut gate (risk-reward): a narrow "portal" near top-right
+SHORTCUT_A = pygame.Vector2(760, 310)
+SHORTCUT_B = pygame.Vector2(860, 360)
+SHORTCUT_R = 18
+
+def track_width_at(p):
+    # Narrow chicane region around mid-top
+    # (simple: if near those points, narrow)
+    chicane_center = pygame.Vector2(470, 285)
+    if (p - chicane_center).length() < 170:
+        return NARROW_W
+    return TRACK_W
+
+def on_track(p):
+    d, _, _ = nearest_on_polyline_cached(p)
+    return d <= track_width_at(p) * 0.5
+
+
+def nearest_on_polyline_cached(p):
+    best_d = 1e9
+    best_i = 0
+    best_t = 0.0
+    segments = TRACK_CACHE["segments"]
+    lengths_sq = TRACK_CACHE["lengths_sq"]
+    for i in range(len(segments)):
+        a = center[i]
+        ab = segments[i]
+        ap = p - a
+        ab2 = lengths_sq[i]
+        t = 0.0 if ab2 <= 1e-9 else clamp(ap.dot(ab) / ab2, 0.0, 1.0)
+        proj = a + ab * t
+        d = (p - proj).length()
+        if d < best_d:
+            best_d, best_i, best_t = d, i, t
+    return best_d, best_i, best_t
+
+
+def polyline_progress_cached(seg_i, t):
+    return TRACK_CACHE["cumulative"][seg_i] + TRACK_CACHE["lengths"][seg_i] * t
+
+
+def point_at_progress_cached(s):
+    total = TRACK_CACHE["total"]
+    s = s % total
+    lengths = TRACK_CACHE["lengths"]
+    segments = TRACK_CACHE["segments"]
+    for i in range(len(lengths)):
+        seg_len = lengths[i]
+        if s <= seg_len:
+            t = 0.0 if seg_len <= 1e-9 else s / seg_len
+            return center[i] + segments[i] * t, i, t
+        s -= seg_len
+    return center[-1], len(center) - 2, 1.0
+
+# -----------------------------
+# Car physics (drift-capable)
+# -----------------------------
+@dataclass
+class CarTuning:
+    max_speed: float = 8.0
+    accel: float = 0.28
+    brake: float = 0.38
+    turn_deg: float = 3.2
+    friction: float = 0.985
+    drift_factor: float = 0.90
+    boost_force: float = 0.55
+
+@dataclass
+class CarState:
+    pos: object
+    vel: object
+    ang: float
+    boost: float = 0.0
+    chain: float = 1.0
+    chain_timer: float = 0.0
+    crashed: bool = False
+    finished: bool = False
+    time: float = 0.0
+    cp_mask: int = 0  # bitmask for checkpoints
+    near_shortcut_a: bool = False
+
+def drift_metrics(vel, forward):
+    fwd_v = forward * vel.dot(forward)
+    side_v = vel - fwd_v
+    return fwd_v, side_v
+
+def update_player(car: CarState, tune: CarTuning, dt, keys):
+    forward = v_from_angle(car.ang)
+
+    if keys[pygame.K_UP]:
+        car.vel += forward * tune.accel
+    if keys[pygame.K_DOWN]:
+        car.vel -= forward * tune.brake
+
+    speed = car.vel.length()
+    if speed > 0.6:
+        steer_scale = speed / tune.max_speed
+        if keys[pygame.K_LEFT]:
+            car.ang += tune.turn_deg * steer_scale
+        if keys[pygame.K_RIGHT]:
+            car.ang -= tune.turn_deg * steer_scale
+
+    # Drift physics
+    fwd_v, side_v = drift_metrics(car.vel, forward)
+
+    # Oil reduces grip (more sideways retained)
+    drift_factor = tune.drift_factor
+    if (car.pos - OIL_POS).length() < OIL_R:
+        drift_factor = min(0.97, drift_factor + 0.06)
+
+    drifting = side_v.length() > 1.25 and speed > 2.2
+
+    # Drift chain logic
+    if drifting:
+        car.chain_timer = 0.0
+        car.chain = clamp(car.chain + 0.35 * dt, 1.0, 3.0)
+        gain = (28.0 * car.chain) * dt
+        car.boost = clamp(car.boost + gain, 0.0, 100.0)
+    else:
+        car.chain_timer += dt
+        if car.chain_timer > 0.55:
+            car.chain = 1.0
+
+    car.vel = fwd_v + side_v * drift_factor
+    car.vel *= tune.friction
+
+    if car.vel.length() > tune.max_speed:
+        car.vel.scale_to_length(tune.max_speed)
+
+    # Boost (SPACE)
+    if keys[pygame.K_SPACE] and car.boost > 0:
+        car.vel += forward * tune.boost_force
+        car.boost = clamp(car.boost - 55.0 * dt, 0.0, 100.0)
+
+    car.pos += car.vel
+
+def update_ai(car: CarState, tune: CarTuning, dt, target_s, aggression=0.55):
+    # AI follows centerline with lookahead; uses same drift physics
+    lookahead = 90 + car.vel.length() * 10
+    target_point, _, _ = point_at_progress_cached(target_s + lookahead)
+
+    to_t = (target_point - car.pos)
+    if to_t.length() > 1e-6:
+        desired = to_t.normalize()
+    else:
+        desired = v_from_angle(car.ang)
+
+    desired_ang = math.degrees(math.atan2(-desired.y, desired.x))
+    # shortest angle diff
+    diff = (desired_ang - car.ang + 180) % 360 - 180
+
+    speed = car.vel.length()
+    if speed > 0.6:
+        car.ang += clamp(diff, -tune.turn_deg, tune.turn_deg) * (speed / tune.max_speed)
+
+    forward = v_from_angle(car.ang)
+
+    # Throttle logic: slow for tight turns
+    turn_severity = abs(diff) / 180.0
+    want_speed = tune.max_speed * (1.0 - 0.55 * turn_severity)
+    want_speed = clamp(want_speed, 3.0, tune.max_speed)
+
+    if speed < want_speed:
+        car.vel += forward * (tune.accel * (0.85 + aggression * 0.3))
+    else:
+        car.vel -= forward * (tune.brake * (0.35 + turn_severity * 0.6))
+
+    # AI boost: uses it on straights if earned
+    fwd_v, side_v = drift_metrics(car.vel, forward)
+    drifting = side_v.length() > 1.15 and speed > 2.0
+    if drifting:
+        car.boost = clamp(car.boost + (18.0 * dt), 0.0, 100.0)
+
+    # Spend boost when aligned and fast
+    if car.boost > 20 and abs(diff) < 10 and speed > 4.5:
+        car.vel += forward * (tune.boost_force * 0.75)
+        car.boost = clamp(car.boost - 35.0 * dt, 0.0, 100.0)
+
+    # Drift physics
+    drift_factor = tune.drift_factor
+    if (car.pos - OIL_POS).length() < OIL_R:
+        drift_factor = min(0.97, drift_factor + 0.06)
+
+    car.vel = fwd_v + side_v * drift_factor
+    car.vel *= tune.friction
+
+    if car.vel.length() > tune.max_speed:
+        car.vel.scale_to_length(tune.max_speed)
+
+    car.pos += car.vel
+
+# -----------------------------
+# Race logic
+# -----------------------------
+def reset_race():
+    player = CarState(pos=START_POS.copy(), vel=pygame.Vector2(0, 0), ang=START_DIR)
+    ai = CarState(pos=(START_POS + pygame.Vector2(0, 26)), vel=pygame.Vector2(0, 0), ang=START_DIR)
+    return player, ai, "COUNTDOWN", 0.0, None
+
+def checkpoint_mask_for_progress(s):
+    mask = 0
+    for i, cp in enumerate(CP_S):
+        if s >= cp:
+            mask |= (1 << i)
+    return mask
+
+def draw_track():
+    screen.fill(GRASS)
+
+    # Draw "road" as thick polyline
+    pygame.draw.lines(screen, ROAD, False, center, TRACK_W)
+    # Narrow chicane overlay
+    pygame.draw.lines(screen, ROAD, False, center, NARROW_W)
+
+    # Neon edges (two passes)
+    pygame.draw.lines(screen, NEON, False, center, TRACK_W + 10)
+    pygame.draw.lines(screen, NEON2, False, center, TRACK_W + 4)
+
+    # Oil slick
+    pygame.draw.circle(screen, (15, 15, 15), OIL_POS, OIL_R)
+    pygame.draw.circle(screen, (40, 40, 40), OIL_POS, OIL_R, 2)
+
+    # Shortcut gate
+    pygame.draw.circle(screen, YELLOW, SHORTCUT_A, SHORTCUT_R, 2)
+    pygame.draw.circle(screen, YELLOW, SHORTCUT_B, SHORTCUT_R, 2)
+    pygame.draw.line(screen, YELLOW, SHORTCUT_A, SHORTCUT_B, 2)
+
+    # Start line
+    pygame.draw.line(screen, RED, (START_POS.x - 18, START_POS.y - 40), (START_POS.x - 18, START_POS.y + 40), 4)
+
+    # Checkpoints
+    for cp_s in CP_S:
+        p, _, _ = point_at_progress_cached(cp_s)
+        pygame.draw.circle(screen, (120, 120, 140), p, CP_RADIUS, 2)
+
+def draw_car(pos, ang, color):
+    # Simple triangle
+    f = v_from_angle(ang)
+    r = v_from_angle(ang - 90)
+    p1 = pos + f * 14
+    p2 = pos - f * 10 + r * 8
+    p3 = pos - f * 10 - r * 8
+    pygame.draw.polygon(screen, color, [p1, p2, p3])
+
+def draw_hud(player, ai, state, countdown, result):
+    # Boost bar
+    pygame.draw.rect(screen, WHITE, (16, 16, 140, 12), 1)
+    pygame.draw.rect(screen, BLUE, (16, 16, int(140 * (player.boost / 100.0)), 12))
+
+    # Chain
+    chain_txt = FONT.render(f"Chain x{player.chain:.1f}", True, WHITE)
+    screen.blit(chain_txt, (16, 36))
+
+    # Time
+    t_txt = FONT.render(f"Time: {player.time:.2f}s", True, WHITE)
+    screen.blit(t_txt, (16, 56))
+
+    # CP
+    cp_txt = FONT.render(f"CP: {bin(player.cp_mask).count('1')}/3", True, WHITE)
+    screen.blit(cp_txt, (16, 76))
+
+    # Rival gap (approx by progress)
+    _, psi, pt = nearest_on_polyline_cached(player.pos)
+    _, asi, at = nearest_on_polyline_cached(ai.pos)
+    ps = polyline_progress_cached(psi, pt)
+    a_s = polyline_progress_cached(asi, at)
+    gap = (ps - a_s)
+    # normalize to shortest loop gap
+    if gap > TOTAL_S / 2:
+        gap -= TOTAL_S
+    if gap < -TOTAL_S / 2:
+        gap += TOTAL_S
+    gap_txt = FONT.render(f"Gap vs Ghostline: {gap:+.0f}m", True, WHITE)
+    screen.blit(gap_txt, (16, 96))
+
+    if state == "COUNTDOWN":
+        msg = "3" if countdown < 1 else "2" if countdown < 2 else "1" if countdown < 3 else "GO!"
+        txt = BIG.render(msg, True, WHITE)
+        screen.blit(txt, (W // 2 - txt.get_width() // 2, 40))
+    elif state == "RESULT":
+        title = BIG.render("RESULTS", True, WHITE)
+        screen.blit(title, (W // 2 - title.get_width() // 2, 28))
+
+        lines = [
+            f"Your time: {result['player_time']:.2f}s",
+            f"Ghostline: {result['ai_time']:.2f}s",
+            f"Outcome: {result['outcome']}",
+            f"Drift efficiency: {result['drift_eff']:.0f}%",
+            "Press ENTER to retry, ESC to quit",
+        ]
+        y = 92
+        for line in lines:
+            t = FONT.render(line, True, WHITE)
+            screen.blit(t, (W // 2 - t.get_width() // 2, y))
+            y += 26
+
+def run_self_test():
+    class KeyState:
+        def __getitem__(self, key):
+            return False
+
+    # Geometry and progress checks
+    assert abs(clamp(5, 0, 4) - 4) < 1e-9
+    assert abs(clamp(-1, 0, 4) - 0) < 1e-9
+    assert TOTAL_S > 0
+
+    p0, si0, t0 = point_at_progress_cached(0)
+    assert (p0 - center[0]).length() < 1e-6
+    s0 = polyline_progress_cached(si0, t0)
+    assert abs(s0 - 0.0) < 1e-6
+
+    d, si, t = nearest_on_polyline_cached(center[3])
+    assert d < 1e-6
+    s = polyline_progress_cached(si, t)
+    p_back, _, _ = point_at_progress_cached(s)
+    assert (p_back - center[3]).length() < 1e-6
+
+    # Update loops should execute without exceptions
+    player = CarState(pos=START_POS.copy(), vel=pygame.Vector2(0, 0), ang=START_DIR)
+    ai = CarState(pos=(START_POS + pygame.Vector2(0, 26)), vel=pygame.Vector2(0, 0), ang=START_DIR)
+    keys = KeyState()
+    tune_p = CarTuning()
+    tune_ai = CarTuning(max_speed=7.6, accel=0.26, brake=0.36, turn_deg=3.0, drift_factor=0.905, boost_force=0.50)
+    for _ in range(20):
+        update_player(player, tune_p, 1.0 / 60.0, keys)
+        update_ai(ai, tune_ai, 1.0 / 60.0, 120.0)
+        _ = on_track(player.pos)
+        _ = on_track(ai.pos)
+
+    return True
+
+
+def init_game_runtime():
+    global FONT, BIG, screen, clock
+    if not HAS_PYGAME:
+        raise RuntimeError("pygame is required for gameplay")
+    pygame.init()
+    FONT = pygame.font.SysFont(None, 22)
+    BIG = pygame.font.SysFont(None, 44)
+    screen = pygame.display.set_mode((W, H))
+    pygame.display.set_caption("Slipstream City - Neon Loop (Vertical Slice)")
+    clock = pygame.time.Clock()
+
+
+def run_game_loop():
+    player, ai, state, countdown, result = reset_race()
+    tune_p = CarTuning()
+    tune_ai = CarTuning(max_speed=7.6, accel=0.26, brake=0.36, turn_deg=3.0, drift_factor=0.905, boost_force=0.50)
+
+    # For drift efficiency metric
+    drift_time = 0.0
+    drive_time = 0.0
+
+    # AI target progress
+    ai_target_s = 0.0
+
+    running = True
+    while running:
+        dt = clock.tick(FPS) / 1000.0
+
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            running = False
+
+        if state == "COUNTDOWN":
+            countdown += dt
+            if countdown >= 3.2:
+                state = "RACE"
+                countdown = 0.0
+
+        elif state == "RACE":
+            player.time += dt
+            ai.time += dt
+
+            # Update player
+            update_player(player, tune_p, dt, keys)
+
+            # AI target follows its own progress along centerline
+            # (keeps it moving even if it drifts off slightly)
+            ai_target_s += (ai.vel.length() * 10.0) * dt
+            update_ai(ai, tune_ai, dt, ai_target_s, aggression=0.55)
+
+            # Track collision
+            if not on_track(player.pos):
+                # crash penalty: bounce + chain break + boost loss
+                player.vel *= -0.45
+                player.pos += player.vel
+                player.chain = 1.0
+                player.boost = max(0.0, player.boost - 18.0)
+            if not on_track(ai.pos):
+                ai.vel *= -0.40
+                ai.pos += ai.vel
+                ai.boost = max(0.0, ai.boost - 10.0)
+
+            # Shortcut: if player crosses the gate line closely, grant a small progress advantage (but risky)
+            if (player.pos - SHORTCUT_A).length() < SHORTCUT_R:
+                player.near_shortcut_a = True
+            if player.near_shortcut_a and (player.pos - SHORTCUT_B).length() < SHORTCUT_R:
+                # "cut" forward by nudging position toward a later point on the centerline
+                _, si, t = nearest_on_polyline_cached(player.pos)
+                s = polyline_progress_cached(si, t)
+                p2, _, _ = point_at_progress_cached(s + 140)
+                player.pos = player.pos.lerp(p2, 0.65)
+                player.near_shortcut_a = False
+
+            # Checkpoints
+            for i, cp_s in enumerate(CP_S):
+                cp_p, _, _ = point_at_progress_cached(cp_s)
+                if (player.pos - cp_p).length() < CP_RADIUS:
+                    player.cp_mask |= (1 << i)
+
+            # AI checkpoints
+            for i, cp_s in enumerate(CP_S):
+                cp_p, _, _ = point_at_progress_cached(cp_s)
+                if (ai.pos - cp_p).length() < CP_RADIUS:
+                    ai.cp_mask |= (1 << i)
+
+            # Drift efficiency metric
+            forward = v_from_angle(player.ang)
+            _, side_v = drift_metrics(player.vel, forward)
+            drifting = side_v.length() > 1.25 and player.vel.length() > 2.2
+            drive_time += dt
+            if drifting:
+                drift_time += dt
+
+            # Finish condition: cross start line after all checkpoints
+            if (player.pos - START_POS).length() < 55 and player.cp_mask == 0b111 and player.vel.length() > 2.0:
+                player.finished = True
+
+            if (ai.pos - START_POS).length() < 55 and ai.cp_mask == 0b111 and ai.vel.length() > 2.0:
+                ai.finished = True
+
+            # End race when player finishes (vertical slice: one lap)
+            if player.finished:
+                ai_time = ai.time if ai.finished else ai.time + 1.2
+                drift_eff = 0.0 if drive_time <= 1e-6 else (drift_time / drive_time) * 100.0
+                outcome = "WIN" if player.time < ai_time else "LOSE"
+                result = {
+                    "player_time": player.time,
+                    "ai_time": ai_time,
+                    "outcome": outcome,
+                    "drift_eff": drift_eff,
+                }
+                state = "RESULT"
+
+        elif state == "RESULT":
+            if keys[pygame.K_RETURN]:
+                player, ai, state, countdown, result = reset_race()
+                drift_time = 0.0
+                drive_time = 0.0
+                ai_target_s = 0.0
+
+        # Reset hotkey anytime
+        if keys[pygame.K_r]:
+            player, ai, state, countdown, result = reset_race()
+            drift_time = 0.0
+            drive_time = 0.0
+            ai_target_s = 0.0
+
+        # Draw
+        draw_track()
+        draw_car(ai.pos, ai.ang, (170, 170, 190))
+        draw_car(player.pos, player.ang, (255, 255, 255))
+
+        # Minimal labels
+        g = FONT.render("Ghostline", True, (170, 170, 190))
+        screen.blit(g, (ai.pos.x - g.get_width() // 2, ai.pos.y - 28))
+
+        draw_hud(player, ai, state, countdown, result)
+        pygame.display.flip()
+
+    pygame.quit()
+
+
+def try_relaunch_with_pygame_env():
+    """Relaunch with a known working Python env when pygame is unavailable."""
+    script_path = Path(__file__).resolve()
+    root = script_path.parent
+    fallback_py = root / ".venv-pygame312" / "Scripts" / "python.exe"
+    current_py = Path(sys.executable).resolve()
+
+    if not fallback_py.exists():
+        return False
+    if fallback_py.resolve() == current_py:
+        return False
+
+    cmd = [str(fallback_py), str(script_path), *sys.argv[1:]]
+    print("pygame not found in current interpreter. Relaunching with .venv-pygame312...")
+    result = subprocess.run(cmd, check=False)
+    sys.exit(result.returncode)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Slipstream City car game")
+    parser.add_argument("--self-test", action="store_true", help="Run fast non-GUI validation tests and exit")
+    args = parser.parse_args()
+
+    if args.self_test:
+        ok = run_self_test()
+        print("SELF_TEST:PASS" if ok else "SELF_TEST:FAIL")
+        return
+
+    if not HAS_PYGAME and try_relaunch_with_pygame_env():
+        return
+
+    try:
+        init_game_runtime()
+        run_game_loop()
+    except RuntimeError as ex:
+        print(f"RuntimeError: {ex}")
+        print("Install pygame in this interpreter, or run with .venv-pygame312\\Scripts\\python.exe")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+

@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\XPS15-MS-20260328-161531-SmokeTest.log"
+  ],
+  "priority": "HIGH",
+  "linkedBugs": [],
+  "notes": "",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "FIX: \u0000</pre></div><div class='section'><h3>3. CHKDSK Scan</h3><pre>Access Denied as you do not have sufficient privileges or",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "created": "2026-03-30T21:01:55.564808Z",
+  "linkedFeatures": [],
+  "category": "crash-log",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bugs2FIX-20260331050155-38d61126",
+  "parentId": "Bug-20260331050153-5d60da7a",
+  "sessionModCount": 1,
+  "description": "Fix for bug Bug-20260331050153-5d60da7a: Error pattern in log XPS15-MS-20260328-161531-SmokeTest.log:127",
+  "modified": "2026-03-30T21:01:55.5648701Z",
+  "type": "Bugs2FIX"
+}
