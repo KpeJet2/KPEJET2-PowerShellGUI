@@ -1,0 +1,25 @@
+# VersionTag: 2602.a.11
+# VersionTag: 2602.a.10
+# VersionTag: 2602.a.9
+# VersionTag: 2602.a.8
+# VersionTag: 2602.a.7
+LastName;FirstName;SAMAccountName;UserPrincipalname;UserName;DisplayName;Description;EmailAddress;Department;Company;PostalCode;City;Street;OUPath;CreateMailbox;ActivateActiveSync
+Doe;John;John.Doe;;John.Doe;Doe, John;none;;Sales;Contoso;12345;Nowhere;Paradise Street;;1,1
+Doe;Jane;;;;;;;;;;;;;;
+
+;LastName 		required	last name of the user
+;FirstName 		required	first name of the user
+;OUPath 		optional	Specifies the OU or container where the new object is created
+;CreateMailbox	optional	Creates Mailbox in Exchange on premise if the value 1
+
+
+
+
+
+
+
+
+
+
+
+

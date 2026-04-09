@@ -1,0 +1,24 @@
+# VersionTag: 2602.a.11
+# VersionTag: 2602.a.10
+# VersionTag: 2602.a.9
+# VersionTag: 2602.a.8
+# VersionTag: 2602.a.7
+UserName;Delete;Disable;HideInAddressLists;RemoveFromTeams
+John.Doe;0;1;1;1
+Jane.Doe;1;;1;1
+
+;UserName 			required	unique account name of the user 
+;HideInAddressLists	optional	Is the value 1, the user hides in the address lists
+;RemoveFromTeams	optional	Is the value 1, the user removes from all MS Teams
+
+
+
+
+
+
+
+
+
+
+
+

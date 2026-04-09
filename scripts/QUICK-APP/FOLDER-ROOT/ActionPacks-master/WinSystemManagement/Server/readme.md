@@ -1,0 +1,29 @@
+# VersionTag: 2602.a.11
+# VersionTag: 2602.a.10
+# VersionTag: 2602.a.9
+# VersionTag: 2602.a.8
+# VersionTag: 2602.a.7
+# Action Pack for Windows Client Management / Server
+Use cases for managing Windows 2016 Server or later
+
+## [Windows Server Backup](./Backup)
+
++ Get backup files, sets, targets
++ Get disks, files, jobs, summary, volume
++ Get/set/remove policy
++ Get/set schedule
++ Remove backup set, file
++ Start backup, file recovery, volume recovery
++ Stop backup job
+
+
+
+
+
+
+
+
+
+
+
+
