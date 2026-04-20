@@ -42,5 +42,7 @@
   "trusted_fix_count": 0,
   "trusted_fix_status": "new",
   "trusted_fix_notes": "",
-  "file_exclusion_regex": "Test-ErrorHandlingCompliance|Invoke-TodoArchiver"
+  "file_exclusion_regex": "Test-ErrorHandlingCompliance|Invoke-TodoArchiver",
+  "context_guard_regex": "^\\s*(It|Describe|Context|InModuleScope|BeforeAll|AfterAll)\\s+",
+  "context_guard_lines": 0
 }

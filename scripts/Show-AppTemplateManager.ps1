@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: UIForm
 #Requires -Version 5.1
 <#
 .SYNOPSIS  App Install Template Manager -- 3-pane GUI for JSON template-based

@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:02:16.9749657Z",
+  "title": "FIX: Missing '=' operator after key in hash literal.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412130119-3f9745ab",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412130216-f364c055",
+  "description": "Fix for bug Bug-20260412130119-3f9745ab: Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:02:16.9750037Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1"
+  ]
+}

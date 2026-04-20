@@ -1,7 +1,7 @@
 {
   "meta": {
     "schema": "SelfReviewHistory/1.0",
-    "updated": "2026-04-04T15:24:39.8559204Z"
+    "updated": "2026-04-18T07:43:12.2356037Z"
   },
   "runs": [
     {
@@ -47,6 +47,311 @@
       "improvements": [],
       "feedbackItems": [],
       "runtimeSeconds": 0.26,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260412124553",
+      "timestamp": "2026-04-12T04:45:53.0747261Z",
+      "mode": "full",
+      "compositeScore": 0.6122,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.45,
+          "detail": "26/52 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.68,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260412124555",
+      "timestamp": "2026-04-12T04:45:55.6859338Z",
+      "mode": "full",
+      "compositeScore": 0.6122,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.45,
+          "detail": "26/52 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "gain": 0.225,
+          "dimension": "SINCompliance",
+          "current": 0.45,
+          "previous": 0.225
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.25,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260412124557",
+      "timestamp": "2026-04-12T04:45:57.9517346Z",
+      "mode": "full",
+      "compositeScore": 0.6122,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.45,
+          "detail": "26/52 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "gain": 0.15,
+          "dimension": "SINCompliance",
+          "current": 0.45,
+          "previous": 0.3
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 1.94,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260412124600",
+      "timestamp": "2026-04-12T04:46:00.3203182Z",
+      "mode": "full",
+      "compositeScore": 0.6122,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.45,
+          "detail": "26/52 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "gain": 0.112,
+          "dimension": "SINCompliance",
+          "current": 0.45,
+          "previous": 0.338
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.0,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260412124602",
+      "timestamp": "2026-04-12T04:46:02.8574054Z",
+      "mode": "full",
+      "compositeScore": 0.6122,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.45,
+          "detail": "26/52 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "gain": 0.09,
+          "dimension": "SINCompliance",
+          "current": 0.45,
+          "previous": 0.36
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.2,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260418154312",
+      "timestamp": "2026-04-18T07:43:12.2291298Z",
+      "mode": "full",
+      "compositeScore": 0.5836,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.332,
+          "detail": "26/68 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.322,
+          "detail": "26 errors in 115 cycles (22.6%); last: PipelineSteer: The property 'FunctionGapCount' cannot be found on this object. V"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [
+        {
+          "current": 0.332,
+          "previous": 0.45,
+          "drop": 0.118,
+          "dimension": "SINCompliance"
+        }
+      ],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 1.89,
       "dryRun": false
     }
   ]

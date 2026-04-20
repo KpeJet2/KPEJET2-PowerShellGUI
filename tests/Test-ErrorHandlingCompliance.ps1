@@ -1,4 +1,6 @@
-﻿<#
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Test
+<#
 .SYNOPSIS
     Validates error handling compliance across PowerShellGUI workspace.
 
@@ -187,7 +189,7 @@ function Get-FunctionContext {
     
     for ($i = $TargetLineIndex; $i -ge 0; $i--) {
         if ($Lines[$i] -match '^\s*function\s+([\w-]+)') {
-            return $matches[1]
+            return $matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
         }
     }
     

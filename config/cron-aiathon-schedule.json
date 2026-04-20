@@ -6,8 +6,8 @@
   },
   "enabled": true,
   "frequencyMinutes": 15,
-  "lastRunTime": "2026-04-04T14:01:03.7400597Z",
-  "nextRunTime": "2026-04-04T14:16:03.7400597Z",
+  "lastRunTime": "2026-04-18T08:08:20.5559471Z",
+  "nextRunTime": "2026-04-18T08:23:20.5559471Z",
   "maxConcurrentJobs": 1,
   "autoStartOnGUILaunch": false,
   "tasks": [
@@ -26,8 +26,9 @@
       "enabled": true,
       "type": "PipelineProcess",
       "frequency": 60,
-      "lastRun": "2026-03-30T21:14:44.3742698Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-04-15T00:47:01.2242691Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-MasterAggregate",
@@ -89,8 +90,9 @@
       "enabled": true,
       "type": "DepMap",
       "frequency": 1440,
-      "lastRun": null,
-      "lastResult": "PENDING"
+      "lastRun": "2026-04-18T06:58:18.084715Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-CertMonitor",
@@ -98,8 +100,9 @@
       "enabled": true,
       "type": "CertMonitor",
       "frequency": 1440,
-      "lastRun": null,
-      "lastResult": "PENDING"
+      "lastRun": "2026-04-14T17:40:34.8017899Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-TabErrorFix",
@@ -107,9 +110,10 @@
       "enabled": true,
       "type": "TabErrorFix",
       "frequency": 30,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Process BUG pipeline items with category TabScanError. Attempt automated resolution and update item status."
+      "lastRun": "2026-04-14T17:40:40.0001829Z",
+      "lastResult": "SUCCESS",
+      "description": "Process BUG pipeline items with category TabScanError. Attempt automated resolution and update item status.",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-AutopilotSuggestion",
@@ -117,9 +121,10 @@
       "enabled": true,
       "type": "AutopilotSuggestion",
       "frequency": 60,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Every hour: derive one actionable suggestion from health signals in under 7 seconds and post to the Autopilot Suggestions store."
+      "lastRun": "2026-04-14T17:40:48.2163667Z",
+      "lastResult": "FAILED",
+      "description": "Every hour: derive one actionable suggestion from health signals in under 7 seconds and post to the Autopilot Suggestions store.",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-ConfigCoverage",
@@ -127,9 +132,10 @@
       "enabled": true,
       "type": "ConfigCoverageAudit",
       "frequency": 1440,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Daily: scan all .ps1/.psm1 files for central config feature adoption. Report gaps and surface SIN violations as pipeline BUG items."
+      "lastRun": "2026-04-14T17:47:48.4045589Z",
+      "lastResult": "SUCCESS",
+      "description": "Daily: scan all .ps1/.psm1 files for central config feature adoption. Report gaps and surface SIN violations as pipeline BUG items.",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-SecMaint",
@@ -137,9 +143,10 @@
       "enabled": false,
       "type": "SecMaint",
       "frequency": 10080,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Weekly: rotate PSGUIAgentSvc and PSGUIPipelineSvc passwords, update vault entries, validate PSGUICertAdmin cert expiry."
+      "lastRun": "2026-04-14T17:50:07.6149725Z",
+      "lastResult": "FAILED",
+      "description": "Weekly: rotate PSGUIAgentSvc and PSGUIPipelineSvc passwords, update vault entries, validate PSGUICertAdmin cert expiry.",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-PipelineSteer",
@@ -147,9 +154,10 @@
       "enabled": true,
       "type": "PipelineSteer",
       "frequency": 1440,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Daily: dry-run scan all workspace .ps1/.psm1 files for missing function descriptions, outline conformance, and dotfile presence. Report only, no changes applied."
+      "lastRun": "2026-04-18T07:40:05.345046Z",
+      "lastResult": "FAILED",
+      "description": "Daily: dry-run scan all workspace .ps1/.psm1 files for missing function descriptions, outline conformance, and dotfile presence. Report only, no changes applied.",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-PipelineSteerApply",
@@ -177,9 +185,10 @@
       "enabled": true,
       "type": "FullSystemsScan",
       "frequency": 10080,
-      "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Weekly: orchestrated parallel+sequential integrity scan (SIN, SemiSin, Dependency, Orphan, ReferenceIntegrity, ConfigCoverage, AgenticManifest, PipelineSteering DryRun). Delta mode skips duplicate writes. Rotates summaries to archive after 7 files."
+      "lastRun": "2026-04-18T08:08:20.5559471Z",
+      "lastResult": "FAILED",
+      "description": "Weekly: orchestrated parallel+sequential integrity scan (SIN, SemiSin, Dependency, Orphan, ReferenceIntegrity, ConfigCoverage, AgenticManifest, PipelineSteering DryRun). Delta mode skips duplicate writes. Rotates summaries to archive after 7 files.",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-ConvoVaultExchange",
@@ -207,22 +216,42 @@
       "enabled": true,
       "type": "SelfReview",
       "frequency": 360,
+      "lastRun": "2026-04-18T07:43:25.7205145Z",
+      "lastResult": "SUCCESS",
+      "description": "Every 6 hours: score workspace health across 8 dimensions, generate feedback items, track improvement trends, suggest config tuning.",
+      "consecutiveFailures": 0
+    },
+    {
+      "id": "TASK-MonthlyMilestone",
+      "name": "Monthly Milestone Event (koe-RumA)",
+      "enabled": true,
+      "type": "KoeRumaMilestone",
+      "frequency": 43200,
       "lastRun": null,
-      "lastResult": "PENDING",
-      "description": "Every 6 hours: score workspace health across 8 dimensions, generate feedback items, track improvement trends, suggest config tuning."
+      "lastResult": null
+    },
+    {
+      "id": "TASK-HelpMenuCompliance",
+      "name": "Help Menu Compliance Audit",
+      "enabled": true,
+      "type": "HelpMenuCompliance",
+      "frequency": 1440,
+      "description": "Daily: audit help-menu readiness across modules/scripts. Checks compact TODO markers, Show-*Help functions, common switches. Uses config/help-menu-registry.json. Script: scripts/Invoke-HelpMenuCompliance.ps1 -Mode Audit",
+      "lastRun": null,
+      "lastResult": null
     }
   ],
   "jobStatistics": {
-    "totalCycles": 107,
-    "totalErrors": 23,
-    "totalItemsDone": 4783,
+    "totalCycles": 117,
+    "totalErrors": 27,
+    "totalItemsDone": 5534,
     "totalBugsFound": 277,
     "totalTestsMade": 0,
     "totalPlansMade": 0,
     "totalSubagentCalls": 0,
     "subagentTally": {},
-    "lastErrorMessage": "ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it is an empty string.",
-    "lastErrorTime": "2026-04-04T13:56:31.8577503Z",
+    "lastErrorMessage": "FullSystemsScan: A parameter cannot be found that matches parameter name 'Parallel'.",
+    "lastErrorTime": "2026-04-18T08:08:20.5559471Z",
     "questionsTotal": 7,
     "questionsAutopilot": 1,
     "questionsCommander": 6,
@@ -245,10 +274,18 @@
         "category": "enhancement",
         "status": "pending",
         "created": "2026-03-28T13:38:38.4463746Z"
+      },
+      {
+        "id": "SUGGEST-20260415013602",
+        "title": "Provide better code snippits that can be easily copied",
+        "description": "",
+        "category": "enhancement",
+        "status": "pending",
+        "created": "2026-04-14T17:36:02.4823671Z"
       }
     ],
     "implemented": 0,
-    "pending": 2,
+    "pending": 3,
     "rejected": 0,
     "blocked": 0,
     "failed": 0

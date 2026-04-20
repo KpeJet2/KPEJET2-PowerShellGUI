@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:51:56.4755974Z",
+  "title": "FIX: Missing closing '}' in statement block or type definition.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412125049-8d786872",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412125156-4ea4be05",
+  "description": "Fix for bug Bug-20260412125049-8d786872: Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 212: Missing closing '}' in statement block or type definition.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:51:56.4756453Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  ]
+}

@@ -1,18 +1,48 @@
 {
-  "lastFullScan": null,
-  "lastIncrementalScan": null,
-  "currentScanMode": null,
-  "currentScanPid": null,
+  "version": "2604.B1.V32.0",
   "phases": {
-    "folders":        { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 },
-    "modules":        { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 },
-    "scripts":        { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 },
-    "configs":        { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 },
-    "urls_ips":       { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 },
-    "dns_resolution": { "status": "pending", "timestamp": null, "hash": null, "itemCount": 0, "error": null, "durationMs": 0 }
+    "dns_resolution": {
+      "error": "",
+      "completedAt": "2026-04-18T14:55:17.7593103+08:00",
+      "status": "ok",
+      "durationMs": 39931,
+      "count": 71
+    },
+    "modules": {
+      "error": "",
+      "completedAt": "2026-04-18T14:54:50.6600193+08:00",
+      "status": "ok",
+      "durationMs": 12832,
+      "count": 108
+    },
+    "folders": {
+      "error": "",
+      "completedAt": "2026-04-18T14:54:41.7966392+08:00",
+      "status": "ok",
+      "durationMs": 3969,
+      "count": 356
+    },
+    "urls_ips": {
+      "error": "",
+      "completedAt": "2026-04-18T14:54:50.6754523+08:00",
+      "status": "ok",
+      "durationMs": 12847,
+      "count": 2133
+    },
+    "configs": {
+      "error": "",
+      "completedAt": "2026-04-18T14:54:55.8785753+08:00",
+      "status": "ok",
+      "durationMs": 18051,
+      "count": 51
+    },
+    "scripts": {
+      "error": "",
+      "completedAt": "2026-04-18T14:54:50.6672715+08:00",
+      "status": "ok",
+      "durationMs": 12839,
+      "count": 2293
+    }
   },
-  "fileHashes": {},
-  "dataFile": null,
-  "version": "1.0",
-  "created": "2026-04-08T00:00:00"
+  "lastFullScan": ""
 }

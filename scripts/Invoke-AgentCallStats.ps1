@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B1.V32.5
+# FileRole: Pipeline
 # Invoke-AgentCallStats.ps1
 # Computes per-agent call statistics (24h / 7d / all-time) by scanning JSONL log files
 # in agents/focalpoint-null/logs/ and writes config/agent-call-stats.json.
@@ -18,7 +19,7 @@ param(
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
-function Write-AppLog {
+function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Message, [string]$Level = 'Info')
     $stamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     Write-Host "[$stamp][$Level] $Message"

@@ -38,8 +38,9 @@ echo Select test mode:
 echo   1. Headless smoke test only
 echo   2. Headless smoke test + chaos conditions
 echo   3. Full smoke test + chaos (keep sandbox open)
+echo   4. Browser compatibility test (Edge/Chrome/Firefox in sandbox)
 echo.
-set /p CHOICE="Choice [1-3]: "
+set /p CHOICE="Choice [1-4]: "
 
 if "%CHOICE%"=="1" (
     %PS_CMD% -NoProfile -ExecutionPolicy Bypass -File "%~dp0tests\Invoke-SandboxSmokeTest.ps1" -HeadlessOnly -SkipPS7Install
@@ -47,11 +48,22 @@ if "%CHOICE%"=="1" (
     %PS_CMD% -NoProfile -ExecutionPolicy Bypass -File "%~dp0tests\Invoke-SandboxSmokeTest.ps1" -HeadlessOnly -ChaosMode -SkipPS7Install
 ) else if "%CHOICE%"=="3" (
     %PS_CMD% -NoProfile -ExecutionPolicy Bypass -File "%~dp0tests\Invoke-SandboxSmokeTest.ps1" -ChaosMode -KeepSandbox -SkipPS7Install
+) else if "%CHOICE%"=="4" (
+    call "%~dp0Launch-SandboxBrowserTest.bat"
 ) else (
     echo Invalid choice. Running default: headless only.
     %PS_CMD% -NoProfile -ExecutionPolicy Bypass -File "%~dp0tests\Invoke-SandboxSmokeTest.ps1" -HeadlessOnly -SkipPS7Install
 )
 
+set "exitCode=%ERRORLEVEL%"
+if "%exitCode%"=="0" (
+    call "%~dp0SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+    if not "%ERRORLEVEL%"=="0" set "exitCode=%ERRORLEVEL%"
+    call "%~dp0SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+    if not "%ERRORLEVEL%"=="0" set "exitCode=%ERRORLEVEL%"
+)
+
 echo.
-echo Exit code: %ERRORLEVEL%
+echo Exit code: %exitCode%
 pause
+exit /b %exitCode%

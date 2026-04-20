@@ -1,10 +1,12 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     Assisted SASC -- Secret Access & Security Checks module for PwShGUI.
+# TODO: HelpMenu | Show-AssistedSASCHelp | Actions: Scan|Report|Reset|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides Bitwarden CLI-backed vault management with authenticated encryption
@@ -153,7 +155,7 @@ function Initialize-SASCModule {
 
     # Run integrity manifest check if manifest exists
     if (Test-Path -LiteralPath $script:_IntegrityPath) {
-        $integrityResult = Test-IntegrityManifest
+        $integrityResult = Test-SASCSignedManifest
         if (-not $integrityResult.AllPassed) {
             $script:_VaultState = 'IntegrityWarning'
             $script:_IntegrityIssuesDetected = $true
@@ -404,7 +406,7 @@ function Unprotect-VaultData {
     return $result
 }
 
-function Compare-ByteArrayConstantTime {
+function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Constant-time byte array comparison to prevent timing attacks.
     #>
@@ -500,9 +502,10 @@ function New-IntegrityManifest {
     return $script:_IntegrityPath
 }
 
-function Test-IntegrityManifest {
+function Test-SASCSignedManifest {
     <#
-    .SYNOPSIS  Verify the integrity manifest -- re-compute hashes and validate HMAC.
+    .SYNOPSIS  Verify the SASC HMAC-signed integrity manifest -- re-compute hashes and validate HMAC.
+    .NOTES     Renamed from Test-IntegrityManifest (P011 fix) to avoid collision with PwShGUI-IntegrityCore.psm1.
     .OUTPUTS   [PSCustomObject] with AllPassed, Results (per-file), SignatureValid
     #>
     [CmdletBinding()]
@@ -787,7 +790,7 @@ function Unlock-Vault {
     $now = Get-Date
     if (($now - $script:_LastIntegrityCheck).TotalSeconds -gt $script:IntegrityCheckThrottle) {
         if (Test-Path -LiteralPath $script:_IntegrityPath) {
-            $intCheck = Test-IntegrityManifest
+            $intCheck = Test-SASCSignedManifest
             if (-not $intCheck.AllPassed) {
                 if ($script:_VaultState -ne 'Unlocked') {
                     $script:_VaultState = 'IntegrityWarning'
@@ -1259,7 +1262,7 @@ function Test-VaultSecurity {
 
     # 3. Integrity manifest
     if (Test-Path -LiteralPath $script:_IntegrityPath) {
-        $intResult = Test-IntegrityManifest
+        $intResult = Test-SASCSignedManifest
         if ($intResult.AllPassed -and $intResult.SignatureValid) {
             $findings += [PSCustomObject]@{ Category='Integrity'; Check='Manifest Verification'; Status='Passed'; Detail="$($intResult.Results.Count) files verified" }
         } else {
@@ -2018,7 +2021,7 @@ function Show-AssistedSASCDialog {
                     & $writeLog "Manifest generated -- $hashCount file hashes recorded" 'OK'
                     # Verify immediately
                     & $writeLog "Running integrity verification" 'RUN'
-                    $verify = Test-IntegrityManifest
+                    $verify = Test-SASCSignedManifest
                     if ($verify.AllPassed) {
                         & $writeLog "Integrity verification: ALL PASSED" 'OK'
                         $script:_IntegrityIssuesDetected = $false
@@ -2519,7 +2522,7 @@ Export-ModuleMember -Function @(
     # Security
     'Test-VaultSecurity',
     'New-IntegrityManifest',
-    'Test-IntegrityManifest',
+    'Test-SASCSignedManifest',
     'Set-VaultFilePermissions',
     # Windows Hello
     'Enable-WindowsHello',

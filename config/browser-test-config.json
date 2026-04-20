@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Configuration for sandbox browser test automation",
+  "selenium": {
+    "webDriverVersion": "4.27.0",
+    "nugetSource": "https://www.nuget.org/api/v2",
+    "packages": [
+      "Selenium.WebDriver",
+      "Selenium.Support"
+    ]
+  },
+  "browsers": {
+    "edge": {
+      "driverName": "msedgedriver.exe",
+      "driverDownloadUrlTemplate": "https://msedgedriver.azureedge.net/{VERSION}/edgedriver_win64.zip",
+      "registryVersionPath": "HKLM:\\SOFTWARE\\Microsoft\\Edge\\BLBeacon",
+      "registryVersionKey": "version",
+      "exePaths": [
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe"
+      ]
+    },
+    "chrome": {
+      "driverName": "chromedriver.exe",
+      "driverDownloadUrl": "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json",
+      "exePaths": [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+      ],
+      "wingetId": "Google.Chrome"
+    },
+    "firefox": {
+      "driverName": "geckodriver.exe",
+      "driverDownloadUrl": "https://github.com/mozilla/geckodriver/releases/latest",
+      "exePaths": [
+        "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+        "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+      ],
+      "wingetId": "Mozilla.Firefox",
+      "manualDownloadUrl": "https://www.mozilla.org/en-US/firefox/new/"
+    }
+  },
+  "timeouts": {
+    "pageLoadSeconds": 30,
+    "elementWaitSeconds": 10,
+    "linkClickSeconds": 15,
+    "jsExecuteSeconds": 10
+  },
+  "dataStatePolling": {
+    "phase1IntervalSeconds": 20,
+    "phase1DurationMinutes": 5,
+    "phase2IntervalSeconds": 60,
+    "phase2DurationMinutes": 5
+  },
+  "archival": {
+    "sevenZipWingetId": "7zip.7zip",
+    "sevenZipManualUrl": "https://7-zip.org/a/7z2409-x64.exe",
+    "sevenZipExePaths": [
+      "C:\\Program Files\\7-Zip\\7z.exe",
+      "C:\\Program Files (x86)\\7-Zip\\7z.exe"
+    ],
+    "certStore": "Cert:\\CurrentUser\\My",
+    "dateFallbackFormat": "yyyyMMdd"
+  },
+  "exclusions": {
+    "skipDirectories": [".git", "node_modules", ".venv", ".venv-pygame312", "checkpoints", "~DOWNLOADS"],
+    "skipExtensions": [".bat"]
+  }
+}

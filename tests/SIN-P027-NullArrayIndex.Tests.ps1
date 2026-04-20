@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
 #Requires -Version 5.1
 #Requires -Modules @{ ModuleName = 'Pester'; ModuleVersion = '5.0' }
 <#

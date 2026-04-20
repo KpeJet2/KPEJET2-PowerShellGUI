@@ -1,9 +1,11 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     PwShGUI Tray Host Module -- background process host, custom tray icon,
     ApplicationContext lifecycle, and keyboard rehydration.
+# TODO: HelpMenu | Show-TrayHostHelp | Actions: Start|Stop|Status|Minimize|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides the "PShellCore" separated background processing layer:

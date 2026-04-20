@@ -1,5 +1,4 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.11
+# VersionTag: 2604.B2.V31.0
 <#
 .SYNOPSIS
     Patch: rewrites Check-VersionTags in Main-GUI.ps1

@@ -1,7 +1,9 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
+# TODO: HelpMenu | Show-AutoIssueFinderHelp | Actions: Scan|Report|Fix|Help | Spec: config/help-menu-registry.json
 
 function Write-AIFLog {
     param(

@@ -1,4 +1,5 @@
 # VersionTag: 2604.B2.V31.0
+# FileRole: Test
 # R3 Stress Test - validates block comment, here-string, SIN-EXEMPT features
 function Test-R3Features {
     param($x)

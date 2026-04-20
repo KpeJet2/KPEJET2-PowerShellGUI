@@ -1,4 +1,4 @@
-# VersionTag: 2602.a.11
+﻿# VersionTag: 2602.a.11
 # VersionTag: 2602.a.10
 # VersionTag: 2602.a.9
 # VersionTag: 2602.a.8
@@ -123,11 +123,11 @@ try{
             [string]$resgrpName = (Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $stoName }).ResourceGroupName
             [hashtable]$cmdArgs = @{
                 'ResourceGroupName' = $resgrpName
-                'Name' = $stoName
-            }     
+                'Name' = $stoName
+            }     
             Get-AzStorageAccount @cmdArgs | `
                         Get-AzStorageContainer | Where-Object { $_.Name -eq $conName }  | `
-                        Remove-AzStorageContainer –Force -ErrorAction Stop
+                        Remove-AzStorageContainer -Force -ErrorAction Stop
         }
         catch{
             Write-Output $_.Exception.Message
@@ -164,6 +164,7 @@ catch{
 }
 finally{
 }
+
 
 
 

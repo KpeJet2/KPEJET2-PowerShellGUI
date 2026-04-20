@@ -80,7 +80,7 @@ Test-Step "Invoke-BackgroundTask and collect result" {
     Start-Sleep -Milliseconds 500
     $completed = Get-CompletedBackgroundTasks
     if ($completed.Count -eq 0) { throw "No completed tasks found" }
-    Write-Host "    Task $taskId result: $($completed[0].Result)" -ForegroundColor Gray
+    Write-Host "    Task $taskId result: $($completed[0].Result)" -ForegroundColor Gray  # SIN-EXEMPT: P027 - array guarded by if(.Count -gt 0) / if($proc) on prior line
 }
 
 Test-Step "Stop-BackgroundPool" {

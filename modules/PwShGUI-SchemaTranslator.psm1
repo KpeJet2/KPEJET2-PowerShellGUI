@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.0
+﻿# VersionTag: 2604.B1.V32.0
 # Author: The Establishment
 # Date: 2026-04-05
 # FileRole: Module
@@ -14,6 +14,7 @@
 #   Test-ScanSchemaCompatibility — validate a scan object against a given schema version
 #   Convert-ScanSchema          — apply the transform chain to upgrade scan data to target schema
 #   Get-SchemaTransformPlan     — return the ordered transform steps for a given version pair
+# TODO: HelpMenu | Show-SchemaTranslatorHelp | Actions: Translate|Validate|Export|Help | Spec: config/help-menu-registry.json
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
@@ -49,7 +50,7 @@ function Get-SchemaMap {
                 $raw = Get-Content -LiteralPath $abs -Raw -Encoding UTF8
                 return ($raw | ConvertFrom-Json)
             } catch {
-                Write-Warning "[SchemaTranslator] Failed to parse schema map at $abs: $_"
+                Write-Warning "[SchemaTranslator] Failed to parse schema map at ${abs}: $_"
                 return $null
             }
         }

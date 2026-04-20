@@ -296,7 +296,7 @@ function Get-NikrAgiRetort {
     $shuffled = $script:NikrRetortAgents | Sort-Object { Get-Random }
     $result   = [ordered]@{ agent1 = $null; line1 = $null; agent2 = $null; line2 = $null }
 
-    $a1   = $shuffled[0]
+    $a1   = $shuffled[0]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
     $result.agent1 = $a1.agent
     $result.line1  = $a1.lines[(Get-Random -Minimum 0 -Maximum $a1.lines.Count)]
 

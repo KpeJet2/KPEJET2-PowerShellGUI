@@ -1,10 +1,11 @@
+# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 # Invoke-TodoBundleRebuild.ps1
 # Regenerates todo/_bundle.js from all individual JSON files in todo/
 # This pre-built JS bundle is required for file:// protocol viewing of:
 #   - ~README.md/PwShGUI-Checklists.xhtml (Items2Do / Bugs2FIX / Feature2ADD tabs)
 #   - scripts/XHTML-Checker/XHTML-MasterToDo.xhtml (fallback data source)
 # Run after any Add-PipelineItem, New-PipelineItem, or Invoke-TodoManager operation.
-# VersionTag: 2604.B2.V31.0
 param(
     [string]$WorkspacePath = $PSScriptRoot
 )

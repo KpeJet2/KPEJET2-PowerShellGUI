@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # VersionTag: 2604.B2.V31.0
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-29 00:00  audit-007 added VersionTag
@@ -88,7 +88,7 @@ foreach ($f in $allFiles) {
         Add-SGResult 'FAIL' 'Encoding' $f.FullName "Null byte at offset $nullIdx"
         $encodingIssues++; continue
     }
-    if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+    if ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
         Add-SGResult 'WARN' 'Encoding' $f.FullName 'UTF-16 LE BOM -- should be UTF-8'
         $encodingIssues++
     }

@@ -1,4 +1,6 @@
-﻿<#
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Pipeline
+<#
 .SYNOPSIS
     Automated batch remediation for common error handling violations.
 
@@ -42,6 +44,7 @@
 #>
 
 # VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 #Requires -Version 5.1
 
 [CmdletBinding()]
@@ -84,7 +87,7 @@ if (@($reportFiles).Count -eq 0) {
 }
 
 $reportPath = $reportFiles[0].FullName
-Write-Host "[INFO] Using compliance report: $($reportFiles[0].Name)" -ForegroundColor Cyan
+Write-Host "[INFO] Using compliance report: $($reportFiles[0].Name)" -ForegroundColor Cyan  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
 
 try {
     $report = Get-Content $reportPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop

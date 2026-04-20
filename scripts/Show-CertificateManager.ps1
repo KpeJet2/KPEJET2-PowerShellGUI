@@ -1,6 +1,7 @@
 ﻿# Author: The Establishment
 # Date: 2603
 # VersionTag: 2604.B2.V31.0
+# FileRole: UIForm
 # FileRole: Script
 #Requires -Version 5.1
 <#

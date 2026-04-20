@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -42,7 +43,7 @@ if (Test-Path $pipeModPath) {
     try { Import-Module $pipeModPath -Force -ErrorAction Stop } catch { <# Intentional: non-fatal #> }
 }
 
-function Write-ScanLog {
+function Write-ScanLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Severity = 'Informational', [string]$Source = 'FullSystemsScan')
     if (Get-Command Write-CronLog -ErrorAction SilentlyContinue) {
         Write-CronLog -Message $Msg -Severity $Severity -Source $Source

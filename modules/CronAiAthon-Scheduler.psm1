@@ -1,9 +1,11 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V32.0
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     Cron-Ai-Athon Scheduler -- manages cyclic job execution, job history,
     pre-requisite checks, and autopilot subagent dispatch.
+# TODO: HelpMenu | Show-SchedulerHelp | Actions: Schedule|Pause|Resume|Cancel|List|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides the scheduling engine behind Cron-Ai-Athon:
@@ -171,7 +173,7 @@ function Initialize-CronLogging {
     }
 
     if (-not (Get-Command Write-CronLog -ErrorAction SilentlyContinue)) {
-        function Write-CronLog {
+        function Write-CronLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
             param(
                 [Parameter(Mandatory)] [string]$Message,
                 [string]$Severity = 'Informational',
@@ -406,6 +408,19 @@ function Invoke-CronJob {
                         $rebuilt += 'MODULE-FUNCTION-INDEX.md'
                     } catch { $result.errors += "Manifest: $($_.Exception.Message)" }
                 }
+                # 1b. IMPL-20260405-003: Version alignment cross-validation gate after manifest rebuild
+                $verAlignScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-VersionAlignmentTool.ps1'
+                if (Test-Path $verAlignScript) {
+                    try {
+                        $xvOutput = powershell -NoProfile -NonInteractive -File $verAlignScript `
+                            -WorkspacePath $WorkspacePath -CrossValidate 2>&1
+                        $xvMismatches = @($xvOutput | Select-String 'Manifest mismatches: [^0]')
+                        if ($xvMismatches.Count -gt 0) {
+                            $result.errors += "VersionAlign(CrossValidate): version drift detected - $($xvMismatches[0].ToString().Trim())"
+                        }
+                        $rebuilt += 'VersionAlign-CrossValidate'
+                    } catch { $result.errors += "VersionAlign: $($_.Exception.Message)" }
+                }
                 # 2. Directory Tree
                 $treeScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Build-DirectoryTree.ps1'
                 if (Test-Path $treeScript) {
@@ -454,22 +469,34 @@ function Invoke-CronJob {
                 $result.success = ($result.errors.Count -eq 0)
             }
             'DepMap' {
-                # Run workspace dependency map scan (URLs, IPs, DNS resolution, XHTML visualisation, ZIP)
-                $depMapScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-WorkspaceDependencyMap.ps1'
+                # Step 7d: Run workspace dependency map + script dependency matrix (IMPL-20260405-002)
+                $depMapScript   = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-WorkspaceDependencyMap.ps1'
+                $scriptMatrixScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-ScriptDependencyMatrix.ps1'
+                $processed = 0
                 if (Test-Path $depMapScript) {
                     try {
                         & $depMapScript -WorkspacePath $WorkspacePath
-                        $result.itemsProcessed = 1
-                        $result.detail = 'Dependency map scan complete'
-                        $result.success = $true
+                        $processed++
                     } catch {
-                        $result.errors += "DepMap: $($_.Exception.Message)"
-                        $result.success = $false
+                        $result.errors += "DepMap(WorkspaceMap): $($_.Exception.Message)"
                     }
                 } else {
                     $result.errors += 'Invoke-WorkspaceDependencyMap.ps1 not found'
-                    $result.success = $false
                 }
+                # IMPL-20260405-002: wire ScriptDependencyMatrix as periodic step
+                if (Test-Path $scriptMatrixScript) {
+                    try {
+                        & $scriptMatrixScript -WorkspacePath $WorkspacePath
+                        $processed++
+                    } catch {
+                        $result.errors += "DepMap(ScriptMatrix): $($_.Exception.Message)"
+                    }
+                } else {
+                    $result.errors += 'Invoke-ScriptDependencyMatrix.ps1 not found'
+                }
+                $result.itemsProcessed = $processed
+                $result.detail = "Dependency map steps completed: $processed"
+                $result.success = ($result.errors.Count -eq 0)
             }
             'CertMonitor' {
                 # Scan PKI folder for expiring or expired certificates and write a report
@@ -623,7 +650,7 @@ function Invoke-CronJob {
                         $result.detail  = 'Invoke-ConfigCoverageAudit.ps1 not found - skipping'
                         $result.success = $true
                     } else {
-                        $auditResult = & $auditScript -WorkspacePath $WorkspacePath 2>&1
+                        $null = & $auditScript -WorkspacePath $WorkspacePath 2>&1
                         $result.detail  = "ConfigCoverageAudit completed. Review ~REPORTS/ConfigCoverage/ for gaps."
                         $result.success = $true
                         $result.itemsProcessed = 1
@@ -867,6 +894,41 @@ function Invoke-CronJob {
                     $result.success = $false
                 }
             }
+            'KoeRumaMilestone' {
+                # gap-2604-001: Monthly milestone event for koe-RumA agent
+                try {
+                    $milestoneDir = Join-Path $WorkspacePath '~REPORTS\KoeRumaMilestone'
+                    if (-not (Test-Path $milestoneDir)) {
+                        New-Item -Path $milestoneDir -ItemType Directory -Force | Out-Null
+                    }
+                    $milestoneStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+                    $enhancements   = Join-Path $WorkspacePath 'logs\ENHANCEMENTS.md'
+
+                    # Call Invoke-MilestoneEvent if available; otherwise write minimal record
+                    $milestoneScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-MilestoneEvent.ps1'
+                    if (Test-Path $milestoneScript) {
+                        & $milestoneScript -WorkspacePath $WorkspacePath -EnhancementsLogPath $enhancements -ErrorAction Stop
+                        $result.detail = "Invoke-MilestoneEvent completed"
+                    } else {
+                        # Fallback: write a minimal milestone record
+                        $mRecord = [ordered]@{
+                            milestoneId   = "KRM-$milestoneStamp"
+                            generatedAt   = (Get-Date).ToString('o')
+                            workspacePath = $WorkspacePath
+                            status        = 'milestone-recorded'
+                            note          = 'koe-RumA monthly milestone - Invoke-MilestoneEvent.ps1 not found, minimal record written'
+                        }
+                        $mRecord | ConvertTo-Json -Depth 3 |
+                            Set-Content (Join-Path $milestoneDir "milestone-$milestoneStamp.json") -Encoding UTF8
+                        $result.detail = "Monthly milestone recorded (minimal): KRM-$milestoneStamp"
+                    }
+                    $result.success = $true
+                    Write-CronLog -Message $result.detail -Severity Informational -Source 'KoeRumaMilestone'
+                } catch {
+                    $result.errors += "KoeRumaMilestone: $($_.Exception.Message)"
+                    $result.success = $false
+                }
+            }
             default {
                 $result.detail = "Unknown task type: $($task.type)"
             }
@@ -893,11 +955,45 @@ function Invoke-CronJob {
     $schedule.lastRunTime = $endTime.ToUniversalTime().ToString('o')
     $schedule.nextRunTime = $endTime.AddMinutes($schedule.frequencyMinutes).ToUniversalTime().ToString('o')
 
-    # Update task-specific last run
+    # Update task-specific last run + consecutive-failure counter (IMPR-006)
     foreach ($t in @($schedule.tasks)) {
         if ($t.id -eq $TaskId) {
             $t.lastRun = $endTime.ToUniversalTime().ToString('o')
             $t.lastResult = if ($result.success) { 'SUCCESS' } else { 'FAILED' }
+
+            # Track consecutive failures for dead-letter queue
+            if (-not (Get-Member -InputObject $t -Name 'consecutiveFailures' -MemberType NoteProperty)) {
+                $t | Add-Member -MemberType NoteProperty -Name 'consecutiveFailures' -Value 0 -Force
+            }
+            if ($result.success) {
+                $t.consecutiveFailures = 0
+            } else {
+                $t.consecutiveFailures = [int]$t.consecutiveFailures + 1
+                if ($t.consecutiveFailures -ge 3) {
+                    # Move to dead-letter queue
+                    $deadLetterDir = Join-Path $WorkspacePath 'todo\dead-letter'
+                    if (-not (Test-Path $deadLetterDir)) {
+                        New-Item -Path $deadLetterDir -ItemType Directory -Force | Out-Null
+                    }
+                    $dlStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+                    $dlFile  = Join-Path $deadLetterDir "dead-$TaskId-$dlStamp.json"
+                    [ordered]@{
+                        id                 = $TaskId
+                        name               = $task.name
+                        type               = $task.type
+                        consecutiveFailures = $t.consecutiveFailures
+                        deadLetteredAt     = $endTime.ToUniversalTime().ToString('o')
+                        lastErrors         = $result.errors
+                        detail             = $result.detail
+                        schedulePath       = (Get-CronSchedulePath -WorkspacePath $WorkspacePath)
+                    } | ConvertTo-Json -Depth 5 | Set-Content -Path $dlFile -Encoding UTF8
+
+                    $t.enabled = $false
+                    $t.consecutiveFailures = 0
+                    $result.errors += "DEAD-LETTER: task disabled after 3 consecutive failures - see $dlFile"
+                    Write-CronLog -Message "Task $TaskId moved to dead-letter after 3 consecutive failures." -Severity 'Error' -Source 'DeadLetterQueue'
+                }
+            }
         }
     }
 
@@ -1145,4 +1241,5 @@ Export-ModuleMember -Function @(
     'Get-CronSchedulePath',
     'Get-CronHistoryPath'
 )
+
 

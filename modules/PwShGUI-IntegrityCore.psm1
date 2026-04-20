@@ -1,5 +1,7 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 #Requires -Version 5.1
+# TODO: HelpMenu | Show-IntegrityCoreHelp | Actions: Verify|Baseline|Compare|Report|Help | Spec: config/help-menu-registry.json
 <#
 .SYNOPSIS
     PwShGUI-IntegrityCore -- Centralised startup and runtime integrity checking.

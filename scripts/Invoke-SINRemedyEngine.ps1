@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS  Iterative SIN Remedy Engine — attempt remedies, rescan, record results.

@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:08:11.7169734Z",
+  "title": "FIX: 7 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "Bug-20260412140712-b5a8a419",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412140811-ec7e3db4",
+  "description": "Fix for bug Bug-20260412140712-b5a8a419: Script PKIChainManager.psm1 has 7 functions but zero try/catch blocks",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:08:11.7170053Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1"
+  ]
+}

@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: UIForm
 #Requires -Version 5.1
 <#
 .SYNOPSIS  Scan Dashboard -- one-stop multi-tabbed form for all scan & analysis scripts.
@@ -651,7 +652,7 @@ function Show-ScanDashboard {
                 continue
             }
             # Show latest of each format
-            $latestTs = Extract-Timestamp $files[0].Name
+            $latestTs = Extract-Timestamp $files[0].Name  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
             $seenFormats = @{}
             $allFiles = @($files)
             if ($def.Related) {

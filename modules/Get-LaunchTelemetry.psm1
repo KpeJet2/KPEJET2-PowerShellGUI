@@ -5,6 +5,7 @@
 # Purpose: Collect comprehensive system telemetry for Launch-GUI.bat logging
 # Description: Gathers 14 fields of system metrics including CPU, memory, disk,
 #              network, and administrative status for launch tracking and diagnostics.
+# TODO: HelpMenu | Show-TelemetryHelp | Actions: Collect|Report|Export|Help | Spec: config/help-menu-registry.json
 
 <#
 .SYNOPSIS

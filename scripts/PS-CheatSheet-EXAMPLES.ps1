@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # VersionTag: 2604.B2.V31.0
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
@@ -25,7 +25,7 @@
 #>
 
 # Helper: print a visible section divider to the console
-function Show-Section ([string]$Title) {
+function Show-Section ([string]$Title) {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     Write-Host ""
     Write-Host ("=" * 60) -ForegroundColor Cyan
     Write-Host "  $Title" -ForegroundColor Yellow

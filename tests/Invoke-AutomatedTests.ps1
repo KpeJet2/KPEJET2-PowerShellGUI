@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
 <#
@@ -50,7 +50,7 @@ $scriptRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Pat
 $timestamp  = Get-Date -Format 'yyyyMMdd-HHmmss'
 $results    = [System.Collections.Generic.List[pscustomobject]]::new()
 
-function Add-TestResult {
+function Add-TestResult {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [string]$Status,
         [string]$Test,
@@ -131,7 +131,10 @@ if (Test-Path $configFile) {
     } catch { <# use default #> }
 }
 
-$tagPattern = 'VersionTag:\s*([\d\.a-z]+)'
+# Fixed: original pattern [\d\.a-z]+ missed uppercase B/V in canonical YYMM.Bx.Vx.x tags
+$tagPattern = 'VersionTag:\s*([\d\.A-Za-z_-]+)'
+# Canonical format: YYMM.Bx.Vx.x (e.g. 2604.B2.V31.0) — per-file version, not a global project version
+$tagFormatPattern = '^\d{4}\.B\d+\.V\d+\.\d+$'
 $excludeFolders = @('.history', '.vscode', 'logs', 'temp', '~REPORTS', '~DOWNLOADS', '~BACKUPS', 'node_modules', 'tests')
 
 foreach ($file in $psFiles) {
@@ -151,19 +154,20 @@ foreach ($file in $psFiles) {
             -Detail "Found $($tagMatches.Count) VersionTag lines: $($tags -join ', ')"
     }
 
-    # Check tag value matches expected
+    # Validate VersionTag FORMAT (YYMM.Bx.Vx.x) — files carry their own per-file history,
+    # not a single global project version. Exact-version-match produced widespread false FAILs.
     if ($content -match $tagPattern) {
         $foundTag = $Matches[1]
-        if ($foundTag -ne $expectedVersion) {
-            Add-TestResult -Status 'FAIL' -Test 'VersionTagMismatch' -File $file.FullName `
-                -Detail "Expected '$expectedVersion', found '$foundTag'"
+        if ($foundTag -match $tagFormatPattern) {
+            Add-TestResult -Status 'PASS' -Test 'VersionTagFormat' -File $file.FullName `
+                -Detail "Format valid: $foundTag"
         } else {
-            Add-TestResult -Status 'PASS' -Test 'VersionTagMatch' -File $file.FullName `
-                -Detail "Tag matches: $foundTag"
+            Add-TestResult -Status 'FAIL' -Test 'VersionTagBadFormat' -File $file.FullName `
+                -Detail "Tag '$foundTag' does not match canonical YYMM.Bx.Vx.x format (e.g. 2604.B2.V31.0)"
         }
     } else {
         Add-TestResult -Status 'WARN' -Test 'VersionTagMissing' -File $file.FullName `
-            -Detail 'No VersionTag found'
+            -Detail 'No VersionTag found in first pass — run dedicated VersionTag compliance test'
     }
 }
 

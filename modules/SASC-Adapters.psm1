@@ -1,10 +1,12 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 3 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     SASC-Adapters -- Target-specific credential injection adapters for Assisted SASC.
+# TODO: HelpMenu | Show-SASCAdaptersHelp | Actions: Load|Unload|List|Test|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides credential injection functions for PuTTY/plink, mRemoteNG, Azure
@@ -32,9 +34,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  HELPER: PRE-FLIGHT VALIDATION
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Assert-AdapterReady {
     <#
@@ -95,9 +95,7 @@ function Find-Executable {
     return $null
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: PuTTY / plink
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Invoke-PuTTYSession {
     <#
@@ -185,9 +183,7 @@ function Invoke-PuTTYSession {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: mRemoteNG
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Invoke-MRemoteNGSession {
     <#
@@ -298,9 +294,7 @@ function Invoke-MRemoteNGSession {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: Azure PowerShell
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Connect-AzureWithVault {
     <#
@@ -335,7 +329,7 @@ function Connect-AzureWithVault {
     # Extract TenantId from notes if not provided
     if (-not $TenantId -and $item.Notes) {
         if ($item.Notes -match 'TenantId\s*[:=]\s*([0-9a-f-]+)') {
-            $TenantId = $Matches[1]
+            $TenantId = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
         }
     }
 
@@ -345,7 +339,7 @@ function Connect-AzureWithVault {
     if ($TenantId) { $connectParams['TenantId'] = $TenantId }
 
     if ($UseCertificate -and $item.Notes -match 'Thumbprint\s*[:=]\s*([A-Fa-f0-9]+)') {
-        $thumbprint = $Matches[1]
+        $thumbprint = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
         $appId = $cred.UserName  # Application/Client ID as username
         $connectParams['ApplicationId'] = $appId
         $connectParams['CertificateThumbprint'] = $thumbprint
@@ -359,9 +353,7 @@ function Connect-AzureWithVault {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: Active Directory (RSAT/ADDS)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Connect-ADDSWithVault {
     <#
@@ -401,9 +393,7 @@ function Connect-ADDSWithVault {
     return $cred
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: PowerShell ISE
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Open-ISEWithCredential {
     <#
@@ -464,9 +454,7 @@ try {
     try { Write-AppLog "SASC-Adapter: ISE launched with credential for: $TargetName" "Info" } catch { <# Intentional: non-fatal #> }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: Windows Hello Authentication
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Invoke-WindowsHelloAuth {
     <#
@@ -500,9 +488,7 @@ function Invoke-WindowsHelloAuth {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: Windows Credential Dialog
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Set-CredentialDialogFill {
     <#
@@ -535,9 +521,7 @@ function Set-CredentialDialogFill {
     return $dialogCred
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  ADAPTER: Generic Script Credential Provider
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Get-VaultCredentialForScript {
     <#
@@ -590,9 +574,7 @@ function Get-VaultCredentialForScript {
     return Get-CredentialForTarget -TargetName $selected.Name
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  MODULE EXPORTS
-# ═══════════════════════════════════════════════════════════════════════════════
 Export-ModuleMember -Function @(
     'Invoke-PuTTYSession',
     'Invoke-MRemoteNGSession',

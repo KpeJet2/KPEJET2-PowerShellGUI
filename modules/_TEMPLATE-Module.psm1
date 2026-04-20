@@ -16,6 +16,8 @@
 
 #Requires -Version 5.1
 
+# TODO: HelpMenu | Show-[PREFIX]Help | Actions: <Action1>|<Action2>|Help | Spec: config/help-menu-registry.json
+
 # ============================ MODULE STATE ============================
 $script:ModuleVersion = 'v26'
 $script:ModuleRoot    = $PSScriptRoot

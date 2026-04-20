@@ -1,0 +1,27 @@
+{
+  "checkpoint_id": "CP-20260410-005",
+  "timestamp": "2026-04-10T09:40:00+08:00",
+  "agent": "FocalPoint-null-00",
+  "scope": "PipeGAP parse remediation",
+  "completed": [
+    "Reproduced PipeGAP parse failures (8 files) under PS5 runtime path",
+    "Normalized PS5-breaking Unicode punctuation/smart quotes/NBSP in affected files",
+    "Re-ran PipeGAP successfully with parseFailures=0"
+  ],
+  "files_touched": [
+    "modules/CronAiAthon-Scheduler.psm1",
+    "modules/RE-memorAiZ.psm1",
+    "scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/Azure/Compute/Remove-AzVM.ps1",
+    "scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/MS Graph/_LIB_/MGLibrary.ps1",
+    "scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/WinSystemManagement/_LIB_/bginfo.ps1",
+    "scripts/Invoke-ReportRetention.ps1",
+    "scripts/Start-LocalWebEngineService.ps1",
+    "sovereign-kernel/core/AgentRegistry.psm1"
+  ],
+  "validation": {
+    "pipegap_report": "~REPORTS/PipelineNormalization/PipeGAP-20260410-093926.json",
+    "parse_failures": 0,
+    "open_todos": 0,
+    "active_session_gaps": 0
+  }
+}

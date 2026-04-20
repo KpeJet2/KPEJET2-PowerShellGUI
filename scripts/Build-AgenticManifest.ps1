@@ -1,4 +1,5 @@
-﻿# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.1
+# FileRole: Builder
 <#
 .SYNOPSIS
     Generates a machine-readable JSON agentic API manifest for the entire PwShGUI workspace.
@@ -19,8 +20,9 @@
       - agenticAPI section: enriched routes, coverage map, call chains,
         agent tracking interface, topological boot order
 .NOTES
-    VersionTag: 2604.B2.V31.0
-    VersionBuildHistory: 2604.B2.V31.0  2026-04-05  V31 alignment
+    VersionTag: 2604.B2.V31.1
+    VersionBuildHistory: 2604.B2.V31.1  2026-04-14  Add recursive tests, root launchers/utils, module psd1, agent coreModules+configFiles, recursive config subdirs, XHTML-Checker ps1
+                         2604.B2.V31.0  2026-04-05  V31 alignment
     FileRole: Generator
     Category: Infrastructure
 .EXAMPLE
@@ -61,7 +63,7 @@ try {
     $writeAppLogCommand = $null
 }
 if (-not $writeAppLogCommand) {
-    function Write-AppLog {
+    function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
         param(
             [Parameter(Mandatory = $true)][string]$Message,
             [Parameter(Mandatory = $true)][ValidateSet('Debug','Info','Warning','Error','Critical','Audit')][string]$Level
@@ -122,7 +124,7 @@ function Extract-FunctionDefs {
 
     $results = [System.Collections.ArrayList]::new()
     $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$null)
-    $funcDefs = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+    $funcDefs = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
 
     foreach ($func in $funcDefs) {
         $paramNames = @()
@@ -160,8 +162,8 @@ function Extract-FunctionDefs {
         # Derive verb-noun
         $verb = $null; $noun = $null
         if ($func.Name -match '^(\w+)-(.+)$') {
-            $verb = $Matches[1]
-            $noun = $Matches[2]
+            $verb = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
+            $noun = $Matches[2]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
         }
 
         $null = $results.Add([PSCustomObject]@{
@@ -476,9 +478,11 @@ foreach ($mDir in $moduleDirs) {
             $d.Target
         }
 
+        $psd1Path = Join-Path $mDir "$modName.psd1"
         $modEntry = [ordered]@{
             name         = $modName
             path         = $relPath
+            manifestFile = if (Test-Path $psd1Path) { $psd1Path.Replace($ProjectRoot, '').TrimStart('\', '/') } else { $null }
             version      = $version
             fileRole     = $fileRole
             tier         = $tier
@@ -574,7 +578,6 @@ try {
 }
 if ($scriptFiles) {
     $scriptFiles = $scriptFiles | Where-Object {
-        $_.FullName -notlike '*XHTML-Checker*' -and
         $_.Name -notlike 'Script-?.ps1' -and
         $_.Name -notlike 'Script?.ps1' -and
         $_.Name -notlike 'PS-CheatSheet*'
@@ -674,8 +677,12 @@ foreach ($xf in $rootXhtml) {
 # ── 5. Scan Config Files ──
 Write-Host "  [5/14] Scanning config files..." -ForegroundColor DarkCyan
 try {
-    $configFiles = Get-ChildItem $ConfigDir -File -ErrorAction Stop |
-        Where-Object { $_.Extension -in '.json','.xml','.csv','.bin' }
+    # Scan config root AND known subdirectories (templates, APP-INSTALL-TEMPLATES, etc.)
+    $configFiles = Get-ChildItem $ConfigDir -File -Recurse -ErrorAction Stop |
+        Where-Object {
+            $_.Extension -in '.json','.xml','.csv','.bin','.ps1' -and
+            $_.FullName -notlike '*\agentic-manifest-history\*'
+        }
 } catch {
     Write-AppLog -Message "Failed to scan config directory: $_" -Level Warning
     $configFiles = @()
@@ -706,7 +713,7 @@ foreach ($cf in $configFiles) {
 Write-Host "  [6/14] Scanning tests..." -ForegroundColor DarkCyan
 try {
     if (Test-Path $TestsDir) {
-        $testFiles = Get-ChildItem $TestsDir -Filter '*.ps1' -ErrorAction Stop
+        $testFiles = Get-ChildItem $TestsDir -Filter '*.ps1' -Recurse -ErrorAction Stop
     } else {
         $testFiles = @()
     }
@@ -750,12 +757,34 @@ if ($agentDirs) {
             $entryPoints = @()
             $pyFiles = @()
         }
+        # Scan core/*.psm1 for agent modules
+        $agentCoreDir = Join-Path $ad.FullName 'core'
+        $agentCoreModules = @()
+        if (Test-Path $agentCoreDir) {
+            try {
+                $agentCoreModules = @(Get-ChildItem $agentCoreDir -Filter '*.psm1' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart('\', '/') })
+            } catch {
+                Write-AppLog -Message "Failed to scan agent core dir for $($ad.Name): $_" -Level Debug
+            }
+        }
+        # Scan agent config subdir for JSON config files
+        $agentConfigFiles = @()
+        $agentConfigDir = Join-Path $ad.FullName 'config'
+        if (Test-Path $agentConfigDir) {
+            try {
+                $agentConfigFiles = @(Get-ChildItem $agentConfigDir -Filter '*.json' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart('\', '/') })
+            } catch {
+                Write-AppLog -Message "Failed to scan agent config dir for $($ad.Name): $_" -Level Debug
+            }
+        }
         $null = $manifest.agents.Add([ordered]@{
             name         = $ad.Name
             path         = $ad.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
             entryPoints  = @($entryPoints | ForEach-Object { $_.Name })
+            coreModules  = $agentCoreModules
+            configFiles  = $agentConfigFiles
             languages    = @(
-                $(if ($entryPoints) { 'PowerShell' })
+                $(if ($entryPoints -or $agentCoreModules) { 'PowerShell' })
                 $(if ($pyFiles) { 'Python' })
             ) | Where-Object { $_ }
         })
@@ -781,6 +810,60 @@ if ($cssFiles) {
             path = $cf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
         })
     }
+}
+
+# ── 8b. Scan Root-level Launchers and Utility Scripts ──
+Write-Host "  [8b] Scanning root-level launchers and utility scripts..." -ForegroundColor DarkCyan
+try {
+    $rootBatFiles = Get-ChildItem $ProjectRoot -Filter '*.bat' -ErrorAction Stop |
+        Where-Object { $_.Name -notlike '*.backup*' }
+    foreach ($bf in $rootBatFiles) {
+        $null = $manifest.scripts.Add([ordered]@{
+            name          = $bf.BaseName
+            path          = $bf.Name
+            version       = Get-VersionTagFromFile $bf.FullName
+            fileRole      = 'launcher'
+            sizeKB        = [math]::Round($bf.Length / 1KB, 1)
+            functionCount = 0
+            functions     = @()
+            agenticActions = @('invoke.launch')
+        })
+    }
+} catch {
+    Write-AppLog -Message "Failed to scan root bat files: $_" -Level Debug
+}
+try {
+    $rootPs1Files = Get-ChildItem $ProjectRoot -Filter '*.ps1' -ErrorAction Stop |
+        Where-Object { $_.Name -ne 'Main-GUI.ps1' }
+    foreach ($rf in $rootPs1Files) {
+        $relPath = $rf.Name
+        $funcs   = @(Extract-FunctionDefs $rf.FullName)
+        $funcList = [System.Collections.ArrayList]::new()
+        $actionKeys = [System.Collections.ArrayList]::new()
+        foreach ($fn in $funcs) {
+            $cat = Categorize-Function -Verb $fn.Verb -Noun $fn.Noun -ModuleName $rf.BaseName
+            $null = $funcList.Add([ordered]@{
+                function      = $fn.Name
+                category      = $cat.Category
+                agenticAction = $cat.ActionKey
+                params        = $fn.Params
+                line          = $fn.Line
+            })
+            if ($cat.ActionKey -notin $actionKeys) { $null = $actionKeys.Add($cat.ActionKey) }
+        }
+        $null = $manifest.scripts.Add([ordered]@{
+            name          = $rf.BaseName
+            path          = $relPath
+            version       = Get-VersionTagFromFile $rf.FullName
+            fileRole      = 'utility'
+            sizeKB        = [math]::Round($rf.Length / 1KB, 1)
+            functionCount = @($funcs).Count
+            functions     = $funcList
+            agenticActions = $actionKeys
+        })
+    }
+} catch {
+    Write-AppLog -Message "Failed to scan root ps1 files: $_" -Level Debug
 }
 
 # ── 9. Scan Tracking Stats ──

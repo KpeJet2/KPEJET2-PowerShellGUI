@@ -1,5 +1,6 @@
-REM VersionTag: 2604.B0.v1
+REM VersionTag: 2604.B2.V31.1
 REM VersionBuildHistory:
+REM   2604.B2.V31.1  2026-04-12  Inject PSModulePath for all child PowerShell processes
 REM   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)
 REM ============================================================
 REM  Launch-GUI-quik_jnr.bat  |  Fast Startup Mode
@@ -16,6 +17,11 @@ setlocal enabledelayedexpansion
 
 set "scriptDir=%~dp0"
 set "TASKTRAY_ARG="
+
+REM ── Bootstrap: ensure PowerShellGUI modules are findable by all child PowerShell processes.
+REM    Prepending to PSModulePath here means pwsh/powershell will inherit it immediately,
+REM    without requiring Main-GUI.ps1 to have run first (solves first-launch & -NoProfile issue).
+set "PSModulePath=%scriptDir%modules;%PSModulePath%"
 
 REM --- Parse /TASKTRAY switch ---
 for %%A in (%*) do (

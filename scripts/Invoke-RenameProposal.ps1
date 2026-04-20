@@ -1,5 +1,6 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 <#
 .SYNOPSIS
 # --- Structured lifecycle logging ---
@@ -56,7 +57,7 @@ $approvedVerbs = @(
 
 $excludePaths = @('.history','node_modules','__pycache__','temp','.git','agents\focalpoint-null\focalpoint_null')
 
-function Test-ExcludedPath {
+function Test-ExcludedPath {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$FullPath)
     foreach ($ex in $excludePaths) {
         if ($FullPath -like "*\$ex\*" -or $FullPath -like "*\$ex") { return $true }

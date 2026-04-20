@@ -1,5 +1,6 @@
 ﻿#Requires -Version 5.1
 # VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 <#
 .SYNOPSIS
     One-time migration of Feature Requests and Bug Tracker JSON into unified todo/ items.

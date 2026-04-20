@@ -1,4 +1,5 @@
-# VersionTag: 2604.B2.V31.1
+﻿# VersionTag: 2604.B2.V31.1
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -10,6 +11,7 @@
       - Indexed incremental change logging with timestamps and agent attribution
       - Intent history traversal with full audit trail
       - Integration with RE-memorAiZ pipeline for workspace memory continuity
+# TODO: HelpMenu | Show-IntentReviewHelp | Actions: Review|Report|Classify|Help | Spec: config/help-menu-registry.json
 
     Intent States:
       DRAFT     -- Proposed intent, open for revision
@@ -32,18 +34,14 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  MODULE STATE
-# ═══════════════════════════════════════════════════════════════════════════════
 
 $script:IntentStorePath   = $null    # Set by Initialize-IntentStore
 $script:ChangeLogPath     = $null
 $script:IntentStore       = $null    # Loaded intent registry
 $script:ChangeLog         = $null    # Loaded change log
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  INITIALIZATION
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Initialize-IntentStore {
     <#
@@ -111,9 +109,7 @@ function Save-ChangeLog {
     $script:ChangeLog | ConvertTo-Json -Depth 10 | Set-Content -Path $script:ChangeLogPath -Encoding UTF8
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  INTENT MANAGEMENT
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function New-DevelopmentIntent {
     <#
@@ -319,9 +315,7 @@ function Invoke-IntentUnseal {
     return $intent
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  INDEXED CHANGE LOGGING
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Add-ChangeLogEntry {
     <#
@@ -432,9 +426,7 @@ function Get-IntentHistory {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  EXPORTS
-# ═══════════════════════════════════════════════════════════════════════════════
 
 Export-ModuleMember -Function @(
     'Initialize-IntentStore',

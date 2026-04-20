@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v24  2026-06-10  Initial: checklist action invoker with progress tracking
 #Requires -Version 5.1

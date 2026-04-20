@@ -1,7 +1,8 @@
 ﻿#Requires -Version 5.1
 # Author: The Establishment
 # Date: 2603
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V32.1
+# FileRole: Pipeline
 # FileRole: Script
 <#
 .SYNOPSIS
@@ -41,6 +42,7 @@ param(
     [string[]]$FileRefs,
     [string]$Severity,
     [string]$Notes,
+    [string[]]$BugReferrals,
     [ValidateSet('todo','bug','feature')]
     [string]$Type
 )
@@ -71,15 +73,23 @@ $requiredFields  = @('todo_id','category','title','description','priority','stat
 # ── Reindex ──────────────────────────────────────────────────
 if ($Reindex) {
     Write-Host "`n=== Reindexing todo/ directory ===" -ForegroundColor Cyan
+    $useFallbackReindex = $true
     if (Get-Command -Name Invoke-PipelineArtifactRefresh -ErrorAction SilentlyContinue) {
-        $workspacePath = Split-Path -Parent $todoDir
-        $refresh = Invoke-PipelineArtifactRefresh -WorkspacePath $workspacePath
-        $index = Get-Content (Join-Path $todoDir '_index.json') -Raw | ConvertFrom-Json
-        Write-Host "Indexed $($index.count) master items and $($index.fileCount) active files -> _index.json" -ForegroundColor Green
-        Write-Host "  Types: $($index.types.todos) todos, $($index.types.bugs) bugs, $($index.types.features) features" -ForegroundColor Gray
-        Write-Host "  Generated: $($index.generated)" -ForegroundColor Gray
-        Write-Host "  Refreshed: $($refresh.master), $($refresh.bundle), $($refresh.index)" -ForegroundColor Gray
-    } else {
+        try {
+            $workspacePath = Split-Path -Parent $todoDir
+            $refresh = Invoke-PipelineArtifactRefresh -WorkspacePath $workspacePath
+            $index = Get-Content (Join-Path $todoDir '_index.json') -Raw | ConvertFrom-Json
+            Write-Host "Indexed $($index.count) master items and $($index.fileCount) active files -> _index.json" -ForegroundColor Green
+            Write-Host "  Types: $($index.types.todos) todos, $($index.types.bugs) bugs, $($index.types.features) features" -ForegroundColor Gray
+            Write-Host "  Generated: $($index.generated)" -ForegroundColor Gray
+            Write-Host "  Refreshed: $($refresh.master), $($refresh.bundle), $($refresh.index)" -ForegroundColor Gray
+            $useFallbackReindex = $false
+        } catch {
+            Write-Warning "[TodoManager] Pipeline artifact refresh failed, using fallback reindex: $($_.Exception.Message)"
+        }
+    }
+
+    if ($useFallbackReindex) {
         $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
         $files = @(
             Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
@@ -113,6 +123,16 @@ if ($Reindex) {
         Write-Host "Indexed $(@($files).Count) todo files -> _index.json" -ForegroundColor Green
         Write-Host "  Types: $($typeCounts.todos) todos, $($typeCounts.bugs) bugs, $($typeCounts.features) features" -ForegroundColor Gray
         Write-Host "  Generated: $($index.generated)" -ForegroundColor Gray
+
+        if (Get-Command -Name Export-CentralMasterToDo -ErrorAction SilentlyContinue) {
+            try {
+                $workspacePath = Split-Path -Parent $todoDir
+                $masterPath = Export-CentralMasterToDo -WorkspacePath $workspacePath
+                Write-Host "  Refreshed: $masterPath" -ForegroundColor Gray
+            } catch {
+                Write-Warning "[TodoManager] Fallback reindex could not refresh _master-aggregated.json: $($_.Exception.Message)"
+            }
+        }
     }
 }
 
@@ -274,12 +294,16 @@ if ($AddItem) {
         Write-Host "Severities: $($validSeverities -join ', ')"
         $Severity = Read-Host "Bug severity"
     }
+    if (-not $BugReferrals -and $Type -eq 'bug') {
+        $brStr = Read-Host "Bug referrals (comma-separated pipeline IDs, e.g. bug-001,bug-003) (optional)"
+        if ($brStr) { $BugReferrals = $brStr -split ',\s*' }
+    }
 
     $catSlug = $Category.ToLower() -replace '[^a-z0-9]', '-'
     $existing = Get-ChildItem -Path $todoDir -Filter "todo-*-$catSlug-*.json" | Sort-Object Name -Descending | Select-Object -First 1
     $seq = 1
     if ($existing -and $existing.Name -match "$catSlug-(\d+)\.json$") {
-        $seq = [int]$Matches[1] + 1
+        $seq = [int]$Matches[1] + 1  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
     $todoId = "$catSlug-$('{0:D3}' -f $seq)"
     $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmss')
@@ -306,6 +330,9 @@ if ($AddItem) {
     }
     if ($Type -eq 'bug' -and $Severity) {
         $todo['severity'] = $Severity.ToUpper()
+    }
+    if ($Type -eq 'bug' -and @($BugReferrals | Where-Object { $_ }).Count -gt 0) {
+        $todo['bugReferrals'] = @($BugReferrals | Where-Object { $_ })
     }
 
     $outPath = Join-Path $todoDir $fileName
@@ -377,6 +404,7 @@ Parameters for -AddItem / -AddBug / -AddFeature:
   -Affects <string[]>    Affected files (legacy)
   -FileRefs <string[]>   Workspace-relative file references for cross-referencing
   -Severity <string>     Bug severity: CRITICAL, HIGH, MEDIUM, LOW
+  -BugReferrals <string[]>  Pipeline bug IDs this item references (bug items only)
   -Type <string>         Item type: todo, bug, feature
 
 Parameters for -ListByFile:

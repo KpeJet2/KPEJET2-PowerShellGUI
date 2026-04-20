@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:02:19.9145954Z",
+  "title": "FIX: 7 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "Bug-20260412140121-89cd2483",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412140219-81a5eb91",
+  "description": "Fix for bug Bug-20260412140121-89cd2483: Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:02:19.9146499Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1"
+  ]
+}

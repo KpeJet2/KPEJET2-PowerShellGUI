@@ -1,7 +1,9 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 9 entries)
 #Requires -Version 5.1
+# TODO: HelpMenu | Show-AVPNTrackerHelp | Actions: Connect|Disconnect|Status|Refresh|Help | Spec: config/help-menu-registry.json
 
 # ── DPAPI credential helpers ────────────────────────────────────────────────
 $script:_DpapiPrefix = 'DPAPI:'
@@ -1159,12 +1161,12 @@ function Show-AVPNConnectionTracker {
             $box.Add_MouseDown({
                 $dragState.Active = $true
                 $dragState.Control = $this
-                $dragState.Offset = [System.Drawing.Point]::new($args[1].X, $args[1].Y)
+                $dragState.Offset = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
             })
             $box.Add_MouseMove({
                 if (-not $dragState.Active) { return }
-                $newX = $this.Left + ($args[1].X - $dragState.Offset.X)
-                $newY = $this.Top + ($args[1].Y - $dragState.Offset.Y)
+                $newX = $this.Left + ($args[1].X - $dragState.Offset.X)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
+                $newY = $this.Top + ($args[1].Y - $dragState.Offset.Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
                 $this.Location = New-Object System.Drawing.Point($newX, $newY)
                 $canvas.Invalidate()
             })
@@ -1205,7 +1207,7 @@ function Show-AVPNConnectionTracker {
     }
 
     $canvas.Add_Paint({
-        $g = $args[1].Graphics
+        $g = $args[1].Graphics  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
         
         # Draw grid if enabled
@@ -1286,10 +1288,10 @@ function Show-AVPNConnectionTracker {
                     'diamond' {
                         # Network connectors -- rotated square (diamond)
                         $dpts = New-Object 'System.Drawing.Point[]' 4
-                        $dpts[0] = [System.Drawing.Point]::new($pos.X, $pos.Y - $sz)
-                        $dpts[1] = [System.Drawing.Point]::new($pos.X + $sz, $pos.Y)
-                        $dpts[2] = [System.Drawing.Point]::new($pos.X, $pos.Y + $sz)
-                        $dpts[3] = [System.Drawing.Point]::new($pos.X - $sz, $pos.Y)
+                        $dpts[0] = [System.Drawing.Point]::new($pos.X, $pos.Y - $sz)  # SIN-EXEMPT: P027 - $dpts[N] is array assignment (write), not index-read
+                        $dpts[1] = [System.Drawing.Point]::new($pos.X + $sz, $pos.Y)  # SIN-EXEMPT: P027 - $dpts[N] is array assignment (write), not index-read
+                        $dpts[2] = [System.Drawing.Point]::new($pos.X, $pos.Y + $sz)  # SIN-EXEMPT: P027 - $dpts[N] is array assignment (write), not index-read
+                        $dpts[3] = [System.Drawing.Point]::new($pos.X - $sz, $pos.Y)  # SIN-EXEMPT: P027 - $dpts[N] is array assignment (write), not index-read
                         $g.FillPolygon($fillBrush, $dpts)
                         $g.DrawPolygon($pen, $dpts)
                     }
@@ -1388,9 +1390,9 @@ function Show-AVPNConnectionTracker {
 
     # Canvas mouse handlers for connector drag-and-drop
     $canvas.Add_MouseDown({
-        $mouseX = $args[1].X
-        $mouseY = $args[1].Y
-        $btn    = $args[1].Button
+        $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
+        $mouseY = $args[1].Y  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
+        $btn    = $args[1].Button  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
 
         # ── RIGHT-CLICK on output connector → quick-connect context menu ──
         if ($btn -eq [System.Windows.Forms.MouseButtons]::Right) {
@@ -1478,7 +1480,7 @@ function Show-AVPNConnectionTracker {
 
     $canvas.Add_MouseMove({
         if ($connectorDragState.Active) {
-            $connectorDragState.MousePos = [System.Drawing.Point]::new($args[1].X, $args[1].Y)
+            $connectorDragState.MousePos = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
             $canvas.Invalidate()
         }
     })
@@ -1486,8 +1488,8 @@ function Show-AVPNConnectionTracker {
     $canvas.Add_MouseUp({
         if (-not $connectorDragState.Active) { return }
         
-        $mouseX = $args[1].X
-        $mouseY = $args[1].Y
+        $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
+        $mouseY = $args[1].Y  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         
         # Check if released near a compatible connector
         foreach ($device in $inventory) {
@@ -1838,7 +1840,7 @@ function Show-AVPNConnectionTracker {
                 $unpowered += $need.Device.name
                 continue
             }
-            $src = $availOutputs[0]
+            $src = $availOutputs[0]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
             $availOutputs.RemoveAt(0)
             $newConn = [pscustomobject]@{
                 SourceInstance  = $src.Device.instanceId

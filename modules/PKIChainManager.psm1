@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 <#
 .SYNOPSIS  PKIChainManager - PKI certificate chain management.
 .DESCRIPTION
@@ -6,6 +7,7 @@
     Uses .NET X509 certificate APIs with PowerShell 5.1 compatibility.
     Private keys can be stored in Bitwarden vault via AssistedSASC.
     All operations are logged to the sovereign kernel ledger.
+# TODO: HelpMenu | Show-PKIHelp | Actions: Validate|Import|Export|Audit|Help | Spec: config/help-menu-registry.json
 
     Chain hierarchy:
     - Root CA:       Self-signed, 4096-bit RSA, 10yr, CA:TRUE

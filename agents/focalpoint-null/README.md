@@ -75,6 +75,23 @@ focalpoint-null/
 
 ---
 
+## Role in PowerShellGUI Workspace
+
+`focalpoint-null` is the **agentic companion** to the PowerShellGUI desktop system (`c:\PowerShellGUI`). It is not embedded inside the GUI — it runs as a separate HTTP process alongside it.
+
+| Aspect | Detail |
+|---|---|
+| **Status** | Active — operational since 2026-03-01 |
+| **Integration** | PKI keys shared at workspace root (`pki/FocalPoint-null-00.*`) |
+| **Sovereign kernel** | Registered in `sovereign-kernel/manifest/sovereign-kernel.json` under `operational_modules` |
+| **Cron** | No scheduled cron trigger — started on-demand via `Start-FocalPoint.ps1` or `Start-FocalPoint.bat` |
+| **Logs** | Written to `agents/focalpoint-null/logs/` in JSONL format; monitored by `Invoke-ReportRetention.ps1` |
+| **Archive decision** | **Keep active**. Not a legacy artifact. Provides multi-agent orchestration that the PowerShell GUI layer cannot supply itself. |
+
+> **Design boundary**: The GUI (`Main-GUI.ps1`) never calls focalpoint-null directly. Interactions go through the HTTP API (`main.py`) or `Chat-FocalPoint.ps1` relay script.
+
+---
+
 ## Quick Start
 
 ### 1. Prerequisites

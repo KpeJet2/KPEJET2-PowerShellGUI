@@ -211,7 +211,7 @@ function Export-ArpToHtml {
     foreach ($row in $OutputGrid.Rows) {
         if (-not $row.IsNewRow) {
             $rows += [PSCustomObject]@{
-                IPAddress = $row.Cells[0].Value
+                IPAddress = $row.Cells[0].Value  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
                 MAC       = $row.Cells[1].Value
                 Type      = $row.Cells[2].Value
             }
@@ -420,7 +420,7 @@ $form.Controls.Add($btnOpenLayouts)
 $btnOpenLayouts.Add_Click({
     # Save current selections to memory
     foreach ($row in $profilesGrid.Rows) {
-        $profileName = $row.Cells[0].Value
+        $profileName = $row.Cells[0].Value  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
         $layoutKey   = $row.Cells[1].Value
         if ($profileName -and $layoutKey) {
             Set-ProfileLayoutSelection -ProfileName $profileName -LayoutKey $layoutKey
@@ -434,7 +434,7 @@ $btnOpenLayouts.Add_Click({
     $first = $true
 
     foreach ($row in $profilesGrid.Rows) {
-        $profileName = $row.Cells[0].Value
+        $profileName = $row.Cells[0].Value  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
         $layoutKey   = $row.Cells[1].Value
         if (-not $profileName -or -not $layoutKey) { continue }
 

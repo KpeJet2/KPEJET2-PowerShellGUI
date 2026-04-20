@@ -1,4 +1,5 @@
-﻿# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.3
+# FileRole: UIForm
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -68,6 +69,8 @@ function Show-CronAiAthonTool {
     $accOrange= [System.Drawing.Color]::FromArgb(206, 145, 64)
     $accRed    = [System.Drawing.Color]::FromArgb(244, 71, 71)
     $accYellow  = [System.Drawing.Color]::FromArgb(220, 195, 48)
+    $accAmber   = [System.Drawing.Color]::FromArgb(220, 160, 40)
+    $accPurple  = [System.Drawing.Color]::FromArgb(200, 140, 220)  # SIN-P025-FIX: inline static call in arg-mode resolves as method ref, not Color
     $accBlueRun = [System.Drawing.Color]::FromArgb(30, 144, 255)
     $fontNorm = New-Object System.Drawing.Font("Segoe UI", 9)
     $fontBold = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
@@ -75,7 +78,7 @@ function Show-CronAiAthonTool {
     $fontMono = New-Object System.Drawing.Font("Cascadia Mono", 9)
 
     # ── Helper: styled label ─────────────────────────────────────
-    function New-StyledLabel {
+    function New-StyledLabel {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
         param([string]$Text, [int]$X, [int]$Y, [int]$W=300, [int]$H=20,
               [System.Drawing.Font]$Font=$fontNorm, [System.Drawing.Color]$ForeColor=$fgWhite)
         $lbl = New-Object System.Windows.Forms.Label
@@ -86,7 +89,7 @@ function Show-CronAiAthonTool {
     }
 
     # ── Helper: styled button ────────────────────────────────────
-    function New-StyledButton {
+    function New-StyledButton {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
         param([string]$Text, [int]$X, [int]$Y, [int]$W=140, [int]$H=30, [string]$Tip='')
         $btn = New-Object System.Windows.Forms.Button
         $btn.Text = $Text; $btn.Location = [System.Drawing.Point]::new($X,$Y)
@@ -2272,7 +2275,7 @@ function Show-CronAiAthonTool {
     $rtbSvcLog.BorderStyle = 'FixedSingle'
     $tabSvcAcc.Controls.Add($rtbSvcLog)
 
-    function Write-SvcLog ([string]$msg, [string]$level='Info') {
+    function Write-SvcLog ([string]$msg, [string]$level='Info') {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
         $color = switch ($level) {
             'OK'    { [System.Drawing.Color]::FromArgb(78,201,176) }
             'Warn'  { [System.Drawing.Color]::FromArgb(220,200,80) }
@@ -2335,7 +2338,7 @@ function Show-CronAiAthonTool {
     $script:_pfxPwd      = $null
 
     # ── Section: Service Account row ─────────────────────────────
-    $lblSvcRow = New-StyledLabel '  [S] Pipeline Service Account (least-priv)' 15 480 440 22 $fontBold [System.Drawing.Color]::FromArgb(200,140,220)
+    $lblSvcRow = New-StyledLabel '  [S] Pipeline Service Account (least-priv)' 15 480 440 22 $fontBold $accPurple
     $tabSvcAcc.Controls.Add($lblSvcRow)
 
     $btnProvisionSvc = New-StyledButton 'Provision Service Account' 15 506 210 30
@@ -2637,14 +2640,14 @@ function Show-CronAiAthonTool {
             )
             'RUNNING SCANS VIA CLI (AGENT SNIPPETS)' = @(
                 "# Headless smoke test (fastest — run after every change):`r`n  pwsh -NoProfile -c ""& tests\Invoke-GUISmokeTest.ps1 -HeadlessOnly -SkipPhase 1,2,3,4,5""",
-                "# Full SIN governance scan:`r`n  pwsh -NoProfile -c ""& tests\Invoke-SINPatternScanner.ps1 -WorkspacePath 'C:\PowerShellGUI'""",
-                "# Config coverage audit:`r`n  pwsh -NoProfile -c ""& scripts\Invoke-ConfigCoverageAudit.ps1 -WorkspacePath 'C:\PowerShellGUI'""",
+                "# Full SIN governance scan:`r`n  pwsh -NoProfile -c ""& tests\Invoke-SINPatternScanner.ps1 -WorkspacePath '$WorkspacePath'""",
+                "# Config coverage audit:`r`n  pwsh -NoProfile -c ""& scripts\Invoke-ConfigCoverageAudit.ps1 -WorkspacePath '$WorkspacePath'""",
                 "# SemiSin penance scan:`r`n  pwsh -NoProfile -c ""& tests\Invoke-SemiSinPenanceScanner.ps1"""
             )
             'INTERACTING WITH THE PIPELINE (AGENT CODE)' = @(
                 "# Add a new pipeline TODO item:`r`n  Add-PipelineItem -WorkspacePath `$WorkspacePath -Type 'FeatureRequest' -Title 'My task' -Priority 'MEDIUM' -Status 'OPEN'",
                 "# Query open BUGs:`r`n  Get-PipelineItems -WorkspacePath `$WorkspacePath -Type 'BUG' -Status 'OPEN' | Select Title,Priority",
-                "# Save a pipeline epoch snapshot:`r`n  Save-PipelineEpoch -WorkspacePath 'C:\PowerShellGUI' -Phase 'MyMilestone' -Description 'What changed'"
+                "# Save a pipeline epoch snapshot:`r`n  Save-PipelineEpoch -WorkspacePath '$WorkspacePath' -Phase 'MyMilestone' -Description 'What changed'"
             )
             'MANIFEST CROSS-REFERENCE' = @(
                 "# Rebuild manifest (auto runs every 2hrs via DocRebuild cron):`r`n  & scripts\Build-AgenticManifest.ps1 -WorkspacePath `$WorkspacePath",

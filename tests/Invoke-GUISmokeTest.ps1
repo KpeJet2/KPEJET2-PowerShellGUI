@@ -166,9 +166,9 @@ function Get-LaunchGuiMenuTargets {
     $quickApp = Join-Path $scriptRoot 'scripts\QUICK-APP'
 
     $fixed = @(
-        Join-Path $root 'Launch-GUI-quik_jnr.bat',
-        Join-Path $root 'Launch-GUI-slow_snr.bat',
-        Join-Path $root 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml'
+        (Join-Path $root 'Launch-GUI-quik_jnr.bat')
+        (Join-Path $root 'Launch-GUI-slow_snr.bat')
+        (Join-Path $root 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml')
     )
     foreach ($f in $fixed) {
         if (Test-Path $f) {
@@ -479,7 +479,7 @@ if ($runPhase0) {
     # ── 0g: Orphan file detection ─────────────────────────────────────────
     # Find .ps1 files under scripts/ not referenced by any menu item, button config,
     # or other known caller in Main-GUI.ps1
-    $orphanScriptsDir = Join-Path $workspace 'scripts'
+    $orphanScriptsDir = Join-Path $scriptRoot 'scripts'
     if (Test-Path $orphanScriptsDir) {
         $mainContent = ''
         if (Test-Path $mainScript) {
@@ -487,7 +487,7 @@ if ($runPhase0) {
             if ($mainLines) { $mainContent = $mainLines -join "`n" }
         }
         $configContent = ''
-        $configXml = Join-Path $workspace 'config\system-variables.xml'
+        $configXml = Join-Path $scriptRoot 'config\system-variables.xml'
         if (Test-Path $configXml) {
             $configLines = Get-Content $configXml -ErrorAction SilentlyContinue
             if ($configLines) { $configContent = $configLines -join "`n" }
@@ -1136,7 +1136,7 @@ if ($runPhase0) {
         $sinPatternFiles  = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SIN-PATTERN-*.json' -File -ErrorAction SilentlyContinue)
         $semiSinFiles     = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SEMI-SIN-*.json'    -File -ErrorAction SilentlyContinue)
         $sinInstanceFiles = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SIN-2*.json'        -File -ErrorAction SilentlyContinue)
-        $minExpectedPatterns = 20
+        $minExpectedPatterns = 28
         $minExpectedSemiSins = 6
         $patCount = @($sinPatternFiles).Count
         $semiCount = @($semiSinFiles).Count

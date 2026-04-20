@@ -1,4 +1,5 @@
-﻿# VersionTag: 2604.B1.V32.0
+﻿# VersionTag: 2604.B1.V32.1
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-08
 # FileRole: CrashHandler
@@ -57,7 +58,7 @@ $CrashId        = "crash-$Timestamp"
 $QuarantineDir  = Join-Path (Join-Path $LogsDir 'crash-quarantine') $CrashId
 $ReportFile     = Join-Path $ReportsDir "crash-report-$Timestamp.json"
 
-function Write-CleanupLog {
+function Write-CleanupLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Level = 'INFO')
     if (-not $Silent) {
         $ts = Get-Date -Format 'HH:mm:ss'
@@ -79,7 +80,11 @@ if (Test-Path -LiteralPath $CrashLogFile) {
         if (-not [string]::IsNullOrEmpty($lastJson)) {
             $crashEvent = $lastJson | ConvertFrom-Json
             if ($null -ne $crashEvent -and $null -ne $crashEvent.timestamp) {
-                try { $crashTime = [datetime]::Parse($crashEvent.timestamp) } catch { }
+                try {
+                    $crashTime = [datetime]::Parse($crashEvent.timestamp)
+                } catch {
+                    Write-CleanupLog "Could not parse crash timestamp '$($crashEvent.timestamp)': $($_.Exception.Message)" 'WARN'
+                }
             }
         }
     } catch {
@@ -195,7 +200,7 @@ Files held : $(@($quarantineList | Where-Object { $_.quarantined }).Count)
 Review each file and restore or purge manually.
 Full report: $ReportFile
 "@
-    try { Set-Content -LiteralPath (Join-Path $QuarantineDir 'README.txt') -Value $readme -Encoding UTF8 } catch { }
+    try { Set-Content -LiteralPath (Join-Path $QuarantineDir 'README.txt') -Value $readme -Encoding UTF8 } catch { <# Intentional: non-fatal — quarantine README write is best-effort #> }
 }
 
 # ─── Write crash report ───────────────────────────────────────────────────────

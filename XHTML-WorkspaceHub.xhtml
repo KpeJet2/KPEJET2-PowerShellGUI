@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- VersionTag: 2604.B1.V32.3 -->
+<!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -160,6 +161,128 @@
     .lvl-bg-CRASH {background:#3a0000;color:#ff6464;font-weight:700}
     .lvl-bg-DEBUG {background:#161616;color:#697169}
     .scan-btn.static{border-color:#b5a04a;color:#b5a04a}
+    /* ── Red glow for config-detection errors ── */
+    @keyframes glow-red{
+      0%,100%{box-shadow:0 0 6px 2px rgba(244,71,71,.3);border-color:#f44747}
+      50%{box-shadow:0 0 14px 5px rgba(244,71,71,.6);border-color:#ff6464}
+    }
+    .hub-card.cfg-error{
+      animation:glow-red 1.2s ease-in-out infinite;
+      border-color:#f44747 !important;
+    }
+    .hub-card.cfg-error .hub-card-badge{background:#3a0000;color:#ff6464}
+    /* ── WebEngine Monitor section ── */
+    .eng-monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .eng-stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+    .eng-stat-label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.5px}
+    .eng-stat-value{font-size:20px;font-weight:700;color:var(--info);margin-top:4px}
+    .eng-stat-value.ok{color:var(--pass)}
+    .eng-stat-value.err{color:var(--fail)}
+    .eng-log-pre{background:#0d0d10;border:1px solid var(--border);border-radius:var(--radius);padding:10px;font-family:'Cascadia Code',Consolas,monospace;font-size:11px;color:var(--fg);max-height:200px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+    /* ── Sidebar links ── */
+    .hub-sidebar-links{border-top:1px solid var(--border);padding:8px 10px;margin-top:auto;flex-shrink:0}
+    .hub-sidebar-link{display:block;font-size:11px;color:var(--info);text-decoration:none;padding:4px 6px;border-radius:var(--radius);margin-bottom:2px}
+    .hub-sidebar-link:hover{background:var(--control);color:#9cdcfe}
+    /* ── Tool toolbar (view modes, sort, bulk actions) ── */
+    .tool-toolbar{
+      display:flex;align-items:center;gap:8px;padding:6px 0 10px;
+      border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap;
+    }
+    .tool-toolbar-group{display:flex;align-items:center;gap:4px}
+    .tt-btn{
+      font-family:var(--font);font-size:10px;padding:3px 8px;
+      border:1px solid var(--border);border-radius:var(--radius);
+      background:var(--btn);color:var(--btn-fg);cursor:pointer;
+    }
+    .tt-btn:hover{background:var(--btn-hover)}
+    .tt-btn.active{border-color:var(--accent);color:var(--accent);background:#0a1424}
+    .tt-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+    .tt-label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.4px}
+    .tt-select{
+      font-family:var(--font);font-size:10px;padding:3px 6px;
+      background:var(--btn);color:var(--btn-fg);border:1px solid var(--border);
+      border-radius:var(--radius);cursor:pointer;
+    }
+    /* ── Bulk action bar ── */
+    .bulk-bar{
+      display:none;align-items:center;gap:8px;padding:6px 10px;
+      background:#0d1424;border:1px solid #1a3060;border-radius:var(--radius);
+      margin-bottom:10px;
+    }
+    .bulk-bar.visible{display:flex}
+    .bulk-count{font-size:11px;color:var(--info);font-weight:600}
+    .bulk-btn{
+      font-family:var(--font);font-size:10px;padding:3px 10px;
+      border:1px solid var(--border);border-radius:var(--radius);
+      background:var(--btn);color:var(--btn-fg);cursor:pointer;
+    }
+    .bulk-btn:hover{background:var(--btn-hover)}
+    .bulk-btn.primary{border-color:var(--accent);color:var(--accent)}
+    /* ── List view ── */
+    .hub-cards.view-list{display:flex;flex-direction:column;gap:3px}
+    .hub-cards.view-list .hub-card{
+      flex-direction:row;align-items:center;gap:10px;
+      padding:6px 10px;min-height:auto;
+    }
+    .hub-cards.view-list .hub-card-icon{font-size:16px;min-width:24px;text-align:center}
+    .hub-cards.view-list .hub-card-title{flex:1;font-size:12px}
+    .hub-cards.view-list .hub-card-desc{display:none}
+    .hub-cards.view-list .hub-card-badge{margin-left:auto}
+    /* ── Detail view ── */
+    .hub-cards.view-detail{display:flex;flex-direction:column;gap:6px}
+    .hub-cards.view-detail .hub-card{
+      flex-direction:row;align-items:flex-start;gap:12px;
+      padding:10px 14px;min-height:auto;
+    }
+    .hub-cards.view-detail .hub-card-icon{font-size:22px;min-width:32px;text-align:center;margin-top:2px}
+    .hub-cards.view-detail .hub-card-title{font-size:13px;font-weight:600}
+    .hub-cards.view-detail .hub-card-desc{font-size:11px;margin-top:2px}
+    .hub-cards.view-detail .hub-card-badge{margin-left:auto;align-self:center}
+    .hub-cards.view-detail .hub-card-meta{font-size:9px;color:var(--fg-sub);margin-top:3px}
+    /* ── Checkbox on cards ── */
+    .hub-card-chk{
+      position:absolute;top:6px;left:6px;z-index:2;
+      width:15px;height:15px;accent-color:var(--accent);cursor:pointer;
+    }
+    .hub-cards.view-list .hub-card-chk{position:static;margin-right:4px}
+    .hub-cards.view-detail .hub-card-chk{position:static;margin-top:3px;margin-right:4px}
+    .hub-card{position:relative} /* ensure abs checkbox anchors */
+    /* ── Group pills on cards ── */
+    .hub-card-groups{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+    .group-pill{font-size:8px;padding:1px 6px;border-radius:8px;
+      background:rgba(78,201,176,.15);color:#4ec9b0;border:1px solid rgba(78,201,176,.25);
+      white-space:nowrap}
+    /* ── Group filter in toolbar ── */
+    .tt-select.group-filter{min-width:110px}
+    /* ── Stop engine confirmation overlay ── */
+    .stop-overlay{
+      display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,.7);z-index:9998;
+      align-items:center;justify-content:center;
+    }
+    .stop-overlay.visible{display:flex}
+    .stop-dialog{
+      background:var(--panel);border:1px solid var(--border);border-radius:8px;
+      padding:24px 28px;min-width:340px;max-width:420px;text-align:center;
+    }
+    .stop-dialog h3{margin:0 0 12px;font-size:15px;color:var(--warn)}
+    .stop-dialog p{font-size:12px;color:var(--fg-sub);margin:0 0 14px}
+    .stop-dialog-btns{display:flex;gap:8px;justify-content:center}
+    .stop-dialog-btn{
+      font-family:var(--font);font-size:12px;padding:6px 16px;
+      border:1px solid var(--border);border-radius:var(--radius);
+      cursor:pointer;background:var(--btn);color:var(--btn-fg);
+    }
+    .stop-dialog-btn:hover{background:var(--btn-hover)}
+    .stop-dialog-btn.danger{border-color:var(--fail);color:var(--fail)}
+    .stop-dialog-btn.restart{border-color:var(--warn);color:var(--warn)}
+    .stop-dialog-btn.cancel{border-color:var(--fg-sub);color:var(--fg-sub)}
+    .stop-monitor-msg{font-size:11px;color:var(--info);margin-top:10px;min-height:16px}
+    /* ── Scan progress spinner ── */
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    .scan-spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--border);
+      border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
+      margin-right:6px;vertical-align:middle}
   </style>
 </head>
 <body>
@@ -218,6 +341,11 @@
       <button class="hub-section-btn hub-nav-item"        id="navTimeline"  onclick="showSection('timeline')"  data-tip="Phase completion history from last scan"><span class="hub-nav-icon">&#x1F554;</span>History</button>
       <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
+      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="WebEngine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Engine Monitor</button>
+      <div class="hub-sidebar-links">
+        <a class="hub-sidebar-link" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help Index in a new window">&#x1F4D6; Help Index (local file)</a>
+        <a class="hub-sidebar-link" id="helpHostedLink" href="http://127.0.0.1:8042/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help via WebEngine (requires engine running)">&#x1F310; Help Index (engine hosted)</a>
+      </div>
     </div>
 
     <!-- Main scrollable area -->
@@ -226,6 +354,46 @@
       <!-- ── Tools section ── -->
       <div id="secTools">
         <div class="hub-section-title">XHTML Tools</div>
+        <!-- Tool toolbar: view modes, sort, select all -->
+        <div class="tool-toolbar">
+          <div class="tool-toolbar-group">
+            <span class="tt-label">View:</span>
+            <button class="tt-btn active" id="viewTile" onclick="setViewMode('tile')" data-tip="Fixed-size tile grid">&#x25A6; Tile</button>
+            <button class="tt-btn" id="viewList" onclick="setViewMode('list')" data-tip="Compact list view">&#x2630; List</button>
+            <button class="tt-btn" id="viewDetail" onclick="setViewMode('detail')" data-tip="Detailed view with descriptions">&#x1F4C4; Detail</button>
+          </div>
+          <div class="tt-sep"></div>
+          <div class="tool-toolbar-group">
+            <span class="tt-label">Group:</span>
+            <select class="tt-select group-filter" id="groupFilter" onchange="applyGroupFilter(this.value)" title="Filter tools by group tag" data-tip="Show only tools in a specific group">
+              <option value="all">All Groups</option>
+            </select>
+          </div>
+          <div class="tt-sep"></div>
+          <div class="tool-toolbar-group">
+            <span class="tt-label">Sort:</span>
+            <select class="tt-select" id="sortMode" onchange="applySort(this.value)" data-tip="Change tool card sort order">
+              <option value="default">Default</option>
+              <option value="alpha">A&#x2192;Z</option>
+              <option value="alpha-desc">Z&#x2192;A</option>
+              <option value="recent">Recent First</option>
+            </select>
+          </div>
+          <div class="tt-sep"></div>
+          <div class="tool-toolbar-group">
+            <label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:4px;cursor:pointer" data-tip="Select/deselect all tool cards">
+              <input type="checkbox" id="selectAllChk" onclick="toggleSelectAll(this.checked)" style="accent-color:var(--accent)" />
+              Select All
+            </label>
+          </div>
+        </div>
+        <!-- Bulk action bar (shown when items selected) -->
+        <div class="bulk-bar" id="bulkBar">
+          <span class="bulk-count" id="bulkCount">0 selected</span>
+          <button class="bulk-btn primary" onclick="bulkLaunch('tab')" data-tip="Open each selected tool in a new browser tab">&#x21D7; Open in New Tabs</button>
+          <button class="bulk-btn" onclick="bulkLaunch('window')" data-tip="Open each selected tool in a separate browser window">&#x2750; Open in New Windows</button>
+          <button class="bulk-btn" onclick="clearSelection()" data-tip="Deselect all tools">&#x2715; Clear</button>
+        </div>
         <div class="hub-cards" id="toolCards">
           <!-- populated by renderToolCards() -->
           <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
@@ -311,8 +479,40 @@
         </div>
       </div>
 
+      <!-- ── WebEngine Monitor section ── -->
+      <div id="secMonitor" style="display:none">
+        <div class="hub-section-title">WebEngine Monitor</div>
+        <div class="eng-monitor-grid">
+          <div class="eng-stat-card"><div class="eng-stat-label">Status</div><div class="eng-stat-value" id="monStatus">&#x2014;</div></div>
+          <div class="eng-stat-card"><div class="eng-stat-label">Uptime</div><div class="eng-stat-value" id="monUptime">&#x2014;</div></div>
+          <div class="eng-stat-card"><div class="eng-stat-label">PID</div><div class="eng-stat-value" id="monPid">&#x2014;</div></div>
+          <div class="eng-stat-card"><div class="eng-stat-label">Port</div><div class="eng-stat-value" id="monPort">&#x2014;</div></div>
+          <div class="eng-stat-card"><div class="eng-stat-label">Server Time</div><div class="eng-stat-value" id="monTime" style="font-size:14px">&#x2014;</div></div>
+          <div class="eng-stat-card"><div class="eng-stat-label">Config Detection</div><div class="eng-stat-value" id="monCfg">&#x2014;</div></div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh engine monitor stats">&#x21BB; Refresh Monitor</button>
+          <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
+        </div>
+        <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
+      </div>
+
     </div><!-- hub-main -->
   </div><!-- hub-layout -->
+
+  <!-- ── Stop Engine Confirmation Overlay ── -->
+  <div class="stop-overlay" id="stopOverlay">
+    <div class="stop-dialog">
+      <h3>&#x26A0; Stop WebEngine?</h3>
+      <p>This will shut down the LocalWebEngine on port 8042.<br/>Scans, WebSocket, and API calls will become unavailable.</p>
+      <div class="stop-dialog-btns">
+        <button class="stop-dialog-btn danger" onclick="confirmStop()">&#x25A0; Stop Engine</button>
+        <button class="stop-dialog-btn restart" onclick="confirmRestart()">&#x21BB; Restart Engine</button>
+        <button class="stop-dialog-btn cancel" onclick="cancelStop()">Cancel</button>
+      </div>
+      <div class="stop-monitor-msg" id="stopMonMsg"></div>
+    </div>
+  </div>
 
   <div class="sbar">
     <span id="sbarLeft">0 tools</span>
@@ -330,28 +530,49 @@
   var WS_MAX_RETRY = 6;
   var _csrfToken  = '';
   var POLL_MS     = 8000;   /* fallback poll interval when WS unavailable */
+  var _scanPollId = null;   /* interval ID for scan progress polling */
+  var _viewMode   = 'tile'; /* tile | list | detail */
+  var _sortMode   = 'default';
+  var _groupFilter = 'all'; /* 'all' or a specific group tag */
+  var _selectedTools = {};  /* id -> true for checked tool cards */
+
+  /* ── Predefined group tags (user can add more via MenuBuilder) ── */
+  var GROUP_TAGS = [
+    'Core','Scanning','Security','Reporting','Checklists','Data','DevOps','Config','Testing','Shopping'
+  ];
 
   var PHASE_IDS = ['folders','modules','scripts','configs','urls_ips','dns_resolution'];
 
   /* ── Built-in tool registry ── */
   var TOOLS = [
-    { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools' },
-    { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools' },
-    { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools' },
-    { title:'Master To-Do',           icon:'&#x2705;',  desc:'Full task manager with filters and priority tracking',         href:'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',         section:'tools' },
-    { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools' },
-    { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools' },
-    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-DependencyVis.xhtml',      section:'tools' },
-    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools' },
-    { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools' },
-    { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools' },
-    { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools' },
-    { title:'Shop Listed Items',      icon:'&#x1F6D2;', desc:'Compare and track item prices across online stores',          href:'Shop-ListedItems-Entry.xhtml',                          section:'tools' },
-    { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools' }
+    { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools', groups:['Core'] },
+    { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools', groups:['Core','Config'] },
+    { title:'Master To-Do',           icon:'&#x2705;',  desc:'Full task manager with filters and priority tracking',         href:'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',         section:'tools', groups:['Core','DevOps'] },
+    { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools', groups:['DevOps'] },
+    { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-DependencyVis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools', groups:['Checklists'] },
+    { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
+    { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
+    { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools', groups:['Security','Checklists'] },
+    { title:'Shop Listed Items',      icon:'&#x1F6D2;', desc:'Compare and track item prices across online stores',          href:'Shop-ListedItems-Entry.xhtml',                          section:'tools', groups:['Shopping'] },
+    { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools', groups:['Security'] },
+    { title:'Data Relational Viz',    icon:'&#x1F578;', desc:'Interrelational data visualization with AI wizard and foresight modelling', href:'XHTML-DataRelationalViz.xhtml', section:'tools', badge:'NEW', groups:['Data','Reporting'] },
+    { title:'Changelog Viewer',       icon:'&#x1F4DD;', desc:'Browse workspace changelog entries with filtering and search',href:'XHTML-ChangelogViewer.xhtml',                            section:'tools', groups:['Reporting','DevOps'] },
+    { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'XHTML-DependencyVis.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Checklists V1 Root',      icon:'&#x2611;',  desc:'Version 1 root checklist with structured pre-flight gates', href:'PwShGUI-Checklists_V1-ROOT.xhtml',                       section:'tools', groups:['Checklists'] },
+    { title:'Implementation Steps',    icon:'&#x1F4C3;', desc:'Step-by-step implementation guide for project features',    href:'~README.md/Implementation-Steps.xhtml',                 section:'tools', groups:['DevOps'] },
+    { title:'Security Setup Guide',    icon:'&#x1F6E1;', desc:'Security configuration and DPAPI setup walkthrough',        href:'~README.md/SECURITY-SETUP-GUIDE.xhtml',                 section:'tools', groups:['Security'] },
+    { title:'Survey Viewpoints',       icon:'&#x1F4CA;', desc:'User survey results and viewpoint analysis dashboard',      href:'~README.md/SURVEY-Viewpoints.html',                     section:'tools', groups:['Reporting','Data'] },
+    { title:'SIN Scoreboard',          icon:'&#x26A0;',  desc:'SIN pattern scan scoreboard with pass/fail trend tracking', href:'~REPORTS/SIN-Scoreboard.xhtml',                         section:'tools', groups:['Scanning','Reporting'] },
+    { title:'UPM User Guide',          icon:'&#x1F4D6;', desc:'Unified Package Manager user guide and reference',          href:'UPM/docs/UPM-UserGuide.xhtml',                          section:'tools', groups:['Config'] },
+    { title:'Checklists (Test Copy)',   icon:'&#x1F9EA;', desc:'Test copy of PwShGUI checklists for validation',            href:'~README.md/PwShGUI-Checklists-TEST.xhtml',              section:'tools', groups:['Checklists','Testing'] },
+    { title:'Checklists (README)',      icon:'&#x2705;',  desc:'README-bundled checklists for quick reference',             href:'~README.md/PwShGUI-Checklists.xhtml',                   section:'tools', groups:['Checklists'] }
   ];
 
   /* ── Section navigation ── */
-  var _sections = ['Tools','Reports','Timeline','Crashes','EventLogs'];
+  var _sections = ['Tools','Reports','Timeline','Crashes','EventLogs','Monitor'];
 
   function showSection(name) {
     for (var i = 0; i < _sections.length; i++) {
@@ -365,6 +586,7 @@
     if (name === 'timeline')   { loadTimeline(); }
     if (name === 'crashes')    { loadCrashes(); }
     if (name === 'eventlogs')  { loadEventLogs(); }
+    if (name === 'monitor')    { refreshMonitor(); }
   }
   window.showSection = showSection;
 
@@ -376,20 +598,167 @@
     if (Array.isArray(extraItems)) {
       for (var e = 0; e < extraItems.length; e++) { allTools.push(extraItems[e]); }
     }
+    /* assign stable index before sort */
+    for (var si = 0; si < allTools.length; si++) { allTools[si]._idx = si; }
+    /* filter by group */
+    if (_groupFilter !== 'all') {
+      var filtered = [];
+      for (var fi = 0; fi < allTools.length; fi++) {
+        var fg = allTools[fi].groups || [];
+        for (var fj = 0; fj < fg.length; fj++) {
+          if (fg[fj] === _groupFilter) { filtered.push(allTools[fi]); break; }
+        }
+      }
+      allTools = filtered;
+    }
+    /* sort */
+    if (_sortMode === 'alpha') {
+      allTools.sort(function(a,b){ return a.title.localeCompare(b.title); });
+    } else if (_sortMode === 'alpha-desc') {
+      allTools.sort(function(a,b){ return b.title.localeCompare(a.title); });
+    } else if (_sortMode === 'recent') {
+      allTools.sort(function(a,b){
+        var da = a._modified || 0, db = b._modified || 0;
+        return db - da;
+      });
+    }
+    /* apply view mode class */
+    cards.className = 'hub-cards' + (_viewMode !== 'tile' ? ' view-' + _viewMode : '');
     var html = '';
     for (var i = 0; i < allTools.length; i++) {
       var t = allTools[i];
-      html += '<a class="hub-card" href="' + escAttr(t.href) + '" title="' + escAttr(t.title) + '">' +
+      var chkId = 'chk_' + t._idx;
+      var checked = _selectedTools[t._idx] ? ' checked="checked"' : '';
+      html += '<a class="hub-card" href="' + escAttr(t.href) + '" title="' + escAttr(t.title) + '" data-idx="' + t._idx + '" onclick="return onCardClick(event,' + t._idx + ')">' +
+        '<input type="checkbox" class="hub-card-chk" id="' + chkId + '"' + checked + ' onclick="onCardCheck(event,' + t._idx + ')" title="Select ' + escAttr(t.title) + '" />' +
         '<div class="hub-card-icon">' + t.icon + '</div>' +
         '<div class="hub-card-title">' + escHtml(t.title) + '</div>' +
-        '<div class="hub-card-desc">' + escHtml(t.desc) + '</div>' +
-        '<span class="hub-card-badge badge-grey" id="badge_' + i + '">loading&#x2026;</span>' +
+        '<div class="hub-card-desc">' + escHtml(t.desc) + '</div>';
+      if (_viewMode === 'detail') {
+        html += '<div class="hub-card-meta">Path: ' + escHtml(t.href) + '</div>';
+      }
+      /* group pills */
+      var tGroups = t.groups || [];
+      if (tGroups.length > 0) {
+        html += '<div class="hub-card-groups">';
+        for (var gp = 0; gp < tGroups.length; gp++) {
+          html += '<span class="group-pill">' + escHtml(tGroups[gp]) + '</span>';
+        }
+        html += '</div>';
+      }
+      html += '<span class="hub-card-badge badge-grey" id="badge_' + t._idx + '">loading&#x2026;</span>' +
         '</a>';
     }
     cards.innerHTML = html;
     document.getElementById('sbarLeft').textContent = allTools.length + ' tools';
+    _updateBulkBar();
     /* apply freshness badges once scan status loads */
     loadScanStatus(allTools);
+  }
+
+  function onCardClick(ev, idx) {
+    /* If checkbox was clicked, don't navigate */
+    if (ev.target.type === 'checkbox') { return true; }
+    return true; /* allow default navigation */
+  }
+  window.onCardClick = onCardClick;
+
+  function onCardCheck(ev, idx) {
+    ev.stopPropagation();
+    _selectedTools[idx] = ev.target.checked;
+    _updateBulkBar();
+  }
+  window.onCardCheck = onCardCheck;
+
+  function toggleSelectAll(checked) {
+    for (var i = 0; i < TOOLS.length; i++) {
+      _selectedTools[i] = checked;
+    }
+    var chks = document.querySelectorAll('.hub-card-chk');
+    for (var j = 0; j < chks.length; j++) { chks[j].checked = checked; }
+    _updateBulkBar();
+  }
+  window.toggleSelectAll = toggleSelectAll;
+
+  function _updateBulkBar() {
+    var bar = document.getElementById('bulkBar');
+    var cnt = document.getElementById('bulkCount');
+    if (!bar) { return; }
+    var count = 0;
+    for (var k in _selectedTools) { if (_selectedTools[k]) { count++; } }
+    bar.className = count > 0 ? 'bulk-bar visible' : 'bulk-bar';
+    if (cnt) { cnt.textContent = count + ' selected'; }
+  }
+
+  function bulkLaunch(mode) {
+    for (var i = 0; i < TOOLS.length; i++) {
+      if (!_selectedTools[i]) { continue; }
+      var href = TOOLS[i].href;
+      if (!href) { continue; }
+      var url = href.indexOf('://') !== -1 ? href : ENGINE_BASE + '/' + href;
+      if (mode === 'window') {
+        window.open(url, '_blank', 'width=1100,height=700,noopener');
+      } else {
+        window.open(url, '_blank', 'noopener');
+      }
+    }
+  }
+  window.bulkLaunch = bulkLaunch;
+
+  function clearSelection() {
+    _selectedTools = {};
+    var chks = document.querySelectorAll('.hub-card-chk');
+    for (var j = 0; j < chks.length; j++) { chks[j].checked = false; }
+    var allChk = document.getElementById('selectAllChk');
+    if (allChk) { allChk.checked = false; }
+    _updateBulkBar();
+  }
+  window.clearSelection = clearSelection;
+
+  /* ── View modes ── */
+  function setViewMode(mode) {
+    _viewMode = mode;
+    var btns = ['viewTile','viewList','viewDetail'];
+    for (var b = 0; b < btns.length; b++) {
+      var el = document.getElementById(btns[b]);
+      if (el) { el.className = 'tt-btn' + (btns[b] === 'view' + mode.charAt(0).toUpperCase() + mode.slice(1) ? ' active' : ''); }
+    }
+    renderToolCards(null);
+  }
+  window.setViewMode = setViewMode;
+
+  /* ── Sort ── */
+  function applySort(val) {
+    _sortMode = val;
+    renderToolCards(null);
+  }
+  window.applySort = applySort;
+
+  /* ── Group filter ── */
+  function applyGroupFilter(val) {
+    _groupFilter = val;
+    renderToolCards(null);
+  }
+  window.applyGroupFilter = applyGroupFilter;
+
+  function _populateGroupFilter() {
+    var sel = document.getElementById('groupFilter');
+    if (!sel) { return; }
+    /* collect unique groups from all tools */
+    var seen = {};
+    var allGroups = GROUP_TAGS.slice();
+    for (var i = 0; i < TOOLS.length; i++) {
+      var tg = TOOLS[i].groups || [];
+      for (var g = 0; g < tg.length; g++) {
+        if (!seen[tg[g]]) { seen[tg[g]] = true; if (allGroups.indexOf(tg[g]) === -1) { allGroups.push(tg[g]); } }
+      }
+    }
+    allGroups.sort();
+    var html = '<option value="all">All Groups</option>';
+    for (var j = 0; j < allGroups.length; j++) {
+      html += '<option value="' + escAttr(allGroups[j]) + '">' + escHtml(allGroups[j]) + '</option>';
+    }
+    sel.innerHTML = html;
   }
 
   /* ── Scan status → freshness badges ── */
@@ -423,7 +792,8 @@
       /* update all tool cards with same badge (could be per-tool in a richer impl) */
       if (tools) {
         for (var i = 0; i < tools.length; i++) {
-          var bEl = document.getElementById('badge_' + i);
+          var tidx = tools[i]._idx !== undefined ? tools[i]._idx : i;
+          var bEl = document.getElementById('badge_' + tidx);
           if (bEl) { bEl.className = 'hub-card-badge ' + badgeCls; bEl.textContent = badgeTxt; }
         }
       }
@@ -432,7 +802,8 @@
       /* engine offline — set grey badges */
       if (tools) {
         for (var i2 = 0; i2 < tools.length; i2++) {
-          var bEl2 = document.getElementById('badge_' + i2);
+          var tidx2 = tools[i2]._idx !== undefined ? tools[i2]._idx : i2;
+          var bEl2 = document.getElementById('badge_' + tidx2);
           if (bEl2) { bEl2.className = 'hub-card-badge badge-grey'; bEl2.textContent = 'engine offline'; }
         }
       }
@@ -544,7 +915,7 @@
   function doScan(mode) {
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
-    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Requesting ' + mode + ' scan…'; }
+    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(mode) + ' scan&#x2026;'; }
     fetchCsrf(function(tok) {
       if (!tok) {
         if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Engine offline'; }
@@ -558,8 +929,9 @@
         if (!r.ok) { throw new Error('HTTP ' + r.status); }
         return r.json();
       }).then(function(){
-        if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan started'; }
+        if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.innerHTML = '<span class="scan-spinner"></span>Scan in progress&#x2026;'; }
         if (pgEl)  { pgEl.style.width = '10%'; }
+        _startScanPolling(msgEl, pgEl);
       }).catch(function(err){
         if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + err.message; }
       });
@@ -567,9 +939,54 @@
   }
   window.doScan = doScan;
 
+  /* ── Scan progress polling ── */
+  function _startScanPolling(msgEl, pgEl) {
+    _stopScanPolling();
+    _scanPollId = setInterval(function(){
+      fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(data){
+        var phases = data.phases || {};
+        var total = 0, done = 0, errors = 0;
+        var pIds = PHASE_IDS;
+        for (var p = 0; p < pIds.length; p++) {
+          total++;
+          var ph = phases[pIds[p]];
+          if (ph && ph.status === 'ok') { done++; }
+          else if (ph && ph.status === 'error') { done++; errors++; }
+        }
+        var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        if (pgEl) { pgEl.style.width = Math.max(pct, 10) + '%'; }
+        updatePhasePills(data);
+        if (done >= total) {
+          _stopScanPolling();
+          if (pgEl) { pgEl.style.width = '100%'; }
+          if (errors > 0) {
+            if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Scan completed with ' + errors + ' error(s)'; }
+          } else {
+            if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan completed successfully'; }
+          }
+          renderToolCards(null);
+          loadTimeline();
+        } else {
+          if (msgEl) { msgEl.innerHTML = '<span class="scan-spinner"></span>' + done + '/' + total + ' phases complete&#x2026;'; }
+        }
+      }).catch(function(){
+        /* engine went offline during scan */
+        _stopScanPolling();
+        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Lost connection during scan'; }
+      });
+    }, 3000);
+  }
+  function _stopScanPolling() {
+    if (_scanPollId) { clearInterval(_scanPollId); _scanPollId = null; }
+  }
+
   /* ── Static (no-engine) scan ── */
   function doStaticScan() {
     var msgEl = document.getElementById('scanMsgHub');
+    var pgEl  = document.getElementById('scanPgHub');
     /* Try engine first (it proxies to static scan worker) */
     fetchCsrf(function(tok) {
       if (tok) {
@@ -581,7 +998,8 @@
           if (!r.ok) { throw new Error('HTTP ' + r.status); }
           return r.json();
         }).then(function(){
-          if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.textContent = 'Static scan started via engine'; }
+          if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.innerHTML = '<span class="scan-spinner"></span>Static scan started via engine&#x2026;'; }
+          _startScanPolling(msgEl, pgEl);
         }).catch(function() {
           _showStaticScanOfflineInstructions(msgEl);
         });
@@ -788,17 +1206,118 @@
   window.startEngine = startEngine;
 
   function stopEngine() {
+    /* Show confirmation overlay instead of immediately stopping */
+    var ov = document.getElementById('stopOverlay');
+    var msg = document.getElementById('stopMonMsg');
+    if (ov) { ov.className = 'stop-overlay visible'; }
+    if (msg) { msg.textContent = ''; }
+  }
+  window.stopEngine = stopEngine;
+
+  function cancelStop() {
+    var ov = document.getElementById('stopOverlay');
+    if (ov) { ov.className = 'stop-overlay'; }
+  }
+  window.cancelStop = cancelStop;
+
+  function confirmStop() {
+    var msg = document.getElementById('stopMonMsg');
+    if (msg) { msg.textContent = 'Sending stop request\u2026'; }
     fetchCsrf(function(tok) {
-      if (!tok) { setStatus('Cannot stop: engine offline', 'warn', 'right'); return; }
+      if (!tok) { if (msg) { msg.textContent = 'Cannot stop: engine already offline'; } return; }
       fetch(ENGINE_BASE + '/api/engine/stop', {
         method: 'POST',
         headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
         body: '{}'
-      }).then(function(){ setStatus('Engine stop requested', 'warn', 'right'); })
-        .catch(function(){ setStatus('Stop request failed', 'err', 'right'); });
+      }).then(function(){ _monitorShutdown(msg); })
+        .catch(function(){ _monitorShutdown(msg); /* might already be stopping */ });
     });
   }
-  window.stopEngine = stopEngine;
+  window.confirmStop = confirmStop;
+
+  function confirmRestart() {
+    var msg = document.getElementById('stopMonMsg');
+    if (msg) { msg.textContent = 'Sending stop request for restart\u2026'; }
+    fetchCsrf(function(tok) {
+      if (!tok) { if (msg) { msg.textContent = 'Engine already offline, cannot restart from here'; } return; }
+      fetch(ENGINE_BASE + '/api/engine/stop', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
+        body: '{}'
+      }).then(function(){ _monitorForRestart(msg); })
+        .catch(function(){ _monitorForRestart(msg); });
+    });
+  }
+  window.confirmRestart = confirmRestart;
+
+  function _monitorShutdown(msgEl) {
+    var checks = 0;
+    var maxChecks = 15;
+    if (msgEl) { msgEl.textContent = 'Monitoring shutdown\u2026'; }
+    var iv = setInterval(function(){
+      checks++;
+      fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+        if (!r.ok) { throw new Error('offline'); }
+        if (msgEl) { msgEl.textContent = 'Engine still running (' + checks + '/' + maxChecks + ')\u2026'; }
+      }).catch(function(){
+        clearInterval(iv);
+        if (msgEl) { msgEl.textContent = 'Engine stopped. Opening fallback checklist\u2026'; }
+        setWsDot('off');
+        setStatus('Engine offline', 'warn', 'right');
+        /* Open fallback file:// link after 1s delay */
+        setTimeout(function(){
+          window.open('file:///C:/PowerShellGUI/~README.md/PwShGUI-Checklists.xhtml', '_blank');
+          cancelStop();
+        }, 1000);
+      });
+      if (checks >= maxChecks) {
+        clearInterval(iv);
+        if (msgEl) { msgEl.textContent = 'Timeout waiting for shutdown. Engine may still be running.'; }
+      }
+    }, 2000);
+  }
+
+  function _monitorForRestart(msgEl) {
+    var checks = 0;
+    if (msgEl) { msgEl.textContent = 'Waiting for engine to stop\u2026'; }
+    var stopIv = setInterval(function(){
+      checks++;
+      fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+        if (!r.ok) { throw new Error('offline'); }
+        if (msgEl) { msgEl.textContent = 'Stopping\u2026 (' + checks + ')'; }
+      }).catch(function(){
+        clearInterval(stopIv);
+        if (msgEl) { msgEl.textContent = 'Engine stopped. To restart, run Launch-GUI.bat or use terminal.'; }
+        setWsDot('off');
+        /* poll for it coming back up */
+        var backChecks = 0;
+        var backIv = setInterval(function(){
+          backChecks++;
+          fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+            if (r.ok) {
+              clearInterval(backIv);
+              if (msgEl) { msgEl.textContent = 'Engine is back online!'; }
+              setWsDot('ok');
+              cancelStop();
+              connectWs();
+              refreshAll();
+            }
+          }).catch(function(){
+            if (backChecks >= 30) {
+              clearInterval(backIv);
+              if (msgEl) { msgEl.textContent = 'Engine did not restart within 60s. Launch manually.'; }
+            } else {
+              if (msgEl) { msgEl.textContent = 'Waiting for restart\u2026 (' + backChecks + ')'; }
+            }
+          });
+        }, 2000);
+      });
+      if (checks >= 15) {
+        clearInterval(stopIv);
+        if (msgEl) { msgEl.textContent = 'Timeout waiting for stop.'; }
+      }
+    }, 2000);
+  }
 
   /* ── WS indicator ── */
   function setWsDot(s) {
@@ -853,6 +1372,106 @@
     el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
   }
 
+  /* ── WebEngine Monitor ── */
+  function refreshMonitor() {
+    var sEl = document.getElementById('monStatus');
+    var uEl = document.getElementById('monUptime');
+    var pEl = document.getElementById('monPid');
+    var poEl = document.getElementById('monPort');
+    var tEl = document.getElementById('monTime');
+    var cfgEl = document.getElementById('monCfg');
+    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(d){
+      if (sEl) { sEl.textContent = d.running ? '\u2705 Running' : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
+      if (uEl) {
+        var up = d.uptime || 0;
+        uEl.textContent = up < 60 ? up + 's' : up < 3600 ? Math.floor(up/60) + 'm ' + (up%60) + 's' : Math.floor(up/3600) + 'h ' + Math.floor((up%3600)/60) + 'm';
+        uEl.className = 'eng-stat-value ok';
+      }
+      if (pEl) { pEl.textContent = d.pid || '\u2014'; pEl.className = 'eng-stat-value'; }
+      if (poEl) { poEl.textContent = d.port || '\u2014'; poEl.className = 'eng-stat-value'; }
+      if (tEl) { tEl.textContent = d.serverTime ? new Date(d.serverTime).toLocaleString() : '\u2014'; }
+      /* Check config detection */
+      verifyConfigDetection(cfgEl);
+    }).catch(function(){
+      if (sEl) { sEl.textContent = '\u274C Offline'; sEl.className = 'eng-stat-value err'; }
+      if (uEl) { uEl.textContent = '\u2014'; uEl.className = 'eng-stat-value err'; }
+      if (pEl) { pEl.textContent = '\u2014'; }
+      if (poEl) { poEl.textContent = '\u2014'; }
+      if (tEl) { tEl.textContent = '\u2014'; }
+      if (cfgEl) { cfgEl.textContent = '\u274C Engine offline'; cfgEl.className = 'eng-stat-value err'; }
+    });
+  }
+  window.refreshMonitor = refreshMonitor;
+
+  function loadMonitorLog() {
+    var logEl = document.getElementById('monLogTail');
+    if (!logEl) { return; }
+    logEl.textContent = 'Loading\u2026';
+    fetch(ENGINE_BASE + '/api/engine/log?tail=40').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(d){
+      var lines = Array.isArray(d.lines) ? d.lines : (d.log ? d.log.split('\n') : []);
+      logEl.textContent = lines.length > 0 ? lines.join('\n') : '(no log data)';
+    }).catch(function(err){
+      logEl.textContent = 'Failed to load log: ' + err.message;
+    });
+  }
+  window.loadMonitorLog = loadMonitorLog;
+
+  /* ── Config detection verification ── */
+  function verifyConfigDetection(cfgEl) {
+    /* Check if /api/config/menus returns valid JSON — if not, flag error */
+    fetch(ENGINE_BASE + '/api/config/menus').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(d){
+      var ok = !!(d && (d.menus || Array.isArray(d)));
+      if (cfgEl) {
+        cfgEl.textContent = ok ? '\u2705 Config loaded' : '\u26A0 Config empty';
+        cfgEl.className = 'eng-stat-value ' + (ok ? 'ok' : '');
+      }
+    }).catch(function(){
+      if (cfgEl) { cfgEl.textContent = '\u274C Config not detected'; cfgEl.className = 'eng-stat-value err'; }
+    });
+  }
+
+  /* ── Config detection flash on tool cards ── */
+  function checkToolConfigs() {
+    /* For each tool card, verify its href resolves via the engine static file server.
+       If the engine is online but a tool's config/file can't be detected, apply red glow. */
+    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+      if (!r.ok) { throw new Error('offline'); }
+      return r.json();
+    }).then(function(d){
+      if (!d || !d.running) { return; }
+      var cards = document.querySelectorAll('.hub-card');
+      for (var i = 0; i < cards.length; i++) {
+        (function(card, idx) {
+          var href = card.getAttribute('href') || '';
+          if (!href || href.indexOf('://') !== -1) { return; } /* skip external URLs */
+          /* Try fetching via engine static file route */
+          fetch(ENGINE_BASE + '/' + href, { method: 'HEAD' }).then(function(r2){
+            if (!r2.ok) {
+              card.classList.add('cfg-error');
+              var badge = document.getElementById('badge_' + idx);
+              if (badge) { badge.textContent = 'not found'; badge.className = 'hub-card-badge badge-red'; }
+            } else {
+              card.classList.remove('cfg-error');
+            }
+          }).catch(function(){
+            card.classList.add('cfg-error');
+            var badge2 = document.getElementById('badge_' + idx);
+            if (badge2) { badge2.textContent = 'unreachable'; badge2.className = 'hub-card-badge badge-red'; }
+          });
+        })(cards[i], i);
+      }
+    }).catch(function(){ /* engine offline — no flash needed, grey badges handle it */ });
+  }
+
   /* ── Escape helpers ── */
   function escHtml(s) {
     if (!s) { return ''; }
@@ -867,6 +1486,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     connectWs();
     startPoll();
+    _populateGroupFilter();
     renderToolCards(null);
     renderEvtPresets();
     setStatus('Initialising&#x2026;', 'ok', 'right');
@@ -875,6 +1495,8 @@
     /* try to update stats strip from last scan data */
     fetch(ENGINE_BASE + '/api/scan/status').then(function(r){ return r.json(); })
       .then(function(d){ _updateStatsStrip(d); }).catch(function(){});
+    /* Check config detection for all tool tiles after a short delay */
+    setTimeout(checkToolConfigs, 3000);
   });
 
   })();

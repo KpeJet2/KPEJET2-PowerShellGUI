@@ -2,7 +2,7 @@
   "type": "Items2ADD",
   "category": "Quality",
   "id": "IMPL-20260405-009",
-  "status": "OPEN",
+  "status": "DONE",
   "title": "Create Invoke-PreCommitValidation.ps1 CI gate script",
   "description": "No pre-commit hook exists. Combine parse check + SIN scan + encoding check + version alignment into lightweight gate.",
   "priority": "MEDIUM"

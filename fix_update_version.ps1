@@ -1,5 +1,4 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.11
+# VersionTag: 2604.B2.V31.0
 <#
 .SYNOPSIS
     Patch: rewrites Update-VersionTags in Main-GUI.ps1
@@ -77,7 +76,7 @@ $newfunc=@(
 '            $newText = $tagLine + [Environment]::NewLine + $text',
 '        }',
 '        if ($newText -ne $text) {',
-'            Set-Content -Path $file.FullName -Value $newText -ErrorAction SilentlyContinue',
+'            Set-Content -Path $file.FullName -Value $newText -Encoding UTF8 -ErrorAction SilentlyContinue',
 '        }',
 '    }',
 '}'

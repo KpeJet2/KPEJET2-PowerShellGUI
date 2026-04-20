@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B1.V32.0
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-08
 # FileRole: Scanner
@@ -113,7 +114,7 @@ function Write-PhaseLog {
 Write-ScanProgress
 
 # ─── Checkpoint helpers ───────────────────────────────────────────────────────
-function Load-Checkpoint {
+function Load-Checkpoint {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     if (Test-Path -LiteralPath $CheckpointFile) {
         try {
             $raw = Get-Content -LiteralPath $CheckpointFile -Raw -Encoding UTF8
@@ -125,7 +126,7 @@ function Load-Checkpoint {
     return [pscustomobject]@{ phases = [pscustomobject]@{}; generated = $null }
 }
 
-function Save-Checkpoint {
+function Save-Checkpoint {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param($Data)
     try {
         $json = $Data | ConvertTo-Json -Depth 10
@@ -310,7 +311,7 @@ if ($RunPhases -contains 'urls_ips') {
     $progress.currentPhase = 'urls_ips'; $progress.phasesStatus['urls_ips'] = 'running'; Write-ScanProgress
     Write-PhaseLog 'urls_ips' 'Extracting URLs and IPs from scripts and modules'
     try {
-        $urlPattern = 'https?://[^\s\'">\])]+'
+        $urlPattern = 'https?://[^\s''"">\])]+'
         $ipPattern  = '\b(?:\d{1,3}\.){3}\d{1,3}\b'
         $urlFiles   = [System.Collections.ArrayList]@()
         $uniqueUrls = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)

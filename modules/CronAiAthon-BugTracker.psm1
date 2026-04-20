@@ -1,9 +1,11 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.1
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     Cron-Ai-Athon Bug Tracker -- comprehensive bug detection, classification,
     and lifecycle management feeding into the pipeline and sin registry.
+# TODO: HelpMenu | Show-BugTrackerHelp | Actions: Scan|Report|Triage|Export|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Scans workspace for bugs across all detection vectors:
@@ -378,6 +380,36 @@ function Invoke-BugToPipelineProcessor {
             -Description $bug.description -Priority $bug.severity `
             -Source 'BugTracker' -Category $bug.category `
             -AffectedFiles @($bug.file) -SuggestedBy 'CronAiAthon-BugTracker'
+
+        # Resurfaced detection: flag if a closed/done bug with same title exists
+        if (Get-Command -Name Get-PipelineRegistryPath -ErrorAction SilentlyContinue) {
+            $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
+            if (Test-Path $regPath) {
+                try {
+                    $reg = Get-Content $regPath -Raw | ConvertFrom-Json
+                    $existingBug = $null
+                    foreach ($b in @($reg.bugs)) {
+                        if ($null -ne $b -and $b.PSObject.Properties['title'] -and $b.title -eq $bug.message) {
+                            $existingBug = $b
+                            break
+                        }
+                    }
+                    if ($null -ne $existingBug -and $existingBug.status -in @('DONE','CLOSED')) {
+                        $bugItem.bugResurfaced = $true
+                        $histEntry = [ordered]@{
+                            event      = 'RESURFACED'
+                            timestamp  = (Get-Date).ToUniversalTime().ToString('o')
+                            by         = 'CronAiAthon-BugTracker'
+                            prevStatus = [string]$existingBug.status
+                        }
+                        $bugItem.bugHistory = @($bugItem.bugHistory) + @($histEntry)
+                        Write-AppLog -Message "[BugProcessor] Bug '$($bug.message)' resurfaced (prev: $($existingBug.status))" -Level Warning
+                    }
+                } catch {
+                    Write-AppLog -Message "[BugProcessor] Resurfaced check error: $_" -Level Debug
+                }
+            }
+        }
 
         # Feed through sin registry
         $bugItem = Invoke-SinRegistryFeedback -WorkspacePath $WorkspacePath -BugItem $bugItem

@@ -1,5 +1,6 @@
 ﻿#Requires -Version 5.1
 # VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 <#
 .SYNOPSIS
     Converts Feature Requests from XHTML backup JSON into ToDo items in the todo/ folder.
@@ -51,7 +52,7 @@ if (-not $FeatureJsonPath) {
         $backups = Get-ChildItem -Path $xhtmlDir -Filter 'PsGUI-FeatureRequests_BACKUP_*.json' -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending
         if ($backups) {
-            $FeatureJsonPath = $backups[0].FullName
+            $FeatureJsonPath = $backups[0].FullName  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
         }
     }
 }

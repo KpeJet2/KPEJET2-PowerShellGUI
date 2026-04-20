@@ -1,3 +1,5 @@
+# VersionTag: 2604.B1.V31.0
+# FileRole: Setup
 <#
 .SYNOPSIS
     Registers / unregisters the PwShGUI 48-hour Cyclic Rename Check as a Windows Scheduled Task.

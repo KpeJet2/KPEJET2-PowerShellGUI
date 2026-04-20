@@ -222,6 +222,48 @@ function Invoke-ChaosTest {
     return @{ exitCode = $proc.ExitCode }
 }
 
+function Invoke-BrowserTest {
+    <# Runs full browser compatibility test suite inside sandbox #>
+    param([hashtable]$Params)
+    $sandboxDir = Join-Path $LocalPath 'tests\sandbox'
+    $installScript = Join-Path $sandboxDir 'Install-BrowserTestDependencies.ps1'
+    $suiteScript   = Join-Path $sandboxDir 'Invoke-SandboxBrowserTestSuite.ps1'
+    $archiveScript = Join-Path $sandboxDir 'Export-SandboxTestArchive.ps1'
+
+    if (-not (Test-Path $installScript)) {
+        Write-SBLog "Browser test install script not found" -Level 'ERROR'
+        return @{ error = 'Install-BrowserTestDependencies.ps1 not found' }
+    }
+
+    Write-SBLog "Installing browser test dependencies..."
+    $installArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$installScript`" -WorkspacePath `"$LocalPath`" -OutputPath `"$OutputPath`""
+    $proc1 = Start-Process powershell.exe -ArgumentList $installArgs -Wait -PassThru -NoNewWindow
+    if ($proc1.ExitCode -ne 0) {
+        Write-SBLog "Dependency install failed: exit $($proc1.ExitCode)" -Level 'ERROR'
+        return @{ exitCode = $proc1.ExitCode; stage = 'install' }
+    }
+
+    Write-SBLog "Running browser test suite..."
+    $suiteArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$suiteScript`" -WorkspacePath `"$LocalPath`" -OutputPath `"$OutputPath`" -IncludeReadme"
+    if ($Params -and $Params.ContainsKey('EdgeOnly') -and $Params['EdgeOnly']) {
+        $suiteArgs += ' -EdgeOnly'
+    }
+    if ($Params -and $Params.ContainsKey('SkipDataState') -and $Params['SkipDataState']) {
+        $suiteArgs += ' -SkipDataState'
+    }
+    $proc2 = Start-Process powershell.exe -ArgumentList $suiteArgs -Wait -PassThru -NoNewWindow
+
+    Write-SBLog "Creating test archive..."
+    $archiveArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$archiveScript`" -OutputPath `"$OutputPath`""
+    if ($Params -and $Params.ContainsKey('CertThumbprint')) {
+        $archiveArgs += " -CertThumbprint `"$($Params['CertThumbprint'])`""
+    }
+    $proc3 = Start-Process powershell.exe -ArgumentList $archiveArgs -Wait -PassThru -NoNewWindow
+
+    Write-SBLog "Browser test complete. Suite:$($proc2.ExitCode) Archive:$($proc3.ExitCode)" -Level $(if ($proc2.ExitCode -eq 0) { 'OK' } else { 'WARN' })
+    return @{ suiteExitCode = $proc2.ExitCode; archiveExitCode = $proc3.ExitCode }
+}
+
 # ========================== COMMAND LOOP ==========================
 Set-SandboxStatus -Status 'READY' -Detail 'Waiting for commands'
 Write-SBLog '=================================================================='
@@ -279,7 +321,8 @@ while ($running) {
             'GUI'      { Invoke-LaunchGUI -Params $params }
             'StopGUI'  { Invoke-StopGUI -Params $params }
             'Exec'     { Invoke-ExecCommand -Params $params }
-            'Chaos'    { Invoke-ChaosTest -Params $params }
+            'Chaos'       { Invoke-ChaosTest -Params $params }
+            'BrowserTest' { Invoke-BrowserTest -Params $params }
             'Shutdown' {
                 Write-SBLog 'Shutdown command received.' -Level 'WARN'
                 $running = $false

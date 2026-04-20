@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -163,7 +163,7 @@ function Invoke-CycleAdvance {
     # Determine new cycle
     $currentNum = 0
     if ($script:_CurrentCycle -match 'cycle(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
 
     if (-not $NewCycleName) {
@@ -243,7 +243,7 @@ function Test-BranchDivergence {
     param()
     $currentNum = 0
     if ($script:_CurrentCycle -match 'cycle(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
 
     # Check against known lineage
@@ -274,7 +274,7 @@ function Invoke-VersionBump {
     param()
     $currentNum = 0
     if ($script:_CurrentVersion -match 'v(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
     $newVersion = 'v' + ($currentNum + 1)
     $script:_Lineage += $newVersion

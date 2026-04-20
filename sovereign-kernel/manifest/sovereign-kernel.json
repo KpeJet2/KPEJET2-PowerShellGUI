@@ -92,7 +92,9 @@
       "ROLLOUT_RANGALA":  { "function": "deployment",           "tier": "operational", "auto_heal": false },
       "AGHOMIE":          { "function": "home_automation",      "tier": "operational", "auto_heal": true  },
       "VENDOR_ORACLE":    { "function": "vendor_intel",         "tier": "operational", "auto_heal": true  },
-      "LEGALAGENT":       { "function": "legal_compliance",     "tier": "operational", "auto_heal": false }
+      "LEGALAGENT":       { "function": "legal_compliance",     "tier": "operational", "auto_heal": false },
+      "KOE_RUMA":         { "function": "monthly_milestone_governance", "tier": "operational", "auto_heal": true  },
+      "H_AI_NIKR_AGI":    { "function": "encryption_rotation_squabble", "tier": "operational", "auto_heal": true  }
     },
     "watchdogs": {
       "CASPAR":    { "trigger": "integrity_breach",   "vote_model": "2_of_3", "priority": 1, "can_halt": true  },

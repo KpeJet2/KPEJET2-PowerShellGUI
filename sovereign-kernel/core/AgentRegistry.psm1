@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -324,10 +324,125 @@ function Get-HotStandbyModules {
         ForEach-Object { $_.Key })
 }
 
+function Register-ExternalAgent {
+    <#
+    .SYNOPSIS  Registers an external agent (e.g. koe-RumA, H-Ai-Nikr-Agi) at runtime with optional health-check hook.
+    .NOTES     gap-2604-014: Allows registering agents that are not present in the sovereign manifest.
+               Agents registered here are always tier='external'. Existing registrations are skipped.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$AgentId,
+
+        [Parameter(Mandatory)]
+        [string]$Function,
+
+        [Parameter()]
+        [scriptblock]$HealthCheckHook,
+
+        [Parameter()]
+        [bool]$AutoHeal = $true,
+
+        [Parameter()]
+        [string[]]$DependsOn = @()
+    )
+
+    if ($script:_Registry.ContainsKey($AgentId)) {
+        Write-Verbose "[AgentRegistry] External agent '$AgentId' already registered - skipping."
+        return
+    }
+
+    $script:_Registry[$AgentId] = @{
+        ModuleId        = $AgentId
+        Tier            = 'external'
+        Definition      = @{ function = $Function; tier = 'external'; auto_heal = $AutoHeal }
+        Handler         = $null
+        Loaded          = $false
+        BootPriority    = 90
+        AutoHeal        = $AutoHeal
+        HotStandby      = $false
+        HealthCheckHook = $HealthCheckHook
+    }
+    $script:_HealthStatus[$AgentId] = @{
+        status          = 'REGISTERED'
+        last_check_utc  = $null
+        failures        = 0
+        consecutive_ok  = 0
+    }
+    $script:_DependencyGraph[$AgentId] = $DependsOn
+
+    Write-Verbose "[AgentRegistry] External agent '$AgentId' ($Function) registered."
+
+    try {
+        Write-LedgerEntry -EventType 'SYSTEM' -Source 'AgentRegistry' -Data @{
+            action    = 'EXTERNAL_AGENT_REGISTERED'
+            module_id = $AgentId
+            function  = $Function
+        }
+    }
+    catch { <# Intentional: non-fatal #> }
+}
+
+function Invoke-AgentHealthCheck {
+    <#
+    .SYNOPSIS  Runs the HealthCheckHook for an external agent (if defined) and updates health status.
+    .NOTES     gap-2604-014
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$AgentId
+    )
+
+    if (-not $script:_Registry.ContainsKey($AgentId)) {
+        throw "[AgentRegistry] Agent '$AgentId' is not registered."
+    }
+
+    $entry = $script:_Registry[$AgentId]
+    $hook  = $entry.HealthCheckHook
+
+    $health = $script:_HealthStatus[$AgentId]
+    $health.last_check_utc = [datetime]::UtcNow.ToString('o')
+
+    if ($null -ne $hook) {
+        try {
+            $result = & $hook
+            $ok = ($result -is [bool] -and $result) -or ($result -is [hashtable] -and $result.ok) -or ($result -is [PSCustomObject] -and $result.ok)
+            if ($ok) {
+                $health.status         = 'HEALTHY'
+                $health.consecutive_ok++
+                $health.failures       = 0
+            } else {
+                $health.status    = 'DEGRADED'
+                $health.failures++
+                $health.consecutive_ok = 0
+            }
+        } catch {
+            $health.status    = 'FAILED'
+            $health.failures++
+            $health.consecutive_ok = 0
+        }
+    } else {
+        $health.status = 'HEALTHY'
+        $health.consecutive_ok++
+    }
+
+    return [PSCustomObject]@{
+        agentId        = $AgentId
+        status         = $health.status
+        last_check_utc = $health.last_check_utc
+        failures       = $health.failures
+        consecutive_ok = $health.consecutive_ok
+    }
+}
+
 # ========================== EXPORTS ==========================
 Export-ModuleMember -Function @(
     'Initialize-AgentRegistry'
     'Register-ModuleHandler'
+    'Register-ExternalAgent'
+    'Invoke-AgentHealthCheck'
     'Get-RegisteredModule'
     'Resolve-BootOrder'
     'Get-BootOrder'
@@ -340,5 +455,6 @@ Export-ModuleMember -Function @(
     'Get-ModulesBySpine'
     'Get-HotStandbyModules'
 )
+
 
 

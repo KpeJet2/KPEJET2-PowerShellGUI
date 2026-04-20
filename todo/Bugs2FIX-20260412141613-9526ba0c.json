@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:16:13.5214520Z",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "Bug-20260412141512-8200cc81",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412141613-9526ba0c",
+  "description": "Fix for bug Bug-20260412141512-8200cc81: Script CallASRWebSvcConnector.ps1 has 1 functions but zero try/catch blocks",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:16:13.5214966Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector.ps1"
+  ]
+}

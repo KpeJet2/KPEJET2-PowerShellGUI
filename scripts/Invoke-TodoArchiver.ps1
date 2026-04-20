@@ -1,4 +1,6 @@
-﻿<#
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Pipeline
+<#
 .SYNOPSIS
     Archives completed, rejected, and blocked todo work items to typed subfolders.
 .DESCRIPTION
@@ -119,7 +121,7 @@ Ensure-ArchiveDir $BlockedDir
 Ensure-ArchiveDir $DeferredDir
 
 # ── Scan todo root (flat, no recursion into ~* folders) ────────────────────────
-# Note: Get-ChildItem without -Recurse only returns items in $TodoDir itself.
+# NOTE: Get-ChildItem without -Recurse only returns items in $TodoDir itself.
 # The FullName filter below provides explicit defence for any future -Recurse use.
 $todoFiles = Get-ChildItem -Path $TodoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
     Where-Object {

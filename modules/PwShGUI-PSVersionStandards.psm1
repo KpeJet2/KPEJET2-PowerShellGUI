@@ -1,5 +1,7 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 # VersionBuildHistory:
+# TODO: HelpMenu | Show-VersionStandardsHelp | Actions: Check|Enforce|Report|Help | Spec: config/help-menu-registry.json
 #   2603.B0.v27.0  2026-03-29 (initial creation)
 #Requires -Version 5.1
 <#

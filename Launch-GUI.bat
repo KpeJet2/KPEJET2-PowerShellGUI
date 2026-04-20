@@ -1,5 +1,6 @@
-REM VersionTag: 2604.B2.V31.0
+REM VersionTag: 2604.B2.V31.1
 REM VersionBuildHistory:
+REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so all child PowerShell processes find modules
 REM   2604.B2.V31.0  2026-04-04  Added switch parameters (/usepsv:5|7, /scriptsec:1-6, /skipps7, /skippolicy), cleaned echo output
 REM   2604.B2.V31.0  2026-04-04  PS7 detection, exec policy diagnostics, launch logging, CFRMenu
 REM   2603.B0.V27.0  2026-03-24 03:28  (deduplicated from 6 entries)
@@ -27,6 +28,12 @@ setlocal enabledelayedexpansion
 set "scriptDir=%~dp0"
 set "quickLauncher=%scriptDir%Launch-GUI-quik_jnr.bat"
 set "slowLauncher=%scriptDir%Launch-GUI-slow_snr.bat"
+
+REM ── Bootstrap: ensure PowerShellGUI modules are findable by all child PowerShell processes.
+REM    This top-level bat is the entry point; injecting here means quik_jnr/slow_snr and any
+REM    directly launched pwsh/powershell calls will all inherit the modules directory in PSModulePath.
+set "PSModulePath=%scriptDir%modules;%PSModulePath%"
+
 set "featureRequests=%scriptDir%scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml"
 set "PASSTHRU_ARGS="
 set "PS7_DETECTED=FALSE"

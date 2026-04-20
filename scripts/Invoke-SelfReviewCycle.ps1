@@ -1,4 +1,6 @@
-﻿#Requires -Version 5.1
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Pipeline
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     Self-Review Cycle Engine -- evaluates workspace health across 8 dimensions.
@@ -299,7 +301,7 @@ function Get-DocFreshnessScore {
 
         $staleRatio = if ($total -gt 0) { $stale / $total } else { 0.0 }
         $score      = [math]::Max(0.0, [math]::Round(1.0 - ($staleRatio * 1.5), 3))
-        $detail     = "$stale/$total docs stale (report: $($reports[0].Name))"
+        $detail     = "$stale/$total docs stale (report: $($reports[0].Name))"  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
         $refinement = if ($stale -gt 0) { "$stale documentation files need refresh -- run DocRebuild cron task to regenerate auto-docs." } else { '' }
 
         return @{ score = $score; detail = $detail; refinement = $refinement }

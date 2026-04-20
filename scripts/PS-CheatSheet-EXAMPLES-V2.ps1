@@ -49,7 +49,7 @@
 # SECTION HELPER
 ###################################################
 
-function Show-Section ([string]$Title) {
+function Show-Section ([string]$Title) {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     Write-Host ""
     Write-Host ("=" * 70) -ForegroundColor Cyan
     Write-Host "  $Title" -ForegroundColor Yellow

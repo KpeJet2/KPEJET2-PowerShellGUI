@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: UIForm
 #Requires -Version 5.1
 <#
 .SYNOPSIS  MCP Service Configuration -- manage MCP servers from the GUI.

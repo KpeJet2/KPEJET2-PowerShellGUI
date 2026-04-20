@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-01
 # FileRole: Diagnostics
@@ -52,10 +53,11 @@ $features = [ordered]@{
     PipelineItem       = 'Add-PipelineItem|Get-PipelineItem'
     TodoRegistry       = '(?i)todo[_-]registry|\.todo\.json|New-TodoItem|Add-TodoItem'
     BugTracker         = '(?i)Invoke-FullBugScan|Add-BugItem|bug.tracker'
+    ConvoVaultUsage    = '(?i)ConvoVault|Add-ConvoEntry|Get-ConvoEntries|Invoke-ConvoExchange'
+    IntegrityCoreUsage = '(?i)IntegrityCore|Write-IntegrityLog|Test-IntegrityManifest'
+    PipelineSteering   = '(?i)PipelineSteering|Invoke-PipelineStep|Step-Pipeline'
 }
 
-# ── gather scripts ─────────────────────────────────────────────────────────────
-Write-AuditLog 'Starting config-coverage scan...'
 $excludeDirs = @('.git', '.history', '.venv', '__pycache__', 'node_modules', '~DOWNLOADS')
 
 $files = Get-ChildItem -Path $WorkspacePath -Include '*.ps1','*.psm1' -Recurse -ErrorAction SilentlyContinue |
@@ -145,6 +147,68 @@ $sinBreakdown = @($sinGaps) | Group-Object sin | ForEach-Object {
     [PSCustomObject]@{ pattern = $_.Name; count = $_.Count }
 } | Sort-Object count -Descending
 
+# ── config-level checks (gap-2604-009) ────────────────────────────────────────
+$configChecks = [System.Collections.ArrayList]::new()
+
+# 1) Check cron schedule for required tasks
+$schedulePath = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-schedule.json'
+if (Test-Path $schedulePath) {
+    try {
+        $sch = Get-Content $schedulePath -Raw | ConvertFrom-Json
+        $schedTaskIds  = @($sch.tasks | Select-Object -ExpandProperty id)
+        $schedTaskTypes= @($sch.tasks | Select-Object -ExpandProperty type)
+        foreach ($reqType in @('FullSystemsScan','ConvoVaultExchange')) {
+            $found = $schedTaskTypes -contains $reqType
+            [void]$configChecks.Add([PSCustomObject]@{
+                check  = "Schedule-$reqType"
+                passed = $found
+                detail = if ($found) { "Task type $reqType found in schedule" } else { "MISSING: No task of type $reqType in cron-aiathon-schedule.json" }
+            })
+            if (-not $found) {
+                [void]$sinGaps.Add([PSCustomObject]@{
+                    file = 'config/cron-aiathon-schedule.json'
+                    sin  = "GAP-MissingScheduleTask-$reqType"
+                })
+            }
+        }
+    } catch { Write-AuditLog "Schedule config check failed: $($_.Exception.Message)" 'Warning' }
+}
+
+# 2) Check agentic-manifest.json includes ConvoVault and IntegrityCore
+$manifestPath = Join-Path (Join-Path $WorkspacePath 'config') 'agentic-manifest.json'
+if (Test-Path $manifestPath) {
+    try {
+        $mf = Get-Content $manifestPath -Raw | ConvertFrom-Json
+        $mfModules = @($mf.modules | ForEach-Object { if ($_ -is [string]) { $_ } elseif ($_.PSObject.Properties.Name -contains 'name') { $_.name } })
+        foreach ($reqMod in @('ConvoVault','IntegrityCore')) {
+            $found = ($mfModules -match $reqMod).Count -gt 0
+            [void]$configChecks.Add([PSCustomObject]@{
+                check  = "AgenticManifest-$reqMod"
+                passed = $found
+                detail = if ($found) { "$reqMod present in agentic-manifest modules" } else { "MISSING: $reqMod not found in agentic-manifest.json modules" }
+            })
+            if (-not $found) {
+                [void]$sinGaps.Add([PSCustomObject]@{
+                    file = 'config/agentic-manifest.json'
+                    sin  = "GAP-ManifestMissingModule-$reqMod"
+                })
+            }
+        }
+    } catch { Write-AuditLog "Agentic-manifest check failed: $($_.Exception.Message)" 'Warning' }
+}
+
+# 3) Check ConvoVault key presence
+$cvKeyPath = Join-Path (Join-Path $WorkspacePath 'pki') 'convovault-master.key'
+$cvKeyAlt  = Join-Path (Join-Path $WorkspacePath 'config') 'convovault.key'
+$cvKeyPresent = (Test-Path $cvKeyPath) -or (Test-Path $cvKeyAlt)
+[void]$configChecks.Add([PSCustomObject]@{
+    check  = 'ConvoVaultKeyPresence'
+    passed = $cvKeyPresent
+    detail = if ($cvKeyPresent) { 'ConvoVault key found' } else { 'WARNING: No ConvoVault master key found (checked pki/ and config/)' }
+})
+
+Write-AuditLog "Config-level checks: $(@($configChecks).Count) checks — $(@($configChecks | Where-Object { -not $_.passed }).Count) failed"
+
 # ── write report ───────────────────────────────────────────────────────────────
 $reportDir = Join-Path (Join-Path $WorkspacePath '~REPORTS') 'ConfigCoverage'
 if (-not (Test-Path $reportDir)) { New-Item $reportDir -ItemType Directory -Force | Out-Null }
@@ -152,13 +216,14 @@ $reportStamp = Get-Date -Format 'yyyyMMddHHmm'
 $reportPath  = Join-Path $reportDir "coverage-$reportStamp.json"
 
 $report = [ordered]@{
-    timestamp      = [datetime]::UtcNow.ToString('o')
-    totalFiles     = $totalFiles
-    avgAdoptionPct = $avgAdoption
-    featureSummary = $summary
-    sinGapSummary  = $sinBreakdown
+    timestamp        = [datetime]::UtcNow.ToString('o')
+    totalFiles       = $totalFiles
+    avgAdoptionPct   = $avgAdoption
+    featureSummary   = $summary
+    sinGapSummary    = $sinBreakdown
+    configChecks     = @($configChecks)
     lowCoverageTop20 = $lowCoverage
-    allResults     = @($results)
+    allResults       = @($results)
 }
 $report | ConvertTo-Json -Depth 10 | Set-Content -Path $reportPath -Encoding UTF8
 

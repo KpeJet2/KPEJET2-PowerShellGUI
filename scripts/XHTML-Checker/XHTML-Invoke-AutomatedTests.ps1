@@ -1,4 +1,5 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 5 entries)
 <#
@@ -50,7 +51,7 @@ $scriptRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Pat
 $timestamp  = Get-Date -Format 'yyyyMMdd-HHmmss'
 $results    = [System.Collections.Generic.List[pscustomobject]]::new()
 
-function Add-TestResult {
+function Add-TestResult {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [string]$Status,
         [string]$Test,

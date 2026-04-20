@@ -1,4 +1,6 @@
-﻿#Requires -Version 5.1
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Launcher
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     BW-CLI Server -- Launch Bitwarden CLI HTTP API service.
@@ -23,7 +25,7 @@ param(
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
-function Write-Banner {
+function Write-Banner {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Text, [ConsoleColor]$Color = 'Cyan')
     $bar = '═' * 60
     Write-Host $bar -ForegroundColor $Color

@@ -1,4 +1,4 @@
-# VersionTag: 2602.a.11
+﻿# VersionTag: 2602.a.11
 # VersionTag: 2602.a.10
 # VersionTag: 2602.a.9
 # VersionTag: 2602.a.8
@@ -241,7 +241,7 @@ Function New-BGinfo {
             [string] $Text,
  
             [Parameter()]
-            [string] $OutFile=“$($env:temp)\” + ( ( get-date ).TimeOfDay.TotalSeconds ) + “BGInfo.bmp”,
+            [string] $OutFile="$($env:temp)\" + ( ( get-date ).TimeOfDay.TotalSeconds ) + "BGInfo.bmp",
  
             [Parameter()]
             [ValidateSet("Left","Center")]
@@ -491,7 +491,7 @@ if($null -eq $BoottimeRaw){
 $Boottime = ''
 if([System.String]::IsNullOrWhiteSpace($BoottimeRaw) -eq $false){
     $BoottimeRaw = $BoottimeRaw.ToString()
-    $Boottime = $BoottimeRaw.Substring($BoottimeRaw.IndexOf(':')+1).Trim() 
+    $Boottime = $BoottimeRaw.Substring($BoottimeRaw.IndexOf(':')+1).Trim() 
 }
 #Writing info to the background
 $t = @"
@@ -515,6 +515,7 @@ $WallPaper = New-BGinfo @BGHT
 
 #Runing the function
 Set-Wallpaper -Path $WallPaper.FullName -Style stretch
+
 
 
 

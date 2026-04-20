@@ -1,0 +1,40 @@
+{
+  "sin_id": "SIN-20260413-TESTPATH-NULL-MAIN-GUI",
+  "title": "Main-GUI.ps1 — Test-Path $null crashes in 6 locations when Get-ProjectPath returns null (P022)",
+  "description": "When $script:_PathRegistry is empty (see SIN-20260413-PATHREGISTRY-FORCE-REIMPORT-RESET), Get-ProjectPath returns $null. Six locations in Main-GUI.ps1 use the returned path directly in Test-Path without a null guard, causing runtime crashes:\n\n1. Get-SecurityChecklistRows (~L7732): 'if (Test-Path $assistedSascModulePath)' — $null from Get-ProjectPath SascModule\n2. Get-SecurityChecklistRows (~L7735): 'if (Test-Path $sascAdaptersModulePath)' — $null from Get-ProjectPath SascAdapters\n3. Get-SecurityChecklistRows (~L7755): 'if (Test-Path $configPath)' — $null from Get-ProjectPath SascConfig\n4. Line ~9822: 'if (-not (Test-Path $scriptFoldersConfigPath))' — $null when path registry empty\n5. Get-ScriptFoldersConfig (~L3257): Test-Path on $scriptFoldersConfigPath without null guard\n6. Save-ScriptFoldersConfig (~L3274): Set-Content on $scriptFoldersConfigPath without null guard",
+  "category": "runtime-state",
+  "severity": "HIGH",
+  "file_path": "Main-GUI.ps1",
+  "line_number": "7732, 7735, 7755, 9822, ~3257, ~3274",
+  "function_name": "Get-SecurityChecklistRows, Get-ScriptFoldersConfig, Save-ScriptFoldersConfig",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User (Security Checklist throws after clicking button; Script Folders config section fails to display)",
+  "is_resolved": true,
+  "resolution": "Added [string]::IsNullOrWhiteSpace() guards before all six Test-Path/Set-Content calls. Get-SecurityChecklistRows now returns 'path unavailable' status (instead of crashing) for null paths from Get-ProjectPath. Get-ScriptFoldersConfig returns $null early; Save-ScriptFoldersConfig logs Warning and returns $false early when path is null.",
+  "occurrence_count": 6,
+  "created_at": "2026-04-13T00:00:00Z",
+  "last_seen_at": "2026-04-13T00:00:00Z",
+  "detection_method": "User-reported Security Checklist crash. Code review of Get-SecurityChecklistRows confirmed three bare Test-Path calls on Get-ProjectPath return values. Code review of script folder config section confirmed three more.",
+  "root_cause": "Defensive null-checking was not applied to Get-ProjectPath return values before use in Test-Path/Set-Content. Assumed path registry would always be populated post-startup. See SIN-20260413-PATHREGISTRY-FORCE-REIMPORT-RESET for root cause of null returns.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "exception_message": "Test-Path: Cannot bind argument to parameter 'Path' because it is null.",
+  "related_sins": [
+    "SIN-PATTERN-022-NULL-METHOD-CALL",
+    "SIN-PATTERN-027-NULL-ARRAY-INDEX",
+    "SIN-20260413-PATHREGISTRY-FORCE-REIMPORT-RESET"
+  ],
+  "fix_pattern": "Wrap all Get-ProjectPath return values in IsNullOrWhiteSpace check before any Test-Path/Set-Content/Join-Path:\n  if (-not [string]::IsNullOrWhiteSpace($path) -and (Test-Path $path)) { ... }",
+  "code_before": "# L7732\nAssistedSASC = if (Test-Path $assistedSascModulePath) { ... } else { 'missing' }\n# L9822\nif (-not (Test-Path $scriptFoldersConfigPath)) { ... }",
+  "code_after": "# L7732\nAssistedSASC = if (-not [string]::IsNullOrWhiteSpace($assistedSascModulePath) -and (Test-Path $assistedSascModulePath)) { ... } else { if ([string]::IsNullOrWhiteSpace($assistedSascModulePath)) { 'path unavailable' } else { 'missing' } }\n# L9822\nif (-not [string]::IsNullOrWhiteSpace($scriptFoldersConfigPath) -and -not (Test-Path $scriptFoldersConfigPath)) { ... }",
+  "tags": ["null-guard", "Test-Path", "P022", "security-checklist", "script-folders", "Get-ProjectPath"],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "notes": "Fixed in session 2026-04-13. All 6 crash sites guarded."
+  }
+}

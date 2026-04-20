@@ -1,0 +1,39 @@
+{
+  "sin_id": "SIN-20260413-FORECOLOR-ACCAMBER-UNDEFINED",
+  "title": "Show-CronAiAthonTool.ps1 — $accAmber undefined in colour palette causes ForeColor null crash on Security Accounts tab",
+  "description": "Show-CronAiAthonTool.ps1 defines a colour palette block (~line 60-74) that includes $accGreen, $accRed, $accYellow, $accBlue, $accOrange but omits $accAmber. The variable $accAmber is used at line 2308 to set the ForeColor of the 'Optional Cert Admin' section label in the Security Accounts tab. Under PS 5.1 StrictMode, referencing an undefined variable throws 'VariableIsUndefined', causing the form-build section to fail and preventing the Security Accounts tab from rendering.",
+  "category": "winforms-runtime",
+  "severity": "HIGH",
+  "file_path": "scripts/Show-CronAiAthonTool.ps1",
+  "line_number": "71 (palette), 2308 (usage)",
+  "function_name": "Show-CronAiAthonTool (colour palette initialization, Security Accounts tab section builder)",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User (Cannot convert null to type System.Drawing.Color at line 2308)",
+  "is_resolved": true,
+  "resolution": "Added '$accAmber = [System.Drawing.Color]::FromArgb(220, 160, 40)' to the colour palette block after $accYellow. VersionTag bumped to 2604.B2.V31.2.",
+  "occurrence_count": 1,
+  "created_at": "2026-04-13T00:00:00Z",
+  "last_seen_at": "2026-04-13T00:00:00Z",
+  "detection_method": "User-reported runtime crash. Grep of palette block confirmed $accAmber missing. grep of script confirmed usage at line 2308.",
+  "root_cause": "Developer extended Security Accounts tab to use $accAmber for the 'Optional Cert Admin' label but did not add the colour definition to the shared palette block. PS 5.1 StrictMode converts the undefined variable to $null; System.Windows.Forms.Label.ForeColor cannot accept $null as a System.Drawing.Color value.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "exception_message": "Cannot convert null to type 'System.Drawing.Color'",
+  "related_sins": [
+    "SIN-PATTERN-025-FORECOLOR-NULL-ASSIGNMENT",
+    "SIN-PATTERN-022-NULL-METHOD-CALL",
+    "SIN-20260405-FORECOLOR-NULL-CRONAUTHON"
+  ],
+  "code_before": "# Colour palette ~line 60-74 — $accAmber absent\n$accGreen  = [System.Drawing.Color]::FromArgb(78, 201, 176)\n$accYellow = [System.Drawing.Color]::FromArgb(220, 220, 0)\n# $accAmber not defined\n$accOrange = [System.Drawing.Color]::FromArgb(214, 111, 0)",
+  "code_after": "$accGreen  = [System.Drawing.Color]::FromArgb(78, 201, 176)\n$accYellow = [System.Drawing.Color]::FromArgb(220, 220, 0)\n$accAmber  = [System.Drawing.Color]::FromArgb(220, 160, 40)   # added\n$accOrange = [System.Drawing.Color]::FromArgb(214, 111, 0)",
+  "tags": ["winforms", "forecolor", "null", "colour-palette", "security-accounts-tab", "cron-ai-athon-tool", "undefined-variable"],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "notes": "Fixed in session 2026-04-13. Single change — add $accAmber to palette."
+  }
+}

@@ -1,4 +1,5 @@
-﻿# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.1
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -13,6 +14,7 @@
     Date    : 2026-04-03
     FileRole: Module
 #>
+# TODO: HelpMenu | Show-ConvoVaultHelp | Actions: Store|Retrieve|Search|Purge|Help | Spec: config/help-menu-registry.json
 
 <# Outline:
     Key management (vault-backed AES-256)
@@ -26,7 +28,7 @@
     Browser crypto uses SubtleCrypto (PBKDF2 + AES-CBC) -- different from PS internal AES
     Export bundle uses same AES-256-CBC but wraps ciphertext as Base64 for JS consumption
 #>
-<# ToDo:
+<# Roadmap:
     Add conversation search/filter by topic or date range
     Add MaxEntries cap + auto-rotation (compress oldest 50% to side-car zip)
     Wire Invoke-ConvoExchange into koe-RumA milestone event handler
@@ -39,9 +41,7 @@ $script:ConvoVaultLogName  = 'convo-vault.enc'
 $script:ConvoBundleName    = 'convo-bundle.json'
 $script:MaxConvoEntries    = 200   # rolling cap; oldest are dropped when exceeded
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   CRYPTO (PS 5.1 compatible AES-256-CBC + GZip, mirrors H-Ai-Nikr-Agi pattern)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Protect-ConvoData {
     [CmdletBinding()]
@@ -135,9 +135,7 @@ function Protect-ConvoEntry {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   KEY MANAGEMENT
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Initialize-ConvoVaultKey {
     <#
@@ -170,9 +168,7 @@ function Initialize-ConvoVaultKey {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   READ / WRITE
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Get-ConvoEntries {
     <#
@@ -252,9 +248,7 @@ function Add-ConvoEntry {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   CROSS-AGENT EXCHANGE (koe-RumA verse + H-Ai-Nikr-Agi response)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Invoke-ConvoExchange {
     <#
@@ -349,9 +343,7 @@ function Invoke-ConvoExchange {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   WEB BUNDLE EXPORT (encrypted per-entry for SubtleCrypto browser decryption)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 function Export-ConvoBundle {
     <#
@@ -419,9 +411,7 @@ function Export-ConvoBundle {
     }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #   EXPORTS
-# ═══════════════════════════════════════════════════════════════════════════════
 
 Export-ModuleMember -Function @(
     'Initialize-ConvoVaultKey',

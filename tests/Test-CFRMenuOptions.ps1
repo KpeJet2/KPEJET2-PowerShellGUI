@@ -52,7 +52,7 @@ try {
         $results += [PSCustomObject]@{
             Option = "1: Test-Prerequisites"
             Status = "FAIL"
-            Details = "Parse errors: $($parseErrors[0].Message)"
+            Details = "Parse errors: $($parseErrors[0].Message)"  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
         }
         Write-Host " ✗" -ForegroundColor Red
     }
@@ -86,7 +86,7 @@ try {
         $results += [PSCustomObject]@{
             Option = "2: Repair-ModulePaths"
             Status = "FAIL"
-            Details = "Parse errors: $($parseErrors[0].Message)"
+            Details = "Parse errors: $($parseErrors[0].Message)"  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
         }
         Write-Host " ✗" -ForegroundColor Red
     }
@@ -140,7 +140,7 @@ try {
             $results += [PSCustomObject]@{
                 Option = "5: CronAiAthon Init"
                 Status = "FAIL"
-                Details = "Parse errors: $($parseErrors[0].Message)"
+                Details = "Parse errors: $($parseErrors[0].Message)"  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
             }
             Write-Host " ✗" -ForegroundColor Red
         }
@@ -182,7 +182,7 @@ try {
         $results += [PSCustomObject]@{
             Option = "6: System Report"
             Status = "FAIL"
-            Details = "Parse errors: $($parseErrors[0].Message)"
+            Details = "Parse errors: $($parseErrors[0].Message)"  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
         }
         Write-Host " ✗" -ForegroundColor Red
     }
@@ -208,7 +208,7 @@ foreach ($scriptName in $scriptsToCheck) {
     $path = Join-Path $scriptsDir $scriptName
     if (Test-Path $path) {
         $bytes = [System.IO.File]::ReadAllBytes($path)
-        $hasBOM = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+        $hasBOM = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
         $content = [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)
         $hasUnicode = $content -match '[^\x00-\x7F]'
         

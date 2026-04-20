@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -484,7 +484,7 @@ function Get-RecommendedCipherUpgrade {
 }
 
 # ========================== UTILITY ==========================
-function Compare-ByteArrayConstantTime {
+function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Constant-time byte comparison to prevent timing side-channel attacks.
     #>

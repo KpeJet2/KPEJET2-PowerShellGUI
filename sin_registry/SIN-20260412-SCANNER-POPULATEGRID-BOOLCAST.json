@@ -1,0 +1,55 @@
+{
+  "sin_id": "SIN-20260412-SCANNER-POPULATEGRID-BOOLCAST",
+  "title": "Populate-GridByKey assigns PSObject-wrapped values to typed DataTable columns without explicit cast — BooleanStorage.Set InvalidCastException",
+  "description": "In Invoke-PSEnvironmentScanner.ps1 Populate-GridByKey (~L2134-2165), DataTable columns are correctly typed from PSObject property TypeNameOfValue (e.g. [bool] for System.Boolean). However, when populating rows via $row = $dt.NewRow() / $row[$p.Name] = $val, the value $val is retrieved as a raw PSObject-wrapped property via $item.($p.Name). No explicit cast is applied before the row-column assignment. The DataTable's BooleanStorage.Set (and IntStorage.Set etc.) receive a PSObject instead of the underlying .NET primitive, throwing System.InvalidCastException. This differs from P026's documented path (.Rows.Add() with positional args) — here the $row[$p.Name] = $val pattern is the vector. The column type-detection code is correct; only the value-assignment step is missing the unwrap cast.",
+  "category": "winforms-runtime",
+  "severity": "HIGH",
+  "file_path": "scripts/Invoke-PSEnvironmentScanner.ps1",
+  "line_number": "2148-2156",
+  "function_name": "Populate-GridByKey",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User (runtime exception from scan tool UI)",
+  "is_resolved": true,
+  "resolution": "Fixed in Invoke-PSEnvironmentScanner.ps1 Populate-GridByKey: inside the foreach ($p in $props) loop, added $colType = $dt.Columns[$p.Name].DataType and explicit branch casts ([bool], [int], [long], [double], else [string]) before $row[$p.Name] = $val. PSObject is now unwrapped by PowerShell's cast operator before DataTable's BooleanStorage.Set receives the value.",
+  "occurrence_count": 1,
+  "created_at": "2026-04-12T00:00:00Z",
+  "last_seen_at": "2026-04-12T00:00:00Z",
+  "detection_method": "User-reported unhandled WinForms exception during scan-tool button click. Stack trace explicitly names Populate-GridByKey. Confirmed by reading code — no [bool]$val or [int]$val cast applied before $row[$p.Name] = $val assignment inside the foreach ($p in $props) loop.",
+  "root_cause": "PSObject wrapping survives the $item.($p.Name) property access. PowerShell does not auto-unwrap PSObject when assigning to a typed System.Data.DataColumn via $row[col] = val. The DataTable's column-specific Storage.Set method calls System.Convert.ChangeType internally (in .NET) but PSObject does not implement IConvertible, causing the cast chain to fail. Explicit [bool]$val / [int]$val in PowerShell correctly calls PSObject.BaseObject before the .NET layer receives the value.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "exception_message": "System.InvalidCastException: Unable to cast object of type 'System.Management.Automation.PSObject' to type 'System.IConvertible'. Couldn't store <False> in Enabled Column. Expected type is Boolean.",
+  "exception_stack_highlight": "BooleanStorage.Set -> DataColumn.set_Item -> DataRow.set_Item -> Populate-GridByKey",
+  "related_sins": [
+    "SIN-PATTERN-026-DATATABLE-PSOBJECT-CAST",
+    "SIN-20260405-DATATABLE-ENABLED-CAST"
+  ],
+  "affected_columns_observed": [
+    "Enabled (Boolean)",
+    "Any column whose TypeNameOfValue resolves to System.Boolean, System.Int32, System.Int64, System.Double in scan result PSObjects"
+  ],
+  "fix_pattern": "Inside the foreach ($p in $props) value-assignment loop in Populate-GridByKey, cast $val to the DataTable column's DataType before assigning to the row. Use $dt.Columns[$p.Name].DataType to retrieve the target type, then branch:\n  if ($colType -eq [bool])   { $val = [bool]$val }\n  elseif ($colType -eq [int])    { $val = [int]$val }\n  elseif ($colType -eq [long])   { $val = [long]$val }\n  elseif ($colType -eq [double]) { $val = [double]$val }\n  else                           { $val = [string]$val }",
+  "code_before": "foreach ($p in $props) {\n    $val = $item.($p.Name)\n    if ($null -eq $val) { $val = [DBNull]::Value }\n    elseif ($val -is [array]) { $val = ($val -join ', ') }\n    $row[$p.Name] = $val\n}",
+  "code_after": "foreach ($p in $props) {\n    $val = $item.($p.Name)\n    $colType = $dt.Columns[$p.Name].DataType\n    if ($null -eq $val) {\n        $val = [DBNull]::Value\n    } elseif ($val -is [array]) {\n        $val = ($val -join ', ')\n    } elseif ($colType -eq [bool])   { $val = [bool]$val }\n      elseif ($colType -eq [int])    { $val = [int]$val }\n      elseif ($colType -eq [long])   { $val = [long]$val }\n      elseif ($colType -eq [double]) { $val = [double]$val }\n      else                           { $val = [string]$val }\n    $row[$p.Name] = $val\n}",
+  "tags": [
+    "datatable",
+    "psobject",
+    "boolean",
+    "invalidcastexception",
+    "scan-tool",
+    "populate-gridbykey",
+    "ps-environment-scanner",
+    "winforms"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "RESOLVED",
+    "auto_retry": false
+  }
+}

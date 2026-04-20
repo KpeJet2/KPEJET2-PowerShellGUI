@@ -1,8 +1,10 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     PwShGUI-VersionManager -- Major.Minor versioning, CPSR HTML reports, and checkpoint epoch management.
+# TODO: HelpMenu | Show-VersionManagerHelp | Actions: Bump|Align|Audit|Tag|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Implements the versioning standard:

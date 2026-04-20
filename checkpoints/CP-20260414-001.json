@@ -1,0 +1,31 @@
+{
+  "checkpoint_id": "CP-20260414-001",
+  "timestamp": "2026-04-14T21:32:11+08:00",
+  "agent": "FocalPoint-null-00",
+  "scope": "April 14 resume: open todo closure + manifest rebuild + PipeGAP clean",
+  "completed": [
+    "Identified 1 OPEN todo (ToDo-20260413014630-8cc8dfab: XHTML-DependencyVis.xhtml CSS hrefs) — fix was already applied on 2026-04-13; todo marked DONE",
+    "Identified 1 relic script (Start-Engines.ps1, created 2026-04-13) not yet in agentic-manifest.json",
+    "Rebuilt agentic-manifest.json via Build-AgenticManifest.ps1 — Start-Engines.ps1 now registered",
+    "PipeGAP confirmed: OpenTodos=0, Relics=0, ParseFail=0, Stale=0, ActiveGaps=0"
+  ],
+  "files_touched": [
+    "todo/ToDo-20260413014630-8cc8dfab.json",
+    "config/agentic-manifest.json"
+  ],
+  "validation": {
+    "pipegap_report": "~REPORTS/PipelineNormalization/PipeGAP-20260414-213206.json",
+    "parse_failures": 0,
+    "open_todos": 0,
+    "relics": 0,
+    "active_session_gaps": 0,
+    "stale_artifacts": 0,
+    "workplan_checked": 118,
+    "workplan_completion_pct": 25.1
+  },
+  "remaining": {
+    "impr_items": "IMPR-001..010 remain PENDING_APPROVAL (user gate)",
+    "checklist_items_unchecked": 353,
+    "note": "Pipeline fully clean. No blocking items."
+  }
+}

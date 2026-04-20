@@ -1,4 +1,5 @@
 # VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-29 00:00  audit-007 added VersionTag
 # PowerShell Script

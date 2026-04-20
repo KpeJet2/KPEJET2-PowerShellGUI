@@ -1,13 +1,13 @@
 {
   "sin_id": "SIN-PATTERN-026-DATATABLE-PSOBJECT-CAST",
   "title": "DataTable Rows.Add with PSObject-wrapped values causes InvalidCastException in typed columns",
-  "description": "When adding rows to a System.Data.DataTable via .Rows.Add($val1, $val2, ...), PowerShell wraps values in PSObject. If the DataTable column expects a specific .NET type (e.g. Boolean, Int32), the BooleanStorage.Set or Int32Storage.Set method receives PSObject instead of the raw type, causing 'System.InvalidCastException: Unable to cast object of type System.Management.Automation.PSObject to type System.IConvertible'. This occurs on untyped columns that infer types from first-row data, OR when CheckBoxColumn underlies a DataTable. The fix is to explicitly cast values: [bool]$val, [int]$val, [string]$val. Alternatively add columns with explicit types: $dt.Columns.Add('Name', [string]).",
+  "description": "When adding rows to a System.Data.DataTable via .Rows.Add($val1, $val2, ...) OR by $row = $dt.NewRow(); $row[$colName] = $val, PowerShell wraps values in PSObject. If the DataTable column expects a specific .NET type (e.g. Boolean, Int32), the BooleanStorage.Set or Int32Storage.Set method receives PSObject instead of the raw type, causing 'System.InvalidCastException: Unable to cast object of type System.Management.Automation.PSObject to type System.IConvertible'. This occurs on untyped columns that infer types from first-row data, AND on correctly-typed columns when the value is not explicitly cast before assignment. The fix is to explicitly cast values: [bool]$val, [int]$val, [string]$val â€” or cast based on $dt.Columns[$colName].DataType in a loop. Two confirmed code vectors: (1) .Rows.Add() positional-arg shortcut; (2) $dt.NewRow() / $row[$col] = val without type cast.",
   "severity": "MEDIUM",
   "category": "winforms-runtime",
   "vector": "psobject-wrapping-type-mismatch",
   "status": "pattern-defined",
   "is_resolved": false,
-  "occurrence_count": 2,
+  "occurrence_count": 3,
   "created_at": "2026-04-05T00:00:00Z",
   "agent_id": "GitHub-Copilot",
   "reported_by": "User + GitHub-Copilot",
@@ -17,8 +17,9 @@
   "is_access_violation": false,
   "is_untrapped_error": true,
   "known_instances": [
-    "Show-CronAiAthonTool.ps1:715 — dt.Rows.Add($t.id, $t.name, $t.type, $t.enabled, ...) where $t.enabled is boolean from JSON but column is untyped",
-    "Main-GUI.ps1:391 — dgv.Rows.Add($false, $Key, ...) passes $false to DataGridViewCheckBoxColumn (less risky since $false is not from JSON but still PSObject-wrapped in some contexts)"
+    "Show-CronAiAthonTool.ps1:715 â€” dt.Rows.Add($t.id, $t.name, $t.type, $t.enabled, ...) where $t.enabled is boolean from JSON but column is untyped",
+    "Main-GUI.ps1:391 â€” dgv.Rows.Add($false, $Key, ...) passes $false to DataGridViewCheckBoxColumn (less risky since $false is not from JSON but still PSObject-wrapped in some contexts)",
+    "Invoke-PSEnvironmentScanner.ps1:2148-2156 â€” Populate-GridByKey: columns typed correctly via TypeNameOfValue (e.g. [bool]) but $row[$p.Name] = $val assigns PSObject-wrapped value without explicit cast â€” BooleanStorage.Set / IntStorage.Set receive PSObject and throw InvalidCastException. SIN: SIN-20260412-SCANNER-POPULATEGRID-BOOLCAST"
   ],
   "exception_message": "System.InvalidCastException: Unable to cast object of type 'System.Management.Automation.PSObject' to type 'System.IConvertible' at System.Data.Common.BooleanStorage.Set(Int32 record, Object value)",
   "scan_regex": "\\.Rows\\.Add\\(",
@@ -46,7 +47,7 @@
     "status": "PENDING",
     "auto_retry": true
   },
-  "context_guard_regex": "DataGridView|\\$dgv|\\$grid.*DataGridView|Cells\\[|New-Object.*DataGridViewRow|\\.Columns\\.Add|DisplayMember|ValueMember|Out-Null|New-Object\\s+System\\.Data\\.DataTable|\\$viewDetail|\\.Rows\\.Clear|DataGridViewTextBoxColumn|Out-Null|New-Object\\s+System\\.Data\\.DataTable|\\$viewDetail|\\.Rows\\.Clear|DataGridViewTextBoxColumn|CmpGrid|Add-CmpRow|\\$Grid\\.Rows|CmpGrid|Add-CmpRow|\\$Grid\\.Rows",
+  "context_guard_regex": "DataGridView|\\$dgv|\\$grid.*DataGridView|Cells\\[|New-Object.*DataGridViewRow|\\.Columns\\.Add|DisplayMember|ValueMember|Out-Null|New-Object\\s+System\\.Data\\.DataTable|\\$viewDetail|\\.Rows\\.Clear|DataGridViewTextBoxColumn|Out-Null|New-Object\\s+System\\.Data\\.DataTable|\\$viewDetail|\\.Rows\\.Clear|DataGridViewTextBoxColumn|CmpGrid|Add-CmpRow|\\$Grid\\.Rows|CmpGrid|Add-CmpRow|\\$Grid\\.Rows|\\w*Grid\\w*\\.Rows\\.Add|\\w*Grid\\w*\\.Rows\\.Add|\\$g[A-Z]\\w*\\.Rows\\.Add",
   "context_guard_lines": 15,
   "context_guard_direction": "both",
   "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$|templates|\\.xhtml$"

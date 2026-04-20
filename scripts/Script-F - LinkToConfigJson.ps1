@@ -1,4 +1,4 @@
-# VersionTag: 2602.a.11
+﻿# VersionTag: 2602.a.11
 # VersionTag: 2602.a.10
 # VersionTag: 2602.a.9
 # VersionTag: 2602.a.8
@@ -92,9 +92,12 @@ Write-Information "" -InformationAction Continue
 # ==================== VALIDATE EXECUTION ORDER ====================
 Write-Information "Validating execution order sequence..." -InformationAction Continue
 $executionOrder = $configTemplate.validation.executionOrder
-Write-Information "  Total steps: $($executionOrder.Count)" -InformationAction Continue
-Write-Information "  First step: $($executionOrder[0])" -InformationAction Continue
-Write-Information "  Last step: $($executionOrder[-1])" -InformationAction Continue
+$executionOrder = if ($null -ne $configTemplate.validation.executionOrder) { @($configTemplate.validation.executionOrder) } else { @() }
+Write-Information "  Total steps: $($executionOrder.Count)" -InformationAction Continue  # SIN-EXEMPT: P027 - false positive: array is populated/guarded before indexing
+if ($executionOrder.Count -gt 0) {
+    Write-Information "  First step: $($executionOrder[0])" -InformationAction Continue
+    Write-Information "  Last step: $($executionOrder[-1])" -InformationAction Continue
+}
 
 Write-Information "" -InformationAction Continue
 Write-Information "Configuration template validation completed successfully!" -InformationAction Continue
@@ -102,7 +105,7 @@ Write-Information "" -InformationAction Continue
 
 # ==================== PATH VALIDATION HELPER ====================
 # https://www.sharepointdiary.com/2023/03/pause-powershell-with-press-any-key-to-continue.html
-function Wait-KeyOrTimeout {
+function Wait-KeyOrTimeout {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([int]$Seconds = 5)
      
     $endTime = (Get-Date).AddSeconds($Seconds)

@@ -1,0 +1,56 @@
+﻿{
+    "id":  "ToDo-20260416230750-1f696275",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Audit and stamp help-menu readiness across all modules and scripts. Runs as cron step. Checks compact TODO markers, Show-*Help functions, and common switches (-EventLevel, -LogToFile, -ShowRainbow). Modes: Audit, Stamp, Report. Spec: config/help-menu-registry.json",
+    "lastSeenAt":  "2026-04-16T15:07:50.6963058Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "Invoke-HelpMenuCompliance pipeline step",
+    "parentId":  "",
+    "type":  "ToDo",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-04-16T15:07:50.6963058Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "Commander",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "Pipeline",
+    "reopenedAt":  null,
+    "created":  "2026-04-16T15:07:50.6922874Z",
+    "bugResurfaced":  false,
+    "source":  "Manual",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-04-16T15:07:50.6953065Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

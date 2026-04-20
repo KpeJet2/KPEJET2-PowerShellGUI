@@ -9,7 +9,7 @@
 
 BeforeAll {
     $modulePath = Join-Path $PSScriptRoot '..\modules\PwShGUI-VersionManager.psm1'
-    Import-Module $modulePath -Force
+    Import-Module $modulePath -Force -DisableNameChecking
     $testWorkspace = Join-Path $env:TEMP 'PwShGUI-VersionManager-Tests'
     if (Test-Path $testWorkspace) { Remove-Item $testWorkspace -Recurse -Force }
     New-Item -ItemType Directory -Path $testWorkspace -Force | Out-Null

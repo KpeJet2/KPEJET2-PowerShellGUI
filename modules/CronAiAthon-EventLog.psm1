@@ -1,9 +1,11 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     Cron-Ai-Athon EventLog & SYSLOG module -- Windows Event Log integration
     with SYSLOG severity levels and optional forwarding.
+# TODO: HelpMenu | Show-EventLogHelp | Actions: Write|Query|Export|Rotate|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides:
@@ -257,7 +259,7 @@ function Write-SyslogFile {
 
 # ========================== UNIFIED LOG FUNCTION ==========================
 
-function Write-CronLog {
+function Write-CronLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Unified logger -- writes to EventLog, .SYSLOG file, and optionally forwards.
     .DESCRIPTION

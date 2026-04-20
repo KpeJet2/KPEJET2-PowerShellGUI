@@ -1,4 +1,5 @@
-﻿# VersionTag: 2604.B1.V32.5
+﻿# VersionTag: 2604.B2.V32.5
+# FileRole: Launcher
 # Start-LocalWebEngine.ps1
 # Loopback HTTP/WebSocket server for PowerShellGUI workspace tools.
 # Listens on http://127.0.0.1:8042/ — serves XHTML pages, APIs, and WebSocket progress.
@@ -64,7 +65,7 @@ function Write-EngineLog {
     $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $line = "[$ts][$Level] $Msg"
     Write-Host $line
-    try { Add-Content -LiteralPath $script:EngineLogFile -Value $line -Encoding UTF8 } catch { }
+    try { Add-Content -LiteralPath $script:EngineLogFile -Value $line -Encoding UTF8 } catch { <# Intentional: non-fatal — log write cannot recurse into itself #> }
 }
 
 # Bootstrap log: written BEFORE HttpListener starts — survives engine non-start
@@ -73,7 +74,7 @@ function Write-BootstrapLog {
     $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $line = "[$ts][BOOT][$Level] $Msg"
     Write-Host $line
-    try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { }
+    try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { <# Intentional: non-fatal — bootstrap log write cannot recurse into itself #> }
     if ($Level -eq 'ERROR' -or $Level -eq 'WARN') {
         $null = $script:_BootstrapErrors.Add([pscustomobject]@{ ts = $ts; level = $Level; msg = $Msg })
     }
@@ -90,7 +91,7 @@ try {
     $conn = $tcpTest.BeginConnect('127.0.0.1', $Port, $null, $null)
     $portInUse = $conn.AsyncWaitHandle.WaitOne(300)
     if ($portInUse) {
-        try { $tcpTest.EndConnect($conn) } catch { }
+        try { $tcpTest.EndConnect($conn) } catch { <# Intentional: non-fatal, TCP EndConnect cleanup #> }
         Write-BootstrapLog "Port $Port may already be in use" 'WARN'
     } else {
         Write-BootstrapLog "Port $Port is available" 'INFO'
@@ -200,8 +201,17 @@ function Send-Response {
     $resp.Headers.Set('X-Content-Type-Options', 'nosniff')
     $resp.Headers.Set('X-Frame-Options', 'SAMEORIGIN')
     $resp.Headers.Set('Content-Security-Policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:$Port ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
     $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    # CORS — allow file:// and localhost origins (engine is 127.0.0.1 only)
+    $reqOrigin = $Context.Request.Headers['Origin']
+    if ($reqOrigin -and ($reqOrigin -match '^(https?://127\.0\.0\.1|file://)')) {
+        $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+    } else {
+        $resp.Headers.Set('Access-Control-Allow-Origin', 'http://127.0.0.1:' + $Port)
+    }
+    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token')
+    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, OPTIONS')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
     $resp.ContentLength64 = $bytes.Length
@@ -503,6 +513,46 @@ function Handle-SaveMenus {
     }
 }
 
+# ─── Route: GET /api/workspace/files ──────────────────────────────────────────
+function Handle-WorkspaceFiles {
+    [CmdletBinding()]
+    param($Context)
+    $ext = $Context.Request.QueryString['ext']
+    if ([string]::IsNullOrWhiteSpace($ext)) { $ext = '*.xhtml,*.html,*.json,*.css,*.js' }
+    $includePatterns = $ext.Split(',') | ForEach-Object { $_.Trim() }
+    $excludeDirs = @('.git','.venv','.venv-pygame312','.history','node_modules','CarGame','~DOWNLOADS')
+    $results = @()
+    foreach ($pattern in $includePatterns) {
+        $files = Get-ChildItem -Path $WorkspacePath -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue
+        foreach ($f in $files) {
+            $skip = $false
+            foreach ($ed in $excludeDirs) {
+                if ($f.FullName -match [regex]::Escape("\$ed\")) { $skip = $true; break }
+            }
+            if (-not $skip) {
+                $relPath = $f.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/'
+                $results += [ordered]@{
+                    name     = $f.Name
+                    path     = $relPath
+                    size     = $f.Length
+                    modified = $f.LastWriteTime.ToString('o')
+                }
+            }
+        }
+    }
+    # Deduplicate by path
+    $seen = @{}
+    $unique = @()
+    foreach ($r in $results) {
+        if (-not $seen.ContainsKey($r.path)) {
+            $seen[$r.path] = $true
+            $unique += $r
+        }
+    }
+    $unique = @($unique | Sort-Object { $_.path })
+    Send-Json -Context $Context -Object @{ files = $unique; count = @($unique).Count }
+}
+
 # ─── Route: static file serve ─────────────────────────────────────────────────
 function Handle-StaticFile {
     [CmdletBinding()]
@@ -597,13 +647,18 @@ $pgPath    = Join-Path $WorkspacePath $pgScanSub
 $script:lastProgressContent = ''
 
 try {
+    # Use GetContextAsync + Task.Wait(ms) instead of BeginGetContext + AsyncWaitHandle.WaitOne
+    # — the old APM pattern (BeginGetContext) has broken AsyncWaitHandle signalling in .NET 8+ (PS 7.x).
+    # GetContextAsync works reliably on both .NET Framework 4.7.2 (PS 5.1) and .NET 8/9 (PS 7.x).
+    $pendingTask = $null
     while ($listener.IsListening) {
         $context = $null
         try {
-            $asyncResult = $listener.BeginGetContext($null, $null)
+            if ($null -eq $pendingTask) {
+                $pendingTask = $listener.GetContextAsync()
+            }
             # Wait with timeout to allow graceful shutdown
-            $asyncResult.AsyncWaitHandle.WaitOne(500) | Out-Null
-            if (-not $asyncResult.IsCompleted) {
+            if (-not $pendingTask.Wait(500)) {
                 # Check for graceful stop signal written by /api/engine/stop
                 $stopSig = Join-Path $WorkspacePath 'logs'
                 $stopSig = Join-Path $stopSig 'engine.stop'
@@ -625,10 +680,12 @@ try {
                 } catch { <# non-fatal — progress file may not exist yet #> }
                 continue
             }
-            $context = $listener.EndGetContext($asyncResult)
+            $context = $pendingTask.Result
+            $pendingTask = $null  # consumed — next iteration starts a new async accept
         } catch [System.Net.HttpListenerException] {
             break  # Listener stopped
         } catch {
+            $pendingTask = $null  # discard faulted task
             continue
         }
 
@@ -685,10 +742,16 @@ try {
                     if ($null -ne $wsId -and $null -ne $wsClients) {
                         $wsClients.TryRemove($wsId, [ref]$removed) | Out-Null
                     }
-                    if ($null -ne $ws) { try { $ws.Dispose() } catch { } }
+                    if ($null -ne $ws) { try { $ws.Dispose() } catch { <# Intentional: non-fatal, WebSocket disposal #> } }
                 }
             }).AddArgument($wsCtxRef).AddArgument($wsClRef).AddArgument($wsTokRef)
             $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
+            continue
+        }
+
+        # ── CORS preflight ────────────────────────────────────────────────
+        if ($method -eq 'OPTIONS') {
+            Send-Response -Context $context -StatusCode 204 -Body ''
             continue
         }
 
@@ -716,6 +779,10 @@ try {
             }
             '^/api/agent/stats$' {
                 if ($method -eq 'GET') { Handle-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/workspace/files$' {
+                if ($method -eq 'GET') { Handle-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/config/menus$' {
@@ -754,7 +821,7 @@ try {
                         # Write stop-signal file (ThreadPool workitems cannot reach $script: scope)
                         $stopSig = Join-Path $WorkspacePath 'logs'
                         $stopSig = Join-Path $stopSig 'engine.stop'
-                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { }
+                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { <# Intentional: non-fatal — stop signal file write failure does not prevent shutdown #> }
                         Write-EngineLog 'Stop requested via /api/engine/stop' -Level 'INFO'
                         $script:_ExitClean = $true
                     }
@@ -780,13 +847,24 @@ try {
             }
             # ── Static assets ────────────────────────────────────────────
             '^/styles/(.+)$' {
-                $file = $Matches[1]
+                $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 Handle-StaticFile -Context $context -RelPath "styles\$file"
                 break
             }
             '^/scripts/(.+)$' {
-                $file = $Matches[1]
+                $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 Handle-StaticFile -Context $context -RelPath "scripts\$file"
+                break
+            }
+            # ── Generic static file fallback (workspace-relative) ────────
+            '^/(.+\.(xhtml|html|css|js|json|png|jpg|gif|svg|ico))$' {
+                $relFile = $Matches[1] -replace '/', '\'  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
+                # P009: validate path does not escape workspace
+                if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
+                    Send-Error -Context $context -StatusCode 400 -Message 'Invalid path'
+                } else {
+                    Handle-StaticFile -Context $context -RelPath $relFile
+                }
                 break
             }
             default {
@@ -816,11 +894,11 @@ try {
         try {
             $crashJson = $crashEvent | ConvertTo-Json -Depth 4
             Add-Content -LiteralPath $script:CrashLogFile -Value $crashJson -Encoding UTF8
-        } catch { }
+        } catch { <# Intentional: non-fatal — crash log write failure cannot be recovered within crash handler #> }
         # Invoke crash cleanup script if it exists
         $cleanupScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-EngineCrashCleanup.ps1'
         if (Test-Path -LiteralPath $cleanupScript) {
-            try { & $cleanupScript -WorkspacePath $WorkspacePath -Silent } catch { }
+            try { & $cleanupScript -WorkspacePath $WorkspacePath -Silent } catch { <# Intentional: non-fatal, cleanup is best-effort in crash handler #> }
         }
     }
 }

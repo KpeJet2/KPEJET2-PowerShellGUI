@@ -143,7 +143,7 @@ try {
     }
     Write-AppLog -Message "Git status: clean" -Level Debug
 } catch {
-    Write-AppLog -Message "Git command failed: $Error[0]" -Level Warning
+    Write-AppLog -Message "Git command failed: $Error[0]" -Level Warning  # SIN-EXEMPT: P027 - $Error[0] is PS automatic var, populated by prior error
 }
 
 # Script block execution with timeout

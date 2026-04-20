@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS  Reindex the SIN Registry — rename all SIN-PATTERN and SEMI-SIN files

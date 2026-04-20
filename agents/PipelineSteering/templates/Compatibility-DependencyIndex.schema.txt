@@ -1,0 +1,9 @@
+# Compatibility Dependency Index Schema
+# Each item must use:
+#   SupportedItemName.version.(indexID)
+# indexID = 0 indicates unresolved match and requires ADD optional review task.
+
+# CSV Columns:
+# FilePath,MimeType,Language,DefaultSupportTarget,DependencyItems,Products
+# Example DependencyItems value:
+# CronAiAthon-Scheduler.1.0.(12),Write-AppLog.2.4.(2),UnknownItem.0.0.(0)

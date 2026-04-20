@@ -1,4 +1,6 @@
-﻿<#
+﻿# VersionTag: 2604.B1.V31.0
+# FileRole: Setup
+<#
 .SYNOPSIS
 # --- Structured lifecycle logging ---
 if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {

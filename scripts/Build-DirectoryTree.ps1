@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Builder
 #Requires -Version 5.1
 <#
 .SYNOPSIS

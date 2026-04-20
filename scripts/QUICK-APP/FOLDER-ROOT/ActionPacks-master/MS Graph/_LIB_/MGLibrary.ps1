@@ -1,4 +1,4 @@
-# VersionTag: 2602.a.11
+﻿# VersionTag: 2602.a.11
 # VersionTag: 2602.a.10
 # VersionTag: 2602.a.9
 # VersionTag: 2602.a.8
@@ -76,7 +76,7 @@ function ConnectMSGraph(){
                     client_secret = $SecretValue
                     grant_type    = "client_credentials"
                     }
-                $tokenRequest = Invoke-WebRequest –Method Post –Uri $uri –ContentType "application/x-www-form-urlencoded" –Body $body –UseBasicParsing
+                $tokenRequest = Invoke-WebRequest -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body -UseBasicParsing
                 [string]$mgToken =($tokenRequest.Content | ConvertFrom-Json).access_token
                 if($v1.IsPresent -eq $false){
                     $secToken = New-Object System.Security.SecureString
@@ -275,6 +275,7 @@ function GetGroupOwners{
         }
     }
 }
+
 
 
 

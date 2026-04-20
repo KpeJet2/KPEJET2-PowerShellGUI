@@ -1,4 +1,5 @@
-# VersionTag: 2604.B1.V32.0
+﻿# VersionTag: 2604.B1.V32.0
+# FileRole: Pipeline
 # Invoke-DependencyScanManager.ps1
 # Orchestrates phased workspace dependency scanning with checkpoint persistence.
 # Supports Full mode (complete rescan) and Incremental mode (missing/stale phases only).
@@ -45,7 +46,7 @@ function Write-DSMLog {
     try { Write-AppLog -Level $Level -Message "[DSM] $Message" } catch { <# non-fatal #> }
 }
 
-function Save-Checkpoint {
+function Save-Checkpoint {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     [CmdletBinding()]
     param(
         [hashtable]$Checkpoint,
@@ -59,7 +60,7 @@ function Save-Checkpoint {
     }
 }
 
-function Load-Checkpoint {
+function Load-Checkpoint {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     [CmdletBinding()]
     param([string]$CheckpointPath, [hashtable]$Default)
     if (Test-Path -LiteralPath $CheckpointPath) {

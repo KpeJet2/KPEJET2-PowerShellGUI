@@ -1,7 +1,7 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2604.B0.v2
 # PipelineSteering Agent
 
-**Version**: 2603.B0.v1.0  
+**Version**: 2604.B0.v2.0  
 **Author**: The Establishment  
 **Date**: 2026-04-03  
 **FileRole**: README
@@ -15,6 +15,8 @@ The PipelineSteering agent performs workspace-wide code quality and documentatio
 - Function-level comment-based help (`.SYNOPSIS`, `.DESCRIPTION`, `.NOTES`)
 - File-level narrative headers (`<# Outline: #>`, `<# Problems: #>`, `<# ToDo: #>`)
 - Standard dotfiles (`.outline`, `.problems`, `.todo`) in each code directory
+- Compatibility directives (`SupportPS5.1`, `SupportsPS7.6`, tested dates) immediately after `VersionTag`
+- Compatibility matrix logging for PS5.1 and PS7.6 parser checks
 - Minor version increments on every file modified by a steering pass
 - Post-fix pipeline referential scans (bug scan + config coverage audit)
 
@@ -44,6 +46,10 @@ agents/PipelineSteering/
 | `Invoke-DocTemplatePropagation` | Creates `.outline` / `.problems` / `.todo` dotfiles |
 | `Invoke-SteeringPipelineScan` | Post-fix bug scan + coverage audit |
 | `Update-FileVersionTag` | Bumps minor version in a file's VersionTag header |
+| `Ensure-CompatibilityDirectiveTags` | Inserts compatibility directives after VersionTag |
+| `New-CompatibilityStandardsTemplates` | Creates PS7.6-first and PS5.1 fallback standards templates |
+| `Invoke-CompatibilityMatrixAudit` | Runs PS5.1/PS7.6 parser checks and writes compatibility logs |
+| `New-WorkspaceCompatibilityIndex` | Writes indexed compatibility/dependency table (CSV+JSON) |
 
 ---
 
@@ -88,6 +94,8 @@ The report contains:
 - `FunctionGaps` — functions missing help blocks
 - `OutlineIssues` — files missing Outline / Problems / ToDo blocks
 - `DotfilesNeeded` — directories needing dotfiles
+- `CompatibilityDirectiveChanges` — files where compatibility tags were inserted/updated
+- `CompatibilityResult` — PS5.1 and PS7.6 compatibility matrix with SEMI-SIN directional warnings
 - `PipelineScanResult` — bug scan + coverage audit summary
 - `ElapsedSeconds`, `DryRun` mode flag, `SessionId`
 

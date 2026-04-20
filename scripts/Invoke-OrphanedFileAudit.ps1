@@ -1,4 +1,5 @@
-# VersionTag: 2604.B1.V32.0
+﻿# VersionTag: 2604.B1.V32.0
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-05
 # FileRole: Scanner
@@ -338,6 +339,7 @@ if ($WriteTodos -and @($orphans).Count -gt 0) {
             }
             $priority = if ($o.Misplaced) { 'MEDIUM' } else { 'LOW' }
             $category = if ($o.Misplaced) { 'placement' } else { 'manifest-gap' }
+            $orphanTag = if ($o.Misplaced) { 'misplaced' } else { 'untracked' }
 
             $item = [ordered]@{
                 id              = $todoId
@@ -354,7 +356,7 @@ if ($WriteTodos -and @($orphans).Count -gt 0) {
                 completedAt     = $null
                 linkedFeatures  = @()
                 linkedBugs      = @()
-                tags            = @('orphan', if ($o.Misplaced) { 'misplaced' } else { 'untracked' })
+                tags            = @('orphan', $orphanTag)
                 notes           = "Detected by orphan audit run on $(Get-Date -Format 'yyyy-MM-dd HH:mm'). ScanReport: $reportFile"
                 sessionModCount = 0
                 parentId        = ''

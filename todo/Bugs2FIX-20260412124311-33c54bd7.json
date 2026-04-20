@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:43:11.6395790Z",
+  "title": "FIX: Unexpected token 'Help' in expression or statement.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412124208-08546813",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412124311-33c54bd7",
+  "description": "Fix for bug Bug-20260412124208-08546813: Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 418: Unexpected token 'Help' in expression or statement.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:43:11.6396316Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  ]
+}

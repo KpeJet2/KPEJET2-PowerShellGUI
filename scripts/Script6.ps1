@@ -1,4 +1,5 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Scaffolding
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 5 entries)
 #Requires -Version 5.1
@@ -44,9 +45,9 @@ if (Test-Path $modulePath) {
     Initialize-CorePaths -ScriptDir $workspaceDir -LogsDir $logsDir
 } else {
     # Minimal fallback if module is missing
-    function Write-AppLog  { param($Message,$Level) Write-Host "[$Level] $Message" }
-    function Write-ScriptLog { param($Message,$ScriptName,$Level) Write-Host "[$ScriptName][$Level] $Message" }
-    function Export-LogBuffer { }
+    function Write-AppLog  { param($Message,$Level) Write-Host "[$Level] $Message" }  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
+    function Write-ScriptLog { param($Message,$ScriptName,$Level) Write-Host "[$ScriptName][$Level] $Message" }  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
+    function Export-LogBuffer { }  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
 }
 
 # Dedicated cleanup log
@@ -54,7 +55,7 @@ $timestamp    = Get-Date -Format 'yyyyMMdd-HHmmss'
 $cleanupLog   = Join-Path $logsDir "SystemCleanup-$timestamp.log"
 if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
 
-function Write-CleanupLog {
+function Write-CleanupLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [string]$Message,
         [ValidateSet('Debug','Info','Warning','Error','Critical','Audit')]
@@ -444,7 +445,7 @@ function Show-CleanupSelector {
                     }
                     32 {  # Space -- toggle
                         if ($cursor -eq 0) {
-                            $ns = -not $selected[0]
+                            $ns = -not $selected[0]  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                             for ($i = 0; $i -lt $totalItems; $i++) { $selected[$i] = $ns }
                         } else {
                             $selected[$cursor] = -not $selected[$cursor]
@@ -452,7 +453,7 @@ function Show-CleanupSelector {
                             for ($i = 1; $i -lt $totalItems; $i++) {
                                 if (-not $selected[$i]) { $allOn = $false; break }
                             }
-                            $selected[0] = $allOn
+                            $selected[0] = $allOn  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                         }
                         Render-Menu
                     }

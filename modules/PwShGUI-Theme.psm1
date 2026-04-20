@@ -1,8 +1,10 @@
-﻿# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V32.0
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     PwShGUI Theme Module -- centralised modern styling, rainbow progress bars, spinners.
+# TODO: HelpMenu | Show-ThemeHelp | Actions: Apply|Preview|Reset|List|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Provides a consistent dark-accent modern look for all PowerShellGUI forms.
@@ -14,6 +16,11 @@
     Version  : 2604.B2.V31.0
     Created  : 24th March 2026
 #>
+
+# Ensure System.Drawing is available (required for Color/Font types in PS 5.1)
+if (-not ([System.Management.Automation.PSTypeName]'System.Drawing.Color').Type) {
+    Add-Type -AssemblyName System.Drawing
+}
 
 # ========================== THEME COLOUR PALETTE ==========================
 $script:Theme = @{

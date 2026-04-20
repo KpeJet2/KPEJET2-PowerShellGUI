@@ -1,9 +1,11 @@
-# VersionTag: 2604.B2.V31.0
+﻿# VersionTag: 2604.B2.V32.1
+# FileRole: Module
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     Cron-Ai-Athon Pipeline Registry -- unified pipeline for Feature Requests,
     Bugs2FIX, Items2ADD, ToDo items, and Sin Registry feedback loop.
+# TODO: HelpMenu | Show-PipelineHelp | Actions: Register|Run|Status|Reset|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Central module that manages the full lifecycle:
@@ -24,7 +26,7 @@
 
 .NOTES
     Author   : The Establishment
-    Version  : 2604.B2.V31.0
+    Version  : 2604.B2.V32.0
     Created  : 28th March 2026
     Modified : 4th April 2026
 
@@ -34,6 +36,28 @@
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+if (-not (Get-Command -Name Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
+        [CmdletBinding()]
+        param(
+            [Parameter(Mandatory)]
+            [string]$Message,
+
+            [ValidateSet('Debug', 'Info', 'Warning', 'Error')]
+            [string]$Level = 'Info'
+        )
+
+        $color = switch ($Level) {
+            'Error' { 'Red' }
+            'Warning' { 'Yellow' }
+            'Debug' { 'DarkGray' }
+            default { 'Gray' }
+        }
+
+        Write-Host "[CronAiAthon][$Level] $Message" -ForegroundColor $color
+    }
+}
 
 # ========================== PIPELINE ITEM SCHEMA ==========================
 
@@ -71,6 +95,7 @@ function New-PipelineItem {
         [string]$SuggestedBy = 'Commander',
         [string]$SinId = '',
         [string]$ParentId = '',
+        [string[]]$BugReferrals = @(),
         [string]$OutlineTag = 'OUTLINE-PROTO-v0',
         [string]$OutlinePhase = 'assessment',
         [string]$OutlineVersion = 'v0'
@@ -105,9 +130,20 @@ function New-PipelineItem {
         linkedBugs       = @()
         linkedFeatures   = @()
         result           = $null
-        outlineTag       = $OutlineTag
-        outlinePhase     = $OutlinePhase
-        outlineVersion   = $OutlineVersion
+        outlineTag               = $OutlineTag
+        outlinePhase             = $OutlinePhase
+        outlineVersion           = $OutlineVersion
+        bugReferrals             = $BugReferrals
+        bugResurfaced            = $false
+        firstSeenAt              = (Get-Date).ToUniversalTime().ToString('o')
+        lastSeenAt               = (Get-Date).ToUniversalTime().ToString('o')
+        implementedAt            = $null
+        reopenedAt               = $null
+        fixesImplementedCount    = 0
+        filesFixedCount          = 0
+        filesRemainingCount      = 0
+        countermeasures          = @()
+        bugHistory               = @()
     }
 }
 
@@ -442,6 +478,7 @@ function Update-PipelineItemStatus {
     }
 
     $found = $false
+    $updatedItem = $null
     foreach ($listName in @('featureRequests','bugs','items2ADD','bugs2FIX','todos')) {
         $listRef = @($registry.$listName)
         for ($i = 0; $i -lt $listRef.Count; $i++) {
@@ -462,7 +499,42 @@ function Update-PipelineItemStatus {
                     $listRef[$i].completedAt = (Get-Date).ToUniversalTime().ToString('o')
                     $registry.statistics.totalItemsDone++
                 }
+
+                # Backfill and update extended tracking fields (SIN-P022: null guard on PSObject.Properties)
+                $nowTs = (Get-Date).ToUniversalTime().ToString('o')
+                foreach ($fld in @('implementedAt','reopenedAt','lastSeenAt','firstSeenAt')) {
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue $null -Force
+                    }
+                }
+                if (-not $listRef[$i].PSObject.Properties['bugResurfaced']) {
+                    $listRef[$i] | Add-Member -NotePropertyName 'bugResurfaced' -NotePropertyValue $false -Force
+                }
+                foreach ($fld in @('bugHistory','bugReferrals','countermeasures')) {
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue @() -Force
+                    }
+                }
+                foreach ($fld in @('fixesImplementedCount','filesFixedCount','filesRemainingCount')) {
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue 0 -Force
+                    }
+                }
+                $listRef[$i].lastSeenAt = $nowTs
+                if ($null -eq $listRef[$i].firstSeenAt) {
+                    $listRef[$i].firstSeenAt = if ($listRef[$i].PSObject.Properties['created'] -and $null -ne $listRef[$i].created) { $listRef[$i].created } else { $nowTs }
+                }
+                if ($NewStatus -eq 'DONE') { $listRef[$i].implementedAt = $nowTs }
+                if ($NewStatus -eq 'OPEN' -and $currentStatus -in @('DONE','CLOSED')) {
+                    $listRef[$i].reopenedAt    = $nowTs
+                    $listRef[$i].bugResurfaced = $true
+                    $histEntry = [ordered]@{ event = 'reopened'; fromStatus = $currentStatus; timestamp = $nowTs }
+                    $existHist = @($listRef[$i].bugHistory)
+                    $listRef[$i].bugHistory = @($existHist) + @($histEntry)
+                }
+
                 $found = $true
+                $updatedItem = $listRef[$i]
                 $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $listRef[$i]
                 break
             }
@@ -480,6 +552,22 @@ function Update-PipelineItemStatus {
     }
 
     if ($found) {
+        # Trigger bug-status rollup for parent bug and any referenced bugs (SIN-P022: null guard)
+        if ($null -ne $updatedItem) {
+            $rollupParentId = if ($updatedItem.PSObject.Properties['parentId']) { [string]$updatedItem.parentId } else { '' }
+            if (-not [string]::IsNullOrWhiteSpace($rollupParentId)) {
+                try { $null = Invoke-BugStatusRollup -WorkspacePath $WorkspacePath -BugItemId $rollupParentId }
+                catch { Write-AppLog -Message "BugStatusRollup failed for parent '$rollupParentId': $_" -Level Warning }
+            }
+            $rollupBugRefs = if ($updatedItem.PSObject.Properties['bugReferrals']) { @($updatedItem.bugReferrals) } else { @() }
+            foreach ($bRef in $rollupBugRefs) {
+                $bRefStr = [string]$bRef
+                if (-not [string]::IsNullOrWhiteSpace($bRefStr)) {
+                    try { $null = Invoke-BugStatusRollup -WorkspacePath $WorkspacePath -BugItemId $bRefStr }
+                    catch { Write-AppLog -Message "BugStatusRollup failed for bugRef '$bRefStr': $_" -Level Warning }
+                }
+            }
+        }
         try {
             $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
         } catch {
@@ -618,14 +706,16 @@ function ConvertTo-Bugs2FIX {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] $BugItem
+        [Parameter(Mandatory)] $BugItem,
+        [string[]]$BugReferrals = @()
     )
 
+    $refIds = @(@($BugReferrals) + @($BugItem.id) | Select-Object -Unique)
     $fixItem = New-PipelineItem -Type 'Bugs2FIX' -Title "FIX: $($BugItem.title)" `
         -Description "Fix for bug $($BugItem.id): $($BugItem.description)" `
         -Priority $BugItem.priority -Source 'BugTracker' -Category $BugItem.category `
         -AffectedFiles @($BugItem.affectedFiles) -SuggestedBy 'CronAiAthon' `
-        -ParentId $BugItem.id
+        -ParentId $BugItem.id -BugReferrals $refIds
 
     Add-PipelineItem -WorkspacePath $WorkspacePath -Item $fixItem
     return $fixItem
@@ -643,12 +733,14 @@ function ConvertTo-Items2ADD {
         [string]$Priority = 'MEDIUM',
         [string]$Source = 'Subagent',
         [string]$Category = 'enhancement',
-        [string]$ParentId = ''
+        [string]$ParentId = '',
+        [string[]]$BugReferrals = @()
     )
 
     $addItem = New-PipelineItem -Type 'Items2ADD' -Title $Title `
         -Description $Description -Priority $Priority -Source $Source `
-        -Category $Category -SuggestedBy 'CronAiAthon-Autopilot' -ParentId $ParentId
+        -Category $Category -SuggestedBy 'CronAiAthon-Autopilot' -ParentId $ParentId `
+        -BugReferrals $BugReferrals
 
     Add-PipelineItem -WorkspacePath $WorkspacePath -Item $addItem
     return $addItem
@@ -668,6 +760,7 @@ function Get-CentralMasterToDo {
     # 1. Pipeline registry items
     $pipelineItems = Get-PipelineItems -WorkspacePath $WorkspacePath
     foreach ($pi in $pipelineItems) {
+        $piProps = $pi.PSObject.Properties
         $master += [ordered]@{
             id              = $pi.id
             type            = ConvertTo-PipelineItemType -Type $pi.type
@@ -675,11 +768,11 @@ function Get-CentralMasterToDo {
             description     = $pi.description
             priority        = $pi.priority
             status          = ConvertTo-PipelineStatus -Status $pi.status
-            source          = if ($pi.PSObject.Properties.Name -contains 'source') { $pi.source } else { 'unknown' }
-            category        = if ($pi.PSObject.Properties.Name -contains 'category') { $pi.category } else { '' }
-            created         = $pi.created
-            modified        = $pi.modified
-            sessionModCount = $pi.sessionModCount
+            source          = if ($piProps.Name -contains 'source') { $pi.source } else { 'unknown' }
+            category        = if ($piProps.Name -contains 'category') { $pi.category } else { '' }
+            created         = if ($piProps.Name -contains 'created') { $pi.created } elseif ($piProps.Name -contains 'created_at') { $pi.created_at } else { '' }
+            modified        = if ($piProps.Name -contains 'modified') { $pi.modified } else { '' }
+            sessionModCount = if ($piProps.Name -contains 'sessionModCount') { $pi.sessionModCount } else { 0 }
             origin          = 'pipeline'
         }
     }
@@ -1177,7 +1270,8 @@ function Get-PipelineInterruptions {
     foreach ($item in $items) {
         if ($null -eq $item) { continue }
         $status = ConvertTo-PipelineStatus -Status $item.status
-        $anchor = if ($item.modified) { $item.modified } elseif ($item.created) { $item.created } else { '' }
+        $propNames = $item.PSObject.Properties.Name
+        $anchor = if (($propNames -contains 'modified') -and $item.modified) { $item.modified } elseif (($propNames -contains 'created') -and $item.created) { $item.created } else { '' }
         if ([string]::IsNullOrWhiteSpace($anchor)) { continue }
 
         try {
@@ -1308,6 +1402,125 @@ function Invoke-PipelineArtifactRefresh {
     return $result
 }
 
+# ========================== BUG STATUS ROLLUP ==========================
+
+function Invoke-BugStatusRollup {
+    <#
+    .SYNOPSIS  Aggregate child Bugs2FIX and Items2ADD statuses to drive Bug item status.
+    .DESCRIPTION
+        Finds all Bugs2FIX children (parentId = BugItemId) and Items2ADD with bugReferrals
+        containing BugItemId. Computes aggregate state and promotes the Bug:
+          - Any child IN_PROGRESS and Bug is OPEN -> Bug becomes IN_PROGRESS
+          - All children DONE or CLOSED (at least one) -> Bug becomes DONE (implementedAt stamped)
+        Does NOT call Update-PipelineItemStatus to avoid recursive loops.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [string]$BugItemId
+    )
+
+    $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
+    try {
+        $raw = Get-Content $regPath -Raw -ErrorAction Stop
+        if (-not $raw -or $raw.Trim().Length -eq 0) {
+            Write-AppLog -Message "Invoke-BugStatusRollup: registry empty, skipping rollup for '$BugItemId'." -Level Warning
+            return
+        }
+        $registry = $raw | ConvertFrom-Json -ErrorAction Stop
+        if ($null -eq $registry) {
+            Write-AppLog -Message "Invoke-BugStatusRollup: registry parse returned null for '$BugItemId'." -Level Warning
+            return
+        }
+    } catch {
+        Write-AppLog -Message "Invoke-BugStatusRollup: failed to load registry: $_" -Level Warning
+        return
+    }
+
+    # Locate the Bug item (only rollup Bug-typed items)
+    $bugItem = $null
+    foreach ($item in @($registry.bugs)) {
+        if ($null -ne $item -and $item.PSObject.Properties['id'] -and $item.id -eq $BugItemId) {
+            $bugItem = $item
+            break
+        }
+    }
+    if ($null -eq $bugItem) {
+        Write-AppLog -Message "Invoke-BugStatusRollup: Bug '$BugItemId' not found — may not be a Bug type item." -Level Debug
+        return
+    }
+
+    $currentBugStatus = ConvertTo-PipelineStatus -Status $bugItem.status
+
+    # Collect child statuses: Bugs2FIX with parentId + Items2ADD with bugReferrals containing BugItemId
+    $childStatuses = @()
+    foreach ($fx in @($registry.bugs2FIX)) {
+        if ($null -ne $fx -and $fx.PSObject.Properties['parentId'] -and [string]$fx.parentId -eq $BugItemId) {
+            $childStatuses += ConvertTo-PipelineStatus -Status $fx.status
+        }
+    }
+    foreach ($add in @($registry.items2ADD)) {
+        if ($null -ne $add -and $add.PSObject.Properties['bugReferrals']) {
+            if (@($add.bugReferrals) -contains $BugItemId) {
+                $childStatuses += ConvertTo-PipelineStatus -Status $add.status
+            }
+        }
+    }
+    if (@($childStatuses).Count -eq 0) { return }  # no children to aggregate
+
+    $nonDoneCount  = @($childStatuses | Where-Object { $_ -notin @('DONE','CLOSED') }).Count
+    $allDone       = ($nonDoneCount -eq 0)
+    $anyInProgress = $childStatuses -contains 'IN_PROGRESS'
+
+    $newBugStatus = $null
+    if ($allDone) {
+        $newBugStatus = 'DONE'
+    } elseif ($anyInProgress -and $currentBugStatus -eq 'OPEN') {
+        $newBugStatus = 'IN_PROGRESS'
+    }
+
+    if ($null -eq $newBugStatus -or $newBugStatus -eq $currentBugStatus) { return }
+    if (-not (Test-StatusTransition -CurrentStatus $currentBugStatus -NewStatus $newBugStatus)) { return }
+
+    # Apply transition directly to avoid recursion through Update-PipelineItemStatus
+    $nowTs = (Get-Date).ToUniversalTime().ToString('o')
+    foreach ($item in @($registry.bugs)) {
+        if ($null -ne $item -and $item.PSObject.Properties['id'] -and $item.id -eq $BugItemId) {
+            $item.status   = $newBugStatus
+            $item.modified = $nowTs
+            if ($item.PSObject.Properties['sessionModCount']) { $item.sessionModCount++ }
+            # Backfill and update extended tracking fields
+            foreach ($fld in @('lastSeenAt','implementedAt','firstSeenAt')) {
+                if (-not $item.PSObject.Properties[$fld]) {
+                    $item | Add-Member -NotePropertyName $fld -NotePropertyValue $null -Force
+                }
+            }
+            if (-not $item.PSObject.Properties['fixesImplementedCount']) {
+                $item | Add-Member -NotePropertyName 'fixesImplementedCount' -NotePropertyValue 0 -Force
+            }
+            $item.lastSeenAt = $nowTs
+            if ($null -eq $item.firstSeenAt) {
+                $item.firstSeenAt = if ($item.PSObject.Properties['created'] -and $null -ne $item.created) { $item.created } else { $nowTs }
+            }
+            if ($newBugStatus -eq 'DONE') {
+                $item.implementedAt       = $nowTs
+                $item.fixesImplementedCount++
+                $registry.statistics.totalItemsDone++
+            }
+            $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $item
+            break
+        }
+    }
+
+    $registry.meta.lastModified = $nowTs
+    try {
+        $registry | ConvertTo-Json -Depth 10 | Set-Content -Path $regPath -Encoding UTF8 -ErrorAction Stop
+        Write-AppLog -Message "BugStatusRollup: '$BugItemId' $currentBugStatus -> $newBugStatus" -Level Info
+    } catch {
+        Write-AppLog -Message "Invoke-BugStatusRollup: failed to save registry for '$BugItemId': $_" -Level Warning
+    }
+}
+
 # ========================== REGRESSION GUARD ==========================
 
 function Test-BugSinResolved {
@@ -1359,7 +1572,8 @@ Export-ModuleMember -Function @(
     'Get-PipelineInterruptions',
     'Test-PipelineArtifactIntegrity',
     'Invoke-PipelineArtifactRefresh',
-    'Test-BugSinResolved'
+    'Test-BugSinResolved',
+    'Invoke-BugStatusRollup'
 )
 
 

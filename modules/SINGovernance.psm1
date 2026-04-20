@@ -1,10 +1,12 @@
 ﻿# VersionTag: 2604.B2.V31.0
+# FileRole: Module
 <#
 .SYNOPSIS  SINGovernance - SIN review, approval, and SINeProofed workflow.
 .DESCRIPTION
     Provides interactive Chief review of SIN registry entries with
     SHA-512 sealed approval (SINeProofed), ledger integration, and
     XHTML report generation.
+# TODO: HelpMenu | Show-SINGovernanceHelp | Actions: Scan|Register|Audit|Report|Help | Spec: config/help-menu-registry.json
     
     Workflow:
     1. Get-SINReviewQueue   - list pending SINs

@@ -1,0 +1,17 @@
+{
+  "sin_id": "SIN-20260412134935-8b01ebb4",
+  "title": "[FAIL] PwSh-HelpFilesUpdateSource-ReR.psm1 -- 5 parse error(s)",
+  "description": "Error pattern in log cycle-1.log:8",
+  "category": "crash-log",
+  "severity": "HIGH",
+  "file_path": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+  "agent_id": "CronAiAthon",
+  "reported_by": "CronAiAthon-BugTracker",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "regression_count": 0,
+  "created_at": "2026-04-12T05:49:35.4248954Z",
+  "last_seen_at": "2026-04-12T05:49:35.4249374Z",
+  "detection_method": "CronAiAthon-BugTracker",
+  "sessionModCount": 1
+}
