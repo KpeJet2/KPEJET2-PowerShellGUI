@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V32.1
+# VersionTag: 2604.B2.V32.3
+# SupportPS5.1: null
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 #Requires -Version 5.1
 <#
@@ -770,9 +774,11 @@ function Get-CentralMasterToDo {
             status          = ConvertTo-PipelineStatus -Status $pi.status
             source          = if ($piProps.Name -contains 'source') { $pi.source } else { 'unknown' }
             category        = if ($piProps.Name -contains 'category') { $pi.category } else { '' }
-            created         = if ($piProps.Name -contains 'created') { $pi.created } elseif ($piProps.Name -contains 'created_at') { $pi.created_at } else { '' }
-            modified        = if ($piProps.Name -contains 'modified') { $pi.modified } else { '' }
-            sessionModCount = if ($piProps.Name -contains 'sessionModCount') { $pi.sessionModCount } else { 0 }
+            created         = if ($piProps.Name -contains 'created' -and $null -ne $pi.created) { $pi.created }
+                              elseif ($piProps.Name -contains 'created_at' -and $null -ne $pi.created_at) { $pi.created_at }
+                              else { (Get-Date).ToUniversalTime().ToString('o') }
+            modified        = if ($piProps.Name -contains 'modified' -and $null -ne $pi.modified) { $pi.modified } else { (Get-Date).ToUniversalTime().ToString('o') }
+            sessionModCount = if ($piProps.Name -contains 'sessionModCount' -and $null -ne $pi.sessionModCount) { $pi.sessionModCount } else { 0 }
             origin          = 'pipeline'
         }
     }
@@ -977,7 +983,7 @@ function Get-PipelineHealthMetrics {
     }
     $now = [DateTime]::UtcNow
 
-    $created = @($items | Where-Object { $_.created })
+    $created = @($items | Where-Object { $null -ne $_ -and $_.PSObject.Properties['created'] -and -not [string]::IsNullOrWhiteSpace([string]$_.created) })
     $closed  = @($items | Where-Object { $_.status -in @('DONE','CLOSED') })
     $open    = @($items | Where-Object { $_.status -in @('OPEN','PLANNED','IN_PROGRESS','TESTING','BLOCKED','FAILED') })
 
@@ -996,7 +1002,9 @@ function Get-PipelineHealthMetrics {
     # Mean time to close (days)
     $closeTimes = @()
     foreach ($c in $closed) {
-        if ($c.created -and $c.completedAt) {
+        $hasCreated = ($null -ne $c -and $c.PSObject.Properties['created'] -and -not [string]::IsNullOrWhiteSpace([string]$c.created))
+        $hasCompletedAt = ($null -ne $c -and $c.PSObject.Properties['completedAt'] -and -not [string]::IsNullOrWhiteSpace([string]$c.completedAt))
+        if ($hasCreated -and $hasCompletedAt) {
             try {
                 $span = [DateTime]::Parse($c.completedAt) - [DateTime]::Parse($c.created)
                 $closeTimes += $span.TotalDays
@@ -1008,7 +1016,8 @@ function Get-PipelineHealthMetrics {
     # Backlog age distribution
     $ageBuckets = [ordered]@{ 'lt1d' = 0; '1d-7d' = 0; '7d-30d' = 0; 'gt30d' = 0 }
     foreach ($o in $open) {
-        if ($o.created) {
+        $hasCreated = ($null -ne $o -and $o.PSObject.Properties['created'] -and -not [string]::IsNullOrWhiteSpace([string]$o.created))
+        if ($hasCreated) {
             try {
                 $age = ($now - [DateTime]::Parse($o.created)).TotalDays
                 if ($age -lt 1)     { $ageBuckets['lt1d']++ }
@@ -1544,7 +1553,73 @@ function Test-BugSinResolved {
     } catch { return $true }
 }
 
+# ========================== HELP MENU ==========================
+
+function Show-PipelineHelp {
+    <#
+    .SYNOPSIS  Display quick usage help for CronAiAthon pipeline operations.
+    #>
+    [CmdletBinding()]
+    param(
+        [ValidateSet('Register','Run','Status','Reset','Help')]
+        [string]$Action = 'Help',
+
+        [ValidateSet('Debug','Info','Warning','Error','Critical')]
+        [string]$EventLevel = 'Info',
+
+        [string]$LogToFile = 'auto',
+        [switch]$ShowRainbow
+    )
+
+    if ($ShowRainbow) {
+        Write-Host '=== CronAiAthon Pipeline Help ===' -ForegroundColor Cyan
+    }
+
+    $lines = @(
+        'Actions: Register | Run | Status | Reset | Help',
+        "Selected Action: $Action",
+        "EventLevel: $EventLevel",
+        'Examples:',
+        '  Show-PipelineHelp -Action Status',
+        '  Show-PipelineHelp -Action Run -EventLevel Warning',
+        '  Show-PipelineHelp -Action Register -LogToFile auto',
+        '  Show-PipelineHelp -Action Help -ShowRainbow'
+    )
+    foreach ($line in $lines) {
+        Write-Host $line
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LogToFile)) {
+        $logPath = if ($LogToFile -eq 'auto') {
+            Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'logs') 'pipeline-events-help.log'
+        } else {
+            $LogToFile
+        }
+        try {
+            $logDir = Split-Path -Path $logPath -Parent
+            if ($logDir -and -not (Test-Path $logDir)) {
+                New-Item -Path $logDir -ItemType Directory -Force | Out-Null
+            }
+            Add-Content -Path $logPath -Value ("[{0}] Help viewed: Action={1}; EventLevel={2}" -f (Get-Date -Format o), $Action, $EventLevel) -Encoding UTF8
+        } catch {
+            Write-Verbose "Show-PipelineHelp log write failed: $($_.Exception.Message)"
+        }
+    }
+}
+
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'New-PipelineItem',
     'ConvertTo-PipelineItemType',
@@ -1573,7 +1648,13 @@ Export-ModuleMember -Function @(
     'Test-PipelineArtifactIntegrity',
     'Invoke-PipelineArtifactRefresh',
     'Test-BugSinResolved',
-    'Invoke-BugStatusRollup'
+    'Invoke-BugStatusRollup',
+    'Show-PipelineHelp'
 )
+
+
+
+
+
 
 

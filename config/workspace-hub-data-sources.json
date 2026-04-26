@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "HubDataSources/1.0",
+  "updatedAt": "2026-04-26T00:00:00Z",
+  "defaultSourceId": "local-engine",
+  "sources": [
+    {
+      "id": "local-engine",
+      "name": "Local Web Engine",
+      "baseUrl": "http://127.0.0.1:8042",
+      "enabled": true,
+      "isDefault": true,
+      "healthy": false,
+      "lastChecked": null,
+      "remoteSchemaVersion": null,
+      "transformId": "compat-v1",
+      "note": "Default live source for Workspace Hub APIs"
+    }
+  ]
+}

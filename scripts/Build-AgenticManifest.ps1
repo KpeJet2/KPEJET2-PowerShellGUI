@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Builder
 <#
 .SYNOPSIS
@@ -180,7 +184,19 @@ function Extract-FunctionDefs {
 
  function Extract-ExportedFunctions {
     <#
-    .SYNOPSIS Returns the function names from Export-ModuleMember calls in a .psm1.
+    .SYNOPSIS Returns the function names from 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember calls in a .psm1.
     #>
     param([string]$FilePath)
     try {
@@ -193,10 +209,70 @@ function Extract-FunctionDefs {
 
     $exports = [System.Collections.ArrayList]::new()
 
-    # Pattern A: Export-ModuleMember -Function @(\n 'Func1',\n 'Func2'\n)
-    # Pattern B: Export-ModuleMember -Function 'Func1','Func2'
-    # Pattern C: Export-ModuleMember -Function Func1, Func2
-    $matches_ = [regex]::Matches($content, "Export-ModuleMember\s+-Function\s+(.+?)(?:\r?\n\s*(?:Export-ModuleMember|#|$)|\z)", 'Singleline')
+    # Pattern A: 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember -Function @(\n 'Func1',\n 'Func2'\n)
+    # Pattern B: 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember -Function 'Func1','Func2'
+    # Pattern C: 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember -Function Func1, Func2
+    $matches_ = [regex]::Matches($content, "
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember\s+-Function\s+(.+?)(?:\r?\n\s*(?:
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember|#|$)|\z)", 'Singleline')
     foreach ($m in $matches_) {
         $block = $m.Groups[1].Value
         # Extract all quoted or bare function names
@@ -426,7 +502,19 @@ foreach ($mDir in $moduleDirs) {
         $exported  = @(Extract-ExportedFunctions $psm.FullName)
         $deps      = @(Extract-Dependencies $psm.FullName)
 
-        # If no Export-ModuleMember found, treat all functions as exported
+        # If no 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember found, treat all functions as exported
         if (@($exported).Count -eq 0 -and @($allFuncs).Count -gt 0) {
             $exported = $allFuncs | ForEach-Object { $_.Name }
         }
@@ -1232,3 +1320,7 @@ Write-Host "[AgenticManifest] Complete.`n" -ForegroundColor Green
 
 # Return the manifest object for pipeline use
 $manifest
+
+
+
+

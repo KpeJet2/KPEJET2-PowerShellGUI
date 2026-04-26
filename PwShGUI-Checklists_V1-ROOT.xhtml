@@ -486,18 +486,18 @@ function el(id){return document.getElementById(id)}
 function now(){return new Date().toLocaleString()}
 
 var tabObjectives={
-  env:'Scanner overview, category health, and latest activity snapshots.',
-  modules:'Loaded module inventory, versions, paths, and export visibility.',
-  scripts:'Script inventory, dependencies, and manifest version overlay.',
-  config:'Repository and config footprint validation for workspace integrity.',
-  providers:'Provider/drive state, roots, and logging provider availability.',
-  packages:'Package, provider, and source inventory with repository provenance.',
-  security:'Execution policy and baseline preflight verification status.',
-  health:'Orphan and cascade-impact visibility for safe cleanup decisions.',
-  pipeline:'Pipeline work queue status, completion, and impacted files.',
-  cron:'Cron schedule state, cadence, and execution recency.',
-  todo:'Master to-do status across aggregated/index/pipeline sources.',
-  reports:'Generated report families and dependency map index summaries.'
+  env:'Provides a comprehensive overview of the PowerShell environment, including scanner health, category summaries, and recent activity. Use this tab to quickly assess the state of all environment categories and identify areas needing attention.',
+  modules:'Displays all loaded PowerShell modules, their versions, types, paths, and exported functions. Use this tab to verify module health, resolve missing dependencies, audit workspace module usage, and check for version mismatches.',
+  scripts:'Lists all workspace scripts with size, exported functions, dependencies, and version tags. Use this tab to audit script coverage, review dependencies, and ensure all scripts are version-aligned and properly referenced.',
+  config:'Shows all registered repositories and config files, including trusted status and provider details. Use this tab to validate repository setup, troubleshoot config issues, and ensure workspace integrity.',
+  providers:'Summarizes all PowerShell providers and drives, including logging providers. Use this tab to check provider availability, drive mappings, and logging integration.',
+  packages:'Lists installed packages, package providers, sources, and PSResources. Use this tab to audit package provenance, resolve provider issues, and verify resource registration.',
+  security:'Displays execution policy, preflight baseline checks, and SIN pattern scan status. Use this tab to verify security posture, baseline compliance, and scan for known anti-patterns.',
+  health:'Shows orphan files and cascade failure risks. Use this tab to identify unreferenced files, audit for safe cleanup, and review dependency chains that could break workflows.',
+  pipeline:'Visualizes the pipeline work queue, including status, priority, category, and affected files. Use this tab to track work progress, identify blockers, and audit pipeline health.',
+  cron:'Displays the CronAiAthon schedule, including task types, frequency, and run history. Use this tab to monitor scheduled tasks, review execution recency, and troubleshoot missed runs.',
+  todo:'Aggregates all master to-do items from multiple sources, with status, priority, and file references. Use this tab to manage outstanding work, prioritize tasks, and track completion.',
+  reports:'Summarizes generated report categories, dependency maps, and compliance scans. Use this tab to review scan results, audit documentation freshness, and triage validation issues.'
 };
 
 var tabFooterRefs={
@@ -956,6 +956,21 @@ function renderObjTable(obj){
 function renderModules(mods){
   var body=el('modBody');body.innerHTML='';
   var arr=Array.isArray(mods)?mods:[];
+  // Add summary card
+  var modSummary=el('pane-modules').querySelector('.summary-row');
+  if(modSummary){
+    modSummary.innerHTML='<div class="sum-card"><div class="sv">'+arr.length+'</div><div class="sk">Modules Loaded</div></div>';
+  }
+  // Add collapsible panel for table
+  var tablePanel=el('pane-modules').querySelector('.cpanel-modules');
+  if(!tablePanel){
+    tablePanel=document.createElement('div');
+    tablePanel.className='cpanel cpanel-modules open';
+    tablePanel.innerHTML='<div class="cpanel-hdr" onclick="togglePanel(this)"><h3><span class="chevron">&#x25B6;</span> Module Table</h3></div><div class="cpanel-body"></div>';
+    var pane=el('pane-modules');
+    pane.insertBefore(tablePanel,pane.querySelector('table'));
+    tablePanel.querySelector('.cpanel-body').appendChild(pane.querySelector('table'));
+  }
   for(var i=0;i<arr.length;i++){
     var m=arr[i];
     body.innerHTML+='<tr><td>'+esc(m.Name||m.name||'')+'</td><td>'+esc(m.Version||m.version||'')+'</td><td>'+esc(m.ModuleType||m.type||'')+'</td><td>'+esc(m.Path||m.path||'')+'</td><td>'+esc((m.ExportedFunctions||m.functions||[]).join?.(', ')||'')+'</td></tr>';
@@ -968,6 +983,21 @@ function renderModules(mods){
 function renderScripts(scrs){
   var body=el('scrBody');body.innerHTML='';
   var arr=Array.isArray(scrs)?scrs:[];
+  // Add summary card
+  var scrSummary=el('pane-scripts').querySelector('.summary-row');
+  if(scrSummary){
+    scrSummary.innerHTML='<div class="sum-card"><div class="sv">'+arr.length+'</div><div class="sk">Scripts</div></div>';
+  }
+  // Add collapsible panel for table
+  var tablePanel=el('pane-scripts').querySelector('.cpanel-scripts');
+  if(!tablePanel){
+    tablePanel=document.createElement('div');
+    tablePanel.className='cpanel cpanel-scripts open';
+    tablePanel.innerHTML='<div class="cpanel-hdr" onclick="togglePanel(this)"><h3><span class="chevron">&#x25B6;</span> Script Table</h3></div><div class="cpanel-body"></div>';
+    var pane=el('pane-scripts');
+    pane.insertBefore(tablePanel,pane.querySelector('table'));
+    tablePanel.querySelector('.cpanel-body').appendChild(pane.querySelector('table'));
+  }
   for(var i=0;i<arr.length;i++){
     var s=arr[i];
     var name=s.Name||s.name||s.label||'';

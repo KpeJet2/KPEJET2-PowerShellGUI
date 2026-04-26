@@ -1,7 +1,7 @@
 {
   "meta": {
     "schema": "SelfReviewHistory/1.0",
-    "updated": "2026-04-18T07:43:12.2356037Z"
+    "updated": "2026-04-20T17:55:39.4925630Z"
   },
   "runs": [
     {
@@ -352,6 +352,401 @@
       "improvements": [],
       "feedbackItems": [],
       "runtimeSeconds": 1.89,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015436",
+      "timestamp": "2026-04-20T17:54:36.0503315Z",
+      "mode": "full",
+      "compositeScore": 0.6385,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [
+        {
+          "previous": 0.348,
+          "current": 0.308,
+          "dimension": "ErrorRate",
+          "drop": 0.04
+        }
+      ],
+      "improvements": [
+        {
+          "previous": 0.426,
+          "current": 0.617,
+          "dimension": "SINCompliance",
+          "gain": 0.191
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.77,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015442",
+      "timestamp": "2026-04-20T17:54:42.4663218Z",
+      "mode": "full",
+      "compositeScore": 0.6385,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "previous": 0.46,
+          "current": 0.617,
+          "dimension": "SINCompliance",
+          "gain": 0.157
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.6,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015455",
+      "timestamp": "2026-04-20T17:54:55.4176378Z",
+      "mode": "full",
+      "compositeScore": 0.6385,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "previous": 0.493,
+          "current": 0.617,
+          "dimension": "SINCompliance",
+          "gain": 0.124
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.58,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015503",
+      "timestamp": "2026-04-20T17:55:03.6147737Z",
+      "mode": "full",
+      "compositeScore": 0.6386,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 1,
+          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [
+        {
+          "current": 0.617,
+          "gain": 0.09,
+          "dimension": "SINCompliance",
+          "previous": 0.527
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.63,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015512",
+      "timestamp": "2026-04-20T17:55:12.5987202Z",
+      "mode": "full",
+      "compositeScore": 0.6386,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 1,
+          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.94,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015525",
+      "timestamp": "2026-04-20T17:55:25.5648553Z",
+      "mode": "full",
+      "compositeScore": 0.6386,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 1,
+          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.62,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015535",
+      "timestamp": "2026-04-20T17:55:35.7819792Z",
+      "mode": "full",
+      "compositeScore": 0.6386,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 1,
+          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 3.2,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260421015539",
+      "timestamp": "2026-04-20T17:55:39.4831878Z",
+      "mode": "full",
+      "compositeScore": 0.6385,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.617,
+          "detail": "46/69 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
+        },
+        "ErrorRate": {
+          "score": 0.308,
+          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.44,
+          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+        },
+        "FormatCongruency": {
+          "score": 0.999,
+          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 2.82,
       "dryRun": false
     }
   ]

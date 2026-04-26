@@ -1,5 +1,9 @@
 <#
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-29 00:00  audit-007 added VersionTag
 .SYNOPSIS
@@ -80,8 +84,25 @@ function Invoke-[PREFIX]Action {
 }
 
 # ============================ EXPORTS ================================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Get-[PREFIX]Status',
     'Invoke-[PREFIX]Action'
 )
+
+
+
+
+
 

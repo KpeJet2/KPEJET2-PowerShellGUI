@@ -1,4 +1,4 @@
-﻿<# 
+<# 
     TerminalLayoutManager.ps1
     Single-file WPF, dark mode, tabbed UI, on-demand elevation (simplified but functional core).
 #>
@@ -649,3 +649,15 @@ $window.Add_Closing({
 
 # -------------------- Run --------------------
 $window.ShowDialog() | Out-Null
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+

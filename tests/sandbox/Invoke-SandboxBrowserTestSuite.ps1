@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Main orchestrator for sandbox browser test automation.
@@ -385,3 +389,19 @@ $signal = [ordered]@{
 ConvertTo-Json $signal -Depth 5 | Set-Content -LiteralPath $signalPath -Encoding UTF8
 
 exit $(if ($totalFailed -gt 0 -or $totalError -gt 0) { 1 } else { 0 })
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

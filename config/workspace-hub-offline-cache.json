@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "WorkspaceHubData/1.0",
+  "updatedAt": null,
+  "sections": {
+    "scanStatus": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "checkpoint": {
+          "phases": {}
+        },
+        "progress": {
+          "status": "idle",
+          "mode": "offline",
+          "totalPhases": 0,
+          "completedPhases": 0,
+          "currentPhase": null,
+          "error": null
+        }
+      }
+    },
+    "scanCrashes": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "crashes": [],
+        "count": 0
+      }
+    },
+    "engineStatus": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "running": false,
+        "responding": false,
+        "pid": null,
+        "port": null,
+        "uptime": 0
+      }
+    },
+    "engineEvents": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "events": []
+      }
+    },
+    "engineLog": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "lines": []
+      }
+    },
+    "configMenus": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "menus": []
+      }
+    },
+    "reportsList": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "files": [],
+        "count": 0
+      }
+    },
+    "historyList": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "history": [],
+        "count": 0
+      }
+    },
+    "pipelineApprovals": {
+      "updatedAt": null,
+      "sourceId": "offline-seed",
+      "sourceBaseUrl": "",
+      "remoteSchemaVersion": "WorkspaceHubData/1.0",
+      "data": {
+        "pending": [],
+        "count": 0
+      }
+    }
+  }
+}

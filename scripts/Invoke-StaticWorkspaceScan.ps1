@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V32.0
+# VersionTag: 2604.B1.V32.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-08
@@ -57,6 +61,7 @@ $LogsDir      = Join-Path $WorkspacePath 'logs'
 $ReportsDir   = Join-Path $WorkspacePath '~REPORTS'
 $CheckpointDir= Join-Path $WorkspacePath 'checkpoints'
 $ProgressFile = Join-Path $LogsDir 'scan-progress.json'
+$ActivityFile = Join-Path $LogsDir 'scan-activity.log'
 $CheckpointFile = Join-Path $CheckpointDir 'dependency-scan-checkpoint.json'
 $Timestamp    = Get-Date -Format 'yyyyMMdd-HHmm'
 $ReportFile   = Join-Path $ReportsDir "static-scan-$Timestamp.json"
@@ -94,6 +99,7 @@ $progress = [ordered]@{
     completedPhases = 0
     currentPhase    = $null
     phasesStatus    = [ordered]@{}
+    activity        = @()
 }
 foreach ($ph in $AllPhases) { $progress.phasesStatus[$ph] = 'pending' }
 foreach ($ph in $AllPhases) {
@@ -105,10 +111,27 @@ function Write-ScanProgress {
     Set-Content -LiteralPath $ProgressFile -Value $json -Encoding UTF8
 }
 
+function Add-ScanActivity {
+    param([string]$Phase, [string]$Msg, [string]$Level = 'INFO')
+    $evt = [ordered]@{
+        timestamp = (Get-Date -Format 'o')
+        phase     = $Phase
+        level     = $Level
+        message   = $Msg
+    }
+    $progress.activity += $evt
+    if (@($progress.activity).Count -gt 120) {
+        $progress.activity = @($progress.activity | Select-Object -Last 120)
+    }
+    try { Add-Content -LiteralPath $ActivityFile -Value ($evt | ConvertTo-Json -Compress) -Encoding UTF8 } catch { <# non-fatal #> }
+    Write-ScanProgress
+}
+
 function Write-PhaseLog {
     param([string]$Phase, [string]$Msg, [string]$Level = 'INFO')
     $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     Write-Host "[$ts][$Phase][$Level] $Msg"
+    Add-ScanActivity -Phase $Phase -Msg $Msg -Level $Level
 }
 
 Write-ScanProgress
@@ -138,6 +161,17 @@ $checkpoint = Load-Checkpoint
 
 # ─── Pipeline ToDo helpers ────────────────────────────────────────────────────
 $bugsToPush = [System.Collections.ArrayList]@()
+$subFailures = [System.Collections.ArrayList]@()
+
+function Register-SubFailure {
+    param([string]$Phase, [string]$Target, [string]$ErrorMsg)
+    $null = $subFailures.Add([pscustomobject]@{
+        phase   = $Phase
+        target  = $Target
+        error   = $ErrorMsg
+        at      = (Get-Date -Format 'o')
+    })
+}
 
 function New-ScanPhaseBug {
     param([string]$Phase, [string]$ErrorMsg)
@@ -188,11 +222,11 @@ if ($RunPhases -contains 'folders') {
         $folderCount = @($allFolders).Count
         Write-PhaseLog 'folders' "Found $folderCount folders" 'INFO'
         $phaseResults['folders'] = @{ count = $folderCount; items = @($allFolders | ForEach-Object { $_.FullName.Substring($WorkspacePath.Length).TrimStart('\/') }) }
-        $progress.phasesStatus['folders'] = 'ok'; $progress.completedPhases++
+        $progress.phasesStatus['folders'] = 'done'; $progress.completedPhases++
         if (-not $checkpoint.phases.PSObject.Properties.Name -contains 'folders') {
             $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'folders' -Value @{} -Force
         }
-        $checkpoint.phases.folders = @{ count = $folderCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' }
+        $checkpoint.phases.folders = @{ count = $folderCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' }
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'folders' "FAILED: $errMsg" 'ERROR'
@@ -224,13 +258,15 @@ if ($RunPhases -contains 'modules') {
                 $modContent = Get-Content -LiteralPath $mod.FullName -Encoding UTF8 -ErrorAction SilentlyContinue
                 $functions  = @($modContent | Select-String -Pattern '^\s*function\s+([A-Za-z][\w-]+)' | ForEach-Object { $_.Matches[0].Groups[1].Value })
                 $funcCount += @($functions).Count
-            } catch { <# non-fatal: count stays 0 for this module #> }
+            } catch {
+                Register-SubFailure -Phase 'modules' -Target $rel -ErrorMsg $_.Exception.Message
+            }
             $null = $modItems.Add([pscustomobject]@{ path = $rel; name = $mod.BaseName; functions = $functions; sizeKB = [Math]::Round($mod.Length/1KB,1) })
         }
         Write-PhaseLog 'modules' "Found $(@($mods).Count) module files, $funcCount exported functions" 'INFO'
         $phaseResults['modules'] = @{ count = @($mods).Count; functionCount = $funcCount; items = @($modItems) }
-        $progress.phasesStatus['modules'] = 'ok'; $progress.completedPhases++
-        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'modules' -Value @{ count = @($mods).Count; functionCount = $funcCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' } -Force
+        $progress.phasesStatus['modules'] = 'done'; $progress.completedPhases++
+        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'modules' -Value @{ count = @($mods).Count; functionCount = $funcCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' } -Force
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'modules' "FAILED: $errMsg" 'ERROR'
@@ -260,12 +296,14 @@ if ($RunPhases -contains 'scripts') {
                 $scrContent = Get-Content -LiteralPath $scr.FullName -Encoding UTF8 -ErrorAction SilentlyContinue
                 $scriptFuncCount += @($scrContent | Select-String '^\s*function\s+' | Measure-Object).Count
                 $varCount        += @($scrContent | Select-String '\$[A-Za-z]\w+\s*=' | Measure-Object).Count
-            } catch { <# non-fatal #> }
+            } catch {
+                Register-SubFailure -Phase 'scripts' -Target ($scr.FullName.Substring($WorkspacePath.Length).TrimStart('\/')) -ErrorMsg $_.Exception.Message
+            }
         }
         Write-PhaseLog 'scripts' "Found $(@($scripts).Count) scripts, $scriptFuncCount functions, ~$varCount var assignments" 'INFO'
         $phaseResults['scripts'] = @{ count = @($scripts).Count; functionCount = $scriptFuncCount; variableCount = $varCount }
-        $progress.phasesStatus['scripts'] = 'ok'; $progress.completedPhases++
-        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'scripts' -Value @{ count = @($scripts).Count; functionCount = $scriptFuncCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' } -Force
+        $progress.phasesStatus['scripts'] = 'done'; $progress.completedPhases++
+        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'scripts' -Value @{ count = @($scripts).Count; functionCount = $scriptFuncCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' } -Force
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'scripts' "FAILED: $errMsg" 'ERROR'
@@ -291,8 +329,8 @@ if ($RunPhases -contains 'configs') {
             })
         Write-PhaseLog 'configs' "Found $(@($configs).Count) json config files" 'INFO'
         $phaseResults['configs'] = @{ count = @($configs).Count }
-        $progress.phasesStatus['configs'] = 'ok'; $progress.completedPhases++
-        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'configs' -Value @{ count = @($configs).Count; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' } -Force
+        $progress.phasesStatus['configs'] = 'done'; $progress.completedPhases++
+        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'configs' -Value @{ count = @($configs).Count; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' } -Force
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'configs' "FAILED: $errMsg" 'ERROR'
@@ -336,12 +374,14 @@ if ($RunPhases -contains 'urls_ips') {
                     foreach ($u in $urls) { $null = $uniqueUrls.Add($u) }
                     foreach ($ip in $ips) { $null = $uniqueIPs.Add($ip) }
                 }
-            } catch { <# non-fatal: skip this file #> }
+            } catch {
+                Register-SubFailure -Phase 'urls_ips' -Target ($f.FullName.Substring($WorkspacePath.Length).TrimStart('\/')) -ErrorMsg $_.Exception.Message
+            }
         }
         Write-PhaseLog 'urls_ips' "Found $(@($uniqueUrls).Count) unique URLs, $(@($uniqueIPs).Count) unique IPs across $(@($urlFiles).Count) files" 'INFO'
         $phaseResults['urls_ips'] = @{ urlFileCount = @($urlFiles).Count; uniqueUrls = @($uniqueUrls).Count; uniqueIPs = @($uniqueIPs).Count; urlIpByFile = @($urlFiles) }
-        $progress.phasesStatus['urls_ips'] = 'ok'; $progress.completedPhases++
-        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'urls_ips' -Value @{ urlFileCount = @($urlFiles).Count; uniqueIPs = @($uniqueIPs).Count; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' } -Force
+        $progress.phasesStatus['urls_ips'] = 'done'; $progress.completedPhases++
+        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'urls_ips' -Value @{ urlFileCount = @($urlFiles).Count; uniqueIPs = @($uniqueIPs).Count; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' } -Force
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'urls_ips' "FAILED: $errMsg" 'ERROR'
@@ -371,18 +411,32 @@ if ($RunPhases -contains 'dns_resolution') {
         foreach ($h in $hosts) {
             $ip = $null
             try {
-                $dnsResult = [System.Net.Dns]::Resolve($h)
-                if ($null -ne $dnsResult -and @($dnsResult.AddressList).Count -gt 0) {
-                    $ip = $dnsResult.AddressList[0].ToString()
-                    $dnsHitCount++
+                $dnsTask = [System.Net.Dns]::GetHostAddressesAsync($h)
+                if (-not $dnsTask.Wait(3000)) {
+                    $ip = 'unresolved'
+                    Register-SubFailure -Phase 'dns_resolution' -Target $h -ErrorMsg 'DNS timeout after 3000ms'
+                } else {
+                    $addrList = @($dnsTask.Result | Where-Object { $_.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork })
+                    if (@($addrList).Count -gt 0) {
+                        $ip = $addrList[0].ToString()
+                        $dnsHitCount++
+                    } else {
+                        $ip = 'unresolved'
+                    }
                 }
-            } catch { $ip = 'unresolved' }
+            } catch {
+                $ip = 'unresolved'
+                Register-SubFailure -Phase 'dns_resolution' -Target $h -ErrorMsg $_.Exception.Message
+            }
+            if ($null -eq $ip) {
+                $ip = 'unresolved'
+            }
             $null = $resolved.Add([pscustomobject]@{ host = $h; ip = $ip })
         }
         Write-PhaseLog 'dns_resolution' "Resolved $dnsHitCount / $(@($hosts).Count) hosts" 'INFO'
         $phaseResults['dns_resolution'] = @{ hostsChecked = @($hosts).Count; resolved = $dnsHitCount; entries = @($resolved) }
-        $progress.phasesStatus['dns_resolution'] = 'ok'; $progress.completedPhases++
-        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'dns_resolution' -Value @{ hostsChecked = @($hosts).Count; resolved = $dnsHitCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'ok' } -Force
+        $progress.phasesStatus['dns_resolution'] = 'done'; $progress.completedPhases++
+        $checkpoint.phases | Add-Member -MemberType NoteProperty -Name 'dns_resolution' -Value @{ hostsChecked = @($hosts).Count; resolved = $dnsHitCount; completedAt = (Get-Date -Format 'o'); durationMs = [int]((Get-Date) - $phaseStart).TotalMilliseconds; status = 'done' } -Force
     } catch {
         $errMsg = "$_"
         Write-PhaseLog 'dns_resolution' "FAILED: $errMsg" 'ERROR'
@@ -398,11 +452,18 @@ $progress.finishedAt  = Get-Date -Format 'o'
 $progress.currentPhase = $null
 $errorCount = @($bugsToPush).Count
 $progress.status = if ($errorCount -gt 0) { 'partial' } else { 'done' }
-$progress.error  = if ($errorCount -gt 0) { "$errorCount phase(s) failed — see pipeline for BUGS2FIX" } else { $null }
+$progress.error  = if ($errorCount -gt 0) { "$errorCount phase(s) failed - see pipeline for BUGS2FIX" } else { $null }
 Write-ScanProgress
 
+if (@($subFailures).Count -gt 0) {
+    $samples = @($subFailures | Select-Object -First 5 | ForEach-Object { "$($_.phase):$($_.target)" })
+    $subMsg = "Subroutine failures detected: $(@($subFailures).Count). Samples: $($samples -join ', ')"
+    Write-PhaseLog 'subroutine' $subMsg 'WARN'
+    $null = $bugsToPush.Add((New-ScanPhaseBug -Phase 'subroutine' -ErrorMsg $subMsg))
+}
+
 # ─── Save checkpoint ─────────────────────────────────────────────────────────
-$checkpoint.generated = Get-Date -Format 'o'
+$checkpoint | Add-Member -MemberType NoteProperty -Name 'generated' -Value (Get-Date -Format 'o') -Force
 $checkpoint | Add-Member -MemberType NoteProperty -Name 'mode' -Value 'Static' -Force
 Save-Checkpoint -Data $checkpoint
 
@@ -466,3 +527,19 @@ foreach ($ph in $AllPhases) {
 Write-Host ''
 Write-Host "  Elapsed: $([Math]::Round($sw.Elapsed.TotalSeconds,1))s  |  Bugs pushed: $(@($bugsToPush).Count)  |  Report: $(Split-Path $ReportFile -Leaf)"
 Write-Host '═══════════════════════════════════════════════════════════════'
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

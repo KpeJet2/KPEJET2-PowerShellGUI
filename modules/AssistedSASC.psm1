@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
@@ -1889,7 +1893,7 @@ function Show-AssistedSASCDialog {
     $colCanRun  = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
     $colCanRun.Name = 'CanRun'; $colCanRun.HeaderText = ''; $colCanRun.Visible = $false
 
-    $grid.Columns.AddRange(@($colIcon, $colCat, $colStep, $colStatus, $colDetail, $colAction, $colCanRun))
+    $grid.Columns.AddRange(@($colIcon, $colCat, $colStep, $colStatus, $colDetail, $colAction, $colCanRun) | Where-Object { $_ -is [System.Windows.Forms.DataGridViewColumn] })
     $setupForm.Controls.Add($grid)
 
     # -- Buttons ------------------------------------------------------------
@@ -2503,6 +2507,18 @@ function Install-BitwardenLite {
 # -------------------------------------------------------------------------------
 #  MODULE EXPORTS
 # -------------------------------------------------------------------------------
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     # Lifecycle
     'Initialize-SASCModule',
@@ -2581,6 +2597,11 @@ function Get-CredentialForTarget {
     try { Write-AppLog "SASC: Credential retrieved for target: $TargetName (user: $($item.UserName))" "Info" } catch { <# Intentional: non-fatal #> }
     return $cred
 }
+
+
+
+
+
 
 
 

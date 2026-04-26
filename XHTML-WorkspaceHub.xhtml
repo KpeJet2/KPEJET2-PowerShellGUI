@@ -82,6 +82,23 @@
       padding:4px var(--pad);font-size:10px;color:var(--fg-sub);
       display:flex;justify-content:space-between;flex-shrink:0;
     }
+    .hub-footer{
+      text-align:left;padding:12px var(--pad);color:#888;font-size:11px;
+      border-top:2px solid var(--accent);background:#1a1a1e;flex-shrink:0;
+    }
+    .hub-footer .ft-title{font-weight:700;color:var(--fg);font-size:12px;margin-bottom:8px}
+    .hub-footer .ft-section{margin-bottom:8px}
+    .hub-footer .ft-section-hdr{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+    .hub-footer .ft-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+    .hub-footer .ft-ref{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;
+      font-family:'Consolas',monospace;border:1px solid;cursor:default}
+    .hub-footer .ft-json{background:#0a2a3a;border-color:#1a4a6a;color:#22d3ee}
+    .hub-footer .ft-xhtml{background:#2a1a3a;border-color:#4a2a6a;color:#9b59b6}
+    .hub-footer .ft-md{background:#3a2a0a;border-color:#6a4a1a;color:#e67e22}
+    .hub-footer .ft-state-ok{color:#9cdcfe;border-color:#007acc60;background:#007acc10}
+    .hub-footer .ft-state-active{color:#8ec7ff;border-color:#8ec7ff;background:#1f3448;box-shadow:0 0 0 1px #8ec7ff inset}
+    .hub-footer .ft-state-missing{border-color:#f44747;background:#5a1d1d;color:#ffd3d3}
+    .hub-footer .ft-version{text-align:center;margin-top:8px;color:#555;font-size:10px}
     .st-ok{color:var(--pass)}
     .st-err{color:var(--fail)}
     .st-warn{color:var(--warn)}
@@ -292,8 +309,8 @@
     <span class="hdr-ver">2604.B1.V32.3</span>
     <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
     <span id="engStatus" class="eng-status-lbl" data-tip="LocalWebEngine uptime and PID">&#x2014;</span>
-    <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Check if engine is running; instructions shown if offline">&#x25B6; Start Engine</button>
-    <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Send stop signal to the running LocalWebEngine">&#x25A0; Stop</button>
+    <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Live mode: verify/start via API route. File mode: shows local launch guidance and opens launcher when possible.">&#x25B6; Start Engine</button>
+    <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Live mode: stop confirmation + API stop. File mode: graceful fallback guidance if remote control is unavailable.">&#x25A0; Stop</button>
   </div>
 
   <!-- ── Scan action toolbar ── -->
@@ -302,6 +319,9 @@
     <button class="scan-btn inc" onclick="doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
     <button class="scan-btn full" onclick="doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
     <button class="scan-btn static" onclick="doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
+    <button class="scan-btn" onclick="createTestCrashDump()" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
+    <button class="scan-btn" onclick="createTestEventLog()" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
+    <button class="scan-btn" onclick="createTestHistory()" data-tip="Write a synthetic runtime history entry and refresh History">&#x1F551; Test History</button>
     <div class="scan-pgbar-wrap"><div class="scan-pgbar-fill" id="scanPgHub"></div></div>
     <span id="scanMsgHub">Idle</span>
     <button class="scan-btn" onclick="refreshAll()" data-tip="Refresh engine status, scan badges and timeline">&#x21BB; Refresh</button>
@@ -339,9 +359,11 @@
       <button class="hub-section-btn hub-nav-item active" id="navTools"     onclick="showSection('tools')"     data-tip="XHTML tool card launcher"><span class="hub-nav-icon">&#x1F6E0;</span>Tools</button>
       <button class="hub-section-btn hub-nav-item"        id="navReports"   onclick="showSection('reports')"   data-tip="Generated scan and audit reports"><span class="hub-nav-icon">&#x1F4CA;</span>Reports</button>
       <button class="hub-section-btn hub-nav-item"        id="navTimeline"  onclick="showSection('timeline')"  data-tip="Phase completion history from last scan"><span class="hub-nav-icon">&#x1F554;</span>History</button>
+      <button class="hub-section-btn hub-nav-item"        id="navApprovals" onclick="showSection('approvals')" data-tip="Pending approval queue for feature, bug-fix and work-item todos"><span class="hub-nav-icon">&#x2705;</span>Pipeline Approvals</button>
       <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
       <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="WebEngine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Engine Monitor</button>
+      <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
       <div class="hub-sidebar-links">
         <a class="hub-sidebar-link" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help Index in a new window">&#x1F4D6; Help Index (local file)</a>
         <a class="hub-sidebar-link" id="helpHostedLink" href="http://127.0.0.1:8042/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help via WebEngine (requires engine running)">&#x1F310; Help Index (engine hosted)</a>
@@ -414,6 +436,34 @@
         <ul class="hub-timeline" id="hubTimeline">
           <li><div class="tl-dot"></div><span class="tl-label">Loading scan history&#x2026;</span></li>
         </ul>
+      </div>
+
+      <div id="secApprovals" style="display:none">
+        <div class="hub-section-title">Pipeline Approval Queue</div>
+        <div class="evt-filter-bar">
+          <button class="scan-btn" onclick="runPipelineProcess()" data-tip="Process outstanding Bugs2FIX, Items2Do/Items2ADD and Feature Requests into pending-approval todos">&#x1F680; Run Pipeline Process</button>
+          <button class="scan-btn" onclick="loadPipelineApprovals()" data-tip="Refresh the pending approval list">&#x21BB; Refresh Queue</button>
+          <label style="font-size:10px;color:var(--fg-sub)">Sort:
+            <select id="approvalSort" onchange="setApprovalSort(this.value)">
+              <option value="priority-desc">Priority (High to Low)</option>
+              <option value="priority-asc">Priority (Low to High)</option>
+              <option value="title-asc">Title (A to Z)</option>
+              <option value="created-desc">Newest First</option>
+            </select>
+          </label>
+          <span id="approvalCount" style="font-size:10px;color:var(--fg-sub);margin-left:6px">0 pending</span>
+        </div>
+        <div class="evt-filter-bar" style="margin-top:4px">
+          <label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:4px;cursor:pointer">
+            <input type="checkbox" id="approvalSelectAll" onclick="toggleApprovalSelectAll(this.checked)" style="accent-color:var(--accent)" />
+            Select All
+          </label>
+          <button class="scan-btn" onclick="applyApprovalAction('APPROVE')" data-tip="Approve selected items and move to PLANNED">Approve</button>
+          <button class="scan-btn" onclick="applyApprovalAction('DEFER_FOR_LATER')" data-tip="Defer selected items for later review">Defer for Later</button>
+          <button class="scan-btn" onclick="applyApprovalAction('BACKLOG_UFN')" data-tip="Backlog selected items until further notice">Backlog UFN</button>
+          <span id="approvalMsg" style="font-size:10px;color:var(--fg-sub)"></span>
+        </div>
+        <div id="approvalTableWrap" class="eng-log-pre" style="max-height:380px">Loading pending approvals...</div>
       </div>
 
       <!-- ── Crash dumps section ── -->
@@ -497,6 +547,30 @@
         <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
       </div>
 
+      <!-- ── Data Sources section ── -->
+      <div id="secSources" style="display:none">
+        <div class="hub-section-title">Data Sources</div>
+        <div class="evt-filter-bar" style="margin-bottom:8px">
+          <span style="font-size:11px;color:var(--fg-sub)">Default source:</span>
+          <span id="srcDefaultLbl" style="font-size:11px;color:var(--info);font-weight:600">loading...</span>
+          <button class="scan-btn" onclick="refreshDataSourceHealth()" data-tip="Re-validate all configured live sources">&#x21BB; Validate Sources</button>
+          <button class="scan-btn" onclick="syncLiveDataToOfflineCache()" data-tip="Fetch all key sections from live source and refresh offline cache">&#x1F4BE; Sync Cache</button>
+          <span id="srcStatusMsg" style="font-size:10px;color:var(--fg-sub)"></span>
+        </div>
+
+        <div class="eng-log-pre" id="srcTableWrap" style="max-height:260px">Loading data sources...</div>
+
+        <div class="evt-filter-bar" style="margin-top:10px">
+          <label style="font-size:10px;color:var(--fg-sub)">Name:
+            <input type="text" id="srcNameInput" placeholder="My Live Source" style="width:180px" />
+          </label>
+          <label style="font-size:10px;color:var(--fg-sub)">Base URL:
+            <input type="text" id="srcUrlInput" placeholder="http://127.0.0.1:8042" style="width:260px" />
+          </label>
+          <button class="scan-btn" onclick="addLiveSource()" data-tip="Connection is tested before the source is added">&#x2795; Add Source</button>
+        </div>
+      </div>
+
     </div><!-- hub-main -->
   </div><!-- hub-layout -->
 
@@ -512,6 +586,26 @@
       </div>
       <div class="stop-monitor-msg" id="stopMonMsg"></div>
     </div>
+  </div>
+
+  <div class="hub-footer" id="hubFooter">
+    <div class="ft-title">&#x1F4CC; Workspace Hub Footer</div>
+    <div class="ft-section">
+      <div class="ft-section-hdr">Data Sources</div>
+      <div class="ft-row">
+        <span class="ft-ref ft-json" id="ftLiveSummary">live: loading...</span>
+        <span class="ft-ref ft-json" id="ftDefaultSource">default: loading...</span>
+        <span class="ft-ref ft-json" id="ftSchemaSummary">schema: loading...</span>
+      </div>
+    </div>
+    <div class="ft-section">
+      <div class="ft-section-hdr">Offline Cache</div>
+      <div class="ft-row">
+        <span class="ft-ref ft-md" id="ftCacheSummary">cache: loading...</span>
+        <span class="ft-ref ft-xhtml" id="ftModeSummary">mode: loading...</span>
+      </div>
+    </div>
+    <div class="ft-version">WorkspaceHub Footer Format aligned to PwShGUI-Checklists-TEST.xhtml</div>
   </div>
 
   <div class="sbar">
@@ -535,6 +629,108 @@
   var _sortMode   = 'default';
   var _groupFilter = 'all'; /* 'all' or a specific group tag */
   var _selectedTools = {};  /* id -> true for checked tool cards */
+  var LOCAL_SCHEMA_VERSION = 'WorkspaceHubData/1.0';
+  var SCHEMA_TRANSFORMS = {
+    'WorkspaceHubData/1.0': 'compat-v1',
+    'EngineStatus/1.0': 'engine-status-v1',
+    'ScanStatus/1.0': 'scan-status-v1',
+    'LegacyScanStatus/0.9': 'legacy-v0'
+  };
+  var DATASRC_KEY = 'pwshgui_hub_data_sources_v1';
+  var CACHE_KEY = 'pwshgui_hub_offline_cache_v1';
+  var _dataSources = [];
+  var _offlineCache = { schemaVersion: LOCAL_SCHEMA_VERSION, updatedAt: null, sections: {} };
+  var _approvalItems = [];
+  var _approvalSelected = {};
+  var _approvalSort = 'priority-desc';
+  var STATIC_BOOTSTRAP_DATA_SOURCES = {
+    schemaVersion: 'HubDataSources/1.0',
+    updatedAt: '2026-04-26T00:00:00Z',
+    defaultSourceId: 'local-engine',
+    sources: [
+      {
+        id: 'local-engine',
+        name: 'Local Web Engine',
+        baseUrl: 'http://127.0.0.1:8042',
+        enabled: true,
+        isDefault: true,
+        healthy: false,
+        lastChecked: null,
+        remoteSchemaVersion: null,
+        transformId: 'compat-v1',
+        note: 'Default live source for Workspace Hub APIs'
+      }
+    ]
+  };
+  var STATIC_BOOTSTRAP_OFFLINE_CACHE = {
+    schemaVersion: 'WorkspaceHubData/1.0',
+    updatedAt: null,
+    sections: {
+      scanStatus: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { checkpoint: { phases: {} }, progress: { status: 'idle', mode: 'offline', totalPhases: 0, completedPhases: 0, currentPhase: null, error: null } }
+      },
+      scanCrashes: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { crashes: [], count: 0 }
+      },
+      engineStatus: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { running: false, responding: false, pid: null, port: null, uptime: 0 }
+      },
+      engineEvents: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { events: [] }
+      },
+      engineLog: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { lines: [] }
+      },
+      configMenus: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { menus: [] }
+      },
+      reportsList: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { files: [], count: 0 }
+      },
+      historyList: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { history: [], count: 0 }
+      },
+      pipelineApprovals: {
+        updatedAt: null,
+        sourceId: 'offline-seed',
+        sourceBaseUrl: '',
+        remoteSchemaVersion: 'WorkspaceHubData/1.0',
+        data: { pending: [], count: 0 }
+      }
+    }
+  };
 
   /* ── Predefined group tags (user can add more via MenuBuilder) ── */
   var GROUP_TAGS = [
@@ -572,7 +768,7 @@
   ];
 
   /* ── Section navigation ── */
-  var _sections = ['Tools','Reports','Timeline','Crashes','EventLogs','Monitor'];
+  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources'];
 
   function showSection(name) {
     for (var i = 0; i < _sections.length; i++) {
@@ -584,11 +780,638 @@
       if (nav) { nav.className = nav.className.replace(' active','') + (match ? ' active' : ''); }
     }
     if (name === 'timeline')   { loadTimeline(); }
+    if (name === 'approvals')  { loadPipelineApprovals(); }
     if (name === 'crashes')    { loadCrashes(); }
     if (name === 'eventlogs')  { loadEventLogs(); }
     if (name === 'monitor')    { refreshMonitor(); }
+    if (name === 'reports')    { loadReports(); }
+    if (name === 'sources')    { renderDataSources(); }
   }
   window.showSection = showSection;
+
+  /* ── Data source management + offline cache ── */
+  function _clone(obj) {
+    try { return JSON.parse(JSON.stringify(obj)); } catch(e) { return obj; }
+  }
+
+  function _isFileProtocol() {
+    return !!(window.location && window.location.protocol === 'file:');
+  }
+
+  function _mkDefaultSource() {
+    return {
+      id: 'local-engine',
+      name: 'Local Web Engine',
+      baseUrl: 'http://127.0.0.1:8042',
+      enabled: true,
+      isDefault: true,
+      healthy: false,
+      lastChecked: null,
+      remoteSchemaVersion: null,
+      transformId: 'compat-v1',
+      note: 'Built-in default source'
+    };
+  }
+
+  function _normalizeBaseUrl(url) {
+    var u = String(url || '').trim();
+    while (u.length > 1 && u.charAt(u.length - 1) === '/') { u = u.substring(0, u.length - 1); }
+    return u;
+  }
+
+  function _joinSourceUrl(baseUrl, relPath) {
+    var b = _normalizeBaseUrl(baseUrl || ENGINE_BASE);
+    var p = String(relPath || '');
+    if (p.indexOf('/') !== 0) { p = '/' + p; }
+    return b + p;
+  }
+
+  function _parseSafeJson(raw, fallback) {
+    try { return JSON.parse(raw); } catch(e) { return fallback; }
+  }
+
+  function _schemaTransformForRemote(remoteVersion) {
+    var rv = String(remoteVersion || '');
+    if (!rv || rv === LOCAL_SCHEMA_VERSION) { return 'compat-v1'; }
+    if (SCHEMA_TRANSFORMS[rv]) { return SCHEMA_TRANSFORMS[rv]; }
+    if (rv.toLowerCase().indexOf('legacy') !== -1) { return 'legacy-v0'; }
+    return 'compat-v1';
+  }
+
+  function _negotiateSchema(remoteVersion, supportedSchemas) {
+    var rv = String(remoteVersion || '');
+    var supportList = Array.isArray(supportedSchemas) ? supportedSchemas : [];
+    var direct = (rv && rv === LOCAL_SCHEMA_VERSION) || (supportList.indexOf(LOCAL_SCHEMA_VERSION) !== -1);
+    if (direct) {
+      return { compatible: true, transformId: 'compat-v1', mode: 'direct' };
+    }
+    return { compatible: false, transformId: _schemaTransformForRemote(rv), mode: 'transform' };
+  }
+
+  function _ensureValidSources() {
+    if (!Array.isArray(_dataSources) || _dataSources.length === 0) { _dataSources = [ _mkDefaultSource() ]; }
+    var valid = [];
+    for (var i = 0; i < _dataSources.length; i++) {
+      var s = _dataSources[i];
+      if (!s || !s.baseUrl) { continue; }
+      s.baseUrl = _normalizeBaseUrl(s.baseUrl);
+      s.enabled = s.enabled !== false;
+      s.id = s.id || ('src_' + i + '_' + Math.floor(Math.random() * 100000));
+      s.name = s.name || s.baseUrl;
+      valid.push(s);
+    }
+    if (valid.length === 0) { valid.push(_mkDefaultSource()); }
+    var hasDefault = false;
+    for (var j = 0; j < valid.length; j++) {
+      if (valid[j].isDefault) { hasDefault = true; break; }
+    }
+    if (!hasDefault) { valid[0].isDefault = true; }
+    var firstDefaultFound = false;
+    for (var k = 0; k < valid.length; k++) {
+      if (valid[k].isDefault && !firstDefaultFound) { firstDefaultFound = true; }
+      else if (valid[k].isDefault) { valid[k].isDefault = false; }
+    }
+    _dataSources = valid;
+  }
+
+  function _getDefaultSource() {
+    _ensureValidSources();
+    for (var i = 0; i < _dataSources.length; i++) {
+      if (_dataSources[i].isDefault) { return _dataSources[i]; }
+    }
+    return _dataSources[0];
+  }
+
+  function _getOrderedLiveSources() {
+    _ensureValidSources();
+    var list = [];
+    var d = _getDefaultSource();
+    if (d && d.enabled) { list.push(d); }
+    for (var i = 0; i < _dataSources.length; i++) {
+      var s = _dataSources[i];
+      if (!s.enabled || (d && s.id === d.id)) { continue; }
+      list.push(s);
+    }
+    return list;
+  }
+
+  function _persistDataSourceConfig() {
+    _ensureValidSources();
+    try {
+      localStorage.setItem(DATASRC_KEY, JSON.stringify({
+        schemaVersion: 'HubDataSources/1.0',
+        updatedAt: new Date().toISOString(),
+        defaultSourceId: _getDefaultSource().id,
+        sources: _dataSources
+      }));
+    } catch(e) { }
+  }
+
+  function _persistOfflineCache() {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(_offlineCache)); } catch(e) { }
+    _updateHubFooter();
+  }
+
+  function _setEngineBaseFromDefault() {
+    var d = _getDefaultSource();
+    ENGINE_BASE = d ? _normalizeBaseUrl(d.baseUrl) : 'http://127.0.0.1:8042';
+    var lbl = document.getElementById('srcDefaultLbl');
+    if (lbl && d) { lbl.textContent = d.name + ' (' + d.baseUrl + ')'; }
+    _updateHubFooter();
+  }
+
+  function _fetchWithTimeout(url, options, timeoutMs) {
+    return new Promise(function(resolve, reject) {
+      var settled = false;
+      var timer = setTimeout(function() {
+        if (settled) { return; }
+        settled = true;
+        reject(new Error('timeout'));
+      }, timeoutMs || 5000);
+      fetch(url, options || {}).then(function(resp) {
+        if (settled) { return; }
+        settled = true;
+        clearTimeout(timer);
+        resolve(resp);
+      }).catch(function(err) {
+        if (settled) { return; }
+        settled = true;
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
+  function _safeFetchJson(url, options, timeoutMs) {
+    return _fetchWithTimeout(url, options || { method: 'GET' }, timeoutMs || 5000).then(function(resp) {
+      if (!resp.ok) { throw new Error('http ' + resp.status); }
+      return resp.json();
+    });
+  }
+
+  function _normalizeSectionData(section, payload) {
+    if (section === 'scanStatus') {
+      if (payload && (payload.checkpoint || payload.progress)) { return payload; }
+      if (payload && payload.phases) { return { checkpoint: { phases: payload.phases }, progress: payload.progress || null }; }
+      return { checkpoint: null, progress: null };
+    }
+    if (section === 'scanCrashes') {
+      if (Array.isArray(payload)) { return { crashes: payload, count: payload.length }; }
+      if (payload && Array.isArray(payload.crashes)) { return payload; }
+      if (payload && Array.isArray(payload.dumps)) { return { crashes: payload.dumps, count: payload.dumps.length }; }
+      return { crashes: [], count: 0 };
+    }
+    if (section === 'engineEvents') {
+      if (payload && Array.isArray(payload.events)) { return payload; }
+      if (Array.isArray(payload)) { return { events: payload }; }
+      return { events: [] };
+    }
+    if (section === 'engineLog') {
+      if (payload && Array.isArray(payload.lines)) { return payload; }
+      if (payload && typeof payload.log === 'string') { return { lines: payload.log.split('\n') }; }
+      return { lines: [] };
+    }
+    if (section === 'engineStatus') {
+      if (!payload) { return { running: false, responding: false }; }
+      if (payload.running === undefined) { payload.running = true; }
+      if (payload.responding === undefined) { payload.responding = !!payload.running; }
+      return payload;
+    }
+    if (section === 'reportsList') {
+      if (payload && Array.isArray(payload.files)) { return payload; }
+      if (Array.isArray(payload)) { return { files: payload, count: payload.length }; }
+      return { files: [], count: 0 };
+    }
+    if (section === 'historyList') {
+      if (payload && Array.isArray(payload.history)) { return payload; }
+      if (Array.isArray(payload)) { return { history: payload, count: payload.length }; }
+      return { history: [], count: 0 };
+    }
+    if (section === 'pipelineApprovals') {
+      if (payload && Array.isArray(payload.pending)) { return payload; }
+      if (Array.isArray(payload)) { return { pending: payload, count: payload.length }; }
+      return { pending: [], count: 0 };
+    }
+    return payload;
+  }
+
+  function _applySchemaTransform(section, payload, transformId) {
+    var data = _normalizeSectionData(section, payload);
+    if (section === 'scanStatus') {
+      var phases = data && data.checkpoint ? data.checkpoint.phases : (data ? data.phases : null);
+      if (phases) {
+        var keys = Object.keys(phases);
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          var ph = phases[k] || {};
+          if (ph.status === 'ok') { ph.status = 'done'; }
+          if (!ph.timestamp && ph.completedAt) { ph.timestamp = ph.completedAt; }
+          phases[k] = ph;
+        }
+      }
+      if (data && data.progress && data.progress.status === 'ok') { data.progress.status = 'done'; }
+    }
+    if (transformId === 'legacy-v0' && section === 'engineEvents' && data && Array.isArray(data.events)) {
+      for (var j = 0; j < data.events.length; j++) {
+        if (!data.events[j].level) { data.events[j].level = 'INFO'; }
+      }
+    }
+    return data;
+  }
+
+  function _cacheSectionData(section, payload, sourceObj) {
+    _offlineCache.schemaVersion = LOCAL_SCHEMA_VERSION;
+    _offlineCache.updatedAt = new Date().toISOString();
+    if (!_offlineCache.sections) { _offlineCache.sections = {}; }
+    _offlineCache.sections[section] = {
+      updatedAt: _offlineCache.updatedAt,
+      sourceId: sourceObj ? sourceObj.id : '',
+      sourceBaseUrl: sourceObj ? sourceObj.baseUrl : '',
+      remoteSchemaVersion: sourceObj ? (sourceObj.remoteSchemaVersion || '') : '',
+      data: payload
+    };
+    _persistOfflineCache();
+  }
+
+  function _ensureOfflineCacheShape() {
+    if (!_offlineCache || typeof _offlineCache !== 'object') { _offlineCache = _clone(STATIC_BOOTSTRAP_OFFLINE_CACHE); }
+    if (!_offlineCache.sections) { _offlineCache.sections = {}; }
+    var seedSections = STATIC_BOOTSTRAP_OFFLINE_CACHE.sections || {};
+    var keys = Object.keys(seedSections);
+    for (var i = 0; i < keys.length; i++) {
+      if (!_offlineCache.sections[keys[i]]) { _offlineCache.sections[keys[i]] = _clone(seedSections[keys[i]]); }
+    }
+  }
+
+  function _readCachedSection(section) {
+    if (_offlineCache && _offlineCache.sections && _offlineCache.sections[section]) {
+      return _offlineCache.sections[section].data;
+    }
+    return null;
+  }
+
+  function _setSourceMessage(msg, level) {
+    var el = document.getElementById('srcStatusMsg');
+    if (!el) { return; }
+    el.style.color = level === 'err' ? '#f44747' : level === 'warn' ? '#dcdcaa' : '#4ec9b0';
+    el.textContent = msg || '';
+  }
+
+  function validateSourceConnection(src) {
+    var source = _clone(src);
+    source.baseUrl = _normalizeBaseUrl(source.baseUrl);
+    var schemaPath = _joinSourceUrl(source.baseUrl, '/api/hub/schema');
+    var statusPath = _joinSourceUrl(source.baseUrl, '/api/engine/status');
+    var scanPath = _joinSourceUrl(source.baseUrl, '/api/scan/status');
+    var nowIso = new Date().toISOString();
+
+    return _safeFetchJson(schemaPath, { method: 'GET' }, 4500).then(function(schema) {
+      var negotiation = _negotiateSchema(schema && schema.schemaVersion ? schema.schemaVersion : '', schema && schema.supportedSchemas ? schema.supportedSchemas : []);
+      source.healthy = true;
+      source.lastChecked = nowIso;
+      source.remoteSchemaVersion = schema && schema.schemaVersion ? schema.schemaVersion : 'remote-unknown';
+      source.transformId = negotiation.transformId;
+      source.schemaCompatible = negotiation.compatible;
+      source.localSchemaVersion = LOCAL_SCHEMA_VERSION;
+      source.negotiationMode = negotiation.mode;
+      source.lastError = '';
+      return source;
+    }).catch(function() {
+      return _safeFetchJson(statusPath, { method: 'GET' }, 4500).then(function(st) {
+        var negotiation2 = _negotiateSchema('EngineStatus/1.0', []);
+        source.healthy = !!(st && st.running);
+        source.lastChecked = nowIso;
+        source.remoteSchemaVersion = 'EngineStatus/1.0';
+        source.transformId = negotiation2.transformId;
+        source.schemaCompatible = negotiation2.compatible;
+        source.localSchemaVersion = LOCAL_SCHEMA_VERSION;
+        source.negotiationMode = negotiation2.mode;
+        source.lastError = source.healthy ? '' : 'engine not running';
+        if (!source.healthy) { throw new Error(source.lastError); }
+        return source;
+      }).catch(function(err2) {
+        return _safeFetchJson(scanPath, { method: 'GET' }, 4500).then(function(scan) {
+          var remoteV = scan && scan.checkpoint ? 'ScanStatus/1.0' : 'LegacyScanStatus/0.9';
+          var negotiation3 = _negotiateSchema(remoteV, []);
+          source.healthy = true;
+          source.lastChecked = nowIso;
+          source.remoteSchemaVersion = remoteV;
+          source.transformId = negotiation3.transformId;
+          source.schemaCompatible = negotiation3.compatible;
+          source.localSchemaVersion = LOCAL_SCHEMA_VERSION;
+          source.negotiationMode = negotiation3.mode;
+          source.lastError = '';
+          return source;
+        }).catch(function(err3) {
+          source.healthy = false;
+          source.lastChecked = nowIso;
+          source.remoteSchemaVersion = '';
+          source.transformId = 'compat-v1';
+          source.schemaCompatible = false;
+          source.localSchemaVersion = LOCAL_SCHEMA_VERSION;
+          source.negotiationMode = 'none';
+          source.lastError = (err3 && err3.message) ? err3.message : ((err2 && err2.message) ? err2.message : 'connection failed');
+          throw source;
+        });
+      });
+    });
+  }
+
+  function fetchSectionData(section, relPath, options, liveOnly) {
+    var sources = _getOrderedLiveSources();
+    var idx = 0;
+    function tryNext() {
+      if (idx >= sources.length) {
+        var cached = _readCachedSection(section);
+        if (!liveOnly && cached !== null && cached !== undefined) {
+          return Promise.resolve({ data: _clone(cached), fromCache: true, source: null });
+        }
+        return Promise.reject(new Error('no live source available and cache missing'));
+      }
+      var s = sources[idx++];
+      var url = _joinSourceUrl(s.baseUrl, relPath);
+      return _fetchWithTimeout(url, options || { method: 'GET' }, 6000).then(function(r) {
+        if (!r.ok) { throw new Error('http ' + r.status); }
+        return r.json();
+      }).then(function(payload) {
+        s.healthy = true;
+        s.lastChecked = new Date().toISOString();
+        var normalized = _applySchemaTransform(section, payload, s.transformId || 'compat-v1');
+        _cacheSectionData(section, normalized, s);
+        _persistDataSourceConfig();
+        return { data: normalized, fromCache: false, source: s };
+      }).catch(function(err) {
+        s.healthy = false;
+        s.lastChecked = new Date().toISOString();
+        s.lastError = (err && err.message) ? err.message : 'request failed';
+        _persistDataSourceConfig();
+        return tryNext();
+      });
+    }
+    return tryNext();
+  }
+
+  function renderDataSources() {
+    var wrap = document.getElementById('srcTableWrap');
+    if (!wrap) { return; }
+    _ensureValidSources();
+    _setEngineBaseFromDefault();
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>' +
+      '<th style="text-align:left;padding:5px 8px;background:#141418">Name</th>' +
+      '<th style="text-align:left;padding:5px 8px;background:#141418">Base URL</th>' +
+      '<th style="text-align:left;padding:5px 8px;background:#141418">Health</th>' +
+      '<th style="text-align:left;padding:5px 8px;background:#141418">Schema</th>' +
+      '<th style="text-align:left;padding:5px 8px;background:#141418">Actions</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < _dataSources.length; i++) {
+      var s = _dataSources[i];
+      var health = s.healthy ? '&#x2705; Live' : '&#x26A0; Unverified';
+      if (s.healthy === false && s.lastChecked) { health = '&#x274C; Offline'; }
+      var schemaCompat = s.schemaCompatible ? 'compatible' : 'mapped';
+      var schema = (s.remoteSchemaVersion || '-') + ' / ' + LOCAL_SCHEMA_VERSION + ' [' + schemaCompat + '] (' + (s.transformId || 'compat-v1') + ')';
+      html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+        '<td style="padding:5px 8px">' + (s.isDefault ? '&#x2605; ' : '') + escHtml(s.name) + '</td>' +
+        '<td style="padding:5px 8px;color:#7a9acc">' + escHtml(s.baseUrl) + '</td>' +
+        '<td style="padding:5px 8px">' + health + '</td>' +
+        '<td style="padding:5px 8px;color:#dcdcaa">' + escHtml(schema) + '</td>' +
+        '<td style="padding:5px 8px;white-space:nowrap">' +
+          '<button class="scan-btn" onclick="setDefaultDataSource(\'' + escAttr(s.id) + '\')">Default</button> ' +
+          '<button class="scan-btn" onclick="retestDataSource(\'' + escAttr(s.id) + '\')">Test</button> ' +
+          '<button class="scan-btn" onclick="toggleDataSourceEnabled(\'' + escAttr(s.id) + '\')">' + (s.enabled === false ? 'Enable' : 'Disable') + '</button> ' +
+          '<button class="scan-btn" onclick="removeDataSource(\'' + escAttr(s.id) + '\')">Remove</button>' +
+        '</td></tr>';
+    }
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+    _setEngineBaseFromDefault();
+    _updateHubFooter();
+  }
+  window.renderDataSources = renderDataSources;
+
+  function setDefaultDataSource(id) {
+    var found = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === id) { found = _dataSources[i]; break; } }
+    if (!found) { return; }
+    _setSourceMessage('Confirming source before setting default...', 'warn');
+    validateSourceConnection(found).then(function(okSrc) {
+      for (var j = 0; j < _dataSources.length; j++) {
+        _dataSources[j].isDefault = (_dataSources[j].id === id);
+        if (_dataSources[j].id === id) { _dataSources[j] = okSrc; _dataSources[j].isDefault = true; }
+      }
+      _persistDataSourceConfig();
+      _setEngineBaseFromDefault();
+      renderDataSources();
+      _setSourceMessage('Default source set: ' + okSrc.name, 'ok');
+      setStatus('Default live source updated', 'ok', 'right');
+    }).catch(function(badSrc) {
+      _setSourceMessage('Cannot set default: validation failed (' + (badSrc.lastError || 'connection error') + ')', 'err');
+      setStatus('Default source not changed: live validation failed', 'warn', 'right');
+    });
+  }
+  window.setDefaultDataSource = setDefaultDataSource;
+
+  function toggleDataSourceEnabled(id) {
+    for (var i = 0; i < _dataSources.length; i++) {
+      if (_dataSources[i].id === id) {
+        _dataSources[i].enabled = (_dataSources[i].enabled === false);
+        break;
+      }
+    }
+    _ensureValidSources();
+    _persistDataSourceConfig();
+    renderDataSources();
+  }
+  window.toggleDataSourceEnabled = toggleDataSourceEnabled;
+
+  function removeDataSource(id) {
+    if (_dataSources.length <= 1) {
+      _setSourceMessage('At least one live source must remain configured', 'warn');
+      return;
+    }
+    var keep = [];
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id !== id) { keep.push(_dataSources[i]); } }
+    _dataSources = keep;
+    _ensureValidSources();
+    _persistDataSourceConfig();
+    _setEngineBaseFromDefault();
+    renderDataSources();
+  }
+  window.removeDataSource = removeDataSource;
+
+  function retestDataSource(id) {
+    var found = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === id) { found = _dataSources[i]; break; } }
+    if (!found) { return; }
+    _setSourceMessage('Validating source ' + found.name + '...', 'warn');
+    validateSourceConnection(found).then(function(okSrc) {
+      for (var j = 0; j < _dataSources.length; j++) { if (_dataSources[j].id === id) { _dataSources[j] = okSrc; } }
+      _persistDataSourceConfig();
+      renderDataSources();
+      _setSourceMessage('Source validated: ' + okSrc.name, 'ok');
+    }).catch(function(badSrc) {
+      for (var k = 0; k < _dataSources.length; k++) { if (_dataSources[k].id === id) { _dataSources[k] = badSrc; } }
+      _persistDataSourceConfig();
+      renderDataSources();
+      _setSourceMessage('Validation failed: ' + (badSrc.lastError || 'connection error'), 'err');
+    });
+  }
+  window.retestDataSource = retestDataSource;
+
+  function addLiveSource() {
+    var nEl = document.getElementById('srcNameInput');
+    var uEl = document.getElementById('srcUrlInput');
+    var name = nEl ? String(nEl.value || '').trim() : '';
+    var url = uEl ? _normalizeBaseUrl(uEl.value || '') : '';
+    if (!name || !url) {
+      _setSourceMessage('Enter source name and base URL', 'warn');
+      return;
+    }
+    if (!window.confirm('Validate and add live source "' + name + '"?\nURL: ' + url)) { return; }
+    var candidate = {
+      id: 'src_' + (new Date().getTime()),
+      name: name,
+      baseUrl: url,
+      enabled: true,
+      isDefault: false,
+      healthy: false,
+      lastChecked: null,
+      remoteSchemaVersion: null,
+      transformId: 'compat-v1'
+    };
+    _setSourceMessage('Confirming live connection before add...', 'warn');
+    validateSourceConnection(candidate).then(function(validSrc) {
+      _dataSources.push(validSrc);
+      _persistDataSourceConfig();
+      renderDataSources();
+      if (nEl) { nEl.value = ''; }
+      if (uEl) { uEl.value = ''; }
+      _setSourceMessage('Source added and verified: ' + validSrc.name, 'ok');
+    }).catch(function(badSrc) {
+      _setSourceMessage('Source not added: ' + (badSrc.lastError || 'validation failed'), 'err');
+    });
+  }
+  window.addLiveSource = addLiveSource;
+
+  function refreshDataSourceHealth() {
+    _setSourceMessage('Validating all sources...', 'warn');
+    var i = 0;
+    function next() {
+      if (i >= _dataSources.length) {
+        _persistDataSourceConfig();
+        renderDataSources();
+        _setSourceMessage('Source validation complete', 'ok');
+        return;
+      }
+      var src = _dataSources[i++];
+      validateSourceConnection(src).then(function(okSrc) {
+        for (var j = 0; j < _dataSources.length; j++) { if (_dataSources[j].id === okSrc.id) { _dataSources[j] = okSrc; } }
+        next();
+      }).catch(function(badSrc) {
+        for (var k = 0; k < _dataSources.length; k++) { if (_dataSources[k].id === badSrc.id) { _dataSources[k] = badSrc; } }
+        next();
+      });
+    }
+    next();
+  }
+  window.refreshDataSourceHealth = refreshDataSourceHealth;
+
+  function syncLiveDataToOfflineCache() {
+    _setSourceMessage('Syncing live data to offline cache...', 'warn');
+    var jobs = [
+      { key: 'scanStatus',   path: '/api/scan/status' },
+      { key: 'scanCrashes',  path: '/api/scan/crashes' },
+      { key: 'historyList',  path: '/api/history/list' },
+      { key: 'engineStatus', path: '/api/engine/status' },
+      { key: 'engineEvents', path: '/api/engine/events?tail=500' },
+      { key: 'engineLog',    path: '/api/engine/log?tail=40' },
+      { key: 'configMenus',  path: '/api/config/menus' },
+      { key: 'reportsList',  path: '/api/workspace/files?ext=*.json,*.xhtml,*.html' },
+      { key: 'pipelineApprovals', path: '/api/pipeline/approvals' }
+    ];
+    var idx = 0;
+    var ok = 0;
+    var fail = 0;
+    function runNext() {
+      if (idx >= jobs.length) {
+        _persistOfflineCache();
+        _setSourceMessage('Sync complete: ' + ok + ' ok, ' + fail + ' failed', fail > 0 ? 'warn' : 'ok');
+        return;
+      }
+      var j = jobs[idx++];
+      fetchSectionData(j.key, j.path, { method: 'GET' }, true).then(function() {
+        ok++;
+        runNext();
+      }).catch(function() {
+        fail++;
+        runNext();
+      });
+    }
+    runNext();
+  }
+  window.syncLiveDataToOfflineCache = syncLiveDataToOfflineCache;
+
+  function _loadDataSourceBootstrap() {
+    var localRaw = null;
+    try { localRaw = localStorage.getItem(DATASRC_KEY); } catch(e) { localRaw = null; }
+    if (localRaw) {
+      var localObj = _parseSafeJson(localRaw, null);
+      if (localObj && Array.isArray(localObj.sources)) { _dataSources = localObj.sources; }
+    }
+    if (_dataSources.length > 0) {
+      _ensureValidSources();
+      _setEngineBaseFromDefault();
+      renderDataSources();
+      return Promise.resolve();
+    }
+    if (_isFileProtocol()) {
+      _dataSources = _clone(STATIC_BOOTSTRAP_DATA_SOURCES.sources || [ _mkDefaultSource() ]);
+      _ensureValidSources();
+      _setEngineBaseFromDefault();
+      _persistDataSourceConfig();
+      renderDataSources();
+      return Promise.resolve();
+    }
+    return fetch('config/workspace-hub-data-sources.json').then(function(r) {
+      if (!r.ok) { throw new Error('no static source config'); }
+      return r.json();
+    }).then(function(cfg) {
+      if (cfg && Array.isArray(cfg.sources)) { _dataSources = cfg.sources; }
+      _ensureValidSources();
+      _setEngineBaseFromDefault();
+      _persistDataSourceConfig();
+      renderDataSources();
+    }).catch(function() {
+      _dataSources = [ _mkDefaultSource() ];
+      _ensureValidSources();
+      _setEngineBaseFromDefault();
+      _persistDataSourceConfig();
+      renderDataSources();
+    });
+  }
+
+  function _loadOfflineCacheBootstrap() {
+    var localRaw = null;
+    try { localRaw = localStorage.getItem(CACHE_KEY); } catch(e) { localRaw = null; }
+    if (localRaw) {
+      var loc = _parseSafeJson(localRaw, null);
+      if (loc && loc.sections) { _offlineCache = loc; _ensureOfflineCacheShape(); _persistOfflineCache(); return Promise.resolve(); }
+    }
+    if (_isFileProtocol()) {
+      _offlineCache = _clone(STATIC_BOOTSTRAP_OFFLINE_CACHE);
+      _persistOfflineCache();
+      return Promise.resolve();
+    }
+    return fetch('config/workspace-hub-offline-cache.json').then(function(r) {
+      if (!r.ok) { throw new Error('no static cache'); }
+      return r.json();
+    }).then(function(cacheObj) {
+      if (cacheObj && cacheObj.sections) { _offlineCache = cacheObj; _ensureOfflineCacheShape(); _persistOfflineCache(); }
+    }).catch(function() {
+      _offlineCache = _clone(STATIC_BOOTSTRAP_OFFLINE_CACHE);
+      _ensureOfflineCacheShape();
+      _persistOfflineCache();
+    });
+  }
 
   /* ── Tool cards ── */
   function renderToolCards(extraItems) {
@@ -763,23 +1586,23 @@
 
   /* ── Scan status → freshness badges ── */
   function loadScanStatus(tools) {
-    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(data){
+    fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false).then(function(res){
+      var data = res.data;
       updatePhasePills(data);
       /* Use max phase age for card badges (good enough proxy) */
       var badgeCls = 'badge-grey';
       var badgeTxt = 'no scan data';
-      if (data && data.phases) {
+      var phaseData = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : null);
+      if (phaseData) {
         var maxAgeMin = 0;
         var hasData = false;
         var pIds = PHASE_IDS;
         for (var p = 0; p < pIds.length; p++) {
-          var ph = data.phases[pIds[p]];
-          if (ph && ph.completedAt) {
+          var ph = phaseData[pIds[p]];
+          var ts = ph ? (ph.completedAt || ph.timestamp || null) : null;
+          if (ph && ts) {
             hasData = true;
-            var ageMin = Math.floor((Date.now() - new Date(ph.completedAt).getTime()) / 60000);
+            var ageMin = Math.floor((Date.now() - new Date(ts).getTime()) / 60000);
             if (ageMin > maxAgeMin) { maxAgeMin = ageMin; }
           }
         }
@@ -797,7 +1620,8 @@
           if (bEl) { bEl.className = 'hub-card-badge ' + badgeCls; bEl.textContent = badgeTxt; }
         }
       }
-      setStatus('Scan data loaded', 'ok', 'right');
+      if (res.fromCache) { setStatus('Scan data loaded from offline cache', 'warn', 'right'); }
+      else { setStatus('Scan data loaded from live source', 'ok', 'right'); }
     }).catch(function(err){
       /* engine offline — set grey badges */
       if (tools) {
@@ -813,7 +1637,8 @@
 
   /* ── Phase freshness pills ── */
   function updatePhasePills(data) {
-    if (!data || !data.phases) { return; }
+    var phases = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : null);
+    if (!phases) { return; }
     var pIds = PHASE_IDS;
     for (var p = 0; p < pIds.length; p++) {
       var pid = pIds[p];
@@ -822,14 +1647,17 @@
       var dotEl = pill.querySelector('.ph-dot');
       var ageEl = pill.querySelector('.ph-age');
       if (!dotEl || !ageEl) { continue; }
-      var ph = data.phases[pid];
-      if (!ph || !ph.completedAt) {
+      var ph = phases[pid];
+      var ts = ph ? (ph.completedAt || ph.timestamp || null) : null;
+      if (!ph || !ts) {
         dotEl.className = 'ph-dot grey';
         ageEl.textContent = '—';
         continue;
       }
-      var ageMin = Math.floor((Date.now() - new Date(ph.completedAt).getTime()) / 60000);
+      var ageMin = Math.floor((Date.now() - new Date(ts).getTime()) / 60000);
       var cls;
+      if (ph.status === 'error') { cls = 'red'; }
+      else
       if (ageMin <= 60)   { cls = 'green'; }
       else if (ageMin <= 1440) { cls = 'yellow'; }
       else { cls = 'red'; }
@@ -840,25 +1668,62 @@
     }
   }
 
+  function loadReports() {
+    var el = document.getElementById('reportCards');
+    if (!el) { return; }
+    el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>';
+    fetchSectionData('reportsList', '/api/workspace/files?ext=*.json,*.xhtml,*.html', { method: 'GET' }, false).then(function(res) {
+      var payload = res.data || {};
+      var files = Array.isArray(payload.files) ? payload.files : [];
+      var reportFiles = [];
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i] || {};
+        var p = String(f.path || '').toLowerCase();
+        if (p.indexOf('~reports/') !== -1 || p.indexOf('~readme.md/') !== -1) { reportFiles.push(f); }
+      }
+      if (reportFiles.length === 0) {
+        el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No report files found in live source or offline cache</div>';
+        return;
+      }
+      var html = '';
+      for (var j = 0; j < reportFiles.length; j++) {
+        var rf = reportFiles[j];
+        var href = String(rf.path || '').replace(/\\/g, '/');
+        html += '<a class="hub-card" href="' + escAttr(href) + '" target="_blank" rel="noopener">' +
+          '<div class="hub-card-icon">&#x1F4C4;</div>' +
+          '<div class="hub-card-title">' + escHtml(rf.name || href) + '</div>' +
+          '<div class="hub-card-desc">' + escHtml(href) + '</div>' +
+          '<span class="hub-card-badge ' + (res.fromCache ? 'badge-yellow' : 'badge-green') + '">' + (res.fromCache ? 'offline' : 'live') + '</span>' +
+          '</a>';
+      }
+      el.innerHTML = html;
+    }).catch(function() {
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">Unable to load reports from live or cache</div>';
+    });
+  }
+
   /* ── Timeline ── */
   function loadTimeline() {
     var el = document.getElementById('hubTimeline');
     if (!el) { return; }
     el.innerHTML = '<li><div class="tl-dot"></div><span class="tl-label">Loading&#x2026;</span></li>';
-    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(data){
+    Promise.all([
+      fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false),
+      fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; })
+    ]).then(function(allRes){
+      var data = allRes[0] ? allRes[0].data : {};
+      var histPayload = allRes[1] ? allRes[1].data : { history: [] };
       var pIds = PHASE_IDS;
       var rows = '';
-      var prevPhase = data && data.phases ? data.phases : {};
+      var prevPhase = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : {});
       for (var p = 0; p < pIds.length; p++) {
         var pid = pIds[p];
         var ph = prevPhase[pid];
         if (!ph) { continue; }
-        var dotCls = ph.status === 'ok' ? 'background:#22c55e' :
+        var dotCls = (ph.status === 'ok' || ph.status === 'done') ? 'background:#22c55e' :
                      ph.status === 'error' ? 'background:#dc2626' : 'background:#ca8a04';
-        var ts = ph.completedAt ? new Date(ph.completedAt).toLocaleString() : '—';
+        var tsRaw = ph.completedAt || ph.timestamp || null;
+        var ts = tsRaw ? new Date(tsRaw).toLocaleString() : '—';
         var dur = (ph.durationMs && ph.durationMs > 0) ? (ph.durationMs / 1000).toFixed(1) + 's' : '';
         rows += '<li>' +
           '<div class="tl-dot" style="' + dotCls + '"></div>' +
@@ -867,22 +1732,260 @@
           '<span class="tl-size">' + escHtml(dur) + '</span>' +
           '</li>';
       }
-      el.innerHTML = rows || '<li><div class="tl-dot"></div><span class="tl-label">No phase data yet</span></li>';
+
+      var histRows = Array.isArray(histPayload.history) ? histPayload.history : [];
+      for (var h = 0; h < Math.min(histRows.length, 15); h++) {
+        var hr = histRows[h] || {};
+        var hTs = hr.timestamp ? new Date(hr.timestamp).toLocaleString() : '—';
+        var hLbl = (hr.eventType || hr.type || 'history') + ' | ' + (hr.target || hr.source || '');
+        var hRes = hr.result || '';
+        var hDot = (String(hRes).indexOf('DIRTY') !== -1 || String(hRes).toLowerCase().indexOf('fail') !== -1) ? 'background:#dc2626' : 'background:#4a6080';
+        rows += '<li>' +
+          '<div class="tl-dot" style="' + hDot + '"></div>' +
+          '<span class="tl-label">' + escHtml(hLbl) + '</span>' +
+          '<span class="tl-meta">' + escHtml(hTs) + '</span>' +
+          '<span class="tl-size">' + escHtml(hRes) + '</span>' +
+          '</li>';
+      }
+
+      el.innerHTML = rows || '<li><div class="tl-dot"></div><span class="tl-label">No phase/history data yet</span></li>';
     }).catch(function(){
-      el.innerHTML = '<li><div class="tl-dot" style="background:#dc2626"></div><span class="tl-label" style="color:#f44747">Engine offline — no history</span></li>';
+      el.innerHTML = '<li><div class="tl-dot" style="background:#dc2626"></div><span class="tl-label" style="color:#f44747">No live or cached history data</span></li>';
     });
   }
+
+  function _approvalPriorityRank(priority) {
+    var p = String(priority || '').toUpperCase();
+    if (p === 'CRITICAL') { return 4; }
+    if (p === 'HIGH') { return 3; }
+    if (p === 'MEDIUM') { return 2; }
+    if (p === 'LOW') { return 1; }
+    return 0;
+  }
+
+  function _sortApprovalItems(items) {
+    var list = Array.isArray(items) ? items.slice() : [];
+    list.sort(function(a, b) {
+      var av = a || {};
+      var bv = b || {};
+      if (_approvalSort === 'priority-asc') { return _approvalPriorityRank(av.priority) - _approvalPriorityRank(bv.priority); }
+      if (_approvalSort === 'title-asc') { return String(av.title || '').localeCompare(String(bv.title || '')); }
+      if (_approvalSort === 'created-desc') {
+        return String(bv.created || bv.modified || '').localeCompare(String(av.created || av.modified || ''));
+      }
+      return _approvalPriorityRank(bv.priority) - _approvalPriorityRank(av.priority);
+    });
+    return list;
+  }
+
+  function _renderApprovalTable() {
+    var wrap = document.getElementById('approvalTableWrap');
+    var countEl = document.getElementById('approvalCount');
+    var selAll = document.getElementById('approvalSelectAll');
+    if (!wrap) { return; }
+    var items = _sortApprovalItems(_approvalItems);
+    if (countEl) { countEl.textContent = String(items.length) + ' pending'; }
+    if (items.length === 0) {
+      if (selAll) { selAll.checked = false; }
+      wrap.innerHTML = 'No pending approval todos.';
+      return;
+    }
+    var html = '<table class="evt-table"><thead><tr>' +
+      '<th style="width:28px"></th>' +
+      '<th>Priority</th>' +
+      '<th>Title</th>' +
+      '<th>Source</th>' +
+      '<th>Status</th>' +
+      '<th>Created</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i] || {};
+      var id = String(it.id || '');
+      var isChecked = !!_approvalSelected[id];
+      var created = it.created ? new Date(it.created).toLocaleString() : '—';
+      var src = (it.sourceItemType || '') + ((it.sourceItemId ? (' | ' + it.sourceItemId) : ''));
+      html += '<tr>' +
+        '<td><input type="checkbox" data-approval-id="' + escAttr(id) + '"' + (isChecked ? ' checked="checked"' : '') + ' onchange="toggleApprovalSelected(this)" style="accent-color:var(--accent)" /></td>' +
+        '<td>' + escHtml(it.priority || 'MEDIUM') + '</td>' +
+        '<td title="' + escAttr(it.description || '') + '">' + escHtml(it.title || id) + '</td>' +
+        '<td>' + escHtml(src || '—') + '</td>' +
+        '<td>' + escHtml(it.status || 'OPEN') + '</td>' +
+        '<td>' + escHtml(created) + '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+    if (selAll) {
+      var selectedCount = 0;
+      for (var k = 0; k < items.length; k++) { if (_approvalSelected[String(items[k].id || '')]) { selectedCount++; } }
+      selAll.checked = selectedCount > 0 && selectedCount === items.length;
+    }
+  }
+
+  function setApprovalSort(mode) {
+    _approvalSort = mode || 'priority-desc';
+    _renderApprovalTable();
+  }
+  window.setApprovalSort = setApprovalSort;
+
+  function toggleApprovalSelected(cb) {
+    var id = cb ? cb.getAttribute('data-approval-id') : '';
+    if (!id) { return; }
+    if (cb.checked) { _approvalSelected[id] = true; } else { delete _approvalSelected[id]; }
+    _renderApprovalTable();
+  }
+  window.toggleApprovalSelected = toggleApprovalSelected;
+
+  function toggleApprovalSelectAll(flag) {
+    var f = !!flag;
+    if (!f) { _approvalSelected = {}; _renderApprovalTable(); return; }
+    var items = Array.isArray(_approvalItems) ? _approvalItems : [];
+    for (var i = 0; i < items.length; i++) {
+      var id = String((items[i] || {}).id || '');
+      if (id) { _approvalSelected[id] = true; }
+    }
+    _renderApprovalTable();
+  }
+  window.toggleApprovalSelectAll = toggleApprovalSelectAll;
+
+  function loadPipelineApprovals() {
+    var msg = document.getElementById('approvalMsg');
+    if (msg) { msg.style.color = 'var(--fg-sub)'; msg.textContent = 'Loading approval queue...'; }
+    fetchSectionData('pipelineApprovals', '/api/pipeline/approvals', { method: 'GET' }, false).then(function(res) {
+      var data = res.data || {};
+      _approvalItems = Array.isArray(data.pending) ? data.pending : [];
+      _approvalItems = _sortApprovalItems(_approvalItems);
+      _approvalSelected = {};
+      _renderApprovalTable();
+      if (msg) {
+        msg.style.color = res.fromCache ? '#dcdcaa' : '#4ec9b0';
+        msg.textContent = res.fromCache ? 'Loaded from offline cache' : 'Loaded from live source';
+      }
+    }).catch(function(err) {
+      if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Failed to load approvals: ' + err.message; }
+      _approvalItems = [];
+      _approvalSelected = {};
+      _renderApprovalTable();
+    });
+  }
+  window.loadPipelineApprovals = loadPipelineApprovals;
+
+  function runPipelineProcess() {
+    var msg = document.getElementById('approvalMsg');
+    fetchCsrf(function(tok) {
+      if (!tok) {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
+        return;
+      }
+      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Running pipeline process...'; }
+      fetch(ENGINE_BASE + '/api/pipeline/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+        body: '{}'
+      }).then(function(r) {
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(data) {
+        if (msg) { msg.style.color = '#4ec9b0'; msg.textContent = 'Created ' + String(data.createdTodos || 0) + ' pending todos'; }
+        loadPipelineApprovals();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline process failed: ' + err.message; }
+      });
+    });
+  }
+  window.runPipelineProcess = runPipelineProcess;
+
+  function applyApprovalAction(actionKey) {
+    var ids = Object.keys(_approvalSelected || {});
+    var msg = document.getElementById('approvalMsg');
+    if (ids.length === 0) {
+      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Select one or more items first'; }
+      return;
+    }
+    fetchCsrf(function(tok) {
+      if (!tok) {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
+        return;
+      }
+      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Applying action...'; }
+      fetch(ENGINE_BASE + '/api/pipeline/approvals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+        body: JSON.stringify({ action: actionKey, ids: ids })
+      }).then(function(r) {
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(data) {
+        _approvalSelected = {};
+        if (msg) {
+          msg.style.color = (data.failed && data.failed.length > 0) ? '#dcdcaa' : '#4ec9b0';
+          msg.textContent = 'Updated ' + String(data.updated || 0) + ' item(s)' + ((data.failed && data.failed.length > 0) ? (', failed: ' + data.failed.length) : '');
+        }
+        loadPipelineApprovals();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval action failed: ' + err.message; }
+      });
+    });
+  }
+  window.applyApprovalAction = applyApprovalAction;
+
+  function _postTestEndpoint(path, successMsg, onDone) {
+    fetchCsrf(function(tok) {
+      if (!tok) {
+        setStatus('Engine offline or token unavailable', 'warn', 'right');
+        return;
+      }
+      fetch(ENGINE_BASE + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+        body: '{}'
+      }).then(function(r){
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      }).then(function(){
+        setStatus(successMsg, 'ok', 'right');
+        if (typeof onDone === 'function') { onDone(); }
+      }).catch(function(err){
+        setStatus('Test action failed: ' + err.message, 'warn', 'right');
+      });
+    });
+  }
+
+  function createTestCrashDump() {
+    _postTestEndpoint('/api/test/crashdump', 'Test crash dump created', function(){
+      loadCrashes();
+      loadEventLogs();
+      syncLiveDataToOfflineCache();
+    });
+  }
+  window.createTestCrashDump = createTestCrashDump;
+
+  function createTestEventLog() {
+    _postTestEndpoint('/api/test/eventlog', 'Test event log created', function(){
+      loadEventLogs();
+      syncLiveDataToOfflineCache();
+    });
+  }
+  window.createTestEventLog = createTestEventLog;
+
+  function createTestHistory() {
+    _postTestEndpoint('/api/test/history', 'Test history entry created', function(){
+      loadTimeline();
+      syncLiveDataToOfflineCache();
+    });
+  }
+  window.createTestHistory = createTestHistory;
 
   /* ── Crash dumps ── */
   function loadCrashes() {
     var el = document.getElementById('crashTable');
     if (!el) { return; }
     el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>';
-    fetch(ENGINE_BASE + '/api/scan/crashes').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(data){
-      var dumps = Array.isArray(data) ? data : (data.dumps || []);
+    fetchSectionData('scanCrashes', '/api/scan/crashes', { method: 'GET' }, false).then(function(res){
+      var data = res.data;
+      var dumps = Array.isArray(data) ? data : (data.crashes || data.dumps || []);
       if (dumps.length === 0) {
         el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No crash dumps recorded</div>';
         return;
@@ -907,7 +2010,7 @@
       html += '</tbody></table>';
       el.innerHTML = html;
     }).catch(function(){
-      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">Engine offline</div>';
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No crash data available</div>';
     });
   }
 
@@ -915,6 +2018,11 @@
   function doScan(mode) {
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
+    if (_isFileProtocol()) {
+      if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Offline page mode: run scan via terminal or open live hub endpoint.'; }
+      setStatus('Offline page mode: scans need live control endpoint or static scan script', 'warn', 'right');
+      return;
+    }
     if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(mode) + ' scan&#x2026;'; }
     fetchCsrf(function(tok) {
       if (!tok) {
@@ -943,23 +2051,47 @@
   function _startScanPolling(msgEl, pgEl) {
     _stopScanPolling();
     _scanPollId = setInterval(function(){
-      fetch(ENGINE_BASE + '/api/scan/status').then(function(r){
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(data){
-        var phases = data.phases || {};
+      fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false).then(function(res){
+        var data = res.data;
+        var phases = data.phases || (data.checkpoint && data.checkpoint.phases) || {};
         var total = 0, done = 0, errors = 0;
+        var pg = data.progress || null;
+
+        if (pg && typeof pg.totalPhases === 'number' && typeof pg.completedPhases === 'number') {
+          total = pg.totalPhases;
+          done = pg.completedPhases;
+          if (pg.status === 'error') { errors = 1; }
+          if (pg.status === 'running' && typeof pg.progress === 'number' && total === 0) {
+            total = 100;
+            done = Math.max(0, Math.min(100, pg.progress));
+          }
+        }
+
         var pIds = PHASE_IDS;
-        for (var p = 0; p < pIds.length; p++) {
-          total++;
-          var ph = phases[pIds[p]];
-          if (ph && ph.status === 'ok') { done++; }
-          else if (ph && ph.status === 'error') { done++; errors++; }
+        if (total === 0) {
+          for (var p = 0; p < pIds.length; p++) {
+            total++;
+            var ph = phases[pIds[p]];
+            if (ph && (ph.status === 'ok' || ph.status === 'done' || ph.status === 'skipped')) { done++; }
+            else if (ph && ph.status === 'error') { done++; errors++; }
+          }
         }
         var pct = total > 0 ? Math.round((done / total) * 100) : 0;
         if (pgEl) { pgEl.style.width = Math.max(pct, 10) + '%'; }
         updatePhasePills(data);
-        if (done >= total) {
+        if (pg && (pg.status === 'done' || pg.status === 'partial' || pg.status === 'error')) {
+          _stopScanPolling();
+          if (pgEl) { pgEl.style.width = (pg.status === 'error' ? '0%' : '100%'); }
+          if (pg.status === 'error') {
+            if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + (pg.error || 'unknown error'); }
+          } else if (pg.status === 'partial') {
+            if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Scan completed with warnings'; }
+          } else {
+            if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan completed successfully'; }
+          }
+          renderToolCards(null);
+          loadTimeline();
+        } else if (done >= total && total > 0) {
           _stopScanPolling();
           if (pgEl) { pgEl.style.width = '100%'; }
           if (errors > 0) {
@@ -987,6 +2119,10 @@
   function doStaticScan() {
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
+    if (_isFileProtocol()) {
+      _showStaticScanOfflineInstructions(msgEl);
+      return;
+    }
     /* Try engine first (it proxies to static scan worker) */
     fetchCsrf(function(tok) {
       if (tok) {
@@ -1018,8 +2154,8 @@
     renderToolCards(null);
     loadScanStatus(TOOLS);
     /* update stats strip if scan data available */
-    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){ return r.json(); })
-      .then(function(d){ _updateStatsStrip(d); }).catch(function(){});
+    fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false)
+      .then(function(res){ _updateStatsStrip(res.data); }).catch(function(){});
   }
   window.refreshAll = refreshAll;
 
@@ -1043,13 +2179,11 @@
     var tbody = document.getElementById('evtTableBody');
     var cntEl = document.getElementById('evtCount');
     if (tbody) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:12px">Loading&#x2026;</td></tr>'; }
-    fetch(ENGINE_BASE + '/api/engine/events?tail=500').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(data){
+    fetchSectionData('engineEvents', '/api/engine/events?tail=500', { method: 'GET' }, false).then(function(res){
+      var data = res.data;
       _evtAllRows = Array.isArray(data.events) ? data.events : [];
       applyEvtFilter();
-      if (cntEl) { cntEl.textContent = _evtAllRows.length + ' events (live)'; }
+      if (cntEl) { cntEl.textContent = _evtAllRows.length + (res.fromCache ? ' events (offline cache)' : ' events (live)'); }
     }).catch(function(){
       /* Engine offline — read log file counts from checkpoint fallback */
       _evtAllRows = [];
@@ -1160,7 +2294,7 @@
   /* ── CSRF ── */
   function fetchCsrf(cb) {
     if (_csrfToken) { cb(_csrfToken); return; }
-    fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){ return r.json(); })
+    _safeFetchJson(ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 3000)
       .then(function(d){ _csrfToken = d.csrfToken || d.token || ''; cb(_csrfToken); })
       .catch(function(){ cb(''); });
   }
@@ -1187,26 +2321,46 @@
   }
 
   function pollEngineStatus() {
-    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){ return r.json(); })
-      .then(function(d){ updateEngineStatus(d); })
+    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false)
+      .then(function(res){ updateEngineStatus(res.data); })
       .catch(function(){ updateEngineStatus(null); });
   }
 
   function startEngine() {
-    setStatus('Starting engine&#x2026;', 'ok', 'right');
-    /* Engines are started via the service launcher script; the Hub can only
-       signal over HTTP if the engine is already up. Redirect to the service
-       status page instead, or open the MCP config page. */
-    fetch(ENGINE_BASE + '/api/engine/status')
-      .then(function(r){ if(r.ok){setStatus('&#x1F7E2; Engine is already running','ok','right');} else { throw new Error(); } })
+    setStatus('Checking engine control path&#x2026;', 'ok', 'right');
+    if (_isFileProtocol()) {
+      setStatus('Offline page mode: launch via terminal or Launch-GUI.bat', 'warn', 'right');
+      _setSourceMessage('Start command: powershell -ExecutionPolicy Bypass -File .\\scripts\\Start-LocalWebEngineService.ps1', 'warn');
+      try { window.open('file:///C:/PowerShellGUI/Launch-GUI.bat', '_blank'); } catch(e) { }
+      return;
+    }
+    _safeFetchJson(ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3500)
+      .then(function(d){
+        if (d && d.running) { setStatus('&#x1F7E2; Engine is already running', 'ok', 'right'); }
+        else { setStatus('Engine endpoint reachable but reports stopped. Start service from terminal.', 'warn', 'right'); }
+      })
       .catch(function(){
-        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngineService.ps1 from terminal','warn','right');
+        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngineService.ps1 from terminal', 'warn', 'right');
       });
   }
   window.startEngine = startEngine;
 
   function stopEngine() {
-    /* Show confirmation overlay instead of immediately stopping */
+    if (_isFileProtocol()) {
+      fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, true).then(function(res) {
+        if (!res || !res.data || !res.data.running) {
+          setStatus('Engine already offline (offline page mode)', 'warn', 'right');
+          return;
+        }
+        var ov = document.getElementById('stopOverlay');
+        var msg = document.getElementById('stopMonMsg');
+        if (ov) { ov.className = 'stop-overlay visible'; }
+        if (msg) { msg.textContent = 'Connected in offline page mode — attempting remote stop...'; }
+      }).catch(function() {
+        setStatus('Offline page mode: open hub from http://127.0.0.1:8042 to use Stop, or stop via terminal.', 'warn', 'right');
+      });
+      return;
+    }
     var ov = document.getElementById('stopOverlay');
     var msg = document.getElementById('stopMonMsg');
     if (ov) { ov.className = 'stop-overlay visible'; }
@@ -1224,7 +2378,7 @@
     var msg = document.getElementById('stopMonMsg');
     if (msg) { msg.textContent = 'Sending stop request\u2026'; }
     fetchCsrf(function(tok) {
-      if (!tok) { if (msg) { msg.textContent = 'Cannot stop: engine already offline'; } return; }
+      if (!tok) { if (msg) { msg.textContent = 'Cannot stop: control token unavailable (offline page mode or engine offline)'; } return; }
       fetch(ENGINE_BASE + '/api/engine/stop', {
         method: 'POST',
         headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
@@ -1239,7 +2393,7 @@
     var msg = document.getElementById('stopMonMsg');
     if (msg) { msg.textContent = 'Sending stop request for restart\u2026'; }
     fetchCsrf(function(tok) {
-      if (!tok) { if (msg) { msg.textContent = 'Engine already offline, cannot restart from here'; } return; }
+      if (!tok) { if (msg) { msg.textContent = 'Engine control token unavailable; restart from terminal or Launch-GUI.bat'; } return; }
       fetch(ENGINE_BASE + '/api/engine/stop', {
         method: 'POST',
         headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
@@ -1256,7 +2410,7 @@
     if (msgEl) { msgEl.textContent = 'Monitoring shutdown\u2026'; }
     var iv = setInterval(function(){
       checks++;
-      fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+      _fetchWithTimeout(ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3000).then(function(r){
         if (!r.ok) { throw new Error('offline'); }
         if (msgEl) { msgEl.textContent = 'Engine still running (' + checks + '/' + maxChecks + ')\u2026'; }
       }).catch(function(){
@@ -1282,7 +2436,7 @@
     if (msgEl) { msgEl.textContent = 'Waiting for engine to stop\u2026'; }
     var stopIv = setInterval(function(){
       checks++;
-      fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+      _fetchWithTimeout(ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3000).then(function(r){
         if (!r.ok) { throw new Error('offline'); }
         if (msgEl) { msgEl.textContent = 'Stopping\u2026 (' + checks + ')'; }
       }).catch(function(){
@@ -1293,7 +2447,7 @@
         var backChecks = 0;
         var backIv = setInterval(function(){
           backChecks++;
-          fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
+          _fetchWithTimeout(ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3000).then(function(r){
             if (r.ok) {
               clearInterval(backIv);
               if (msgEl) { msgEl.textContent = 'Engine is back online!'; }
@@ -1326,10 +2480,19 @@
     d.className = 'ws-dot ' + s;
   }
 
+  function _toWsUrl(httpUrl) {
+    var b = _normalizeBaseUrl(httpUrl || ENGINE_BASE);
+    if (b.indexOf('https://') === 0) { return 'wss://' + b.substring(8) + '/ws'; }
+    if (b.indexOf('http://') === 0)  { return 'ws://' + b.substring(7) + '/ws'; }
+    return '';
+  }
+
   function connectWs() {
     if (typeof WebSocket === 'undefined') { return; }
+    var wsUrl = _toWsUrl(ENGINE_BASE);
+    if (!wsUrl) { return; }
     try {
-      var ws = new WebSocket('ws://127.0.0.1:8042/ws');
+      var ws = new WebSocket(wsUrl);
       _wsConn = ws;
       ws.onopen  = function(){ _wsRetries = 0; setWsDot('ok'); setStatus('&#x1F7E2; Engine connected','ok','right'); };
       ws.onmessage = function(ev) {
@@ -1372,6 +2535,37 @@
     el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
   }
 
+  function _setFooterPill(id, text, cssClass) {
+    var el = document.getElementById(id);
+    if (!el) { return; }
+    el.textContent = text;
+    var base = el.className.replace(/\s*ft-state-(ok|active|missing)\b/g, '');
+    el.className = base + (cssClass ? (' ' + cssClass) : '');
+  }
+
+  function _updateHubFooter() {
+    var enabled = 0, healthy = 0, total = 0;
+    var def = _getDefaultSource();
+    var schemaModes = {};
+    for (var i = 0; i < _dataSources.length; i++) {
+      var s = _dataSources[i];
+      total++;
+      if (s.enabled !== false) { enabled++; }
+      if (s.healthy) { healthy++; }
+      var tf = s.transformId || 'compat-v1';
+      schemaModes[tf] = true;
+    }
+    var schemaKeys = Object.keys(schemaModes);
+    _setFooterPill('ftLiveSummary', 'live: ' + healthy + '/' + enabled + ' healthy (' + total + ' total)', healthy > 0 ? 'ft-state-ok' : 'ft-state-missing');
+    _setFooterPill('ftDefaultSource', 'default: ' + (def ? (def.name + ' @ ' + def.baseUrl) : 'none'), def ? 'ft-state-active' : 'ft-state-missing');
+    _setFooterPill('ftSchemaSummary', 'schema: local ' + LOCAL_SCHEMA_VERSION + ' / transforms ' + (schemaKeys.length ? schemaKeys.join(',') : 'n/a'), 'ft-state-ok');
+
+    var cacheUpdated = (_offlineCache && _offlineCache.updatedAt) ? _offlineCache.updatedAt : 'never';
+    var cacheSections = (_offlineCache && _offlineCache.sections) ? Object.keys(_offlineCache.sections).length : 0;
+    _setFooterPill('ftCacheSummary', 'cache: ' + cacheSections + ' sections, updated ' + cacheUpdated, cacheSections > 0 ? 'ft-state-ok' : 'ft-state-missing');
+    _setFooterPill('ftModeSummary', 'mode: ' + (_isFileProtocol() ? 'offline-file' : 'live-http') + ' | Start/Stop adapts automatically', _isFileProtocol() ? 'ft-state-active' : 'ft-state-ok');
+  }
+
   /* ── WebEngine Monitor ── */
   function refreshMonitor() {
     var sEl = document.getElementById('monStatus');
@@ -1380,10 +2574,8 @@
     var poEl = document.getElementById('monPort');
     var tEl = document.getElementById('monTime');
     var cfgEl = document.getElementById('monCfg');
-    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(d){
+    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
+      var d = res.data;
       if (sEl) { sEl.textContent = d.running ? '\u2705 Running' : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
       if (uEl) {
         var up = d.uptime || 0;
@@ -1410,10 +2602,8 @@
     var logEl = document.getElementById('monLogTail');
     if (!logEl) { return; }
     logEl.textContent = 'Loading\u2026';
-    fetch(ENGINE_BASE + '/api/engine/log?tail=40').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(d){
+    fetchSectionData('engineLog', '/api/engine/log?tail=40', { method: 'GET' }, false).then(function(res){
+      var d = res.data;
       var lines = Array.isArray(d.lines) ? d.lines : (d.log ? d.log.split('\n') : []);
       logEl.textContent = lines.length > 0 ? lines.join('\n') : '(no log data)';
     }).catch(function(err){
@@ -1425,13 +2615,11 @@
   /* ── Config detection verification ── */
   function verifyConfigDetection(cfgEl) {
     /* Check if /api/config/menus returns valid JSON — if not, flag error */
-    fetch(ENGINE_BASE + '/api/config/menus').then(function(r){
-      if (!r.ok) { throw new Error('HTTP ' + r.status); }
-      return r.json();
-    }).then(function(d){
+    fetchSectionData('configMenus', '/api/config/menus', { method: 'GET' }, false).then(function(res){
+      var d = res.data;
       var ok = !!(d && (d.menus || Array.isArray(d)));
       if (cfgEl) {
-        cfgEl.textContent = ok ? '\u2705 Config loaded' : '\u26A0 Config empty';
+        cfgEl.textContent = ok ? '\u2705 Config loaded' + (res.fromCache ? ' (offline)' : '') : '\u26A0 Config empty';
         cfgEl.className = 'eng-stat-value ' + (ok ? 'ok' : '');
       }
     }).catch(function(){
@@ -1441,12 +2629,11 @@
 
   /* ── Config detection flash on tool cards ── */
   function checkToolConfigs() {
+    if (_isFileProtocol()) { return; }
     /* For each tool card, verify its href resolves via the engine static file server.
        If the engine is online but a tool's config/file can't be detected, apply red glow. */
-    fetch(ENGINE_BASE + '/api/engine/status').then(function(r){
-      if (!r.ok) { throw new Error('offline'); }
-      return r.json();
-    }).then(function(d){
+    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
+      var d = res.data;
       if (!d || !d.running) { return; }
       var cards = document.querySelectorAll('.hub-card');
       for (var i = 0; i < cards.length; i++) {
@@ -1454,7 +2641,7 @@
           var href = card.getAttribute('href') || '';
           if (!href || href.indexOf('://') !== -1) { return; } /* skip external URLs */
           /* Try fetching via engine static file route */
-          fetch(ENGINE_BASE + '/' + href, { method: 'HEAD' }).then(function(r2){
+          _fetchWithTimeout(ENGINE_BASE + '/' + href, { method: 'HEAD' }, 3500).then(function(r2){
             if (!r2.ok) {
               card.classList.add('cfg-error');
               var badge = document.getElementById('badge_' + idx);
@@ -1482,22 +2669,50 @@
     return escHtml(s).replace(/"/g,'&quot;');
   }
 
+  function notifyToolExit() {
+    if (_isFileProtocol()) { return; }
+    if (!_csrfToken) { return; }
+    try {
+      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: '2604.B1.V32.3' });
+      if (navigator.sendBeacon) {
+        var blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon(ENGINE_BASE + '/api/runtime/tool-exit', blob);
+      } else {
+        fetch(ENGINE_BASE + '/api/runtime/tool-exit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': _csrfToken },
+          body: payload,
+          keepalive: true
+        });
+      }
+    } catch(e) { /* non-fatal */ }
+  }
+
   /* ── Init ── */
   document.addEventListener('DOMContentLoaded', function() {
-    connectWs();
-    startPoll();
-    _populateGroupFilter();
-    renderToolCards(null);
-    renderEvtPresets();
-    setStatus('Initialising&#x2026;', 'ok', 'right');
-    pollEngineStatus();
-    setInterval(pollEngineStatus, 15000);
-    /* try to update stats strip from last scan data */
-    fetch(ENGINE_BASE + '/api/scan/status').then(function(r){ return r.json(); })
-      .then(function(d){ _updateStatsStrip(d); }).catch(function(){});
-    /* Check config detection for all tool tiles after a short delay */
-    setTimeout(checkToolConfigs, 3000);
+    _loadOfflineCacheBootstrap()
+      .then(function(){ return _loadDataSourceBootstrap(); })
+      .then(function(){
+        connectWs();
+        startPoll();
+        _populateGroupFilter();
+        renderToolCards(null);
+        renderEvtPresets();
+        renderDataSources();
+        refreshDataSourceHealth();
+        setStatus(_isFileProtocol() ? 'Initialised (offline page mode with live-source fallback)' : 'Initialising&#x2026;', _isFileProtocol() ? 'warn' : 'ok', 'right');
+        pollEngineStatus();
+        setInterval(pollEngineStatus, 15000);
+        fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false)
+          .then(function(res){ _updateStatsStrip(res.data); })
+          .catch(function(){});
+        setTimeout(checkToolConfigs, 3000);
+      })
+      .catch(function() {
+        setStatus('Initialisation failed: data source bootstrap error', 'warn', 'right');
+      });
   });
+  window.addEventListener('beforeunload', notifyToolExit);
 
   })();
   //]]>

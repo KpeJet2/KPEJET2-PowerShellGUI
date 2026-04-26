@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B1.V32.5
+# VersionTag: 2604.B1.V32.7
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Modules Pester
 <#
 .SYNOPSIS  Smoke tests for Start-LocalWebEngine.ps1 — route presence, CSRF guard, SIN compliance.
@@ -62,36 +67,36 @@ Describe 'Start-LocalWebEngine — API Route declarations' {
 }
 
 Describe 'Start-LocalWebEngine — Handler functions present' {
-    It 'Has Handle-TriggerStaticScan function' {
-        $script:Content | Should -Match 'function Handle-TriggerStaticScan'
+    It 'Has Invoke-StaticScan function' {
+        $script:Content | Should -Match 'function Invoke-StaticScan'
     }
-    It 'Has Handle-AgentStats function' {
-        $script:Content | Should -Match 'function Handle-AgentStats'
+    It 'Has Get-AgentStats function' {
+        $script:Content | Should -Match 'function Get-AgentStats'
     }
-    It 'Has Handle-TriggerScan function' {
-        $script:Content | Should -Match 'function Handle-TriggerScan'
+    It 'Has Invoke-Scan function' {
+        $script:Content | Should -Match 'function Invoke-Scan'
     }
-    It 'Has Handle-EngineEvents function' {
-        $script:Content | Should -Match 'function Handle-EngineEvents'
+    It 'Has Get-EngineEvents function' {
+        $script:Content | Should -Match 'function Get-EngineEvents'
     }
 }
 
 Describe 'Start-LocalWebEngine — CSRF protection on mutating routes' {
-    It 'Handle-TriggerScan checks SessionToken' {
+    It 'Invoke-Scan checks SessionToken' {
         # Find function block and verify CSRF check
         $script:Content | Should -Match 'SessionToken'
     }
-    It 'Handle-TriggerStaticScan has CSRF check' {
+    It 'Invoke-StaticScan has CSRF check' {
         # Ensure the new static scan function also has CSRF
         $content = $script:Content
-        $fIdx = $content.IndexOf('function Handle-TriggerStaticScan')
+        $fIdx = $content.IndexOf('function Invoke-StaticScan')
         $fBlock = $content.Substring($fIdx, [Math]::Min(600, $content.Length - $fIdx))
         $fBlock | Should -Match 'SessionToken'
     }
-    It 'Handle-AgentStats does NOT require CSRF (GET route)' {
+    It 'Get-AgentStats does NOT require CSRF (GET route)' {
         # GET routes should not enforce CSRF
         $content = $script:Content
-        $fIdx = $content.IndexOf('function Handle-AgentStats')
+        $fIdx = $content.IndexOf('function Get-AgentStats')
         $fBlock = $content.Substring($fIdx, [Math]::Min(2000, $content.Length - $fIdx))
         # Should reach the next function without a CSRF block — just check it has Send-Json
         $fBlock | Should -Match 'Send-Json'
@@ -118,3 +123,19 @@ Describe 'Start-LocalWebEngine — SIN compliance' {
         }
     }
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

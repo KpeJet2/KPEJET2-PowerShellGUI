@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V31.0
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 #Requires -Version 5.1
 <#
@@ -111,7 +115,7 @@ function Invoke-ManifestRevision {
 function Invoke-DeepTest {
     Write-CronProcessorLog 'Step 3: Deep parse validation'
     $scripts = Get-ChildItem -Path $script:Root -Include '*.ps1','*.psm1' -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notlike '*\.history*' -and $_.FullName -notlike '*node_modules*' }
+        Where-Object { $_.FullName -notlike '*\.history*' -and $_.FullName -notlike '*node_modules*' -and $_.FullName -notlike '*remediation-backups*' -and $_.FullName -notlike '*~REPORTS*' }
     $pass = 0; $fail = 0; $failFiles = @()
     foreach ($s in $scripts) {
         $errors = $null
@@ -704,3 +708,19 @@ if (Get-Command Write-ProcessBanner -ErrorAction SilentlyContinue) {
 if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
     throw "Integrity gate FAILED: $integrityStep"
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

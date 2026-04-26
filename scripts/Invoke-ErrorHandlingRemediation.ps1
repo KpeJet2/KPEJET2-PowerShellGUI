@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V31.0
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 <#
 .SYNOPSIS
@@ -43,7 +47,11 @@
     FileRole : Remediation Script
 #>
 
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.0
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 #Requires -Version 5.1
 
@@ -286,3 +294,19 @@ try {
 }
 
 exit $(if ($errorCount -gt 0) { 1 } else { 0 })
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

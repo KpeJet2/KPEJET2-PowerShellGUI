@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # Test-ScanDashboard-NullFix.ps1 - Validate null reference fixes in Show-ScanDashboard.ps1
 <#
 .SYNOPSIS
@@ -87,3 +91,19 @@ Write-Host "  3. Click 'Open Selected' without selecting a row" -ForegroundColor
 Write-Host "  4. Verify no 'null-valued expression' errors occur" -ForegroundColor Gray
 
 exit 0
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

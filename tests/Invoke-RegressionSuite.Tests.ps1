@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Modules Pester
 <#
 .SYNOPSIS  Pester regression tests -- Pass 5.
@@ -159,27 +163,91 @@ Describe 'SIN Registry Integrity' {
     }
 }
 
-Describe 'Export-ModuleMember Consistency' {
+Describe '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember Consistency' {
     BeforeAll {
         $script:moduleDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'modules'
         $script:moduleFiles = Get-ChildItem -Path $script:moduleDir -Filter '*.psm1' -File -ErrorAction SilentlyContinue
     }
 
-    It 'All modules use array-style Export-ModuleMember' {
+    It 'All modules use array-style 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember' {
         $violations = @()
         foreach ($mf in $script:moduleFiles) {
             $content = Get-Content $mf.FullName -Raw -ErrorAction SilentlyContinue
             if ($null -eq $content) { continue }
-            # Check for single-line Export-ModuleMember (Pattern C - non-array)
-            if ($content -match 'Export-ModuleMember\s+-Function\s+[^@\(]') {
+            # Check for single-line 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember (Pattern C - non-array)
+            if ($content -match '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember\s+-Function\s+[^@\(]') {
                 # Allow single function export but flag for consistency review
                 $violations += $mf.Name
             }
         }
         # This is a style check -- report but do not fail hard
         if ($violations.Count -gt 0) {
-            Write-Warning "Modules using non-array Export-ModuleMember: $($violations -join ', ')"
+            Write-Warning "Modules using non-array 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember: $($violations -join ', ')"
         }
     }
 }
+
+
+
+
 

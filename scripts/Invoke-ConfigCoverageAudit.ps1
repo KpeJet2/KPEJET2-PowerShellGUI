@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-01
@@ -46,7 +50,19 @@ $features = [ordered]@{
     CmdletBinding      = '\[CmdletBinding'
     WorkspacePath      = '\$WorkspacePath'
     SINGovernance      = '(?i)sin[_-]pattern|sin.governance|Invoke-SIN|sin_registry'
-    ModuleExport       = 'Export-ModuleMember'
+    ModuleExport       = '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember'
     CronLog            = 'Write-CronLog'
     CryptoThumbprint   = '(?i)thumbprint|Get-CertThumbprint|CryptoEngine'
     SecretsVault       = '(?i)Get-VaultItem|Set-VaultItem|vault'
@@ -273,4 +289,8 @@ if ($PipelineItems) {
     sinGapsFound   = @($sinGaps).Count
     featureSummary = $summary
 }
+
+
+
+
 

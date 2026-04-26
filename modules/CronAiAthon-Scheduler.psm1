@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V32.0
+# VersionTag: 2604.B2.V32.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 #Requires -Version 5.1
 <#
@@ -313,8 +317,18 @@ function Invoke-CronJob {
                 if (Test-Path $pipeMod) { Import-Module $pipeMod -Force -ErrorAction Stop }
                 $items = Get-PipelineItems -WorkspacePath $WorkspacePath -Status 'OPEN'
                 $items = @($items)
+                $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
+                $health = $null
+                try {
+                    $health = Get-PipelineHealthMetrics -WorkspacePath $WorkspacePath
+                } catch {
+                    $result.errors += "Pipeline health metrics warning: $($_.Exception.Message)"
+                }
                 $result.itemsProcessed = $items.Count
-                $result.detail = "$($items.Count) open items in pipeline"
+                $result.detail = "$($items.Count) open items in pipeline; artifacts refreshed (master/bundle/index) and health sampled"
+                if ($null -ne $health -and $health.PSObject.Properties['openItems']) {
+                    $result.detail += "; openItems=$($health.openItems)"
+                }
                 $result.success = $true
             }
             'MasterAggregate' {
@@ -1223,7 +1237,73 @@ function Register-Question {
     Save-CronSchedule -WorkspacePath $WorkspacePath -Schedule $schedule
 }
 
+# ========================== HELP MENU ==========================
+
+function Show-SchedulerHelp {
+    <#
+    .SYNOPSIS  Display quick usage help for CronAiAthon scheduler operations.
+    #>
+    [CmdletBinding()]
+    param(
+        [ValidateSet('Schedule','Pause','Resume','Cancel','List','Help')]
+        [string]$Action = 'Help',
+
+        [ValidateSet('Debug','Info','Warning','Error','Critical')]
+        [string]$EventLevel = 'Info',
+
+        [string]$LogToFile = 'auto',
+        [switch]$ShowRainbow
+    )
+
+    if ($ShowRainbow) {
+        Write-Host '=== CronAiAthon Scheduler Help ===' -ForegroundColor Cyan
+    }
+
+    $lines = @(
+        'Actions: Schedule | Pause | Resume | Cancel | List | Help',
+        "Selected Action: $Action",
+        "EventLevel: $EventLevel",
+        'Examples:',
+        '  Show-SchedulerHelp -Action List',
+        '  Show-SchedulerHelp -Action Schedule -EventLevel Warning',
+        '  Show-SchedulerHelp -Action Resume -LogToFile auto',
+        '  Show-SchedulerHelp -Action Help -ShowRainbow'
+    )
+    foreach ($line in $lines) {
+        Write-Host $line
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LogToFile)) {
+        $logPath = if ($LogToFile -eq 'auto') {
+            Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'logs') 'scheduler-events-help.log'
+        } else {
+            $LogToFile
+        }
+        try {
+            $logDir = Split-Path -Path $logPath -Parent
+            if ($logDir -and -not (Test-Path $logDir)) {
+                New-Item -Path $logDir -ItemType Directory -Force | Out-Null
+            }
+            Add-Content -Path $logPath -Value ("[{0}] Help viewed: Action={1}; EventLevel={2}" -f (Get-Date -Format o), $Action, $EventLevel) -Encoding UTF8
+        } catch {
+            Write-Verbose "Show-SchedulerHelp log write failed: $($_.Exception.Message)"
+        }
+    }
+}
+
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-CronSchedule',
     'Save-CronSchedule',
@@ -1239,7 +1319,13 @@ Export-ModuleMember -Function @(
     'Register-SubagentCall',
     'Register-Question',
     'Get-CronSchedulePath',
-    'Get-CronHistoryPath'
+    'Get-CronHistoryPath',
+    'Show-SchedulerHelp'
 )
+
+
+
+
+
 
 

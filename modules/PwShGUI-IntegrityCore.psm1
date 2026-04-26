@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 #Requires -Version 5.1
 # TODO: HelpMenu | Show-IntegrityCoreHelp | Actions: Verify|Baseline|Compare|Report|Help | Spec: config/help-menu-registry.json
@@ -381,11 +385,28 @@ function Invoke-EmergencyUnlock {
 }
 
 # -------------------------------------------------------------------------------
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Invoke-StartupIntegrityCheck'
     'Test-IntegrityManifest'
     'Initialize-EmergencyUnlockKey'
     'Invoke-EmergencyUnlock'
 )
+
+
+
+
+
 
 

@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V32.5
+# VersionTag: 2604.B1.V32.7
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Invoke-AgentCallStats.ps1
 # Computes per-agent call statistics (24h / 7d / all-time) by scanning JSONL log files
@@ -153,3 +157,19 @@ try {
 }
 
 if ($PassThru) { return $true }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

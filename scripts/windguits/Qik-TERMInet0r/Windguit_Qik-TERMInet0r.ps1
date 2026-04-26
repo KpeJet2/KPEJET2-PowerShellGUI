@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
   Windows Terminal Layout & Profile Manager with GUI, layout memory, ping grid, ARP, and config backup/restore.
 
@@ -541,3 +541,16 @@ $form.Add_FormClosing({
 })
 
 [void]$form.ShowDialog()
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+

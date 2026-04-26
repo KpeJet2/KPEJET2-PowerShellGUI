@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
 <#
@@ -905,7 +909,19 @@ Carol,Engineering,105000
 
 ###################################################
 # 20. MODULE AUTHORING SKELETON
-#   Commands: Export-ModuleMember | Format-Table | New-ModuleManifest | Write-Host
+#   Commands: 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember | Format-Table | New-ModuleManifest | Write-Host
 ###################################################
 Show-Section "20. Module Authoring Skeleton"
 
@@ -929,6 +945,18 @@ function Get-Greeting {
 function Set-Greeting { Write-Host "Placeholder for a setter command." }
 
 # Export only the functions you want consumers to see
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function Get-Greeting, Set-Greeting
 '@
     Write-Host "Module skeleton (would be saved as MyModule.psm1):"
@@ -2035,6 +2063,10 @@ if ($script:DoExport) {
     # Remove the temp transcript once all exports are done
     Remove-Item -Path $script:TranscriptPath -Force -ErrorAction SilentlyContinue
 }
+
+
+
+
 
 
 

@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Test
 # VersionBuildHistory:
 #   2604.B2.V31.1  2026-04-14  Initial — XHTML structure, VersionTag format, FileRole coverage,
@@ -610,3 +614,19 @@ Describe 'Manifest Alignment' {
         $diff | Should -BeLessOrEqual 5 -Because "Manifest xhtmlTools count ($mfXhtml) should be within 5 of filesystem count ($fsXhtml)"
     }
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

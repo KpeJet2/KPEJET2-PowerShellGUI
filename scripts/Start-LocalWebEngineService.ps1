@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V33.4
+# VersionTag: 2604.B2.V33.6
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Launcher
 # Start-LocalWebEngineService.ps1
 # Manages the LocalWebEngine as a headless background service.
@@ -72,47 +77,15 @@
 .EXAMPLE
     .\Start-LocalWebEngineService.ps1 -Action Restart -ShowRainbow -LogToFile 'C:\logs\engine.log'
 #>
-[CmdletBinding()]
-param(
-    [ValidateSet('Start','Stop','Restart','Status','Help')]
-    [string]$Action           = 'Start',
-    [int]   $Port             = 8042,
-    [string]$WorkspacePath    = '',
-    [switch]$SeparateTerminal,
-    [ValidateSet('Debug','Info','Warning','Error','Critical')]
-    [string]$EventLevel       = 'Info',
-    [string]$LogToFile        = '',
-    [bool]  $ShowRainbow      = $true,
-    [int]   $PollInterval     = 1,
-    [int]   $MaxWait          = 15
-)
-
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Continue'
-
-# ─── Paths ─────────────────────────────────────────────────────────────────────
+Write-Host "[DEPRECATED] Start-LocalWebEngineService.ps1 is replaced by Start-LocalWebEngine.ps1 -Action RunAsService" -ForegroundColor Yellow
 $ScriptDir = $PSScriptRoot
-if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
-    $WorkspacePath = Split-Path $ScriptDir -Parent
+$engineScript = Join-Path $ScriptDir 'Start-LocalWebEngine.ps1'
+if (-not (Test-Path $engineScript)) {
+    Write-Host "Engine script not found: $engineScript" -ForegroundColor Red
+    exit 1
 }
-
-$EngineScript = Join-Path $ScriptDir 'Start-LocalWebEngine.ps1'
-$LogsDir      = Join-Path $WorkspacePath 'logs'
-$PidFile      = Join-Path $LogsDir 'engine.pid'
-$LogFile      = Join-Path $LogsDir 'engine-service.log'
-
-if (-not (Test-Path $LogsDir)) {
-    New-Item -ItemType Directory -Path $LogsDir -Force | Out-Null
-}
-
-# ─── Helpers ───────────────────────────────────────────────────────────────────
-
-# ─── Event Level Filter ───────────────────────────────────────────────────────
-$script:EventLevelOrder = @{ Debug = 0; Info = 1; Warning = 2; Error = 3; Critical = 4 }
-$script:MinLevel = $script:EventLevelOrder[$EventLevel]
-
-# ─── Resolve LogToFile ─────────────────────────────────────────────────────────
-$script:EventLogPath = ''
+& $engineScript -Action RunAsService @args
+exit $LASTEXITCODE
 if ($LogToFile -eq 'auto') {
     $ts = Get-Date -Format 'yyyyMMdd-HHmmss'
     $script:EventLogPath = Join-Path $LogsDir "engine-events-$ts.log"
@@ -502,4 +475,20 @@ switch ($Action) {
         exit $(if ($running -and $responding) { 0 } else { 1 })
     }
 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

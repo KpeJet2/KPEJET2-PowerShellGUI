@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 #Requires -Version 5.1
 <#
@@ -96,6 +100,7 @@ function Register-EventLogSources {
                 }
             }
         } catch {
+            Write-AppLog -Message "Register-EventLogSource failed for ${src}: $($_.Exception.Message)" -Level Error
             $results += [ordered]@{
                 source  = $src
                 status  = 'FAILED'
@@ -116,6 +121,7 @@ function Test-EventLogSourceReady {
     try {
         return [System.Diagnostics.EventLog]::SourceExists($Source)
     } catch {
+        Write-AppLog -Message "Test-EventLogSourceReady failed for ${Source}: $($_.Exception.Message)" -Level Error
         return $false
     }
 }
@@ -400,7 +406,73 @@ function ConvertTo-SyslogSeverity {
     }
 }
 
+# ========================== HELP MENU ==========================
+
+function Show-EventLogHelp {
+    <#
+    .SYNOPSIS  Display quick usage help for CronAiAthon EventLog operations.
+    #>
+    [CmdletBinding()]
+    param(
+        [ValidateSet('Write','Query','Export','Rotate','Help')]
+        [string]$Action = 'Help',
+
+        [ValidateSet('Debug','Info','Warning','Error','Critical')]
+        [string]$EventLevel = 'Info',
+
+        [string]$LogToFile = 'auto',
+        [switch]$ShowRainbow
+    )
+
+    if ($ShowRainbow) {
+        Write-Host '=== CronAiAthon EventLog Help ===' -ForegroundColor Cyan
+    }
+
+    $lines = @(
+        'Actions: Write | Query | Export | Rotate | Help',
+        "Selected Action: $Action",
+        "EventLevel: $EventLevel",
+        'Examples:',
+        '  Show-EventLogHelp -Action Write',
+        '  Show-EventLogHelp -Action Query -EventLevel Warning',
+        '  Show-EventLogHelp -Action Export -LogToFile auto',
+        '  Show-EventLogHelp -Action Help -ShowRainbow'
+    )
+    foreach ($line in $lines) {
+        Write-Host $line
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LogToFile)) {
+        $logPath = if ($LogToFile -eq 'auto') {
+            Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'logs') 'eventlog-events-help.log'
+        } else {
+            $LogToFile
+        }
+        try {
+            $logDir = Split-Path -Path $logPath -Parent
+            if ($logDir -and -not (Test-Path $logDir)) {
+                New-Item -Path $logDir -ItemType Directory -Force | Out-Null
+            }
+            Add-Content -Path $logPath -Value ("[{0}] Help viewed: Action={1}; EventLevel={2}" -f (Get-Date -Format o), $Action, $EventLevel) -Encoding UTF8
+        } catch {
+            Write-Verbose "Show-EventLogHelp log write failed: $($_.Exception.Message)"
+        }
+    }
+}
+
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Register-EventLogSources',
     'Test-EventLogSourceReady',
@@ -410,6 +482,12 @@ Export-ModuleMember -Function @(
     'Write-CronLog',
     'Get-EventLogConfig',
     'Get-SyslogEntries',
-    'ConvertTo-SyslogSeverity'
+    'ConvertTo-SyslogSeverity',
+    'Show-EventLogHelp'
 )
+
+
+
+
+
 

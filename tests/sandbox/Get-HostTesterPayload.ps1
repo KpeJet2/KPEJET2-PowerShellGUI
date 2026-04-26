@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Handles certificate key exchange between host and sandbox for encrypted archive access.
@@ -119,3 +123,19 @@ if ($DecryptKeyBlob) {
     Write-Host ''
     Write-Host "To extract: 7z x `"$($keyBlob.archiveFile)`" -p`"$password`"" -ForegroundColor Gray
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

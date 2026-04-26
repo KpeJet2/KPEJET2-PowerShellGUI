@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V32.0
+# VersionTag: 2604.B1.V32.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # Author: The Establishment
 # Date: 2026-04-05
 # FileRole: Module
@@ -342,9 +346,26 @@ function Convert-ScanSchema {
 
 
 # ─── Module exports ───────────────────────────────────────────────────────────────
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Get-ScanSchemaVersion',
     'Test-ScanSchemaCompatibility',
     'Get-SchemaTransformPlan',
     'Convert-ScanSchema'
 )
+
+
+
+
+

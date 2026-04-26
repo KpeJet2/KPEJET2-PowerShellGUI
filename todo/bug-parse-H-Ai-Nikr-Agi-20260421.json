@@ -1,0 +1,16 @@
+{
+  "priority": "HIGH",
+  "created_at": "2026-04-21T01:47:37.0834063+08:00",
+  "severity": "HIGH",
+  "category": "bug",
+  "todo_id": "bug-parse-H-Ai-Nikr-Agi-20260421",
+  "file_refs": [
+    "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "notes": "Auto-detected by cron deep-test cycle",
+  "title": "Parse error in H-Ai-Nikr-Agi.psm1",
+  "status": "OPEN",
+  "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
+  "suggested_by": "CronProcessor-DeepTest",
+  "type": "bug"
+}

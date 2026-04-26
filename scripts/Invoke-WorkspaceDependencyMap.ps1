@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-03
@@ -78,7 +82,21 @@ Write-Output "Excluded  : $($script:ExcludeNames -join ', ')"
 # ─── Checkpoint + progress helpers ─────────────────────────────────────────
 $script:_CkptPath    = Join-Path (Join-Path $WorkspacePath 'checkpoints') 'dependency-scan-checkpoint.json'
 $script:_ProgressPath= Join-Path (Join-Path $WorkspacePath 'logs') 'scan-progress.json'
+$script:_PipelinePath= Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json'
 $script:_ScanStart   = [System.Diagnostics.Stopwatch]::StartNew()
+$script:_PhaseOrder  = @('folders','modules','scripts','configs','urls_ips','dns_resolution')
+$script:_SubFailures = [System.Collections.ArrayList]@()
+
+function Register-MapSubFailure {
+    [CmdletBinding()]
+    param([string]$Phase, [string]$Target, [string]$ErrorMessage)
+    $null = $script:_SubFailures.Add([pscustomobject]@{
+        phase   = $Phase
+        target  = $Target
+        error   = $ErrorMessage
+        at      = (Get-Date -Format 'o')
+    })
+}
 
 function Save-ScanPhaseCheckpoint {
     [CmdletBinding()]
@@ -134,12 +152,25 @@ function Save-ScanPhaseCheckpoint {
     # ── Write scan-progress.json for LocalWebEngine polling ──
     $progressDir = Split-Path $script:_ProgressPath -Parent
     if (-not (Test-Path $progressDir)) { New-Item -ItemType Directory -Path $progressDir -Force | Out-Null }
+    $completed = @($script:_PhaseOrder | Where-Object { $ckpt.phases.ContainsKey($_) -and $ckpt.phases[$_].status -eq 'done' }).Count
+    $errorCount = @($script:_PhaseOrder | Where-Object { $ckpt.phases.ContainsKey($_) -and $ckpt.phases[$_].status -eq 'error' }).Count
+    $overallStatus = if ($ProgressPct -ge 100) {
+        if ($errorCount -gt 0 -or @($script:_SubFailures).Count -gt 0) { 'partial' } else { 'done' }
+    } else { 'running' }
     $progress = @{
-        type           = 'scanProgress'
-        statusMessage  = "Phase $Phase complete ($Count items)"
-        progress       = $ProgressPct
-        phases         = $ckpt.phases
-        updatedAt      = $now
+        type            = 'scanProgress'
+        mode            = 'DependencyMap'
+        status          = $overallStatus
+        statusMessage   = "Phase $Phase complete ($Count items)"
+        progress        = $ProgressPct
+        totalPhases     = @($script:_PhaseOrder).Count
+        completedPhases = $completed
+        currentPhase    = if ($ProgressPct -ge 100) { $null } else { $Phase }
+        phases          = $ckpt.phases
+        updatedAt       = $now
+        error           = if ($overallStatus -eq 'partial') {
+            "$errorCount phase error(s), $(@($script:_SubFailures).Count) subroutine failure(s)"
+        } else { $null }
     }
     $progress | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $script:_ProgressPath -Encoding UTF8
 
@@ -222,7 +253,7 @@ foreach ($dir in $allDirsWithRoot) {
 }
 
 # ── Checkpoint: folders phase complete ──
-Save-ScanPhaseCheckpoint -Phase 'folders' -Status 'ok' -Count @($folderNodes).Count -ProgressPct 20
+Save-ScanPhaseCheckpoint -Phase 'folders' -Status 'done' -Count @($folderNodes).Count -ProgressPct 20
 
 # ─── Regex patterns used during code file parsing ────────────────────────────
 $fnRegex  = [regex]'(?m)^[ \t]*function\s+([A-Za-z][\w-]+)\s*[({]'
@@ -256,6 +287,7 @@ foreach ($f in $codeFiles) {
         $src = [System.IO.File]::ReadAllText($f.FullName, [System.Text.Encoding]::UTF8)
     } catch {
         Write-Output "  WARN: Cannot read $rel -- $($_.Exception.Message)"
+        Register-MapSubFailure -Phase 'scripts' -Target $rel -ErrorMessage $_.Exception.Message
         continue
     }
 
@@ -362,9 +394,9 @@ foreach ($f in $codeFiles) {
 }
 
 # ── Checkpoint: modules + scripts + urls_ips phases complete ──
-Save-ScanPhaseCheckpoint -Phase 'modules' -Status 'ok' -Count @($moduleNodes).Count -ProgressPct 45
-Save-ScanPhaseCheckpoint -Phase 'scripts' -Status 'ok' -Count @($scriptNodes).Count -ProgressPct 50
-Save-ScanPhaseCheckpoint -Phase 'urls_ips' -Status 'ok' -Count @($urlIpMap.Keys).Count -ProgressPct 55
+Save-ScanPhaseCheckpoint -Phase 'modules' -Status 'done' -Count @($moduleNodes).Count -ProgressPct 45
+Save-ScanPhaseCheckpoint -Phase 'scripts' -Status 'done' -Count @($scriptNodes).Count -ProgressPct 50
+Save-ScanPhaseCheckpoint -Phase 'urls_ips' -Status 'done' -Count @($urlIpMap.Keys).Count -ProgressPct 55
 
 # ─── Phase 4: Parse config files ─────────────────────────────────────────────
 Write-Output '[55%] Parsing config files and extracting URLs/IPs...'
@@ -384,7 +416,9 @@ foreach ($cf in $configFiles) {
         if (@($cfUrls).Count -gt 0 -or @($cfIPs).Count -gt 0) {
             $urlIpMap[$rel] = @{ urls = $cfUrls; ips = $cfIPs }
         }
-    } catch { <# Intentional: non-fatal URL scan on config #> }
+    } catch {
+        Register-MapSubFailure -Phase 'configs' -Target $rel -ErrorMessage $_.Exception.Message
+    }
 
     try {
         if ($cf.Extension -ieq '.json') {
@@ -401,7 +435,9 @@ foreach ($cf in $configFiles) {
                     Select-Object -Unique -First 30)
             }
         }
-    } catch { <# Intentional: non-fatal config parse failure #> }
+    } catch {
+        Register-MapSubFailure -Phase 'configs' -Target $rel -ErrorMessage $_.Exception.Message
+    }
 
     $cnid = New-NodeId
     $configNodes.Add([pscustomobject]@{
@@ -419,7 +455,7 @@ foreach ($cf in $configFiles) {
 }
 
 # ── Checkpoint: configs phase complete ──
-Save-ScanPhaseCheckpoint -Phase 'configs' -Status 'ok' -Count @($configNodes).Count -ProgressPct 62
+Save-ScanPhaseCheckpoint -Phase 'configs' -Status 'done' -Count @($configNodes).Count -ProgressPct 62
 
 # ─── Phase 4b: DNS resolution of URL hostnames ───────────────────────────────
 Write-Output '[62%] Resolving URL hostnames to IPs...'
@@ -462,16 +498,27 @@ if (-not $SkipDns) {
     Write-Output "  Resolving $($allHosts.Count) unique hostnames..."
     foreach ($hostName in $allHosts) {
         try {
-            $resolved = [System.Net.Dns]::GetHostAddresses($hostName) |
+            $dnsTask = [System.Net.Dns]::GetHostAddressesAsync($hostName)
+            if (-not $dnsTask.Wait(3000)) {
+                $dnsResolution[$hostName] = @{
+                    ips   = @()
+                    error = 'DNS timeout after 3000ms'
+                    hits  = if ($hostHitCount.ContainsKey($hostName)) { $hostHitCount[$hostName] } else { 0 }
+                }
+                Register-MapSubFailure -Phase 'dns_resolution' -Target $hostName -ErrorMessage 'DNS timeout after 3000ms'
+                continue
+            }
+            $resolved = @($dnsTask.Result |
                 Where-Object { $_.AddressFamily -eq 'InterNetwork' } |
                 ForEach-Object { $_.ToString() } |
-                Select-Object -Unique
+                Select-Object -Unique)
             $dnsResolution[$hostName] = @{
                 ips   = @($resolved)
                 error = ''
                 hits  = if ($hostHitCount.ContainsKey($hostName)) { $hostHitCount[$hostName] } else { 0 }
             }
         } catch {
+            Register-MapSubFailure -Phase 'dns_resolution' -Target $hostName -ErrorMessage $_.Exception.Message
             $dnsResolution[$hostName] = @{
                 ips   = @()
                 error = $_.Exception.Message
@@ -480,10 +527,10 @@ if (-not $SkipDns) {
         }
     }
     Write-Output "  DNS resolved $(@($dnsResolution.Keys).Count) hosts"
-    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'ok' -Count @($dnsResolution.Keys).Count -ProgressPct 70
+    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count @($dnsResolution.Keys).Count -ProgressPct 70
 } else {
     Write-Output '  DNS resolution skipped (-SkipDns)'
-    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'ok' -Count 0 -ProgressPct 70
+    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count 0 -ProgressPct 70
 }
 
 # ─── Phase 5: Resolve import edges ───────────────────────────────────────────
@@ -1209,9 +1256,79 @@ buildIpTable();
     }
 }
 
+# ─── Subroutine failure Bug2FIX push (best-effort) ───────────────────────────
+if (@($script:_SubFailures).Count -gt 0 -and (Test-Path -LiteralPath $script:_PipelinePath)) {
+    try {
+        $sample = @($script:_SubFailures | Select-Object -First 6 | ForEach-Object { "$($_.phase):$($_.target)" })
+        $now = Get-Date
+        $seed = "map-subfail-$timestamp-$(@($script:_SubFailures).Count)"
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $sid = [System.BitConverter]::ToString($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))[0..3]).Replace('-','').ToLower()
+        $sha.Dispose()
+        $bug = [ordered]@{
+            id              = "Bug-$($now.ToString('yyyyMMddHHmmss'))-$sid"
+            type            = 'Bug'
+            status          = 'OPEN'
+            priority        = 'MEDIUM'
+            category        = 'scan-subroutine-failure'
+            title           = "[SCAN PARTIAL] Dependency map had subroutine failures"
+            description     = "Invoke-WorkspaceDependencyMap completed with $(@($script:_SubFailures).Count) subroutine failure(s). Sample targets: $($sample -join ', ')"
+            affectedFiles   = @()
+            source          = 'Invoke-WorkspaceDependencyMap'
+            created         = $now.ToString('o')
+            modified        = $now.ToString('o')
+            completedAt     = $null
+            linkedFeatures  = @()
+            linkedBugs      = @()
+            tags            = @('scan','bug2fix','subroutine')
+            notes           = "Auto-created from dependency map scan run at $timestamp."
+            sessionModCount = 0
+            parentId        = ''
+            executionAgent  = ''
+        }
+        $pipeRaw = Get-Content -LiteralPath $script:_PipelinePath -Raw -Encoding UTF8
+        if (-not [string]::IsNullOrEmpty($pipeRaw)) {
+            $pipe = $pipeRaw | ConvertFrom-Json
+            if ($null -ne $pipe -and $null -ne $pipe.bugs) {
+                $existing = @($pipe.bugs | Where-Object { $null -ne $_ -and $_.id -eq $bug.id }).Count -gt 0
+                if (-not $existing) {
+                    $newBugs = [System.Collections.ArrayList]@()
+                    foreach ($b in @($pipe.bugs)) { $null = $newBugs.Add($b) }
+                    $null = $newBugs.Add($bug)
+                    $pipe.bugs = @($newBugs)
+                    if ($null -ne $pipe.meta) { $pipe.meta.lastModified = (Get-Date -Format 'o') }
+                    Set-Content -LiteralPath $script:_PipelinePath -Value ($pipe | ConvertTo-Json -Depth 10) -Encoding UTF8 -Force
+                    Write-Output "  [bug2fix] Created $($bug.id) for subroutine failures"
+                }
+            }
+        }
+    } catch {
+        Write-Output "  WARN: Could not push subroutine Bug2FIX -- $($_.Exception.Message)"
+    }
+}
+
+# Mark progress done/partial for UI poller
+Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count @($dnsResolution.Keys).Count -ProgressPct 100
+
 # ─── Done ─────────────────────────────────────────────────────────────────────
 Write-Output '[100%] Workspace Dependency Map complete.'
 Write-Output "  Nodes: $(@($allNodes).Count)   Edges: $(@($resolvedEdges).Count)"
 Write-Output "  Folders: $($folderNodes.Count)  Modules: $($moduleNodes.Count)  Scripts: $($scriptNodes.Count)"
 Write-Output "  Functions: $($functionNodes.Count)  Variables: $($variableNodes.Count)  Configs: $($configNodes.Count)"
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

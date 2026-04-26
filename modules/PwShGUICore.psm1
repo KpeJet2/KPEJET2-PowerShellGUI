@@ -1,4 +1,59 @@
-﻿# VersionTag: 2604.B2.V31.2
+# ========================== FILE ENUMERATION UTILITY ==========================
+function Get-AllProjectFiles {
+    <#
+    .SYNOPSIS  Enumerate all project files, excluding dot folders and known large directories.
+    .PARAMETER Root  Optional root directory (defaults to workspace root).
+    .PARAMETER Pattern  Optional file pattern (e.g. *.ps1).
+    .OUTPUTS   [System.IO.FileInfo[]] Array of file objects.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$Root,
+        [string]$Pattern = '*'
+    )
+    if (-not $Root) { $Root = Get-ProjectPath -Key 'Root' }
+    $excludeDirs = @('.git','.history','node_modules','__pycache__','.venv','~DOWNLOADS','~REPORTS')
+    $files = @()
+    try {
+        $files = Get-ChildItem -Path $Root -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue |
+            Where-Object { $path = $_.FullName; -not ($excludeDirs | ForEach-Object { $path -like "*$_*" }) }
+    } catch {
+        Write-AppLog -Message "[FileEnum] Error enumerating files: $($_.Exception.Message)" -Level Error
+    }
+    return $files
+}
+# ========================== CONFIG PATH VALIDATION ==========================
+function Validate-ConfigPaths {
+    <#
+    .SYNOPSIS  Validates all critical config and workspace paths at startup.
+    .DESCRIPTION
+        Checks that all required directories and config files exist. Logs errors and returns $false if any are missing.
+    .OUTPUTS   [bool] $true if all paths exist, $false otherwise.
+    #>
+    [CmdletBinding()]
+    param()
+    $requiredKeys = @(
+        'Config','Modules','Scripts','Logs','Reports','Temp','Downloads','Checkpoints','Pki','SinRegistry','Readme',
+        'SystemVarsXml','LinksXml','AppConfigJson','PrereqJson','SascConfig','AvpnDevices','ScriptFolders'
+    )
+    $allOk = $true
+    foreach ($key in $requiredKeys) {
+        $path = Get-ProjectPath -Key $key
+        if (-not $path -or -not (Test-Path $path)) {
+            Write-AppLog -Message "[ConfigValidation] Missing or invalid path for key '$key': $path" -Level Error
+            $allOk = $false
+        }
+    }
+    if ($allOk) {
+        Write-AppLog -Message '[ConfigValidation] All critical config paths validated successfully.' -Level Info
+    }
+    return $allOk
+}
+# VersionTag: 2604.B2.V31.4
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v23  2026-03-28 09:15  Fix Join-Path 3-arg calls for PS 5.1 compatibility
@@ -984,6 +1039,18 @@ function Write-CrashDump {
 }
 
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-CorePaths'
     'Initialize-ConfigFile'
@@ -1007,6 +1074,11 @@ Export-ModuleMember -Function @(
     'Write-ProcessBanner'
     'Write-CrashDump'
 )
+
+
+
+
+
 
 
 

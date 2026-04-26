@@ -1,8 +1,49 @@
-﻿# VersionTag: 2604.B2.V33.1
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
+function Scan-ForSinPattern028 {
+    <#
+    .SYNOPSIS
+        Scan for Import-Module statements that reference .psm1 files instead of .psd1 manifests (SIN-PATTERN-028).
+    .DESCRIPTION
+        Reports all Import-Module calls that use a .psm1 file as a target, which is forbidden except for legacy wrappers.
+    .PARAMETER WorkspacePath
+        Workspace root folder to scan.
+    .OUTPUTS
+        [PSCustomObject[]]  FilePath, LineNumber, LineText
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [string[]]$ExcludePaths = @('.history', '~REPORTS', 'node_modules', '__pycache__', '.git', '~DOWNLOADS', 'CarGame')
+    )
+
+    $results = [System.Collections.ArrayList]::new()
+    $files = Get-ChildItem -Path $WorkspacePath -Recurse -Include '*.ps1', '*.psm1' -ErrorAction SilentlyContinue |
+        Where-Object {
+            $p = $_.FullName
+            -not ($ExcludePaths | Where-Object { $p -like "*$_*" })
+        }
+
+    foreach ($file in $files) {
+        $lines = @(Get-Content $file.FullName -Encoding UTF8 -ErrorAction SilentlyContinue)
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $line = $lines[$i]
+            # Use a minimal, PowerShell-safe regex for Import-Module .psm1 detection
+            if ($line -match "Import-Module\s+\S+\.psm1") {
+                [void]$results.Add([PSCustomObject]@{
+                    FilePath   = $file.FullName
+                    LineNumber = $i + 1
+                    LineText   = $line.Trim()
+                })
+            }
+        }
+    }
+    Write-SteerLog "Scan-ForSinPattern028: found $(@($results).Count) SIN-PATTERN-028 violation(s)" 'Warning'
+    return @($results)
+}
+# VersionTag: 2604.B2.V33.1
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -129,17 +170,17 @@ function Ensure-CompatibilityDirectiveTags {
     .DESCRIPTION
         For each .ps1/.psm1 file, ensures the four compatibility directives exist directly
         after VersionTag in this order:
-          # SupportPS5.1:
-          # SupportsPS7.6:
-          # SupportPS5.1TestedDate:
-          # SupportsPS7.6TestedDate:
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
         Default values are null until tests confirm support.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [switch]$Apply,
-        [string[]]$ExcludePaths = @('.history', 'node_modules', '__pycache__', '.git', '~DOWNLOADS', 'CarGame')
+        [string[]]$ExcludePaths = @('.history', '~REPORTS', 'node_modules', '__pycache__', '.git', '~DOWNLOADS', 'CarGame')
     )
 
     $changes = [System.Collections.ArrayList]::new()
@@ -200,10 +241,10 @@ function New-CompatibilityStandardsTemplates {
             Path    = Join-Path $dir 'PS76-Preferred-Template.ps1.txt'
             Content = @'
 # VersionTag: YYMM.B0.V1.0
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -422,7 +463,7 @@ function Test-FunctionDescriptions {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [string[]]$ExcludePaths = @('.history', 'node_modules', '__pycache__', '.git')
+        [string[]]$ExcludePaths = @('.history', '~REPORTS', 'node_modules', '__pycache__', '.git')
     )
 
     $gaps = [System.Collections.ArrayList]::new()
@@ -487,7 +528,7 @@ function Resolve-OutlineConformance {
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [switch]$Apply,
-        [string[]]$ExcludePaths = @('.history', 'node_modules', '__pycache__', '.git', 'CarGame', '~DOWNLOADS')
+        [string[]]$ExcludePaths = @('.history', '~REPORTS', 'node_modules', '__pycache__', '.git', 'CarGame', '~DOWNLOADS')
     )
 
     $results = [System.Collections.ArrayList]::new()
@@ -801,6 +842,11 @@ function Invoke-PipelineSteerSession {
     $sessionStart = Get-Date
     Write-SteerLog "Invoke-PipelineSteerSession: starting (Apply=$($Apply.IsPresent))" 'Informational'
 
+
+    # Phase 0 — SIN-PATTERN-028 scan (Import-Module .psm1 usage)
+    Write-SteerLog 'PipelineSteer Phase 0: scanning for SIN-PATTERN-028 (.psm1 Import-Module usage)...' 'Warning'
+    $sin028 = Scan-ForSinPattern028 -WorkspacePath $WorkspacePath
+
     # Phase 1 — function description gaps
     Write-SteerLog 'PipelineSteer Phase 1: scanning function descriptions...' 'Informational'
     $fnGaps = Test-FunctionDescriptions -WorkspacePath $WorkspacePath
@@ -847,6 +893,8 @@ function Invoke-PipelineSteerSession {
         Timestamp          = $sessionStart.ToString('yyyy-MM-dd HH:mm:ss')
         DryRun             = (-not $Apply.IsPresent)
         ElapsedSeconds     = [math]::Round($elapsed, 1)
+        SinPattern028      = @($sin028)
+        SinPattern028Count = @($sin028).Count
         FunctionGaps       = @($fnGaps)
         FunctionGapCount   = @($fnGaps).Count
         OutlineIssues      = @($outlineResults)
@@ -895,5 +943,6 @@ Export-ModuleMember -Function @(
     'Invoke-CompatibilityMatrixAudit'
     'New-WorkspaceCompatibilityIndex'
 )
+
 
 

@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.3
+# VersionTag: 2604.B2.V31.5
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # VersionBuildHistory:
 #   2603.B0.v24  2026-06-10       Phase A-F implementation: dep visualiser, smoke test, checklist invoker
 #   2603.B0.v23  2026-03-28 09:15  TrayHost/PShellCore: ApplicationContext lifecycle, custom smiley tray icon, spacebar rehydration, verbose logging
@@ -149,9 +154,9 @@ function Clear-FileListCache {
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # ==================== IMPORT SHARED CORE MODULE ====================
-$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
-if (Test-Path $coreModulePath) {
-    Import-Module $coreModulePath -Force
+$coreManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psd1'
+if (Test-Path $coreManifestPath) {
+    Import-Module $coreManifestPath -Force
     if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
         throw "PwShGUICore imported but Write-AppLog not available -- module may be corrupt"
     }
@@ -173,14 +178,14 @@ if (Test-Path $coreModulePath) {
         [System.Environment]::SetEnvironmentVariable('PSModulePath', "$modsDir;$procPath", 'Process')
     }
 } else {
-    Write-Warning "PwShGUICore module not found at $coreModulePath -- falling back to inline functions"
+    Write-Warning "PwShGUICore module not found at $coreManifestPath -- falling back to inline functions"
 }
 _SwMark 'module-core-loaded'
 
 # ==================== IMPORT THEME MODULE ====================
-$themeModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-Theme.psm1'
-if (Test-Path $themeModulePath) {
-    Import-Module $themeModulePath -Force
+ $themeManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-Theme.psd1'
+if (Test-Path $themeManifestPath) {
+    Import-Module $themeManifestPath -Force
     if (-not (Get-Command Set-ModernFormTheme -ErrorAction SilentlyContinue)) {
         Write-AppLog 'PwShGUI-Theme imported but Set-ModernFormTheme not available' 'Warning'
     }
@@ -188,9 +193,9 @@ if (Test-Path $themeModulePath) {
 _SwMark 'module-theme-loaded'
 
 # ==================== IMPORT TRAY HOST MODULE (PShellCore) ====================
-$trayHostModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psm1'
-if (Test-Path $trayHostModulePath) {
-    Import-Module $trayHostModulePath -Force
+$trayHostManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psd1'
+if (Test-Path $trayHostManifestPath) {
+    Import-Module $trayHostManifestPath -Force
     if (-not (Get-Command Initialize-TrayAppContext -ErrorAction SilentlyContinue)) {
         Write-AppLog 'PwShGUI-TrayHost imported but Initialize-TrayAppContext not available' 'Warning'
     } else {
@@ -200,16 +205,16 @@ if (Test-Path $trayHostModulePath) {
 _SwMark 'module-trayhost-loaded'
 
 # ==================== IMPORT INTEGRITY CORE MODULE ====================
-$integrityCoreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-IntegrityCore.psm1'
-if (Test-Path $integrityCoreModulePath) {
+$integrityCoreManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-IntegrityCore.psd1'
+if (Test-Path $integrityCoreManifestPath) {
     try {
-        Import-Module $integrityCoreModulePath -Force -ErrorAction Stop
+        Import-Module $integrityCoreManifestPath -Force -ErrorAction Stop
         Write-AppLog "[Init] PwShGUI-IntegrityCore module loaded" "Debug"
     } catch {
         Write-AppLog "PwShGUI-IntegrityCore failed to load: $($_.Exception.Message)" "Warning"
     }
 } else {
-    Write-AppLog "PwShGUI-IntegrityCore.psm1 not found -- startup integrity check will run inline fallback" "Warning"
+    Write-AppLog "PwShGUI-IntegrityCore.psd1 not found -- startup integrity check will run inline fallback" "Warning"
 }
 _SwMark 'module-integritycore-loaded'
 
@@ -1376,19 +1381,21 @@ if (Test-Path $avpnModulePath) {
 }
 
 # Import SASC (Secrets Access & Security Checks) modules if available
-$sascModulePath = Get-ProjectPath SascModule
-$sascAdaptersPath = Get-ProjectPath SascAdapters
-if (Test-Path $sascModulePath) {
-    Import-Module $sascModulePath -Force
-    Write-AppLog "SASC module loaded from $sascModulePath" "Info"
+
+# Always import the module manifest (.psd1) for AssistedSASC and SASC-Adapters
+$sascModuleManifest = Join-Path $modulesDir 'AssistedSASC.psd1'
+$sascAdaptersManifest = Join-Path $modulesDir 'SASC-Adapters.psd1'
+if (Test-Path $sascModuleManifest) {
+    Import-Module $sascModuleManifest -Force
+    Write-AppLog "SASC module loaded from $sascModuleManifest" "Info"
 } else {
-    Write-AppLog "SASC module not found at $sascModulePath" "Warning"
+    Write-AppLog "SASC module not found at $sascModuleManifest" "Warning"
 }
-if (Test-Path $sascAdaptersPath) {
-    Import-Module $sascAdaptersPath -Force
-    Write-AppLog "SASC-Adapters module loaded from $sascAdaptersPath" "Info"
+if (Test-Path $sascAdaptersManifest) {
+    Import-Module $sascAdaptersManifest -Force
+    Write-AppLog "SASC-Adapters module loaded from $sascAdaptersManifest" "Info"
 } else {
-    Write-AppLog "SASC-Adapters module not found at $sascAdaptersPath" "Warning"
+    Write-AppLog "SASC-Adapters module not found at $sascAdaptersManifest" "Warning"
 }
 # Initialize SASC module state
 try {
@@ -2431,10 +2438,17 @@ function New-BuildManifest {
         $cachedEntry = $cacheIndex[$rel]
 
         if ($cachedEntry -and $cachedEntry.Signature -eq $signature) {
+            # Patch: Ensure 'Created' property is present, fallback to file property if missing/null/empty
+            $createdValue = $null
+            if ($cachedEntry.PSObject.Properties.Name -contains 'Created' -and $cachedEntry.Created) {
+                $createdValue = [string]$cachedEntry.Created
+            } else {
+                $createdValue = $f.CreationTime.ToString('s')
+            }
             $entry = [PSCustomObject]@{
                 RelPath = $rel
                 Signature = $signature
-                Created = [string]$cachedEntry.Created
+                Created = $createdValue
                 Modified = [string]$cachedEntry.Modified
                 Size = [string]$cachedEntry.Size
                 Owner = [string]$cachedEntry.Owner
@@ -10069,6 +10083,22 @@ Export-LogBuffer
 
 
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

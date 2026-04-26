@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V1.0
+# VersionTag: 2604.B1.V1.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # VersionBuildHistory:
 #   2604.B1.V1.0  2026-04-10  Rebuilt from broken 2-B draft. SIN-compliant WPF rewrite of Qik-TERMInet0r.
 # ============================================================
@@ -624,3 +628,19 @@ $window.Add_Closing({
 
 # -------------------- Launch --------------------
 $window.ShowDialog() | Out-Null
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

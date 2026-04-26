@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 <#
 .SYNOPSIS  SINGovernance - SIN review, approval, and SINeProofed workflow.
@@ -308,6 +312,18 @@ $rows
 }
 
 # ── Exports ──────────────────────────────────────────────────
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-SINGovernance'
     'Get-SINReviewQueue'
@@ -316,4 +332,9 @@ Export-ModuleMember -Function @(
     'Start-SINReview'
     'Export-SINReviewReport'
 )
+
+
+
+
+
 

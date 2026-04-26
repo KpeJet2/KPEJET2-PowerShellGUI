@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V1.0
+# VersionTag: 2604.B2.V1.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Diagnoses, registers, and installs PowerShellGUI project modules for local use.
@@ -391,3 +395,19 @@ switch ($Action) {
     'Install'   { Invoke-Install }
     'Uninstall' { Invoke-Uninstall }
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

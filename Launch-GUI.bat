@@ -1,3 +1,4 @@
+@echo off
 REM VersionTag: 2604.B2.V31.1
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so all child PowerShell processes find modules
@@ -21,7 +22,7 @@ REM             - Detect execution policy blocks, show solutions
 REM             - Log every launch with 14 telemetry fields
 REM             - Launch CFRMenu on first run for setup
 REM ============================================================
-@echo off
+
 
 setlocal enabledelayedexpansion
 
@@ -32,6 +33,14 @@ set "slowLauncher=%scriptDir%Launch-GUI-slow_snr.bat"
 REM ── Bootstrap: ensure PowerShellGUI modules are findable by all child PowerShell processes.
 REM    This top-level bat is the entry point; injecting here means quik_jnr/slow_snr and any
 REM    directly launched pwsh/powershell calls will all inherit the modules directory in PSModulePath.
+
+REM --- Ensure workspace PowerShell environment is set up ---
+if exist "%scriptDir%scripts\Set-WorkspaceModulePath.ps1" (
+    powershell -ExecutionPolicy Bypass -NoProfile -File "%scriptDir%scripts\Set-WorkspaceModulePath.ps1"
+)
+if exist "%scriptDir%scripts\Register-WorkspaceRepository.ps1" (
+    powershell -ExecutionPolicy Bypass -NoProfile -File "%scriptDir%scripts\Register-WorkspaceRepository.ps1"
+)
 set "PSModulePath=%scriptDir%modules;%PSModulePath%"
 
 set "featureRequests=%scriptDir%scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml"

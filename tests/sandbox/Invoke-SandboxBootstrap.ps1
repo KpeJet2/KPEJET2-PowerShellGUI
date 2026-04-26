@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Bootstrap script that runs INSIDE Windows Sandbox for interactive GUI testing.
@@ -356,3 +360,19 @@ if ($script:guiProcess -and (-not $script:guiProcess.HasExited)) {
     try { $script:guiProcess.Kill() } catch { Write-SBLog "Kill failed: $_" -Level 'WARN' }
 }
 Set-SandboxStatus -Status 'SHUTDOWN' -Detail "Iterations: $($script:iterationCount)"
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

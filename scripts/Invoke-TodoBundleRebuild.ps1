@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Invoke-TodoBundleRebuild.ps1
 # Regenerates todo/_bundle.js from all individual JSON files in todo/
@@ -62,4 +66,20 @@ $content = $header + "`n  " + $joined + $footer
 
 $size = [math]::Round((Get-Item $outFile).Length / 1KB, 1)
 Write-Host "[TodoBundle] Written: $outFile ($size KB, $totalCount items)" -ForegroundColor Green
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

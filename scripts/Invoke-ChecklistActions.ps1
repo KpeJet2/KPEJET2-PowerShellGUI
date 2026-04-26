@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v24  2026-06-10  Initial: checklist action invoker with progress tracking
@@ -390,4 +394,20 @@ Write-Host "  Pass: $passCount  Fail: $failCount  Skip: $skipCount" -ForegroundC
 Write-Host "$('=' * 60)" -ForegroundColor Cyan
 
 $resultsList | Format-Table -AutoSize Id, Group, Label, Status, Duration, Detail
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

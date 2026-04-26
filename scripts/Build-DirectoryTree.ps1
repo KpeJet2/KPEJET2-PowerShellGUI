@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Builder
 #Requires -Version 5.1
 <#
@@ -102,4 +106,20 @@ $output += "*Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') | Regenerate: 
 $content = $output -join "`n"
 [System.IO.File]::WriteAllText($outPath, $content, [System.Text.UTF8Encoding]::new($false))
 Write-Host "[DirectoryTree] Written: $outPath ($($treeLines.Count) tree lines)" -ForegroundColor Green
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

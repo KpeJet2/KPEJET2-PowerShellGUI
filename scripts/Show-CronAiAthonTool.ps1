@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.3
+# VersionTag: 2604.B2.V31.5
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: UIForm
 #Requires -Version 5.1
 <#
@@ -286,11 +290,11 @@ function Show-CronAiAthonTool {
 
     # ---- Help menu ------------------------------------------------
     $menuHelp      = & $mkItem 'Help' $fgWhite
-    $miQuickStart  = & $mkItem 'Quick Start Guide'       ([System.Drawing.Color]::FromArgb(200,200,200))
-    $miModuleIndex = & $mkItem 'Module Function Index'   ([System.Drawing.Color]::FromArgb(200,200,200))
-    $miImplGuide   = & $mkItem 'Implementation Guide'    ([System.Drawing.Color]::FromArgb(200,200,200))
+    $miQuickStart  = & $mkItem 'Quick Start Guide (.md)'       ([System.Drawing.Color]::FromArgb(200,200,200))
+    $miModuleIndex = & $mkItem 'Module Function Index (.md)'   ([System.Drawing.Color]::FromArgb(200,200,200))
+    $miImplGuide   = & $mkItem 'Implementation Guide (.xhtml)' ([System.Drawing.Color]::FromArgb(200,200,200))
     $miSep2        = New-Object System.Windows.Forms.ToolStripSeparator
-    $miAboutNikr   = & $mkItem 'About H-Ai-Nikr-Agi'    ([System.Drawing.Color]::FromArgb(200,140,80))
+    $miAboutNikr   = & $mkItem 'About H-Ai-Nikr-Agi (PowerShell)'    ([System.Drawing.Color]::FromArgb(200,140,80))
     [void]$menuHelp.DropDownItems.AddRange(@($miQuickStart,$miModuleIndex,$miImplGuide,$miSep2,$miAboutNikr))
 
     # Helper: open file in default browser/editor
@@ -551,6 +555,7 @@ function Show-CronAiAthonTool {
             # Return to Dashboard
             $tabCtrl.SelectedTab = $tabDash
             $btnRefreshDash.PerformClick()
+            Update-MasterToDoCache
         } catch {
             Write-CronLog -Message "RefreshAll error: $($_.Exception.Message)" -Severity Warning -Source 'Dashboard'
         } finally {
@@ -819,6 +824,8 @@ function Show-CronAiAthonTool {
         try {
             $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
             $lbTasks.Items.Clear()
+            # Insert AAA-TEST simulation entry at the top
+            $lbTasks.Items.Add("[AAA-TEST] AAA-TEST: Full Test Simulation of TASK")
             foreach ($t in $sched.tasks) {
                 $status = if ($t.enabled) { '[ON]' } else { '[OFF]' }
                 $lbTasks.Items.Add("$status $($t.id)  --  $($t.name)")
@@ -834,6 +841,56 @@ function Show-CronAiAthonTool {
             return
         }
         $sel = $lbTasks.SelectedItem.ToString()
+        if ($sel -like '[AAA-TEST]*') {
+            $rtbManResult.Clear()
+            $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
+            $startTime = Get-Date
+            $testFolder = Join-Path (Join-Path $WorkspacePath 'logs') ("AAA-TEST_" + $startTime.ToString('yyyyMMdd-HHmm'))
+            $cacheFolder = Join-Path $testFolder 'AAA-TEST_cache'
+            $errorFolder = Join-Path $testFolder 'errors'
+            $zipPath = $testFolder + '_zip.zip'
+            New-Item -ItemType Directory -Force -Path $testFolder | Out-Null
+            New-Item -ItemType Directory -Force -Path $cacheFolder | Out-Null
+            New-Item -ItemType Directory -Force -Path $errorFolder | Out-Null
+            $masterLog = Join-Path $testFolder 'AAA-TEST_master-overview.log'
+            $rtbManResult.AppendText("AAA-TEST simulation started.\nOutput folder: $testFolder\n\n")
+            Add-Content -Path $masterLog -Value ("AAA-TEST simulation started at $startTime`r`nOutput folder: $testFolder`r`n") -Encoding UTF8
+            $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
+            $taskCount = 0
+            foreach ($t in $sched.tasks) {
+                $taskStart = Get-Date
+                $logFile = Join-Path $testFolder ("AAA-TEST_master-overview_" + $t.id + ".log")
+                try {
+                    $rtbManResult.AppendText("Simulating $($t.id) ... ")
+                    $simResult = Invoke-CronJob -WorkspacePath $WorkspacePath -TaskId $t.id -WhatIf -TestOutputPath $cacheFolder
+                    $taskEnd = Get-Date
+                    $msg = "Simulated $($t.id) in $([math]::Round(($taskEnd-$taskStart).TotalSeconds,2))s. Would access: $($simResult.FilesAccessed -join ', ')`r`nWould edit/create: $($simResult.FilesCreatedOrModified -join ', ')`r`n"
+                    Add-Content -Path $logFile -Value $msg -Encoding UTF8
+                    Add-Content -Path $masterLog -Value $msg -Encoding UTF8
+                    $rtbManResult.AppendText("OK ($([math]::Round(($taskEnd-$taskStart).TotalSeconds,2))s)\n")
+                } catch {
+                    $errTime = Get-Date
+                    $errFile = Join-Path $errorFolder ($t.id + '.2debug')
+                    $errMsg = "ERROR in $($t.id) at $errTime: $($_.Exception.Message)`r`nBUGS2FIX: $($_ | Out-String)"
+                    Add-Content -Path $errFile -Value $errMsg -Encoding UTF8
+                    Add-Content -Path $masterLog -Value $errMsg -Encoding UTF8
+                    $rtbManResult.AppendText("ERROR! See $errFile\n")
+                }
+                $taskCount++
+            }
+            $endTime = Get-Date
+            $totalTime = [math]::Round(($endTime-$startTime).TotalSeconds,2)
+            $rtbManResult.AppendText("\nAAA-TEST simulation complete. $taskCount tasks simulated in $totalTime seconds.\n")
+            Add-Content -Path $masterLog -Value ("AAA-TEST simulation complete at $endTime. $taskCount tasks simulated in $totalTime seconds.`r`n") -Encoding UTF8
+            # Zip all output
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            [System.IO.Compression.ZipFile]::CreateFromDirectory($testFolder, $zipPath)
+            # Remove cache folder
+            Remove-Item -Recurse -Force $cacheFolder
+            $rtbManResult.AppendText("Test output zipped to $zipPath.\n")
+            $form.Cursor = [System.Windows.Forms.Cursors]::Default
+            return
+        }
         if ($sel -match 'TASK-\w+') {
             $taskId = $Matches[0]
             $rtbManResult.Clear()
@@ -2972,4 +3029,20 @@ function Show-CronAiAthonTool {
     $toolTip.Dispose()
     $form.Dispose()
 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

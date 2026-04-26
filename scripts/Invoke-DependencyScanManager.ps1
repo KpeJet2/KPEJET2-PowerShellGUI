@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V32.0
+# VersionTag: 2604.B1.V32.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # FileRole: Pipeline
 # Invoke-DependencyScanManager.ps1
 # Orchestrates phased workspace dependency scanning with checkpoint persistence.
@@ -88,6 +92,69 @@ function Write-ProgressLog {
     } catch { <# non-fatal #> }
 }
 
+function New-Bug2FixItem {
+    [CmdletBinding()]
+    param(
+        [string]$Title,
+        [string]$Description,
+        [string]$Category = 'scan-subroutine-failure',
+        [string]$Priority = 'HIGH',
+        [string[]]$Tags = @('scan','bug2fix')
+    )
+    $ts = Get-Date
+    $stamp = $ts.ToString('yyyyMMddHHmmss')
+    $seed = "$Title|$Description|$stamp"
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $hash = [System.BitConverter]::ToString($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))[0..3]).Replace('-','').ToLower()
+    $sha.Dispose()
+    $now = $ts.ToString('o')
+    return [ordered]@{
+        id              = "Bug-$stamp-$hash"
+        type            = 'Bug'
+        status          = 'OPEN'
+        priority        = $Priority
+        category        = $Category
+        title           = $Title
+        description     = $Description
+        affectedFiles   = @()
+        source          = 'Invoke-DependencyScanManager'
+        created         = $now
+        modified        = $now
+        completedAt     = $null
+        linkedFeatures  = @()
+        linkedBugs      = @()
+        tags            = $Tags
+        notes           = 'Auto-created by LocalWebEngine scan manager resilience path.'
+        sessionModCount = 0
+        parentId        = ''
+        executionAgent  = ''
+    }
+}
+
+function Push-Bug2FixItem {
+    [CmdletBinding()]
+    param([hashtable]$BugItem, [string]$PipelinePath)
+    if (-not (Test-Path -LiteralPath $PipelinePath)) { return $false }
+    try {
+        $raw = Get-Content -LiteralPath $PipelinePath -Raw -Encoding UTF8
+        if ([string]::IsNullOrEmpty($raw)) { return $false }
+        $pipe = $raw | ConvertFrom-Json
+        if ($null -eq $pipe.bugs) { return $false }
+        $exists = @($pipe.bugs | Where-Object { $null -ne $_ -and $_.id -eq $BugItem.id }).Count -gt 0
+        if ($exists) { return $true }
+        $newBugs = [System.Collections.ArrayList]@()
+        foreach ($b in @($pipe.bugs)) { $null = $newBugs.Add($b) }
+        $null = $newBugs.Add($BugItem)
+        $pipe.bugs = @($newBugs)
+        if ($null -ne $pipe.meta) { $pipe.meta.lastModified = (Get-Date -Format 'o') }
+        Set-Content -LiteralPath $PipelinePath -Value ($pipe | ConvertTo-Json -Depth 10) -Encoding UTF8 -Force
+        return $true
+    } catch {
+        Write-DSMLog -Level 'Warning' -Message "Could not push Bug2FIX item: $($_.Exception.Message)"
+        return $false
+    }
+}
+
 function Get-AgeMinutes {
     [CmdletBinding()]
     param([string]$Timestamp)
@@ -138,6 +205,7 @@ $checkpointPath = Join-Path $WorkspacePath $checkpointRel
 $crashDumpPath  = Join-Path $WorkspacePath $crashDumpRel
 $progressPath   = Join-Path $WorkspacePath $progressRel
 $scanScriptPath = Join-Path $WorkspacePath $scanScriptRel
+$pipelinePath   = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json'
 $staleMins      = if ($null -ne $cfg -and $null -ne $cfg.staleness) { [int]$cfg.staleness.greenMaxMinutes } else { 60 }
 $maxRetries     = if ($null -ne $cfg -and $null -ne $cfg.scan)      { [int]$cfg.scan.maxRetries }           else { 3  }
 
@@ -215,10 +283,33 @@ $progressState = [ordered]@{
     currentPhase  = $null
     phasesStatus  = [ordered]@{}
     error         = $null
+    activity      = @()
 }
 foreach ($pid2 in $phaseIds) { $progressState.phasesStatus[$pid2] = 'pending' }
 
+function Add-ProgressEvent {
+    [CmdletBinding()]
+    param(
+        [hashtable]$State,
+        [string]$Message,
+        [string]$Level = 'INFO',
+        [string]$Phase = ''
+    )
+    $evt = [ordered]@{
+        timestamp = (Get-Date -Format 'o')
+        level     = $Level
+        phase     = $Phase
+        message   = $Message
+    }
+    $State.activity += $evt
+    if (@($State.activity).Count -gt 120) {
+        $State.activity = @($State.activity | Select-Object -Last 120)
+    }
+    Write-ProgressLog -State $State -ProgressPath $progressPath
+}
+
 Write-ProgressLog -State $progressState -ProgressPath $progressPath
+Add-ProgressEvent -State $progressState -Message "Scan job initialised (mode: $Mode)" -Level 'INFO'
 
 # ─── Mark scan as in-progress in checkpoint ────────────────────────────────────
 if ($null -ne $cp.phases -and $cp -is [hashtable]) {
@@ -240,16 +331,20 @@ Save-Checkpoint -Checkpoint $cpSaveEarly -CheckpointPath $checkpointPath
 # The scan script handles all phases internally; we checkpoint per completion below.
 # P010: use & operator, never iex
 $scanSuccess     = $false
+$scanPartial     = $false
 $scanErrorMsg    = ''
 $scanStackTrace  = ''
+$staticFallbackMsg = ''
 $scanStopwatch   = [System.Diagnostics.Stopwatch]::StartNew()
 
 Write-DSMLog -Level 'Info' -Message "Starting scan: Mode=$Mode, Phases=$($phasesToRun -join ',')"
 Write-DSMLog -Level 'Info' -Message "Script: $scanScriptPath"
+Add-ProgressEvent -State $progressState -Message "Primary scan started: $(Split-Path $scanScriptPath -Leaf)" -Level 'INFO'
 
 for ($retry = 0; $retry -le $maxRetries; $retry++) {
     if ($retry -gt 0) {
         Write-DSMLog -Level 'Warning' -Message "Retry $retry/$maxRetries after failure..."
+        Add-ProgressEvent -State $progressState -Message "Retry $retry of $maxRetries after failure" -Level 'WARN'
         Start-Sleep -Seconds 3
     }
 
@@ -257,19 +352,44 @@ for ($retry = 0; $retry -le $maxRetries; $retry++) {
         if ($WhatIf) {
             Write-DSMLog -Level 'Info' -Message "[WhatIf] Would run: & '$scanScriptPath' -WorkspacePath '$WorkspacePath'"
             $scanSuccess = $true
+            Add-ProgressEvent -State $progressState -Message '[WhatIf] Primary scan skipped and marked success' -Level 'INFO'
         } elseif (Test-Path -LiteralPath $scanScriptPath) {
             # Run and capture output — Phase checkpointing happens inline after each phase
             $null = & $scanScriptPath -WorkspacePath $WorkspacePath
             $scanSuccess = $true
+            Add-ProgressEvent -State $progressState -Message 'Primary scan script completed successfully' -Level 'INFO'
         } else {
             Write-DSMLog -Level 'Error' -Message "Scan script not found: $scanScriptPath"
             $scanSuccess = $false
+            $scanErrorMsg = "Scan script not found: $scanScriptPath"
+            Add-ProgressEvent -State $progressState -Message $scanErrorMsg -Level 'ERROR'
         }
         if ($scanSuccess) { break }
     } catch {
         $scanErrorMsg   = $_.Exception.Message
         $scanStackTrace = $_.ScriptStackTrace
         Write-DSMLog -Level 'Error' -Message "Scan failed (attempt $($retry+1)): $scanErrorMsg"
+        Add-ProgressEvent -State $progressState -Message "Primary scan attempt $($retry+1) failed: $scanErrorMsg" -Level 'ERROR'
+    }
+}
+
+if (-not $scanSuccess -and -not $WhatIf) {
+    $staticScriptPath = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-StaticWorkspaceScan.ps1'
+    if (Test-Path -LiteralPath $staticScriptPath) {
+        try {
+            $staticFallbackMsg = "Primary scan failed; falling back to static scan: $(Split-Path $staticScriptPath -Leaf)"
+            Write-DSMLog -Level 'Warning' -Message $staticFallbackMsg
+            Add-ProgressEvent -State $progressState -Message $staticFallbackMsg -Level 'WARN'
+            $null = & $staticScriptPath -WorkspacePath $WorkspacePath
+            $scanSuccess = $true
+            $scanPartial = $true
+            Add-ProgressEvent -State $progressState -Message 'Static fallback scan completed' -Level 'WARN'
+        } catch {
+            $scanErrorMsg = if ([string]::IsNullOrEmpty($scanErrorMsg)) { $_.Exception.Message } else { "$scanErrorMsg | static fallback failed: $($_.Exception.Message)" }
+            Add-ProgressEvent -State $progressState -Message "Static fallback failed: $($_.Exception.Message)" -Level 'ERROR'
+        }
+    } else {
+        Add-ProgressEvent -State $progressState -Message "Static fallback script missing: $staticScriptPath" -Level 'ERROR'
     }
 }
 
@@ -283,9 +403,14 @@ if ($scanSuccess) {
         $progressState.phasesStatus[$pid2] = 'done'
         $progressState.completedPhases++
     }
-    $progressState.status = 'done'
+    $progressState.status = if ($scanPartial) { 'partial' } else { 'done' }
     $progressState.finishedAt = $nowTs
-    Write-DSMLog -Level 'Info' -Message "Scan completed in $([int]$scanStopwatch.Elapsed.TotalSeconds)s"
+    if ($scanPartial) {
+        $progressState.error = $staticFallbackMsg
+        Write-DSMLog -Level 'Warning' -Message "Scan completed with fallback in $([int]$scanStopwatch.Elapsed.TotalSeconds)s"
+    } else {
+        Write-DSMLog -Level 'Info' -Message "Scan completed in $([int]$scanStopwatch.Elapsed.TotalSeconds)s"
+    }
 } else {
     $progressState.status = 'error'
     $progressState.finishedAt = $nowTs
@@ -306,6 +431,25 @@ if ($scanSuccess) {
 }
 
 Write-ProgressLog -State $progressState -ProgressPath $progressPath
+if ($scanPartial -or -not $scanSuccess) {
+    $bugTitle = if ($scanPartial) {
+        "[SCAN PARTIAL] Dependency scan used static fallback ($Mode)"
+    } else {
+        "[SCAN FAIL] Dependency scan failed ($Mode)"
+    }
+    $bugDesc = if ($scanPartial) {
+        "Primary script '$scanScriptPath' failed and static fallback was used. Last error: $scanErrorMsg"
+    } else {
+        "Dependency scan failed after retries. Script: $scanScriptPath. Error: $scanErrorMsg"
+    }
+    $bug = New-Bug2FixItem -Title $bugTitle -Description $bugDesc -Category 'scan-subroutine-failure' -Priority 'HIGH' -Tags @('scan','bug2fix',$Mode.ToLower())
+    $pushed = Push-Bug2FixItem -BugItem $bug -PipelinePath $pipelinePath
+    if ($pushed) {
+        Add-ProgressEvent -State $progressState -Message "Bug2FIX created: $($bug.id)" -Level 'WARN'
+    } else {
+        Add-ProgressEvent -State $progressState -Message 'Bug2FIX creation failed or pipeline unavailable' -Level 'WARN'
+    }
+}
 
 # ─── Reload pointer file to update checkpoint with output file info ────────────
 $reportsDir  = Join-Path $WorkspacePath '~REPORTS'
@@ -356,3 +500,19 @@ if ($scanSuccess) {
     Write-ProcessBanner -ProcessName "DependencyScanManager [$Mode]" -Stopwatch $scanStopwatch -Success $false
     exit 1
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

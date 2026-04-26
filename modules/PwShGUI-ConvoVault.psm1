@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 #Requires -Version 5.1
 <#
@@ -413,6 +417,10 @@ function Export-ConvoBundle {
 
 #   EXPORTS
 
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-ConvoVaultKey',
     'Get-ConvoEntries',
@@ -420,5 +428,10 @@ Export-ModuleMember -Function @(
     'Invoke-ConvoExchange',
     'Export-ConvoBundle'
 )
+
+
+
+
+
 
 

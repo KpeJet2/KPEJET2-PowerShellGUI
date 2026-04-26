@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B0.V1.0
+# VersionTag: 2604.B0.V1.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # FileRole: Module
 # Module: PwShGUI-NetworkTools
 # Purpose: Network connectivity testing and diagnostic utilities for PwShGUI
@@ -146,6 +150,18 @@ function Get-NetworkSummary {
     }
 }
 
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Test-NetworkConnectivity',
     'Test-PortOpen',
@@ -153,3 +169,8 @@ Export-ModuleMember -Function @(
     'Test-DnsResolution',
     'Get-NetworkSummary'
 )
+
+
+
+
+

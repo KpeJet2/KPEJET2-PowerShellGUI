@@ -1,0 +1,34 @@
+﻿{
+    "sin_id":  "SIN-20260421020707-3886bb73",
+    "title":  "Unexpected token \u0027VersionTag\u0027 in expression or statement.",
+    "description":  "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 178: Unexpected token \u0027VersionTag\u0027 in expression or statement.",
+    "category":  "parsing",
+    "severity":  "HIGH",
+    "file_path":  "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+    "agent_id":  "CronAiAthon",
+    "reported_by":  "CronAiAthon-BugTracker",
+    "is_resolved":  true,
+    "occurrence_count":  1,
+    "regression_count":  0,
+    "created_at":  "2026-04-20T18:07:07.5135897Z",
+    "last_seen_at":  "2026-04-20T18:07:07.5139632Z",
+    "detection_method":  "CronAiAthon-BugTracker",
+    "sessionModCount":  1,
+    "remedy_tracking":  {
+                            "attempts":  [
+                                             {
+                                                 "attempt_number":  1,
+                                                 "timestamp":  "2026-04-20T18:17:05.5340838Z",
+                                                 "method":  "external-fix-detected",
+                                                 "success":  true,
+                                                 "notes":  "Finding no longer detected at original location. Resolved externally."
+                                             }
+                                         ],
+                            "last_attempt_at":  "2026-04-20T18:17:05.5340838Z",
+                            "total_attempts":  1,
+                            "successful_count":  1,
+                            "failed_count":  0,
+                            "status":  "RESOLVED",
+                            "auto_retry":  true
+                        }
+}

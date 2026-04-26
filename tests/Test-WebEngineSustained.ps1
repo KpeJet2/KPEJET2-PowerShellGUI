@@ -1,4 +1,8 @@
-# VersionTag: 2604.B0.V1.0
+# VersionTag: 2604.B0.V1.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # Test-WebEngineSustained.ps1
 # Sustained I/O test: starts engine, runs sanitized requests for 15+ seconds,
 # validates all responses, then performs clean shutdown with confirmation.
@@ -469,3 +473,19 @@ $finalColor = if ($exitCode -eq 0) { 'Green' } else { 'Red' }
 Write-Host "  TEST COMPLETE: $($script:PassCount) passed, $($script:FailCount) failed" -ForegroundColor $finalColor
 Write-Host ''
 exit $exitCode
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+
