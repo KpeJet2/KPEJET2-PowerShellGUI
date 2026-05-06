@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-010",
+  "category": "optimization",
+  "title": "Performance Baseline & Profiling Dashboard",
+  "description": "Create Measure-AppStartupPerformance helper; log results to JSON; add Performance tab in Scan Dashboard to display startup time trends.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "scripts/Show-ScanDashboard.ps1",
+    "modules/PwShGUICore.psm1"
+  ],
+  "notes": null,
+  "id": "ai-eval-010",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.4171195Z"
+}

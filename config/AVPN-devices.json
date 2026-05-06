@@ -2,84 +2,254 @@
   "avpnDevices": [
     {
       "id": 1,
-      "type": "Audio Player",
-      "model": "Sonos Play:5",
-      "name": "Living Room Speaker",
-      "avInputs": 2,
-      "avOutputs": 0,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 1,
-      "usbInputs": 0,
-      "usbPlugs": 0
-    },
-    {
-      "id": 2,
-      "type": "Video Media Player",
-      "model": "Sony BDP-S6700",
-      "name": "Blu-ray Player",
-      "avInputs": 0,
-      "avOutputs": 2,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 1,
-      "usbInputs": 1,
-      "usbPlugs": 0
-    },
-    {
-      "id": 3,
-      "type": "Video Renderer",
-      "model": "LG OLED65B9PUA",
-      "name": "Main Display",
-      "avInputs": 3,
-      "avOutputs": 1,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 1,
-      "usbInputs": 2,
-      "usbPlugs": 0
-    },
-    {
-      "id": 4,
-      "type": "HDMI Splitter",
-      "model": "ATEN VS1904",
-      "name": "4x1 HDMI Splitter",
-      "avInputs": 4,
-      "avOutputs": 1,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 0,
-      "usbInputs": 0,
-      "usbPlugs": 0
-    },
-    {
-      "id": 5,
-      "type": "Digital Amplifier",
-      "model": "Crown XLS2002",
-      "name": "Audio Amplifier",
-      "avInputs": 2,
-      "avOutputs": 2,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 0,
-      "usbInputs": 0,
-      "usbPlugs": 0
-    },
-    {
-      "id": 6,
-      "type": "Networking",
-      "model": "Cisco SG300-28",
+      "type": "Switch",
+      "model": "Generic L2/L3 Switch",
       "name": "Network Switch",
       "avInputs": 0,
       "avOutputs": 0,
       "powerInputs": 1,
       "powerOutputs": 0,
-      "networkInterfaces": 28,
+      "networkInterfaces": 6,
       "usbInputs": 0,
-      "usbPlugs": 0
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "RJ45 1G",
+        "RJ45 10G",
+        "SFP",
+        "SFP+",
+        "QSFP+",
+        "QSFP28"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Router",
+      "model": "Generic Router",
+      "name": "Network Router",
+      "avInputs": 0,
+      "avOutputs": 0,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 5,
+      "usbInputs": 0,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "RJ45 WAN",
+        "RJ45 LAN",
+        "SFP",
+        "SFP+",
+        "Wi-Fi 2.4/5/6 GHz"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Firewall",
+      "model": "Generic Firewall",
+      "name": "Network Firewall",
+      "avInputs": 0,
+      "avOutputs": 0,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 5,
+      "usbInputs": 0,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "RJ45",
+        "SFP",
+        "SFP+",
+        "QSFP",
+        "Wi-Fi (optional)"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "Wireless Access Point",
+      "model": "Enterprise AP",
+      "name": "Wireless AP",
+      "avInputs": 0,
+      "avOutputs": 0,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 2,
+      "usbInputs": 0,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "RJ45 PoE",
+        "Wi-Fi 2.4/5/6 GHz"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "Desktop PC",
+      "model": "Workstation/Desktop",
+      "name": "Desktop PC",
+      "avInputs": 0,
+      "avOutputs": 3,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 3,
+      "usbInputs": 2,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "USB-A",
+        "USB-C",
+        "HDMI",
+        "DisplayPort",
+        "RJ45",
+        "Wi-Fi",
+        "Bluetooth",
+        "3.5mm Audio"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Laptop",
+      "model": "Generic Laptop",
+      "name": "Laptop",
+      "avInputs": 0,
+      "avOutputs": 3,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 3,
+      "usbInputs": 2,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "USB-A",
+        "USB-C/Thunderbolt",
+        "HDMI",
+        "DisplayPort Alt Mode",
+        "RJ45 (optional)",
+        "Wi-Fi",
+        "Bluetooth",
+        "3.5mm Audio"
+      ]
     },
     {
       "id": 7,
+      "type": "Server",
+      "model": "Rack Server",
+      "name": "Rack Server",
+      "avInputs": 0,
+      "avOutputs": 1,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 5,
+      "usbInputs": 1,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "RJ45 1G",
+        "RJ45 10G",
+        "SFP+",
+        "iDRAC/iLO",
+        "USB",
+        "VGA",
+        "Serial"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "Thin Client",
+      "model": "Enterprise Thin Client",
+      "name": "Thin Client",
+      "avInputs": 0,
+      "avOutputs": 2,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 2,
+      "usbInputs": 2,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "USB-A",
+        "USB-C",
+        "DisplayPort",
+        "RJ45",
+        "Wi-Fi",
+        "3.5mm Audio"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "Crestron Control Processor",
+      "model": "CP4 / CP4-R",
+      "name": "Control Processor",
+      "avInputs": 0,
+      "avOutputs": 1,
+      "powerInputs": 1,
+      "powerOutputs": 1,
+      "networkInterfaces": 3,
+      "usbInputs": 1,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "Ethernet",
+        "RS-232",
+        "IR",
+        "Relay",
+        "IO",
+        "USB"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "Crestron Touch Panel",
+      "model": "TSW/TS-1070 Series",
+      "name": "Touch Panel",
+      "avInputs": 0,
+      "avOutputs": 0,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 2,
+      "usbInputs": 1,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "Ethernet",
+        "PoE",
+        "Wi-Fi (some models)",
+        "USB"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "Crestron DM NVX Encoder",
+      "model": "DM-NVX-350/360",
+      "name": "DM NVX Encoder",
+      "avInputs": 1,
+      "avOutputs": 2,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 1,
+      "usbInputs": 1,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "HDMI In",
+        "HDMI Out",
+        "RJ45 1G/10G",
+        "USB",
+        "AES67 Audio"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "Crestron DM Switcher",
+      "model": "DM-MD Series",
+      "name": "DM Switcher",
+      "avInputs": 8,
+      "avOutputs": 8,
+      "powerInputs": 1,
+      "powerOutputs": 0,
+      "networkInterfaces": 1,
+      "usbInputs": 1,
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "DM 8G+ In",
+        "DM 8G+ Out",
+        "HDMI In",
+        "HDMI Out",
+        "Ethernet",
+        "USB"
+      ]
+    },
+    {
+      "id": 13,
       "type": "Power Distribution",
       "model": "Furman M-8LX",
       "name": "Power Conditioner",
@@ -89,23 +259,14 @@
       "powerOutputs": 8,
       "networkInterfaces": 0,
       "usbInputs": 0,
-      "usbPlugs": 0
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "AC Input",
+        "AC Output x8"
+      ]
     },
     {
-      "id": 8,
-      "type": "PC",
-      "model": "Dell XPS 15",
-      "name": "Workstation",
-      "avInputs": 0,
-      "avOutputs": 2,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 2,
-      "usbInputs": 4,
-      "usbPlugs": 2
-    },
-    {
-      "id": 9,
+      "id": 14,
       "type": "UPS",
       "model": "APC Back-UPS Pro 1500VA",
       "name": "Backup Power",
@@ -115,36 +276,15 @@
       "powerOutputs": 12,
       "networkInterfaces": 1,
       "usbInputs": 0,
-      "usbPlugs": 0
+      "usbPlugs": 0,
+      "interfaceLabels": [
+        "AC Input",
+        "AC Output x12",
+        "Network"
+      ]
     },
     {
-      "id": 10,
-      "type": "Power Board",
-      "model": "Belkin 12-Outlet",
-      "name": "Power Strip",
-      "avInputs": 0,
-      "avOutputs": 0,
-      "powerInputs": 1,
-      "powerOutputs": 12,
-      "networkInterfaces": 0,
-      "usbInputs": 0,
-      "usbPlugs": 0
-    },
-    {
-      "id": 11,
-      "type": "USB Dock",
-      "model": "CalDigit Thunderbolt 3",
-      "name": "Dock Station",
-      "avInputs": 0,
-      "avOutputs": 0,
-      "powerInputs": 1,
-      "powerOutputs": 0,
-      "networkInterfaces": 2,
-      "usbInputs": 15,
-      "usbPlugs": 0
-    },
-    {
-      "id": 12,
+      "id": 15,
       "type": "Other",
       "model": "Generic Device",
       "name": "Custom Device",
@@ -154,7 +294,8 @@
       "powerOutputs": 0,
       "networkInterfaces": 0,
       "usbInputs": 0,
-      "usbPlugs": 0
+      "usbPlugs": 0,
+      "interfaceLabels": []
     }
   ],
   "inventory": [
@@ -207,7 +348,7 @@
       "model": "Belkin 12-Outlet",
       "name": "Power Strip",
       "quantity": 1,
-      "location": "20,260",
+      "location": "120,280",
       "avInputs": 0,
       "avOutputs": 0,
       "powerInputs": 1,
@@ -348,6 +489,7 @@
       "loginPassword": ""
     }
   ],
-  "lastModified": "2026-02-18T13:45:15Z",
-  "version": "2602.a.7"
+  "lastModified": "2026-03-23T22:21:21Z",
+  "version": "2604.B2.V31.0",
+  "versionTag": "2604.B2.V31.0"
 }

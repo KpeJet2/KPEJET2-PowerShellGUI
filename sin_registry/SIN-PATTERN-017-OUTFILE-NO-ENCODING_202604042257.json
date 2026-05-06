@@ -1,0 +1,48 @@
+{
+  "sin_id": "SIN-PATTERN-017-OUTFILE-NO-ENCODING_202604042257",
+  "title": "Out-File without -Encoding defaults to UCS-2 LE (UTF-16) in PS 5.1",
+  "description": "In PowerShell 5.1, Out-File defaults to Unicode (UCS-2 LE / UTF-16) encoding when -Encoding is not specified. This doubles file size compared to UTF-8, creates compatibility issues with tools expecting UTF-8, and produces files that are inconsistent with Set-Content (which defaults to ANSI). The -Encoding UTF8 parameter should always be specified explicitly to ensure consistent, portable output.",
+  "severity": "MEDIUM",
+  "category": "encoding",
+  "vector": "data-corruption",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T19:30:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Out-File calls missing -Encoding parameter",
+  "is_security_related": false,
+  "preventionRule": "Always specify -Encoding UTF8 on Out-File. PS 5.1 default is UCS-2 LE (UTF-16), not UTF-8.",
+  "scan_regex": "Out-File\\s+(?!.*-Encoding)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;__pycache__;.venv;.venv-pygame312;node_modules;Report",
+  "remedy": "Add -Encoding UTF8 parameter to all Out-File calls. Example: Get-Process | Out-File -FilePath $path -Encoding UTF8",
+  "tags": [
+    "sin-pattern",
+    "encoding",
+    "out-file",
+    "utf16",
+    "ps51",
+    "data-integrity"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-017-OUTFILE-NO-ENCODING",
+    "previous_file": "SIN-PATTERN-017-OUTFILE-NO-ENCODING.json",
+    "reindexed_at": "2026-04-04T14:57:30.7296326Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|Show-CronAiAthonTool"
+}

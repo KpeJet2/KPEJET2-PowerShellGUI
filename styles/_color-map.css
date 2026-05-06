@@ -1,0 +1,25 @@
+# VersionTag: 2604.B0.v1
+/* PwShGUI Tool Accent Colors Index | v26 | 2026-03-26
+   Each tool/tab gets unique --heading color via accent-*.css override
+   Import: base.css + responsive.css + ONE accent file
+   COLOR MAP:
+   Tool/Tab                     Color       Hex
+   Folder Actions (Tab 1)       Emerald     #2ecc71
+   Archive Operations (Tab 2)   Amber       #f0a030
+   Config Management (Tab 3)    Teal        #00b4d8
+   Remote Paths (Tab 4)         Coral       #e06050
+   Build Package (Tab 5)        Purple      #9b59b6
+   MasterToDo (XHTML)           Gold        #d4a017
+   FeatureRequests (XHTML)      Magenta     #c850c0
+   CodeAnalysis (XHTML)         Sky Blue    #3498db
+   MCPServiceConfig (XHTML)     Lime        #7ed321
+   TestingRoutineBuilder (XHTML) Red-Orange #e74c3c
+   ScanDashboard (Show)         Indigo      #6c5ce7
+   CronAiAthon (Show)           Neon Green  #00e676
+   EventLogViewer (Show)        Steel Blue  #4a86c8
+   AppTemplateManager (Show)    Salmon      #fa8072
+   SecretsVault (XHTML)         Deep Purple #7c3aed
+   ShopListedItems (XHTML)      Orange      #ff8c00
+   PSEnvironmentScanner         Cyan        #22d3ee
+*/
+

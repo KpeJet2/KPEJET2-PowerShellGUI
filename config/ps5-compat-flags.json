@@ -1,0 +1,41 @@
+﻿{
+  "description": "PS5 compatibility flags per script/module. Tracks v5/v7+ compatibility workflow.",
+  "optimalVersion": "7.6",
+  "minimumVersion": "5.1",
+  "flagStates": [
+    "Optional-PendingSmokeTesting",
+    "Yes-NativeBackwardsCompatibility",
+    "Optional-PendingPipelineItem2ADD",
+    "Yes-CustomCodeForksImplemented",
+    "No-v5Compat-REVIEW-case-DENIED-FunctionalRelationsDisabledUntilPS76Detected"
+  ],
+  "workflow": {
+    "step1": "All scripts start at Optional-PendingSmokeTesting",
+    "step2": "Run smoke test under PS 5.1",
+    "step3a": "If passes natively -> Yes-NativeBackwardsCompatibility",
+    "step3b": "If fails or needs forks -> Optional-PendingPipelineItem2ADD",
+    "step4a": "If approved + code forks implemented + tests pass -> Yes-CustomCodeForksImplemented",
+    "step4b": "If denied by review -> No-v5Compat-REVIEW-case-DENIED-FunctionalRelationsDisabledUntilPS76Detected"
+  },
+  "flags": [
+    { "scriptName": "Main-GUI.ps1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial -- pending PS5.1 smoke test" },
+    { "scriptName": "View-Config.ps1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUICore.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUI-Theme.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUI-TrayHost.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUI-VersionManager.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUI-PSVersionStandards.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "AssistedSASC.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "SASC-Adapters.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "AVPN-Tracker.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "CronAiAthon-Pipeline.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "CronAiAthon-BugTracker.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "CronAiAthon-EventLog.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "CronAiAthon-Scheduler.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PKIChainManager.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "SINGovernance.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "UserProfileManager.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PwShGUI_AutoIssueFinder.psm1", "flag": "Optional-PendingSmokeTesting", "updated": "2026-03-29", "notes": "Initial" },
+    { "scriptName": "PS-CheatSheet-EXAMPLES-V2.ps1", "flag": "No-v5Compat-REVIEW-case-DENIED-FunctionalRelationsDisabledUntilPS76Detected", "updated": "2026-03-29", "notes": "Already #Requires -Version 7.0 -- v7-only by design" }
+  ]
+}

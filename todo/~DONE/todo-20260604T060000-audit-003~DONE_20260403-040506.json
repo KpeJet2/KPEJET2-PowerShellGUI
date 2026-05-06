@@ -1,0 +1,15 @@
+{
+  "category": "hardcoded-paths",
+  "id": "audit-003",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "Install-ModulesLisT.ps1:107, ModulesLisT*.ps1:107, PackagesLisT*.ps1:107, ScriptsList*.ps1:107 reference hardcoded C:\\\\PowerShellGUI.",
+  "files": [
+    "scripts/QUICK-APP/FOLDER-ROOT/Install-ModulesLisT.ps1"
+  ],
+  "priority": "high",
+  "title": "Replace hardcoded C:\\\\PowerShellGUI in Install/List scripts",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Replaced hardcoded C:\\PowerShellGUI in 5 QUICK-APP scripts with $PSScriptRoot-relative",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

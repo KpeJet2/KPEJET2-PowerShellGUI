@@ -1,16 +1,14 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+# VersionTag: 2604.B2.V31.0
 # ignore log files and temporary data
+.history/ 
 logs/
 *.log
 temp/
 *.tmp
 *.temp
-# ignore ~DOWNLOADS, ~README.md, ~REPORTS, .venv
+# ignore ~DOWNLOADS, ~HISTORY, ~README.md, ~REPORTS, .venv
 ~DOWNLOADS/
+~HISTORY/
 ~README.md
 ~REPORTS/
 .venv/
@@ -24,6 +22,10 @@ ehthumbs.db
 *.suo
 # exclude built manifest files? maybe include them
 # you might want to track config and manifest so not add them
+
+
+
+
 
 
 

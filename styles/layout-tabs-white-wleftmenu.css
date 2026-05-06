@@ -1,0 +1,119 @@
+# VersionTag: 2604.B0.v1
+/* Layout: kpe-CSS_TabsWhite-wLeftMENU | v2603.B0.v27.0
+   Source: XHTML-FeatureRequests.xhtml
+   Pattern: Light-themed body + top tab bar (dark) + left sidebar + right content + toolbars
+   Import: pwshgui-base.css → this layout → accent-*.css
+   NOTE: This layout OVERRIDES body bg to light (#f0f2f5). Accent colors still apply via vars. */
+
+/* ── light body override ── */
+body{background:#f0f2f5;color:#222;line-height:1.5;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ── gradient top bar ── */
+#topBar{background:linear-gradient(135deg,#1a3a5c,#2980b9);color:#fff;
+  padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#topBar h1{font-size:18px;font-weight:600}
+#versionBadge{background:rgba(255,255,255,.18);padding:4px 14px;border-radius:12px;font-size:12px}
+
+/* ── dark tab bar ── */
+#tabBar{display:flex;background:#2c3e50;flex-shrink:0}
+.tab-btn{background:transparent;color:#aaa;border:none;padding:10px 22px;font-size:13px;
+  font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
+.tab-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.tab-btn.active{color:#fff;border-bottom-color:#2980b9;background:rgba(41,128,185,.15)}
+
+/* ── two-column layout ── */
+#mainLayout{display:flex;flex:1;overflow:hidden}
+#leftPane{flex:0 0 340px;background:#fff;border-right:1px solid #ccc;overflow-y:auto;padding:16px}
+#rightPane{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#fafbfc}
+
+/* ── sidebar navigation ── */
+.section-header{font-size:14px;font-weight:700;color:#1a3a5c;margin:14px 0 6px;
+  border-bottom:2px solid #2980b9;padding-bottom:4px}
+.section-header:first-child{margin-top:0}
+.link-list{list-style:none;margin:0 0 10px;padding:0}
+.link-list li{margin:3px 0}
+.link-list a{text-decoration:none;color:#2980b9;font-size:13px;display:block;
+  padding:3px 8px;border-radius:4px;transition:background .15s}
+.link-list a:hover{background:#eaf2fa}
+
+/* ── tab panels ── */
+.tab-panel{display:none;flex-direction:column;flex:1;overflow:hidden}
+.tab-panel.active{display:flex}
+
+/* ── search box ── */
+#searchBox{padding:10px 14px;border-bottom:1px solid #ddd;background:#fff;flex-shrink:0}
+#searchInput{width:100%;padding:8px 12px;border:1px solid #bbb;border-radius:6px;font-size:13px;outline:none}
+#searchInput:focus{border-color:#2980b9;box-shadow:0 0 4px rgba(41,128,185,.3)}
+
+/* ── toolbar ── */
+.toolbar{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid #ddd;
+  background:#f4f6f9;flex-shrink:0;flex-wrap:wrap;align-items:center}
+.tb-btn{background:#2980b9;color:#fff;border:none;padding:5px 12px;border-radius:4px;
+  font-size:12px;cursor:pointer;white-space:nowrap}
+.tb-btn:hover{background:#1a6fa0}
+.tb-btn.danger{background:#c0392b}.tb-btn.danger:hover{background:#962d22}
+.tb-btn.secondary{background:#7f8c8d}.tb-btn.secondary:hover{background:#636e72}
+.tb-btn.success{background:#27ae60}.tb-btn.success:hover{background:#1e8a4e}
+.tb-btn.warning{background:#e67e22}.tb-btn.warning:hover{background:#c76b15}
+.tb-sep{border-left:1px solid #ccc;height:22px;align-self:center}
+select.tb-select{padding:4px 6px;border:1px solid #aab;border-radius:4px;font-size:12px;background:#fff}
+
+/* ── scrollable content ── */
+.scroll-container{flex:1;overflow-y:auto;padding:10px 14px}
+
+/* ── light todo card ── */
+.todo-card{background:#fff;border:1px solid #dde;border-radius:8px;padding:14px;
+  margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:border-color .15s}
+.todo-card:focus{outline:2px solid #2980b9;outline-offset:2px}
+.todo-card h3{font-size:14px;color:#1a3a5c;margin-bottom:4px}
+.todo-card .todo-meta{font-size:11px;color:#888;margin-bottom:6px}
+.todo-card p{font-size:12px;line-height:1.5}
+
+/* ── cross-reference panel ── */
+.xref-panel{border-top:1px solid #ddd;background:#f4f6f9;padding:10px 14px;
+  max-height:220px;overflow-y:auto;flex-shrink:0}
+.xref-panel h4{font-size:12px;color:#1a3a5c;margin-bottom:6px;cursor:pointer;user-select:none}
+.xref-item{font-size:11px;color:#555;padding:2px 8px;border-left:3px solid #2980b9;margin:3px 0}
+
+/* ── action history ── */
+.action-history{border-top:1px solid #ddd;background:#fafbfc;padding:10px 14px;
+  max-height:180px;overflow-y:auto;flex-shrink:0}
+.action-history h4{font-size:12px;color:#1a3a5c;margin-bottom:6px;cursor:pointer;user-select:none}
+.action-entry{font-size:11px;color:#666;padding:2px 6px;border-bottom:1px dotted #eee}
+.action-entry .action-time{color:#999;font-family:monospace;margin-right:6px}
+
+/* ── action log (dark inset terminal) ── */
+.action-log{background:#1e1e1e;border:1px solid #3c3c3c;border-radius:6px;margin:8px 14px;
+  padding:8px 12px;max-height:160px;overflow-y:auto;font-family:'Cascadia Code','Consolas',monospace;
+  font-size:11px;color:#d4d4d4;display:none}
+.action-log .log-entry{margin:2px 0;line-height:1.5}
+.action-log .log-ts{color:#569cd6}.action-log .log-ok{color:#4ec9b0}
+.action-log .log-err{color:#f44747}.action-log .log-warn{color:#ce9140}
+
+/* ── data tables ── */
+table.tree-table,table.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.tree-table th,.data-table th{background:#2c3e50;color:#fff;padding:6px 8px;text-align:left;
+  font-weight:600;position:sticky;top:0;z-index:2}
+.tree-table td,.data-table td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:middle}
+.tree-table tr:hover,.data-table tr:hover{background:#eaf2fa}
+.tree-table tr.selected,.data-table tr.selected{background:#d4e6f9}
+
+/* ── saves pane (left slot for test layout) ── */
+.saves-pane{flex:0 0 240px;background:#fff;border-right:1px solid #ccc;display:flex;flex-direction:column;overflow:hidden}
+.saves-pane .sp-header{background:#1a3a5c;color:#fff;padding:8px 12px;font-size:12px;font-weight:600;flex-shrink:0}
+.save-item{padding:6px 10px;margin:2px 0;border:1px solid #dde;border-radius:4px;font-size:11px;cursor:pointer;transition:background .15s}
+.save-item:hover{background:#eaf2fa}
+.save-item.active{background:#d4e6f9;border-color:#2980b9}
+.save-item .si-name{font-weight:600;color:#1a3a5c}
+.save-item .si-meta{color:#888;font-size:10px;margin-top:2px}
+
+/* ── footer ── */
+#footer{background:#2c3e50;color:#aaa;text-align:center;padding:4px;font-size:11px;flex-shrink:0}
+
+/* ── responsive ── */
+@media(max-width:900px){#leftPane{flex:0 0 240px}}
+@media(max-width:640px){
+  #mainLayout{flex-direction:column}
+  #leftPane{flex:none;max-height:200px;border-right:none;border-bottom:1px solid #ccc}
+}
+

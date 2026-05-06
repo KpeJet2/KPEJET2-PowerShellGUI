@@ -1,9 +1,8 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 # Find all references to PwShGUI_AutoIssueFinder module and display in GridView
-$rootPath = "C:\PowerShellGUI"
+$rootPath = Split-Path -Parent $PSScriptRoot
 $results = @()
 
 Write-Host "`nSearching for PwShGUI_AutoIssueFinder references..." -ForegroundColor Cyan
@@ -103,6 +102,13 @@ if ($needsUpdate) {
 
 Write-Host "`nOpening GridView for detailed analysis..." -ForegroundColor Cyan
 $results | Sort-Object FilePath, LineNumber | Out-GridView -Title "PwShGUI_AutoIssueFinder References - Moved from scripts\ to modules\" -Wait
+
+
+
+
+
+
+
 
 
 

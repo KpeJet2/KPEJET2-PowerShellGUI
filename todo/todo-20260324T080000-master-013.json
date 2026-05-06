@@ -1,0 +1,16 @@
+{
+  "id": "master-013",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "medium",
+  "status": "PLANNED",
+  "title": "Create .history rotation/archive script",
+  "description": ".history/ directory is ~500MB with 35+ days of snapshots accumulating indefinitely. Create Archive-HistoryRotation.ps1 to compress files older than 30 days into dated 7z bundles and delete files older than 90 days.",
+  "files": [
+    ".history/"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6465517Z"
+}

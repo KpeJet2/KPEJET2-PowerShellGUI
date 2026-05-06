@@ -1,0 +1,76 @@
+# VersionTag: 2604.B0.v1
+/* Layout: kpe-CSS_TabsBlack-Checklist | v2603.B0.v27.0
+   Source: PwShGUI-Checklists.xhtml
+   Pattern: Dark top-bar + horizontal tab strip + checklist cards + progress bars
+   Import: pwshgui-base.css → this layout → accent-*.css */
+
+/* ── top bar ── */
+.top-bar{background:var(--accent);color:#fff;padding:14px 24px;font-size:18px;font-weight:bold;
+  display:flex;align-items:center;justify-content:space-between}
+.top-bar span{font-size:12px;opacity:.8}
+
+/* ── tab strip ── */
+.tabs{display:flex;background:var(--bg-alt,#252526);border-bottom:2px solid var(--accent)}
+.tabs button{background:none;border:none;color:#999;padding:10px 22px;cursor:pointer;
+  font-size:13px;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s}
+.tabs button:hover{color:#fff;background:var(--bg-alt,#2d2d30)}
+.tabs button.active{color:#fff;border-bottom-color:var(--accent);background:var(--bg-alt,#2d2d30)}
+.tab-content{display:none;padding:20px 24px}
+.tab-content.active{display:block}
+
+/* ── sub-tabs for nested tab groups ── */
+.sub-tabs{display:flex;gap:2px;background:#1a1a2e;border-radius:6px;padding:4px;margin-bottom:16px;flex-wrap:wrap}
+.sub-tabs button{background:none;border:none;color:#888;padding:6px 12px;cursor:pointer;font-size:11px;border-radius:4px;font-family:inherit}
+.sub-tabs button:hover{color:#fff;background:var(--bg-alt,#2d2d30)}
+.sub-tabs button.sub-active{color:#fff;background:var(--accent)}
+.sub-content{display:none}
+.sub-content.sub-active{display:block}
+
+/* ── checklist items ── */
+.checklist{list-style:none;margin:0 0 16px;padding:0}
+.checklist li{background:var(--panel,#252526);border:1px solid var(--border);border-radius:4px;
+  margin:4px 0;padding:8px 12px;display:flex;align-items:center;gap:10px;font-size:13px;transition:background .15s}
+.checklist li:hover{background:var(--bg-alt,#2d2d30)}
+.checklist li input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.checklist li label{cursor:pointer;flex:1}
+.checklist li .detail{font-size:11px;color:#888;margin-left:auto;white-space:nowrap}
+
+/* ── progress bar ── */
+.progress-bar{height:6px;background:var(--border);border-radius:3px;margin:8px 0 16px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);transition:width .3s;border-radius:3px}
+
+/* ── summary row of stat cards ── */
+.summary-row{display:flex;gap:12px;margin:12px 0 20px;flex-wrap:wrap}
+.summary-card{background:var(--panel,#252526);border:1px solid var(--border);border-radius:6px;
+  padding:12px 18px;min-width:100px;text-align:center}
+.summary-card .num{font-size:24px;font-weight:bold}
+.summary-card .lbl{font-size:11px;color:#888;margin-top:2px}
+
+/* ── overview grid ── */
+.ov-grid{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+.ov-card{background:var(--panel,#252526);border:1px solid var(--border);border-radius:8px;
+  padding:14px 18px;min-width:110px;text-align:center}
+.ov-card .ov-num{font-size:26px;font-weight:bold}
+.ov-card .ov-lbl{font-size:11px;color:#888;margin-top:4px}
+
+/* ── item cards (bug/feature/pipeline entries) ── */
+.item-card{background:var(--panel,#252526);border:1px solid var(--border);border-radius:6px;
+  padding:12px;margin-bottom:8px;transition:border-color .15s}
+.item-card:hover{border-color:var(--accent)}
+.item-card h4{font-size:13px;color:var(--pass,#4ec9b0);margin:0 0 4px}
+.item-card .meta{font-size:11px;color:#888;margin-bottom:4px}
+.item-card p{font-size:12px;color:#ccc;margin:0}
+.item-card .file-refs{font-size:11px;color:var(--info,#569cd6);margin-top:4px}
+.item-card .file-refs a{color:var(--info,#569cd6);text-decoration:none}
+.item-card .file-refs a:hover{text-decoration:underline}
+
+/* ── notes callout ── */
+.note{background:#1a3050;border-left:3px solid var(--accent);padding:8px 14px;
+  margin:10px 0;font-size:12px;border-radius:0 4px 4px 0}
+
+/* ── by-file panel (collapsible) ── */
+.by-file-panel{background:#1a1a2e;border:1px solid var(--border);border-radius:6px;margin-top:16px;padding:12px}
+.by-file-panel h3{color:var(--accent);font-size:14px;cursor:pointer}
+.by-file-group{margin:8px 0}
+.by-file-group h4{font-size:12px;color:var(--info,#569cd6);margin:6px 0 4px;cursor:pointer}
+

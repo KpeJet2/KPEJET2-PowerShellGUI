@@ -1,0 +1,16 @@
+{
+  "category": "structural",
+  "id": "audit-012",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "AVPN-devices.json at config/(11560b) and scripts/config/(0 bytes). Remove empty duplicate.",
+  "files": [
+    "config/AVPN-devices.json",
+    "scripts/config/AVPN-devices.json"
+  ],
+  "priority": "low",
+  "title": "Consolidate duplicate AVPN-devices.json locations",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Removed empty scripts/config/AVPN-devices.json (0 bytes). UPM copy retained.",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

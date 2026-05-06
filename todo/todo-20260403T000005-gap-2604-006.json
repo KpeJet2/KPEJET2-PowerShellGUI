@@ -1,0 +1,23 @@
+{
+  "todo_id": "gap-2604-006",
+  "id": "gap-2604-006",
+  "category": "maintenance",
+  "title": "SIN instance records accumulating without rotation -- add to ReportRetention",
+  "description": "sin_registry/ stores 24 definition files (SIN-PATTERN-*.json, SEMI-SIN-*.json) plus scanner output writes SIN instance records to ~REPORTS/SINScanner/ and ~REPORTS/SemiSin/. The ReportRetention cron task handles ~REPORTS/ subdirectories but the sin_registry instance logs (if any) are not included. Add sin_registry/ log cleanup (if applicable) to Invoke-ReportRetention. Also confirm SINScanner/SemiSin report dirs have retention configured correctly (threshold: 30 days to archive zip).",
+  "suggested_by": "redundancy audit 2026-04-03",
+  "priority": "LOW",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:05Z",
+  "createdAt": "2026-04-03T00:00:05Z",
+  "acknowledged_at": null,
+  "affects": [
+    "scripts/Invoke-ReportRetention.ps1",
+    "sin_registry/",
+    "~REPORTS/SINScanner/",
+    "~REPORTS/SemiSin/"
+  ],
+  "notes": "24 total SIN patterns (18 blocking + 6 advisory). Retention = archive dirs >30 days to zip. See TASK-ReportRetention in cron schedule.",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.7988635Z"
+}

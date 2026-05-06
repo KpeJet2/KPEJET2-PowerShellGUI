@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1"
+  ],
+  "priority": "MEDIUM",
+  "linkedBugs": [],
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "SIN-20260328082049-dbcb8434",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "7 functions with no try/catch blocks",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "created": "2026-03-30T21:02:44.731835Z",
+  "linkedFeatures": [],
+  "category": "error-handling",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bug-20260331050244-92cc13dc",
+  "parentId": "",
+  "sessionModCount": 1,
+  "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:02:44.7319009Z",
+  "type": "Bug"
+}

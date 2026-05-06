@@ -1,0 +1,50 @@
+/* VersionTag: 2604.B1.V32.0 */
+/* accent-dependency-vis.css — Crimson/Red accent override for Dependency Visualizer */
+
+:root {
+  --accent:          #e94560;
+  --accent-hover:    #f55373;
+  --accent-dim:      #7a1c30;
+  --accent-glow:     rgba(233, 69, 96, 0.30);
+  --panel-border:    #2a0a14;
+  --tab-active-bg:   #1a050c;
+  --link-hover:      #f55373;
+}
+
+/* Top bar accent */
+#topbar { border-bottom-color: var(--accent-dim); }
+.tab { border-right-color: #1a0509; }
+.tab:hover { background: var(--tab-active-bg); color: var(--accent-hover); }
+.tab.active {
+  background: var(--tab-active-bg);
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  box-shadow: 0 -1px 8px var(--accent-glow);
+}
+
+/* Status bar scan phases — phase dots use standard colours; accent on border */
+.sb-phase { border-color: var(--panel-border); }
+.sb-phase:hover { border-color: var(--accent); }
+
+/* Scan control buttons */
+.sc2-btn.full {
+  border-color: #22c55e;
+  background: #0a2a10;
+  color: #4ade80;
+}
+.sc2-btn.inc {
+  border-color: var(--accent);
+  background: var(--tab-active-bg);
+  color: var(--accent-hover);
+}
+.sc2-btn.inc:hover { box-shadow: 0 0 10px var(--accent-glow); }
+
+/* Phase cards accent header */
+.phase-card h4 { color: var(--accent); }
+
+/* Log panel header */
+#logPanelHeader { border-bottom-color: var(--accent-dim); }
+#logPanelHeader span { color: var(--accent); }
+
+/* Crash table header */
+.crash-table th { color: var(--accent); }

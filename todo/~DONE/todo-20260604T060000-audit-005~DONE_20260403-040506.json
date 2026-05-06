@@ -1,0 +1,15 @@
+{
+  "category": "hardcoded-paths",
+  "id": "audit-005",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "Line 19 has hardcoded C:\\\\PowerShellGUI in test assertion.",
+  "files": [
+    "tests/AssistedSASC.Tests.ps1"
+  ],
+  "priority": "medium",
+  "title": "Fix hardcoded path in AssistedSASC.Tests.ps1",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Replaced hardcoded path in AssistedSASC.Tests.ps1 with Join-Path $PSScriptRoot",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

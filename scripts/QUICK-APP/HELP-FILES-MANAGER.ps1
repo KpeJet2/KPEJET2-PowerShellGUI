@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -72,6 +71,13 @@ if (Test-Path $helpFilesModulePath) {
     Write-Host "Error: Help Files Manager module not found at $helpFilesModulePath" -ForegroundColor Red
     exit 1
 }
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,16 @@
+{
+  "id": "master-011",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "optimization",
+  "priority": "medium",
+  "status": "PLANNED",
+  "title": "Expand FILES-MANIFEST.md coverage (44 undocumented scripts)",
+  "description": "Only 18 of 61 script files have documentation blocks in FILES-MANIFEST.md. 44 files including WinRemote-PSTool, Show-ScanDashboard, Show-MCPServiceConfig, Show-EventLogViewer, all XHTML-Checker scripts, QUICK-APP utilities, and Script1-6 templates are undocumented.",
+  "files": [
+    "~README.md/FILES-MANIFEST.md"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6311307Z"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "master-015",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "optimization",
+  "priority": "low",
+  "status": "PLANNED",
+  "title": "Clean up QUICK-APP/FOLDER-ROOT stale test and template files",
+  "description": "scripts/QUICK-APP/FOLDER-ROOT contains 15 mixed files: test.ps1, test - Copy.ps1, test(Get-Host).ps1, test - [TEMP].ps1, DellCommandUpdate variants, ActionPacks-master.zip, various Install-Module scripts. Segregate templates into TEMPLATES subfolder, delete stale copies, archive zip.",
+  "files": [
+    "scripts/QUICK-APP/FOLDER-ROOT/"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6583900Z"
+}

@@ -1,8 +1,13 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.11
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 5 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
+# --- Structured lifecycle logging ---
+if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+    Write-AppLog -Message "Started: $($MyInvocation.MyCommand.Name)" -Level 'Info'
+}
     Configuration and Logs Viewer
 
 .DESCRIPTION
@@ -12,7 +17,7 @@
 
 .NOTES
     Author   : The Establishment
-    Version  : 2602.a.11
+    Version  : 2604.B2.V31.0
     Created  : January 2026
     Modified : 22nd February 2026
 
@@ -119,3 +124,14 @@ Write-Host ""
 
 
 
+
+
+
+
+
+
+
+# --- End lifecycle logging ---
+if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+    Write-AppLog -Message "Completed: $($MyInvocation.MyCommand.Name)" -Level 'Info'
+}

@@ -1,0 +1,37 @@
+{
+  "sin_id": "SIN-20260328090005-e5f6a7b8",
+  "title": "PwShGUICore path registry uses 3-argument Join-Path incompatible with PS 5.1",
+  "description": "Initialize-CorePaths in PwShGUICore.psm1 used 14 instances of Join-Path with 3 positional arguments (Join-Path $ScriptDir 'config' 'file.json') which fails in PowerShell 5.1. Fixed by pre-resolving intermediate directory variables ($cfgDir, $modDir, $rdmDir) and using 2-argument Join-Path throughout.",
+  "category": "compatibility",
+  "severity": "HIGH",
+  "file_path": "modules/PwShGUICore.psm1",
+  "agent_id": "FocalPoint-null-00",
+  "reported_by": "Code-B-Tsted",
+  "is_resolved": true,
+  "occurrence_count": 14,
+  "regression_count": 0,
+  "created_at": "2026-03-28T09:49:00Z",
+  "last_seen_at": "2026-03-28T09:49:00Z",
+  "detection_method": "Test-TrayHostLifecycle.ps1 under PowerShell 5.1",
+  "sessionModCount": 1,
+  "fix_applied": {
+    "fix_id": "FIX-20260328090005-e5f6a7b8",
+    "description": "Pre-resolve intermediate directories ($cfgDir, $modDir, $rdmDir) then use 2-argument Join-Path for all nested file paths. Follows same pattern as CronAiAthon module fixes.",
+    "files_modified": [
+      "modules/PwShGUICore.psm1"
+    ],
+    "pattern": "Pre-resolve parent dir then Join-Path $dir 'file' instead of Join-Path $root 'dir' 'file'",
+    "trust_level": "trusted",
+    "pilot_count": 14,
+    "verified_at": "2026-03-28T09:49:00Z"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

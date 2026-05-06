@@ -1,0 +1,15 @@
+{
+  "category": "pki",
+  "id": "audit-008",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "koe-RumA-00 registered but has 0 PKI files. All other 8 agents have .key/.pem/.pub.",
+  "files": [
+    "pki/"
+  ],
+  "priority": "medium",
+  "title": "Generate PKI certificates for koe-RumA-00 agent",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Generated self-signed PKI cert/key/pub for koe-RumA-00 using .NET crypto",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

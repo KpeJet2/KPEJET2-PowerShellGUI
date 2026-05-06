@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-008-20260408",
+  "title": "Engine Health Dashboard WinForms",
+  "description": "Show-EngineHealthMonitor.ps1: live CPU/mem, route hit counters, WS client count, uptime.",
+  "status": "PENDING_APPROVAL",
+  "priority": "MEDIUM",
+  "effort": "6-8h",
+  "affectedFiles": "scripts/Show-EngineHealthMonitor.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

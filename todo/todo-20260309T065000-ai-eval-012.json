@@ -1,0 +1,20 @@
+{
+  "todo_id": "ai-eval-012",
+  "category": "documentation",
+  "title": "Extension Developer Guide",
+  "description": "Create ~README.md/EXTENSION-DEVELOPER-GUIDE.md covering module architecture, adding custom menu items, button registration, logging conventions, form integration patterns.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "~README.md/ (new file)"
+  ],
+  "notes": "Enables community/internal contributors",
+  "id": "ai-eval-012",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.4401590Z"
+}

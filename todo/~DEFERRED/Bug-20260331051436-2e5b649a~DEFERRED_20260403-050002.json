@@ -1,0 +1,33 @@
+{
+  "notes": "Matched existing sin: 5 functions with no try/catch blocks",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "description": "Script Script1.ps1 has 5 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script1.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bug-20260331051436-2e5b649a",
+  "sessionModCount": 1,
+  "parentId": "",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bug",
+  "priority": "MEDIUM",
+  "title": "5 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:14:36.5318351Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:14:36.5318802Z",
+  "sinId": "SIN-20260328082050-21f46fba"
+}

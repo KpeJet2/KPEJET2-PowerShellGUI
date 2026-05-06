@@ -1,0 +1,32 @@
+{
+  "sessionModCount": 1,
+  "tags": [],
+  "completedAt": null,
+  "executionAgent": "",
+  "notes": "",
+  "type": "Bugs2FIX",
+  "acknowledged": null,
+  "executedAt": null,
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1"
+  ],
+  "sinId": "",
+  "id": "Bugs2FIX-20260328132131-7fb1c88d",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "executionMethod": "",
+  "created": "2026-03-28T05:21:31.539396Z",
+  "description": "Fix for bug Bug-20260328132131-d3a5c107: Script ConvertTo-FeatureToDo.ps1 has 1 functions but zero try/catch blocks",
+  "category": "error-handling",
+  "status": "DEFERRED",
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "linkedBugs": [],
+  "modified": "2026-03-28T05:21:31.5394335Z",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260328132131-d3a5c107",
+  "priority": "MEDIUM",
+  "result": null,
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase — catch-block hardening queued for dedicated remediation sprint. See SIN-PATTERN-002 for guidance."
+}

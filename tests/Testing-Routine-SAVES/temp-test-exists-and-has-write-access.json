@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "schema": "PsGUI-TestRoutine/1.0",
+    "name": "TEMP Test Exists and has write access",
+    "description": "",
+    "created": "2026-03-08T21:39:16.645Z",
+    "lastModified": "2026-03-08T21:39:16.645Z",
+    "version": "2603.B0.v16"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "type": "FolderExists",
+      "label": "Folder Exists: c:\\temp",
+      "param": "c:\\temp",
+      "remediation": ""
+    },
+    {
+      "id": 2,
+      "type": "FolderWritable",
+      "label": "Can Write to Folder: c:\\temp",
+      "param": "c:\\temp",
+      "remediation": ""
+    }
+  ]
+}

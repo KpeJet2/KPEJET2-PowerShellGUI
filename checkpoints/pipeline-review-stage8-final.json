@@ -1,0 +1,26 @@
+{
+  "encoding": {
+    "critical": 14,
+    "high": 0,
+    "medium": 280,
+    "total": 294
+  },
+  "scanId": "SINSCAN-20260405062024",
+  "timestamp": "2026-04-05 06:21:28",
+  "sin": {
+    "critical": 9,
+    "high": 148,
+    "medium": 1259,
+    "total": 1416
+  },
+  "parse": {
+    "errors": 0,
+    "files": 177
+  },
+  "errorHandling": {
+    "critical": 2191,
+    "high": 11,
+    "total": 2202
+  },
+  "stage": "Stage 8 - Final Verification Complete"
+}

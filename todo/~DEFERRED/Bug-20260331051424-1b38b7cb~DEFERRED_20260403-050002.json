@@ -1,0 +1,33 @@
+{
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bug-20260331051424-1b38b7cb",
+  "sessionModCount": 1,
+  "parentId": "",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bug",
+  "priority": "MEDIUM",
+  "title": "7 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:14:24.6685571Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:14:24.6685973Z",
+  "sinId": "SIN-20260328082049-dbcb8434"
+}

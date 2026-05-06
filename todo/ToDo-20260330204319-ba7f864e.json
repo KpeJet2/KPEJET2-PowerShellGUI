@@ -1,0 +1,35 @@
+{
+  "status": "PLANNED",
+  "suggestedBy": "GitHub-Copilot-Session4",
+  "tags": [
+    "session4-audit"
+  ],
+  "description": "Apply Write-AppLog pattern per STYLE-REMEDIATION-GUIDE.md to all 127 empty catch blocks identified in config/style-remediation-inventory.json",
+  "linkedFeatures": [],
+  "completedAt": null,
+  "result": null,
+  "category": "style-remediation",
+  "type": "ToDo",
+  "linkedBugs": [],
+  "id": "ToDo-20260330204319-ba7f864e",
+  "executionAgent": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "parentId": "",
+  "sinId": "",
+  "source": "Manual",
+  "priority": "HIGH",
+  "title": "Remediate 127 empty catch blocks",
+  "notes": "",
+  "createdAt": "2026-03-30T12:43:19.325718Z",
+  "executedAt": null,
+  "modified": "2026-03-30T12:43:19.325718Z",
+  "created": "2026-03-30T12:43:19.325718Z",
+  "acknowledged": null,
+  "affectedFiles": [
+    "modules/AssistedSASC.psm1",
+    "modules/PwShGUI-TrayHost.psm1",
+    "scripts/Build-AgenticManifest.ps1"
+  ],
+  "plannedAt": "2026-03-31T01:25:34.4086159+08:00"
+}

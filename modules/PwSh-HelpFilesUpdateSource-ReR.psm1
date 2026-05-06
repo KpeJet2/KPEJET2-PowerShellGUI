@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+﻿# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -74,47 +73,13 @@ $script:avpnConfigFile = Join-Path $script:configDir "AVPN-devices.json"
 }
 
 # ==================== LOGGING FUNCTIONS ====================
-function Write-AppLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $logFile = Join-Path $script:logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd').log"
-
-    $logEntry = "[$timestamp] [$Level] $Message"
-    Add-Content -Path $logFile -Value $logEntry -ErrorAction SilentlyContinue
-
-    switch ($Level) {
-        "Warning" { Write-Warning $logEntry }
-        "Error" { Write-Error $logEntry -ErrorAction Continue }
-        default { Write-Information $logEntry -InformationAction Continue }
-    }
-}
-
-function Write-ScriptLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [Parameter(Mandatory = $true)]
-        [string]$ScriptName,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $scriptLogFile = Join-Path $script:logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd')_PwShGui-SCRIPTS.log"
-
-    $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"
-    Add-Content -Path $scriptLogFile -Value $logEntry -ErrorAction SilentlyContinue
+# Write-AppLog, Write-ScriptLog -- now provided by PwShGUICore module
+$script:coreModulePath = Join-Path $script:modulesDir 'PwShGUICore.psm1'
+if (Test-Path $script:coreModulePath) {
+    Import-Module $script:coreModulePath -Force
+    Initialize-CorePaths -ScriptDir $script:scriptDir
+} else {
+    Write-AppLog -Message "PwShGUICore module not found at $($script:coreModulePath)" -Level Warning
 }
 
 # ==================== HELP FILE FUNCTIONS ====================
@@ -152,23 +117,23 @@ function Invoke-SavePowerShellHelp {
         Write-AppLog "Starting Save-Help for cultures: $($UICultures -join ', ')" "Info"
 
         foreach ($culture in $UICultures) {
-            Write-Host "Saving help files for culture: $culture" -ForegroundColor Cyan
+            Write-Verbose "Saving help files for culture: $culture"
             
             try {
                 Save-Help -DestinationPath $DestinationPath -UICulture $culture -Force -ErrorAction Stop
-                Write-AppLog "Successfully saved help files for culture: $culture" "Success"
-                Write-Host "✓ Saved help for $culture" -ForegroundColor Green
+                Write-AppLog "Successfully saved help files for culture: $culture" "Info"
+                Write-Verbose "âœ“ Saved help for $culture"
             } catch {
                 Write-AppLog "Error saving help for culture $($culture): $_" "Warning"
-                Write-Host "✗ Error saving help for $culture : $_" -ForegroundColor Red
+                Write-Verbose "âœ— Error saving help for $culture : $_"
             }
         }
 
-        Write-AppLog "Save-Help operation completed" "Success"
+        Write-AppLog "Save-Help operation completed" "Info"
         return $true
     } catch {
         Write-AppLog "Save-Help failed: $_" "Error"
-        Write-Host "Error: $_" -ForegroundColor Red
+        Write-Verbose "Error: $_"
         return $false
     }
 }
@@ -183,7 +148,7 @@ function Invoke-UpdatePowerShellHelp {
 
     try {
         if (-not (Test-Path $SourcePath)) {
-            Write-Host "Source path does not exist: $SourcePath" -ForegroundColor Red
+            Write-Verbose "Source path does not exist: $SourcePath"
             Write-AppLog "Update-Help failed: source path does not exist: $SourcePath" "Error"
             return $false
         }
@@ -191,23 +156,23 @@ function Invoke-UpdatePowerShellHelp {
         Write-AppLog "Starting Update-Help from source: $SourcePath for cultures: $($UICultures -join ', ')" "Info"
 
         foreach ($culture in $UICultures) {
-            Write-Host "Updating help files for culture: $culture" -ForegroundColor Cyan
+            Write-Verbose "Updating help files for culture: $culture"
             
             try {
                 Update-Help -SourcePath $SourcePath -UICulture $culture -Force -ErrorAction Stop
-                Write-AppLog "Successfully updated help files for culture: $culture" "Success"
-                Write-Host "✓ Updated help for $culture" -ForegroundColor Green
+                Write-AppLog "Successfully updated help files for culture: $culture" "Info"
+                Write-Verbose "âœ“ Updated help for $culture"
             } catch {
                 Write-AppLog "Error updating help for culture $($culture): $_" "Warning"
-                Write-Host "✗ Error updating help for $culture : $_" -ForegroundColor Red
+                Write-Verbose "âœ— Error updating help for $culture : $_"
             }
         }
 
-        Write-AppLog "Update-Help operation completed" "Success"
+        Write-AppLog "Update-Help operation completed" "Info"
         return $true
     } catch {
         Write-AppLog "Update-Help failed: $_" "Error"
-        Write-Host "Error: $_" -ForegroundColor Red
+        Write-Verbose "Error: $_"
         return $false
     }
 }
@@ -374,7 +339,7 @@ function Show-HelpFilesGUI {
         $result = Invoke-SavePowerShellHelp -DestinationPath $pathTextBox.Text -UICultures $cultures
         
         if ($result) {
-            [System.Windows.Forms.MessageBox]::Show("Help files saved successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            [System.Windows.Forms.MessageBox]::Show("Help files saved successfully!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         } else {
             [System.Windows.Forms.MessageBox]::Show("Error saving help files. Check the status above for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
@@ -406,7 +371,7 @@ function Show-HelpFilesGUI {
         $result = Invoke-UpdatePowerShellHelp -SourcePath $pathTextBox.Text -UICultures $cultures
         
         if ($result) {
-            [System.Windows.Forms.MessageBox]::Show("Help files updated successfully!", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            [System.Windows.Forms.MessageBox]::Show("Help files updated successfully!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         } else {
             [System.Windows.Forms.MessageBox]::Show("Error updating help files. Check the status above for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
@@ -449,7 +414,7 @@ function Show-HelpFilesGUI {
 
         if ($helpExists) {
             $info = Get-HelpFileInfo -HelpPath $path
-            $statusTextBox.Text = "✓ Help files detected in this folder`r`n`r`n"
+            $statusTextBox.Text = "[OK] Help files detected in this folder`r`n`r`n"
             $statusTextBox.AppendText("Files Found: $($info.FileCount)`r`n")
             $statusTextBox.AppendText("Total Size: $(if ($info.TotalSize -gt 1MB) { "$([Math]::Round($info.TotalSize / 1MB, 2)) MB" } else { "$([Math]::Round($info.TotalSize / 1KB, 2)) KB" })`r`n")
             
@@ -465,12 +430,12 @@ function Show-HelpFilesGUI {
             $updateHelpButton.Enabled = $true
             $saveHelpButton.Enabled = $true
         } else {
-            $statusTextBox.Text = "⚠ No help files detected in this folder`r`n`r`n"
-            $statusTextBox.AppendText("Recommendation:`r`nClick 'Save-Help (Download)' to download the latest PowerShell help files to this location.`r`n`r`n"
-            $statusTextBox.AppendText("This process:`r`n"
-            $statusTextBox.AppendText("1. Requires an internet connection`r`n"
-            $statusTextBox.AppendText("2. May take several minutes`r`n"
-            $statusTextBox.AppendText("3. Downloads help for the selected cultures (en-US and/or en-AU)`r`n"
+            $statusTextBox.Text = "[!] No help files detected in this folder`r`n`r`n"
+            $statusTextBox.AppendText("Recommendation:`r`nClick 'Save-Help (Download)' to download the latest PowerShell help files to this location.`r`n`r`n")
+            $statusTextBox.AppendText("This process:`r`n")
+            $statusTextBox.AppendText("1. Requires an internet connection`r`n")
+            $statusTextBox.AppendText("2. May take several minutes`r`n")
+            $statusTextBox.AppendText("3. Downloads help for the selected cultures (en-US and/or en-AU)`r`n")
             $statusTextBox.AppendText("4. Stores files in the specified location`r`n")
             $updateHelpButton.Enabled = $false
             $saveHelpButton.Enabled = $true
@@ -481,6 +446,7 @@ function Show-HelpFilesGUI {
     Update-HelpStatus
 
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
 }
 
 # ==================== EXPORTED FUNCTIONS ====================
@@ -493,6 +459,15 @@ Export-ModuleMember -Function @(
     'Write-AppLog',
     'Write-ScriptLog'
 )
+
+
+
+
+
+
+
+
+
 
 
 

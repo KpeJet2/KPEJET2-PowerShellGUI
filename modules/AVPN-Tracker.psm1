@@ -1,9 +1,32 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+﻿# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v19  2026-03-24 03:28  (deduplicated from 9 entries)
 #Requires -Version 5.1
+
+# ── DPAPI credential helpers ────────────────────────────────────────────────
+$script:_DpapiPrefix = 'DPAPI:'
+
+function Protect-AVPNCredential {
+    param([string]$PlainText)
+    if ([string]::IsNullOrEmpty($PlainText)) { return '' }
+    try {
+        $secure = ConvertTo-SecureString $PlainText -AsPlainText -Force
+        return $script:_DpapiPrefix + ($secure | ConvertFrom-SecureString)
+    } catch { <# Intentional: non-fatal #> return $PlainText }
+}
+
+function Unprotect-AVPNCredential {
+    param([string]$Stored)
+    if ([string]::IsNullOrEmpty($Stored)) { return '' }
+    if (-not $Stored.StartsWith($script:_DpapiPrefix)) { return $Stored }
+    try {
+        $encrypted = $Stored.Substring($script:_DpapiPrefix.Length)
+        $secure = ConvertTo-SecureString $encrypted
+        $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+        try { return [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr) }
+        finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+    } catch { <# Intentional: non-fatal #> return '' }
+}
 
 function Invoke-AVPNLog {
     param(
@@ -14,30 +37,35 @@ function Invoke-AVPNLog {
     if ($LogCallback) {
         & $LogCallback $Message $Level
     } else {
-        if ($Level -eq "Warning") {
-            Write-Warning "[AVPN][$Level] $Message"
-        } elseif ($Level -eq "Error") {
-            Write-Error "[AVPN][$Level] $Message" -ErrorAction Continue
+        # Use Write-Warning for all non-info levels so errors surface to caller
+        # (Write-Error -ErrorAction Continue silently bypasses callers' -ErrorAction Stop)
+        if ($Level -eq "Error") {
+            Write-AppLog -Message "[AVPN][ERROR] $Message" -Level Warning
+        } elseif ($Level -eq "Warning") {
+            Write-AppLog -Message "[AVPN][$Level] $Message" -Level Warning
         } else {
-            Write-Information "[AVPN][$Level] $Message" -InformationAction Continue
+            Write-Verbose "[AVPN][$Level] $Message"
         }
     }
 }
 
 function Get-AVPNDefaultTemplateList {
     return @(
-        @{ id = 1; type = "Audio Player"; model = "Sonos Play:5"; name = "Living Room Speaker"; avInputs = 2; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 1; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 2; type = "Video Media Player"; model = "Sony BDP-S6700"; name = "Blu-ray Player"; avInputs = 0; avOutputs = 2; powerInputs = 1; powerOutputs = 0; networkInterfaces = 1; usbInputs = 1; usbPlugs = 0 },
-        @{ id = 3; type = "Video Renderer"; model = "LG OLED65B9PUA"; name = "Main Display"; avInputs = 3; avOutputs = 1; powerInputs = 1; powerOutputs = 0; networkInterfaces = 1; usbInputs = 2; usbPlugs = 0 },
-        @{ id = 4; type = "HDMI Splitter"; model = "ATEN VS1904"; name = "4x1 HDMI Splitter"; avInputs = 4; avOutputs = 1; powerInputs = 1; powerOutputs = 0; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 5; type = "Digital Amplifier"; model = "Crown XLS2002"; name = "Audio Amplifier"; avInputs = 2; avOutputs = 2; powerInputs = 1; powerOutputs = 0; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 6; type = "Networking"; model = "Cisco SG300-28"; name = "Network Switch"; avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 28; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 7; type = "Power Distribution"; model = "Furman M-8LX"; name = "Power Conditioner"; avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 8; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 8; type = "PC"; model = "Dell XPS 15"; name = "Workstation"; avInputs = 0; avOutputs = 2; powerInputs = 1; powerOutputs = 0; networkInterfaces = 2; usbInputs = 4; usbPlugs = 2 },
-        @{ id = 9; type = "UPS"; model = "APC Back-UPS Pro 1500VA"; name = "Backup Power"; avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 12; networkInterfaces = 1; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 10; type = "Power Board"; model = "Belkin 12-Outlet"; name = "Power Strip"; avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 12; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0 },
-        @{ id = 11; type = "USB Dock"; model = "CalDigit Thunderbolt 3"; name = "Dock Station"; avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 2; usbInputs = 15; usbPlugs = 0 },
-        @{ id = 12; type = "Other"; model = "Generic Device"; name = "Custom Device"; avInputs = 0; avOutputs = 0; powerInputs = 0; powerOutputs = 0; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0 }
+        @{ id = 1;  type = "Switch";                    model = "Generic L2/L3 Switch";      name = "Network Switch";      avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 6; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("RJ45 1G","RJ45 10G","SFP","SFP+","QSFP+","QSFP28") },
+        @{ id = 2;  type = "Router";                    model = "Generic Router";            name = "Network Router";      avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 5; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("RJ45 WAN","RJ45 LAN","SFP","SFP+","Wi-Fi 2.4/5/6 GHz") },
+        @{ id = 3;  type = "Firewall";                  model = "Generic Firewall";          name = "Network Firewall";    avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 5; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("RJ45","SFP","SFP+","QSFP","Wi-Fi (optional)") },
+        @{ id = 4;  type = "Wireless Access Point";     model = "Enterprise AP";             name = "Wireless AP";         avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 2; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("RJ45 PoE","Wi-Fi 2.4/5/6 GHz") },
+        @{ id = 5;  type = "Desktop PC";                model = "Workstation/Desktop";       name = "Desktop PC";          avInputs = 0; avOutputs = 3; powerInputs = 1; powerOutputs = 0; networkInterfaces = 3; usbInputs = 2; usbPlugs = 0; interfaceLabels = @("USB-A","USB-C","HDMI","DisplayPort","RJ45","Wi-Fi","Bluetooth","3.5mm Audio") },
+        @{ id = 6;  type = "Laptop";                    model = "Generic Laptop";            name = "Laptop";              avInputs = 0; avOutputs = 3; powerInputs = 1; powerOutputs = 0; networkInterfaces = 3; usbInputs = 2; usbPlugs = 0; interfaceLabels = @("USB-A","USB-C/Thunderbolt","HDMI","DisplayPort Alt Mode","RJ45 (optional)","Wi-Fi","Bluetooth","3.5mm Audio") },
+        @{ id = 7;  type = "Server";                    model = "Rack Server";               name = "Rack Server";         avInputs = 0; avOutputs = 1; powerInputs = 1; powerOutputs = 0; networkInterfaces = 5; usbInputs = 1; usbPlugs = 0; interfaceLabels = @("RJ45 1G","RJ45 10G","SFP+","iDRAC/iLO","USB","VGA","Serial") },
+        @{ id = 8;  type = "Thin Client";               model = "Enterprise Thin Client";    name = "Thin Client";         avInputs = 0; avOutputs = 2; powerInputs = 1; powerOutputs = 0; networkInterfaces = 2; usbInputs = 2; usbPlugs = 0; interfaceLabels = @("USB-A","USB-C","DisplayPort","RJ45","Wi-Fi","3.5mm Audio") },
+        @{ id = 9;  type = "Crestron Control Processor"; model = "CP4 / CP4-R";             name = "Control Processor";   avInputs = 0; avOutputs = 1; powerInputs = 1; powerOutputs = 1; networkInterfaces = 3; usbInputs = 1; usbPlugs = 0; interfaceLabels = @("Ethernet","RS-232","IR","Relay","IO","USB") },
+        @{ id = 10; type = "Crestron Touch Panel";      model = "TSW/TS-1070 Series";        name = "Touch Panel";         avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 0; networkInterfaces = 2; usbInputs = 1; usbPlugs = 0; interfaceLabels = @("Ethernet","PoE","Wi-Fi (some models)","USB") },
+        @{ id = 11; type = "Crestron DM NVX Encoder";   model = "DM-NVX-350/360";           name = "DM NVX Encoder";      avInputs = 1; avOutputs = 2; powerInputs = 1; powerOutputs = 0; networkInterfaces = 1; usbInputs = 1; usbPlugs = 0; interfaceLabels = @("HDMI In","HDMI Out","RJ45 1G/10G","USB","AES67 Audio") },
+        @{ id = 12; type = "Crestron DM Switcher";      model = "DM-MD Series";              name = "DM Switcher";         avInputs = 8; avOutputs = 8; powerInputs = 1; powerOutputs = 0; networkInterfaces = 1; usbInputs = 1; usbPlugs = 0; interfaceLabels = @("DM 8G+ In","DM 8G+ Out","HDMI In","HDMI Out","Ethernet","USB") },
+        @{ id = 13; type = "Power Distribution";        model = "Furman M-8LX";              name = "Power Conditioner";   avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 8; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("AC Input","AC Output x8") },
+        @{ id = 14; type = "UPS";                       model = "APC Back-UPS Pro 1500VA";   name = "Backup Power";        avInputs = 0; avOutputs = 0; powerInputs = 1; powerOutputs = 12; networkInterfaces = 1; usbInputs = 0; usbPlugs = 0; interfaceLabels = @("AC Input","AC Output x12","Network") },
+        @{ id = 15; type = "Other";                     model = "Generic Device";            name = "Custom Device";       avInputs = 0; avOutputs = 0; powerInputs = 0; powerOutputs = 0; networkInterfaces = 0; usbInputs = 0; usbPlugs = 0; interfaceLabels = @() }
     )
 }
 
@@ -53,7 +81,7 @@ function Initialize-AVPNConfigFile {
         avpnDevices = Get-AVPNDefaultTemplateList
         inventory = @()
         lastModified = (Get-Date).ToUniversalTime().ToString("s") + "Z"
-        version = "2602.a.7"
+        version = "2603.B0.v19"
     }
 
     $json = $config | ConvertTo-Json -Depth 6
@@ -82,7 +110,7 @@ function Initialize-AVPNDeviceTypesFile {
     $config = [ordered]@{
         deviceTypes = $seed
         lastModified = (Get-Date).ToUniversalTime().ToString("s") + "Z"
-        version = "2602.a.7"
+        version = "2603.B0.v19"
     }
 
     $json = $config | ConvertTo-Json -Depth 6
@@ -115,7 +143,7 @@ function Save-AVPNDeviceTypeList {
     $config = [ordered]@{
         deviceTypes = @($Templates)
         lastModified = $timestamp
-        version = "2602.a.7"
+        version = "2603.B0.v19"
     }
     $json = $config | ConvertTo-Json -Depth 6
     Set-Content -Path $DeviceTypesPath -Value $json -Encoding ascii
@@ -130,6 +158,12 @@ function Get-AVPNConfig {
         $data = $raw | ConvertFrom-Json
         if (-not $data.avpnDevices) { $data | Add-Member -NotePropertyName avpnDevices -NotePropertyValue (Get-AVPNDefaultTemplateList) }
         if (-not $data.inventory) { $data | Add-Member -NotePropertyName inventory -NotePropertyValue @() }
+        # Decrypt DPAPI-protected credentials on load
+        foreach ($dev in $data.inventory) {
+            if ($dev.PSObject.Properties['loginPassword'] -and $dev.loginPassword) {
+                $dev.loginPassword = Unprotect-AVPNCredential $dev.loginPassword
+            }
+        }
         return $data
     } catch {
         Initialize-AVPNConfigFile -ConfigPath $ConfigPath
@@ -144,7 +178,7 @@ function Save-AVPNConfig {
     )
     # Safely set metadata properties
     $timestamp = (Get-Date).ToUniversalTime().ToString("s") + "Z"
-    $versionStr = "2602.a.7"
+    $versionStr = "2603.B0.v19"
     
     if ($ConfigData.PSObject.Properties['lastModified']) {
         $ConfigData.lastModified = $timestamp
@@ -158,8 +192,22 @@ function Save-AVPNConfig {
         $ConfigData | Add-Member -NotePropertyName 'version' -NotePropertyValue $versionStr -Force
     }
     
+    # Encrypt credentials before writing to disk
+    foreach ($dev in $ConfigData.inventory) {
+        if ($dev.PSObject.Properties['loginPassword'] -and $dev.loginPassword) {
+            $dev.loginPassword = Protect-AVPNCredential $dev.loginPassword
+        }
+    }
+    
     $json = $ConfigData | ConvertTo-Json -Depth 6
     Set-Content -Path $ConfigPath -Value $json -Encoding ascii
+
+    # Restore plaintext in memory so callers remain unaffected
+    foreach ($dev in $ConfigData.inventory) {
+        if ($dev.PSObject.Properties['loginPassword'] -and $dev.loginPassword) {
+            $dev.loginPassword = Unprotect-AVPNCredential $dev.loginPassword
+        }
+    }
 }
 
 function Get-AVPNConnectorCount {
@@ -257,7 +305,9 @@ function Export-AVPNCsv {
 
 function Import-AVPNCsv {
     param([Parameter(Mandatory = $true)][string]$Path)
-    $rows = Import-Csv -Path $Path
+    # Strip comment lines (e.g. # VersionTag) before passing to Import-Csv
+    $rawLines = Get-Content -Path $Path | Where-Object { $_ -notmatch '^\s*#' }
+    $rows = $rawLines | ConvertFrom-Csv
     $inventory = New-Object System.Collections.ArrayList
     $connections = New-Object System.Collections.ArrayList
 
@@ -370,9 +420,9 @@ function Show-AVPNDeviceTypeDialog {
     $cancelBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $dialog.Close() })
     $dialog.Controls.Add($cancelBtn)
 
-    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return $null }
+    if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $dialog.Dispose(); return $null }
 
-    return [ordered]@{
+    $result = [ordered]@{
         id = if ($Template) { $Template.id } else { $NextId }
         type = $controls["Type"].Text.Trim()
         model = $controls["Model"].Text.Trim()
@@ -385,6 +435,8 @@ function Show-AVPNDeviceTypeDialog {
         usbInputs = [int]$controls["USB Inputs"].Value
         usbPlugs = [int]$controls["USB Plugs"].Value
     }
+    $dialog.Dispose()
+    return $result
 }
 
 function Show-AVPNDeviceTypeEditor {
@@ -497,6 +549,7 @@ function Show-AVPNDeviceTypeEditor {
 
     & $refresh
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
     return $Templates
 }
 
@@ -521,7 +574,7 @@ function Show-AVPNConnectionTracker {
     if (-not $templates -or $templates.Count -eq 0) {
         $templates = if ($config.avpnDevices) { @($config.avpnDevices) } else { @(Get-AVPNDefaultTemplateList) }
     }
-    $filteredTemplates = @()
+    $filteredTemplates = New-Object System.Collections.ArrayList
     $inventory = New-Object System.Collections.ArrayList
     if ($config.inventory) { foreach ($item in $config.inventory) { [void]$inventory.Add($item) } }
 
@@ -588,12 +641,14 @@ function Show-AVPNConnectionTracker {
 
     $refreshTemplateList = {
         $templateList.Items.Clear()
-        $filteredTemplates = @($templates)
+        $filteredTemplates.Clear()
+        $src = @($templates)
         if ($typeCombo.SelectedIndex -gt 0) {
             $selectedType = $typeCombo.SelectedItem
-            $filteredTemplates = @($templates | Where-Object { $_.type -eq $selectedType })
+            $src = @($templates | Where-Object { $_.type -eq $selectedType })
         }
-        foreach ($t in $filteredTemplates) {
+        foreach ($t in $src) {
+            [void]$filteredTemplates.Add($t)
             [void]$templateList.Items.Add("$($t.id) - $($t.type) ($($t.model))")
         }
     }
@@ -636,12 +691,15 @@ function Show-AVPNConnectionTracker {
     $rightSplit.Dock = "Fill"
     $rightSplit.Orientation = "Horizontal"
     $rightSplit.SplitterDistance = 440
+    $mainSplit.Panel2.Padding = New-Object System.Windows.Forms.Padding(0)
     $mainSplit.Panel2.Controls.Add($rightSplit)
 
     $canvas = New-Object System.Windows.Forms.Panel
     $canvas.Dock = "Fill"
     $canvas.BackColor = [System.Drawing.Color]::WhiteSmoke
     $canvas.AutoScroll = $true
+    $canvas.Padding = New-Object System.Windows.Forms.Padding(0)
+    $rightSplit.Panel1.Padding = New-Object System.Windows.Forms.Padding(0)
     $rightSplit.Panel1.Controls.Add($canvas)
 
     $gridPanel = New-Object System.Windows.Forms.Panel
@@ -679,6 +737,13 @@ function Show-AVPNConnectionTracker {
     $alignBtn.Location = New-Object System.Drawing.Point(390, 6)
     $alignBtn.Size = New-Object System.Drawing.Size(120, 24)
     $gridPanel.Controls.Add($alignBtn)
+
+    $autoPlugBtn = New-Object System.Windows.Forms.Button
+    $autoPlugBtn.Text = "Auto Plug All"
+    $autoPlugBtn.Location = New-Object System.Drawing.Point(520, 6)
+    $autoPlugBtn.Size = New-Object System.Drawing.Size(120, 24)
+    $autoPlugBtn.BackColor = [System.Drawing.Color]::MistyRose
+    $gridPanel.Controls.Add($autoPlugBtn)
 
     $tabControl = New-Object System.Windows.Forms.TabControl
     $tabControl.Dock = "Fill"
@@ -847,6 +912,18 @@ function Show-AVPNConnectionTracker {
         'USB Plug' = [System.Drawing.Color]::Orange
     }
 
+    # Connector shape identifiers (unique per interface type)
+    # AV = circle, Power = rectangle (plug/socket), Network = diamond (RJ45), USB = rounded-rect
+    $connectorShapes = @{
+        'AV Input'     = 'circle'
+        'AV Output'    = 'circle'
+        'Power Input'  = 'rect'
+        'Power Output' = 'rect'
+        'Network'      = 'diamond'
+        'USB Input'    = 'roundrect'
+        'USB Plug'     = 'roundrect'
+    }
+
     $getConnectorColor = {
         param([string]$Type)
         if ($connectorColors.ContainsKey($Type)) { return $connectorColors[$Type] }
@@ -961,13 +1038,13 @@ function Show-AVPNConnectionTracker {
     }
 
     $getNextPosition = {
-        $grid = [int]$gridSizeUpDown.Value
-        $cols = [int][Math]::Max(1, [Math]::Floor(($canvas.DisplayRectangle.Width - 40) / 200))
+        $grid = [math]::Max(1, [int]$gridSizeUpDown.Value)
+        $cols = [int][Math]::Max(1, [Math]::Floor(($canvas.DisplayRectangle.Width - 10) / 200))
         $row = [math]::Floor($script:placementIndex / $cols)
         $col = $script:placementIndex % $cols
         $script:placementIndex++
-        $x = 20 + ($col * 200)
-        $y = 20 + ($row * 120)
+        $x = 4 + ($col * 200)
+        $y = 4 + ($row * 120)
         $x = [math]::Round($x / $grid) * $grid
         $y = [math]::Round($y / $grid) * $grid
         return [System.Drawing.Point]::new($x, $y)
@@ -1037,7 +1114,23 @@ function Show-AVPNConnectionTracker {
             $box.Size = New-Object System.Drawing.Size(180, 100)
             $box.Text = "$invIndex - $($device.name)"
             $box.Tag = $device.instanceId
-            $box.BackColor = [System.Drawing.Color]::White
+
+            # Highlight unpowered devices in yellow
+            $needsPower = ([int]$device.powerInputs -gt 0)
+            $hasPower = $false
+            if ($needsPower) {
+                for ($pi = 0; $pi -lt [int]$device.powerInputs; $pi++) {
+                    $pwrConn = $connections | Where-Object {
+                        $_.DestInstance -eq $device.instanceId -and $_.DestConnector -eq "Power Input:$pi"
+                    }
+                    if ($pwrConn) { $hasPower = $true; break }
+                }
+            }
+            if ($needsPower -and -not $hasPower) {
+                $box.BackColor = [System.Drawing.Color]::LightYellow
+            } else {
+                $box.BackColor = [System.Drawing.Color]::White
+            }
 
             $label = New-Object System.Windows.Forms.Label
             $label.AutoSize = $false
@@ -1162,7 +1255,7 @@ function Show-AVPNConnectionTracker {
             }
         }
         
-        # Draw connector triangles on each device
+        # Draw connector shapes on each device (unique per interface type)
         foreach ($device in $inventory) {
             if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
             $box = $deviceControls[$device.instanceId]
@@ -1170,36 +1263,54 @@ function Show-AVPNConnectionTracker {
             
             foreach ($pos in $positions) {
                 $color = & $getConnectorColor $pos.Type
-                $brush = if ($pos.IsInput) { 
-                    [System.Drawing.Brushes]::Black 
+                $fillBrush = if ($pos.IsInput) { 
+                    New-Object System.Drawing.SolidBrush($color) 
                 } else { 
-                    [System.Drawing.Brushes]::White 
+                    New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
                 }
                 $pen = New-Object System.Drawing.Pen($color, 2)
+                $shapeName = if ($connectorShapes.ContainsKey($pos.Type)) { $connectorShapes[$pos.Type] } else { 'circle' }
+                $sz = 7
+
+                switch ($shapeName) {
+                    'circle' {
+                        # AV connectors -- filled/hollow circle
+                        $g.FillEllipse($fillBrush, ($pos.X - $sz), ($pos.Y - $sz), ($sz * 2), ($sz * 2))
+                        $g.DrawEllipse($pen, ($pos.X - $sz), ($pos.Y - $sz), ($sz * 2), ($sz * 2))
+                    }
+                    'rect' {
+                        # Power connectors -- filled/hollow rectangle (plug shape)
+                        $g.FillRectangle($fillBrush, ($pos.X - $sz), ($pos.Y - $sz), ($sz * 2), ($sz * 2))
+                        $g.DrawRectangle($pen, ($pos.X - $sz), ($pos.Y - $sz), ($sz * 2), ($sz * 2))
+                    }
+                    'diamond' {
+                        # Network connectors -- rotated square (diamond)
+                        $dpts = New-Object 'System.Drawing.Point[]' 4
+                        $dpts[0] = [System.Drawing.Point]::new($pos.X, $pos.Y - $sz)
+                        $dpts[1] = [System.Drawing.Point]::new($pos.X + $sz, $pos.Y)
+                        $dpts[2] = [System.Drawing.Point]::new($pos.X, $pos.Y + $sz)
+                        $dpts[3] = [System.Drawing.Point]::new($pos.X - $sz, $pos.Y)
+                        $g.FillPolygon($fillBrush, $dpts)
+                        $g.DrawPolygon($pen, $dpts)
+                    }
+                    'roundrect' {
+                        # USB connectors -- rounded rectangle
+                        $rr = $sz * 2
+                        $radius = 4
+                        $rrRect = [System.Drawing.Rectangle]::new(($pos.X - $sz), ($pos.Y - [int]($sz * 0.7)), $rr, [int]($sz * 1.4))
+                        $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+                        $path.AddArc($rrRect.X, $rrRect.Y, $radius, $radius, 180, 90)
+                        $path.AddArc($rrRect.Right - $radius, $rrRect.Y, $radius, $radius, 270, 90)
+                        $path.AddArc($rrRect.Right - $radius, $rrRect.Bottom - $radius, $radius, $radius, 0, 90)
+                        $path.AddArc($rrRect.X, $rrRect.Bottom - $radius, $radius, $radius, 90, 90)
+                        $path.CloseFigure()
+                        $g.FillPath($fillBrush, $path)
+                        $g.DrawPath($pen, $path)
+                        $path.Dispose()
+                    }
+                }
                 
-                # Draw triangle
-                $size = 8
-                $pts = New-Object 'System.Drawing.Point[]' 3
-                
-                # Calculate triangle points based on angle
-                $angleRad = $pos.Angle * [Math]::PI / 180
-                $pts[0] = [System.Drawing.Point]::new(
-                    [int]($pos.X + $size * [Math]::Sin($angleRad)),
-                    [int]($pos.Y - $size * [Math]::Cos($angleRad))
-                )
-                $pts[1] = [System.Drawing.Point]::new(
-                    [int]($pos.X + $size * [Math]::Sin($angleRad + 2.094)),
-                    [int]($pos.Y - $size * [Math]::Cos($angleRad + 2.094))
-                )
-                $pts[2] = [System.Drawing.Point]::new(
-                    [int]($pos.X + $size * [Math]::Sin($angleRad - 2.094)),
-                    [int]($pos.Y - $size * [Math]::Cos($angleRad - 2.094))
-                )
-                
-                $g.FillPolygon($brush, $pts)
-                $g.DrawPolygon($pen, $pts)
-                
-                # Draw count number near connector
+                # Draw index number near connector
                 $font = New-Object System.Drawing.Font('Arial', 7, [System.Drawing.FontStyle]::Bold)
                 $textBrush = New-Object System.Drawing.SolidBrush($color)
                 $text = "$($pos.Index)"
@@ -1208,6 +1319,7 @@ function Show-AVPNConnectionTracker {
                 $textY = $pos.Y - ($textSize.Height / 2)
                 $g.DrawString($text, $font, $textBrush, $textX, $textY)
                 
+                if ($fillBrush -is [System.Drawing.SolidBrush]) { $fillBrush.Dispose() }
                 $pen.Dispose()
                 $font.Dispose()
                 $textBrush.Dispose()
@@ -1235,11 +1347,110 @@ function Show-AVPNConnectionTracker {
         }
     })
 
+    # ── Helper: find all matching available input connectors for a given output ──
+    $getMatchingInputs = {
+        param([string]$srcInstanceId, [string]$srcType, [int]$srcIndex)
+        # Determine the matching input type
+        $inputType = switch ($srcType) {
+            'AV Output'    { 'AV Input' }
+            'Power Output' { 'Power Input' }
+            'USB Plug'     { 'USB Input' }
+            'Network'      { 'Network' }
+            default        { $null }
+        }
+        if (-not $inputType) { return @() }
+
+        $matches = @()
+        foreach ($dev in $inventory) {
+            if ($dev.instanceId -eq $srcInstanceId -and $inputType -ne 'Network') { continue }
+            $count = Get-AVPNConnectorCount -Device $dev -ConnectorType $inputType
+            for ($i = 0; $i -lt $count; $i++) {
+                # Check if this input port is already connected
+                $alreadyUsed = $connections | Where-Object {
+                    $_.DestInstance -eq $dev.instanceId -and $_.DestConnector -eq "${inputType}:$i"
+                }
+                if (-not $alreadyUsed) {
+                    $matches += @{ Device = $dev; Type = $inputType; Index = $i }
+                }
+            }
+        }
+        return $matches
+    }
+
+    # ── Helper: check whether a Power Input port is already connected ──
+    $isPowerInputUsed = {
+        param([string]$instanceId, [int]$portIndex)
+        $used = $connections | Where-Object {
+            $_.DestInstance -eq $instanceId -and $_.DestConnector -eq "Power Input:$portIndex"
+        }
+        return [bool]$used
+    }
+
     # Canvas mouse handlers for connector drag-and-drop
     $canvas.Add_MouseDown({
         $mouseX = $args[1].X
         $mouseY = $args[1].Y
+        $btn    = $args[1].Button
+
+        # ── RIGHT-CLICK on output connector → quick-connect context menu ──
+        if ($btn -eq [System.Windows.Forms.MouseButtons]::Right) {
+            foreach ($device in $inventory) {
+                if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
+                $box = $deviceControls[$device.instanceId]
+                $positions = & $getConnectorPositions $device $box
+
+                foreach ($pos in $positions) {
+                    $dx = $mouseX - $pos.X
+                    $dy = $mouseY - $pos.Y
+                    if ([Math]::Sqrt($dx * $dx + $dy * $dy) -ge 14) { continue }
+
+                    # Only show menu for output-type connectors (or Network as bidirectional)
+                    if ($pos.IsInput -and $pos.Type -ne 'Network') { continue }
+
+                    $matchList = & $getMatchingInputs $device.instanceId $pos.Type $pos.Index
+                    if ($matchList.Count -eq 0) { continue }
+
+                    $ctxMenu = New-Object System.Windows.Forms.ContextMenuStrip
+                    foreach ($m in $matchList) {
+                        $label = "$($m.Device.name) -- $($m.Type):$($m.Index)"
+                        $mi = New-Object System.Windows.Forms.ToolStripMenuItem($label)
+                        # Capture closure variables
+                        $mi.Tag = @{
+                            SrcInst = $device.instanceId
+                            SrcConn = "$($pos.Type):$($pos.Index)"
+                            DstInst = $m.Device.instanceId
+                            DstConn = "$($m.Type):$($m.Index)"
+                        }
+                        $mi.Add_Click({
+                            $t = $this.Tag
+                            $newConn = [pscustomobject]@{
+                                SourceInstance  = $t.SrcInst
+                                SourceConnector = $t.SrcConn
+                                DestInstance    = $t.DstInst
+                                DestConnector   = $t.DstConn
+                            }
+                            $dup = $connections | Where-Object {
+                                $_.SourceInstance  -eq $newConn.SourceInstance -and
+                                $_.SourceConnector -eq $newConn.SourceConnector -and
+                                $_.DestInstance    -eq $newConn.DestInstance -and
+                                $_.DestConnector   -eq $newConn.DestConnector
+                            }
+                            if (-not $dup) {
+                                [void]$connections.Add($newConn)
+                                & $refreshInventoryUI
+                                $canvas.Invalidate()
+                            }
+                        })
+                        [void]$ctxMenu.Items.Add($mi)
+                    }
+                    $ctxMenu.Show($canvas, $mouseX, $mouseY)
+                    return   # handled
+                }
+            }
+            return   # right-click but not on a connector -- do nothing
+        }
         
+        # ── LEFT-CLICK: existing drag logic ──
         # Check if clicking near any connector
         foreach ($device in $inventory) {
             if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
@@ -1380,7 +1591,7 @@ function Show-AVPNConnectionTracker {
             [System.Windows.Forms.MessageBox]::Show("Select a device template.", "AVPN") | Out-Null
             return
         }
-        if (-not $filteredTemplates -or $filteredTemplates.Count -eq 0) {
+        if ($filteredTemplates.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show("No templates available for the selected type.", "AVPN") | Out-Null
             return
         }
@@ -1415,7 +1626,7 @@ function Show-AVPNConnectionTracker {
         $nameBox.Clear()
         $qtyUpDown.Value = 1
         & $refreshInventoryUI
-+        $canvas.Invalidate()
+        $canvas.Invalidate()
     })
 
     $removeBtn.Add_Click({
@@ -1424,20 +1635,11 @@ function Show-AVPNConnectionTracker {
         $device = $inventory | Where-Object { $_.instanceId -eq $selectedItemTag } | Select-Object -First 1
         if (-not $device) { return }
         [void]$inventory.Remove($device)
-        $connections = New-Object System.Collections.ArrayList
-        foreach ($item in $inventory) {
-            if ($item.connections) {
-                foreach ($conn in $item.connections) {
-                    if ($conn.sourceInstance -eq $selectedId -or $conn.destInstance -eq $selectedId) { continue }
-                    [void]$connections.Add([pscustomobject]@{
-                        SourceInstance = $conn.sourceInstance
-                        SourceConnector = $conn.sourceConnector
-                        DestInstance = $conn.destInstance
-                        DestConnector = $conn.destConnector
-                    })
-                }
-            }
-        }
+        # Remove connections referencing the deleted device from the shared ArrayList
+        $toRemove = @($connections | Where-Object {
+            $_.SourceInstance -eq $selectedItemTag -or $_.DestInstance -eq $selectedItemTag
+        })
+        foreach ($c in $toRemove) { [void]$connections.Remove($c) }
         & $refreshInventoryUI
         $canvas.Invalidate()
     })
@@ -1601,6 +1803,66 @@ function Show-AVPNConnectionTracker {
         $canvas.Invalidate()
     })
 
+    # ── Auto Plug All: connect every unconnected Power Input to an unused Power Output socket ──
+    $autoPlugBtn.Add_Click({
+        # Build list of available Power Output ports
+        $availOutputs = New-Object System.Collections.ArrayList
+        foreach ($dev in $inventory) {
+            for ($p = 0; $p -lt [int]$dev.powerOutputs; $p++) {
+                $used = $connections | Where-Object {
+                    $_.SourceInstance -eq $dev.instanceId -and $_.SourceConnector -eq "Power Output:$p"
+                }
+                if (-not $used) {
+                    [void]$availOutputs.Add(@{ Device = $dev; Index = $p })
+                }
+            }
+        }
+
+        # Build list of devices needing power
+        $needPower = New-Object System.Collections.ArrayList
+        foreach ($dev in $inventory) {
+            for ($p = 0; $p -lt [int]$dev.powerInputs; $p++) {
+                $used = $connections | Where-Object {
+                    $_.DestInstance -eq $dev.instanceId -and $_.DestConnector -eq "Power Input:$p"
+                }
+                if (-not $used) {
+                    [void]$needPower.Add(@{ Device = $dev; Index = $p })
+                }
+            }
+        }
+
+        $plugged = 0
+        $unpowered = @()
+        foreach ($need in $needPower) {
+            if ($availOutputs.Count -eq 0) {
+                $unpowered += $need.Device.name
+                continue
+            }
+            $src = $availOutputs[0]
+            $availOutputs.RemoveAt(0)
+            $newConn = [pscustomobject]@{
+                SourceInstance  = $src.Device.instanceId
+                SourceConnector = "Power Output:$($src.Index)"
+                DestInstance    = $need.Device.instanceId
+                DestConnector   = "Power Input:$($need.Index)"
+            }
+            [void]$connections.Add($newConn)
+            $plugged++
+        }
+
+        & $refreshInventoryUI
+        $canvas.Invalidate()
+
+        $msg = "Auto Plug: $plugged power connections made."
+        if ($unpowered.Count -gt 0) {
+            $uniqueNames = $unpowered | Select-Object -Unique
+            $msg += "`r`n`r`nNo available power sockets for:`r`n- " + ($uniqueNames -join "`r`n- ")
+            $msg += "`r`n`r`nThese devices are highlighted in yellow on the canvas."
+        }
+        [System.Windows.Forms.MessageBox]::Show($msg, "AVPN Auto Plug", [System.Windows.Forms.MessageBoxButtons]::OK,
+            $(if ($unpowered.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information })) | Out-Null
+    })
+
     $saveBtn.Add_Click({
         $defaultPath = Join-Path (Split-Path $ConfigPath -Parent) "AVPN-inventory.csv"
         Export-AVPNCsv -Inventory $inventory -Connections $connections -Path $defaultPath
@@ -1624,10 +1886,10 @@ function Show-AVPNConnectionTracker {
         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             try {
                 $result = Import-AVPNCsv -Path $dialog.FileName
-                $inventory = $result.Inventory
-                $connections = $result.Connections
-                $null = $inventory.Count
-                $null = $connections.Count
+                $inventory.Clear()
+                if ($result.Inventory) { foreach ($item in $result.Inventory) { [void]$inventory.Add($item) } }
+                $connections.Clear()
+                if ($result.Connections) { foreach ($item in $result.Connections) { [void]$connections.Add($item) } }
                 & $refreshInventoryUI
                 $canvas.Invalidate()
                 Invoke-AVPNLog -LogCallback $LogCallback -Message "Imported AVPN CSV from $($dialog.FileName)" -Level "Info"
@@ -1771,9 +2033,18 @@ function Show-AVPNConnectionTracker {
     } else {
         $form.ShowDialog() | Out-Null
     }
+    $form.Dispose()
 }
 
 Export-ModuleMember -Function Show-AVPNConnectionTracker, Initialize-AVPNConfigFile, Get-AVPNConfig, Save-AVPNConfig
+
+
+
+
+
+
+
+
 
 
 

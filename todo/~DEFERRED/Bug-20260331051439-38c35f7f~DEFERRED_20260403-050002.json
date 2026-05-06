@@ -1,0 +1,33 @@
+{
+  "notes": "Matched existing sin: Missing module reference: path/to/module/updateMods",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "description": "Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bug-20260331051439-38c35f7f",
+  "sessionModCount": 1,
+  "parentId": "",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bug",
+  "priority": "HIGH",
+  "title": "Missing module reference: path/to/module/updateMods",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "dependency",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:14:39.0378618Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:14:39.0379314Z",
+  "sinId": "SIN-20260328082052-d834b6ff"
+}

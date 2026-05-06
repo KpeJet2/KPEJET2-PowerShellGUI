@@ -1,0 +1,54 @@
+{
+  "sin_id": "SIN-20260330-SCANDASH-NOPARAM",
+  "title": "Scan Dashboard Run buttons invoke scripts with no parameters via & $scriptPath",
+  "description": "Show-ScanDashboard.ps1 line ~248 invokes each scan script using '& $scriptPath' with no arguments. The scripts (Invoke-PSEnvironmentScanner, Invoke-ScriptDependencyMatrix, etc.) each accept optional -WorkspacePath, -ReportPath, -TempPath parameters and auto-detect them from $PSScriptRoot. When invoked via & from the dashboard, $PSScriptRoot resolves correctly to the scripts/ directory, so the auto-detection works. However, the Invoke-PSEnvironmentScanner.ps1 launches its own GUI (ShowDialog) which blocks the dashboard form — this is a UX issue, not a CommandNotFoundException. The actual CommandNotFoundException risk is mitigated by each script's self-contained design.",
+  "category": "design",
+  "severity": "LOW",
+  "file_path": "scripts/Show-ScanDashboard.ps1",
+  "line_number": 248,
+  "function_name": "btnRun.Add_Click",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "regression_count": 0,
+  "created_at": "2026-03-30T12:00:00Z",
+  "last_seen_at": "2026-03-30T12:00:00Z",
+  "detection_method": "Manual code review of scan dashboard Run button event handler",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "sessionModCount": 1,
+  "remedy_tracking": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "timestamp": "2026-04-04T20:40:00.8872635Z",
+        "method": "manual-remedy-pending",
+        "success": false,
+        "notes": "No automated fix. Remedy instructions: No remedy defined"
+      },
+      {
+        "attempt_number": 2,
+        "timestamp": "2026-04-04T20:41:35.1956879Z",
+        "method": "known-fix:FIX-202604050440-1713",
+        "success": false,
+        "notes": "Known fix available (FIX-202604050440-1713: Auto-detected resolution of unknown at C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1:?). Manual application required."
+      },
+      {
+        "attempt_number": 3,
+        "timestamp": "2026-04-04T20:44:09.9697990Z",
+        "method": "known-fix:FIX-202604050440-1713",
+        "success": false,
+        "notes": "Known fix available (FIX-202604050440-1713: Auto-detected resolution of unknown at C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1:?). Manual application required."
+      }
+    ],
+    "last_attempt_at": "2026-04-04T20:44:09.9697990Z",
+    "total_attempts": 3,
+    "successful_count": 0,
+    "failed_count": 3,
+    "status": "ESCALATED",
+    "auto_retry": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "todo_id": "gap-2604-011",
+  "id": "gap-2604-011",
+  "category": "maintenance",
+  "title": "Chat Diagnostics debug files in ~README.md/ -- remove AI session leftovers",
+  "description": "~README.md/ contains: '## Chat Customization Diagnostics.md', '## Chat Customization Diagnostics2.md', '## Chat Customization Diagnostics3.md' (in PowerShellGUI root). These are AI-session debug notes, not workspace documentation. They violate SS-002 (files outside recognized folders) / T3 classification. Delete all three after confirming no other file references them. Also check for '# Phase 3 Debug Logging & Error Handling.prompt.md' which may also be an AI session artifact.",
+  "suggested_by": "documentation consolidation audit 2026-04-03",
+  "priority": "LOW",
+  "status": "OPEN",
+  "created_at": "2026-04-03T00:00:10Z",
+  "createdAt": "2026-04-03T00:00:10Z",
+  "acknowledged_at": null,
+  "affects": [
+    "~README.md/## Chat Customization Diagnostics.md",
+    "~README.md/## Chat Customization Diagnostics2.md",
+    "PowerShellGUI/## Chat Customization Diagnostics3.md",
+    "~README.md/# Phase 3 Debug Logging & Error Handling.prompt.md"
+  ],
+  "notes": "These files have unusual names starting with ## or # which also suggests they are AI ephemera, not canonical docs.",
+  "plannedAt": null,
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.8444426Z"
+}

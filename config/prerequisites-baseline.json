@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "updated": "2026-03-05",
+    "description": "Canonical prerequisite baseline for PowerShellGUI operability checks."
+  },
+  "tools": [
+    {
+      "name": "PowerShell 7 x64",
+      "key": "pwsh",
+      "required": true,
+      "minimumVersion": "7.5.0",
+      "recommendedVersion": "7.5.4",
+      "wingetId": "Microsoft.PowerShell",
+      "installIfMissing": true
+    },
+    {
+      "name": ".NET SDK x64",
+      "key": "dotnet-sdk",
+      "required": true,
+      "minimumVersion": "8.0.100",
+      "recommendedVersion": "9.0.100",
+      "wingetId": "Microsoft.DotNet.SDK.9",
+      "installIfMissing": true
+    },
+    {
+      "name": ".NET WindowsDesktop Runtime x64",
+      "key": "dotnet-desktop-runtime",
+      "required": true,
+      "minimumVersion": "8.0.0",
+      "recommendedVersion": "9.0.0",
+      "wingetId": "Microsoft.DotNet.DesktopRuntime.9",
+      "installIfMissing": true
+    },
+    {
+      "name": "Python",
+      "key": "python",
+      "required": true,
+      "minimumVersion": "3.11.0",
+      "recommendedVersion": "3.12.0",
+      "wingetId": "Python.Python.3.12",
+      "installIfMissing": true
+    },
+    {
+      "name": "Windows Terminal",
+      "key": "windows-terminal",
+      "required": true,
+      "minimumVersion": "1.20.0",
+      "recommendedVersion": "1.21.0",
+      "wingetId": "Microsoft.WindowsTerminal",
+      "installIfMissing": true
+    },
+    {
+      "name": "mRemoteNG",
+      "key": "mremoteng",
+      "required": false,
+      "minimumVersion": "1.77.0",
+      "recommendedVersion": "1.78.0",
+      "wingetId": "mRemoteNG.mRemoteNG",
+      "installIfMissing": false
+    }
+  ],
+  "repositories": {
+    "psRepository": {
+      "requiredNames": [
+        "PSGallery"
+      ],
+      "minimumTrustedCount": 1
+    },
+    "psResourceRepository": {
+      "requiredNames": [
+        "PSGallery"
+      ],
+      "minimumTrustedCount": 1
+    }
+  },
+  "modules": [
+    {
+      "name": "PowerShellGet",
+      "required": true,
+      "minimumVersion": "2.2.5"
+    },
+    {
+      "name": "PackageManagement",
+      "required": true,
+      "minimumVersion": "1.4.8.1"
+    },
+    {
+      "name": "Microsoft.PowerShell.PSResourceGet",
+      "required": true,
+      "minimumVersion": "1.0.0"
+    }
+  ],
+  "environmentVariables": [
+    {
+      "name": "Path",
+      "required": true
+    },
+    {
+      "name": "PSModulePath",
+      "required": true
+    },
+    {
+      "name": "TEMP",
+      "required": true
+    },
+    {
+      "name": "ProgramFiles",
+      "required": true
+    }
+  ]
+}

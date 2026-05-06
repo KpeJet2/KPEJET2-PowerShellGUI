@@ -1,0 +1,65 @@
+{
+  "templateName": "Office & Productivity",
+  "description": "Core office and productivity applications",
+  "version": "1.0",
+  "created": "2026-03-09",
+  "scope": "allUsers",
+  "applications": [
+    {
+      "name": "Microsoft 365 Apps",
+      "wingetId": "Microsoft.Office",
+      "publisher": "Microsoft",
+      "minVersion": "",
+      "category": "Office",
+      "required": true
+    },
+    {
+      "name": "Adobe Acrobat Reader DC",
+      "wingetId": "Adobe.Acrobat.Reader.64-bit",
+      "publisher": "Adobe",
+      "minVersion": "24.0",
+      "category": "Document",
+      "required": true
+    },
+    {
+      "name": "7-Zip",
+      "wingetId": "7zip.7zip",
+      "publisher": "Igor Pavlov",
+      "minVersion": "24.0",
+      "category": "Utility",
+      "required": false
+    },
+    {
+      "name": "Notepad++",
+      "wingetId": "Notepad++.Notepad++",
+      "publisher": "Notepad++ Team",
+      "minVersion": "8.6",
+      "category": "Editor",
+      "required": false
+    },
+    {
+      "name": "Google Chrome",
+      "wingetId": "Google.Chrome",
+      "publisher": "Google",
+      "minVersion": "",
+      "category": "Browser",
+      "required": false
+    },
+    {
+      "name": "Mozilla Firefox",
+      "wingetId": "Mozilla.Firefox",
+      "publisher": "Mozilla",
+      "minVersion": "",
+      "category": "Browser",
+      "required": false
+    },
+    {
+      "name": "VLC Media Player",
+      "wingetId": "VideoLAN.VLC",
+      "publisher": "VideoLAN",
+      "minVersion": "3.0",
+      "category": "Media",
+      "required": false
+    }
+  ]
+}

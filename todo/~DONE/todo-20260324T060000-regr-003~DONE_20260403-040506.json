@@ -1,0 +1,19 @@
+{
+  "todo_id": "regr-003",
+  "category": "regression",
+  "title": "System.Timers.Timer Has No .Tag Property",
+  "description": "System.Timers.Timer does not have a .Tag property. Only System.Windows.Forms.Timer has .Tag. Auto-lock start time must be tracked via module-scoped variable ($script:_AutoLockStartTime) not timer.Tag.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "HIGH",
+  "status": "DONE",
+  "created_at": "2026-03-24T06:00:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "modules/AssistedSASC.psm1"
+  ],
+  "notes": "Regression detection: grep for .Tag on System.Timers.Timer objects. Crashed vault unlock in prior session.",
+  "id": "regr-003",
+  "createdAt": "2026-03-24T06:00:00Z",
+  "completedAt": "2026-03-31T01:23:32.6042883+08:00",
+  "resolution": "VERIFIED - Uses $script:_AutoLockStartTime variable, no .Tag references"
+}

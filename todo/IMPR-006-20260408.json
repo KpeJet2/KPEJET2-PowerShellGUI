@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-006-20260408",
+  "title": "Cron Dead-Letter Queue",
+  "description": "Failed cron jobs (3x fail) move to todo/dead-letter/. Add retry logic and review UI panel.",
+  "status": "PENDING_APPROVAL",
+  "priority": "HIGH",
+  "effort": "5-7h",
+  "affectedFiles": "scripts/Invoke-CronProcessor.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

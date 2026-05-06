@@ -1,0 +1,38 @@
+{
+  "sinId": "SIN-027-MissingTypeProperty",
+  "title": "Get-PipelineItems returns items without 'type' property",
+  "description": "Pipeline items stored in JSON lists (featureRequests, bugs, items2ADD, bugs2FIX, todos) do not carry a 'type' field. Get-PipelineItems collected them without injecting type, causing downstream consumers like Get-CentralMasterToDo and Export-CentralMasterToDo to crash with 'The property type cannot be found on this object'.",
+  "rootCause": "Items are segregated by list name in the registry JSON but the list-to-type mapping was not applied during collection.",
+  "resolution": "Added listTypeMap hashtable in Get-PipelineItems to inject type property via Add-Member based on which list each item came from.",
+  "affectedFiles": [
+    "modules/CronAiAthon-Pipeline.psm1"
+  ],
+  "affectedFunctions": [
+    "Get-PipelineItems",
+    "Get-CentralMasterToDo",
+    "Export-CentralMasterToDo"
+  ],
+  "severity": "HIGH",
+  "category": "runtime-crash",
+  "vector": "missing-property",
+  "detected": "2026-03-28T13:55:02.7360985Z",
+  "resolved": "2026-03-28T13:55:02.7360985Z",
+  "status": "resolved",
+  "version": "2603.B0.v26",
+  "tags": [
+    "pipeline",
+    "type-injection",
+    "property-access",
+    "v26"
+  ],
+  "preventionRule": "When items are stored in typed lists, always inject the type property when reading items back into a flat collection.",
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

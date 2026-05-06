@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B1.V32.2 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>PwShGUI &#x2014; MCP Service Configuration</title>
+  <!-- External CSS: base → responsive → layout → accent -->
+  <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="../../styles/layout-mastertight-wleftmenu.css" />
+  <link rel="stylesheet" href="../../styles/accent-mcp-config.css" />
+  <style type="text/css">
+    /* ── Reset ─────────────────────────────────────────── */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;height:100vh;background:#1e1e1e;color:#ccc;display:flex;flex-direction:column;overflow:hidden}
+
+    /* ── Top Bar ───────────────────────────────────────── */
+    #topBar{background:#007acc;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    #topBar h1{font-size:16px;font-weight:600}
+    #versionBadge{background:rgba(255,255,255,0.18);padding:2px 10px;border-radius:10px;font-size:11px}
+
+    /* ── Tab Bar ───────────────────────────────────────── */
+    #tabBar{display:flex;background:#252526;border-bottom:2px solid #007acc;flex-shrink:0;overflow-x:auto}
+    .tab-btn{background:transparent;color:#aaa;border:none;padding:10px 20px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+    .tab-btn:hover{color:#fff;background:#2d2d30}
+    .tab-btn.active{color:#fff;border-bottom:2px solid #007acc;background:#1e1e1e}
+
+    /* ── Main Layout ──────────────────────────────────── */
+    #mainLayout{display:flex;flex:1;overflow:hidden}
+    #leftPane{width:260px;background:#252526;overflow-y:auto;border-right:1px solid #3e3e42;flex-shrink:0;padding-bottom:20px}
+    #rightPane{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .tab-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+    .tab-panel.active{display:flex}
+
+    /* ── Left Pane ────────────────────────────────────── */
+    .section-header{padding:10px 14px 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:#007acc;letter-spacing:.5px}
+    .link-list{list-style:none;padding:0 8px}
+    .link-list li{padding:0}
+    .link-list a{display:block;padding:5px 10px;color:#9cdcfe;text-decoration:none;font-size:12px;border-radius:3px}
+    .link-list a:hover{background:#2d2d30;color:#fff}
+
+    /* ── Scroll container ─────────────────────────────── */
+    .scroll-container{flex:1;overflow-y:auto;padding:16px 20px}
+
+    /* ── Tables ────────────────────────────────────────── */
+    table.data-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+    .data-table th{background:#2c3e50;color:#fff;padding:6px 10px;text-align:left;font-weight:600;position:sticky;top:0;z-index:2}
+    .data-table td{padding:5px 10px;border-bottom:1px solid #333;vertical-align:top}
+    .data-table tr:hover{background:#2a3a4a}
+
+    /* ── Badges ────────────────────────────────────────── */
+    .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff;text-transform:uppercase}
+    .badge-http{background:#3498db}
+    .badge-stdio{background:#8e44ad}
+    .badge-installed{background:#27ae60}
+    .badge-missing{background:#e74c3c}
+    .badge-reachable{background:#27ae60}
+    .badge-unreachable{background:#e74c3c}
+    .badge-docker{background:#0db7ed}
+    .badge-node{background:#68a063}
+    .badge-npx{background:#cb3837}
+    .badge-python{background:#3776ab}
+
+    /* ── Code blocks ──────────────────────────────────── */
+    pre.json-block{background:#1a1a1a;color:#9cdcfe;padding:12px;border-radius:6px;overflow-x:auto;font-size:12px;font-family:Consolas,'Courier New',monospace;border:1px solid #333;margin:8px 0}
+    code{font-family:Consolas,'Courier New',monospace;font-size:12px;background:#2d2d30;padding:1px 5px;border-radius:3px}
+
+    /* ── Info cards ────────────────────────────────────── */
+    .info-card{background:#252526;border:1px solid #3e3e42;border-radius:8px;padding:14px;margin-bottom:12px}
+    .info-card h3{font-size:14px;color:#4fc3f7;margin-bottom:6px}
+    .info-card p{font-size:12px;line-height:1.6;color:#bbb}
+
+    /* ── Footer ────────────────────────────────────────── */
+    #footer{background:#2c3e50;color:#aaa;text-align:center;padding:4px;font-size:11px;flex-shrink:0}
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════ TOP BAR ════════════════════════ -->
+<div id="topBar">
+  <h1>PwShGUI &#x2014; MCP Service Configuration</h1>
+  <span id="versionBadge">2604.B1.V32.2</span>
+</div>
+
+<!-- ════════════════════════ TAB BAR ═══════════════════════ -->
+<div id="tabBar">
+  <button type="button" class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+  <button type="button" class="tab-btn" onclick="switchTab('servers')">Server Reference</button>
+  <button type="button" class="tab-btn" onclick="switchTab('config')">Configuration Guide</button>
+  <button type="button" class="tab-btn" onclick="switchTab('operations')">Operations</button>
+  <button type="button" class="tab-btn" onclick="switchTab('services')">&#x25B6; Script Services</button>
+</div>
+
+<!-- ════════════════════════ MAIN LAYOUT ════════════════════ -->
+<div id="mainLayout">
+
+  <!-- ──── LEFT PANE ──── -->
+  <div id="leftPane">
+    <div class="section-header">MCP Config</div>
+    <ul class="link-list">
+      <li><a href="../../.vscode/mcp.json">mcp.json</a></li>
+    </ul>
+
+    <div class="section-header">Related Docs</div>
+    <ul class="link-list">
+      <li><a href="XHTML-FeatureRequests.xhtml">Feature Requests</a></li>
+      <li><a href="XHTML-code-analysis.xhtml">Code Analysis</a></li>
+      <li><a href="../../~README.md/PwShGUI-Help-Index.html">Help Index</a></li>
+      <li><a href="../../~README.md/NETWORK-TOOLS-GUIDE.md">Network Tools Guide</a></li>
+    </ul>
+
+    <div class="section-header">Server Types</div>
+    <div style="font-size:11px;line-height:1.7;padding:4px 14px">
+      <span class="badge badge-stdio">stdio</span> &#x2014; Local process (Docker, Node, Python)<br/>
+      <span class="badge badge-http">http</span> &#x2014; HTTP/SSE endpoint
+    </div>
+
+    <div class="section-header">Runtimes</div>
+    <div style="font-size:11px;line-height:1.7;padding:4px 14px">
+      <span class="badge badge-docker">Docker</span>
+      <span class="badge badge-node">Node</span>
+      <span class="badge badge-npx">npx</span>
+      <span class="badge badge-python">Python</span>
+    </div>
+
+    <div class="section-header">Tool Access</div>
+    <div style="font-size:11px;line-height:1.6;padding:4px 14px;color:#aaa">
+      Tools &#x2192; Script Services &#x2192; MCP Service Config<br/>
+      (or via <code>Start-LocalWebEngineService.ps1</code>)
+    </div>
+  </div>
+
+  <!-- ──── RIGHT PANE ──── -->
+  <div id="rightPane">
+
+    <!-- ════════════ TAB: OVERVIEW ════════════ -->
+    <div id="panelOverview" class="tab-panel active">
+      <div class="scroll-container">
+        <h2 style="color:#4fc3f7;margin-bottom:12px">MCP Server Overview</h2>
+        <p style="margin-bottom:16px;font-size:13px;color:#bbb">
+          The MCP Service Config tool provides a centralized GUI for managing all Model Context Protocol servers
+          defined in <code>.vscode/mcp.json</code>. Access it from <strong>Tools &#x2192; MCP Service Config</strong> in the main GUI.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Server</th>
+              <th>Type</th>
+              <th>Runtime</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>tplink-omada-mcp</strong></td>
+              <td><span class="badge badge-stdio">stdio</span></td>
+              <td><span class="badge badge-docker">Docker</span></td>
+              <td>TP-Link Omada SDN controller management (APs, switches, gateways, clients)</td>
+            </tr>
+            <tr>
+              <td><strong>fing-mcp</strong></td>
+              <td><span class="badge badge-stdio">stdio</span></td>
+              <td><span class="badge badge-node">Node</span></td>
+              <td>Fing network scanner local API (device discovery, bandwidth monitoring)</td>
+            </tr>
+            <tr>
+              <td><strong>mikrotik-mcp</strong></td>
+              <td><span class="badge badge-stdio">stdio</span></td>
+              <td><span class="badge badge-docker">Docker</span></td>
+              <td>MikroTik RouterOS SSH management (firewall, routing, interfaces)</td>
+            </tr>
+            <tr>
+              <td><strong>lifx-api-mcp</strong></td>
+              <td><span class="badge badge-stdio">stdio</span></td>
+              <td><span class="badge badge-npx">npx</span></td>
+              <td>LIFX smart lighting control (scenes, effects, scheduling)</td>
+            </tr>
+            <tr>
+              <td><strong>flipper-mcp</strong></td>
+              <td><span class="badge badge-http">http</span></td>
+              <td>&#x2014;</td>
+              <td>Flipper Zero RF toolkit (Sub-GHz, NFC, RFID, IR, GPIO)</td>
+            </tr>
+            <tr>
+              <td><strong>tapo-mcp</strong></td>
+              <td><span class="badge badge-http">http</span></td>
+              <td>&#x2014;</td>
+              <td>TP-Link Tapo smart home devices (plugs, cameras, sensors)</td>
+            </tr>
+            <tr>
+              <td><strong>tuya-mcp</strong></td>
+              <td><span class="badge badge-stdio">stdio</span></td>
+              <td><span class="badge badge-python">Python</span></td>
+              <td>Tuya IoT platform integration (multi-device cloud control)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: SERVER REFERENCE ════════════ -->
+    <div id="panelServers" class="tab-panel">
+      <div class="scroll-container">
+        <h2 style="color:#4fc3f7;margin-bottom:12px">Server Reference</h2>
+
+        <div class="info-card">
+          <h3>tplink-omada-mcp <span class="badge badge-docker">Docker</span></h3>
+          <p>Connects to the TP-Link Omada SDN controller via OAuth. Requires Omada controller URL, client ID, client secret, and omadacId.</p>
+          <pre class="json-block">{
+  "type": "stdio",
+  "command": "docker",
+  "args": ["run", "--rm", "-i",
+    "-e", "OMADA_BASE_URL=...",
+    "-e", "OMADA_CLIENT_ID=...",
+    "-e", "OMADA_CLIENT_SECRET=...",
+    "-e", "OMADA_OMADAC_ID=...",
+    "-e", "OMADA_STRICT_SSL=false",
+    "jmtvms/tplink-omada-mcp:latest"]
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>fing-mcp <span class="badge badge-node">Node</span></h3>
+          <p>Local Fing agent API integration. Requires the Fing API key and base URL (default: http://localhost:49090/1).</p>
+          <pre class="json-block">{
+  "type": "stdio",
+  "command": "node",
+  "args": ["${workspaceFolder}/../fing-mcp/dist/index.js"],
+  "env": { "FING_API_KEY": "...", "FING_BASE_URL": "..." }
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>mikrotik-mcp <span class="badge badge-docker">Docker</span></h3>
+          <p>SSH-based router management for MikroTik devices. Requires host IP, username, and password.</p>
+          <pre class="json-block">{
+  "type": "stdio",
+  "command": "docker",
+  "args": ["run", "--rm", "-i",
+    "-e", "MIKROTIK_HOST=...",
+    "-e", "MIKROTIK_USERNAME=...",
+    "-e", "MIKROTIK_PASSWORD=...",
+    "-e", "MIKROTIK_PORT=22",
+    "mikrotik-mcp"]
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>lifx-api-mcp <span class="badge badge-npx">npx</span></h3>
+          <p>Cloud-based LIFX smart lighting. Requires a personal access token from cloud.lifx.com.</p>
+          <pre class="json-block">{
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "lifx-api-mcp-server@latest"],
+  "env": { "CONFIG_API_TOKEN": "..." }
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>flipper-mcp <span class="badge badge-http">http</span></h3>
+          <p>Flipper Zero RF multi-tool over HTTP. The device must be running the MCP firmware module and reachable on the local network.</p>
+          <pre class="json-block">{
+  "type": "http",
+  "url": "http://flipper-mcp.local:8080/mcp"
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>tapo-mcp <span class="badge badge-http">http</span></h3>
+          <p>TP-Link Tapo smart home bridge. The local tapo-mcp service must be running on port 3000.</p>
+          <pre class="json-block">{
+  "type": "http",
+  "url": "http://127.0.0.1:3000/mcp",
+  "headers": { "Content-Type": "application/json" }
+}</pre>
+        </div>
+
+        <div class="info-card">
+          <h3>tuya-mcp <span class="badge badge-python">Python</span></h3>
+          <p>Tuya IoT cloud integration via the official MCP SDK. Requires Access ID, Access Secret, and endpoint from the Tuya developer platform.</p>
+          <pre class="json-block">{
+  "type": "stdio",
+  "command": "python",
+  "args": ["-m", "examples", "all",
+    "--endpoint", "...",
+    "--access-id", "...",
+    "--access-secret", "..."],
+  "cwd": "${workspaceFolder}/../tuya-mcp-sdk/mcp-python"
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: CONFIGURATION GUIDE ════════════ -->
+    <div id="panelConfig" class="tab-panel">
+      <div class="scroll-container">
+        <h2 style="color:#4fc3f7;margin-bottom:12px">Configuration Guide</h2>
+
+        <div class="info-card">
+          <h3>File Location</h3>
+          <p>All MCP server definitions live in <code>.vscode/mcp.json</code> at the workspace root.
+             This file contains two top-level sections:</p>
+          <ul style="margin:8px 0 0 20px;font-size:12px;line-height:1.8">
+            <li><strong>inputs</strong> &#x2014; Credential prompts (API keys, passwords, URLs) used via <code>${input:id}</code> references</li>
+            <li><strong>servers</strong> &#x2014; Named server definitions with type, command, args, env, and cwd</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h3>Adding a New Server</h3>
+          <p>Use the <strong>+ Add Server</strong> tab in the MCP Service Config tool, or manually edit mcp.json:</p>
+          <ol style="margin:8px 0 0 20px;font-size:12px;line-height:1.8">
+            <li>Open <code>.vscode/mcp.json</code></li>
+            <li>Add input prompts under <code>"inputs"</code> for any credentials</li>
+            <li>Add the server definition under <code>"servers"</code></li>
+            <li>Reference inputs with <code>${input:your-input-id}</code></li>
+            <li>Use <strong>Backup Config</strong> before making changes</li>
+          </ol>
+        </div>
+
+        <div class="info-card">
+          <h3>Server Types</h3>
+          <p><strong>stdio</strong> &#x2014; VS Code spawns the process and communicates over stdin/stdout.
+             Define <code>command</code>, <code>args</code>, and optionally <code>env</code> and <code>cwd</code>.</p>
+          <p style="margin-top:6px"><strong>http</strong> &#x2014; VS Code connects to an already-running HTTP endpoint.
+             Define <code>url</code> and optionally <code>headers</code>.</p>
+        </div>
+
+        <div class="info-card">
+          <h3>Credential Security</h3>
+          <p>Sensitive inputs use <code>"password": true</code> so VS Code masks them in the prompt.
+             Credentials are never stored in mcp.json &#x2014; they are prompted at runtime via the <code>inputs</code> mechanism.
+             For vault-backed secrets, see the <a href="../../~README.md/SECRETS-MANAGEMENT-GUIDE.md" style="color:#4fc3f7">Secrets Management Guide</a>.</p>
+        </div>
+
+        <div class="info-card">
+          <h3>Backups</h3>
+          <p>The MCP Service Config tool stores timestamped backups in <code>config/mcp-backups/</code>.
+             A backup is automatically created when adding a new server through the GUI.
+             Use <strong>Backup Config</strong> on the main tab before any manual edits.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: OPERATIONS ════════════ -->
+    <div id="panelOperations" class="tab-panel">
+      <div class="scroll-container">
+        <h2 style="color:#4fc3f7;margin-bottom:12px">Operations Guide</h2>
+
+        <div class="info-card">
+          <h3>Testing Servers</h3>
+          <p><strong>stdio servers:</strong> The tool checks whether the command (docker, node, npx, python) is available in PATH.
+             This does not start the server &#x2014; it verifies the runtime is installed.</p>
+          <p style="margin-top:6px"><strong>http servers:</strong> The tool sends an HTTP HEAD request to the configured URL
+             with a 3-second timeout. A successful response means the server is reachable.</p>
+        </div>
+
+        <div class="info-card">
+          <h3>Status Indicators</h3>
+          <table class="data-table" style="margin-top:8px">
+            <thead><tr><th>Status</th><th>Colour</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-reachable">Reachable</span></td><td>Green</td><td>HTTP endpoint responded successfully</td></tr>
+              <tr><td><span class="badge badge-installed">Installed</span></td><td>Green</td><td>stdio command found in PATH</td></tr>
+              <tr><td><span class="badge badge-missing">Missing</span></td><td>Red</td><td>stdio command not found</td></tr>
+              <tr><td><span class="badge badge-unreachable">Unreachable</span></td><td>Red</td><td>HTTP endpoint did not respond</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info-card">
+          <h3>Editing Server Config</h3>
+          <p>Each server has its own tab with a JSON editor. Edit the definition, then click <strong>Save</strong> to write changes
+             to mcp.json. Click <strong>Reload</strong> to discard changes and reload from disk.</p>
+        </div>
+
+        <div class="info-card">
+          <h3>Docker-Based Servers</h3>
+          <p>For servers using Docker (tplink-omada-mcp, mikrotik-mcp), ensure Docker Desktop is running.
+             The containers are configured with <code>--rm</code> so they auto-clean after stopping.
+             Pull the latest image with <code>docker pull &lt;image&gt;</code> before first use.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: SCRIPT SERVICES ════════════ -->
+    <div id="panelServices" class="tab-panel">
+      <div class="scroll-container">
+        <h2 style="color:#4fc3f7;margin-bottom:12px">Script Services</h2>
+        <p style="margin-bottom:10px;font-size:13px;color:#bbb">
+          Start, stop and monitor background PowerShell script services.
+          The Local Web Engine provides the HTTP API and WebSocket endpoint used
+          by all XHTML tools in this workspace.
+        </p>
+
+        <!-- Engine status card -->
+        <div class="info-card">
+          <h3>&#x1F4E1; Local Web Engine (port 8042)</h3>
+          <p id="engStatusText" style="font-size:12px;color:#bbb;margin-bottom:8px">Checking engine status&#x2026;</p>
+          <p style="font-size:11px;margin-bottom:8px">
+            <strong>Script:</strong> <code>scripts/Start-LocalWebEngine.ps1</code><br/>
+            <strong>Launcher:</strong> <code>scripts/Start-LocalWebEngineService.ps1</code><br/>
+            <strong>PID file:</strong> <code>logs/engine.pid</code>
+            &#x2014; <a href="http://127.0.0.1:8042/api/engine/log?name=stdout" style="color:#9cdcfe" target="_blank">engine-stdout.log</a>
+            &#x2014; <a href="http://127.0.0.1:8042/api/engine/log?name=stderr" style="color:#e06c75" target="_blank">engine-stderr.log</a>
+            &#x2014; <a href="http://127.0.0.1:8042/api/engine/log?name=service" style="color:#e5c07b" target="_blank">engine-service.log</a>
+          </p>
+          <p>
+            <button type="button" class="tab-btn" style="margin-right:6px;padding:4px 14px;border-radius:4px;border:1px solid #007acc;background:#007acc;color:#fff"
+                onclick="engAction('start')">&#x25B6; Start Engine</button>
+            <button type="button" class="tab-btn" style="padding:4px 14px;border-radius:4px;border:1px solid #c0392b;background:#c0392b;color:#fff"
+                onclick="engAction('stop')">&#x25A0; Stop Engine</button>
+            <button type="button" class="tab-btn" style="margin-left:6px;padding:4px 14px;border-radius:4px;border:1px solid #444;background:#333;color:#ccc"
+                onclick="engAction('status')">&#x21BA; Refresh Status</button>
+          </p>
+        </div>
+
+        <!-- Quick links after engine is running -->
+        <div class="info-card">
+          <h3>&#x1F517; Quick Links (engine must be running)</h3>
+          <ul style="margin:8px 0 0 18px;font-size:12px;line-height:2.0">
+            <li><a href="http://127.0.0.1:8042/" style="color:#9cdcfe">Workspace Hub</a> &#x2014; Central navigation hub</li>
+            <li><a href="http://127.0.0.1:8042/api/csrf-token" style="color:#9cdcfe">CSRF Token</a> &#x2014; Live API check</li>
+            <li><a href="http://127.0.0.1:8042/api/engine/status" style="color:#9cdcfe">Engine Status JSON</a></li>
+            <li><a href="http://127.0.0.1:8042/api/scan/progress" style="color:#9cdcfe">Scan Progress</a></li>
+            <li><a href="http://127.0.0.1:8042/api/engine/log?name=stdout" style="color:#9cdcfe">Engine Log (stdout)</a></li>
+            <li><a href="http://127.0.0.1:8042/api/engine/log?name=stderr" style="color:#e06c75">Engine Errors (stderr)</a></li>
+            <li><a href="http://127.0.0.1:8042/api/engine/log?name=service" style="color:#e5c07b">Service Log</a></li>
+          </ul>
+        </div>
+
+        <!-- Available services list -->
+        <div class="info-card">
+          <h3>&#x1F4C4; Available Services</h3>
+          <table class="data-table" style="margin-top:8px">
+            <thead>
+              <tr><th>Service</th><th>Script</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Local Web Engine</strong><br/><span style="font-size:11px;color:#888">HTTP API + WebSocket + Static file server</span></td>
+                <td><code>Start-LocalWebEngineService.ps1</code></td>
+                <td><button type="button" class="tab-btn" style="padding:2px 10px;border-radius:3px;border:1px solid #007acc;background:#007acc;color:#fff;font-size:11px" onclick="engAction('start')">Start</button></td>
+              </tr>
+              <tr>
+                <td><strong>Dependency Scan Manager</strong><br/><span style="font-size:11px;color:#888">Full and incremental workspace dependency scans</span></td>
+                <td><code>Invoke-DependencyScanManager.ps1</code></td>
+                <td><span class="badge" style="background:#555;font-size:10px">Via API</span></td>
+              </tr>
+              <tr>
+                <td><strong>SIN Pattern Scanner</strong><br/><span style="font-size:11px;color:#888">Code quality and anti-pattern detection</span></td>
+                <td><code>Invoke-SINPatternScanner.ps1</code></td>
+                <td><span class="badge" style="background:#555;font-size:10px">CLI only</span></td>
+              </tr>
+              <tr>
+                <td><strong>Security Integrity Tests</strong><br/><span style="font-size:11px;color:#888">Vault, secrets and credential audit</span></td>
+                <td><code>Invoke-SecurityIntegrityTests.ps1</code></td>
+                <td><span class="badge" style="background:#555;font-size:10px">CLI only</span></td>
+              </tr>
+              <tr>
+                <td><strong>Orphaned File Audit</strong><br/><span style="font-size:11px;color:#888">Detect files missing from scan manifest; propose ToDos</span></td>
+                <td><code>Invoke-OrphanedFileAudit.ps1</code></td>
+                <td><span class="badge" style="background:#555;font-size:10px">CLI only</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Engine log viewer (tabbed: stdout / stderr / service) -->
+        <div class="info-card">
+          <h3>&#x1F4CB; Engine Log Viewer</h3>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <button type="button" id="logTabStdout" class="tab-btn" style="padding:2px 10px;border-radius:3px;border:1px solid #007acc;background:#007acc;color:#fff;font-size:11px"
+                onclick="loadEngLog('stdout')">stdout</button>
+            <button type="button" id="logTabStderr" class="tab-btn" style="padding:2px 10px;border-radius:3px;border:1px solid #444;background:#333;color:#ccc;font-size:11px"
+                onclick="loadEngLog('stderr')">stderr</button>
+            <button type="button" id="logTabService" class="tab-btn" style="padding:2px 10px;border-radius:3px;border:1px solid #444;background:#333;color:#ccc;font-size:11px"
+                onclick="loadEngLog('service')">service</button>
+            <span id="logFileLabel" style="font-size:11px;color:#666;line-height:24px;margin-left:6px">engine-stdout.log</span>
+          </div>
+          <pre id="engLogPreview" class="json-block" style="min-height:60px;max-height:200px;overflow-y:auto;font-size:11px">&#x2014; log not loaded &#x2014;</pre>
+          <button type="button" class="tab-btn" style="margin-top:6px;padding:3px 12px;border-radius:3px;border:1px solid #444;background:#333;color:#ccc;font-size:11px"
+              onclick="loadEngLog(_curLogTab)">&#x1F504; Refresh</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ FOOTER ═════════════════════════ -->
+<div id="footer">PwShGUI MCP Service Configuration &#x2014; v2604.B1.V32.2</div>
+
+<!-- ════════════════════════ SCRIPT ═════════════════════════ -->
+<script type="text/javascript">
+//<![CDATA[
+var _csrfMcp = '';
+var ENG = 'http://127.0.0.1:8042';
+
+function switchTab(id) {
+  var panels = document.querySelectorAll('.tab-panel');
+  var btns   = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < panels.length; i++) panels[i].className = 'tab-panel';
+  for (var i = 0; i < btns.length; i++)   btns[i].className = 'tab-btn';
+  var map = { 'overview':'panelOverview', 'servers':'panelServers', 'config':'panelConfig', 'operations':'panelOperations', 'services':'panelServices' };
+  var pid = map[id];
+  if (pid) document.getElementById(pid).className = 'tab-panel active';
+  var clicked = document.querySelector('.tab-btn[onclick*="' + id + '"]');
+  if (clicked) clicked.className = 'tab-btn active';
+  if (id === 'services') { pollEngStatus(); loadEngLog(_curLogTab || 'stdout'); }
+}
+
+function setEngStatus(msg, colour) {
+  var el = document.getElementById('engStatusText');
+  if (el) { el.textContent = msg; el.style.color = colour || '#bbb'; }
+}
+
+function pollEngStatus() {
+  setEngStatus('Checking engine status\u2026', '#9cdcfe');
+  fetch(ENG + '/api/engine/status').then(function(r){ return r.json(); })
+    .then(function(d) {
+      var up = d.uptime || 0;
+      var upTxt = up < 60 ? up + 's' : Math.floor(up/60) + 'm';
+      setEngStatus('\u2705 Engine running \u2014 PID ' + d.pid + ', uptime ' + upTxt + ', port ' + d.port, '#7ec98f');
+    })
+    .catch(function(){ setEngStatus('\u274C Engine offline \u2014 use Start Engine to launch it', '#e06c75'); });
+}
+
+function getCsrf(cb) {
+  if (_csrfMcp) { cb(_csrfMcp); return; }
+  fetch(ENG + '/api/csrf-token').then(function(r){ return r.json(); })
+    .then(function(d){ _csrfMcp = d.csrfToken || d.token || ''; cb(_csrfMcp); })
+    .catch(function(){ cb(''); });
+}
+
+function engAction(action) {
+  if (action === 'status') { pollEngStatus(); return; }
+  if (action === 'start') {
+    setEngStatus('Requesting start\u2026 (if engine is not running, use the terminal launcher)', '#9cdcfe');
+    pollEngStatus();
+    return;
+  }
+  if (action === 'stop') {
+    getCsrf(function(tok) {
+      if (!tok) { setEngStatus('\u274C Cannot stop: engine is not responding', '#e06c75'); return; }
+      fetch(ENG + '/api/engine/stop', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
+        body: '{}'
+      }).then(function(){ setEngStatus('\u23F9 Stop requested \u2014 engine will shut down shortly', '#e5c07b'); })
+        .catch(function(){ setEngStatus('\u274C Stop request failed', '#e06c75'); });
+    });
+  }
+}
+
+var _curLogTab = 'stdout';
+var _logFileMap = { stdout: 'engine-stdout.log', stderr: 'engine-stderr.log', service: 'engine-service.log' };
+
+function loadEngLog(tabName) {
+  if (tabName) { _curLogTab = tabName; }
+  var pre   = document.getElementById('engLogPreview');
+  var label = document.getElementById('logFileLabel');
+  if (!pre) { return; }
+  // Update tab button active state
+  var tabs = ['stdout', 'stderr', 'service'];
+  for (var i = 0; i < tabs.length; i++) {
+    var tName = tabs[i];
+    var tBtn  = document.getElementById('logTab' + tName.charAt(0).toUpperCase() + tName.slice(1));
+    if (tBtn) {
+      tBtn.style.background  = (tName === _curLogTab) ? '#007acc' : '#333';
+      tBtn.style.borderColor = (tName === _curLogTab) ? '#007acc' : '#444';
+    }
+  }
+  if (label) { label.textContent = _logFileMap[_curLogTab] || _curLogTab; }
+  pre.textContent = 'Loading\u2026';
+  fetch(ENG + '/api/engine/log?name=' + _curLogTab)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var lines = d.lines || [];
+      pre.textContent = lines.length > 0 ? lines.join('\n') : '(log file is empty)';
+      pre.scrollTop = pre.scrollHeight;
+    })
+    .catch(function() { pre.textContent = 'Engine not responding \u2014 start engine to view logs.'; });
+}
+
+// Auto-poll when the services tab is visible on load
+document.addEventListener('DOMContentLoaded', function() {
+  // Only poll if services tab is active on initial load
+  var svcPanel = document.getElementById('panelServices');
+  if (svcPanel && svcPanel.className.indexOf('active') >= 0) {
+    pollEngStatus();
+    loadEngLog('stdout');
+  }
+});
+//]]>
+</script>
+
+</body>
+</html>
+

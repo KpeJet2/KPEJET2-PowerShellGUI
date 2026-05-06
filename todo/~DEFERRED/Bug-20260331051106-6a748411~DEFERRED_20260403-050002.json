@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1"
+  ],
+  "executionAgent": "",
+  "type": "Bug",
+  "sinId": "SIN-20260328082050-d343681b",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "Matched existing sin: 1 functions with no try/catch blocks",
+  "executionMethod": "",
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "tags": [],
+  "created": "2026-03-30T21:11:06.223371Z",
+  "description": "Script Build-DirectoryTree.ps1 has 1 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:11:06.2234183Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "",
+  "title": "1 functions with no try/catch blocks",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bug-20260331051106-6a748411"
+}

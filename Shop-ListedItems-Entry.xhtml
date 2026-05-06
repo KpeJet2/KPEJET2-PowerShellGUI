@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B0.v1 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop Listed Items Entry</title>
+  <!-- External CSS: base → responsive → layout → accent -->
+  <link rel="stylesheet" href="styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="styles/layout-tabs-white-wleftmenu.css" />
+  <link rel="stylesheet" href="styles/accent-shop-items.css" />
+  <style type="text/css">
+    body { font-family: Segoe UI, Tahoma, sans-serif; margin: 16px; background: #f3f6fb; color: #1a2233; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card { background: #ffffff; border: 1px solid #c8d3e1; border-radius: 8px; padding: 12px; }
+    h1 { margin: 0 0 12px 0; font-size: 20px; }
+    h2 { margin: 0 0 8px 0; font-size: 14px; }
+    label { display: block; margin: 8px 0 4px; font-weight: 600; }
+    input, textarea, select { width: 100%; box-sizing: border-box; border: 1px solid #99abc5; border-radius: 6px; padding: 8px; }
+    textarea { min-height: 84px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+    button { border: 0; border-radius: 6px; padding: 8px 12px; background: #0f5da8; color: #fff; cursor: pointer; }
+    button.alt { background: #5a6d85; }
+    iframe { width: 100%; height: 280px; border: 1px solid #99abc5; border-radius: 6px; background: #fff; }
+    .full { grid-column: 1 / span 2; }
+    .note { font-size: 12px; color: #5f6f84; margin-top: 6px; }
+    .status { font-size: 12px; color: #1f4e7e; margin-top: 8px; }
+    .mt12 { margin-top: 12px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Shop-ListedItemsBot Data Entry</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Item Row Input</h2>
+      <div class="row">
+        <div>
+          <label for="country">Country</label>
+          <input id="country" type="text" value="Australia" />
+        </div>
+        <div>
+          <label for="rowId">Row ID</label>
+          <input id="rowId" type="text" value="1" />
+        </div>
+      </div>
+      <label for="title">Title</label>
+      <input id="title" type="text" value="Samsung 990 PRO 2TB NVMe SSD" />
+      <div class="row">
+        <div>
+          <label for="brand">Brand</label>
+          <input id="brand" type="text" value="Samsung" />
+        </div>
+        <div>
+          <label for="model">Model / SKU</label>
+          <input id="model" type="text" value="MZ-V9P2T0BW" />
+        </div>
+      </div>
+      <label for="specs">Specs</label>
+      <textarea id="specs">PCIe 4.0, M.2 2280</textarea>
+
+      <h2 class="mt12">Store Selection (3 Required for Matchup)</h2>
+      <div class="row">
+        <div>
+          <label for="storePick1">Store 1</label>
+          <select id="storePick1"><option value="">Select store...</option></select>
+        </div>
+        <div>
+          <label for="storePick2">Store 2</label>
+          <select id="storePick2"><option value="">Select store...</option></select>
+        </div>
+      </div>
+      <div>
+        <label for="storePick3">Store 3</label>
+        <select id="storePick3"><option value="">Select store...</option></select>
+      </div>
+
+      <h2 class="mt12">Optional Store Input (Create New Entry)</h2>
+      <div class="row">
+        <div>
+          <label for="siteName">Site Name</label>
+          <input id="siteName" type="text" placeholder="e.g. Example Store" />
+        </div>
+        <div>
+          <label for="baseUrl">Base URL</label>
+          <input id="baseUrl" type="text" placeholder="https://example.com" />
+        </div>
+      </div>
+      <label for="searchPattern">Search Pattern</label>
+      <input id="searchPattern" type="text" placeholder="https://example.com/search?q={query}" />
+
+      <div class="actions">
+        <button type="button" id="btnAdd">Add Submission</button>
+        <button type="button" id="btnRunSelected">Run Matchup for Selected</button>
+        <button type="button" class="alt" id="btnSuggestStores">Suggest Store Inputs</button>
+        <button type="button" class="alt" id="btnAddStore">Add Store Entry</button>
+        <button type="button" class="alt" id="btnCopy">Copy Payload JSON</button>
+        <button type="button" class="alt" id="btnSaveHistory">Export History JSON</button>
+        <button type="button" class="alt" id="btnLoadHistory">Load History JSON</button>
+        <button type="button" class="alt" id="btnReset">Reset</button>
+      </div>
+      <input id="historyFileInput" class="hidden" type="file" accept="application/json" />
+      <div class="note">History and payload preview update in the iframes on each submission.</div>
+      <div class="note">Tip: Save exported history in <code>c:\PowerShellGUI\~REPORTS\shop-listeditems-history.json</code>.</div>
+      <div class="status" id="statusLine">Ready.</div>
+    </div>
+
+    <div class="card">
+      <h2>Input History (iframe)</h2>
+      <iframe id="historyFrame" src="about:blank" title="Input history"></iframe>
+    </div>
+
+    <div class="card full">
+      <h2>Dynamic Results Payload (iframe)</h2>
+      <iframe id="resultsFrame" src="about:blank" title="Dynamic results"></iframe>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function () {
+    var STORAGE_KEY = "shopListedItemsHistoryV1";
+    var STORE_KEY = "shopListedItemsStoreCatalogV1";
+    var submissions = [];
+    var storeCatalog = [];
+
+    function esc(text) {
+      return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;");
+    }
+
+    function value(id) {
+      var el = document.getElementById(id);
+      return el ? el.value : "";
+    }
+
+    function writeFrame(frameId, html) {
+      var frame = document.getElementById(frameId);
+      if (!frame || !frame.contentWindow) { return; }
+      var doc = frame.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
+    }
+
+    function setStatus(message) {
+      var el = document.getElementById("statusLine");
+      if (el) {
+        el.textContent = message;
+      }
+    }
+
+    function persistLocalHistory() {
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+          window.localStorage.setItem(STORE_KEY, JSON.stringify(storeCatalog));
+        }
+      } catch (e) {
+        setStatus("Local autosave unavailable: " + e.message);
+      }
+    }
+
+    function loadLocalHistory() {
+      try {
+        if (!window.localStorage) { return false; }
+        var rawSubmissions = window.localStorage.getItem(STORAGE_KEY);
+        var rawStores = window.localStorage.getItem(STORE_KEY);
+        var parsedSubmissions = rawSubmissions ? JSON.parse(rawSubmissions) : [];
+        var parsedStores = rawStores ? JSON.parse(rawStores) : [];
+        submissions = parsedSubmissions instanceof Array ? parsedSubmissions : [];
+        storeCatalog = parsedStores instanceof Array ? parsedStores : [];
+        return true;
+      } catch (e) {
+        setStatus("Failed to restore local history: " + e.message);
+        return false;
+      }
+    }
+
+    function makeStoreId(siteName, baseUrl) {
+      return (siteName + "|" + baseUrl).toLowerCase().replace(/\s+/g, "-");
+    }
+
+    function getStoreById(storeId) {
+      var i;
+      for (i = 0; i < storeCatalog.length; i += 1) {
+        if (storeCatalog[i].id === storeId) { return storeCatalog[i]; }
+      }
+      return null;
+    }
+
+    function ensureDefaultStores() {
+      if (storeCatalog.length > 0) { return; }
+      var defaults = [
+        { siteName: "Amazon Australia", baseUrl: "https://www.amazon.com.au", searchPattern: "https://www.amazon.com.au/s?k={query}" },
+        { siteName: "JB Hi-Fi", baseUrl: "https://www.jbhifi.com.au", searchPattern: "https://www.jbhifi.com.au/search?query={query}" },
+        { siteName: "Umart", baseUrl: "https://www.umart.com.au", searchPattern: "https://www.umart.com.au/search.php?q={query}" }
+      ];
+      var i;
+      for (i = 0; i < defaults.length; i += 1) {
+        defaults[i].id = makeStoreId(defaults[i].siteName, defaults[i].baseUrl);
+      }
+      storeCatalog = defaults;
+    }
+
+    function renderStoreOptions() {
+      var selectIds = ["storePick1", "storePick2", "storePick3"];
+      var i;
+      for (i = 0; i < selectIds.length; i += 1) {
+        var sel = document.getElementById(selectIds[i]);
+        if (!sel) { continue; }
+        var current = sel.value;
+        var html = ["<option value=''>Select store...</option>"];
+        var j;
+        for (j = 0; j < storeCatalog.length; j += 1) {
+          var st = storeCatalog[j];
+          html.push("<option value='" + esc(st.id) + "'>" + esc(st.siteName) + "</option>");
+        }
+        sel.innerHTML = html.join("");
+        if (current) {
+          sel.value = current;
+        }
+      }
+    }
+
+    function renderHistory() {
+      var rows = [];
+      var i;
+      for (i = 0; i < submissions.length; i += 1) {
+        var s = submissions[i];
+        rows.push("<tr><td><input type='checkbox' class='histChk' data-index='" + esc(String(i)) + "' /></td><td>" + esc(String(i + 1)) + "</td><td>" + esc(s.item.rowId) + "</td><td>" + esc(s.item.title) + "</td><td>" + esc(s.country) + "</td></tr>");
+      }
+
+      var html = "<!DOCTYPE html><html><head><meta charset='utf-8' /><style>body{font-family:Segoe UI,Tahoma,sans-serif;margin:8px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #c8d3e1;padding:6px;text-align:left;}th{background:#eef4ff;}</style></head><body><table><thead><tr><th><input type='checkbox' id='selAll' /></th><th>#</th><th>Row ID</th><th>Title</th><th>Country</th></tr></thead><tbody>" + rows.join("") + "</tbody></table></body></html>";
+      writeFrame("historyFrame", html);
+      var frame = document.getElementById("historyFrame");
+      var doc = frame && frame.contentWindow ? frame.contentWindow.document : null;
+      var selAll = doc ? doc.getElementById("selAll") : null;
+      if (selAll) {
+        selAll.addEventListener("change", function () {
+          var checks = doc.querySelectorAll(".histChk");
+          var k;
+          for (k = 0; k < checks.length; k += 1) {
+            checks[k].checked = selAll.checked;
+          }
+        });
+      }
+    }
+
+    function renderResults(payload) {
+      var pretty = JSON.stringify(payload, null, 2);
+      var html = "<!DOCTYPE html><html><head><meta charset='utf-8' /><style>body{font-family:Consolas,monospace;margin:8px;background:#0f1728;color:#dbe7ff;}pre{white-space:pre-wrap;word-wrap:break-word;}</style></head><body><pre>" + esc(pretty) + "</pre></body></html>";
+      writeFrame("resultsFrame", html);
+    }
+
+    function buildPayload() {
+      var country = value("country");
+      var item = {
+        rowId: value("rowId"),
+        title: value("title"),
+        brand: value("brand"),
+        model: value("model"),
+        specs: value("specs")
+      };
+      var siteName = value("siteName");
+      var baseUrl = value("baseUrl");
+      var searchPattern = value("searchPattern");
+
+      return {
+        country: country,
+        items: [item],
+        stores: [],
+        optionalStoreInput: {
+          siteName: siteName,
+          baseUrl: baseUrl,
+          searchPattern: searchPattern
+        }
+      };
+    }
+
+    function getSelectedSubmissionIndices() {
+      var frame = document.getElementById("historyFrame");
+      var out = [];
+      if (!frame || !frame.contentWindow || !frame.contentWindow.document) { return out; }
+      var checks = frame.contentWindow.document.querySelectorAll(".histChk");
+      var i;
+      for (i = 0; i < checks.length; i += 1) {
+        if (checks[i].checked) {
+          out.push(parseInt(checks[i].getAttribute("data-index"), 10));
+        }
+      }
+      return out;
+    }
+
+    function getSelectedStores() {
+      var pickedIds = [value("storePick1"), value("storePick2"), value("storePick3")];
+      var unique = {};
+      var selected = [];
+      var i;
+      for (i = 0; i < pickedIds.length; i += 1) {
+        var id = pickedIds[i];
+        if (!id || unique[id]) { continue; }
+        unique[id] = true;
+        var store = getStoreById(id);
+        if (store) { selected.push(store); }
+      }
+      return selected;
+    }
+
+    function onAddSubmission() {
+      var payload = buildPayload();
+      submissions.push({
+        country: payload.country,
+        item: payload.items[0]
+      });
+      renderHistory();
+      renderResults(payload);
+      persistLocalHistory();
+      setStatus("Submission added and autosaved locally.");
+    }
+
+    function onRunSelected() {
+      var indexes = getSelectedSubmissionIndices();
+      var stores = getSelectedStores();
+      if (indexes.length === 0) {
+        setStatus("Select at least one history item row before running matchup.");
+        return;
+      }
+      if (stores.length !== 3) {
+        setStatus("Choose exactly three unique stores for matchup.");
+        return;
+      }
+      var items = [];
+      var i;
+      for (i = 0; i < indexes.length; i += 1) {
+        if (submissions[indexes[i]]) {
+          items.push(submissions[indexes[i]].item);
+        }
+      }
+      var payload = {
+        action: "run-selected-item-matchup",
+        country: value("country"),
+        selectedRowIndexes: indexes,
+        items: items,
+        stores: stores
+      };
+      renderResults(payload);
+      setStatus("Generated matchup payload from selected rows and 3 stores.");
+    }
+
+    function onSuggestStores() {
+      var country = value("country").toLowerCase();
+      var suggestions = [];
+      var au = [
+        { siteName: "Scorptec", baseUrl: "https://www.scorptec.com.au", searchPattern: "https://www.scorptec.com.au/search?query={query}" },
+        { siteName: "MSY", baseUrl: "https://www.msy.com.au", searchPattern: "https://www.msy.com.au/search?query={query}" },
+        { siteName: "Mwave", baseUrl: "https://www.mwave.com.au", searchPattern: "https://www.mwave.com.au/searchresult?skeyword={query}" }
+      ];
+      var global = [
+        { siteName: "Amazon", baseUrl: "https://www.amazon.com", searchPattern: "https://www.amazon.com/s?k={query}" },
+        { siteName: "eBay", baseUrl: "https://www.ebay.com", searchPattern: "https://www.ebay.com/sch/i.html?_nkw={query}" },
+        { siteName: "Newegg", baseUrl: "https://www.newegg.com", searchPattern: "https://www.newegg.com/p/pl?d={query}" }
+      ];
+      suggestions = country.indexOf("australia") >= 0 || country.indexOf("au") >= 0 ? au : global;
+
+      var added = 0;
+      var i;
+      for (i = 0; i < suggestions.length; i += 1) {
+        var s = suggestions[i];
+        var id = makeStoreId(s.siteName, s.baseUrl);
+        if (!getStoreById(id)) {
+          s.id = id;
+          storeCatalog.push(s);
+          added += 1;
+        }
+      }
+      renderStoreOptions();
+      persistLocalHistory();
+      renderResults({ action: "suggest-store-inputs", country: value("country"), addedStores: added, suggestions: suggestions });
+      setStatus("Suggested store inputs processed. Added " + String(added) + " new store entries.");
+    }
+
+    function onAddStore() {
+      var siteName = value("siteName");
+      var baseUrl = value("baseUrl");
+      var searchPattern = value("searchPattern");
+      if (!siteName || !baseUrl) {
+        setStatus("Store entry needs at least Site Name and Base URL.");
+        return;
+      }
+      var id = makeStoreId(siteName, baseUrl);
+      if (getStoreById(id)) {
+        setStatus("Store entry already exists in the catalog.");
+        return;
+      }
+      storeCatalog.push({ id: id, siteName: siteName, baseUrl: baseUrl, searchPattern: searchPattern });
+      renderStoreOptions();
+      persistLocalHistory();
+      renderResults({ action: "add-store-entry", store: { id: id, siteName: siteName, baseUrl: baseUrl, searchPattern: searchPattern } });
+      setStatus("Store entry added to catalog. You can now pick it in Store 1/2/3.");
+    }
+
+    function onCopyPayload() {
+      var payload = buildPayload();
+      var text = JSON.stringify(payload, null, 2);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+      }
+      renderResults(payload);
+    }
+
+    function onReset() {
+      submissions = [];
+      storeCatalog = [];
+      renderHistory();
+      renderResults({ country: value("country"), items: [], stores: [] });
+      ensureDefaultStores();
+      renderStoreOptions();
+      persistLocalHistory();
+      setStatus("History and store catalog reset. Defaults restored and autosaved locally.");
+    }
+
+    function onSaveHistory() {
+      var exportObj = { submissions: submissions, storeCatalog: storeCatalog };
+      var blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "shop-listeditems-history.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStatus("History exported. Move the file to c:\\PowerShellGUI\\~REPORTS if needed.");
+    }
+
+    function onLoadHistory() {
+      var input = document.getElementById("historyFileInput");
+      if (!input) { return; }
+      input.click();
+    }
+
+    function onHistoryFileChosen(evt) {
+      var file = evt.target && evt.target.files && evt.target.files[0];
+      if (!file) { return; }
+
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var parsed = JSON.parse(String(reader.result || "[]"));
+          if (parsed instanceof Array) {
+            submissions = parsed;
+            storeCatalog = [];
+          } else if (parsed && parsed.submissions instanceof Array) {
+            submissions = parsed.submissions;
+            storeCatalog = parsed.storeCatalog instanceof Array ? parsed.storeCatalog : [];
+          } else {
+            throw new Error("History JSON must be an array or object with submissions.");
+          }
+          if (storeCatalog.length === 0) {
+            ensureDefaultStores();
+          }
+          renderHistory();
+          renderStoreOptions();
+          renderResults(buildPayload());
+          persistLocalHistory();
+          setStatus("History loaded from JSON and autosaved locally.");
+        } catch (e) {
+          setStatus("Could not load history JSON: " + e.message);
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+
+    document.getElementById("btnAdd").onclick = onAddSubmission;
+    document.getElementById("btnRunSelected").onclick = onRunSelected;
+    document.getElementById("btnSuggestStores").onclick = onSuggestStores;
+    document.getElementById("btnAddStore").onclick = onAddStore;
+    document.getElementById("btnCopy").onclick = onCopyPayload;
+    document.getElementById("btnSaveHistory").onclick = onSaveHistory;
+    document.getElementById("btnLoadHistory").onclick = onLoadHistory;
+    document.getElementById("btnReset").onclick = onReset;
+    document.getElementById("historyFileInput").onchange = onHistoryFileChosen;
+
+    ensureDefaultStores();
+    if (loadLocalHistory()) {
+      if (storeCatalog.length === 0) {
+        ensureDefaultStores();
+      }
+      renderHistory();
+      renderStoreOptions();
+      renderResults(buildPayload());
+      setStatus("Restored history from local autosave.");
+    } else {
+      renderHistory();
+      renderStoreOptions();
+      renderResults(buildPayload());
+      setStatus("Ready. No local autosave found yet.");
+    }
+  }());
+  //]]>
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\XPS15-MS-20260328-161531-SmokeTest.log"
+  ],
+  "executionAgent": "",
+  "type": "Bugs2FIX",
+  "sinId": "",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "",
+  "executionMethod": "",
+  "priority": "HIGH",
+  "category": "crash-log",
+  "tags": [],
+  "created": "2026-03-30T21:09:56.9191828Z",
+  "description": "Fix for bug Bug-20260331050953-4c787b1d: Error pattern in log XPS15-MS-20260328-161531-SmokeTest.log:4264",
+  "modified": "2026-03-30T21:09:56.9192465Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260331050953-4c787b1d",
+  "title": "FIX: Scan</h3><pre>Access Denied as you do not have sufficient",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331050956-98b97e34"
+}

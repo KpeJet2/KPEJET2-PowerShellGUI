@@ -1,4 +1,6 @@
-# VersionTag: 2602.a.11
+# VersionTag: 2605.B4.V37.1
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
 <#
 .SYNOPSIS
     Automated test routines for the KPEJET2 PowerShell GUI application.

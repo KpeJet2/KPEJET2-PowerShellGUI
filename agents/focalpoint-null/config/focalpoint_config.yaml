@@ -1,0 +1,187 @@
+# VersionTag: 2604.B0.v1
+# VersionTag: 2604.B0.v1
+# VersionTag: 2604.B0.v1
+# VersionTag: 2604.B0.v1
+# FocalPoint-null System Configuration
+# Version: 1.0.0
+# Last Updated: 2026-03-01
+
+system:
+  version: "1.0.0"
+  instance_id: "FocalPoint-null-00"
+  orchestrator_sequence: 0         # Increments for sub-orchestrators: FocalPoint-null-01, etc.
+  max_sub_orchestrators: 5
+  human_review_broker: true        # FocalPoint must broker all human review requests
+
+# ─────────────────────────────────────────────
+# GROWTH & FORK CONTROL
+# ─────────────────────────────────────────────
+growth:
+  allow_autonomous_organic_growth: false   # Override via env ALLOW_AUTONOMOUS_ORGANIC_GROWTH
+  max_fork_depth: 3
+  max_fork_paths: 10
+  # After fork testing completes, block further autonomous forking for that fork tree
+  lock_forks_after_test: true
+  # Minimum completed orchestration loop version before code writing/reviewing is permitted
+  min_version_loops_before_code_ops: 1
+
+# ─────────────────────────────────────────────
+# TASK MANAGEMENT
+# ─────────────────────────────────────────────
+task_management:
+  max_retries: 3
+  retry_backoff_seconds: [5, 30, 120]   # Exponential backoff
+  retry_on_failure: true
+  save_directive_on_receive: true       # Save copy of agent directive at task receipt
+  checkpoint_interval_seconds: 60
+  resume_from_checkpoint: true
+  # Allow planned/unplanned detachment and reattachment
+  allow_async_detachment: true
+
+# ─────────────────────────────────────────────
+# SECURITY
+# ─────────────────────────────────────────────
+security:
+  pki:
+    algorithm: "RSA"
+    key_size: 2048
+    hash_algorithm: "SHA256"
+    cert_validity_days: 365
+    require_cert_for_inter_agent: true
+  viewpoint:
+    # All subagent outputs go through ViewPoint-init encoding before FocalPoint sees them
+    enforce_viewpoint_proxy: true
+    encoding: "base64"            # Encoded transform type for ViewPoint-init outputs
+    allow_direct_memory_access: false
+    max_output_size_mb: 10
+  # Security detection/remediation must go through SecurityTriage agent only
+  security_triage_agent: "SecurityTriage-00"
+  # SecurityTriage must pass sandbox simulation before results returned
+  require_sandbox_sim_before_remediation: true
+
+# ─────────────────────────────────────────────
+# LOGGING
+# ─────────────────────────────────────────────
+logging:
+  level: "INFO"
+  structured: true
+  checkpoint_logging: true
+  archive_after_days: 7
+  # SHA256 validation on log archive entries
+  sha256_archive_validation: true
+  # ALLOW-AGENT-ARCHIVAL-ACCESS metatag in archive enables agent re-access with PKI validation
+  allow_agent_archival_access_tag: "ALLOW-AGENT-ARCHIVAL-ACCESS"
+  # Separate counters: FocalPoint vs all sub-agents
+  access_counters:
+    track_focalpoint_separately: true
+    track_per_subagent: true
+    tracked_resources:
+      - file_access
+      - website_requests
+      - memory_requests
+      - checkpoint_events
+      - actions
+      - prompt_inputs
+      - prompt_outputs
+      - process_ids
+      - thread_ids
+
+# ─────────────────────────────────────────────
+# AGENT REVIEW
+# ─────────────────────────────────────────────
+agent_review:
+  enabled: true
+  review_agent: "AgentReview-00"
+  # Triggers for inter-agent review
+  review_on_failure: true
+  review_on_completion: false      # Set true for verbose post-mortem on every task
+  review_frequency_hours: 24      # Periodic review cadence
+  # Build inter-agent awareness for interoperability
+  interagent_awareness: true
+  suggest_new_roles: true
+  reduce_regression: true
+
+# ─────────────────────────────────────────────
+# STANDARDS & TEMPLATES
+# ─────────────────────────────────────────────
+standards:
+  quality_control_agent: "QualityControl-00"
+  standards_guard_agent: "StandardsGuard-00"
+  template_dir: "config/standards"
+  # Standards updates are isolated from code changes
+  separate_from_code: true
+  # TO-DO list for admin oversight—completely separate from code project
+  todo_dir: "todo"
+  todo_categories:
+    - "new_agents"
+    - "agent_changes"
+    - "human_oversight_required"
+    - "standards_updates"
+    - "security_recommendations"
+
+# ─────────────────────────────────────────────
+# MULTI-MODEL PARALLEL DISPATCH
+# ─────────────────────────────────────────────
+# When enabled, every FocalPoint-null prompt is dispatched to ALL configured
+# endpoints simultaneously. ConsensusEngine cross-validates responses by
+# structural quality, length, peer agreement and endpoint weight, then selects
+# the highest-confidence winner. Failover promotes the secondary when winner
+# confidence falls below failover_confidence_threshold.
+# All responses are recorded as cryptographically hashed WitnessEntries.
+#
+# Enable via env: MULTI_MODEL_ENABLED=true
+# Override threshold: MULTI_MODEL_FAILOVER_THRESHOLD=0.35
+multi_model:
+  enabled: false                        # Override with MULTI_MODEL_ENABLED env var
+  failover_confidence_threshold: 0.35   # Override with MULTI_MODEL_FAILOVER_THRESHOLD
+  default_timeout_seconds: 30.0         # Override with MULTI_MODEL_TIMEOUT_SECONDS
+  # Additional endpoints — primary is always the configured ORCHESTRATOR_MODEL.
+  # Each entry's api_key_env value names an environment variable that holds the actual key.
+  # NEVER place literal API key values here (P001: no hardcoded credentials).
+  additional_endpoints:
+    # ── Anthropic Claude (comment in to activate) ──────────────────────
+    # - endpoint_id: "claude-3-5-sonnet"
+    #   base_url: "https://api.anthropic.com/v1"
+    #   api_key_env: "ANTHROPIC_API_KEY"
+    #   model_name: "claude-3-5-sonnet-20241022"
+    #   weight: 0.90
+    #   timeout_seconds: 45.0
+    #   temperature: 0.7
+    # ── OpenAI direct API ─────────────────────────────────────────────
+    # - endpoint_id: "gpt-4o-openai"
+    #   base_url: "https://api.openai.com/v1"
+    #   api_key_env: "OPENAI_API_KEY"
+    #   model_name: "gpt-4o"
+    #   weight: 0.95
+    #   timeout_seconds: 30.0
+    #   temperature: 0.7
+    # ── Google Gemini (OpenAI-compatible) ─────────────────────────────
+    # - endpoint_id: "gemini-1.5-pro"
+    #   base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    #   api_key_env: "GEMINI_API_KEY"
+    #   model_name: "gemini-1.5-pro"
+    #   weight: 0.85
+    #   timeout_seconds: 40.0
+    #   temperature: 0.7
+    # ── Local Ollama ──────────────────────────────────────────────────
+    # - endpoint_id: "ollama-local-llama3"
+    #   base_url: "http://localhost:11434/v1"
+    #   api_key_env: "OLLAMA_API_KEY"
+    #   model_name: "llama3.2"
+    #   weight: 0.60
+    #   timeout_seconds: 90.0
+    #   temperature: 0.7
+    # ── Mistral AI ────────────────────────────────────────────────────
+    # - endpoint_id: "mistral-large"
+    #   base_url: "https://api.mistral.ai/v1"
+    #   api_key_env: "MISTRAL_API_KEY"
+    #   model_name: "mistral-large-latest"
+    #   weight: 0.80
+    #   timeout_seconds: 35.0
+    #   temperature: 0.7
+
+
+
+
+
+

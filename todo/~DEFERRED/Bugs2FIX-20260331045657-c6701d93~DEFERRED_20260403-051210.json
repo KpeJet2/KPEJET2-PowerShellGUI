@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1"
+  ],
+  "priority": "MEDIUM",
+  "linkedBugs": [],
+  "notes": "",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "created": "2026-03-30T20:56:57.2658718Z",
+  "linkedFeatures": [],
+  "category": "error-handling",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bugs2FIX-20260331045657-c6701d93",
+  "parentId": "Bug-20260331045654-45e2f6b3",
+  "sessionModCount": 1,
+  "description": "Fix for bug Bug-20260331045654-45e2f6b3: Script Invoke-ReleasePreFlight.ps1 has 1 functions but zero try/catch blocks",
+  "modified": "2026-03-30T20:56:57.2659128Z",
+  "type": "Bugs2FIX"
+}

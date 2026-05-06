@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 $rootPath = Split-Path -Parent $PSScriptRoot
 $path = Join-Path $rootPath 'Main-GUI.ps1'
 $lines = Get-Content $path
@@ -30,13 +29,15 @@ $newfunc = @(
 '        -not $skip',
 '    } | ForEach-Object {',
 '        $file = $_',
+'        # skip version build artifacts',
+'        if ($file.Name -like ''PwShGUI-v-*'') { return }',
 '        # remove version tags from JSON files and then skip',
 '        if ($file.Extension -ieq ".json") {',
 '            $txt = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue',
 '            if ($txt) {',
 '                $clean = $txt -replace "(?m)^\\s*#\\s*VersionTag:.*$\\r?\\n?", ""',
 '                if ($clean -ne $txt) {',
-'                    Set-Content -Path $file.FullName -Value $clean -ErrorAction SilentlyContinue',
+'                    Set-Content -Path $file.FullName -Value $clean -Encoding UTF8 -ErrorAction SilentlyContinue',
 '                }',
 '            }',
 '            return',
@@ -59,7 +60,7 @@ $newfunc = @(
 '            $newText = $tagLine + [Environment]::NewLine + $text',
 '        }',
 '        if ($newText -ne $text) {',
-'            Set-Content -Path $file.FullName -Value $newText -ErrorAction SilentlyContinue',
+'            Set-Content -Path $file.FullName -Value $newText -Encoding UTF8 -ErrorAction SilentlyContinue',
 '        }',
 '    }',
 '}'
@@ -67,6 +68,13 @@ $newfunc = @(
 $newContent = $before + $newfunc + $after
 $newContent | Set-Content $path -Encoding UTF8
 Write-Host 'Update-VersionTags rewritten'
+
+
+
+
+
+
+
 
 
 

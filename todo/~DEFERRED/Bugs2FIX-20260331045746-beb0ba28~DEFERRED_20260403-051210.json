@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F-LinkToConfigJson.ps1"
+  ],
+  "priority": "MEDIUM",
+  "linkedBugs": [],
+  "notes": "",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "created": "2026-03-30T20:57:46.5738591Z",
+  "linkedFeatures": [],
+  "category": "error-handling",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bugs2FIX-20260331045746-beb0ba28",
+  "parentId": "Bug-20260331045744-fe6b8d8a",
+  "sessionModCount": 1,
+  "description": "Fix for bug Bug-20260331045744-fe6b8d8a: Script Script-F-LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+  "modified": "2026-03-30T20:57:46.5738964Z",
+  "type": "Bugs2FIX"
+}

@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1"
+  ],
+  "executionAgent": "",
+  "type": "Bugs2FIX",
+  "sinId": "",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "",
+  "executionMethod": "",
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "tags": [],
+  "created": "2026-03-30T21:10:41.2917346Z",
+  "description": "Fix for bug Bug-20260331051037-e79952b7: Script PwShGUI-PSVersionStandards.psm1 has 9 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:10:41.2917862Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260331051037-e79952b7",
+  "title": "FIX: 9 functions with no try/catch blocks",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051041-d0a1027f"
+}

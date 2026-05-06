@@ -1,0 +1,212 @@
+{
+  "reindexed_at": "2026-04-04T14:57:30.9793030Z",
+  "format": "SIN-PATTERN-NNN-NAME_yyyyMMddhhmm.json",
+  "total_renamed": 29,
+  "total_skipped": 0,
+  "instances_updated": 40,
+  "mappings": [
+    {
+      "old_file": "SIN-PATTERN-001-HARDCODED-CREDENTIALS.json",
+      "new_file": "SIN-PATTERN-001-HARDCODED-CREDENTIALS_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-001-HARDCODED-CREDENTIALS",
+      "new_sin_id": "SIN-PATTERN-001-HARDCODED-CREDENTIALS_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW.json",
+      "new_file": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW",
+      "new_sin_id": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT.json",
+      "new_file": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT",
+      "new_sin_id": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY.json",
+      "new_file": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY",
+      "new_sin_id": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-005-PS7ONLY-OPERATORS.json",
+      "new_file": "SIN-PATTERN-005-PS7ONLY-OPERATORS_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-005-PS7ONLY-OPERATORS",
+      "new_sin_id": "SIN-PATTERN-005-PS7ONLY-OPERATORS_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE.json",
+      "new_file": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE",
+      "new_sin_id": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-007-VERSIONTAG-STALE.json",
+      "new_file": "SIN-PATTERN-007-VERSIONTAG-STALE_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-007-VERSIONTAG-STALE",
+      "new_sin_id": "SIN-PATTERN-007-VERSIONTAG-STALE_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-008-ADDTYPE-MISSING-ASSEMBLY.json",
+      "new_file": "SIN-PATTERN-008-ADDTYPE-MISSING-ASSEMBLY_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-008-ADDTYPE-MISSING-ASSEMBLY",
+      "new_sin_id": "SIN-PATTERN-008-ADDTYPE-MISSING-ASSEMBLY_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN.json",
+      "new_file": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN",
+      "new_sin_id": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-010-IEX-DYNAMIC-STRING.json",
+      "new_file": "SIN-PATTERN-010-IEX-DYNAMIC-STRING_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-010-IEX-DYNAMIC-STRING",
+      "new_sin_id": "SIN-PATTERN-010-IEX-DYNAMIC-STRING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF.json",
+      "new_file": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF",
+      "new_sin_id": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING.json",
+      "new_file": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING",
+      "new_sin_id": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-013-FILESIZEBLOWOUT.json",
+      "new_file": "SIN-PATTERN-013-FILESIZEBLOWOUT_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-013-FILESIZEBLOWOUT",
+      "new_sin_id": "SIN-PATTERN-013-FILESIZEBLOWOUT_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH.json",
+      "new_file": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH",
+      "new_sin_id": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH.json",
+      "new_file": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH",
+      "new_sin_id": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-016-TODO-FIXME-STALE.json",
+      "new_file": "SIN-PATTERN-016-TODO-FIXME-STALE_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-016-TODO-FIXME-STALE",
+      "new_sin_id": "SIN-PATTERN-016-TODO-FIXME-STALE_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-017-OUTFILE-NO-ENCODING.json",
+      "new_file": "SIN-PATTERN-017-OUTFILE-NO-ENCODING_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-017-OUTFILE-NO-ENCODING",
+      "new_sin_id": "SIN-PATTERN-017-OUTFILE-NO-ENCODING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS.json",
+      "new_file": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257.json",
+      "old_sin_id": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS",
+      "new_sin_id": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING.json",
+      "new_file": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING_202604040000.json",
+      "old_sin_id": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING",
+      "new_sin_id": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING_202604040000",
+      "timestamp": "202604040000"
+    },
+    {
+      "old_file": "SIN-PATTERN-020-SSL-CERT-BYPASS.json",
+      "new_file": "SIN-PATTERN-020-SSL-CERT-BYPASS_202604040000.json",
+      "old_sin_id": "SIN-PATTERN-020-SSL-CERT-BYPASS",
+      "new_sin_id": "SIN-PATTERN-020-SSL-CERT-BYPASS_202604040000",
+      "timestamp": "202604040000"
+    },
+    {
+      "old_file": "SIN-PATTERN-021-DIVZERO-UNGUARDED.json",
+      "new_file": "SIN-PATTERN-021-DIVZERO-UNGUARDED_202601040000.json",
+      "old_sin_id": "SIN-PATTERN-021-DIVZERO-UNGUARDED",
+      "new_sin_id": "SIN-PATTERN-021-DIVZERO-UNGUARDED_202601040000",
+      "timestamp": "202601040000"
+    },
+    {
+      "old_file": "SIN-PATTERN-022-NULL-METHOD-CALL.json",
+      "new_file": "SIN-PATTERN-022-NULL-METHOD-CALL_202603040000.json",
+      "old_sin_id": "SIN-PATTERN-022-NULL-METHOD-CALL",
+      "new_sin_id": "SIN-PATTERN-022-NULL-METHOD-CALL_202603040000",
+      "timestamp": "202603040000"
+    },
+    {
+      "old_file": "SEMI-SIN-001-SIZE-GROWTH-51PCT.json",
+      "new_file": "SEMI-SIN-001-SIZE-GROWTH-51PCT_202604042257.json",
+      "old_sin_id": "SEMI-SIN-001-SIZE-GROWTH-51PCT",
+      "new_sin_id": "SEMI-SIN-001-SIZE-GROWTH-51PCT_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-002-FILE-OUTSIDE-WORKSPACE.json",
+      "new_file": "SEMI-SIN-002-FILE-OUTSIDE-WORKSPACE_202604042257.json",
+      "old_sin_id": "SEMI-SIN-002-FILE-OUTSIDE-WORKSPACE",
+      "new_sin_id": "SEMI-SIN-002-FILE-OUTSIDE-WORKSPACE_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-003-WRITEHOST-IN-MODULE.json",
+      "new_file": "SEMI-SIN-003-WRITEHOST-IN-MODULE_202604042257.json",
+      "old_sin_id": "SEMI-SIN-003-WRITEHOST-IN-MODULE",
+      "new_sin_id": "SEMI-SIN-003-WRITEHOST-IN-MODULE_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING.json",
+      "new_file": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING_202604042257.json",
+      "old_sin_id": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING",
+      "new_sin_id": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-005-MISSING-CMDLETBINDING.json",
+      "new_file": "SEMI-SIN-005-MISSING-CMDLETBINDING_202604042257.json",
+      "old_sin_id": "SEMI-SIN-005-MISSING-CMDLETBINDING",
+      "new_sin_id": "SEMI-SIN-005-MISSING-CMDLETBINDING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-006-ADDCONTENT-NO-ENCODING.json",
+      "new_file": "SEMI-SIN-006-ADDCONTENT-NO-ENCODING_202604042257.json",
+      "old_sin_id": "SEMI-SIN-006-ADDCONTENT-NO-ENCODING",
+      "new_sin_id": "SEMI-SIN-006-ADDCONTENT-NO-ENCODING_202604042257",
+      "timestamp": "202604042257"
+    },
+    {
+      "old_file": "SEMI-SIN-007-COMPLIANCE-BACKUP-SCOPE-DRIFT.json",
+      "new_file": "SEMI-SIN-007-COMPLIANCE-BACKUP-SCOPE-DRIFT_202604041345.json",
+      "old_sin_id": "SEMI-SIN-007-COMPLIANCE-BACKUP-SCOPE-DRIFT",
+      "new_sin_id": "SEMI-SIN-007-COMPLIANCE-BACKUP-SCOPE-DRIFT_202604041345",
+      "timestamp": "202604041345"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "5de12454-5870-4b15-8b15-487bbc0292ff",
+  "title": "Rename Proposal: scripts\\WinRemote-PSTool.ps1",
+  "description": "Script uses non-standard verb 'WinRemote': WinRemote-PSTool.ps1 -- Suggested: WinRemote-PSTool.ps1",
+  "category": "maintenance",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "type": "todo",
+  "file_refs": [
+    "scripts\\WinRemote-PSTool.ps1"
+  ],
+  "created": "2026-03-28T05:14:51.1561875+08:00",
+  "source_scan_id": "rename-proposal",
+  "naming_rule": "verb-noun",
+  "suggested_name": "WinRemote-PSTool.ps1",
+  "createdAt": "2026-03-01T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "triagedAt": "2026-04-04T18:57:30.3245535Z",
+  "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
+}

@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F-Copy.ps1"
+  ],
+  "executionAgent": "",
+  "type": "Bugs2FIX",
+  "sinId": "",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "",
+  "executionMethod": "",
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "tags": [],
+  "created": "2026-03-30T21:12:35.5489264Z",
+  "description": "Fix for bug Bug-20260331051231-8366cf27: Script Script-F-Copy.ps1 has 1 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:12:35.5489987Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "Bug-20260331051231-8366cf27",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051235-fef64ceb"
+}

@@ -1,0 +1,1327 @@
+[
+  {
+    "module": "AgentRegistry",
+    "function": "Get-AutoHealCandidates",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-BootOrder",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-FailedModules",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-HealthScore",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-HotStandbyModules",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-ModuleHealth",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-ModulesBySpine",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-ModulesByTier",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Get-RegisteredModule",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Initialize-AgentRegistry",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Register-ModuleHandler",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Resolve-BootOrder",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AgentRegistry",
+    "function": "Update-ModuleHealth",
+    "source": "sovereign-kernel\\core\\AgentRegistry.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Assert-SafePath",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Enable-WindowsHello",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Export-VaultBackup",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Find-BWCli",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Get-CredentialForTarget",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Get-VaultItem",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Get-VaultItemList",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Get-VaultLANStatus",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Import-Certificates",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Import-VaultSecrets",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Initialize-SASCModule",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Install-BitwardenLite",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Lock-Vault",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "New-IntegrityManifest",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Protect-VaultData",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Set-VaultFilePermissions",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Set-VaultItem",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Set-VaultLANSharing",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Show-AssistedSASCDialog",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Show-SecretsInvokerForm",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Show-VaultStatusDialog",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Show-VaultUnlockDialog",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Start-AutoLockTimer",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Test-IntegrityManifest",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Test-VaultSecurity",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Test-VaultStatus",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Unlock-Vault",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AssistedSASC",
+    "function": "Unprotect-VaultData",
+    "source": "modules\\AssistedSASC.psm1"
+  },
+  {
+    "module": "AVPN-Tracker",
+    "function": "Get-AVPNConfig",
+    "source": "modules\\AVPN-Tracker.psm1"
+  },
+  {
+    "module": "AVPN-Tracker",
+    "function": "Initialize-AVPNConfigFile",
+    "source": "modules\\AVPN-Tracker.psm1"
+  },
+  {
+    "module": "AVPN-Tracker",
+    "function": "Save-AVPNConfig",
+    "source": "modules\\AVPN-Tracker.psm1"
+  },
+  {
+    "module": "AVPN-Tracker",
+    "function": "Show-AVPNConnectionTracker",
+    "source": "modules\\AVPN-Tracker.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Get-CallStats",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Get-CurrentCallDepth",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Get-CurrentCallStack",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Initialize-CallProxy",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Invoke-ProxiedCall",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Test-OutboundRequest",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CallProxy",
+    "function": "Test-RateLimit",
+    "source": "sovereign-kernel\\core\\CallProxy.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-BugToPipelineProcessor",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-CrashLogScan",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-DataValidationCheck",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-DependencyCheck",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-ErrorTrapAudit",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-FullBugScan",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-ParseCheck",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-BugTracker",
+    "function": "Invoke-XhtmlValidation",
+    "source": "modules\\CronAiAthon-BugTracker.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Get-EventLogConfig",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Get-SyslogEntries",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Register-EventLogSources",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Send-SyslogMessage",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Test-EventLogSourceReady",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Write-CronEventLog",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Write-CronLog",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-EventLog",
+    "function": "Write-SyslogFile",
+    "source": "modules\\CronAiAthon-EventLog.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Add-PipelineItem",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Confirm-OutlineVersion",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "ConvertTo-Bugs2FIX",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "ConvertTo-Items2ADD",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Export-CentralMasterToDo",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Get-CentralMasterToDo",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Get-PipelineHealthMetrics",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Get-PipelineItems",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Get-PipelineRegistryPath",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Get-PipelineStatistics",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Initialize-PipelineRegistry",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Invoke-PriorityAutoEscalation",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Invoke-SinRegistryFeedback",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "New-PipelineItem",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Set-BatchItemStatus",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Set-OutlinePhase",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Test-RegressionGuard",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Test-SinBugLinkage",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Test-StatusTransition",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Update-PipelineItemStatus",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Pipeline",
+    "function": "Write-ActionLogEntry",
+    "source": "modules\\CronAiAthon-Pipeline.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Add-AutopilotSuggestion",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Add-CronJobHistory",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Get-CronHistoryPath",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Get-CronJobHistory",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Get-CronJobSummary",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Get-CronSchedulePath",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Initialize-CronSchedule",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Invoke-AllCronJobs",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Invoke-CronJob",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Invoke-PreRequisiteCheck",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Register-Question",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Register-SubagentCall",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Save-CronSchedule",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Set-CronFrequency",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CronAiAthon-Scheduler",
+    "function": "Update-AutopilotSuggestionStatus",
+    "source": "modules\\CronAiAthon-Scheduler.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Compare-ByteArrayConstantTime",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Compress-Data",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "ConvertTo-SecureStringFromPlain",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Expand-Data",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-CachedKeySet",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-CipherStrengthScore",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-FileHash512",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-RecommendedCipherUpgrade",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-SecureRandomBytes",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-SecureRandomHex",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-SHA512Hash",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Get-StringHash512",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Initialize-CryptoEngine",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "New-DerivedKeySet",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "New-EpochSeal",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "New-HashChainEntry",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Protect-Data",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Test-CipherStrengthCompliance",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Test-EpochSeal",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Test-HashChain",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CryptoEngine",
+    "function": "Unprotect-Data",
+    "source": "sovereign-kernel\\core\\CryptoEngine.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Get-CycleHistory",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Get-CycleSnapshots",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Get-CycleState",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Initialize-CycleManager",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Invoke-CycleAdvance",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Invoke-CycleRollback",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Invoke-VersionBump",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "New-CycleSnapshot",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Test-BranchDivergence",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "CycleManager",
+    "function": "Test-CycleAdvanceReady",
+    "source": "sovereign-kernel\\core\\CycleManager.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Get-LedgerStats",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Initialize-LedgerWriter",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Read-LedgerEntry",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Sync-LedgerReplicas",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Test-LedgerIntegrity",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "LedgerWriter",
+    "function": "Write-LedgerEntry",
+    "source": "sovereign-kernel\\core\\LedgerWriter.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Get-HelpFileInfo",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Invoke-SavePowerShellHelp",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Invoke-UpdatePowerShellHelp",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Show-HelpFilesGUI",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Test-HelpFilesExist",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Write-AppLog",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwSh-HelpFilesUpdateSource-ReR",
+    "function": "Write-ScriptLog",
+    "source": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  },
+  {
+    "module": "PwShGUI_AutoIssueFinder",
+    "function": "Invoke-PwShGUIAutoIssueFinder",
+    "source": "modules\\PwShGUI_AutoIssueFinder.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Get-ThemeFont",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Get-ThemeValue",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "New-RainbowProgressBar",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "New-SpinnerLabel",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernButtonStyle",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernDgvStyle",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernFormStyle",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernFormTheme",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernMenuStyle",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-Theme",
+    "function": "Set-ModernTabStyle",
+    "source": "modules\\PwShGUI-Theme.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Get-CompletedBackgroundTasks",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Get-TrayHostStatus",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Initialize-BackgroundPool",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Initialize-TrayAppContext",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Invoke-BackgroundTask",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "New-SmileyTrayIcon",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Set-VerboseLifecycle",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Start-KeyboardMonitor",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Start-TrayApplicationLoop",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Stop-BackgroundPool",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Stop-KeyboardMonitor",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUI-TrayHost",
+    "function": "Stop-TrayHost",
+    "source": "modules\\PwShGUI-TrayHost.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Assert-DirectoryExists",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Export-LogBuffer",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Get-AllProjectPaths",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Get-ProjectPath",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Get-RainbowColor",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Initialize-ConfigFile",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Initialize-CorePaths",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Invoke-CrashRecovery",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Invoke-LogRotation",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Remove-SessionLock",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Request-LocalPath",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Wait-KeyOrTimeout",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Write-AppLog",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Write-RainbowProgress",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Write-ScriptLog",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "PwShGUICore",
+    "function": "Write-SessionLock",
+    "source": "modules\\PwShGUICore.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Get-ActiveSandboxCount",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Get-SandboxStatus",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Initialize-SandboxManager",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Invoke-InSandbox",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "New-Sandbox",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Remove-AllSandboxes",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SandboxManager",
+    "function": "Remove-Sandbox",
+    "source": "sovereign-kernel\\core\\SandboxManager.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Connect-ADDSWithVault",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Connect-AzureWithVault",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Get-VaultCredentialForScript",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Invoke-MRemoteNGSession",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Invoke-PuTTYSession",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Invoke-WindowsHelloAuth",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Open-ISEWithCredential",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SASC-Adapters",
+    "function": "Set-CredentialDialogFill",
+    "source": "modules\\SASC-Adapters.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Build-IntegrityBaseline",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Enter-DegradedMode",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Exit-DegradedMode",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Get-IntegrityBaseline",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Get-RepairLog",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Get-SelfHealerStatus",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Initialize-SelfHealer",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Invoke-AutoRestore",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Invoke-HealCycle",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Invoke-IntegrityScan",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Test-CipherUpgradeAvailable",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SelfHealer",
+    "function": "Test-DegradedMode",
+    "source": "sovereign-kernel\\core\\SelfHealer.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Get-ComplianceReport",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Get-ModuleComplianceState",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Get-ModulePermissions",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Get-PolicyDecisionLog",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Initialize-SovereignPolicy",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Register-ModulePermissions",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Set-ModuleComplianceState",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Test-EscalationQuorum",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Test-EthicalConstraint",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "SovereignPolicy",
+    "function": "Test-OverridePermission",
+    "source": "sovereign-kernel\\core\\SovereignPolicy.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Compare-ProfileSnapshot",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-CertificateStores",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-DisplayLayout",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-EnvironmentVariables",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-ExplorerFolderView",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-InstalledFonts",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-ISEConfiguration",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-LanguageAndSpeech",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-MappedDrives",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-MimeTypes",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-MRULocations",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-PowerConfiguration",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-PrintDrivers",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-ProfileList",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-ProfileSnapshot",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-PSEnvironment",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-PSHelpRepositories",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-QuickAccessLinks",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-RegionalSettings",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-ScreensaverSettings",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-SearchProviders",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-TaskbarLayout",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-TerminalConfiguration",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-UserAppConfigs",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-WiFiProfiles",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Get-WingetApplications",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Import-ProfileSnapshot",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Protect-ProfileData",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Restore-ProfileSnapshot",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Save-ProfileSnapshot",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "UserProfileManager",
+    "function": "Unprotect-ProfileData",
+    "source": "modules\\UserProfileManager.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Get-VoteHistory",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Get-WatchdogStatus",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Initialize-WatchdogSupervisor",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Invoke-BalthazarAnomalyCheck",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Invoke-CasparIntegrityCheck",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Invoke-FullTribunalSweep",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Invoke-MelchiorEthicsCheck",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Invoke-TribunalVote",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Submit-WatchdogAlert",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  },
+  {
+    "module": "WatchdogSupervisor",
+    "function": "Test-KernelHalted",
+    "source": "sovereign-kernel\\core\\WatchdogSupervisor.psm1"
+  }
+]

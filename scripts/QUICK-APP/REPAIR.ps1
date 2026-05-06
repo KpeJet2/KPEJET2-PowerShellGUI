@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -80,47 +79,13 @@ if (-not (Test-Path $linksConfigFile)) { New-Item -ItemType File -Path $linksCon
 if (-not (Test-Path $avpnConfigFile)) { New-Item -ItemType File -Path $avpnConfigFile -Force | Out-Null }
 
 # ==================== LOGGING FUNCTIONS ====================
-function Write-AppLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $logFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd').log"
-
-    $logEntry = "[$timestamp] [$Level] $Message"
-    Add-Content -Path $logFile -Value $logEntry -ErrorAction SilentlyContinue
-
-    switch ($Level) {
-        "Warning" { Write-Warning $logEntry }
-        "Error" { Write-Error $logEntry -ErrorAction Continue }
-        default { Write-Information $logEntry -InformationAction Continue }
-    }
-}
-
-function Write-ScriptLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [Parameter(Mandatory = $true)]
-        [string]$ScriptName,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $scriptLogFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd')_PwShGui-SCRIPTS.log"
-
-    $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"
-    Add-Content -Path $scriptLogFile -Value $logEntry -ErrorAction SilentlyContinue
+# Write-AppLog, Write-ScriptLog -- now provided by PwShGUICore module
+$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
+if (Test-Path $coreModulePath) {
+    Import-Module $coreModulePath -Force
+    Initialize-CorePaths -ScriptDir $scriptDir
+} else {
+    Write-Warning "PwShGUICore module not found at $coreModulePath"
 }
 
 # Import AVPN module if available
@@ -184,7 +149,7 @@ function Save-ConfigValue {
         }
         
         $config.Save($configFile)
-        Write-AppLog "Config saved: $Path = $Value" "Success"
+        Write-AppLog "Config saved: $Path = $Value" "Info"
     } catch {
         Write-AppLog "Error saving config: $_" "Error"
     }
@@ -411,8 +376,15 @@ Write-Host "`nReport saved to: $reportPath" -ForegroundColor Cyan
 Start-Process $reportPath
 
 Write-Host "`nRepair steps completed. Please review the report for details." -ForegroundColor Green
-Write-AppLog "REPAIR script execution completed" "Success"
-Write-ScriptLog "All repair steps completed" "REPAIR" "Success"
+Write-AppLog "REPAIR script execution completed" "Info"
+Write-ScriptLog "All repair steps completed" "REPAIR" "Info"
+
+
+
+
+
+
+
 
 
 

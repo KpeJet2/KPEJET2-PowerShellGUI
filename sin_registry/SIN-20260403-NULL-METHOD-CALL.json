@@ -1,0 +1,53 @@
+{
+  "sin_id": "SIN-20260403-NULL-METHOD-CALL",
+  "title": "WinForms Button click handler crashes with null-valued expression RuntimeException",
+  "description": "System.Management.Automation.RuntimeException 'You cannot call a method on a null-valued expression' thrown inside a WinForms Button.OnClick event handler. The compiled lambda (lambda_method1396) called a method or accessed a property on a variable that was $null at the time of the button click. Root cause: either a control variable went out of scope, a lookup returned $null without a guard, or a $Script: variable was never initialised before the handler fired.",
+  "severity": "HIGH",
+  "status": "OPEN",
+  "is_resolved": true,
+  "created_at": "2026-04-03T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User",
+  "pattern_ref": "SIN-PATTERN-022-NULL-METHOD-CALL",
+  "exception_message": "System.Management.Automation.RuntimeException: You cannot call a method on a null-valued expression.",
+  "exception_stack": [
+    "System.Management.Automation.ExceptionHandlingOps.CheckActionPreference",
+    "System.Management.Automation.Interpreter.ActionCallInstruction`2.Run",
+    "System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run (x2)",
+    "System.Management.Automation.Interpreter.Interpreter.Run",
+    "System.Management.Automation.ScriptBlock.InvokeWithPipeImpl",
+    "System.Management.Automation.ScriptBlock.InvokeWithPipe",
+    "lambda_method1396(Closure, Object, EventArgs)",
+    "System.Windows.Forms.Button.OnClick(EventArgs e)",
+    "System.Windows.Forms.Button.OnMouseUp(MouseEventArgs mevent)"
+  ],
+  "affected_file": "Unknown — stack frame lambda_method1396 is a compiled event handler; exact file/line requires adding Write-AppLog to the handler try/catch",
+  "affected_line": "Unknown — lambda frame has no PS source line",
+  "fix_applied": false,
+  "fix_notes": "1. Locate all Button.Add_Click scriptblocks in the codebase. 2. Add try/catch with Write-AppLog to each. 3. Identify which variable is $null at click time (add $null -ne guards). 4. Reference SIN-PATTERN-022 remedy for the fix pattern.",
+  "tags": [
+    "runtime-error",
+    "null-dereference",
+    "winforms",
+    "button-click",
+    "event-handler",
+    "ps51"
+  ],
+  "remedy_tracking": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "timestamp": "2026-04-04T20:40:00.8872635Z",
+        "method": "external-fix-detected",
+        "success": true,
+        "notes": "Finding no longer detected at original location. Resolved externally."
+      }
+    ],
+    "last_attempt_at": "2026-04-04T20:40:00.8872635Z",
+    "total_attempts": 1,
+    "successful_count": 1,
+    "failed_count": 0,
+    "status": "RESOLVED",
+    "auto_retry": true
+  }
+}

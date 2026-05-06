@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-003",
+  "category": "testing",
+  "title": "Pester Unit Test Framework",
+  "description": "Project has smoke tests but no Pester unit tests. Create tests/Modules.Tests.ps1 for PwShGUICore, AssistedSASC, SASC-Adapters modules with mock-based assertions and coverage tracking.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "HIGH",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "tests/ (new files)",
+    "modules/*.psm1"
+  ],
+  "notes": "Pester v5+ with -CodeCoverage; integrate into smoke test pipeline",
+  "id": "ai-eval-003",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:25:09.9479429+08:00",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.3446162Z"
+}

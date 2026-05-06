@@ -1,0 +1,73 @@
+{
+  "templateName": "Developer Tools",
+  "description": "Essential developer tools and IDEs",
+  "version": "1.0",
+  "created": "2026-03-09",
+  "scope": "allUsers",
+  "applications": [
+    {
+      "name": "Visual Studio Code",
+      "wingetId": "Microsoft.VisualStudioCode",
+      "publisher": "Microsoft",
+      "minVersion": "1.90",
+      "category": "IDE",
+      "required": true
+    },
+    {
+      "name": "Git",
+      "wingetId": "Git.Git",
+      "publisher": "Git SCM",
+      "minVersion": "2.45",
+      "category": "VCS",
+      "required": true
+    },
+    {
+      "name": "Python 3",
+      "wingetId": "Python.Python.3.12",
+      "publisher": "Python Software Foundation",
+      "minVersion": "3.12",
+      "category": "Runtime",
+      "required": false
+    },
+    {
+      "name": "Node.js LTS",
+      "wingetId": "OpenJS.NodeJS.LTS",
+      "publisher": "OpenJS Foundation",
+      "minVersion": "20.0",
+      "category": "Runtime",
+      "required": false
+    },
+    {
+      "name": "PowerShell 7",
+      "wingetId": "Microsoft.PowerShell",
+      "publisher": "Microsoft",
+      "minVersion": "7.4",
+      "category": "Shell",
+      "required": true
+    },
+    {
+      "name": "Windows Terminal",
+      "wingetId": "Microsoft.WindowsTerminal",
+      "publisher": "Microsoft",
+      "minVersion": "1.20",
+      "category": "Shell",
+      "required": false
+    },
+    {
+      "name": "Docker Desktop",
+      "wingetId": "Docker.DockerDesktop",
+      "publisher": "Docker",
+      "minVersion": "4.30",
+      "category": "Container",
+      "required": false
+    },
+    {
+      "name": "Postman",
+      "wingetId": "Postman.Postman",
+      "publisher": "Postman",
+      "minVersion": "",
+      "category": "API",
+      "required": false
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "metadata": {
     "version": "1.0.0",
+    "versionTag": "2603.B0.v27.0",
     "description": "Script folder paths configuration for PowerShell GUI Application",
     "lastModified": "2026-02-16T00:00:00Z",
     "format": "JSON"
@@ -17,6 +18,24 @@
       "addedDate": "2026-02-24",
       "path": "C:\\PowerShellGUI\\scripts",
       "label": "scripts"
+    },
+    {
+      "enabled": true,
+      "label": "PowerShell",
+      "addedDate": "2026-03-23",
+      "path": "C:\\Users\\msaib\\OneDrive\\Documents\\PowerShell"
+    },
+    {
+      "enabled": true,
+      "label": "WindowsPowerShell",
+      "addedDate": "2026-03-23",
+      "path": "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell"
+    },
+    {
+      "enabled": true,
+      "label": "CERTS",
+      "addedDate": "2026-03-23",
+      "path": "C:\\Users\\msaib\\OneDrive\\Documents\\CERTS"
     }
   ]
 }

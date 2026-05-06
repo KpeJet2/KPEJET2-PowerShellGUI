@@ -1,0 +1,83 @@
+{
+    "python.terminal.useEnvFile": true,
+    "chat.mcp.serverSampling": {
+        "PowerShellGUI/.vscode/mcp.json: tplink-omada-mcp": {
+            "allowedModels": [
+                "copilot/auto",
+                "copilotcli/claude-sonnet-4.6",
+                "copilot/claude-haiku-4.5",
+                "copilot/claude-opus-4.6",
+                "aitk-foundry/Microsoft Foundry/claude-opus-4-6",
+                "aitk-foundry/Microsoft Foundry/claude-sonnet-4-6",
+                "aitk-foundry/Microsoft Foundry/Codestral-2501",
+                "aitk-foundry/Microsoft Foundry/computer-use-preview"
+            ]
+        },
+        "PowerShellGUI/.vscode/mcp.json: fing-mcp": {
+            "allowedModels": [
+                "copilot/auto",
+                "copilotcli/claude-sonnet-4.6",
+                "aitk-foundry/Microsoft Foundry/claude-opus-4-6",
+                "aitk-foundry/Microsoft Foundry/claude-sonnet-4-6",
+                "aitk-foundry/Microsoft Foundry/Codestral-2501",
+                "aitk-foundry/Microsoft Foundry/computer-use-preview"
+            ]
+        }
+    },
+    "cSpell.words": [
+        "agentic",
+        "Agentic",
+        "aiathon",
+        "apikey",
+        "Argb",
+        "Athon",
+        "Authenticode",
+        "biex",
+        "bschtasks",
+        "chkdsk",
+        "Colour",
+        "compmgmt",
+        "Consolas",
+        "detectonly",
+        "devmgmt",
+        "diskmgmt",
+        "eventvwr",
+        "focalpoint",
+        "funcs",
+        "gpedit",
+        "initialised",
+        "Jsons",
+        "LASTEXITCODE",
+        "Launchr",
+        "lusrmgr",
+        "Mgmt",
+        "motw",
+        "msconfig",
+        "nslookup",
+        "optimised",
+        "packlist",
+        "perfmon",
+        "pwshgui",
+        "readback",
+        "regedit",
+        "relname",
+        "resmon",
+        "scannow",
+        "secops",
+        "securestring",
+        "Segoe",
+        "semisin",
+        "spacebar",
+        "SPACEBAR",
+        "subfolders",
+        "taskmgr",
+        "taskschd",
+        "timespan",
+        "tzip",
+        "unparseable",
+        "visualisation",
+        "Visualisation",
+        "visualiser",
+        "wingets"
+    ]
+}

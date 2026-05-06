@@ -1,0 +1,15 @@
+{
+  "category": "agent-registry",
+  "id": "audit-011",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "9 agents registered but none have directory or status fields populated.",
+  "files": [
+    "agents/focalpoint-null/config/agent_registry.json"
+  ],
+  "priority": "medium",
+  "title": "Add directory and status fields to agent_registry.json",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Added directory and status fields to all 9 agents in agent_registry.json",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

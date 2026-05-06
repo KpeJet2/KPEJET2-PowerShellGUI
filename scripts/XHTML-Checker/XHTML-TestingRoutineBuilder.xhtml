@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B0.v1 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>PwShGUI &#x2014; Testing Routine Builder</title>
+  <!-- External CSS: base → responsive → layout → accent -->
+  <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="../../styles/layout-tabs-white-wleftmenu.css" />
+  <link rel="stylesheet" href="../../styles/accent-testing-builder.css" />
+  <style type="text/css">
+    :root { --bg:#1e1e1e; --fg:#d4d4d4; --accent:#007acc; --card:#252526;
+            --border:#3e3e42; --pass:#4ec9b0; --warn:#dcdcaa; --fail:#f44747;
+            --green:#27ae60; --red:#e74c3c; --yellow:#f39c12; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+           background:var(--bg); color:var(--fg); display:flex; flex-direction:column;
+           height:100vh; overflow:hidden; }
+
+    /* ── Top bar ──────────────────────────────────────── */
+    .top-bar { background:var(--accent); color:#fff; padding:12px 20px;
+               display:flex; align-items:center; justify-content:space-between;
+               flex-shrink:0; }
+    .top-bar h1 { font-size:16px; font-weight:600; }
+    .top-bar .ver { font-size:11px; opacity:0.8; }
+
+    /* ── Toolbar ──────────────────────────────────────── */
+    .toolbar { display:flex; gap:6px; padding:8px 14px; background:#2d2d30;
+               border-bottom:1px solid var(--border); flex-shrink:0;
+               flex-wrap:wrap; align-items:center; }
+    .btn { padding:5px 14px; border:none; border-radius:4px; cursor:pointer;
+           font-size:12px; font-family:inherit; color:#fff; transition:background 0.15s; }
+    .btn-primary { background:var(--accent); }
+    .btn-primary:hover { background:#005a9e; }
+    .btn-success { background:var(--green); }
+    .btn-success:hover { background:#1e8a4e; }
+    .btn-danger { background:var(--red); }
+    .btn-danger:hover { background:#c0392b; }
+    .btn-warning { background:var(--yellow); }
+    .btn-warning:hover { background:#d68910; }
+    .btn-secondary { background:#555; }
+    .btn-secondary:hover { background:#444; }
+    .btn-outline { background:none; border:1px solid var(--border); color:var(--fg); }
+    .btn-outline:hover { background:var(--card); }
+    .sep { border-left:1px solid var(--border); height:22px; }
+    select.tb-sel { padding:4px 8px; border:1px solid var(--border); border-radius:4px;
+                    font-size:12px; background:var(--card); color:var(--fg); }
+
+    /* ── Main two-panel layout ────────────────────────── */
+    .main { display:flex; flex:1; overflow:hidden; }
+    .panel-left { flex:0 0 50%; display:flex; flex-direction:column; overflow:hidden;
+                  border-right:1px solid var(--border); }
+    .panel-right { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .panel-header { background:#2d2d30; padding:8px 14px; font-size:13px;
+                    font-weight:600; color:var(--accent); border-bottom:1px solid var(--border);
+                    flex-shrink:0; display:flex; align-items:center; justify-content:space-between; }
+    .scroll { flex:1; overflow-y:auto; padding:10px 14px; }
+
+    /* ── Step editor (left panel) ─────────────────────── */
+    .add-row { padding:10px 14px; background:#252526; border-bottom:1px solid var(--border);
+               flex-shrink:0; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .add-row label { font-size:12px; color:#aaa; }
+    .add-row select, .add-row input { padding:5px 8px; border:1px solid var(--border);
+                                       border-radius:4px; font-size:12px; background:#1e1e1e;
+                                       color:var(--fg); }
+    .add-row select { min-width:180px; }
+    .add-row input { flex:1; min-width:140px; }
+
+    /* ── Step list ────────────────────────────────────── */
+    .step-item { background:var(--card); border:1px solid var(--border); border-radius:4px;
+                 margin:4px 0; padding:8px 12px; font-size:12px; transition:background 0.15s;
+                 cursor:pointer; }
+    .step-item:hover { background:#2d2d30; }
+    .step-item.selected { border-color:var(--accent); background:#1a3050; }
+    .step-item .step-head { display:flex; align-items:center; gap:8px; }
+    .step-item .step-num { background:var(--accent); color:#fff; border-radius:50%;
+                           width:22px; height:22px; display:flex; align-items:center;
+                           justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+    .step-item .step-type { background:#264f78; color:#9cdcfe; padding:1px 8px;
+                            border-radius:10px; font-size:10px; font-weight:600; }
+    .step-item .step-label { flex:1; }
+    .step-item .step-param { color:#888; font-size:11px; margin-top:3px; font-style:italic; }
+    .step-item .step-remed { color:var(--yellow); font-size:11px; margin-top:3px; }
+    .step-item .step-remed::before { content:'IF FAIL \u2192 '; font-weight:600; }
+    .step-actions { display:flex; gap:4px; flex-shrink:0; }
+    .step-actions button { background:none; border:none; color:#888; cursor:pointer;
+                           font-size:14px; padding:0 3px; }
+    .step-actions button:hover { color:#fff; }
+
+    /* ── Results (right panel) ────────────────────────── */
+    .result-item { background:var(--card); border:1px solid var(--border); border-radius:4px;
+                   margin:4px 0; padding:8px 12px; font-size:12px; display:flex;
+                   align-items:center; gap:10px; }
+    .result-item.pass { border-left:3px solid var(--green); }
+    .result-item.fail { border-left:3px solid var(--red); }
+    .result-item.error { border-left:3px solid var(--yellow); }
+    .result-item.pending { border-left:3px solid #555; }
+    .result-icon { font-size:16px; flex-shrink:0; width:22px; text-align:center; }
+    .result-detail { flex:1; }
+    .result-detail .rd-label { font-weight:600; }
+    .result-detail .rd-msg { font-size:11px; color:#aaa; margin-top:2px; }
+
+    /* ── Summary bar ──────────────────────────────────── */
+    .summary-bar { display:flex; gap:16px; padding:10px 14px; background:#2d2d30;
+                   border-top:1px solid var(--border); flex-shrink:0; align-items:center;
+                   font-size:12px; }
+    .sum-item { display:flex; align-items:center; gap:4px; }
+    .sum-dot { width:10px; height:10px; border-radius:50%; }
+    .sum-dot.g { background:var(--green); }
+    .sum-dot.r { background:var(--red); }
+    .sum-dot.y { background:var(--yellow); }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer { text-align:center; padding:6px; color:#555; font-size:11px;
+             border-top:1px solid var(--border); flex-shrink:0; }
+    footer a { color:var(--accent); }
+
+    /* ── Misc ─────────────────────────────────────────── */
+    .hidden { display:none !important; }
+    .drag-over { border-style:dashed !important; border-color:var(--accent) !important; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════ TOP BAR ════════════════════════ -->
+<div class="top-bar">
+  <h1>&#x1F9EA; Testing Routine Builder</h1>
+  <span class="ver">v2603.B0.v27.0 &#x2014; PwShGUI</span>
+</div>
+
+<!-- ════════════════════════ TOOLBAR ════════════════════════ -->
+<div class="toolbar" id="mainToolbar">
+  <button type="button" class="btn btn-primary" id="btnNewRoutine" title="Start new empty routine">&#x2795; New</button>
+  <button type="button" class="btn btn-success" id="btnLoadTemplate" title="Load from JSON template">&#x1F4C2; Load</button>
+  <input type="file" id="fileLoad" accept=".json" style="display:none" />
+  <button type="button" class="btn btn-warning" id="btnSaveTemplate" title="Save current routine as JSON">&#x1F4BE; Save</button>
+  <div class="sep"></div>
+  <button type="button" class="btn btn-success" id="btnTestOnly" title="Execute test logic only &#x2014; no remediation">&#x25B6; TEST-ONLY</button>
+  <button type="button" class="btn btn-danger" id="btnTestRemediate" title="Execute tests then run remediation on failures">&#x26A0; TEST-REMEDIATION</button>
+  <div class="sep"></div>
+  <button type="button" class="btn btn-outline" id="btnExportResults" title="Export results to JSON">&#x1F4E5; Export Results</button>
+  <div class="sep"></div>
+  <span style="font-size:11px;color:#888" id="routineName">Untitled Routine</span>
+</div>
+
+<!-- ════════════════════════ MAIN PANELS ═══════════════════ -->
+<div class="main">
+
+  <!-- ──── LEFT: Step Builder ──── -->
+  <div class="panel-left">
+    <div class="panel-header">
+      <span>Test Steps (sequential)</span>
+      <span id="stepCount" style="font-size:11px;color:#888">0 steps</span>
+    </div>
+
+    <!-- Add step row -->
+    <div class="add-row">
+      <label for="selType">Type:</label>
+      <select id="selType" class="tb-sel">
+        <option value="FileExists">File Exists</option>
+        <option value="FolderExists">Folder Exists</option>
+        <option value="FolderWritable">Can Write to Folder</option>
+        <option value="ServiceRunning">Service is Running</option>
+        <option value="ServiceExists">Service Name Exists</option>
+        <option value="AppInstalled">Application Installed</option>
+        <option value="AppRunning">Application is Running</option>
+        <option value="AppVersionHigher">App Version Higher Than</option>
+        <option value="UserIsAdmin">User is Admin</option>
+        <option value="RemotePathAccessible">Remote Path Accessible (UNC)</option>
+        <option value="DriveMappingExists">Network Drive Mapping Exists</option>
+        <option value="DNSForward">DNS Forward Resolution</option>
+        <option value="DNSReverse">DNS Reverse Resolution</option>
+        <option value="TimezoneEquals">Timezone Equals</option>
+        <option value="LanguageEquals">Language Equals</option>
+        <option value="RegionEquals">Region Equals</option>
+        <option value="UserExists">Username Exists</option>
+        <option value="UserIsLocalAdmin">User is Member of Local Admins</option>
+        <option value="BiosVersionHigher">BIOS Version Higher Than</option>
+        <option value="WinRMEnabled">WinRM Enabled</option>
+        <option value="WinRMSecured">WinRM Secured (HTTPS)</option>
+        <option value="WinVersionCurrent">Windows Build Within 2 Releases</option>
+      </select>
+      <input type="text" id="inpParam" placeholder="Parameter value..." title="Enter the test parameter (path, name, version, etc.)" />
+      <button type="button" class="btn btn-primary" id="btnAddStep" title="Add this test step">&#x2795; Add Step</button>
+    </div>
+
+    <!-- Step list -->
+    <div class="scroll" id="stepList">
+      <div style="text-align:center;color:#555;padding:40px">
+        No test steps &#x2014; add steps above or load a template.
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── RIGHT: Results ──── -->
+  <div class="panel-right">
+    <div class="panel-header">
+      <span>Test Results</span>
+      <span id="resultStatus" style="font-size:11px;color:#888">Not run</span>
+    </div>
+    <div class="scroll" id="resultList">
+      <div style="text-align:center;color:#555;padding:40px">
+        Click <strong>TEST-ONLY</strong> or <strong>TEST-REMEDIATION</strong> to execute.
+      </div>
+    </div>
+    <div class="summary-bar" id="summaryBar">
+      <div class="sum-item"><div class="sum-dot g"></div> <span id="sumPass">0</span> Pass</div>
+      <div class="sum-item"><div class="sum-dot r"></div> <span id="sumFail">0</span> Fail</div>
+      <div class="sum-item"><div class="sum-dot y"></div> <span id="sumError">0</span> Error</div>
+      <div class="sum-item" style="margin-left:auto;color:#888">
+        <span id="sumTotal">0</span> total &#x2014; <span id="sumPct">0%</span> pass rate
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════ FOOTER ═════════════════════════ -->
+<footer>
+  Testing Routine Builder &#x2014; v2603.B0.v27.0
+  &#x2014; <a href="../../~README.md/FILES-MANIFEST.md">Files Manifest</a>
+  &#x2014; <a href="../../~README.md/PwShGUI-Checklists.xhtml">Checklists</a>
+  &#x2014; <a href="XHTML-FeatureRequests.xhtml">Feature Requests</a>
+  &#x2014; <a href="../../~README.md/ENHANCEMENTS-LOG.md">Enhancements</a>
+  &#x2014; <a href="../../~README.md/VERSION-UPDATES.md">Version Updates</a>
+</footer>
+
+<!-- ════════════════════ EDIT DIALOG (hidden) ══════════════ -->
+<div id="editOverlay" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;
+     background:rgba(0,0,0,0.6);z-index:1000;display:flex;align-items:center;justify-content:center">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;
+              padding:20px;width:480px;max-width:90%">
+    <div style="font-size:14px;font-weight:600;color:var(--accent);margin-bottom:12px" id="editTitle">Edit Step</div>
+    <div style="margin:8px 0">
+      <label style="font-size:12px;color:#aaa">Label:</label><br/>
+      <input type="text" id="editLabel" style="width:100%;padding:6px 10px;border:1px solid var(--border);
+             border-radius:4px;background:#1e1e1e;color:var(--fg);font-size:13px;margin-top:4px" />
+    </div>
+    <div style="margin:8px 0">
+      <label style="font-size:12px;color:#aaa">Parameter:</label><br/>
+      <input type="text" id="editParam" style="width:100%;padding:6px 10px;border:1px solid var(--border);
+             border-radius:4px;background:#1e1e1e;color:var(--fg);font-size:13px;margin-top:4px" />
+    </div>
+    <div style="margin:8px 0">
+      <label style="font-size:12px;color:#aaa">IF FAIL Remediation Command (optional):</label><br/>
+      <input type="text" id="editRemed" style="width:100%;padding:6px 10px;border:1px solid var(--border);
+             border-radius:4px;background:#1e1e1e;color:var(--fg);font-size:13px;margin-top:4px"
+             placeholder="e.g. Start-Service wuauserv" />
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+      <button type="button" class="btn btn-secondary" onclick="closeEdit()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ JAVASCRIPT ═════════════════════ -->
+<script type="text/javascript">
+//<![CDATA[
+/* ═══════════════════════════════════════════════════════════
+   DATA MODEL
+   ═══════════════════════════════════════════════════════════ */
+var steps = [];
+var results = [];
+var selectedStep = -1;
+var editIdx = -1;
+var routineMeta = { name:'Untitled Routine', description:'', version:'2603.B0.v27.0' };
+var TEMPLATE_DIR = '../../config/CONFIG-TEMPLATES/TESTING-TEMPLATES/';
+
+var TEST_TYPES = {
+  FileExists:          { label:'File Exists',               paramHint:'Full path to file' },
+  FolderExists:        { label:'Folder Exists',             paramHint:'Full path to folder' },
+  FolderWritable:      { label:'Can Write to Folder',       paramHint:'Full path to folder' },
+  ServiceRunning:      { label:'Service is Running',        paramHint:'Service name' },
+  ServiceExists:       { label:'Service Name Exists',       paramHint:'Service name' },
+  AppInstalled:        { label:'Application Installed',     paramHint:'Application name (winget/registry)' },
+  AppRunning:          { label:'Application is Running',    paramHint:'Process name' },
+  AppVersionHigher:    { label:'App Version Higher Than',   paramHint:'AppName|MinVersion' },
+  UserIsAdmin:         { label:'User is Admin',             paramHint:'Username (blank=current)' },
+  RemotePathAccessible:{ label:'Remote Path Accessible',    paramHint:'UNC path (\\\\server\\share)' },
+  DriveMappingExists:  { label:'Drive Mapping Exists',      paramHint:'Drive letter (e.g. Z:)' },
+  DNSForward:          { label:'DNS Forward Resolution',    paramHint:'Hostname' },
+  DNSReverse:          { label:'DNS Reverse Resolution',    paramHint:'IP address' },
+  TimezoneEquals:      { label:'Timezone Equals',           paramHint:'UTC offset (e.g. +8)' },
+  LanguageEquals:      { label:'Language Equals',           paramHint:'Language tag (e.g. en-AU)' },
+  RegionEquals:        { label:'Region Equals',             paramHint:'Country (e.g. Australia)' },
+  UserExists:          { label:'Username Exists',           paramHint:'Local username' },
+  UserIsLocalAdmin:    { label:'User in Local Admins',      paramHint:'Username' },
+  BiosVersionHigher:   { label:'BIOS Version Higher Than',  paramHint:'Minimum version string' },
+  WinRMEnabled:        { label:'WinRM Enabled',             paramHint:'(no parameter needed)' },
+  WinRMSecured:        { label:'WinRM Secured (HTTPS)',     paramHint:'(no parameter needed)' },
+  WinVersionCurrent:   { label:'Windows Build Current',     paramHint:'(no parameter needed)' }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════ */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function iso() { return new Date().toISOString(); }
+function pad2(n) { return n < 10 ? '0'+n : ''+n; }
+function stamp() { var d=new Date(); return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'_'+pad2(d.getHours())+pad2(d.getMinutes()); }
+
+function dlBlob(json, name) {
+  try {
+    var b = new Blob([json], {type:'application/json'});
+    var u = URL.createObjectURL(b);
+    var a = document.createElement('a');
+    a.href = u; a.download = name;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(u);
+  } catch(e) { alert('Download failed: ' + e.message); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDERING — STEPS
+   ═══════════════════════════════════════════════════════════ */
+function renderSteps() {
+  var el = document.getElementById('stepList');
+  document.getElementById('stepCount').textContent = steps.length + ' step' + (steps.length !== 1 ? 's' : '');
+
+  if (!steps.length) {
+    el.innerHTML = '<div style="text-align:center;color:#555;padding:40px">No test steps \u2014 add steps above or load a template.</div>';
+    return;
+  }
+
+  var h = '';
+  for (var i = 0; i < steps.length; i++) {
+    var s = steps[i];
+    var sel = i === selectedStep ? ' selected' : '';
+    var tl = TEST_TYPES[s.type] ? TEST_TYPES[s.type].label : s.type;
+    h += '<div class="step-item' + sel + '" data-idx="' + i + '" onclick="selectStep(' + i + ')">';
+    h += '<div class="step-head">';
+    h += '<div class="step-num">' + (i+1) + '</div>';
+    h += '<span class="step-type">' + esc(tl) + '</span>';
+    h += '<span class="step-label">' + esc(s.label || 'Step ' + (i+1)) + '</span>';
+    h += '<div class="step-actions">';
+    h += '<button type="button" title="Edit" onclick="openEdit(' + i + ');event.stopPropagation()">&#x270E;</button>';
+    h += '<button type="button" title="Move up" onclick="moveStep(' + i + ',-1);event.stopPropagation()">&#x25B2;</button>';
+    h += '<button type="button" title="Move down" onclick="moveStep(' + i + ',1);event.stopPropagation()">&#x25BC;</button>';
+    h += '<button type="button" title="Delete" onclick="deleteStep(' + i + ');event.stopPropagation()" style="color:var(--red)">&#x2716;</button>';
+    h += '</div></div>';
+    h += '<div class="step-param">' + esc(s.param) + '</div>';
+    if (s.remediation) h += '<div class="step-remed">' + esc(s.remediation) + '</div>';
+    h += '</div>';
+  }
+  el.innerHTML = h;
+}
+
+function selectStep(i) { selectedStep = (selectedStep === i) ? -1 : i; renderSteps(); }
+
+function moveStep(i, dir) {
+  var j = i + dir;
+  if (j < 0 || j >= steps.length) return;
+  var tmp = steps[i]; steps[i] = steps[j]; steps[j] = tmp;
+  selectedStep = j;
+  renderSteps();
+}
+
+function deleteStep(i) {
+  steps.splice(i, 1);
+  if (selectedStep >= steps.length) selectedStep = steps.length - 1;
+  renderSteps();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ADD STEP
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnAddStep').addEventListener('click', function() {
+  var t = document.getElementById('selType').value;
+  var p = document.getElementById('inpParam').value.trim();
+  if (!p && t !== 'WinRMEnabled' && t !== 'WinRMSecured' && t !== 'WinVersionCurrent') {
+    alert('Enter a parameter value for this test type.');
+    return;
+  }
+  steps.push({
+    id: steps.length + 1,
+    type: t,
+    label: (TEST_TYPES[t] ? TEST_TYPES[t].label : t) + ': ' + p,
+    param: p,
+    remediation: ''
+  });
+  document.getElementById('inpParam').value = '';
+  renderSteps();
+});
+
+/* Update param placeholder when type changes */
+document.getElementById('selType').addEventListener('change', function() {
+  var t = this.value;
+  document.getElementById('inpParam').placeholder = TEST_TYPES[t] ? TEST_TYPES[t].paramHint : 'Parameter...';
+});
+
+/* ═══════════════════════════════════════════════════════════
+   EDIT DIALOG
+   ═══════════════════════════════════════════════════════════ */
+function openEdit(i) {
+  editIdx = i;
+  document.getElementById('editLabel').value = steps[i].label || '';
+  document.getElementById('editParam').value = steps[i].param || '';
+  document.getElementById('editRemed').value = steps[i].remediation || '';
+  document.getElementById('editTitle').textContent = 'Edit Step ' + (i+1) + ' (' + (TEST_TYPES[steps[i].type] ? TEST_TYPES[steps[i].type].label : steps[i].type) + ')';
+  document.getElementById('editOverlay').className = '';
+}
+
+function closeEdit() {
+  document.getElementById('editOverlay').className = 'hidden';
+  editIdx = -1;
+}
+
+function saveEdit() {
+  if (editIdx < 0 || editIdx >= steps.length) return;
+  steps[editIdx].label = document.getElementById('editLabel').value.trim() || steps[editIdx].label;
+  steps[editIdx].param = document.getElementById('editParam').value.trim();
+  steps[editIdx].remediation = document.getElementById('editRemed').value.trim();
+  closeEdit();
+  renderSteps();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAVE / LOAD TEMPLATES
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnSaveTemplate').addEventListener('click', function() {
+  var name = prompt('Template name:', routineMeta.name || 'my-test-routine');
+  if (!name) return;
+  routineMeta.name = name;
+  document.getElementById('routineName').textContent = name;
+  var data = {
+    meta: {
+      schema: 'PsGUI-TestRoutine/1.0',
+      name: name,
+      description: routineMeta.description || '',
+      created: iso(),
+      lastModified: iso(),
+      version: '2603.B0.v27.0'
+    },
+    steps: steps
+  };
+  var safeName = name.replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase();
+  dlBlob(JSON.stringify(data, null, 2), safeName + '.json');
+  alert('Template downloaded.\nSave it to:\nconfig/CONFIG-TEMPLATES/TESTING-TEMPLATES/' + safeName + '.json');
+});
+
+document.getElementById('btnLoadTemplate').addEventListener('click', function() {
+  document.getElementById('fileLoad').click();
+});
+
+document.getElementById('fileLoad').addEventListener('change', function(ev) {
+  var file = ev.target.files[0];
+  if (!file) return;
+  var rd = new FileReader();
+  rd.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data.steps || !data.steps.length) { alert('No steps found in template.'); return; }
+      steps = data.steps;
+      if (data.meta) {
+        routineMeta = data.meta;
+        document.getElementById('routineName').textContent = data.meta.name || 'Loaded Routine';
+      }
+      results = [];
+      selectedStep = -1;
+      renderSteps();
+      renderResults();
+      alert('Loaded ' + steps.length + ' test steps from: ' + file.name);
+    } catch(ex) { alert('Failed to parse JSON: ' + ex.message); }
+  };
+  rd.readAsText(file);
+  ev.target.value = '';
+});
+
+document.getElementById('btnNewRoutine').addEventListener('click', function() {
+  if (steps.length && !confirm('Discard current steps?')) return;
+  steps = [];
+  results = [];
+  selectedStep = -1;
+  routineMeta = { name:'Untitled Routine', description:'', version:'2603.B0.v27.0' };
+  document.getElementById('routineName').textContent = 'Untitled Routine';
+  renderSteps();
+  renderResults();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   TEST EXECUTION — IN-BROWSER SIMULATION
+   (For full OS-level tests, use Invoke-TestRoutine.ps1)
+   ═══════════════════════════════════════════════════════════ */
+function simulateTest(step) {
+  /* Returns { status: 'pass'|'fail'|'error', message: '...' }
+     Most tests can only be fully run via PowerShell.
+     This provides a best-effort browser emulation. */
+  var p = step.param || '';
+  var r = { status:'error', message:'Browser cannot execute this test type. Use Invoke-TestRoutine.ps1 for full execution.' };
+
+  switch(step.type) {
+    case 'FileExists':
+    case 'FolderExists':
+    case 'FolderWritable':
+    case 'RemotePathAccessible':
+    case 'DriveMappingExists':
+      r.message = 'Path test "' + p + '" requires OS access. Run via PowerShell.';
+      break;
+    case 'ServiceRunning':
+    case 'ServiceExists':
+      r.message = 'Service "' + p + '" check requires OS access. Run via PowerShell.';
+      break;
+    case 'AppInstalled':
+    case 'AppRunning':
+    case 'AppVersionHigher':
+      r.message = 'Application "' + p + '" check requires OS access. Run via PowerShell.';
+      break;
+    case 'UserIsAdmin':
+    case 'UserExists':
+    case 'UserIsLocalAdmin':
+      r.message = 'User "' + p + '" check requires OS access. Run via PowerShell.';
+      break;
+    case 'DNSForward':
+    case 'DNSReverse':
+      r.message = 'DNS "' + p + '" check requires OS access. Run via PowerShell.';
+      break;
+    case 'TimezoneEquals':
+      try {
+        var offset = new Date().getTimezoneOffset();
+        var hrs = -(offset / 60);
+        var expected = parseFloat(p);
+        if (hrs === expected) { r.status = 'pass'; r.message = 'Timezone offset is +' + hrs + ' (matches +' + expected + ')'; }
+        else { r.status = 'fail'; r.message = 'Timezone offset is +' + hrs + ', expected +' + expected; }
+      } catch(e) { r.message = 'Could not determine timezone: ' + e.message; }
+      break;
+    case 'LanguageEquals':
+      try {
+        var lang = navigator.language || navigator.userLanguage || '';
+        if (lang.toLowerCase() === p.toLowerCase()) { r.status = 'pass'; r.message = 'Language is ' + lang; }
+        else { r.status = 'fail'; r.message = 'Language is "' + lang + '", expected "' + p + '"'; }
+      } catch(e) { r.message = 'Could not determine language.'; }
+      break;
+    case 'RegionEquals':
+      r.message = 'Region check requires OS access. Run via PowerShell.';
+      break;
+    case 'BiosVersionHigher':
+    case 'WinRMEnabled':
+    case 'WinRMSecured':
+    case 'WinVersionCurrent':
+      r.message = 'System check requires OS access. Run via PowerShell.';
+      break;
+  }
+  return r;
+}
+
+function runTests(withRemediation) {
+  results = [];
+  document.getElementById('resultStatus').textContent = 'Running...';
+  var pass = 0, fail = 0, err = 0;
+
+  for (var i = 0; i < steps.length; i++) {
+    var s = steps[i];
+    var r = simulateTest(s);
+    r.stepIdx = i;
+    r.label = s.label;
+    r.type = s.type;
+    r.param = s.param;
+    r.remediation = '';
+
+    if (r.status === 'fail' && withRemediation && s.remediation) {
+      r.remediation = s.remediation;
+      r.message += ' \u2014 Remediation queued: ' + s.remediation;
+    }
+
+    results.push(r);
+    if (r.status === 'pass') pass++;
+    else if (r.status === 'fail') fail++;
+    else err++;
+  }
+
+  renderResults();
+  document.getElementById('sumPass').textContent = pass;
+  document.getElementById('sumFail').textContent = fail;
+  document.getElementById('sumError').textContent = err;
+  document.getElementById('sumTotal').textContent = steps.length;
+  var pct = steps.length > 0 ? Math.round((pass / steps.length) * 100) : 0;
+  document.getElementById('sumPct').textContent = pct + '%';
+  document.getElementById('resultStatus').textContent =
+    'Complete: ' + pass + ' pass, ' + fail + ' fail, ' + err + ' error';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDERING — RESULTS
+   ═══════════════════════════════════════════════════════════ */
+function renderResults() {
+  var el = document.getElementById('resultList');
+  if (!results.length) {
+    el.innerHTML = '<div style="text-align:center;color:#555;padding:40px">Click <strong>TEST-ONLY</strong> or <strong>TEST-REMEDIATION</strong> to execute.</div>';
+    return;
+  }
+
+  var h = '';
+  for (var i = 0; i < results.length; i++) {
+    var r = results[i];
+    var cls = r.status === 'pass' ? 'pass' : (r.status === 'fail' ? 'fail' : 'error');
+    var icon = r.status === 'pass' ? '\u2705' : (r.status === 'fail' ? '\u274C' : '\u26A0\uFE0F');
+    h += '<div class="result-item ' + cls + '">';
+    h += '<div class="result-icon">' + icon + '</div>';
+    h += '<div class="result-detail">';
+    h += '<div class="rd-label">[' + (r.stepIdx + 1) + '] ' + esc(r.label) + '</div>';
+    h += '<div class="rd-msg">' + esc(r.message) + '</div>';
+    if (r.remediation) h += '<div class="rd-msg" style="color:var(--yellow)">REMEDIATION: ' + esc(r.remediation) + '</div>';
+    h += '</div></div>';
+  }
+  el.innerHTML = h;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOOLBAR BUTTONS
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnTestOnly').addEventListener('click', function() {
+  if (!steps.length) { alert('Add test steps first.'); return; }
+  runTests(false);
+});
+
+document.getElementById('btnTestRemediate').addEventListener('click', function() {
+  if (!steps.length) { alert('Add test steps first.'); return; }
+  if (!confirm('This will run tests AND execute remediation commands for failures.\nProceed?')) return;
+  runTests(true);
+});
+
+document.getElementById('btnExportResults').addEventListener('click', function() {
+  if (!results.length) { alert('Run tests first.'); return; }
+  var data = {
+    exported: iso(),
+    routine: routineMeta.name,
+    steps: steps.length,
+    results: results
+  };
+  dlBlob(JSON.stringify(data, null, 2), 'test-results_' + stamp() + '.json');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════ */
+renderSteps();
+renderResults();
+
+/* ═══════════════════════════════════════════════════════════
+   POSTMESSAGE API — parent frame communication
+   ═══════════════════════════════════════════════════════════ */
+window.addEventListener('message', function(ev) {
+  if (!ev.data || typeof ev.data !== 'object') return;
+
+  if (ev.data.action === 'getRoutine') {
+    var data = {
+      meta: {
+        schema: 'PsGUI-TestRoutine/1.0',
+        name: routineMeta.name || 'Untitled Routine',
+        description: routineMeta.description || '',
+        lastModified: iso(),
+        version: routineMeta.version || '2603.B0.v27.0'
+      },
+      steps: steps
+    };
+    var msg = { action:'routineData', data:data };
+    if (ev.data._saveMode) msg._saveMode = ev.data._saveMode;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(msg, '*');
+    }
+  }
+
+  if (ev.data.action === 'loadRoutine' && ev.data.data) {
+    var d = ev.data.data;
+    if (d.steps && d.steps.length) {
+      steps = d.steps;
+      if (d.meta) {
+        routineMeta = d.meta;
+        document.getElementById('routineName').textContent = d.meta.name || 'Loaded Routine';
+      }
+      results = [];
+      selectedStep = -1;
+      renderSteps();
+      renderResults();
+    }
+  }
+});
+
+/* Notify parent of changes when steps are modified */
+var _origAddClick = document.getElementById('btnAddStep').onclick;
+function notifyParentChanged() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ action:'routineChanged' }, '*');
+  }
+}
+document.getElementById('btnAddStep').addEventListener('click', function() { setTimeout(notifyParentChanged,50); });
+var _origSaveEdit = window.saveEdit;
+window.saveEdit = function() { _origSaveEdit(); notifyParentChanged(); };
+
+//]]>
+</script>
+</body>
+</html>
+
+

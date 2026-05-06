@@ -1,0 +1,33 @@
+{
+  "notes": "",
+  "suggestedBy": "CronAiAthon",
+  "description": "Fix for bug Bug-20260331051323-848d0a4c: Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051323-2fa72ce0",
+  "sessionModCount": 1,
+  "parentId": "Bug-20260331051323-848d0a4c",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bugs2FIX",
+  "priority": "MEDIUM",
+  "title": "FIX: 7 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:13:23.8305305Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:13:23.8305871Z",
+  "sinId": ""
+}

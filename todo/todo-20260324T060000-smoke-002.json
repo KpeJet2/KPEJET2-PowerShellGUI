@@ -1,0 +1,22 @@
+{
+  "todo_id": "smoke-002",
+  "category": "smoke-test",
+  "title": "GUI Smoke Test Shell Matrix Execution",
+  "description": "Run tests/Invoke-GUISmokeTest.ps1 -RunShellMatrix to validate GUI launch, form display, menu presence, and tray icon on both PS 5.1 and PS 7. Launch-GUI-SmokeTest.bat calls this mode. Baseline: 33 PASS, 0 FAIL, 1 WARN.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "HIGH",
+  "status": "PLANNED",
+  "created_at": "2026-03-24T06:00:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "tests/Invoke-GUISmokeTest.ps1",
+    "Launch-GUI-SmokeTest.bat",
+    "Main-GUI.ps1"
+  ],
+  "notes": "Routine: Run after feature additions. Check pass count >= 33. Any new FAIL items added to regression backlog.",
+  "id": "smoke-002",
+  "createdAt": "2026-03-24T06:00:00Z",
+  "plannedAt": "2026-03-31T01:25:48.3877203+08:00",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.5885621Z"
+}

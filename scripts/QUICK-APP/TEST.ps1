@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
 <#[
 .SYNOPSIS
@@ -78,50 +77,16 @@ if (-not (Test-Path $linksConfigFile)) { New-Item -ItemType File -Path $linksCon
 if (-not (Test-Path $avpnConfigFile)) { New-Item -ItemType File -Path $avpnConfigFile -Force | Out-Null }
 
 # ==================== LOGGING FUNCTIONS ====================
-function Write-AppLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $logFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd').log"
-
-    $logEntry = "[$timestamp] [$Level] $Message"
-    Add-Content -Path $logFile -Value $logEntry -ErrorAction SilentlyContinue
-
-    switch ($Level) {
-        "Warning" { Write-Warning $logEntry }
-        "Error" { Write-Error $logEntry -ErrorAction Continue }
-        default { Write-Information $logEntry -InformationAction Continue }
-    }
+# Write-AppLog, Write-ScriptLog -- now provided by PwShGUICore module
+$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
+if (Test-Path $coreModulePath) {
+    Import-Module $coreModulePath -Force
+    Initialize-CorePaths -ScriptDir $scriptDir
+} else {
+    Write-Warning "PwShGUICore module not found at $coreModulePath"
 }
 
-function Write-ScriptLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-
-        [Parameter(Mandatory = $true)]
-        [string]$ScriptName,
-
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $scriptLogFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd')_PwShGui-SCRIPTS.log"
-
-    $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"
-    Add-Content -Path $scriptLogFile -Value $logEntry -ErrorAction SilentlyContinue
-}
-
-# ==================== TEST HELPERS ====================
+# ==================== TEST HELPERS ======================================
 function Compare-WinVer {
     $results = @()
     $localOs = Get-CimInstance -ClassName Win32_OperatingSystem
@@ -296,7 +261,7 @@ function Add-TestStep {
             $testCommand = "$testCommand -WhatIf"
         }
         try {
-            Invoke-Expression $testCommand | Out-Null
+            & ([scriptblock]::Create($testCommand)) | Out-Null
             Write-Host "WhatIf simulation executed. Review output above." -ForegroundColor Yellow
         } catch {
             Write-Warning "WhatIf simulation failed: $_"
@@ -479,7 +444,7 @@ foreach ($step in $selectedSteps) {
                     $output = $output -split "`n"
                 }
             } else {
-                $output = Invoke-Expression $step.Command 2>&1
+                $output = & ([scriptblock]::Create($step.Command)) 2>&1
             }
         } else {
             $output = @()
@@ -538,6 +503,13 @@ Export-TestReport -Results $results -ReportPath $reportPath
 
 Write-Host "`nReport saved to: $reportPath" -ForegroundColor Cyan
 Start-Process $reportPath
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,59 @@
+{
+  "sin_id": "SIN-PATTERN-022-NULL-METHOD-CALL_202603040000",
+  "title": "Method or property accessed on null-valued expression — RuntimeException in event handler",
+  "description": "Calling a method or accessing a property on a PowerShell variable that is $null throws System.Management.Automation.RuntimeException: 'You cannot call a method on a null-valued expression.' This is especially dangerous in WinForms button-click event handlers where closured variables (controls, data lists, result objects) may not yet be initialised, or where a lookup (e.g. .Controls.Find(), Where-Object, Get-Item) returned $null silently. Unlike NullReferenceException in C#, PS 5.1 gives no line-number in the compiled lambda stack frame, making diagnosis very slow. PS 7 provides the ?. null-conditional operator, but that operator is blocked by SIN-PATTERN-005 — PS 5.1 targets must use explicit $null -ne guards instead.",
+  "severity": "HIGH",
+  "category": "runtime-error",
+  "vector": "null-dereference",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "created_at": "2026-04-03T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Regex scan for [0] array-index access immediately followed by a property or method call, and for .Controls.Find() result immediately dereferenced — both are classic null sources in WinForms PS code",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "known_instances": [
+    "SIN-20260403-NULL-METHOD-CALL: WinForms Button.OnClick event handler (lambda_method1396) — System.Management.Automation.RuntimeException: You cannot call a method on a null-valued expression."
+  ],
+  "exception_message": "System.Management.Automation.RuntimeException: You cannot call a method on a null-valued expression.",
+  "exception_stack_highlight": "lambda_method*396 -> System.Windows.Forms.Button.OnClick -> Button.OnMouseUp",
+  "preventionRule": "In PS 5.1 there is no null-conditional operator (that is PS 7+ and blocked by P005). Always guard every method call or property access on a variable that may be $null:\n  if ($null -ne $obj) { $obj.Method() }\nIn WinForms event handlers:\n  1. Declare control variables in $Script: scope so all handlers share the same reference.\n  2. Wrap the entire handler body in try/catch and log with Write-AppLog.\n  3. Never index into an array result ([0]) without first checking @($arr).Count -gt 0.\n  4. Never dereference a .Controls.Find() result without null-check: $ctrl = $form.Controls.Find('name',$true); if ($null -ne $ctrl -and @($ctrl).Count -gt 0) { $ctrl[0].Text }.",
+  "scan_regex": "(?<![#'])\\[0\\]\\.[A-Za-z]|\\.Controls\\.Find\\([^)]+\\)(?:\\[0\\])?\\.[A-Za-z]",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;__pycache__;.venv;.venv-pygame312;node_modules;checkpoints",
+  "remedy": "# BEFORE (SIN)\n$ctrl = $form.Controls.Find('myBtn', $true)[0]\n$ctrl.Enabled = $false   # crashes if Find returned empty array\n\n# AFTER (safe)\n$found = @($form.Controls.Find('myBtn', $true))\nif ($found.Count -gt 0 -and $null -ne $found[0]) {\n    $found[0].Enabled = $false\n}\n\n# General pattern\n# BEFORE\n$result = Get-Something\n$result.Method()\n\n# AFTER\n$result = Get-Something\nif ($null -ne $result) {\n    $result.Method()\n}",
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "Pattern newly registered from live runtime exception in WinForms button handler. Remedy not yet applied to known instance.",
+  "tags": [
+    "runtime-error",
+    "null-dereference",
+    "winforms",
+    "event-handler",
+    "ps51-compatible",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-022-NULL-METHOD-CALL",
+    "previous_file": "SIN-PATTERN-022-NULL-METHOD-CALL.json",
+    "reindexed_at": "2026-04-04T14:57:30.7770871Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "context_guard_regex": "\\.Count\\s*-gt\\s*0|\\$null\\s*-ne|-ne\\s*\\$null|\\.Count\\s*-ge\\s*1|\\.Length\\s*-gt\\s*0|\\.SelectedItems\\.Count|\\.SelectedRows\\.Count|@\\(\\$|ForEach-Object|Where-Object|\\$match\\s+-and|Sort-Object|\\.Split\\(|\\.Matches\\.Count|if\\s*\\(\\$\\w+\\)|\\.Groups\\[|\\$errors\\[0\\]|\\$parseErrors\\[0\\]|\\.Rows\\[\\$|\\.Nodes\\[|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=",
+  "context_guard_lines": 8,
+  "context_guard_direction": "above",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$"
+}

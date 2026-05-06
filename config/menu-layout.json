@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "generated": "2026-04-08T00:00:00",
+  "menus": [
+    {
+      "id": "main-nav",
+      "label": "Navigation",
+      "style": "sidebar",
+      "items": [
+        { "id": "nav-hub",         "label": "Dashboard",       "icon": "\uD83C\uDFE0", "action": "navigate", "target": "/",                     "tooltip": "Workspace Hub"                  },
+        { "id": "nav-depvis",      "label": "Dependency Map",  "icon": "\uD83D\uDDFA", "action": "navigate", "target": "/pages/dependency-vis",  "tooltip": "Workspace Dependency Visualizer"},
+        { "id": "nav-scan-dash",   "label": "Scan Dashboard",  "icon": "\uD83D\uDCCA", "action": "navigate", "target": "/pages/scan-dashboard",  "tooltip": "Scan Results Dashboard"         },
+        { "id": "nav-menubuilder", "label": "Menu Builder",    "icon": "\uD83C\uDF9B", "action": "navigate", "target": "/pages/menu-builder",    "tooltip": "WYSIWYG Menu Editor"            },
+        { "id": "nav-bw-vault",    "label": "BW Vault",        "icon": "\uD83D\uDD10", "action": "navigate", "target": "/pages/bw-vault",        "tooltip": "Bitwarden Vault Checklist"      }
+      ]
+    },
+    {
+      "id": "scan-actions",
+      "label": "Scan Actions",
+      "style": "toolbar",
+      "items": [
+        { "id": "scan-full",        "label": "Full Scan",        "icon": "\uD83D\uDD0D", "action": "api-post", "target": "/api/scan/full",        "tooltip": "Run complete workspace dependency scan", "class": "btn-scan-full" },
+        { "id": "scan-incremental", "label": "Get Missing Data", "icon": "\uD83D\uDCE5", "action": "api-post", "target": "/api/scan/incremental", "tooltip": "Scan only stale or missing phases",      "class": "btn-scan-inc"  },
+        { "id": "scan-crashes",     "label": "Crash Dumps",      "icon": "\uD83D\uDCA5", "action": "navigate", "target": "/api/scan/crashes",     "tooltip": "View recent scan crash dumps",           "class": "btn-crashes"   }
+      ]
+    }
+  ],
+  "toolbar": {
+    "items": [
+      { "id": "tb-full-scan",   "label": "Full Scan",   "action": "api-post", "target": "/api/scan/full",        "class": "tb-btn tb-btn-scan" },
+      { "id": "tb-get-missing", "label": "Get Missing", "action": "api-post", "target": "/api/scan/incremental", "class": "tb-btn tb-btn-inc"  }
+    ]
+  },
+  "statusBar": {
+    "phases": ["folders","modules","scripts","configs","urls_ips","dns_resolution"],
+    "labels": {
+      "folders":        "Folders",
+      "modules":        "Modules",
+      "scripts":        "Scripts",
+      "configs":        "Configs",
+      "urls_ips":       "URLs/IPs",
+      "dns_resolution": "DNS"
+    }
+  }
+}

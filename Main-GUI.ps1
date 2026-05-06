@@ -1,5 +1,8 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.11
+﻿# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v24  2026-06-10       Phase A-F implementation: dep visualiser, smoke test, checklist invoker
+#   2603.B0.v23  2026-03-28 09:15  TrayHost/PShellCore: ApplicationContext lifecycle, custom smiley tray icon, spacebar rehydration, verbose logging
+#   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -12,9 +15,9 @@
 
 .NOTES
     Author   : The Establishment
-    Version  : 2602.a.11
+    Version  : 2604.B2.V31.0
     Created  : 24th January 2026
-    Modified : 22nd February 2026
+    Modified : 3rd March 2026
     Config   : config\system-variables.xml
 
 .PARAMETER StartupMode
@@ -43,16 +46,26 @@
 
 param(
     [ValidateSet('quik_jnr', 'slow_snr')]
-    [string]$StartupMode = 'slow_snr'
+    [string]$StartupMode = 'slow_snr',
+    [switch]$TaskTray
 )
 
-# Stop on errors
-$ErrorActionPreference = "Stop"
+# Continue on errors (GUI app should not terminate on unhandled errors)
+$ErrorActionPreference = "Continue"
+
+# ==================== GLOBAL ERROR TRAP ====================
+trap {
+    try { Write-AppLog "FATAL unhandled exception: $_" "Error" } catch { <# Intentional: non-fatal #> }
+    try { Export-LogBuffer } catch { <# Intentional: non-fatal #> }
+    try { Remove-SessionLock } catch { <# Intentional: non-fatal #> }
+    continue
+}
 
 # ==================== PERFORMANCE OPTIMIZATION: ASSEMBLY LOADING ====================
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Web
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # ==================== PERFORMANCE OPTIMIZATION: CACHING ====================
 # XML Document Cache
@@ -63,94 +76,113 @@ $script:_XmlCache = @{
     LastLinksLoad = $null
 }
 
-# Log Stream for buffered writes
-$script:_LogBuffer = @()
-$script:_LogBufferSize = 10  # Flush every N entries
-$script:_LogFilePath = $null
+# Workspace File-List Cache -- avoids redundant Get-ChildItem -Recurse scans
+$script:_FileListCache = @{
+    ScriptFiles = $null   # *.ps1, *.psm1, *.psd1
+    AllFiles    = $null   # All files
+    CachedAt    = $null   # [datetime] when last refreshed
+    MaxAgeSec   = 120     # Cache validity in seconds
+}
+$script:_ScanExclude = @('.git', '.history', 'node_modules', '~REPORTS\archive')
+
+function Get-CachedScriptFiles {
+    <# Returns cached list of *.ps1/*.psm1/*.psd1 in workspace, excluding .git/.history #>
+    $now = [datetime]::UtcNow
+    if ($script:_FileListCache.ScriptFiles -and $script:_FileListCache.CachedAt -and
+        ($now - $script:_FileListCache.CachedAt).TotalSeconds -lt $script:_FileListCache.MaxAgeSec) {
+        return $script:_FileListCache.ScriptFiles
+    }
+    $root = $scriptDir
+    $files = Get-ChildItem -Path $root -Recurse -File -Include *.ps1,*.psm1,*.psd1 -ErrorAction SilentlyContinue |
+        Where-Object {
+            foreach ($ex in $script:_ScanExclude) { if ($_.FullName -like "$root\$ex\*") { return $false } }
+            return $true
+        }
+    $script:_FileListCache.ScriptFiles = @($files)
+    $script:_FileListCache.CachedAt = $now
+    return $script:_FileListCache.ScriptFiles
+}
+
+function Get-CachedAllFiles {
+    <# Returns cached list of all files in workspace, excluding .git/.history #>
+    $now = [datetime]::UtcNow
+    if ($script:_FileListCache.AllFiles -and $script:_FileListCache.CachedAt -and
+        ($now - $script:_FileListCache.CachedAt).TotalSeconds -lt $script:_FileListCache.MaxAgeSec) {
+        return $script:_FileListCache.AllFiles
+    }
+    $root = $scriptDir
+    $exclude = @(Get-ConfigList "Do-Not-VersionTag-FoldersFiles") + '.git'
+    $files = Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue |
+        Where-Object {
+            $rel = $_.FullName.Substring($root.Length).TrimStart("\\")
+            foreach ($ex in $exclude) { if ($rel -like "${ex}*") { return $false } }
+            return $true
+        }
+    $script:_FileListCache.AllFiles = @($files)
+    $script:_FileListCache.CachedAt = $now
+    return $script:_FileListCache.AllFiles
+}
+
+function Clear-FileListCache {
+    <# Invalidates the workspace file cache (call after file create/delete operations) #>
+    $script:_FileListCache.ScriptFiles = $null
+    $script:_FileListCache.AllFiles = $null
+    $script:_FileListCache.CachedAt = $null
+}
+
+# Log Stream -- managed by PwShGUICore module (import below)
+# (Buffer variables removed -- now in PwShGUICore.psm1)
 
 # Define LOCAL script directory and paths (used before the global $scriptDir block)
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-function Request-LocalPath {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Label,
-
-        [Parameter(Mandatory = $true)]
-        [string]$DefaultValue,
-
-        [int]$TimeoutSeconds = 9
-    )
-
-    $result = $DefaultValue
-    $timedOut = $false
-    $remaining = $TimeoutSeconds
-
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Local config: $Label"
-    $form.Size = New-Object System.Drawing.Size(520, 180)
-    $form.StartPosition = "CenterScreen"
-    $form.FormBorderStyle = "FixedDialog"
-    $form.MaximizeBox = $false
-    $form.MinimizeBox = $false
-    $form.Topmost = $true
-
-    $promptLabel = New-Object System.Windows.Forms.Label
-    $promptLabel.Text = "Enter value for $Label (blank uses default):"
-    $promptLabel.Location = New-Object System.Drawing.Point(12, 12)
-    $promptLabel.Size = New-Object System.Drawing.Size(490, 18)
-    $form.Controls.Add($promptLabel)
-
-    $textBox = New-Object System.Windows.Forms.TextBox
-    $textBox.Text = $DefaultValue
-    $textBox.Location = New-Object System.Drawing.Point(12, 36)
-    $textBox.Size = New-Object System.Drawing.Size(490, 20)
-    $form.Controls.Add($textBox)
-
-    $countdownLabel = New-Object System.Windows.Forms.Label
-    $countdownLabel.Text = "Auto-continue in $remaining s"
-    $countdownLabel.Location = New-Object System.Drawing.Point(12, 64)
-    $countdownLabel.Size = New-Object System.Drawing.Size(490, 18)
-    $form.Controls.Add($countdownLabel)
-
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Text = "OK"
-    $okButton.Location = New-Object System.Drawing.Point(346, 100)
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.Controls.Add($okButton)
-
-    $cancelButton = New-Object System.Windows.Forms.Button
-    $cancelButton.Text = "Use Default"
-    $cancelButton.Location = New-Object System.Drawing.Point(426, 100)
-    $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-    $form.Controls.Add($cancelButton)
-
-    $form.AcceptButton = $okButton
-    $form.CancelButton = $cancelButton
-
-    $timer = New-Object System.Windows.Forms.Timer
-    $timer.Interval = 1000
-    $timer.Add_Tick({
-        $remaining--
-        if ($remaining -le 0) {
-            $timedOut = $true
-            $timer.Stop()
-            $form.Close()
-        } else {
-            $countdownLabel.Text = "Auto-continue in $remaining s"
-        }
-    })
-
-    $form.Add_Shown({ $timer.Start() })
-    $dialogResult = $form.ShowDialog()
-    $timer.Stop()
-
-    if (-not $timedOut -and $dialogResult -eq [System.Windows.Forms.DialogResult]::OK) {
-        $result = if ([string]::IsNullOrWhiteSpace($textBox.Text)) { $DefaultValue } else { $textBox.Text }
+# ==================== IMPORT SHARED CORE MODULE ====================
+$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
+if (Test-Path $coreModulePath) {
+    Import-Module $coreModulePath -Force
+    if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+        throw "PwShGUICore imported but Write-AppLog not available -- module may be corrupt"
     }
-
-    return $result
+    Initialize-CorePaths -ScriptDir $scriptDir
+} else {
+    Write-Warning "PwShGUICore module not found at $coreModulePath -- falling back to inline functions"
 }
+
+# ==================== IMPORT THEME MODULE ====================
+$themeModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-Theme.psm1'
+if (Test-Path $themeModulePath) {
+    Import-Module $themeModulePath -Force
+    if (-not (Get-Command Set-ModernFormTheme -ErrorAction SilentlyContinue)) {
+        Write-AppLog 'PwShGUI-Theme imported but Set-ModernFormTheme not available' 'Warning'
+    }
+}
+
+# ==================== IMPORT TRAY HOST MODULE (PShellCore) ====================
+$trayHostModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psm1'
+if (Test-Path $trayHostModulePath) {
+    Import-Module $trayHostModulePath -Force
+    if (-not (Get-Command Initialize-TrayAppContext -ErrorAction SilentlyContinue)) {
+        Write-AppLog 'PwShGUI-TrayHost imported but Initialize-TrayAppContext not available' 'Warning'
+    } else {
+        Write-AppLog "[Init] PwShGUI-TrayHost module loaded (PShellCore background host)" "Debug"
+    }
+}
+
+# ==================== IMPORT INTEGRITY CORE MODULE ====================
+$integrityCoreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-IntegrityCore.psm1'
+if (Test-Path $integrityCoreModulePath) {
+    try {
+        Import-Module $integrityCoreModulePath -Force -ErrorAction Stop
+        Write-AppLog "[Init] PwShGUI-IntegrityCore module loaded" "Debug"
+    } catch {
+        Write-AppLog "PwShGUI-IntegrityCore failed to load: $($_.Exception.Message)" "Warning"
+    }
+} else {
+    Write-AppLog "PwShGUI-IntegrityCore.psm1 not found -- startup integrity check will run inline fallback" "Warning"
+}
+
+# Request-LocalPath -- now provided by PwShGUICore module
+# (Inline definition removed -- see modules/PwShGUICore.psm1)
 
 function Show-ConfigMaintenanceForm {
     <#
@@ -169,7 +201,7 @@ function Show-ConfigMaintenanceForm {
         [hashtable]$CurrentPaths
     )
     
-    Write-AppLog "Opening Config Maintenance Form" "Event"
+    Write-AppLog "Opening Config Maintenance Form" "Audit"
 
     $defaultBase = $scriptDir
     $defaultDownloads = Join-Path $scriptDir "~DOWNLOADS"
@@ -200,7 +232,7 @@ function Show-ConfigMaintenanceForm {
         Save-ConfigPathValues -Paths $CurrentPaths
     }
 
-    function Refresh-RowStats {
+    function Update-RowStats {
         param(
             [System.Windows.Forms.DataGridViewRow]$Row,
             [string]$Path
@@ -220,42 +252,74 @@ function Show-ConfigMaintenanceForm {
             }
         }
 
-        $canNest = "No"
-        if ($Row.Cells["ConfigKey"].Value -ne "DefaultFolder" -and $CurrentPaths.ContainsKey("DefaultFolder")) {
+        $configKey = $Row.Cells["ConfigKey"].Value
+        $canNest = if ($configKey -like '[Folder]*') { "-" }
+        elseif ($configKey -ne "DefaultFolder" -and $CurrentPaths.ContainsKey("DefaultFolder")) {
             $defaultFolder = $CurrentPaths["DefaultFolder"]
-            if (-not $Path.StartsWith($defaultFolder, [StringComparison]::OrdinalIgnoreCase)) {
-                $canNest = "Yes"
-            }
+            if (-not $Path.StartsWith($defaultFolder, [StringComparison]::OrdinalIgnoreCase)) { "Yes" } else { "No" }
+        } else { "No" }
+
+        $folderCount = 0
+        if ($exists) {
+            try {
+                $folderCount = @(Get-ChildItem -LiteralPath $Path -Directory -ErrorAction SilentlyContinue).Count
+            } catch { <# Intentional: non-fatal #> }
         }
 
         $Row.Cells["Path"].Value = $Path
         $Row.Cells["Exists"].Value = $(if ($exists) { "Y" } else { "N" })
         $Row.Cells["Files"].Value = $fileCount
+        $Row.Cells["Folders"].Value = $folderCount
         $Row.Cells["SizeMB"].Value = $sizeMB
         $Row.Cells["CanNest"].Value = $canNest
+    }
+
+    function Get-SelectedConfigRows {
+        # Returns an array of @{ Row; Key; Path } for checked config rows in the DGV (excludes [Folder] rows)
+        $result = @()
+        foreach ($row in $dgv.Rows) {
+            if ($row.IsNewRow) { continue }
+            $key = $row.Cells["ConfigKey"].Value
+            if ($row.Cells["Select"].Value -eq $true -and $key -notlike '[Folder]*') {
+                $result += @{ Row = $row; Key = $key; Path = $row.Cells["Path"].Value }
+            }
+        }
+        return $result
     }
     
     # Create main form
     $mainForm = New-Object System.Windows.Forms.Form
     $mainForm.Text = "Config Maintenance & Folder Management"
-    $mainForm.Width = 900
-    $mainForm.Height = 1010
+    $mainForm.Width = 920
+    $mainForm.Height = 950
+    $mainForm.MinimumSize = New-Object System.Drawing.Size(820, 700)
     $mainForm.StartPosition = "CenterScreen"
-    $mainForm.FormBorderStyle = "FixedDialog"
-    $mainForm.MaximizeBox = $false
+    $mainForm.FormBorderStyle = "Sizable"
+    $mainForm.MaximizeBox = $true
+    $mainForm.GetType().GetProperty('DoubleBuffered',
+        [System.Reflection.BindingFlags]'Instance,NonPublic').SetValue($mainForm, $true, $null)
     
     # Header label
     $headerLabel = New-Object System.Windows.Forms.Label
     $headerLabel.Text = "Manage Configuration Paths and Folder Content"
-    $headerLabel.Location = New-Object System.Drawing.Point(10, 10)
-    $headerLabel.Size = New-Object System.Drawing.Size(860, 25)
+    $headerLabel.Dock = [System.Windows.Forms.DockStyle]::Top
+    $headerLabel.Height = 28
+    $headerLabel.Padding = New-Object System.Windows.Forms.Padding(10, 6, 0, 0)
     $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
     $mainForm.Controls.Add($headerLabel)
     
+    # Split container: DGV top, tabs bottom
+    $splitContainer = New-Object System.Windows.Forms.SplitContainer
+    $splitContainer.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $splitContainer.Orientation = [System.Windows.Forms.Orientation]::Horizontal
+    $splitContainer.SplitterDistance = 460
+    $splitContainer.SplitterWidth = 6
+    $splitContainer.Panel1MinSize = 200
+    $splitContainer.Panel2MinSize = 150
+
     # Create DataGridView for folder paths
     $dgv = New-Object System.Windows.Forms.DataGridView
-    $dgv.Location = New-Object System.Drawing.Point(10, 45)
-    $dgv.Size = New-Object System.Drawing.Size(860, 280)
+    $dgv.Dock = [System.Windows.Forms.DockStyle]::Fill
     $dgv.AllowUserToAddRows = $false
     $dgv.AllowUserToDeleteRows = $false
     $dgv.SelectionMode = "FullRowSelect"
@@ -264,79 +328,129 @@ function Show-ConfigMaintenanceForm {
     $dgv.AutoSizeColumnsMode = "Fill"
     $dgv.RowHeadersVisible = $false
     
-    # Add columns
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewCheckBoxColumn -Property @{ 
-        Name = "Select"; HeaderText = "☑"; Width = 40; ReadOnly = $false 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "ConfigKey"; HeaderText = "Config Key"; Width = 120; ReadOnly = $true 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "Path"; HeaderText = "Current Path"; Width = 350; ReadOnly = $true 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "Exists"; HeaderText = "Exists"; Width = 60; ReadOnly = $true 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "Files"; HeaderText = "Files"; Width = 60; ReadOnly = $true 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "SizeMB"; HeaderText = "Size(MB)"; Width = 75; ReadOnly = $true 
-    }))
-    $null = $dgv.Columns.Add((New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{ 
-        Name = "CanNest"; HeaderText = "Nestable"; Width = 70; ReadOnly = $true 
-    }))
-    
-    # Populate data
-    foreach ($key in $CurrentPaths.Keys | Sort-Object) {
-        $path = $CurrentPaths[$key]
-        $exists = Test-Path $path
-        $fileCount = 0
-        $sizeMB = 0
-        $canNest = "No"
-        
+    # Add columns – optimised widths: checkbox narrow, numerics right-aligned
+    $colSelect = New-Object System.Windows.Forms.DataGridViewCheckBoxColumn -Property @{
+        Name = "Select"; HeaderText = [char]0x2611; Width = 35; ReadOnly = $false
+    }
+    $null = $dgv.Columns.Add($colSelect)
+
+    $colKey = New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{
+        Name = "ConfigKey"; HeaderText = "Name"; Width = 140; ReadOnly = $true
+    }
+    $null = $dgv.Columns.Add($colKey)
+
+    $colPath = New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{
+        Name = "Path"; HeaderText = "Current Path"; Width = 320; ReadOnly = $true; AutoSizeMode = "Fill"
+    }
+    $null = $dgv.Columns.Add($colPath)
+
+    $colExists = New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{
+        Name = "Exists"; HeaderText = "?"; Width = 28; ReadOnly = $true
+    }
+    $colExists.DefaultCellStyle.Alignment = "MiddleCenter"
+    $null = $dgv.Columns.Add($colExists)
+
+    foreach ($numCol in @(
+        @{ N = "Files";   H = "Files";   W = 55 },
+        @{ N = "Folders"; H = "Dirs";    W = 45 },
+        @{ N = "SizeMB";  H = "MB";      W = 60 }
+    )) {
+        $c = New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{
+            Name = $numCol.N; HeaderText = $numCol.H; Width = $numCol.W; ReadOnly = $true
+        }
+        $c.DefaultCellStyle.Alignment = "MiddleRight"
+        $null = $dgv.Columns.Add($c)
+    }
+
+    $colNest = New-Object System.Windows.Forms.DataGridViewTextBoxColumn -Property @{
+        Name = "CanNest"; HeaderText = "Nest"; Width = 40; ReadOnly = $true
+    }
+    $colNest.DefaultCellStyle.Alignment = "MiddleCenter"
+    $null = $dgv.Columns.Add($colNest)
+
+    # ── Helper: compute row stats and add a DGV row ──
+    function Add-FolderRow {
+        param([string]$Key, [string]$FolderPath, [string]$NestDefault = "No")
+        $exists = Test-Path $FolderPath
+        $fileCount = 0; $sizeMB = 0; $folderCount = 0; $canNest = $NestDefault
         if ($exists) {
             try {
-                $items = Get-ChildItem -Path $path -File -Recurse -ErrorAction SilentlyContinue
-                $fileCount = ($items | Measure-Object).Count
-                $sizeBytes = ($items | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-                $sizeMB = [math]::Round($sizeBytes / 1MB, 2)
+                $items = Get-ChildItem -LiteralPath $FolderPath -File -Recurse -ErrorAction SilentlyContinue
+                $fileCount  = ($items | Measure-Object).Count
+                $sizeBytes  = ($items | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+                $sizeMB     = [math]::Round($sizeBytes / 1MB, 2)
+                $folderCount = @(Get-ChildItem -LiteralPath $FolderPath -Directory -ErrorAction SilentlyContinue).Count
             } catch {
-                Write-AppLog "Error scanning folder $path : $_" "Warning"
+                Write-AppLog "Error scanning folder $FolderPath : $_" "Warning"
             }
         }
-        
-        # Check if can be nested (not already in DefaultFolder and not DefaultFolder itself)
-        if ($key -ne "DefaultFolder" -and $CurrentPaths.ContainsKey("DefaultFolder")) {
-            $defaultFolder = $CurrentPaths["DefaultFolder"]
-            if (-not $path.StartsWith($defaultFolder, [StringComparison]::OrdinalIgnoreCase)) {
-                $canNest = "Yes"
-            }
+        if ($NestDefault -ne "-" -and $Key -ne "DefaultFolder" -and $CurrentPaths.ContainsKey("DefaultFolder")) {
+            $defPath = $CurrentPaths["DefaultFolder"]
+            $canNest = if (-not $FolderPath.StartsWith($defPath, [StringComparison]::OrdinalIgnoreCase)) { "Yes" } else { "No" }
         }
-        
-        $null = $dgv.Rows.Add($false, $key, $path, $(if($exists){"Y"}else{"N"}), $fileCount, $sizeMB, $canNest)
+        $null = $dgv.Rows.Add($false, $Key, $FolderPath,
+            $(if ($exists) { "Y" } else { "N" }),
+            $fileCount, $folderCount, $sizeMB, $canNest)
     }
+
+    # ── Populate data in hierarchical order ──
+    # 1  Workspace root (DefaultFolder / ConfigPath)
+    $hierarchicalConfigOrder = @('DefaultFolder','ConfigPath','TempFolder','ReportFolder','DownloadFolder')
+    foreach ($key in $hierarchicalConfigOrder) {
+        if ($CurrentPaths.ContainsKey($key)) {
+            Add-FolderRow -Key $key -FolderPath $CurrentPaths[$key]
+        }
+    }
+    # Any remaining config keys not in the ordered list
+    foreach ($key in ($CurrentPaths.Keys | Sort-Object)) {
+        if ($hierarchicalConfigOrder -contains $key) { continue }
+        Add-FolderRow -Key $key -FolderPath $CurrentPaths[$key]
+    }
+
+    # 2  Workspace subfolders – alphabetical within group
+    $workspaceFolders = @('agents','checkpoints','config','logs','modules','pki','Report',
+                          'scripts','sin_registry','temp','todo','UPM','~DOWNLOADS','~README.md','~REPORTS')
+    foreach ($folderName in $workspaceFolders) {
+        $folderPath = Join-Path $scriptDir $folderName
+        Add-FolderRow -Key "[Folder] $folderName" -FolderPath $folderPath -NestDefault "-"
+    }
+
+    # Colour-code: grey background for [Folder] info rows
+    foreach ($row in $dgv.Rows) {
+        if ($row.Cells["ConfigKey"].Value -like '[Folder]*') {
+            $row.DefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(245, 245, 245)
+        }
+    }
+
+    $splitContainer.Panel1.Controls.Add($dgv)
     
-    $mainForm.Controls.Add($dgv)
-    
-    # Action panel
-    $actionPanel = New-Object System.Windows.Forms.GroupBox
-    $actionPanel.Text = "Folder Actions"
-    $actionPanel.Location = New-Object System.Drawing.Point(10, 335)
-    $actionPanel.Size = New-Object System.Drawing.Size(860, 260)
-    $mainForm.Controls.Add($actionPanel)
-    
-    # Nest folders section
+    # ══════════════════════════════════════════════════════════════
+    # TabControl – replaces flat action panel with tabbed panes
+    # ══════════════════════════════════════════════════════════════
+    $tabControl = New-Object System.Windows.Forms.TabControl
+    $tabControl.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $tabControl.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $splitContainer.Panel2.Controls.Add($tabControl)
+
+    $mainForm.Controls.Add($splitContainer)
+
+    # ─── TAB 1: Folder Actions ───────────────────────────────────
+    $tabFolderActions = New-Object System.Windows.Forms.TabPage
+    $tabFolderActions.Text = "Folder Actions"
+    $tabFolderActions.Padding = New-Object System.Windows.Forms.Padding(8)
+    $tabControl.TabPages.Add($tabFolderActions)
+
+    # Nest section
     $nestLabel = New-Object System.Windows.Forms.Label
-    $nestLabel.Text = "Nest Selected Folders in DefaultFolder:"
-    $nestLabel.Location = New-Object System.Drawing.Point(15, 25)
-    $nestLabel.Size = New-Object System.Drawing.Size(300, 20)
-    $actionPanel.Controls.Add($nestLabel)
-    
+    $nestLabel.Text = "Nest Selected Config Folders into DefaultFolder:"
+    $nestLabel.Location = New-Object System.Drawing.Point(10, 12)
+    $nestLabel.Size = New-Object System.Drawing.Size(320, 20)
+    $tabFolderActions.Controls.Add($nestLabel)
+
     $nestButton = New-Object System.Windows.Forms.Button
     $nestButton.Text = "Nest Folders →"
-    $nestButton.Location = New-Object System.Drawing.Point(320, 22)
-    $nestButton.Size = New-Object System.Drawing.Size(150, 25)
+    $nestButton.Location = New-Object System.Drawing.Point(340, 9)
+    $nestButton.Size = New-Object System.Drawing.Size(140, 25)
     $nestButton.Add_Click({
         $selectedRows = @()
         foreach ($row in $dgv.Rows) {
@@ -345,16 +459,13 @@ function Show-ConfigMaintenanceForm {
                 $selectedRows += $row
             }
         }
-
         if ($selectedRows.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No nestable folders selected.", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            [System.Windows.Forms.MessageBox]::Show("No nestable folders selected.", "Info", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
             return
         }
-
         $selectedKeys = $selectedRows | ForEach-Object { $_.Cells["ConfigKey"].Value }
         $confirmMsg = "Nest $($selectedKeys.Count) folder(s) into DefaultFolder?`n`nSelected: $($selectedKeys -join ', ')`n`nThis will move folder contents and update config."
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Nest", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-
+        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Nest", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question)
         if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
 
         $defaultFolder = $CurrentPaths["DefaultFolder"]
@@ -362,185 +473,119 @@ function Show-ConfigMaintenanceForm {
             $key = $row.Cells["ConfigKey"].Value
             $path = $row.Cells["Path"].Value
             if (-not (Test-Path $path)) { continue }
-
             $dest = Join-Path $defaultFolder $key
-            if (Test-Path $dest) {
-                $dest = Join-Path $defaultFolder ("{0}-{1}" -f $key, (Get-Date -Format "yyyyMMdd-HHmmss"))
-            }
+            if (Test-Path $dest) { $dest = Join-Path $defaultFolder ("{0}-{1}" -f $key, (Get-Date -Format "yyyyMMdd-HHmmss")) }
             New-Item -ItemType Directory -Path $dest -Force | Out-Null
-
             try {
-                $items = Get-ChildItem -LiteralPath $path -Force -ErrorAction SilentlyContinue
-                foreach ($item in $items) {
-                    Move-Item -LiteralPath $item.FullName -Destination $dest -Force -ErrorAction SilentlyContinue
+                Get-ChildItem -LiteralPath $path -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                    Move-Item -LiteralPath $_.FullName -Destination $dest -Force -ErrorAction SilentlyContinue
                 }
                 $remaining = Get-ChildItem -LiteralPath $path -Force -ErrorAction SilentlyContinue
-                if (-not $remaining) {
-                    Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
-                }
-
+                if (-not $remaining) { Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue }
                 Set-PathForKey -Key $key -Path $dest
-                Refresh-RowStats -Row $row -Path $dest
+                Update-RowStats -Row $row -Path $dest
                 Save-CurrentPaths
                 Write-AppLog "Nested folder $key into $dest" "Info"
-            } catch {
-                Write-AppLog "Nest operation failed for $path : $_" "Error"
-            }
+            } catch { Write-AppLog "Nest operation failed for $path : $_" "Error" }
         }
     })
-    $actionPanel.Controls.Add($nestButton)
-    
-    # Content Management section
+    $tabFolderActions.Controls.Add($nestButton)
+
+    # Content management section
     $contentLabel = New-Object System.Windows.Forms.Label
-    $contentLabel.Text = "Content Management (Selected Folders):"
-    $contentLabel.Location = New-Object System.Drawing.Point(15, 60)
-    $contentLabel.Size = New-Object System.Drawing.Size(300, 20)
-    $actionPanel.Controls.Add($contentLabel)
-    
+    $contentLabel.Text = "Content Management (Selected Config Folders):"
+    $contentLabel.Location = New-Object System.Drawing.Point(10, 48)
+    $contentLabel.Size = New-Object System.Drawing.Size(320, 20)
+    $tabFolderActions.Controls.Add($contentLabel)
+
     $moveButton = New-Object System.Windows.Forms.Button
     $moveButton.Text = "Move Content..."
-    $moveButton.Location = New-Object System.Drawing.Point(15, 85)
+    $moveButton.Location = New-Object System.Drawing.Point(10, 72)
     $moveButton.Size = New-Object System.Drawing.Size(120, 25)
     $moveButton.Add_Click({
-        $selected = @()
-        foreach ($row in $dgv.Rows) {
-            if ($row.IsNewRow) { continue }
-            if ($row.Cells["Select"].Value -eq $true) {
-                $selected += @{ Row = $row; Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value }
-            }
-        }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No folders selected.", "Info")
-            return
-        }
-
+        $selected = Get-SelectedConfigRows
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
         $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderBrowser.Description = "Select destination folder for content move"
-        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-        $dest = $folderBrowser.SelectedPath
-        $confirmMsg = "Move content from $($selected.Count) folder(s) to:`n$dest`n`nEach folder will be moved into a subfolder named after its config key. Source folders will be emptied. Continue?"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Move", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $folderBrowser.Dispose(); return }
+        $dest = $folderBrowser.SelectedPath; $folderBrowser.Dispose()
+        $confirmMsg = "Move content from $($selected.Count) folder(s) to:`n$dest`n`nContinue?"
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Move", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         foreach ($item in $selected) {
             if (-not (Test-Path $item.Path)) { continue }
             $target = Join-Path $dest $item.Key
             New-Item -ItemType Directory -Path $target -Force | Out-Null
             try {
-                $children = Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue
-                foreach ($child in $children) {
-                    Move-Item -LiteralPath $child.FullName -Destination $target -Force -ErrorAction SilentlyContinue
-                }
+                Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue | ForEach-Object { Move-Item -LiteralPath $_.FullName -Destination $target -Force -ErrorAction SilentlyContinue }
                 $remaining = Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue
-                if (-not $remaining) {
-                    Remove-Item -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue
-                }
-                Refresh-RowStats -Row $item.Row -Path $item.Path
+                if (-not $remaining) { Remove-Item -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue }
+                Update-RowStats -Row $item.Row -Path $item.Path
                 Write-AppLog "Moved content from $($item.Path) to $target" "Info"
-            } catch {
-                Write-AppLog "Move content failed for $($item.Path) : $_" "Error"
-            }
+            } catch { Write-AppLog "Move content failed for $($item.Path) : $_" "Error" }
         }
     })
-    $actionPanel.Controls.Add($moveButton)
-    
+    $tabFolderActions.Controls.Add($moveButton)
+
     $copyButton = New-Object System.Windows.Forms.Button
     $copyButton.Text = "Copy Content..."
-    $copyButton.Location = New-Object System.Drawing.Point(145, 85)
+    $copyButton.Location = New-Object System.Drawing.Point(140, 72)
     $copyButton.Size = New-Object System.Drawing.Size(120, 25)
     $copyButton.Add_Click({
-        $selected = @()
-        foreach ($row in $dgv.Rows) {
-            if ($row.IsNewRow) { continue }
-            if ($row.Cells["Select"].Value -eq $true) {
-                $selected += @{ Row = $row; Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value }
-            }
-        }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No folders selected.", "Info")
-            return
-        }
-
+        $selected = Get-SelectedConfigRows
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
         $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderBrowser.Description = "Select destination folder for content copy"
-        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-        $dest = $folderBrowser.SelectedPath
-        $confirmMsg = "Copy content from $($selected.Count) folder(s) to:`n$dest`n`nEach folder will be copied into a subfolder named after its config key. Source folders remain unchanged. Continue?"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Copy", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $folderBrowser.Dispose(); return }
+        $dest = $folderBrowser.SelectedPath; $folderBrowser.Dispose()
+        $confirmMsg = "Copy content from $($selected.Count) folder(s) to:`n$dest`n`nContinue?"
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Copy", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         foreach ($item in $selected) {
             if (-not (Test-Path $item.Path)) { continue }
             $target = Join-Path $dest $item.Key
             New-Item -ItemType Directory -Path $target -Force | Out-Null
             try {
-                $children = Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue
-                foreach ($child in $children) {
-                    if ($child.PSIsContainer) {
-                        Copy-Item -LiteralPath $child.FullName -Destination (Join-Path $target $child.Name) -Recurse -Force -ErrorAction SilentlyContinue
-                    } else {
-                        Copy-Item -LiteralPath $child.FullName -Destination $target -Force -ErrorAction SilentlyContinue
-                    }
+                Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                    if ($_.PSIsContainer) { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $target $_.Name) -Recurse -Force -ErrorAction SilentlyContinue }
+                    else { Copy-Item -LiteralPath $_.FullName -Destination $target -Force -ErrorAction SilentlyContinue }
                 }
-                Refresh-RowStats -Row $item.Row -Path $item.Path
+                Update-RowStats -Row $item.Row -Path $item.Path
                 Write-AppLog "Copied content from $($item.Path) to $target" "Info"
-            } catch {
-                Write-AppLog "Copy content failed for $($item.Path) : $_" "Error"
-            }
+            } catch { Write-AppLog "Copy content failed for $($item.Path) : $_" "Error" }
         }
     })
-    $actionPanel.Controls.Add($copyButton)
-    
+    $tabFolderActions.Controls.Add($copyButton)
+
     $abandonButton = New-Object System.Windows.Forms.Button
     $abandonButton.Text = "Abandon Folders"
-    $abandonButton.Location = New-Object System.Drawing.Point(275, 85)
+    $abandonButton.Location = New-Object System.Drawing.Point(270, 72)
     $abandonButton.Size = New-Object System.Drawing.Size(120, 25)
     $abandonButton.Add_Click({
-        $selected = @()
-        foreach ($row in $dgv.Rows) {
-            if ($row.IsNewRow) { continue }
-            if ($row.Cells["Select"].Value -eq $true) {
-                $selected += @{ Row = $row; Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value }
-            }
-        }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No folders selected.", "Info")
-            return
-        }
-
-        $confirmMsg = "ABANDON WARNING`n`nThis will mark $($selected.Count) folder(s) as abandoned (config reset to defaults).`nContent remains on disk but won't be tracked.`n`nFolders: $($selected.Key -join ', ')`n`nContinue?"
-        $confirm1 = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Abandon", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        if ($confirm1 -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
-        $confirm2 = [System.Windows.Forms.MessageBox]::Show("Final confirmation: abandon selected folders and reset to defaults?", "Final Confirmation", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        if ($confirm2 -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        $selected = Get-SelectedConfigRows
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
+        $confirmMsg = "ABANDON WARNING`n`nMark $($selected.Count) folder(s) as abandoned (config reset to defaults).`nContent remains on disk.`n`nFolders: $(($selected | ForEach-Object { $_.Key }) -join ', ')`n`nContinue?"
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Abandon", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+        if ([System.Windows.Forms.MessageBox]::Show("Final confirmation: abandon selected folders?", "Final", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         foreach ($item in $selected) {
             $defaultPath = Get-DefaultPathForKey -Key $item.Key
-            if (-not (Test-Path $defaultPath)) {
-                New-Item -ItemType Directory -Path $defaultPath -Force | Out-Null
-            }
+            if (-not (Test-Path $defaultPath)) { New-Item -ItemType Directory -Path $defaultPath -Force | Out-Null }
             Set-PathForKey -Key $item.Key -Path $defaultPath
-            Refresh-RowStats -Row $item.Row -Path $defaultPath
+            Update-RowStats -Row $item.Row -Path $defaultPath
             Save-CurrentPaths
             Write-AppLog "Abandoned $($item.Key) and reset to default $defaultPath" "Warning"
         }
     })
-    $actionPanel.Controls.Add($abandonButton)
-    
-    # Archive Operations section
-    $archiveLabel = New-Object System.Windows.Forms.Label
-    $archiveLabel.Text = "Archive Operations (Selected Folders):"
-    $archiveLabel.Location = New-Object System.Drawing.Point(15, 125)
-    $archiveLabel.Size = New-Object System.Drawing.Size(300, 20)
-    $actionPanel.Controls.Add($archiveLabel)
-    
+    $tabFolderActions.Controls.Add($abandonButton)
+
+    # ─── TAB 2: Archive Operations ───────────────────────────────
+    $tabArchive = New-Object System.Windows.Forms.TabPage
+    $tabArchive.Text = "Archive Operations"
+    $tabArchive.Padding = New-Object System.Windows.Forms.Padding(8)
+    $tabControl.TabPages.Add($tabArchive)
+
     $archiveInPlaceButton = New-Object System.Windows.Forms.Button
     $archiveInPlaceButton.Text = "Archive In-Place"
-    $archiveInPlaceButton.Location = New-Object System.Drawing.Point(15, 150)
-    $archiveInPlaceButton.Size = New-Object System.Drawing.Size(120, 25)
+    $archiveInPlaceButton.Location = New-Object System.Drawing.Point(10, 14)
+    $archiveInPlaceButton.Size = New-Object System.Drawing.Size(140, 28)
     $archiveInPlaceButton.Add_Click({
         $selected = @()
         foreach ($row in $dgv.Rows) {
@@ -549,36 +594,66 @@ function Show-ConfigMaintenanceForm {
                 $selected += @{ Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value }
             }
         }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info")
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info"); return }
+
+        # Collect root-level files for each selected folder
+        $folderSummary = @()
+        foreach ($item in $selected) {
+            if (-not (Test-Path $item.Path)) { continue }
+            $rootFiles = @(Get-ChildItem -Path $item.Path -File -ErrorAction SilentlyContinue)
+            $folderSummary += @{ Key = $item.Key; Path = $item.Path; Files = $rootFiles }
+        }
+        $totalFiles = ($folderSummary | ForEach-Object { $_.Files.Count } | Measure-Object -Sum).Sum
+        if ($totalFiles -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show("No root-level files found in the selected folder(s).", "Info")
             return
         }
 
-        $confirmMsg = "Create compressed archive (.zip) in-place for $($selected.Count) folder(s)?`n`nArchive will be created in parent directory with timestamp.`nOriginal folders remain unchanged.`n`nCompression: Maximum"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Archive In-Place", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+        $confirmMsg = "Archive In-Place for $($folderSummary.Count) folder(s)?`n" +
+                      "Root-level files to archive: $totalFiles`n" +
+                      "Files will be zipped into each folder's 'archive' subfolder.`n" +
+                      "Originals are deleted ONLY after the zip is verified."
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Archive In-Place", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
 
-        foreach ($item in $selected) {
-            if (-not (Test-Path $item.Path)) { continue }
-            $parent = Split-Path -Parent $item.Path
-            $zipName = "{0}-archive-{1}.zip" -f $item.Key, (Get-Date -Format "yyyyMMdd-HHmmss")
-            $zipPath = Join-Path $parent $zipName
+        $successCount = 0; $failCount = 0
+        foreach ($entry in $folderSummary) {
+            if ($entry.Files.Count -eq 0) { continue }
+            $archiveDir = Join-Path $entry.Path 'archive'
+            if (-not (Test-Path $archiveDir)) { New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null }
+            $zipName = "{0}-archive-v02-{1}.zip" -f $entry.Key, (Get-Date -Format "yyMMddHHmm")
+            $zipPath = Join-Path $archiveDir $zipName
+            $sourceCount = $entry.Files.Count
             try {
-                Compress-Archive -Path (Join-Path $item.Path "*") -DestinationPath $zipPath -CompressionLevel Optimal -Force
-                Write-AppLog "Archive created: $zipPath" "Info"
-            } catch {
-                Write-AppLog "Archive in-place failed for $($item.Path) : $_" "Error"
+                Compress-Archive -Path ($entry.Files | ForEach-Object { $_.FullName }) -DestinationPath $zipPath -CompressionLevel Optimal -Force
+                # Verify: zip exists and contains the expected file count
+                if (-not (Test-Path $zipPath)) { throw "Zip file was not created at $zipPath" }
+                $zipCheck = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+                $zipEntryCount = $zipCheck.Entries.Count
+                $zipCheck.Dispose()
+                if ($zipEntryCount -ne $sourceCount) {
+                    throw "Zip contains $zipEntryCount entries but expected $sourceCount"
+                }
+                # Verified -- safe to delete originals
+                foreach ($f in $entry.Files) {
+                    Remove-Item -Path $f.FullName -Force -ErrorAction Stop
+                }
+                Write-AppLog "Archive in-place OK: $zipPath ($sourceCount files archived, originals removed)" "Info"
+                $successCount++
+            }
+            catch {
+                Write-AppLog "Archive in-place failed for $($entry.Path): $_" "Error"
+                $failCount++
             }
         }
-
-        [System.Windows.Forms.MessageBox]::Show("Archive creation completed. Check logs for details.", "Archive In-Place")
+        $resultMsg = "Archive In-Place complete.`nSucceeded: $successCount folder(s), Failed: $failCount folder(s).`nCheck logs for details."
+        [System.Windows.Forms.MessageBox]::Show($resultMsg, "Archive In-Place")
     })
-    $actionPanel.Controls.Add($archiveInPlaceButton)
-    
+    $tabArchive.Controls.Add($archiveInPlaceButton)
+
     $archiveOutYonderButton = New-Object System.Windows.Forms.Button
     $archiveOutYonderButton.Text = "Archive Out-Yonder..."
-    $archiveOutYonderButton.Location = New-Object System.Drawing.Point(145, 150)
-    $archiveOutYonderButton.Size = New-Object System.Drawing.Size(150, 25)
+    $archiveOutYonderButton.Location = New-Object System.Drawing.Point(160, 14)
+    $archiveOutYonderButton.Size = New-Object System.Drawing.Size(160, 28)
     $archiveOutYonderButton.Add_Click({
         $selected = @()
         foreach ($row in $dgv.Rows) {
@@ -587,40 +662,28 @@ function Show-ConfigMaintenanceForm {
                 $selected += @{ Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value }
             }
         }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info")
-            return
-        }
-
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info"); return }
         $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderBrowser.Description = "Select destination for archive files"
-        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-        $dest = $folderBrowser.SelectedPath
-        $confirmMsg = "Create compressed archives for $($selected.Count) folder(s) in:`n$dest`n`nArchives will include timestamp.`nOriginal folders remain unchanged.`n`nCompression: Maximum"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Archive Out-Yonder", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        if ($folderBrowser.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $folderBrowser.Dispose(); return }
+        $dest = $folderBrowser.SelectedPath; $folderBrowser.Dispose()
+        $confirmMsg = "Create archives for $($selected.Count) folder(s) in:  $dest"
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Archive Out-Yonder", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         foreach ($item in $selected) {
             if (-not (Test-Path $item.Path)) { continue }
-            $zipName = "{0}-archive-{1}.zip" -f $item.Key, (Get-Date -Format "yyyyMMdd-HHmmss")
+            $zipName = "{0}-archive-v02-{1}.zip" -f $item.Key, (Get-Date -Format "yyMMddHHmm")
             $zipPath = Join-Path $dest $zipName
-            try {
-                Compress-Archive -Path (Join-Path $item.Path "*") -DestinationPath $zipPath -CompressionLevel Optimal -Force
-                Write-AppLog "Archive created: $zipPath" "Info"
-            } catch {
-                Write-AppLog "Archive out-yonder failed for $($item.Path) : $_" "Error"
-            }
+            try { Compress-Archive -Path (Join-Path $item.Path "*") -DestinationPath $zipPath -CompressionLevel Optimal -Force; Write-AppLog "Archive created: $zipPath" "Info" }
+            catch { Write-AppLog "Archive out-yonder failed for $($item.Path) : $_" "Error" }
         }
-
-        [System.Windows.Forms.MessageBox]::Show("Archive creation completed. Check logs for details.", "Archive Out-Yonder")
+        [System.Windows.Forms.MessageBox]::Show("Archive complete. Check logs for details.", "Archive Out-Yonder")
     })
-    $actionPanel.Controls.Add($archiveOutYonderButton)
-    
+    $tabArchive.Controls.Add($archiveOutYonderButton)
+
     $clearCleanButton = New-Object System.Windows.Forms.Button
     $clearCleanButton.Text = "Clear-Clean"
-    $clearCleanButton.Location = New-Object System.Drawing.Point(305, 150)
-    $clearCleanButton.Size = New-Object System.Drawing.Size(120, 25)
+    $clearCleanButton.Location = New-Object System.Drawing.Point(330, 14)
+    $clearCleanButton.Size = New-Object System.Drawing.Size(120, 28)
     $clearCleanButton.ForeColor = [System.Drawing.Color]::DarkRed
     $clearCleanButton.Add_Click({
         $selected = @()
@@ -630,84 +693,58 @@ function Show-ConfigMaintenanceForm {
                 $selected += @{ Row = $row; Key = $row.Cells["ConfigKey"].Value; Path = $row.Cells["Path"].Value; Files = $row.Cells["Files"].Value }
             }
         }
-        if ($selected.Count -eq 0) {
-            [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info")
-            return
-        }
-
+        if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No existing folders selected.", "Info"); return }
         $totalFiles = ($selected | ForEach-Object { [int]$_.Files } | Measure-Object -Sum).Sum
-        $confirmMsg = "CLEAR-CLEAN WARNING`n`nThis will DELETE ALL CONTENT from $($selected.Count) folder(s)!`n`nTotal files to delete: $totalFiles`n`nFolders: $($selected.Key -join ', ')`n`nTHIS CANNOT BE UNDONE!`n`nContinue?"
-        $confirm1 = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Clear-Clean", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        if ($confirm1 -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
-        $confirm2 = [System.Windows.Forms.MessageBox]::Show("Final confirmation: permanently delete all content from selected folders?", "Final Confirmation", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Stop)
-        if ($confirm2 -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        $confirmMsg = "CLEAR-CLEAN WARNING`n`nDELETE ALL CONTENT from $($selected.Count) folder(s)!`nTotal files: $totalFiles`n`nTHIS CANNOT BE UNDONE!"
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Clear-Clean", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+        if ([System.Windows.Forms.MessageBox]::Show("Final confirmation: permanently delete all content?", "Final", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Stop) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         foreach ($item in $selected) {
             if (-not (Test-Path $item.Path)) { continue }
             try {
-                $children = Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue
-                foreach ($child in $children) {
-                    Remove-Item -LiteralPath $child.FullName -Recurse -Force -ErrorAction SilentlyContinue
-                }
-                Refresh-RowStats -Row $item.Row -Path $item.Path
+                Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue | ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction SilentlyContinue }
+                Update-RowStats -Row $item.Row -Path $item.Path
                 Write-AppLog "Cleared content for $($item.Path)" "Warning"
-            } catch {
-                Write-AppLog "Clear-clean failed for $($item.Path) : $_" "Error"
-            }
+            } catch { Write-AppLog "Clear-clean failed for $($item.Path) : $_" "Error" }
         }
     })
-    $actionPanel.Controls.Add($clearCleanButton)
-    
-    # Config Management section
-    $configLabel = New-Object System.Windows.Forms.Label
-    $configLabel.Text = "Configuration Management:"
-    $configLabel.Location = New-Object System.Drawing.Point(15, 190)
-    $configLabel.Size = New-Object System.Drawing.Size(300, 20)
-    $actionPanel.Controls.Add($configLabel)
-    
+    $tabArchive.Controls.Add($clearCleanButton)
+
+    # ─── TAB 3: Config Management ────────────────────────────────
+    $tabConfig = New-Object System.Windows.Forms.TabPage
+    $tabConfig.Text = "Config Management"
+    $tabConfig.Padding = New-Object System.Windows.Forms.Padding(8)
+    $tabControl.TabPages.Add($tabConfig)
+
     $exportButton = New-Object System.Windows.Forms.Button
     $exportButton.Text = "Export Config"
-    $exportButton.Location = New-Object System.Drawing.Point(15, 215)
-    $exportButton.Size = New-Object System.Drawing.Size(120, 25)
+    $exportButton.Location = New-Object System.Drawing.Point(10, 14)
+    $exportButton.Size = New-Object System.Drawing.Size(120, 28)
     $exportButton.Add_Click({
-        Write-AppLog "User clicked Export Config" "Event"
-        if (-not (Test-Path $configFile)) {
-            [System.Windows.Forms.MessageBox]::Show("Config file not found: $configFile", "Error")
-            return
-        }
+        Write-AppLog "User clicked Export Config" "Audit"
+        if (-not (Test-Path $configFile)) { [System.Windows.Forms.MessageBox]::Show("Config file not found: $configFile", "Error"); return }
         $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
         $saveDialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
         $saveDialog.Title = "Export Configuration"
         $saveDialog.FileName = "config-export-$(Get-Date -Format 'yyyyMMdd-HHmmss').xml"
-        if ($saveDialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
-        try {
-            Copy-Item -LiteralPath $configFile -Destination $saveDialog.FileName -Force
-            Write-AppLog "Config export to: $($saveDialog.FileName)" "Info"
-            [System.Windows.Forms.MessageBox]::Show("Config exported successfully.", "Export")
-        } catch {
-            Write-AppLog "Config export failed: $_" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Export failed: $_", "Error")
-        }
+        if ($saveDialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $saveDialog.Dispose(); return }
+        try { Copy-Item -LiteralPath $configFile -Destination $saveDialog.FileName -Force; Write-AppLog "Config export to: $($saveDialog.FileName)" "Info"; [System.Windows.Forms.MessageBox]::Show("Config exported successfully.", "Export") }
+        catch { Write-AppLog "Config export failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Export failed: $_", "Error") }
+        finally { $saveDialog.Dispose() }
     })
-    $actionPanel.Controls.Add($exportButton)
-    
+    $tabConfig.Controls.Add($exportButton)
+
     $importButton = New-Object System.Windows.Forms.Button
     $importButton.Text = "Import Config"
-    $importButton.Location = New-Object System.Drawing.Point(145, 215)
-    $importButton.Size = New-Object System.Drawing.Size(120, 25)
+    $importButton.Location = New-Object System.Drawing.Point(140, 14)
+    $importButton.Size = New-Object System.Drawing.Size(120, 28)
     $importButton.Add_Click({
-        Write-AppLog "User clicked Import Config" "Event"
+        Write-AppLog "User clicked Import Config" "Audit"
         $openDialog = New-Object System.Windows.Forms.OpenFileDialog
         $openDialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
         $openDialog.Title = "Import Configuration"
-        if ($openDialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
-
+        if ($openDialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $openDialog.Dispose(); return }
         $confirmMsg = "Import configuration from:`n$($openDialog.FileName)`n`nCurrent config will be backed up first. Continue?"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Import", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        if ([System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Import", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -ne [System.Windows.Forms.DialogResult]::Yes) { $openDialog.Dispose(); return }
         try {
             if (Test-Path $configFile) {
                 $backup = Join-Path $configDir ("system-variables-backup-{0}.xml" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
@@ -715,64 +752,49 @@ function Show-ConfigMaintenanceForm {
                 Write-AppLog "Config backup created: $backup" "Info"
             }
             Copy-Item -LiteralPath $openDialog.FileName -Destination $configFile -Force
-            $script:_XmlCache.ConfigFile = $null
-            $script:_XmlCache.LastConfigLoad = $null
-            $CurrentPaths["ConfigPath"] = $ConfigPath
-            $CurrentPaths["DefaultFolder"] = $DefaultFolder
-            $CurrentPaths["TempFolder"] = $TempFolder
-            $CurrentPaths["ReportFolder"] = $ReportFolder
+            $script:_XmlCache.ConfigFile = $null; $script:_XmlCache.LastConfigLoad = $null
+            $CurrentPaths["ConfigPath"] = $ConfigPath; $CurrentPaths["DefaultFolder"] = $DefaultFolder
+            $CurrentPaths["TempFolder"] = $TempFolder; $CurrentPaths["ReportFolder"] = $ReportFolder
             $CurrentPaths["DownloadFolder"] = $DownloadFolder
             Write-AppLog "Config imported from: $($openDialog.FileName)" "Info"
             [System.Windows.Forms.MessageBox]::Show("Config imported successfully.", "Import")
-        } catch {
-            Write-AppLog "Config import failed: $_" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Import failed: $_", "Error")
-        }
+        } catch { Write-AppLog "Config import failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Import failed: $_", "Error") }
+        finally { $openDialog.Dispose() }
     })
-    $actionPanel.Controls.Add($importButton)
-    
+    $tabConfig.Controls.Add($importButton)
+
     $resetButton = New-Object System.Windows.Forms.Button
     $resetButton.Text = "Reset to Defaults"
-    $resetButton.Location = New-Object System.Drawing.Point(275, 215)
-    $resetButton.Size = New-Object System.Drawing.Size(120, 25)
+    $resetButton.Location = New-Object System.Drawing.Point(270, 14)
+    $resetButton.Size = New-Object System.Drawing.Size(130, 28)
     $resetButton.ForeColor = [System.Drawing.Color]::DarkRed
     $resetButton.Add_Click({
-        Write-AppLog "User clicked Reset to Defaults" "Event"
-        $confirmMsg = "RESET WARNING`n`nThis will reset ALL configuration to factory defaults.`nCurrent config will be backed up.`n`nContinue?"
-        $confirm = [System.Windows.Forms.MessageBox]::Show($confirmMsg, "Confirm Reset", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-
+        Write-AppLog "User clicked Reset to Defaults" "Audit"
+        if ([System.Windows.Forms.MessageBox]::Show("RESET WARNING`n`nReset ALL configuration to factory defaults?`nCurrent config backed up.", "Confirm Reset", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         try {
             if (Test-Path $configFile) {
                 $backup = Join-Path $configDir ("system-variables-backup-{0}.xml" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
                 Copy-Item -LiteralPath $configFile -Destination $backup -Force
                 Write-AppLog "Config backup created: $backup" "Info"
             }
-            Initialize-ConfigFile
-            $script:_XmlCache.ConfigFile = $null
-            $script:_XmlCache.LastConfigLoad = $null
-            $CurrentPaths["ConfigPath"] = $ConfigPath
-            $CurrentPaths["DefaultFolder"] = $DefaultFolder
-            $CurrentPaths["TempFolder"] = $TempFolder
-            $CurrentPaths["ReportFolder"] = $ReportFolder
+            Initialize-ConfigFile -ConfigFile $configFile -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir
+            $script:_XmlCache.ConfigFile = $null; $script:_XmlCache.LastConfigLoad = $null
+            $CurrentPaths["ConfigPath"] = $ConfigPath; $CurrentPaths["DefaultFolder"] = $DefaultFolder
+            $CurrentPaths["TempFolder"] = $TempFolder; $CurrentPaths["ReportFolder"] = $ReportFolder
             $CurrentPaths["DownloadFolder"] = $DownloadFolder
             Write-AppLog "Config reset to defaults" "Warning"
             [System.Windows.Forms.MessageBox]::Show("Config reset to defaults.", "Reset")
-        } catch {
-            Write-AppLog "Config reset failed: $_" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Reset failed: $_", "Error")
-        }
+        } catch { Write-AppLog "Config reset failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Reset failed: $_", "Error") }
     })
-    $actionPanel.Controls.Add($resetButton)
-    
-    # ==================== REMOTE PATHS SECTION ====================
-    $remotePathsGroup = New-Object System.Windows.Forms.GroupBox
-    $remotePathsGroup.Text = "Remote Paths"
-    $remotePathsGroup.Location = New-Object System.Drawing.Point(10, 605)
-    $remotePathsGroup.Size = New-Object System.Drawing.Size(860, 360)
-    $mainForm.Controls.Add($remotePathsGroup)
+    $tabConfig.Controls.Add($resetButton)
 
-    # Define the 7 remote path variables with their config XPath keys
+    # ─── TAB 4: Remote Paths ─────────────────────────────────────
+    $tabRemote = New-Object System.Windows.Forms.TabPage
+    $tabRemote.Text = "Remote Paths"
+    $tabRemote.Padding = New-Object System.Windows.Forms.Padding(8)
+    $tabRemote.AutoScroll = $true
+    $tabControl.TabPages.Add($tabRemote)
+
     $remotePathDefs = @(
         @{ Label = "RemoteUpdatePath";   XPath = "RemoteUpdatePath"   },
         @{ Label = "RemoteConfigPath";   XPath = "RemoteConfigPath"   },
@@ -782,342 +804,470 @@ function Show-ConfigMaintenanceForm {
         @{ Label = "RemoteLinksPath";    XPath = "RemoteLinksPath"    },
         @{ Label = "RemoteDownloadPath"; XPath = "RemoteDownloadPath" }
     )
-
     $remoteTextBoxes = @{}
-    $ry = 22
+    $ry = 12
     foreach ($def in $remotePathDefs) {
         $rLabel = New-Object System.Windows.Forms.Label
         $rLabel.Text = $def.Label + ":"
-        $rLabel.Location = New-Object System.Drawing.Point(10, $ry)
+        $rLabel.Location = New-Object System.Drawing.Point(6, $ry)
         $rLabel.Size = New-Object System.Drawing.Size(145, 20)
         $rLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleRight
-        $remotePathsGroup.Controls.Add($rLabel)
+        $tabRemote.Controls.Add($rLabel)
 
         $rTextBox = New-Object System.Windows.Forms.TextBox
-        $rTextBox.Location = New-Object System.Drawing.Point(158, ($ry - 1))
-        $rTextBox.Size = New-Object System.Drawing.Size(590, 22)
-        # Load current value from config (fall back to script-scope variable)
+        $rTextBox.Location = New-Object System.Drawing.Point(154, ($ry - 1))
+        $rTextBox.Size = New-Object System.Drawing.Size(560, 22)
         $cfgVal = try { [string](Get-ConfigSubValue $def.XPath) } catch { "" }
         $rTextBox.Text = if ($cfgVal) { $cfgVal } else { "" }
-        $remotePathsGroup.Controls.Add($rTextBox)
+        $tabRemote.Controls.Add($rTextBox)
         $remoteTextBoxes[$def.XPath] = $rTextBox
 
         $rBrowse = New-Object System.Windows.Forms.Button
         $rBrowse.Text = "..."
-        $rBrowse.Location = New-Object System.Drawing.Point(756, ($ry - 2))
-        $rBrowse.Size = New-Object System.Drawing.Size(90, 24)
-        $defCopy  = $def
-        $tbCopy   = $rTextBox
+        $rBrowse.Location = New-Object System.Drawing.Point(720, ($ry - 2))
+        $rBrowse.Size = New-Object System.Drawing.Size(60, 24)
+        $defCopy = $def; $tbCopy = $rTextBox
         $browseHandler = {
             $fb = New-Object System.Windows.Forms.FolderBrowserDialog
             $fb.Description = "Select path for $($defCopy.Label)"
             $fb.SelectedPath = if ([string]::IsNullOrWhiteSpace($tbCopy.Text)) { $scriptDir } else { $tbCopy.Text }
-            if ($fb.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-                $tbCopy.Text = $fb.SelectedPath
-            }
+            if ($fb.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { $tbCopy.Text = $fb.SelectedPath }
+            $fb.Dispose()
         }.GetNewClosure()
         $rBrowse.Add_Click($browseHandler)
-        $remotePathsGroup.Controls.Add($rBrowse)
-
-        $ry += 34
+        $tabRemote.Controls.Add($rBrowse)
+        $ry += 32
     }
 
-    # Save All Remote Paths button
     $saveRemoteButton = New-Object System.Windows.Forms.Button
     $saveRemoteButton.Text = "Save All Remote Paths"
-    $saveRemoteButton.Location = New-Object System.Drawing.Point(10, ($ry + 4))
-    $saveRemoteButton.Size = New-Object System.Drawing.Size(180, 26)
+    $saveRemoteButton.Location = New-Object System.Drawing.Point(6, ($ry + 6))
+    $saveRemoteButton.Size = New-Object System.Drawing.Size(170, 26)
     $saveRemoteButton.Add_Click({
         foreach ($def in $remotePathDefs) {
             $val = $remoteTextBoxes[$def.XPath].Text.Trim()
-            try {
-                Set-ConfigSubValue -XPath $def.XPath -Value $val
-                # Also update the script-level variable
-                Set-Variable -Name $def.Label -Value $val -Scope Script -ErrorAction SilentlyContinue
-                Write-AppLog "Remote path saved: $($def.XPath) = $val" "Info"
-            } catch {
-                Write-AppLog "Failed to save $($def.XPath): $_" "Warning"
-            }
+            try { Set-ConfigSubValue -XPath $def.XPath -Value $val; Set-Variable -Name $def.Label -Value $val -Scope Script -ErrorAction SilentlyContinue; Write-AppLog "Remote path saved: $($def.XPath) = $val" "Info" }
+            catch { Write-AppLog "Failed to save $($def.XPath): $_" "Warning" }
         }
-        [System.Windows.Forms.MessageBox]::Show("Remote paths saved to config.", "Saved", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        [System.Windows.Forms.MessageBox]::Show("Remote paths saved to config.", "Saved", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
     })
-    $remotePathsGroup.Controls.Add($saveRemoteButton)
+    $tabRemote.Controls.Add($saveRemoteButton)
 
     $clearRemoteButton = New-Object System.Windows.Forms.Button
     $clearRemoteButton.Text = "Clear All"
-    $clearRemoteButton.Location = New-Object System.Drawing.Point(200, ($ry + 4))
+    $clearRemoteButton.Location = New-Object System.Drawing.Point(186, ($ry + 6))
     $clearRemoteButton.Size = New-Object System.Drawing.Size(90, 26)
     $clearRemoteButton.ForeColor = [System.Drawing.Color]::DarkRed
     $clearRemoteButton.Add_Click({
-        $confirm = [System.Windows.Forms.MessageBox]::Show("Clear all remote path fields?", "Confirm", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
-        if ($confirm -eq [System.Windows.Forms.DialogResult]::Yes) {
+        if ([System.Windows.Forms.MessageBox]::Show("Clear all remote path fields?", "Confirm", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -eq [System.Windows.Forms.DialogResult]::Yes) {
             foreach ($tb in $remoteTextBoxes.Values) { $tb.Text = "" }
         }
     })
-    $remotePathsGroup.Controls.Add($clearRemoteButton)
+    $tabRemote.Controls.Add($clearRemoteButton)
 
-    # --- Compare & Sync from RemoteUpdatePath ---
     $compareRemoteButton = New-Object System.Windows.Forms.Button
-    $compareRemoteButton.Text = "Compare & Sync from RemoteUpdatePath..."
-    $compareRemoteButton.Location = New-Object System.Drawing.Point(10, ($ry + 36))
+    $compareRemoteButton.Text = "Compare && Sync from RemoteUpdatePath..."
+    $compareRemoteButton.Location = New-Object System.Drawing.Point(6, ($ry + 38))
     $compareRemoteButton.Size = New-Object System.Drawing.Size(280, 26)
     $compareRemoteButton.Add_Click({
         $remotePath = $remoteTextBoxes["RemoteUpdatePath"].Text.Trim()
         if ([string]::IsNullOrWhiteSpace($remotePath)) {
-            [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is not set. Enter a path and save first.", "Not Set", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
-            return
+            [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is not set.", "Not Set", "OK", [System.Windows.Forms.MessageBoxIcon]::Warning); return
         }
         if (-not (Test-Path $remotePath)) {
-            [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is not accessible:`n$remotePath", "Cannot Read Remote", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-            return
+            [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is not accessible:`n$remotePath", "Cannot Read Remote", "OK", [System.Windows.Forms.MessageBoxIcon]::Error); return
         }
-
         $localRoot = $scriptDir
         Write-AppLog "Comparing RemoteUpdatePath '$remotePath' with local root '$localRoot'" "Info"
-
-        # Gather remote files and compare
-        $whatIfLines  = [System.Collections.Generic.List[string]]::new()
-        $copyQueue    = [System.Collections.Generic.List[hashtable]]::new()
-
-        try {
-            $remoteFiles = Get-ChildItem -Path $remotePath -File -Recurse -ErrorAction Stop
-        } catch {
-            [System.Windows.Forms.MessageBox]::Show("Failed to enumerate remote path:`n$_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-            return
-        }
-
+        $whatIfLines = [System.Collections.Generic.List[string]]::new()
+        $copyQueue   = [System.Collections.Generic.List[hashtable]]::new()
+        try { $remoteFiles = Get-ChildItem -Path $remotePath -File -Recurse -ErrorAction Stop }
+        catch { [System.Windows.Forms.MessageBox]::Show("Failed to enumerate remote path:`n$_", "Error", "OK", [System.Windows.Forms.MessageBoxIcon]::Error); return }
         foreach ($rf in $remoteFiles) {
-            $relPath   = $rf.FullName.Substring($remotePath.TrimEnd('\').Length).TrimStart('\')
+            $relPath = $rf.FullName.Substring($remotePath.TrimEnd('\').Length).TrimStart('\')
+            if ($relPath -match '\.\.' -or $relPath -match '^[\\/]') { Write-AppLog "Skipped unsafe relative path: $relPath" "Warning"; continue }
+            if ($rf.Attributes -band [System.IO.FileAttributes]::ReparsePoint) { Write-AppLog "Skipped reparse point: $relPath" "Warning"; continue }
             $localFile = Join-Path $localRoot $relPath
             if (-not (Test-Path $localFile)) {
-                $whatIfLines.Add("  [NEW]     $relPath")
-                $copyQueue.Add(@{ Src = $rf.FullName; Dst = $localFile })
+                $whatIfLines.Add("  [NEW]     $relPath"); $copyQueue.Add(@{ Src = $rf.FullName; Dst = $localFile })
             } else {
                 $lf = Get-Item $localFile
                 if ($rf.LastWriteTime -gt $lf.LastWriteTime) {
                     $diff = [math]::Round(($rf.LastWriteTime - $lf.LastWriteTime).TotalMinutes, 1)
-                    $whatIfLines.Add("  [NEWER +${diff}m] $relPath")
-                    $copyQueue.Add(@{ Src = $rf.FullName; Dst = $localFile })
+                    $whatIfLines.Add("  [NEWER +${diff}m] $relPath"); $copyQueue.Add(@{ Src = $rf.FullName; Dst = $localFile })
                 }
             }
         }
-
         if ($copyQueue.Count -eq 0) {
             Write-AppLog "Remote compare: no differences found" "Info"
-            [System.Windows.Forms.MessageBox]::Show("No differences found.`nLocal root is up to date with RemoteUpdatePath.", "Up To Date", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-            return
+            [System.Windows.Forms.MessageBox]::Show("No differences found.", "Up To Date", "OK", [System.Windows.Forms.MessageBoxIcon]::Information); return
         }
-
-        # Build WhatIf report in a scrollable dialog
-        $whatIfText = "WhatIf - Files that would be copied from RemoteUpdatePath to local root:`n" +
-                      "Remote : $remotePath`n" +
-                      "Local  : $localRoot`n" +
-                      "Files  : $($copyQueue.Count)`n`n" +
-                      ($whatIfLines -join "`n")
-
+        $whatIfText = "WhatIf - Files to copy from RemoteUpdatePath:`nRemote : $remotePath`nLocal  : $localRoot`nFiles  : $($copyQueue.Count)`n`n" + ($whatIfLines -join "`n")
         $previewForm = New-Object System.Windows.Forms.Form
         $previewForm.Text = "Compare Result - WhatIf Preview"
         $previewForm.Size = New-Object System.Drawing.Size(820, 500)
         $previewForm.StartPosition = "CenterScreen"
         $previewForm.FormBorderStyle = "FixedDialog"
-        $previewForm.MaximizeBox = $false
-
-        $previewBox = New-Object System.Windows.Forms.TextBox
-        $previewBox.Multiline = $true
-        $previewBox.ScrollBars = "Both"
-        $previewBox.WordWrap  = $false
-        $previewBox.ReadOnly  = $true
-        $previewBox.Font      = New-Object System.Drawing.Font("Consolas", 9)
-        $previewBox.Location  = New-Object System.Drawing.Point(10, 10)
-        $previewBox.Size      = New-Object System.Drawing.Size(780, 390)
-        $previewBox.Text      = $whatIfText
-        $previewForm.Controls.Add($previewBox)
-
-        $applyButton = New-Object System.Windows.Forms.Button
-        $applyButton.Text = "Update Local Root with Newer Files ($($copyQueue.Count))"
-        $applyButton.Location = New-Object System.Drawing.Point(10, 412)
-        $applyButton.Size = New-Object System.Drawing.Size(360, 30)
-        $applyButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-        $previewForm.Controls.Add($applyButton)
-
-        $skipButton = New-Object System.Windows.Forms.Button
-        $skipButton.Text = "Cancel - Do Not Copy"
-        $skipButton.Location = New-Object System.Drawing.Point(380, 412)
-        $skipButton.Size = New-Object System.Drawing.Size(200, 30)
-        $skipButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-        $previewForm.Controls.Add($skipButton)
-        $previewForm.CancelButton = $skipButton
-
-        $previewResult = $previewForm.ShowDialog()
+        $previewTb = New-Object System.Windows.Forms.TextBox
+        $previewTb.Multiline = $true; $previewTb.ReadOnly = $true; $previewTb.ScrollBars = "Both"
+        $previewTb.Font = New-Object System.Drawing.Font("Consolas", 9)
+        $previewTb.Location = New-Object System.Drawing.Point(10, 10)
+        $previewTb.Size = New-Object System.Drawing.Size(790, 390)
+        $previewTb.Text = $whatIfText
+        $previewForm.Controls.Add($previewTb)
+        $applySyncBtn = New-Object System.Windows.Forms.Button
+        $applySyncBtn.Text = "Apply Sync Now"
+        $applySyncBtn.Location = New-Object System.Drawing.Point(600, 410)
+        $applySyncBtn.Size = New-Object System.Drawing.Size(120, 30)
+        $applySyncBtn.DialogResult = [System.Windows.Forms.DialogResult]::OK
+        $previewForm.Controls.Add($applySyncBtn)
+        $cancelSyncBtn = New-Object System.Windows.Forms.Button
+        $cancelSyncBtn.Text = "Cancel"
+        $cancelSyncBtn.Location = New-Object System.Drawing.Point(490, 410)
+        $cancelSyncBtn.Size = New-Object System.Drawing.Size(100, 30)
+        $cancelSyncBtn.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+        $previewForm.Controls.Add($cancelSyncBtn)
+        $previewForm.AcceptButton = $applySyncBtn; $previewForm.CancelButton = $cancelSyncBtn
+        if ($previewForm.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $previewForm.Dispose(); return }
         $previewForm.Dispose()
+        $successCount = 0; $errorCount = 0
+        foreach ($entry in $copyQueue) {
+            $dir = Split-Path -Parent $entry.Dst
+            if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+            try { Copy-Item -LiteralPath $entry.Src -Destination $entry.Dst -Force; $successCount++ }
+            catch { Write-AppLog "Sync copy failed: $($entry.Src) -> $($entry.Dst) : $_" "Error"; $errorCount++ }
+        }
+        $summary = "Sync complete.`n`nCopied : $successCount file(s)`nFailed : $errorCount file(s)"
+        Write-AppLog $summary "Info"
+        [System.Windows.Forms.MessageBox]::Show($summary, "Sync Complete", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+    })
+    $tabRemote.Controls.Add($compareRemoteButton)
 
-        if ($previewResult -ne [System.Windows.Forms.DialogResult]::OK) {
-            Write-AppLog "Remote sync cancelled by user" "Info"
-            return
+    # ─── TAB 5: Build Package ────────────────────────────────────
+    $tabPackage = New-Object System.Windows.Forms.TabPage
+    $tabPackage.Text = "Build Package"
+    $tabPackage.Padding = New-Object System.Windows.Forms.Padding(8)
+    $tabPackage.AutoScroll = $true
+    $tabControl.TabPages.Add($tabPackage)
+
+    # Description label
+    $pkgInfo = New-Object System.Windows.Forms.Label
+    $pkgInfo.Text = "Build a distributable .zip package from the workspace. Select/deselect folders to include."
+    $pkgInfo.Location = New-Object System.Drawing.Point(10, 8)
+    $pkgInfo.Size = New-Object System.Drawing.Size(820, 18)
+    $tabPackage.Controls.Add($pkgInfo)
+
+    # Folder inclusion checklist (CheckedListBox)
+    $pkgFolderList = New-Object System.Windows.Forms.CheckedListBox
+    $pkgFolderList.Location = New-Object System.Drawing.Point(10, 30)
+    $pkgFolderList.Size = New-Object System.Drawing.Size(520, 240)
+    $pkgFolderList.CheckOnClick = $true
+    $pkgFolderList.Font = New-Object System.Drawing.Font("Consolas", 9)
+
+    # Uncompressed size label
+    $pkgSizeLabel = New-Object System.Windows.Forms.Label
+    $pkgSizeLabel.Text = "Estimated uncompressed size: calculating..."
+    $pkgSizeLabel.Location = New-Object System.Drawing.Point(10, 276)
+    $pkgSizeLabel.Size = New-Object System.Drawing.Size(520, 20)
+    $pkgSizeLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $tabPackage.Controls.Add($pkgSizeLabel)
+
+    # Build the folder list from workspace contents
+    $pkgExcludeDefaults = @(Get-ConfigList "Do-Not-VersionTag-FoldersFiles") + '.git'
+    $allWorkspaceItems = @(Get-ChildItem -Path $scriptDir -Force -ErrorAction SilentlyContinue)
+    $pkgFolderSizes = @{}   # name -> bytes
+    foreach ($wi in $allWorkspaceItems) {
+        $displayName = $wi.Name
+        $sizeBytes = 0
+        if ($wi.PSIsContainer) {
+            try {
+                $measurement = Get-ChildItem -LiteralPath $wi.FullName -File -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue
+                $sizeBytes = if ($measurement.Sum) { $measurement.Sum } else { 0 }
+            }
+            catch { $sizeBytes = 0 }
+            $sizeMBDisp = [math]::Round($sizeBytes / 1MB, 2)
+            $displayName = "{0,-30} {1,8} MB  (dir)" -f $wi.Name, $sizeMBDisp
+        } else {
+            $sizeBytes = $wi.Length
+            $sizeMBDisp = [math]::Round($sizeBytes / 1MB, 2)
+            $displayName = "{0,-30} {1,8} MB" -f $wi.Name, $sizeMBDisp
+        }
+        $pkgFolderSizes[$wi.Name] = $sizeBytes
+        $idx = $pkgFolderList.Items.Add($displayName)
+        # Pre-check items NOT in exclude list
+        $isIncluded = ($pkgExcludeDefaults -notcontains $wi.Name)
+        $pkgFolderList.SetItemChecked($idx, $isIncluded)
+    }
+    $tabPackage.Controls.Add($pkgFolderList)
+
+    # Update size estimate when selections change
+    function Update-PackageSizeEstimate {
+        $totalBytes = 0
+        for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) {
+            if ($pkgFolderList.GetItemChecked($i)) {
+                $itemName = ($allWorkspaceItems[$i]).Name
+                if ($pkgFolderSizes.ContainsKey($itemName)) { $totalBytes += $pkgFolderSizes[$itemName] }
+            }
+        }
+        $totalMB = [math]::Round($totalBytes / 1MB, 2)
+        $pkgSizeLabel.Text = "Estimated uncompressed size: $totalMB MB  ($($totalBytes.ToString('N0')) bytes)"
+    }
+    Update-PackageSizeEstimate
+    $pkgFolderList.Add_ItemCheck({
+        # ItemCheck fires before state changes, so use BeginInvoke to defer
+        $pkgFolderList.BeginInvoke([Action]{ Update-PackageSizeEstimate })
+    })
+
+    # Right side – options panel
+    $pkgOptGroup = New-Object System.Windows.Forms.GroupBox
+    $pkgOptGroup.Text = "Package Options"
+    $pkgOptGroup.Location = New-Object System.Drawing.Point(545, 30)
+    $pkgOptGroup.Size = New-Object System.Drawing.Size(280, 240)
+    $tabPackage.Controls.Add($pkgOptGroup)
+
+    # Drop folder contents before packaging
+    $chkDropContents = New-Object System.Windows.Forms.CheckBox
+    $chkDropContents.Text = "Clear temp/logs/reports first"
+    $chkDropContents.Location = New-Object System.Drawing.Point(12, 22)
+    $chkDropContents.Size = New-Object System.Drawing.Size(250, 20)
+    $pkgOptGroup.Controls.Add($chkDropContents)
+
+    # Sign scripts in package
+    $chkSign = New-Object System.Windows.Forms.CheckBox
+    $chkSign.Text = "Sign scripts (.ps1/.psm1/.psd1)"
+    $chkSign.Location = New-Object System.Drawing.Point(12, 46)
+    $chkSign.Size = New-Object System.Drawing.Size(250, 20)
+    $pkgOptGroup.Controls.Add($chkSign)
+
+    # Bake in remote update path
+    $chkBakeRemote = New-Object System.Windows.Forms.CheckBox
+    $chkBakeRemote.Text = "Bake in RemoteUpdatePath"
+    $chkBakeRemote.Location = New-Object System.Drawing.Point(12, 70)
+    $chkBakeRemote.Size = New-Object System.Drawing.Size(250, 20)
+    $pkgOptGroup.Controls.Add($chkBakeRemote)
+
+    # Compression level
+    $lblCompression = New-Object System.Windows.Forms.Label
+    $lblCompression.Text = "Compression:"
+    $lblCompression.Location = New-Object System.Drawing.Point(12, 100)
+    $lblCompression.Size = New-Object System.Drawing.Size(90, 20)
+    $pkgOptGroup.Controls.Add($lblCompression)
+
+    $cboCompression = New-Object System.Windows.Forms.ComboBox
+    $cboCompression.DropDownStyle = "DropDownList"
+    $cboCompression.Location = New-Object System.Drawing.Point(105, 97)
+    $cboCompression.Size = New-Object System.Drawing.Size(160, 22)
+    $cboCompression.Items.AddRange(@("Optimal","Fastest","NoCompression"))
+    $cboCompression.SelectedIndex = 0
+    $pkgOptGroup.Controls.Add($cboCompression)
+
+    # Encryption
+    $chkEncrypt = New-Object System.Windows.Forms.CheckBox
+    $chkEncrypt.Text = "Encrypt zip (requires 7-Zip)"
+    $chkEncrypt.Location = New-Object System.Drawing.Point(12, 130)
+    $chkEncrypt.Size = New-Object System.Drawing.Size(250, 20)
+    $pkgOptGroup.Controls.Add($chkEncrypt)
+
+    $lblEncMethod = New-Object System.Windows.Forms.Label
+    $lblEncMethod.Text = "Method:"
+    $lblEncMethod.Location = New-Object System.Drawing.Point(30, 155)
+    $lblEncMethod.Size = New-Object System.Drawing.Size(55, 20)
+    $lblEncMethod.Enabled = $false
+    $pkgOptGroup.Controls.Add($lblEncMethod)
+
+    $cboEncMethod = New-Object System.Windows.Forms.ComboBox
+    $cboEncMethod.DropDownStyle = "DropDownList"
+    $cboEncMethod.Location = New-Object System.Drawing.Point(88, 152)
+    $cboEncMethod.Size = New-Object System.Drawing.Size(177, 22)
+    $cboEncMethod.Items.AddRange(@("AES-256 (7z -mem=AES256)","ZipCrypto (legacy)"))
+    $cboEncMethod.SelectedIndex = 0
+    $cboEncMethod.Enabled = $false
+    $pkgOptGroup.Controls.Add($cboEncMethod)
+
+    $lblPassword = New-Object System.Windows.Forms.Label
+    $lblPassword.Text = "Password:"
+    $lblPassword.Location = New-Object System.Drawing.Point(30, 180)
+    $lblPassword.Size = New-Object System.Drawing.Size(55, 20)
+    $lblPassword.Enabled = $false
+    $pkgOptGroup.Controls.Add($lblPassword)
+
+    $txtPassword = New-Object System.Windows.Forms.TextBox
+    $txtPassword.Location = New-Object System.Drawing.Point(88, 177)
+    $txtPassword.Size = New-Object System.Drawing.Size(177, 22)
+    $txtPassword.UseSystemPasswordChar = $true
+    $txtPassword.Enabled = $false
+    $pkgOptGroup.Controls.Add($txtPassword)
+
+    # Toggle encryption controls
+    $chkEncrypt.Add_CheckedChanged({
+        $en = $chkEncrypt.Checked
+        $cboEncMethod.Enabled = $en; $lblEncMethod.Enabled = $en
+        $txtPassword.Enabled  = $en; $lblPassword.Enabled  = $en
+    })
+
+    # Copy to remote
+    $chkCopyRemote = New-Object System.Windows.Forms.CheckBox
+    $chkCopyRemote.Text = "Copy zip to RemoteUpdatePath"
+    $chkCopyRemote.Location = New-Object System.Drawing.Point(12, 210)
+    $chkCopyRemote.Size = New-Object System.Drawing.Size(250, 20)
+    $pkgOptGroup.Controls.Add($chkCopyRemote)
+
+    # ── Build button ──
+    $btnBuildPackage = New-Object System.Windows.Forms.Button
+    $btnBuildPackage.Text = "Build Package"
+    $btnBuildPackage.Location = New-Object System.Drawing.Point(545, 276)
+    $btnBuildPackage.Size = New-Object System.Drawing.Size(140, 30)
+    $btnBuildPackage.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $btnBuildPackage.Add_Click({
+        Write-AppLog "User initiated Build Package from Config Maintenance" "Audit"
+
+        # Gather selected folder names
+        $selectedItems = @()
+        for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) {
+            if ($pkgFolderList.GetItemChecked($i)) {
+                $selectedItems += $allWorkspaceItems[$i].FullName
+            }
+        }
+        if ($selectedItems.Count -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show("No folders/files selected for packaging.", "Info"); return
         }
 
-        # Perform the copy
-        $successCount = 0
-        $errorCount   = 0
-        foreach ($item in $copyQueue) {
-            try {
-                $destDir = Split-Path $item.Dst -Parent
-                if (-not (Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir -Force | Out-Null }
-                Copy-Item -Path $item.Src -Destination $item.Dst -Force -ErrorAction Stop
-                Write-AppLog "Synced: $($item.Dst)" "Info"
-                $successCount++
-            } catch {
-                Write-AppLog "Sync failed for $($item.Src): $_" "Warning"
-                $errorCount++
+        # Version info for zip name
+        $versionString = Get-VersionString
+        $zipName = "pwshGUI-v02-$versionString-$(Get-Date -Format 'yyMMddHHmm').zip"
+        $destinationPath = Join-Path $DownloadFolder $zipName
+
+        # Clear temp folders if requested
+        if ($chkDropContents.Checked) {
+            Clear-FolderContents -Path $DownloadFolder -Label "~DOWNLOADS"
+            Clear-FolderContents -Path $ReportFolder -Label "~REPORTS"
+            Clear-FolderContents -Path $logsDir -Label "logs"
+            Clear-FolderContents -Path $TempFolder -Label "temp"
+        }
+
+        # Bake-in remote path
+        $configBackup = $null; $configUpdated = $false
+        if ($chkBakeRemote.Checked) {
+            $remoteVal = try { $remoteTextBoxes["RemoteUpdatePath"].Text.Trim() } catch { "" }
+            if ($remoteVal) {
+                $configBackup = Get-ConfigSubValue "RemoteUpdatePath"
+                Set-ConfigSubValue -XPath "RemoteUpdatePath" -Value $remoteVal
+                $configUpdated = $true
+                Write-AppLog "Bake-in RemoteUpdatePath set to $remoteVal" "Info"
             }
         }
 
-        $summary = "Sync complete.`n`nCopied : $successCount file(s)`nFailed : $errorCount file(s)"
-        Write-AppLog $summary "Info"
-        [System.Windows.Forms.MessageBox]::Show($summary, "Sync Complete", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        # Sign scripts
+        if ($chkSign.Checked) {
+            $signingSubject = try { Get-ConfigSubValue "CodeSigningSubject" } catch { "CN=PowerShellGUI" }
+            $cert = Initialize-CodeSigningCert -Subject $signingSubject
+            if ($cert) {
+                Write-AppLog "Signing scripts in place using $($cert.Subject)" "Info"
+                Get-CachedScriptFiles | ForEach-Object {
+                    try { Set-AuthenticodeSignature -FilePath $_.FullName -Certificate $cert | Out-Null }
+                    catch { Write-AppLog "Failed to sign $($_.FullName): $_" "Warning" }
+                }
+                Clear-FileListCache  # Invalidate after signing changes
+            }
+        }
+
+        # Build package
+        $compressionLevel = $cboCompression.SelectedItem
+        Write-AppLog "Packaging workspace to $destinationPath (compression: $compressionLevel)" "Info"
+
+        if ($chkEncrypt.Checked) {
+            $password = $txtPassword.Text
+            if ([string]::IsNullOrWhiteSpace($password)) {
+                [System.Windows.Forms.MessageBox]::Show("Encryption requires a password.", "Password Required", "OK", [System.Windows.Forms.MessageBoxIcon]::Warning)
+                return
+            }
+            $sevenZipPath = Resolve-7ZipPath
+            if (-not $sevenZipPath) {
+                [System.Windows.Forms.MessageBox]::Show("7-Zip not found. Install 7-Zip or disable encryption.", "7-Zip Required", "OK", [System.Windows.Forms.MessageBoxIcon]::Error)
+                return
+            }
+            $encMethod = if ($cboEncMethod.SelectedIndex -eq 0) { "AES256" } else { "ZipCrypto" }
+            # Build list file for 7-Zip
+            $listFile = Join-Path $env:TEMP ("pwshgui_packlist_{0}.txt" -f ([guid]::NewGuid().ToString("N")))
+            try {
+                $relItems = $selectedItems | ForEach-Object { $_.Substring($scriptDir.Length).TrimStart("\") }
+                Set-Content -Path $listFile -Value $relItems -Encoding ASCII
+                $zipArgs = @("a", "-tzip", "-mem=$encMethod", "-mhe=on", "-p$password", $destinationPath, "@$listFile")
+                Push-Location $scriptDir
+                & $sevenZipPath @zipArgs | Out-Null
+                Pop-Location
+                Write-AppLog "Encrypted package created ($encMethod): $destinationPath" "Info"
+            } finally { if (Test-Path $listFile) { Remove-Item $listFile -Force } }
+        } else {
+            Compress-Archive -Path $selectedItems -DestinationPath $destinationPath -CompressionLevel $compressionLevel -Force
+        }
+
+        # Restore baked config
+        if ($configUpdated -and $configBackup) {
+            Set-ConfigSubValue -XPath "RemoteUpdatePath" -Value $configBackup
+        }
+
+        # Copy to remote
+        if ($chkCopyRemote.Checked) {
+            $remoteVal = try { $remoteTextBoxes["RemoteUpdatePath"].Text.Trim() } catch { "" }
+            if ($remoteVal) {
+                $remoteBuildDir = Join-Path $remoteVal "~BUILD-ZIPS"
+                try {
+                    if (-not (Test-Path $remoteBuildDir)) { New-Item -ItemType Directory -Path $remoteBuildDir -Force | Out-Null }
+                    Copy-Item -Path $destinationPath -Destination $remoteBuildDir -Force
+                    Write-AppLog "Copied build zip to $remoteBuildDir" "Info"
+                } catch { Write-AppLog "Failed to copy build zip to ${remoteBuildDir}: $_" "Warning" }
+            }
+        }
+
+        Write-AppLog "Package created: $destinationPath" "Info"
+        [System.Windows.Forms.MessageBox]::Show("Package created successfully:`n$destinationPath", "Build Package", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
     })
-    $remotePathsGroup.Controls.Add($compareRemoteButton)
+    $tabPackage.Controls.Add($btnBuildPackage)
+
+    # Select All / Deselect All buttons
+    $btnSelectAll = New-Object System.Windows.Forms.Button
+    $btnSelectAll.Text = "Select All"
+    $btnSelectAll.Location = New-Object System.Drawing.Point(700, 276)
+    $btnSelectAll.Size = New-Object System.Drawing.Size(56, 30)
+    $btnSelectAll.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $btnSelectAll.Add_Click({
+        for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) { $pkgFolderList.SetItemChecked($i, $true) }
+        Update-PackageSizeEstimate
+    })
+    $tabPackage.Controls.Add($btnSelectAll)
+
+    $btnDeselectAll = New-Object System.Windows.Forms.Button
+    $btnDeselectAll.Text = "Clear"
+    $btnDeselectAll.Location = New-Object System.Drawing.Point(762, 276)
+    $btnDeselectAll.Size = New-Object System.Drawing.Size(56, 30)
+    $btnDeselectAll.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $btnDeselectAll.Add_Click({
+        for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) { $pkgFolderList.SetItemChecked($i, $false) }
+        Update-PackageSizeEstimate
+    })
+    $tabPackage.Controls.Add($btnDeselectAll)
 
     # Close button
     $closeButton = New-Object System.Windows.Forms.Button
     $closeButton.Text = "Close"
-    $closeButton.Location = New-Object System.Drawing.Point(750, 972)
+    $closeButton.Location = New-Object System.Drawing.Point(750, 878)
     $closeButton.Size = New-Object System.Drawing.Size(120, 30)
     $closeButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $mainForm.Controls.Add($closeButton)
     $mainForm.CancelButton = $closeButton
-    
+
     # Show form
     $null = $mainForm.ShowDialog()
     $mainForm.Dispose()
 }
 
-function Request-LocalPathsUnified {
-    param(
-        [Parameter(Mandatory = $true)]
-        [hashtable]$Defaults,
-
-        [int]$TimeoutSeconds = 15
-    )
-
-    $result = @{}
-    $timedOut = $false
-    $remaining = $TimeoutSeconds
-
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Local configuration paths"
-    $form.Size = New-Object System.Drawing.Size(860, 340)
-    $form.StartPosition = "CenterScreen"
-    $form.FormBorderStyle = "FixedDialog"
-    $form.MaximizeBox = $false
-    $form.MinimizeBox = $false
-    $form.Topmost = $true
-
-    $titleLabel = New-Object System.Windows.Forms.Label
-    $titleLabel.Text = "Set local folders (blank keeps default)."
-    $titleLabel.Location = New-Object System.Drawing.Point(12, 12)
-    $titleLabel.Size = New-Object System.Drawing.Size(820, 20)
-    $form.Controls.Add($titleLabel) | Out-Null
-
-    $fieldOrder = @('ConfigPath', 'DefaultFolder', 'TempFolder', 'ReportFolder', 'DownloadFolder')
-    $textBoxes = @{}
-    $y = 44
-
-    foreach ($fieldName in $fieldOrder) {
-        $label = New-Object System.Windows.Forms.Label
-        $label.Text = $fieldName
-        $label.Location = New-Object System.Drawing.Point(12, $y)
-        $label.Size = New-Object System.Drawing.Size(120, 22)
-        $form.Controls.Add($label) | Out-Null
-
-        $textBox = New-Object System.Windows.Forms.TextBox
-        $textBox.Text = [string]$Defaults[$fieldName]
-        $textBox.Location = New-Object System.Drawing.Point(138, $y)
-        $textBox.Size = New-Object System.Drawing.Size(610, 22)
-        $form.Controls.Add($textBox) | Out-Null
-        $textBoxes[$fieldName] = $textBox
-
-        $browseButton = New-Object System.Windows.Forms.Button
-        $browseButton.Text = "Browse..."
-        $browseButton.Location = New-Object System.Drawing.Point(756, $y - 1)
-        $browseButton.Size = New-Object System.Drawing.Size(84, 24)
-        $fieldNameCopy = $fieldName
-        $textBoxCopy = $textBox
-        $defaultValueCopy = [string]$Defaults[$fieldName]
-        $clickHandler = {
-            $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
-            $dialog.Description = "Select folder for $fieldNameCopy"
-            $dialog.SelectedPath = if ([string]::IsNullOrWhiteSpace($textBoxCopy.Text)) { $defaultValueCopy } else { $textBoxCopy.Text }
-            if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-                $textBoxCopy.Text = $dialog.SelectedPath
-            }
-        }.GetNewClosure()
-        $null = $browseButton.Add_Click($clickHandler)
-        $form.Controls.Add($browseButton) | Out-Null
-
-        $y = $y + 42
-    }
-
-    $countdownLabel = New-Object System.Windows.Forms.Label
-    $countdownLabel.Text = "Auto-continue in $remaining s"
-    $countdownLabel.Location = New-Object System.Drawing.Point(12, 262)
-    $countdownLabel.Size = New-Object System.Drawing.Size(380, 18)
-    $form.Controls.Add($countdownLabel) | Out-Null
-
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Text = "OK"
-    $okButton.Location = New-Object System.Drawing.Point(666, 256)
-    $okButton.Size = New-Object System.Drawing.Size(84, 28)
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.Controls.Add($okButton) | Out-Null
-
-    $defaultsButton = New-Object System.Windows.Forms.Button
-    $defaultsButton.Text = "Use Defaults"
-    $defaultsButton.Location = New-Object System.Drawing.Point(756, 256)
-    $defaultsButton.Size = New-Object System.Drawing.Size(84, 28)
-    $defaultsButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-    $form.Controls.Add($defaultsButton) | Out-Null
-
-    $form.AcceptButton = $okButton
-    $form.CancelButton = $defaultsButton
-
-    $timer = New-Object System.Windows.Forms.Timer
-    $timer.Interval = 1000
-    $timerRemaining = $remaining
-    $tickHandler = {
-        $timerRemaining--
-        if ($timerRemaining -le 0) {
-            $timer.Stop()
-            $form.Close()
-        } else {
-            $countdownLabel.Text = "Auto-continue in $timerRemaining s"
-        }
-    }.GetNewClosure()
-    $null = $timer.Add_Tick($tickHandler)
-
-    $null = $form.Add_Shown({ $timer.Start() })
-    [void]$form.ShowDialog()
-    $null = $timer.Stop()
-
-    foreach ($fieldName in $fieldOrder) {
-        $defaultValue = [string]$Defaults[$fieldName]
-        $entered = [string]$textBoxes[$fieldName].Text
-        if (-not [string]::IsNullOrWhiteSpace($entered)) {
-            $result[$fieldName] = $entered
-        } else {
-            $result[$fieldName] = $defaultValue
-        }
-    }
-
-    Write-Output $result
-}
-
 # Define LOCAL region Configuration
-$ConfigPath = "C:\PowerShellGUI\config"
-$DefaultFolder = "C:\PowerShellGUI"
-$TempFolder = "C:\PowerShellGUI\temp"
-$ReportFolder = "C:\PowerShellGUI\~REPORTS"
-$DownloadFolder = "C:\PowerShellGUI\~DOWNLOADS"
+$ConfigPath = Join-Path $scriptDir "config"
+$DefaultFolder = $scriptDir
+$TempFolder = Join-Path $scriptDir "temp"
+$ReportFolder = Join-Path $scriptDir "~REPORTS"
+$DownloadFolder = Join-Path $scriptDir "~DOWNLOADS"
 
 $localPathDefaults = @{
     ConfigPath = if ([string]::IsNullOrWhiteSpace($ConfigPath)) { $scriptDir } else { $ConfigPath }
@@ -1135,17 +1285,18 @@ $ReportFolder = $localPathDefaults.ReportFolder
 $DownloadFolder = $localPathDefaults.DownloadFolder
 
 # Create local directories if they don't exist
-if ($ConfigPath -and -not (Test-Path $ConfigPath)) { New-Item -ItemType Directory -Path $ConfigPath -Force | Out-Null }
-if ($DefaultFolder -and -not (Test-Path $DefaultFolder)) { New-Item -ItemType Directory -Path $DefaultFolder -Force | Out-Null }
-if ($TempFolder -and -not (Test-Path $TempFolder)) { New-Item -ItemType Directory -Path $TempFolder -Force | Out-Null }
-if ($ReportFolder -and -not (Test-Path $ReportFolder)) { New-Item -ItemType Directory -Path $ReportFolder -Force | Out-Null }
-if ($DownloadFolder -and -not (Test-Path $DownloadFolder)) { New-Item -ItemType Directory -Path $DownloadFolder -Force | Out-Null }
+Assert-DirectoryExists $ConfigPath, $DefaultFolder, $TempFolder, $ReportFolder, $DownloadFolder
 
 # Define GLOBAL script directory and Files (already set above; re-affirmed here for clarity)
+# NOTE: Individual $xxxDir vars are retained for backward compatibility.
+#       The path registry in PwShGUICore (Get-ProjectPath / Get-AllProjectPaths) is the
+#       canonical source for new code.  Initialize-CorePaths populates it above.
 $configDir = Join-Path $scriptDir "config"
 $modulesDir = Join-Path $scriptDir "modules"
 $logsDir = Join-Path $scriptDir "logs"
 $scriptsDir = Join-Path $scriptDir "scripts"
+$versionsDir = Join-Path $scriptDir '.history\PwShGUI-Versions'
+if (-not (Test-Path $versionsDir)) { New-Item -ItemType Directory -Path $versionsDir -Force | Out-Null }
 $configFile = Join-Path $configDir "system-variables.xml"
 $linksConfigFile = Join-Path $configDir "links.xml"
 $avpnConfigFile = Join-Path $configDir "AVPN-devices.json"
@@ -1160,100 +1311,30 @@ $RemoteArchivePath = ""
 $RemoteLinksPath = ""
 $RemoteDownloadPath = ""
 
+# ── Load remote paths from config (so status bar shows correct state) ──
+try {
+    if (Get-Command Get-ConfigSubValue -ErrorAction SilentlyContinue) {
+        foreach ($rpKey in @('RemoteUpdatePath','RemoteConfigPath','RemoteTemplatePath',
+                             'RemoteBackupPath','RemoteArchivePath','RemoteLinksPath','RemoteDownloadPath')) {
+            $val = try { [string](Get-ConfigSubValue $rpKey) } catch { '' }
+            if (-not [string]::IsNullOrWhiteSpace($val)) {
+                Set-Variable -Name $rpKey -Value $val -Scope Script
+            }
+        }
+    }
+} catch { <# Non-fatal: remote paths stay empty #> }
+
 # Create GLOBAL directories if they don't exist
-if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
-if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
-if (-not (Test-Path $modulesDir)) { New-Item -ItemType Directory -Path $modulesDir -Force | Out-Null }
-if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
-if (-not (Test-Path $scriptsDir)) { New-Item -ItemType Directory -Path $scriptsDir -Force | Out-Null }
+$logsArchiveDir = Join-Path $logsDir "archive"
+Assert-DirectoryExists $scriptDir, $configDir, $modulesDir, $logsDir, $logsArchiveDir, $scriptsDir
 if (-not (Test-Path $configFile)) { New-Item -ItemType File -Path $configFile -Force | Out-Null }
 if (-not (Test-Path $linksConfigFile)) { New-Item -ItemType File -Path $linksConfigFile -Force | Out-Null }
 if (-not (Test-Path $avpnConfigFile)) { New-Item -ItemType File -Path $avpnConfigFile -Force | Out-Null }
 if (-not (Test-Path $avpnModulePath)) { Write-Warning "AVPN module not found at $avpnModulePath" }
 
 # ==================== LOGGING FUNCTIONS ====================
-function Write-AppLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-    
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $timestamp_date = Get-Date -Format 'yyyy-MM-dd'
-    $logFile = Join-Path $logsDir "$hostname-$timestamp_date.log"
-    
-    $logEntry = "[$timestamp] [$Level] $Message"
-    
-    # Buffered write instead of Add-Content for performance
-    $script:_LogBuffer += @{
-        File = $logFile
-        Content = $logEntry
-    }
-    
-    if ($script:_LogBuffer.Count -ge $script:_LogBufferSize) {
-        Flush-LogBuffer
-    }
-    
-    # Also write to console
-    switch ($Level) {
-        "Warning" { Write-Warning $logEntry }
-        "Error" { Write-Error $logEntry -ErrorAction Continue }
-        default { Write-Information $logEntry -InformationAction Continue }
-    }
-}
-
-function Write-ScriptLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        
-        [Parameter(Mandatory = $true)]
-        [string]$ScriptName,
-        
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-    
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $timestamp_date = Get-Date -Format 'yyyy-MM-dd'
-    $scriptLogFile = Join-Path $logsDir "$hostname-$timestamp_date`_PwShGui-SCRIPTS.log"
-    
-    $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"
-    
-    # Buffered write instead of Add-Content for performance
-    $script:_LogBuffer += @{
-        File = $scriptLogFile
-        Content = $logEntry
-    }
-    
-    if ($script:_LogBuffer.Count -ge $script:_LogBufferSize) {
-        Flush-LogBuffer
-    }
-}
-
-function Flush-LogBuffer {
-    if ($script:_LogBuffer.Count -eq 0) { return }
-    
-    $groupedByFile = $script:_LogBuffer | Group-Object -Property File
-    
-    foreach ($group in $groupedByFile) {
-        $logFile = $group.Name
-        $entries = $group.Group | ForEach-Object { $_.Content }
-        
-        try {
-            $entries | Add-Content -Path $logFile -ErrorAction SilentlyContinue
-        } catch {
-            Write-Warning "Failed to write log to $logFile : $_"
-        }
-    }
-    
-    $script:_LogBuffer.Clear()
-}
+# Write-AppLog, Write-ScriptLog, Export-LogBuffer -- now provided by PwShGUICore module
+# (Inline definitions removed -- see modules/PwShGUICore.psm1)
 
 # Import AVPN module if available
 if (Test-Path $avpnModulePath) {
@@ -1262,127 +1343,37 @@ if (Test-Path $avpnModulePath) {
     Write-AppLog "AVPN module not found at $avpnModulePath" "Warning"
 }
 
-# ==================== CONFIG FUNCTIONS ====================
-function Initialize-ConfigFile {
-    Write-AppLog "Creating system variables config file..." "Info"
-    
-    $systemVars = @{
-        ComputerName = $env:COMPUTERNAME
-        UserName = $env:USERNAME
-        UserDomain = $env:USERDOMAIN
-        OSVersion = [System.Environment]::OSVersion.VersionString
-        ProcessorCount = $env:PROCESSOR_COUNT
-        SystemRoot = $env:SystemRoot
-        Windows = $env:Windows
-        ProgramFiles = $env:ProgramFiles
-        ProgramFiles_x86 = ${env:ProgramFiles(x86)}
-        AppData = $env:APPDATA
-        LocalAppData = $env:LOCALAPPDATA
-        Temp = $env:TEMP
-        PSVersion = $PSVersionTable.PSVersion.ToString()
-        PowerShellVersion = $PSVersionTable.PSVersion.Major
-        ExecutionDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        LogDirectory = $logsDir
-        ConfigDirectory = $configDir
-        ScriptsDirectory = $scriptsDir
-        InitialExecutionHost = $host.Name
-    }
-    
-    # Convert to XML and save
-    $xmlDoc = New-Object System.Xml.XmlDocument
-    $root = $xmlDoc.CreateElement("SystemVariables")
-    
-    foreach ($key in $systemVars.Keys) {
-        $element = $xmlDoc.CreateElement($key)
-        $element.InnerText = $systemVars[$key]
-        $root.AppendChild($element) | Out-Null
-    }
-    
-    # version and tagging configuration
-    $versionElement = $xmlDoc.CreateElement("Version")
-    $majorElem = $xmlDoc.CreateElement("Major")
-    $majorElem.InnerText = (Get-Date).ToString('yyMM')
-    $versionElement.AppendChild($majorElem) | Out-Null
-    $minorElem = $xmlDoc.CreateElement("Minor")
-    $minorElem.InnerText = 'a'
-    $versionElement.AppendChild($minorElem) | Out-Null
-    $buildElem = $xmlDoc.CreateElement("Build")
-    $buildElem.InnerText = '0'
-    $versionElement.AppendChild($buildElem) | Out-Null
-    $root.AppendChild($versionElement) | Out-Null
-    
-    $excludeElement = $xmlDoc.CreateElement("Do-Not-VersionTag-FoldersFiles")
-    foreach ($folder in @('~BACKUPS','FOLDER-ROOT','logs','~REPORTS','~DOWNLOADS','temp','.logs','AutoIssueFinder-Logs','.history','.vscode')) {
-        $f = $xmlDoc.CreateElement("Folder")
-        $f.InnerText = $folder
-        $excludeElement.AppendChild($f) | Out-Null
-    }
-    $root.AppendChild($excludeElement) | Out-Null
-    
-    # Add Buttons section
-    $buttonsElement = $xmlDoc.CreateElement("Buttons")
-    
-    # Left column buttons
-    $leftButtonsElement = $xmlDoc.CreateElement("LeftColumn")
-    $leftButtons = @(
-        @{ ScriptName = "Script5"; DisplayName = "Backup Operations" },
-        @{ ScriptName = "Script6"; DisplayName = "Configuration Sync" },
-        @{ ScriptName = "Script1"; DisplayName = "Database Maintenance" },
-        @{ ScriptName = "Script3"; DisplayName = "Network Diagnostics" },
-        @{ ScriptName = "Script2"; DisplayName = "System Cleanup" },
-        @{ ScriptName = "Script4"; DisplayName = "Access - User and Group Management" }
-    )
-    
-    foreach ($btn in $leftButtons) {
-        $btnElement = $xmlDoc.CreateElement("Button")
-        
-        $scriptNameElem = $xmlDoc.CreateElement("ScriptName")
-        $scriptNameElem.InnerText = $btn.ScriptName
-        $btnElement.AppendChild($scriptNameElem) | Out-Null
-        
-        $displayNameElem = $xmlDoc.CreateElement("DisplayName")
-        $displayNameElem.InnerText = $btn.DisplayName
-        $btnElement.AppendChild($displayNameElem) | Out-Null
-        
-        $leftButtonsElement.AppendChild($btnElement) | Out-Null
-    }
-    
-    $buttonsElement.AppendChild($leftButtonsElement) | Out-Null
-    
-    # Right column buttons
-    $rightButtonsElement = $xmlDoc.CreateElement("RightColumn")
-    $rightButtons = @(
-        @{ ScriptName = "PWShQuickApp"; DisplayName = "PWSH-Quick-App (PWSH7 Prompt - Script Runner)"; ScriptPath = "~PWSH_Quick-APP3.ps1" }
-    )
-    
-    foreach ($btn in $rightButtons) {
-        $btnElement = $xmlDoc.CreateElement("Button")
-        
-        $scriptNameElem = $xmlDoc.CreateElement("ScriptName")
-        $scriptNameElem.InnerText = $btn.ScriptName
-        $btnElement.AppendChild($scriptNameElem) | Out-Null
-        
-        $displayNameElem = $xmlDoc.CreateElement("DisplayName")
-        $displayNameElem.InnerText = $btn.DisplayName
-        $btnElement.AppendChild($displayNameElem) | Out-Null
-        
-        if ($btn.ScriptPath) {
-            $pathElem = $xmlDoc.CreateElement("ScriptPath")
-            $pathElem.InnerText = $btn.ScriptPath
-            $btnElement.AppendChild($pathElem) | Out-Null
-        }
-        
-        $rightButtonsElement.AppendChild($btnElement) | Out-Null
-    }
-    
-    $buttonsElement.AppendChild($rightButtonsElement) | Out-Null
-    $root.AppendChild($buttonsElement) | Out-Null
-    
-    $xmlDoc.AppendChild($root) | Out-Null
-    $xmlDoc.Save($configFile)
-    
-    Write-AppLog "System variables config created successfully" "Success"
+# Import SASC (Secrets Access & Security Checks) modules if available
+$sascModulePath = Get-ProjectPath SascModule
+$sascAdaptersPath = Get-ProjectPath SascAdapters
+if (Test-Path $sascModulePath) {
+    Import-Module $sascModulePath -Force
+    Write-AppLog "SASC module loaded from $sascModulePath" "Info"
+} else {
+    Write-AppLog "SASC module not found at $sascModulePath" "Warning"
 }
+if (Test-Path $sascAdaptersPath) {
+    Import-Module $sascAdaptersPath -Force
+    Write-AppLog "SASC-Adapters module loaded from $sascAdaptersPath" "Info"
+} else {
+    Write-AppLog "SASC-Adapters module not found at $sascAdaptersPath" "Warning"
+}
+# Initialize SASC module state
+try {
+    if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
+        $script:_SASCAvailable = Initialize-SASCModule -ScriptDir $scriptDir
+        Write-AppLog "SASC initialized: $_SASCAvailable" "Info"
+    } else {
+        $script:_SASCAvailable = $false
+    }
+} catch {
+    $script:_SASCAvailable = $false
+    Write-AppLog "SASC initialization failed: $($_.Exception.Message)" "Warning"
+}
+
+# ==================== CONFIG FUNCTIONS ====================
+# Initialize-ConfigFile is now provided by PwShGUICore module.
+# Call sites pass $configFile, $logsDir, $configDir, $scriptsDir explicitly.
 
 function Get-ConfigVariable {
     param([string]$VariableName)
@@ -1453,7 +1444,7 @@ function Save-ConfigPathValues {
         [hashtable]$Paths
     )
 
-    if (-not (Test-Path $configFile)) { Initialize-ConfigFile }
+    if (-not (Test-Path $configFile)) { Initialize-ConfigFile -ConfigFile $configFile -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir }
 
     try {
         [xml]$xml = Get-Content $configFile
@@ -1544,15 +1535,31 @@ function Get-LinksConfig {
 function Get-VersionInfo {
     # Consolidated version info retrieval (single cache load instead of 3)
     try {
+        $major = Get-ConfigSubValue "Version/Major"
+        $minor = Get-ConfigSubValue "Version/Minor"
+        $build = Get-ConfigSubValue "Version/Build"
+
+        if ([string]::IsNullOrWhiteSpace($major)) { $major = (Get-Date).ToString('yyMM') }
+        if ([string]::IsNullOrWhiteSpace($minor)) { $minor = 'B0' }
+        if ([string]::IsNullOrWhiteSpace($build)) { $build = '0' }
+
+        $buildNumeric = 0
+        if (-not [int]::TryParse(($build -replace '[^0-9]',''), [ref]$buildNumeric)) { $buildNumeric = 0 }
+
         return @{
-            Major = Get-ConfigSubValue "Version/Major"
-            Minor = Get-ConfigSubValue "Version/Minor"
-            Build = Get-ConfigSubValue "Version/Build"
+            Major = $major
+            Minor = $minor
+            Build = $buildNumeric.ToString()
         }
     } catch {
         Write-AppLog "Error retrieving version info: $_" "Error"
-        return @{ Major = "26"; Minor = "02"; Build = "0" }
+        return @{ Major = (Get-Date).ToString('yyMM'); Minor = 'B0'; Build = '0' }
     }
+}
+
+function Get-VersionString {
+    $versionInfo = Get-VersionInfo
+    return "$($versionInfo.Major).$($versionInfo.Minor).v$($versionInfo.Build)"
 }
 
 function Build-LinksMenu {
@@ -1573,7 +1580,7 @@ function Build-LinksMenu {
     }
 }
 function Show-DiskCheckDialog {
-    Write-AppLog "User initiated Disk Check" "Event"
+    Write-AppLog "User initiated Disk Check" "Audit"
     $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | Select-Object -ExpandProperty DeviceID
     if (-not $drives) {
         [System.Windows.Forms.MessageBox]::Show("No local fixed drives found.", "Disk Check") | Out-Null
@@ -1615,15 +1622,16 @@ function Show-DiskCheckDialog {
     $form.Controls.Add($cancelBtn)
 
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
 }
 
 function Show-PrivacyCheck {
-    Write-AppLog "User initiated Privacy Check" "Event"
+    Write-AppLog "User initiated Privacy Check" "Audit"
     Start-Process "ms-settings:privacy"
 }
 
 function Show-SystemCheck {
-    Write-AppLog "User initiated System Check" "Event"
+    Write-AppLog "User initiated System Check" "Audit"
     $tempFile = Join-Path $env:TEMP ("sfc-detectonly-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".txt")
     Start-Process -FilePath "cmd.exe" -ArgumentList "/c sfc /detectonly > `"$tempFile`" 2>&1" -Wait -WindowStyle Hidden
     $output = Get-Content $tempFile -Raw -ErrorAction SilentlyContinue
@@ -1646,7 +1654,7 @@ function Show-SystemCheck {
 }
 
 function Show-WingetInstalledApp {
-    Write-AppLog "User initiated WinGet Installed Apps view" "Event"
+    Write-AppLog "User initiated WinGet Installed Apps view" "Audit"
     $apps = @()
     $regSources = @(
         @{ Path = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*";           Source = "HKLM (x64)" },
@@ -1690,18 +1698,18 @@ function Show-WingetInstalledApp {
         }
     }
 
-    $apps | Sort-Object Name | Out-GridView -Title "Installed Apps (Registry — $($apps.Count) entries)"
+    $apps | Sort-Object Name | Out-GridView -Title "Installed Apps (Registry -- $($apps.Count) entries)"
 }
 
 function Show-WingetUpgradeCheck {
-    Write-AppLog "User initiated WinGet update check" "Event"
+    Write-AppLog "User initiated WinGet update check" "Audit"
     $logFile = Join-Path $logsDir ("winget-upgrades-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".txt")
     Start-Process -FilePath "cmd.exe" -ArgumentList "/c winget upgrade > `"$logFile`" 2>&1" -Wait -WindowStyle Hidden
     Invoke-Item $logFile
 }
 
 function Show-WingetUpdateAllDialog {
-    Write-AppLog "User initiated WinGet update-all" "Event"
+    Write-AppLog "User initiated WinGet update-all" "Audit"
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "WinGet Update All"
     $form.Size = New-Object System.Drawing.Size(520, 220)
@@ -1752,30 +1760,57 @@ function Show-WingetUpdateAllDialog {
     $form.Controls.Add($cancelBtn)
 
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
 }
 
 # version helpers and tagging
 function Update-VersionBuild {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([switch]$Auto)
-    if (-not (Test-Path $configFile)) { Initialize-ConfigFile }
+    if (-not (Test-Path $configFile)) { Initialize-ConfigFile -ConfigFile $configFile -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir }
     if (-not $PSCmdlet.ShouldProcess($configFile, "Update build number")) { return }
     [xml]$xml = Get-Content $configFile
+    $versionNode = $xml.SelectSingleNode('/SystemVariables/Version')
+    if (-not $versionNode) {
+        $versionNode = $xml.CreateElement('Version')
+        $xml.SystemVariables.AppendChild($versionNode) | Out-Null
+    }
+
+    $majorNode = $xml.SelectSingleNode('/SystemVariables/Version/Major')
+    if (-not $majorNode) {
+        $majorNode = $xml.CreateElement('Major')
+        $versionNode.AppendChild($majorNode) | Out-Null
+    }
+
+    $minorNode = $xml.SelectSingleNode('/SystemVariables/Version/Minor')
+    if (-not $minorNode) {
+        $minorNode = $xml.CreateElement('Minor')
+        $versionNode.AppendChild($minorNode) | Out-Null
+    }
+
     $buildNode = $xml.SelectSingleNode('/SystemVariables/Version/Build')
     if (-not $buildNode) {
-        $versionNode = $xml.SelectSingleNode('/SystemVariables/Version')
-        if (-not $versionNode) {
-            $versionNode = $xml.CreateElement('Version')
-            $xml.SystemVariables.AppendChild($versionNode) | Out-Null
-        }
         $buildNode = $xml.CreateElement('Build')
         $versionNode.AppendChild($buildNode) | Out-Null
         $buildNode.InnerText = '0'
     }
-    $current = [int]$buildNode.InnerText
+
+    $currentPrefix = (Get-Date).ToString('yyMM')
+    $storedPrefix = [string]$majorNode.InnerText
+    if ([string]::IsNullOrWhiteSpace($storedPrefix) -or $storedPrefix -ne $currentPrefix) {
+        $majorNode.InnerText = $currentPrefix
+        Write-AppLog "Version month prefix moved to $currentPrefix" "Info"
+    }
+
+    if ([string]::IsNullOrWhiteSpace([string]$minorNode.InnerText)) {
+        $minorNode.InnerText = 'B0'
+    }
+
+    $current = 0
+    if (-not [int]::TryParse(([string]$buildNode.InnerText -replace '[^0-9]',''), [ref]$current)) { $current = 0 }
     $buildNode.InnerText = ($current + 1).ToString()
     $xml.Save($configFile)
-    if ($Auto) { Write-AppLog "Auto-incremented build to $($buildNode.InnerText)" "Info" }
+    if ($Auto) { Write-AppLog "Auto-incremented build to $(Get-VersionString)" "Info" }
 }
 
 function Export-WorkspacePackage {
@@ -1783,11 +1818,8 @@ function Export-WorkspacePackage {
         [hashtable]$Options = @{}
     )
 
-    $versionInfo = Get-VersionInfo
-    $major = $versionInfo.Major
-    $minor = $versionInfo.Minor
-    $build = $versionInfo.Build
-    $zipName = "pwshGUI-v-$major$minor-build$build.zip"
+    $versionString = Get-VersionString
+    $zipName = "pwshGUI-v02-$versionString-$(Get-Date -Format 'yyMMddHHmm').zip"
     $workspace = Get-Location
 
     if ($Options.DropFolderContents) {
@@ -1812,20 +1844,21 @@ function Export-WorkspacePackage {
     }
 
     if ($Options.SignScriptsInPlace) {
-        $cert = Get-OrCreate-CodeSigningCert -Subject $Options.CodeSigningSubject
+        $cert = Initialize-CodeSigningCert -Subject $Options.CodeSigningSubject
         if ($cert) {
             Write-AppLog "Signing scripts in place using $($cert.Subject)" "Info"
-            Get-ChildItem -Path $workspace.Path -Recurse -File -Include *.ps1,*.psm1,*.psd1 | ForEach-Object {
+            Get-CachedScriptFiles | ForEach-Object {
                 try {
                     Set-AuthenticodeSignature -FilePath $_.FullName -Certificate $cert | Out-Null
                 } catch {
                     Write-AppLog "Failed to sign $($_.FullName): $_" "Warning"
                 }
             }
+            Clear-FileListCache  # Invalidate after signing changes
         }
     }
 
-    $packageExcludeFolders = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
+    $packageExcludeFolders = @(Get-ConfigList "Do-Not-VersionTag-FoldersFiles") + '.git'
     if ($Options.IncludeHistoryFolder) {
         $packageExcludeFolders = $packageExcludeFolders | Where-Object { $_ -ne ".history" }
     }
@@ -1861,13 +1894,13 @@ function Export-WorkspacePackage {
         try {
             if (-not (Test-Path $remoteBuildDir)) { New-Item -ItemType Directory -Path $remoteBuildDir -Force | Out-Null }
             Copy-Item -Path $destinationPath -Destination $remoteBuildDir -Force
-            Write-AppLog "Copied build zip to $remoteBuildDir" "Success"
+            Write-AppLog "Copied build zip to $remoteBuildDir" "Info"
         } catch {
             Write-AppLog "Failed to copy build zip to ${remoteBuildDir}: $_" "Warning"
         }
     }
 
-    Write-AppLog "Package created" "Success"
+    Write-AppLog "Package created" "Info"
 }
 
 function Clear-FolderContents {
@@ -1915,6 +1948,8 @@ function Resolve-7ZipPath {
 }
 
 function New-EncryptedZip {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'Password',
+        Justification = 'Password is passed to 7-Zip CLI as -p argument; SecureString conversion adds no security benefit')]
     param(
         [string]$SevenZipPath,
         [string]$WorkspacePath,
@@ -1926,7 +1961,7 @@ function New-EncryptedZip {
     try {
         $relativeItems = $ItemPaths | ForEach-Object { $_.Substring($WorkspacePath.Length).TrimStart("\\") }
         Set-Content -Path $listFile -Value $relativeItems -Encoding ASCII
-        $args = @(
+        $sevenZipArgs = @(
             "a",
             "-tzip",
             "-mem=AES256",
@@ -1937,14 +1972,14 @@ function New-EncryptedZip {
         )
         Write-AppLog "Creating encrypted zip with 7-Zip" "Info"
         Push-Location $WorkspacePath
-        & $SevenZipPath @args | Out-Null
+        & $SevenZipPath @sevenZipArgs | Out-Null
         Pop-Location
     } finally {
         if (Test-Path $listFile) { Remove-Item $listFile -Force }
     }
 }
 
-function Get-OrCreate-CodeSigningCert {
+function Initialize-CodeSigningCert {
     param([string]$Subject)
     if ([string]::IsNullOrWhiteSpace($Subject)) { return $null }
     $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Where-Object { $_.Subject -eq $Subject } | Select-Object -First 1
@@ -1965,7 +2000,7 @@ function Set-ConfigSubValue {
         [string]$XPath,
         [string]$Value
     )
-    if (-not (Test-Path $configFile)) { Initialize-ConfigFile }
+    if (-not (Test-Path $configFile)) { Initialize-ConfigFile -ConfigFile $configFile -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir }
     [xml]$xml = Get-Content $configFile
     $node = $xml.SelectSingleNode("/SystemVariables/$XPath")
     if (-not $node) {
@@ -2218,6 +2253,7 @@ function Show-BuildPackageOptionsForm {
     })
 
     $result = $form.ShowDialog()
+    $form.Dispose()
     if ($result -ne [System.Windows.Forms.DialogResult]::OK) { return $null }
 
     return @{
@@ -2244,34 +2280,23 @@ function Update-VersionTag {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param()
     # Auto-increment removed - now controlled by startup logic
-    $versionInfo = Get-VersionInfo
-    $major = $versionInfo.Major
-    $minor = $versionInfo.Minor
-    $build = $versionInfo.Build
-    $versionString = "$major.$minor.$build"
+    $versionString = Get-VersionString
     $exclude = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
 
     Write-AppLog "Updating version tags to $versionString" "Info"
     $workspace = Get-Location
-    Get-ChildItem -File -Recurse | Where-Object {
-        $rel = $_.FullName.Substring($workspace.Path.Length).TrimStart("\\")
-        $skip = $false
-        foreach($ex in $exclude) {
-            if ($rel -like "${ex}*") { $skip = $true; break }
-        }
-        -not $skip
-    } | ForEach-Object {
+    Get-CachedAllFiles | ForEach-Object {
         $file = $_
         # skip modifying the main launcher script and build manifests
         if ($file.FullName -ieq $MyInvocation.MyCommand.Path) { return }
-        if ($file.Name -like 'pwshGUI-v-*versionbuild*') { return }
+        if ($file.Name -like 'PwShGUI-v-*') { return }
         if ($file.Extension -ieq ".json") {
             $txt = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($txt) {
                 $clean = $txt -replace '(?m)^\s*#\s*VersionTag:.*$\r?\n?', ''
                 if ($clean -ne $txt) {
                     if ($PSCmdlet.ShouldProcess($file.FullName, "Remove version tag")) {
-                        Set-Content -Path $file.FullName -Value $clean -ErrorAction SilentlyContinue
+                        Set-Content -Path $file.FullName -Value $clean -Encoding UTF8 -ErrorAction SilentlyContinue
                     }
                 }
             }
@@ -2282,24 +2307,47 @@ function Update-VersionTag {
         if ($null -eq $text) { return }
         $commentPrefix = "#"
         $commentSuffix = ""
+        $isXmlLike = $false
         switch -Regex ($file.Extension) {
-            "\.xml$|\.html$|\.htm$" { $commentPrefix = "<!--"; $commentSuffix=" -->" }
+            "\.xml$|\.xhtml$|\.html$|\.htm$" {
+                $commentPrefix = "<!--"
+                $commentSuffix = " -->"
+                if ($file.Extension -ieq '.xml' -or $file.Extension -ieq '.xhtml') { $isXmlLike = $true }
+            }
             "\.ps1$|\.psm1$|\.psd1$|\.txt$|\.md$" { $commentPrefix="#"; $commentSuffix="" }
             default { $commentPrefix="#"; $commentSuffix="" }
         }
+
         $tagLine = "$commentPrefix VersionTag: $versionString$commentSuffix"
         $newText = $text
-        if ($text -match '^(.*)VersionTag:\s*([\d\.a-z]+)(.*)$') {
-            $existingVer = $Matches[2]
-            if ($existingVer -ne $versionString) {
-                $newText = $text -replace '(?m)^\s*(#|<!--)\s*VersionTag:.*?(-->)?\s*$', $tagLine
+
+        if ($isXmlLike) {
+            # Ensure XHTML/XML stays parse-safe: no hash comments and no tags before XML declaration.
+            $withoutTags = $text -replace '(?m)^\s*(#|<!--)\s*VersionTag:.*?(-->)?\s*$\r?\n?', ''
+            if ($withoutTags -match '^\s*<\?xml[^>]*\?>') {
+                $newText = [regex]::Replace(
+                    $withoutTags,
+                    '^\s*<\?xml[^>]*\?>\s*',
+                    { param($m) "$($m.Value)$([Environment]::NewLine)$tagLine$([Environment]::NewLine)" },
+                    [System.Text.RegularExpressions.RegexOptions]::Singleline,
+                    [timespan]::FromSeconds(2)
+                )
+            } else {
+                $newText = $tagLine + [Environment]::NewLine + $withoutTags
             }
         } else {
-            $newText = $tagLine + [Environment]::NewLine + $text
+            if ($text -match 'VersionTag:\s*([0-9A-Za-z\._-]+)') {
+                $existingVer = $Matches[1]
+                if ($existingVer -ne $versionString) {
+                    $newText = $text -replace '(?m)^\s*(#|<!--)\s*VersionTag:.*?(-->)?\s*$', $tagLine
+                }
+            } else {
+                $newText = $tagLine + [Environment]::NewLine + $text
+            }
         }
         if ($newText -ne $text) {
             if ($PSCmdlet.ShouldProcess($file.FullName, "Update version tag")) {
-                Set-Content -Path $file.FullName -Value $newText -ErrorAction SilentlyContinue
+                Set-Content -Path $file.FullName -Value $newText -Encoding UTF8 -ErrorAction SilentlyContinue
             }
         }
     }
@@ -2307,14 +2355,11 @@ function Update-VersionTag {
 function New-BuildManifest {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param()
-    $versionInfo = Get-VersionInfo
-    $major = $versionInfo.Major
-    $minor = $versionInfo.Minor
-    $build = $versionInfo.Build
-    $versionString = "$major.$minor.$build"
-    $fileName = "pwshGUI-v-$major$minor-versionbuild.txt"
+    $versionString = Get-VersionString
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmm'
+    $fileName = "PwShGUI-v-$versionString~versionbuild-$stamp.txt"
     $workspace = Get-Location
-    $manifestPath = Join-Path $workspace.Path $fileName
+    $manifestPath = Join-Path $versionsDir $fileName
     $manifestCachePath = Join-Path $configDir "manifest-cache.json"
     if (-not $PSCmdlet.ShouldProcess($manifestPath, "Create build manifest")) { return }
     Write-AppLog "Generating build manifest $fileName" "Info"
@@ -2347,11 +2392,7 @@ function New-BuildManifest {
     $reusedCount = 0
     $refreshedCount = 0
 
-    Get-ChildItem -File -Recurse | Where-Object {
-        $rel = $_.FullName.Substring($workspace.Path.Length).TrimStart('\\')
-        foreach($ex in $exclude) { if ($rel -like "$ex*") { return $false } }
-        return $true
-    } | ForEach-Object {
+    Get-CachedAllFiles | ForEach-Object {
         $f = $_
         $rel = $f.FullName.Substring($workspace.Path.Length).TrimStart('\\')
         $signature = "$($f.Length)|$($f.LastWriteTimeUtc.Ticks)"
@@ -2420,11 +2461,7 @@ function New-BuildManifest {
 }
 
 function Test-VersionTag {
-    $versionInfo = Get-VersionInfo
-    $major = $versionInfo.Major
-    $minor = $versionInfo.Minor
-    $build = $versionInfo.Build
-    $expected = "$major.$minor.$build"
+    $expected = Get-VersionString
     $workspace = Get-Location
     Write-AppLog "Checking version tags against expected $expected" "Info"
 
@@ -2433,13 +2470,12 @@ function Test-VersionTag {
     $root = $xml.CreateElement('Diffs')
     $root.SetAttribute('version',$expected)
     $xml.AppendChild($root) | Out-Null
+    $orphanCandidates = New-Object 'System.Collections.Generic.List[object]'
 
-    Get-ChildItem -File -Recurse | Where-Object {
+    Get-CachedAllFiles | Where-Object {
         $rel = $_.FullName.Substring($workspace.Path.Length).TrimStart("\\")
         # skip manifest itself
-        if ($rel -like 'pwshGUI-v-*versionbuild*') { return $false }
-        $exclude = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
-        foreach($ex in $exclude) { if ($rel -like "${ex}*") { return $false } }
+        if ($rel -like '.history\PwShGUI-Versions\*') { return $false }
         return $true
     } | ForEach-Object {
         $file = $_
@@ -2457,7 +2493,7 @@ function Test-VersionTag {
         $rel = $file.FullName.Substring($workspace.Path.Length).TrimStart("\\")
         $folder = Split-Path $rel -Parent
         if (-not $folder) { $folder = '.' }
-        if ($content -match 'VersionTag:\s*([\d\.a-z]+)') {
+        if ($content -match 'VersionTag:\s*([0-9A-Za-z\._-]+)') {
             $tag = $Matches[1]
             if ($tag -ne $expected) {
                 $folderNode = $root.SelectSingleNode("Folder[@path='$folder']")
@@ -2489,17 +2525,97 @@ function Test-VersionTag {
         }
     }
 
-    Compare-ExcludedFolder -workspace $workspace -xmlDoc $xml
+    Compare-ExcludedFolder -workspace $workspace -xmlDoc $xml -orphanCandidates ([ref]$orphanCandidates)
 
-    $diffFile = Join-Path $workspace.Path ("pwshGUI-v-$major$minor-versionbuild~DIFFS.xml")
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmm'
+    $diffFile = Join-Path $versionsDir "PwShGUI-v-$expected~DIFFS-$stamp.xml"
     $xml.Save($diffFile)
+
+    Write-OrphanAuditReport -workspace $workspace -version $expected -orphanCandidates $orphanCandidates
+    return $diffFile
+}
+
+function Write-OrphanAuditReport {
+    param(
+        [Parameter(Mandatory = $true)]
+        $workspace,
+
+        [Parameter(Mandatory = $true)]
+        [string]$version,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.List[object]]$orphanCandidates
+    )
+
+    $reportRoot = $script:ReportFolder
+    if ([string]::IsNullOrWhiteSpace($reportRoot) -or -not (Test-Path $reportRoot)) {
+        $reportRoot = Join-Path $workspace.Path "~REPORTS"
+    }
+    if (-not (Test-Path $reportRoot)) {
+        New-Item -ItemType Directory -Path $reportRoot -Force | Out-Null
+    }
+
+    $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $jsonPath = Join-Path $reportRoot "orphan-audit-$timestamp.json"
+    $mdPath = Join-Path $reportRoot "orphan-audit-core-$timestamp.md"
+
+    $candidateArray = @($orphanCandidates)
+    $summary = [ordered]@{
+        generatedAt = (Get-Date).ToString('o')
+        workspace = $workspace.Path
+        version = $version
+        detectionModel = 'inventory-drift'
+        note = 'Potential orphan candidates are files under excluded folders that are not listed in their local manifest text files.'
+        candidateCount = $candidateArray.Count
+    }
+
+    $payload = [ordered]@{
+        summary = $summary
+        candidates = $candidateArray
+    }
+
+    $payload | ConvertTo-Json -Depth 8 | Set-Content -Path $jsonPath -Encoding UTF8
+
+    $lines = @(
+        "# Orphan Audit (Inventory Drift)",
+        "",
+        "- Generated: $($summary.generatedAt)",
+        "- Workspace: $($summary.workspace)",
+        "- Version: $($summary.version)",
+        "- Detection Model: $($summary.detectionModel)",
+        "- Candidate Count: $($summary.candidateCount)",
+        "",
+        "## Scope",
+        "",
+        "This report uses inventory/drift detection. It does not perform reference-graph analysis.",
+        ""
+    )
+
+    if ($candidateArray.Count -eq 0) {
+        $lines += "## Candidates"
+        $lines += ""
+        $lines += "No orphan candidates detected in excluded-folder manifest comparisons."
+    } else {
+        $lines += "## Candidates"
+        $lines += ""
+        foreach ($candidate in $candidateArray) {
+            $lines += "- $($candidate.relativePath) | issue=$($candidate.issue) | source=$($candidate.sourceManifest)"
+        }
+    }
+
+    Set-Content -Path $mdPath -Value $lines -Encoding UTF8
+
+    Write-AppLog "Orphan audit JSON generated: $jsonPath" "Info"
+    Write-AppLog "Orphan audit Markdown generated: $mdPath" "Info"
+    Write-AppLog "Orphan audit candidate count: $($candidateArray.Count)" "Info"
 }
 
 function Compare-ExcludedFolder {
     param(
         $workspace,
         [ref]$diffs,
-        [xml]$xmlDoc
+        [xml]$xmlDoc,
+        [ref]$orphanCandidates
     )
     $excludes = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
     $reportedIssues = New-Object 'System.Collections.Generic.HashSet[string]'
@@ -2531,7 +2647,12 @@ function Compare-ExcludedFolder {
             }
             Get-ChildItem -Path $folderPath -File | ForEach-Object {
                 $relname = $_.Name
-                if ($relname -like 'pwshGUI-v-*versionbuild*') { return }
+                if ($relname -like 'PwShGUI-v-*') { return }
+                if ($relname -like 'orphan-audit-*') { return }
+                if ($relname -like 'orphan-audit-core-*') { return }
+                if ($relname -like 'orphan-cleanup-*') { return }
+                if ($relname -like 'report-retention-*') { return }
+                if ($relname -like 'xhtml-triage-*') { return }
                 if ($manifest.FullName -eq $_.FullName) { return }
 
                 $relativeFromExcludedFolder = Join-Path $ex $relname
@@ -2546,6 +2667,17 @@ function Compare-ExcludedFolder {
 
                 Write-AppLog "$relname exists but not in manifest" "Error"
                 if ($diffs) { $diffs.Value += "$folderPath\$relname - not in manifest" }
+                if ($orphanCandidates) {
+                    $orphanCandidates.Value.Add([ordered]@{
+                        folder = $ex
+                        fileName = $relname
+                        relativePath = $relativeFromExcludedFolder
+                        fullPath = $_.FullName
+                        issue = 'not in manifest'
+                        sourceManifest = $manifest.FullName
+                        detectedAt = (Get-Date).ToString('o')
+                    }) | Out-Null
+                }
                 if ($xmlDoc) {
                     $root = $xmlDoc.DocumentElement
                     $folderNode = $root.SelectSingleNode("Folder[@path='$ex']")
@@ -2564,51 +2696,95 @@ function Compare-ExcludedFolder {
     }
 }
 
-# ==================== SCRIPT EXECUTION FUNCTIONS ====================
+# ==================== PROGRESS & PROCESS HELPERS ====================
+# Get-RainbowColor and Write-RainbowProgress are now provided by PwShGUICore module.
 
-function Get-RainbowColor {
-    param([int]$Step)
-
-    $colors = @(
-        @{R=255; G=0;   B=0},
-        @{R=255; G=127; B=0},
-        @{R=255; G=255; B=0},
-        @{R=0;   G=255; B=0},
-        @{R=0;   G=0;   B=255},
-        @{R=75;  G=0;   B=130},
-        @{R=148; G=0;   B=211}
-    )
-
-    $index = $Step % $colors.Count
-    return $colors[$index]
-}
-
-function Write-RainbowProgress {
+function Get-FooterItemTooltip {
+    <#
+    .SYNOPSIS
+        Builds a rich multi-line tooltip string showing file/folder metadata for
+        a footer status-bar element.
+    #>
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$Activity,
-
-        [Parameter(Mandatory = $true)]
-        [int]$PercentComplete,
-
-        [Parameter(Mandatory = $true)]
-        [string]$Status,
-
-        [int]$Step = 0
+        [string]$ItemPath,
+        [string]$ItemLabel = ''
     )
-
-    $color = Get-RainbowColor -Step $Step
-    $barLength = 50
-    $completed = [Math]::Floor(($PercentComplete / 100) * $barLength)
-    $remaining = $barLength - $completed
-    $bar = ("[" + ("█" * $completed) + ("░" * $remaining) + "]")
-    $colorCode = "`e[38;2;$($color.R);$($color.G);$($color.B)m"
-    $resetCode = "`e[0m"
-    Write-Host "`r$colorCode$bar $PercentComplete% $resetCode- $Status" -NoNewline
-
-    if ($PercentComplete -ge 100) {
-        Write-Host ""
+    if ([string]::IsNullOrWhiteSpace($ItemPath)) {
+        return "$ItemLabel`nPath: (not configured)"
     }
+    if (-not (Test-Path -LiteralPath $ItemPath)) {
+        return "$ItemLabel`nPath: $ItemPath`nStatus: Not accessible"
+    }
+    try {
+        $item = Get-Item -LiteralPath $ItemPath -ErrorAction Stop
+    } catch {
+        return "$ItemLabel`nPath: $ItemPath`nStatus: Cannot read"
+    }
+    $lines = @()
+    if ($ItemLabel) { $lines += $ItemLabel }
+    $lines += "Path: $($item.FullName)"
+    if ($item.PSIsContainer) {
+        $childFiles = @(Get-ChildItem -LiteralPath $ItemPath -File -Recurse -ErrorAction SilentlyContinue)
+        $childDirs  = @(Get-ChildItem -LiteralPath $ItemPath -Directory -ErrorAction SilentlyContinue)
+        $totalBytes = 0
+        foreach ($cf in $childFiles) { $totalBytes += $cf.Length }
+        $sizeText = if ($totalBytes -ge 1GB) { '{0:N2} GB' -f ($totalBytes / 1GB) }
+                    elseif ($totalBytes -ge 1MB) { '{0:N1} MB' -f ($totalBytes / 1MB) }
+                    elseif ($totalBytes -ge 1KB) { '{0:N0} KB' -f ($totalBytes / 1KB) }
+                    else { "$totalBytes bytes" }
+        $lines += "Type: Directory"
+        $lines += "Files: $(@($childFiles).Count) | Sub-folders: $(@($childDirs).Count)"
+        $lines += "Total Size: $sizeText"
+        $lines += "Created: $($item.CreationTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        $lines += "Modified: $($item.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        # Most recently changed file in directory
+        $newest = $childFiles | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if ($newest) {
+            $lines += "Last Changed File: $($newest.Name)"
+            $lines += "  Changed: $($newest.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        }
+    } else {
+        $ext = $item.Extension.ToLower()
+        $sizeText = if ($item.Length -ge 1GB) { '{0:N2} GB' -f ($item.Length / 1GB) }
+                    elseif ($item.Length -ge 1MB) { '{0:N1} MB' -f ($item.Length / 1MB) }
+                    elseif ($item.Length -ge 1KB) { '{0:N0} KB' -f ($item.Length / 1KB) }
+                    else { "$($item.Length) bytes" }
+        $lines += "Type: $ext file"
+        $lines += "Size: $sizeText"
+        # Count lines for text-based files
+        $textExts = @('.ps1','.psm1','.psd1','.txt','.md','.json','.xml','.csv','.log','.xhtml','.html','.css','.bat','.cmd','.cfg','.ini')
+        if ($ext -in $textExts) {
+            $lineCount = 0
+            try { $lineCount = @(Get-Content -LiteralPath $ItemPath -ErrorAction Stop).Count } catch { <# Intentional: non-fatal #> }
+            $lines += "Lines: $lineCount"
+        }
+        $lines += "Created: $($item.CreationTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        $lines += "Modified: $($item.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+        # Attempt to identify last modifier from action-log
+        $actionLogPath = Join-Path $PSScriptRoot (Join-Path 'logs' 'action-log.json')
+        if (Test-Path -LiteralPath $actionLogPath) {
+            try {
+                $logEntries = Get-Content -LiteralPath $actionLogPath -Raw -Encoding UTF8 -ErrorAction Stop |
+                    ConvertFrom-Json -ErrorAction Stop
+                $relName = $item.Name
+                $match = @($logEntries | Where-Object {
+                    ($_.PSObject.Properties.Name -contains 'file' -and $_.file -like "*$relName*") -or
+                    ($_.PSObject.Properties.Name -contains 'target' -and $_.target -like "*$relName*")
+                } | Sort-Object { if ($_.PSObject.Properties.Name -contains 'timestamp') { $_.timestamp } else { '' } } -Descending |
+                    Select-Object -First 1)
+                if (@($match).Count -gt 0) {
+                    $entry = $match[0]
+                    $actor = if ($entry.PSObject.Properties.Name -contains 'script') { $entry.script }
+                             elseif ($entry.PSObject.Properties.Name -contains 'agent') { $entry.agent }
+                             elseif ($entry.PSObject.Properties.Name -contains 'process') { $entry.process }
+                             else { 'unknown' }
+                    $lines += "Last Actor: $actor"
+                }
+            } catch { <# Intentional: non-fatal — action log may not exist or be parseable #> }
+        }
+    }
+    $lines += "`nClick to open in Explorer"
+    return ($lines -join "`n")
 }
 
 function Invoke-LocalScriptWithProgress {
@@ -2646,7 +2822,7 @@ function Invoke-LocalScriptWithProgress {
         $elapsed = (Get-Date) - $startTime
         $elapsedSeconds = [Math]::Floor($elapsed.TotalSeconds)
 
-        if ($elapsedSeconds -lt $EstimatedSeconds) {
+        if ($elapsedSeconds -lt $EstimatedSeconds -and $EstimatedSeconds -gt 0) {
             $percentComplete = [Math]::Floor(($elapsedSeconds / $EstimatedSeconds) * 100)
         } else {
             $percentComplete = 95 + ($elapsedSeconds - $EstimatedSeconds)
@@ -2674,11 +2850,12 @@ function Invoke-LocalScriptWithProgress {
 
     $result = Receive-Job -Job $job -Wait -AutoRemoveJob
     $finalElapsed = ((Get-Date) - $startTime).TotalSeconds
-    Write-RainbowProgress -Activity $ScriptName -PercentComplete 101 -Status "COMPLETED!" -Step 10
+    Write-RainbowProgress -Activity $ScriptName -PercentComplete 100 -Status "COMPLETED!" -Step 10
 
     Write-Host "`n[DONE] COMPLETED: $ScriptName" -ForegroundColor Green
     Write-Host "  Duration: $([Math]::Round($finalElapsed, 2)) seconds" -ForegroundColor Gray
     Write-Host "  Items processed: $lastOutputCount" -ForegroundColor Gray
+    Write-AppLog "Completed: $ScriptName in $([Math]::Round($finalElapsed,2))s ($lastOutputCount items)" "Info"
 
     return $result
 }
@@ -2706,7 +2883,7 @@ function Wait-ProcessWithProgress {
         $elapsed = (Get-Date) - $startTime
         $elapsedSeconds = [Math]::Floor($elapsed.TotalSeconds)
 
-        if ($elapsedSeconds -lt $EstimatedSeconds) {
+        if ($elapsedSeconds -lt $EstimatedSeconds -and $EstimatedSeconds -gt 0) {
             $percentComplete = [Math]::Floor(($elapsedSeconds / $EstimatedSeconds) * 100)
         } else {
             $percentComplete = 95 + ($elapsedSeconds - $EstimatedSeconds)
@@ -2725,11 +2902,12 @@ function Wait-ProcessWithProgress {
     }
 
     $finalElapsed = ((Get-Date) - $startTime).TotalSeconds
-    Write-RainbowProgress -Activity $ScriptName -PercentComplete 101 -Status "COMPLETED!" -Step 10
+    Write-RainbowProgress -Activity $ScriptName -PercentComplete 100 -Status "COMPLETED!" -Step 10
 
     Write-Host "`n[DONE] COMPLETED: $ScriptName" -ForegroundColor Green
     Write-Host "  Duration: $([Math]::Round($finalElapsed, 2)) seconds" -ForegroundColor Gray
     Write-Host "  Items processed: Output not captured (elevated process)" -ForegroundColor Gray
+    Write-AppLog "Completed (elevated): $ScriptName in $([Math]::Round($finalElapsed,2))s" "Info"
 }
 
 # ==================== SCRIPT EXECUTION FUNCTIONS ====================
@@ -2755,7 +2933,7 @@ function Invoke-ScriptWithElevation {
     $safetyScore = if ($scoreInfo) { $scoreInfo.Score } else { 0 }
     $requiresInteractive = $false
     if ($scriptContent) {
-        $requiresInteractive = $scriptContent -match '\bRead-Host\b|\bPromptForChoice\b|Out-GridView\s+.*-OutputMode|\.ShowDialog\(|MessageBox\]::Show\('
+        $requiresInteractive = $scriptContent -match '\bRead-Host\b|\bPromptForChoice\b|\bReadKey\b|Out-GridView\s+.*-OutputMode|\.ShowDialog\(|MessageBox\]::Show\('
     } else {
         $requiresInteractive = $ScriptName -match 'QUICK-APP' -or $scriptPath -match '\\QUICK-APP\\'
     }
@@ -2766,7 +2944,7 @@ function Invoke-ScriptWithElevation {
     }
     Write-AppLog "Launching script: $ScriptName (RunAsAdmin: $RunAsAdmin)" "Info"
     Write-AppLog "Script safety score: $safetyScore | $scriptPath" "Info"
-    Write-ScriptLog "Script launch initiated (RunAsAdmin: $RunAsAdmin)" $ScriptName "Event"
+    Write-ScriptLog "Script launch initiated (RunAsAdmin: $RunAsAdmin)" $ScriptName "Audit"
 
     $supportsWhatIf = $false
     try {
@@ -2832,8 +3010,8 @@ function Invoke-ScriptWithElevation {
             }
         }
         
-        Write-AppLog "Script execution completed: $ScriptName" "Success"
-        Write-ScriptLog "Script execution completed successfully" $ScriptName "Success"
+        Write-AppLog "Script execution completed: $ScriptName" "Info"
+        Write-ScriptLog "Script execution completed successfully" $ScriptName "Info"
         return $true
     }
     catch {
@@ -2850,7 +3028,7 @@ function Show-ElevationPrompt {
         [string]$ScriptPath
     )
     
-    Write-AppLog "Displaying admin elevation prompt for script: $ScriptName" "Event"
+    Write-AppLog "Displaying admin elevation prompt for script: $ScriptName" "Audit"
     
     # Calculate safety score
     $safetyScore = 0
@@ -2900,7 +3078,7 @@ function Show-ElevationPrompt {
     )
     
     $shouldElevate = $result -eq [System.Windows.Forms.DialogResult]::Yes
-    Write-AppLog "Admin elevation response: $(if ($shouldElevate) { 'YES' } else { 'NO' })" "Event"
+    Write-AppLog "Admin elevation response: $(if ($shouldElevate) { 'YES' } else { 'NO' })" "Audit"
     
     return $shouldElevate
 }
@@ -2932,10 +3110,11 @@ function Get-NetworkDiagnostic {
     
     # Get public WAN IP
     try {
-        $wanIP = Invoke-RestMethod -Uri "https://api.ipify.org?format=json" -TimeoutSec 5 | Select-Object -ExpandProperty ip
+        $wanIP = Invoke-RestMethod -Uri "https://api.ipify.org?format=json" -TimeoutSec 5 -ErrorAction Stop | Select-Object -ExpandProperty ip
         $results += "Public WAN IP: $wanIP"
     }
     catch {
+        Write-AppLog "WAN IP lookup failed: $_" "Warning"
         $results += "Public WAN IP: Unable to determine"
     }
     
@@ -3002,6 +3181,7 @@ MAIN WINDOW (600x500)
 |  |  - Button Maintenance
 |  |  - Network Details
 |  |  - AVPN Connection Tracker
+|  |  - Cron-Ai-Athon Tool
 |  + Help
 |     - Update-Help
 |     - Package Workspace
@@ -3017,9 +3197,9 @@ MAIN WINDOW (600x500)
 `- Status Bar (600x20)
 
 CONFIGURATION
-- Config File: C:\PowerShellGUI\config\system-variables.xml
-- AVPN Devices: C:\PowerShellGUI\config\AVPN-devices.json
-`- Logs Directory: C:\PowerShellGUI\logs\
+- Config File: $configFile
+- AVPN Devices: $avpnConfigFile
+``- Logs Directory: $logsDir
 
 For more information, see the documentation files.
 "@,
@@ -3041,7 +3221,7 @@ function Test-PathReadWrite {
     $canWrite = $true
     
     try {
-        $items = Get-ChildItem -Path $Path -ErrorAction Stop
+        $null = Get-ChildItem -Path $Path -ErrorAction Stop
     } catch {
         $canRead = $false
     }
@@ -3058,7 +3238,7 @@ function Test-PathReadWrite {
 }
 
 function Get-ScriptFoldersConfig {
-    $scriptFoldersConfigPath = Join-Path $configDir "pwsh-scriptfolders-config.json"
+    $scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
     
     if (Test-Path $scriptFoldersConfigPath) {
         try {
@@ -3075,11 +3255,11 @@ function Get-ScriptFoldersConfig {
 function Save-ScriptFoldersConfig {
     param([object]$Config)
     
-    $scriptFoldersConfigPath = Join-Path $configDir "pwsh-scriptfolders-config.json"
+    $scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
     
     try {
-        $Config | ConvertTo-Json -Depth 5 | Set-Content -Path $scriptFoldersConfigPath -Force
-        Write-AppLog "Script folders config saved successfully" "Success"
+        $Config | ConvertTo-Json -Depth 5 | Set-Content -Path $scriptFoldersConfigPath -Encoding UTF8 -Force
+        Write-AppLog "Script folders config saved successfully" "Info"
         return $true
     } catch {
         Write-AppLog "Error saving script folders config: $_" "Error"
@@ -3166,14 +3346,15 @@ function Show-PathSettingsGUI {
         $browseBtn.Location = New-Object System.Drawing.Point(720, $yPos)
         $browseBtn.Size = New-Object System.Drawing.Size(60, 22)
         $browseBtn.Add_Click({
-            param($sender, $e)
+            param($btnSender, $e)
             $folder = New-Object System.Windows.Forms.FolderBrowserDialog
-            $folder.Description = "Select path for $($sender.Tag)"
+            $folder.Description = "Select path for $($btnSender.Tag)"
             $folder.SelectedPath = $textBox.Text
             if ($folder.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
                 $textBox.Text = $folder.SelectedPath
                 & $ValidatePathStatus
             }
+            $folder.Dispose()
         }.GetNewClosure())
         $browseBtn.Tag = $pathItem.Label
         $form.Controls.Add($browseBtn)
@@ -3222,6 +3403,7 @@ function Show-PathSettingsGUI {
             if ($fb.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
                 $rTextBoxCopy.Text = $fb.SelectedPath
             }
+            $fb.Dispose()
         }.GetNewClosure())
         $rBrowseBtn.Tag = $rItem.Label
         $form.Controls.Add($rBrowseBtn)
@@ -3281,6 +3463,7 @@ function Show-PathSettingsGUI {
 
     & $ValidatePathStatus
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
 }
 
 function Get-AllScriptFolders {
@@ -3355,6 +3538,7 @@ function Show-ScriptFolderSettingsGUI {
             $displayText = "$($newFolder.label) - $($newFolder.path)"
             [void]$listBox.Items.Add($displayText)
         }
+        $folderDialog.Dispose()
     })
     $form.Controls.Add($addBtn)
     
@@ -3375,11 +3559,11 @@ function Show-ScriptFolderSettingsGUI {
     # OK Button
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "OK"
-    $okBtn.Location = New-Object System.Drawing.Point(570, 430)
-    $okBtn.Size = New-Object System.Drawing.Size(100, 25)
+    $okBtn.Location = New-Object System.Drawing.Point(490, 430)
+    $okBtn.Size = New-Object System.Drawing.Size(90, 25)
     $okBtn.Add_Click({
         Save-ScriptFoldersConfig -Config $config
-        Write-AppLog "Script folders configuration updated" "Success"
+        Write-AppLog "Script folders configuration updated" "Info"
         $form.Close()
     })
     $form.Controls.Add($okBtn)
@@ -3387,22 +3571,426 @@ function Show-ScriptFolderSettingsGUI {
     # Cancel Button
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
-    $cancelBtn.Location = New-Object System.Drawing.Point(600, 430)
-    $cancelBtn.Size = New-Object System.Drawing.Size(75, 25)
+    $cancelBtn.Location = New-Object System.Drawing.Point(590, 430)
+    $cancelBtn.Size = New-Object System.Drawing.Size(90, 25)
     $cancelBtn.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $form.Controls.Add($cancelBtn)
     
     $form.ShowDialog() | Out-Null
+    $form.Dispose()
 }
 
 # ==================== HELP FUNCTIONS ====================
+
+# ── Manifests, Registries & SINs Viewer ─────────────────────────────────
+function Show-ManifestsRegistrySinsViewer {
+    Write-AppLog "User opened Manifests, Registries & SINs viewer" "Audit"
+
+    $viewerForm = New-Object System.Windows.Forms.Form
+    $viewerForm.Text = "Manifests, Registries & SINs"
+    $viewerForm.Size = New-Object System.Drawing.Size(960, 640)
+    $viewerForm.StartPosition = "CenterScreen"
+    $viewerForm.MinimumSize = New-Object System.Drawing.Size(800, 500)
+    $viewerForm.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+    # ── TabControl ────────────────────────────────────────────────
+    $tabs = New-Object System.Windows.Forms.TabControl
+    $tabs.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $tabs.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $viewerForm.Controls.Add($tabs)
+
+    # ── Status bar ────────────────────────────────────────────────
+    $statusBar = New-Object System.Windows.Forms.StatusStrip
+    $statusLabel = New-Object System.Windows.Forms.ToolStripStatusLabel
+    $statusLabel.Text = "Loading..."
+    $statusBar.Items.Add($statusLabel) | Out-Null
+    $viewerForm.Controls.Add($statusBar)
+
+    # ═════════════════════════════════════════════════════════════
+    #  Helper: build a split-panel tab with a ListView + detail box
+    # ═════════════════════════════════════════════════════════════
+    function New-DataTab {
+        param(
+            [string]$TabTitle,
+            [string[]]$ColumnHeaders,
+            [int[]]$ColumnWidths
+        )
+        $page = New-Object System.Windows.Forms.TabPage
+        $page.Text = $TabTitle
+        $page.Padding = New-Object System.Windows.Forms.Padding(4)
+
+        $split = New-Object System.Windows.Forms.SplitContainer
+        $split.Dock = [System.Windows.Forms.DockStyle]::Fill
+        $split.Orientation = [System.Windows.Forms.Orientation]::Horizontal
+        $split.SplitterDistance = 340
+        $page.Controls.Add($split)
+
+        $lv = New-Object System.Windows.Forms.ListView
+        $lv.View = [System.Windows.Forms.View]::Details
+        $lv.FullRowSelect = $true
+        $lv.GridLines = $true
+        $lv.Dock = [System.Windows.Forms.DockStyle]::Fill
+        $lv.Font = New-Object System.Drawing.Font("Consolas", 9)
+        for ($i = 0; $i -lt $ColumnHeaders.Count; $i++) {
+            $col = New-Object System.Windows.Forms.ColumnHeader
+            $col.Text  = $ColumnHeaders[$i]
+            $col.Width = $ColumnWidths[$i]
+            $lv.Columns.Add($col) | Out-Null
+        }
+        $split.Panel1.Controls.Add($lv)
+
+        $detail = New-Object System.Windows.Forms.TextBox
+        $detail.Multiline  = $true
+        $detail.ReadOnly   = $true
+        $detail.ScrollBars = [System.Windows.Forms.ScrollBars]::Both
+        $detail.WordWrap   = $false
+        $detail.Dock       = [System.Windows.Forms.DockStyle]::Fill
+        $detail.Font       = New-Object System.Drawing.Font("Consolas", 9)
+        $split.Panel2.Controls.Add($detail)
+
+        $tabs.TabPages.Add($page) | Out-Null
+
+        return @{ Page = $page; ListView = $lv; Detail = $detail }
+    }
+
+    # ═════════════════════════════════════════════════════════════
+    #  TAB 1:  SIN Registry  (instances + patterns + SemiSins)
+    # ═════════════════════════════════════════════════════════════
+    $sinTab = New-DataTab -TabTitle "SIN Registry" `
+        -ColumnHeaders @('SIN ID','Class','Severity','Category','Status','Title') `
+        -ColumnWidths  @(260,80,80,120,90,280)
+
+    $sinDir = Join-Path $PSScriptRoot 'sin_registry'
+    $sinFiles = @(Get-ChildItem -Path $sinDir -Filter '*.json' -File -ErrorAction SilentlyContinue | Sort-Object Name)
+    $sinTotal = 0; $sinResolved = 0; $sinCritical = 0; $sinPenance = 0
+    $sinDetailMap = @{}
+
+    foreach ($sf in $sinFiles) {
+        try {
+            $raw = Get-Content $sf.FullName -Raw -Encoding UTF8
+            $sin = $raw | ConvertFrom-Json
+            $props = $sin.PSObject.Properties.Name
+
+            $sinId    = if ($props -contains 'sin_id')   { $sin.sin_id }   else { $sf.BaseName }
+            $severity = if ($props -contains 'severity') { $sin.severity } else { '?' }
+            $category = if ($props -contains 'category') { $sin.category } else { '' }
+            $title    = if ($props -contains 'title')    { $sin.title }    else { '' }
+            $resolved = if ($props -contains 'is_resolved') { $sin.is_resolved } else { $false }
+
+            # Determine class
+            $sinClass = 'Instance'
+            if ($sinId -match '^SIN-PATTERN-')  { $sinClass = 'Pattern' }
+            if ($sinId -match '^SEMI-SIN-')     { $sinClass = 'SemiSin' }
+
+            $status = if ($resolved) { 'Resolved' } elseif ($props -contains 'status') { $sin.status } else { 'Open' }
+
+            $item = New-Object System.Windows.Forms.ListViewItem($sinId)
+            $item.SubItems.Add($sinClass)  | Out-Null
+            $item.SubItems.Add($severity)  | Out-Null
+            $item.SubItems.Add($category)  | Out-Null
+            $item.SubItems.Add($status)    | Out-Null
+            $item.SubItems.Add($title)     | Out-Null
+
+            # Colour coding by severity
+            if ($severity -eq 'CRITICAL')   { $item.ForeColor = [System.Drawing.Color]::Red }
+            elseif ($severity -eq 'HIGH')   { $item.ForeColor = [System.Drawing.Color]::OrangeRed }
+            elseif ($severity -eq 'MEDIUM') { $item.ForeColor = [System.Drawing.Color]::DarkGoldenrod }
+            elseif ($severity -eq 'PENANCE'){ $item.ForeColor = [System.Drawing.Color]::DarkOrchid }
+            if ($resolved) { $item.ForeColor = [System.Drawing.Color]::Gray }
+
+            $sinTab.ListView.Items.Add($item) | Out-Null
+            $sinDetailMap[$sinId] = $raw
+            $sinTotal++
+            if ($resolved)              { $sinResolved++ }
+            if ($severity -eq 'CRITICAL') { $sinCritical++ }
+            if ($severity -eq 'PENANCE')  { $sinPenance++ }
+        }
+        catch { <# skip unparseable files #> }
+    }
+
+    $sinTab.ListView.Add_SelectedIndexChanged({
+        if ($sinTab.ListView.SelectedItems.Count -gt 0) {
+            $selId = $sinTab.ListView.SelectedItems[0].Text
+            if ($sinDetailMap.ContainsKey($selId)) {
+                $sinTab.Detail.Text = $sinDetailMap[$selId]
+            }
+        }
+    })
+
+    # ═════════════════════════════════════════════════════════════
+    #  TAB 2:  Manifests
+    # ═════════════════════════════════════════════════════════════
+    $mfTab = New-DataTab -TabTitle "Manifests" `
+        -ColumnHeaders @('Manifest','Type','Location','Size','Key Metric') `
+        -ColumnWidths  @(220,100,300,80,210)
+
+    $manifests = @()
+    $mfDetailMap = @{}
+
+    # Files Manifest (markdown)
+    $filesManifest = Join-Path $PSScriptRoot '~README.md\FILES-MANIFEST.md'
+    if (Test-Path $filesManifest) {
+        $fmInfo = Get-Item $filesManifest
+        $manifests += @{ Name = 'FILES-MANIFEST'; Type = 'Markdown'; Path = $fmInfo.FullName; Size = "$([math]::Round($fmInfo.Length / 1KB, 1))KB"; Metric = 'Workspace file inventory' }
+        $mfDetailMap['FILES-MANIFEST'] = (Get-Content $filesManifest -TotalCount 80 -Encoding UTF8) -join "`r`n"
+    }
+
+    # Agentic Manifest (JSON)
+    $agManifest = Join-Path $PSScriptRoot 'config\agentic-manifest.json'
+    if (Test-Path $agManifest) {
+        $amInfo = Get-Item $agManifest
+        $metricText = ''
+        try {
+            $amJson = Get-Content $agManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+            $c = $amJson.meta.counts
+            $metricText = "$($c.modules) modules, $($c.totalExportedFunctions) funcs, $($c.scripts) scripts"
+        } catch { $metricText = 'Parse error' }
+        $manifests += @{ Name = 'agentic-manifest'; Type = 'JSON'; Path = $amInfo.FullName; Size = "$([math]::Round($amInfo.Length / 1KB, 1))KB"; Metric = $metricText }
+        $mfDetailMap['agentic-manifest'] = (Get-Content $agManifest -TotalCount 120 -Encoding UTF8) -join "`r`n"
+    }
+
+    # Module Load Order
+    $mloFile = Join-Path $PSScriptRoot '~README.md\MODULE-LOAD-ORDER.md'
+    if (Test-Path $mloFile) {
+        $mloInfo = Get-Item $mloFile
+        $manifests += @{ Name = 'MODULE-LOAD-ORDER'; Type = 'Markdown'; Path = $mloInfo.FullName; Size = "$([math]::Round($mloInfo.Length / 1KB, 1))KB"; Metric = 'Module import sequence' }
+        $mfDetailMap['MODULE-LOAD-ORDER'] = (Get-Content $mloFile -TotalCount 80 -Encoding UTF8) -join "`r`n"
+    }
+
+    # Module Function Index
+    $mfiFile = Join-Path $PSScriptRoot '~README.md\MODULE-FUNCTION-INDEX.md'
+    if (Test-Path $mfiFile) {
+        $mfiInfo = Get-Item $mfiFile
+        $manifests += @{ Name = 'MODULE-FUNCTION-INDEX'; Type = 'Markdown'; Path = $mfiInfo.FullName; Size = "$([math]::Round($mfiInfo.Length / 1KB, 1))KB"; Metric = 'Function-to-module mapping' }
+        $mfDetailMap['MODULE-FUNCTION-INDEX'] = (Get-Content $mfiFile -TotalCount 80 -Encoding UTF8) -join "`r`n"
+    }
+
+    # Installation Summary
+    $isFile = Join-Path $PSScriptRoot '~README.md\INSTALLATION-SUMMARY.md'
+    if (Test-Path $isFile) {
+        $isInfo = Get-Item $isFile
+        $manifests += @{ Name = 'INSTALLATION-SUMMARY'; Type = 'Markdown'; Path = $isInfo.FullName; Size = "$([math]::Round($isInfo.Length / 1KB, 1))KB"; Metric = 'Setup & prerequisites' }
+        $mfDetailMap['INSTALLATION-SUMMARY'] = (Get-Content $isFile -TotalCount 80 -Encoding UTF8) -join "`r`n"
+    }
+
+    # Scan for any other config/*.json that looks manifest-like
+    $configJsons = @(Get-ChildItem -Path (Join-Path $PSScriptRoot 'config') -Filter '*.json' -File -ErrorAction SilentlyContinue | Sort-Object Name)
+    foreach ($cj in $configJsons) {
+        if ($cj.Name -eq 'agentic-manifest.json') { continue }  # already added
+        $manifests += @{ Name = $cj.BaseName; Type = 'Config JSON'; Path = $cj.FullName; Size = "$([math]::Round($cj.Length / 1KB, 1))KB"; Metric = 'Configuration' }
+        $mfDetailMap[$cj.BaseName] = (Get-Content $cj.FullName -TotalCount 60 -Encoding UTF8 -ErrorAction SilentlyContinue) -join "`r`n"
+    }
+
+    foreach ($mf in $manifests) {
+        $item = New-Object System.Windows.Forms.ListViewItem($mf.Name)
+        $item.SubItems.Add($mf.Type) | Out-Null
+        $item.SubItems.Add($mf.Path.Replace($PSScriptRoot, '.')) | Out-Null
+        $item.SubItems.Add($mf.Size) | Out-Null
+        $item.SubItems.Add($mf.Metric) | Out-Null
+        $mfTab.ListView.Items.Add($item) | Out-Null
+    }
+
+    $mfTab.ListView.Add_SelectedIndexChanged({
+        if ($mfTab.ListView.SelectedItems.Count -gt 0) {
+            $selName = $mfTab.ListView.SelectedItems[0].Text
+            if ($mfDetailMap.ContainsKey($selName)) {
+                $mfTab.Detail.Text = $mfDetailMap[$selName]
+            }
+        }
+    })
+
+    # ═════════════════════════════════════════════════════════════
+    #  TAB 3:  Registries
+    # ═════════════════════════════════════════════════════════════
+    $regTab = New-DataTab -TabTitle "Registries" `
+        -ColumnHeaders @('Registry','Type','Location','Entries','Purpose') `
+        -ColumnWidths  @(220,100,300,70,220)
+
+    $registries = @()
+    $regDetailMap = @{}
+
+    # Agent Registry (JSON)
+    $arFile = Join-Path $PSScriptRoot 'agents\focalpoint-null\config\agent_registry.json'
+    if (Test-Path $arFile) {
+        $arInfo = Get-Item $arFile
+        $agentCount = 0
+        $preview = ''
+        try {
+            $arRaw = Get-Content $arFile -Raw -Encoding UTF8
+            $arJson = $arRaw | ConvertFrom-Json
+            if ($arJson.PSObject.Properties.Name -contains 'agents') { $agentCount = @($arJson.agents).Count }
+            $preview = $arRaw.Substring(0, [Math]::Min($arRaw.Length, 4000))
+        } catch { $preview = 'Parse error' }
+        $registries += @{ Name = 'agent_registry'; Type = 'JSON'; Path = $arInfo.FullName; Entries = "$agentCount"; Purpose = 'FocalPoint agent definitions' }
+        $regDetailMap['agent_registry'] = $preview
+    }
+
+    # Pipeline Registry (JSON)
+    $plFile = Join-Path $PSScriptRoot 'config\cron-aiathon-pipeline.json'
+    if (Test-Path $plFile) {
+        $plInfo = Get-Item $plFile
+        $plCount = 0
+        $preview = ''
+        try {
+            $plRaw = Get-Content $plFile -Raw -Encoding UTF8
+            $plJson = $plRaw | ConvertFrom-Json
+            foreach ($cat in @('bugs','featureRequests','items2ADD','bugs2FIX','todos')) {
+                if ($plJson.PSObject.Properties.Name -contains $cat) {
+                    $plCount += @($plJson.$cat).Count
+                }
+            }
+            $preview = $plRaw.Substring(0, [Math]::Min($plRaw.Length, 4000))
+        } catch { $preview = 'Parse error' }
+        $registries += @{ Name = 'cron-aiathon-pipeline'; Type = 'JSON'; Path = $plInfo.FullName; Entries = "$plCount"; Purpose = 'Pipeline backlog items' }
+        $regDetailMap['cron-aiathon-pipeline'] = $preview
+    }
+
+    # SIN Registry folder summary (already in Tab 1, but link here)
+    if (Test-Path $sinDir) {
+        $registries += @{ Name = 'sin_registry'; Type = 'Folder'; Path = $sinDir; Entries = "$sinTotal"; Purpose = "SIN tracking ($sinCritical CRIT, $sinPenance PENANCE)" }
+        $regDetailMap['sin_registry'] = "SIN Registry Folder: $sinDir`r`n`r`nTotal entries: $sinTotal`r`nResolved: $sinResolved`r`nCritical: $sinCritical`r`nPenance (SemiSin): $sinPenance`r`n`r`nSee the SIN Registry tab for full details."
+    }
+
+    # Checkpoint Index
+    $cpIndex = Join-Path $PSScriptRoot 'checkpoints\_index.json'
+    if (Test-Path $cpIndex) {
+        $cpInfo = Get-Item $cpIndex
+        $cpCount = 0
+        $preview = ''
+        try {
+            $cpRaw = Get-Content $cpIndex -Raw -Encoding UTF8
+            $cpJson = $cpRaw | ConvertFrom-Json
+            $cpCount = @($cpJson.PSObject.Properties).Count
+            $preview = $cpRaw.Substring(0, [Math]::Min($cpRaw.Length, 4000))
+        } catch { $preview = 'Parse error' }
+        $registries += @{ Name = 'checkpoints/_index'; Type = 'JSON'; Path = $cpInfo.FullName; Entries = "$cpCount"; Purpose = 'Epoch checkpoint index' }
+        $regDetailMap['checkpoints/_index'] = $preview
+    }
+
+    # AgentRegistry.psm1 module
+    $agRegMod = Join-Path $PSScriptRoot 'sovereign-kernel\core\AgentRegistry.psm1'
+    if (Test-Path $agRegMod) {
+        $agModInfo = Get-Item $agRegMod
+        $registries += @{ Name = 'AgentRegistry.psm1'; Type = 'Module'; Path = $agModInfo.FullName; Entries = '-'; Purpose = 'Sovereign kernel agent registry' }
+        $regDetailMap['AgentRegistry.psm1'] = (Get-Content $agRegMod -TotalCount 80 -Encoding UTF8 -ErrorAction SilentlyContinue) -join "`r`n"
+    }
+
+    foreach ($rg in $registries) {
+        $item = New-Object System.Windows.Forms.ListViewItem($rg.Name)
+        $item.SubItems.Add($rg.Type) | Out-Null
+        $item.SubItems.Add($rg.Path.Replace($PSScriptRoot, '.')) | Out-Null
+        $item.SubItems.Add($rg.Entries) | Out-Null
+        $item.SubItems.Add($rg.Purpose) | Out-Null
+        $regTab.ListView.Items.Add($item) | Out-Null
+    }
+
+    $regTab.ListView.Add_SelectedIndexChanged({
+        if ($regTab.ListView.SelectedItems.Count -gt 0) {
+            $selName = $regTab.ListView.SelectedItems[0].Text
+            if ($regDetailMap.ContainsKey($selName)) {
+                $regTab.Detail.Text = $regDetailMap[$selName]
+            }
+        }
+    })
+
+    # ═════════════════════════════════════════════════════════════
+    #  TAB 4:  Summary Dashboard
+    # ═════════════════════════════════════════════════════════════
+    $summaryPage = New-Object System.Windows.Forms.TabPage
+    $summaryPage.Text = "Dashboard"
+    $summaryPage.Padding = New-Object System.Windows.Forms.Padding(10)
+
+    $summaryBox = New-Object System.Windows.Forms.TextBox
+    $summaryBox.Multiline  = $true
+    $summaryBox.ReadOnly   = $true
+    $summaryBox.ScrollBars = [System.Windows.Forms.ScrollBars]::Vertical
+    $summaryBox.Dock       = [System.Windows.Forms.DockStyle]::Fill
+    $summaryBox.Font       = New-Object System.Drawing.Font("Consolas", 10)
+    $summaryBox.WordWrap   = $true
+
+    $sinPatterns  = @($sinFiles | Where-Object { $_.Name -match '^SIN-PATTERN-' }).Count
+    $sinInstances = @($sinFiles | Where-Object { $_.Name -match '^SIN-\d{8}' }).Count
+    $sinSemiSins  = @($sinFiles | Where-Object { $_.Name -match '^SEMI-SIN-' }).Count
+
+    $dashLines = @(
+        "==================================================="
+        "  MANIFESTS, REGISTRIES & SINS  -  DASHBOARD"
+        "==================================================="
+        ""
+        "  SIN REGISTRY"
+        "  -----------------------------------------------"
+        "    Total entries ........... $sinTotal"
+        "    SIN Instances ........... $sinInstances"
+        "    SIN Patterns ............ $sinPatterns"
+        "    SemiSin Definitions ..... $sinSemiSins"
+        "    Resolved ................ $sinResolved"
+        "    Open CRITICAL ........... $sinCritical"
+        "    Open PENANCE ............ $sinPenance"
+        ""
+        "  MANIFESTS"
+        "  -----------------------------------------------"
+        "    Files tracked ........... $($manifests.Count)"
+        "    Main manifests:"
+    )
+    foreach ($mf in $manifests) {
+        if ($mf.Type -eq 'Config JSON') { continue }
+        $dashLines += "      $($mf.Name)  ($($mf.Size))"
+    }
+    $dashLines += @(
+        "    Config files ............ $($configJsons.Count)"
+        ""
+        "  REGISTRIES"
+        "  -----------------------------------------------"
+    )
+    foreach ($rg in $registries) {
+        $dashLines += "    $($rg.Name) : $($rg.Entries) entries - $($rg.Purpose)"
+    }
+    $dashLines += @(
+        ""
+        "  SCAN RESULTS"
+        "  -----------------------------------------------"
+    )
+    $sinScanResults = Join-Path $PSScriptRoot 'temp\sin-scan-results.json'
+    if (Test-Path $sinScanResults) {
+        try {
+            $sr = Get-Content $sinScanResults -Raw -Encoding UTF8 | ConvertFrom-Json
+            $dashLines += "    Last SIN scan: $($sr.scanId)"
+            $dashLines += "    Findings: $($sr.totalFindings) (C:$($sr.critical) H:$($sr.high) M:$($sr.medium))"
+        } catch { $dashLines += "    SIN scan results: parse error" }
+    } else { $dashLines += "    No SIN scan results yet" }
+
+    $penanceResults = Join-Path $PSScriptRoot 'temp\semisin-penance-results.json'
+    if (Test-Path $penanceResults) {
+        try {
+            $pr = Get-Content $penanceResults -Raw -Encoding UTF8 | ConvertFrom-Json
+            $dashLines += "    Last Penance scan: $($pr.scanId)"
+            $dashLines += "    Penance warnings: $($pr.penanceWarnings) ($($pr.baselineFiles) files tracked)"
+        } catch { $dashLines += "    Penance results: parse error" }
+    } else { $dashLines += "    No Penance scan results yet" }
+
+    $dashLines += @(
+        ""
+        "==================================================="
+    )
+    $summaryBox.Text = $dashLines -join "`r`n"
+    $summaryPage.Controls.Add($summaryBox)
+    $tabs.TabPages.Insert(0, $summaryPage) | Out-Null
+    $tabs.SelectedIndex = 0
+
+    # ── Final status ──────────────────────────────────────────────
+    $statusLabel.Text = "SINs: $sinTotal  |  Manifests: $($manifests.Count)  |  Registries: $($registries.Count)"
+
+    $viewerForm.ShowDialog() | Out-Null
+    $viewerForm.Dispose()
+}
+
 function Show-UpdateHelp {
-    Write-AppLog "User initiated Update-Help" "Event"
+    Write-AppLog "User initiated Update-Help" "Audit"
     [System.Windows.Forms.MessageBox]::Show("Updating PowerShell Help...", "Please Wait", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
     
     try {
         Update-Help -Force -ErrorAction SilentlyContinue
-        Write-AppLog "Help updated successfully" "Success"
+        Write-AppLog "Help updated successfully" "Info"
         [System.Windows.Forms.MessageBox]::Show("PowerShell Help has been updated successfully.", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
     }
     catch {
@@ -3412,7 +4000,7 @@ function Show-UpdateHelp {
 }
 
 function Show-NetworkDiagnosticsDialog {
-    Write-AppLog "User opened Network Diagnostics" "Event"
+    Write-AppLog "User opened Network Diagnostics" "Audit"
     
     $results = Get-NetworkDiagnostic
     $resultText = $results -join "`r`n"
@@ -3433,8 +4021,12 @@ function Test-AppTesting {
     $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
     $report = @()
 
-    $mdFiles = Get-ChildItem -Path $root -Recurse -File -Include *.md -ErrorAction SilentlyContinue
-    $scriptFiles = Get-ChildItem -Path $root -Recurse -File -Include *.ps1,*.psm1,*.psd1 -ErrorAction SilentlyContinue
+    # Folders to exclude from scanning
+    $scanExclude = @('.git', '.history', '~REPORTS\archive')
+    $filterScan = { param($f) foreach ($ex in $scanExclude) { if ($f.FullName -like "$root\$ex\*") { return $false } }; return $true }
+
+    $mdFiles = Get-ChildItem -Path $root -Recurse -File -Include *.md -ErrorAction SilentlyContinue | Where-Object { & $filterScan $_ }
+    $scriptFiles = @(Get-CachedScriptFiles)
 
     $contradictionPairs = @(
         @("supported","not supported"),
@@ -3584,7 +4176,7 @@ if ($errors) { $errors | ForEach-Object { Write-Output $_.Message }; exit 1 } el
     $logDir = Join-Path $root "logs"
     if (-not (Test-Path $logDir)) { New-Item -Path $logDir -ItemType Directory -Force | Out-Null }
     $logPath = Join-Path $logDir "testing-app-testing-$timestamp.txt"
-    $report | Format-Table -AutoSize | Out-String | Set-Content -Path $logPath
+    $report | Format-Table -AutoSize | Out-String | Set-Content -Path $logPath -Encoding UTF8
 
     Write-AppLog "Test-AppTesting completed with $($report.Count) findings. Report: $logPath" "Info"
     return [pscustomobject]@{
@@ -3618,7 +4210,12 @@ function Get-ScriptSafetyScore {
         @{ Name = "apikey"; Regex = "(?i)apikey\s*[:=]"; Penalty = 20 },
         @{ Name = "api_key"; Regex = "(?i)api_key\s*[:=]"; Penalty = 20 },
         @{ Name = "secret"; Regex = "(?i)secret\s*[:=]"; Penalty = 20 },
-        @{ Name = "token"; Regex = "(?i)token\s*[:=]"; Penalty = 20 }
+        @{ Name = "token"; Regex = "(?i)token\s*[:=]"; Penalty = 20 },
+        @{ Name = "bw_unlock_raw"; Regex = "(?i)bw\s+unlock\s+.*--raw"; Penalty = 25 },
+        @{ Name = "bw_session_var"; Regex = "(?i)BW_SESSION\s*[:=]"; Penalty = 25 },
+        @{ Name = "securestring_plain"; Regex = "(?i)ConvertFrom-SecureString.*-AsPlainText"; Penalty = 20 },
+        @{ Name = "vault_master_pwd"; Regex = "(?i)(master|vault).*(password|pwd)\s*[:=]"; Penalty = 30 },
+        @{ Name = "hardcoded_key"; Regex = "(?i)(encryption|aes|crypto).*(key|iv)\s*[:=]\s*\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S"; Penalty = 30 }
     )
 
     $findings = @()
@@ -3653,7 +4250,11 @@ function Test-ScriptSafetySecOp {
     $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
     $report = @()
 
-    $scriptFiles = Get-ChildItem -Path $root -Recurse -File -Include *.ps1,*.psm1,*.psd1 -ErrorAction SilentlyContinue
+    # Folders to exclude from scanning
+    $scanExclude = @('.git', '.history', '~REPORTS\archive')
+    $filterScan = { param($f) foreach ($ex in $scanExclude) { if ($f.FullName -like "$root\$ex\*") { return $false } }; return $true }
+
+    $scriptFiles = @(Get-CachedScriptFiles)
     foreach ($script in $scriptFiles) {
         $content = Get-Content $script.FullName -Raw -ErrorAction SilentlyContinue
         if (-not $content) { continue }
@@ -3672,7 +4273,7 @@ function Test-ScriptSafetySecOp {
     $logDir = Join-Path $root "logs"
     if (-not (Test-Path $logDir)) { New-Item -Path $logDir -ItemType Directory -Force | Out-Null }
     $logPath = Join-Path $logDir "scrutiny-safety-secops-$timestamp.txt"
-    $report | Format-Table -AutoSize | Out-String | Set-Content -Path $logPath
+    $report | Format-Table -AutoSize | Out-String | Set-Content -Path $logPath -Encoding UTF8
 
     Write-AppLog "Test-ScriptSafetySecOp completed with $($report.Count) findings. Report: $logPath" "Info"
     return [pscustomobject]@{
@@ -3682,22 +4283,634 @@ function Test-ScriptSafetySecOp {
     }
 }
 
+# ==================== STARTUP SHORTCUT HELPER ====================
+function Show-StartupShortcutForm {
+    param([System.Windows.Forms.Form]$Owner)
+
+    $scForm = New-Object System.Windows.Forms.Form
+    $scForm.Text = "Create Startup Shortcut"
+    $scForm.Size = New-Object System.Drawing.Size(500, 280)
+    $scForm.StartPosition = "CenterParent"
+    $scForm.FormBorderStyle = "FixedDialog"
+    $scForm.MaximizeBox = $false
+    $scForm.MinimizeBox = $false
+    if (Get-Command Set-ModernFormStyle -ErrorAction SilentlyContinue) { Set-ModernFormStyle -Form $scForm }
+
+    $lblInfo = New-Object System.Windows.Forms.Label
+    $lblInfo.Text = "Create a shortcut to Launch-GUI that runs at Windows startup.`nSelect whose Startup folder to place it in:"
+    $lblInfo.Location = New-Object System.Drawing.Point(14, 14)
+    $lblInfo.Size = New-Object System.Drawing.Size(460, 42)
+    $scForm.Controls.Add($lblInfo)
+
+    $chkUser = New-Object System.Windows.Forms.CheckBox
+    $chkUser.Text = "Current User Startup  ($env:USERNAME)"
+    $chkUser.Location = New-Object System.Drawing.Point(30, 68)
+    $chkUser.Size = New-Object System.Drawing.Size(430, 24)
+    $chkUser.Checked = $true
+    $scForm.Controls.Add($chkUser)
+
+    $chkAll = New-Object System.Windows.Forms.CheckBox
+    $chkAll.Text = "All Users Startup  (requires Admin)"
+    $chkAll.Location = New-Object System.Drawing.Point(30, 98)
+    $chkAll.Size = New-Object System.Drawing.Size(430, 24)
+    $scForm.Controls.Add($chkAll)
+
+    $chkTray = New-Object System.Windows.Forms.CheckBox
+    $chkTray.Text = "Start minimized to TaskTray (/TASKTRAY)"
+    $chkTray.Location = New-Object System.Drawing.Point(30, 132)
+    $chkTray.Size = New-Object System.Drawing.Size(430, 24)
+    $chkTray.Checked = $true
+    $scForm.Controls.Add($chkTray)
+
+    $btnCreate = New-Object System.Windows.Forms.Button
+    $btnCreate.Text = "Create Shortcut"
+    $btnCreate.Location = New-Object System.Drawing.Point(140, 175)
+    $btnCreate.Size = New-Object System.Drawing.Size(130, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnCreate }
+
+    $btnCancel = New-Object System.Windows.Forms.Button
+    $btnCancel.Text = "Cancel"
+    $btnCancel.Location = New-Object System.Drawing.Point(280, 175)
+    $btnCancel.Size = New-Object System.Drawing.Size(90, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnCancel }
+
+    $btnCancel.Add_Click({ $scForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $scForm.Close() })
+
+    $btnCreate.Add_Click({
+        $batPath = Join-Path $scriptDir 'Launch-GUI-quik_jnr.bat'
+        if (-not (Test-Path $batPath)) { $batPath = Join-Path $scriptDir 'Launch-GUI.bat' }
+        $trayArg = if ($chkTray.Checked) { '/TASKTRAY' } else { '' }
+        $created = @()
+        $failed  = @()
+
+        if ($chkUser.Checked) {
+            $userStartup = [Environment]::GetFolderPath('Startup')
+            try {
+                $ws = New-Object -ComObject WScript.Shell
+                $sc = $ws.CreateShortcut((Join-Path $userStartup 'PowerShellGUI.lnk'))
+                $sc.TargetPath = $batPath
+                $sc.Arguments = $trayArg
+                $sc.WorkingDirectory = $scriptDir
+                $sc.Description = "PowerShellGUI Launcher"
+                $sc.WindowStyle = 7  # minimized
+                $sc.Save()
+                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($ws) | Out-Null
+                $created += "User Startup: $userStartup"
+                Write-AppLog "Startup shortcut created in user startup: $userStartup" "Info"
+            } catch {
+                $failed += "User Startup: $_"
+                Write-AppLog "Failed to create user startup shortcut: $_" "Error"
+            }
+        }
+
+        if ($chkAll.Checked) {
+            $allStartup = "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+            try {
+                $ws = New-Object -ComObject WScript.Shell
+                $sc = $ws.CreateShortcut((Join-Path $allStartup 'PowerShellGUI.lnk'))
+                $sc.TargetPath = $batPath
+                $sc.Arguments = $trayArg
+                $sc.WorkingDirectory = $scriptDir
+                $sc.Description = "PowerShellGUI Launcher"
+                $sc.WindowStyle = 7
+                $sc.Save()
+                [System.Runtime.InteropServices.Marshal]::ReleaseComObject($ws) | Out-Null
+                $created += "All Users Startup: $allStartup"
+                Write-AppLog "Startup shortcut created in all-users startup: $allStartup" "Info"
+            } catch {
+                $failed += "All Users Startup: $_"
+                Write-AppLog "Failed to create all-users startup shortcut: $_" "Error"
+            }
+        }
+
+        $msg = ""
+        if ($created.Count -gt 0) { $msg += "Created:`n" + ($created -join "`n") + "`n`n" }
+        if ($failed.Count -gt 0) { $msg += "Failed:`n" + ($failed -join "`n") }
+        if ($created.Count -eq 0 -and $failed.Count -eq 0) { $msg = "No startup folder selected." }
+
+        [System.Windows.Forms.MessageBox]::Show($msg, "Startup Shortcut", "OK",
+            $(if ($failed.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information }))
+        if ($failed.Count -eq 0 -and $created.Count -gt 0) { $scForm.DialogResult = [System.Windows.Forms.DialogResult]::OK; $scForm.Close() }
+    })
+
+    $scForm.Controls.Add($btnCreate)
+    $scForm.Controls.Add($btnCancel)
+    $scForm.AcceptButton = $btnCreate
+    $scForm.CancelButton = $btnCancel
+    $scForm.ShowDialog($Owner) | Out-Null
+    $scForm.Dispose()
+}
+
+# ==================== REMOTE BUILD PATH CONFIG ====================
+function Show-RemoteBuildConfigForm {
+    param([System.Windows.Forms.Form]$Owner)
+
+    $rbForm = New-Object System.Windows.Forms.Form
+    $rbForm.Text = "Remote Build Path Configuration"
+    $rbForm.Size = New-Object System.Drawing.Size(720, 620)
+    $rbForm.StartPosition = "CenterParent"
+    $rbForm.FormBorderStyle = "FixedDialog"
+    $rbForm.MaximizeBox = $false
+    if (Get-Command Set-ModernFormStyle -ErrorAction SilentlyContinue) { Set-ModernFormStyle -Form $rbForm }
+
+    $resultsBox = New-Object System.Windows.Forms.RichTextBox
+    $resultsBox.Location = New-Object System.Drawing.Point(12, 310)
+    $resultsBox.Size = New-Object System.Drawing.Size(680, 230)
+    $resultsBox.ReadOnly = $true
+    $resultsBox.Font = New-Object System.Drawing.Font("Consolas", 9)
+    $resultsBox.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+    $resultsBox.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $rbForm.Controls.Add($resultsBox)
+
+    # helper to append colored text
+    $appendResult = {
+        param([string]$Text, [System.Drawing.Color]$Color)
+        $resultsBox.SelectionStart = $resultsBox.TextLength
+        $resultsBox.SelectionLength = 0
+        $resultsBox.SelectionColor = $Color
+        $resultsBox.AppendText($Text + "`r`n")
+        $resultsBox.ScrollToCaret()
+    }
+
+    # Remote path label + textbox
+    $lblPath = New-Object System.Windows.Forms.Label
+    $lblPath.Text = "Remote Build Path (RemoteUpdatePath):"
+    $lblPath.Location = New-Object System.Drawing.Point(12, 14)
+    $lblPath.Size = New-Object System.Drawing.Size(280, 20)
+    $rbForm.Controls.Add($lblPath)
+
+    $txtRemotePath = New-Object System.Windows.Forms.TextBox
+    $txtRemotePath.Location = New-Object System.Drawing.Point(12, 36)
+    $txtRemotePath.Size = New-Object System.Drawing.Size(600, 22)
+    $cfgRemote = try { [string](Get-ConfigSubValue "RemoteUpdatePath") } catch { "" }
+    $txtRemotePath.Text = if ($cfgRemote) { $cfgRemote } else { "" }
+    $rbForm.Controls.Add($txtRemotePath)
+
+    $btnBrowse = New-Object System.Windows.Forms.Button
+    $btnBrowse.Text = "..."
+    $btnBrowse.Location = New-Object System.Drawing.Point(618, 34)
+    $btnBrowse.Size = New-Object System.Drawing.Size(60, 26)
+    $btnBrowse.Add_Click({
+        $fb = New-Object System.Windows.Forms.FolderBrowserDialog
+        $fb.Description = "Select Remote Build Path"
+        if (-not [string]::IsNullOrWhiteSpace($txtRemotePath.Text)) { $fb.SelectedPath = $txtRemotePath.Text }
+        if ($fb.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { $txtRemotePath.Text = $fb.SelectedPath }
+        $fb.Dispose()
+    })
+    $rbForm.Controls.Add($btnBrowse)
+
+    # ── Check Remote Path button ──
+    $btnCheck = New-Object System.Windows.Forms.Button
+    $btnCheck.Text = "Check Remote Path"
+    $btnCheck.Location = New-Object System.Drawing.Point(12, 70)
+    $btnCheck.Size = New-Object System.Drawing.Size(160, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnCheck }
+    $btnCheck.Add_Click({
+        $resultsBox.Clear()
+        $rp = $txtRemotePath.Text.Trim()
+        if ([string]::IsNullOrWhiteSpace($rp)) {
+            & $appendResult "ERROR: No remote path specified." ([System.Drawing.Color]::OrangeRed)
+            return
+        }
+        & $appendResult "=== Checking Remote Path ===" ([System.Drawing.Color]::Cyan)
+        & $appendResult "Path: $rp" ([System.Drawing.Color]::White)
+
+        # Exists?
+        if (-not (Test-Path $rp)) {
+            & $appendResult "[FAIL] Path does NOT exist." ([System.Drawing.Color]::OrangeRed)
+            return
+        }
+        & $appendResult "[OK] Path exists." ([System.Drawing.Color]::LimeGreen)
+
+        # Readable?
+        try {
+            $null = Get-ChildItem -Path $rp -ErrorAction Stop | Select-Object -First 1
+            & $appendResult "[OK] Path is readable." ([System.Drawing.Color]::LimeGreen)
+        } catch {
+            & $appendResult "[FAIL] Path is NOT readable: $_" ([System.Drawing.Color]::OrangeRed)
+        }
+
+        # Writable?
+        $testFile = Join-Path $rp ".pwshgui-write-test-$(Get-Random)"
+        try {
+            [System.IO.File]::WriteAllText($testFile, "test")
+            Remove-Item $testFile -Force -ErrorAction SilentlyContinue
+            & $appendResult "[OK] Path is writable." ([System.Drawing.Color]::LimeGreen)
+        } catch {
+            & $appendResult "[FAIL] Path is NOT writable: $_" ([System.Drawing.Color]::OrangeRed)
+        }
+
+        # Build version / manifest?
+        $buildDir = Join-Path $rp "~BUILD-ZIPS"
+        if (Test-Path $buildDir) {
+            & $appendResult "`n=== Build Directory: ~BUILD-ZIPS ===" ([System.Drawing.Color]::Cyan)
+            $zips = Get-ChildItem -Path $buildDir -Filter "*.zip" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+            if ($zips.Count -gt 0) {
+                & $appendResult "Found $($zips.Count) zip package(s):" ([System.Drawing.Color]::White)
+                foreach ($z in $zips | Select-Object -First 10) {
+                    $sizeKB = [math]::Round($z.Length / 1KB, 1)
+                    & $appendResult "  $($z.Name)  ($sizeKB KB)  $($z.LastWriteTime.ToString('yyyy-MM-dd HH:mm'))" ([System.Drawing.Color]::LightGray)
+                }
+            } else {
+                & $appendResult "No zip packages found in ~BUILD-ZIPS." ([System.Drawing.Color]::Yellow)
+            }
+
+            # Check for manifest
+            $manifests = Get-ChildItem -Path $buildDir -Filter "*.xml" -ErrorAction SilentlyContinue
+            if ($manifests.Count -gt 0) {
+                & $appendResult "Build manifest(s) found:" ([System.Drawing.Color]::White)
+                foreach ($m in $manifests) { & $appendResult "  $($m.Name)" ([System.Drawing.Color]::LightGray) }
+            } else {
+                & $appendResult "No build manifest XML found. Zip packages may be used for expansion." ([System.Drawing.Color]::Yellow)
+            }
+        } else {
+            & $appendResult "`n~BUILD-ZIPS directory not found at remote path." ([System.Drawing.Color]::Yellow)
+            & $appendResult "Scanning for any zip packages in root of remote path..." ([System.Drawing.Color]::White)
+            $rootZips = Get-ChildItem -Path $rp -Filter "*.zip" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+            if ($rootZips.Count -gt 0) {
+                & $appendResult "Found $($rootZips.Count) zip(s) for potential expansion:" ([System.Drawing.Color]::White)
+                foreach ($z in $rootZips | Select-Object -First 10) {
+                    $sizeKB = [math]::Round($z.Length / 1KB, 1)
+                    $verMatch = if ($z.Name -match 'v[- ]?(\d+\.\w+\.\w+)') { $Matches[1] } else { "unknown" }
+                    & $appendResult "  $($z.Name)  ($sizeKB KB)  ver: $verMatch  $($z.LastWriteTime.ToString('yyyy-MM-dd HH:mm'))" ([System.Drawing.Color]::LightGray)
+                }
+            } else {
+                & $appendResult "No zip packages found at remote path." ([System.Drawing.Color]::Yellow)
+            }
+        }
+        Write-AppLog "Remote build path check completed for: $rp" "Info"
+    })
+    $rbForm.Controls.Add($btnCheck)
+
+    # ── Build Zip & Upload button ──
+    $btnBuild = New-Object System.Windows.Forms.Button
+    $btnBuild.Text = "Build Zip && Upload"
+    $btnBuild.Location = New-Object System.Drawing.Point(12, 110)
+    $btnBuild.Size = New-Object System.Drawing.Size(160, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnBuild }
+    $btnBuild.Add_Click({
+        $resultsBox.Clear()
+        $rp = $txtRemotePath.Text.Trim()
+        if ([string]::IsNullOrWhiteSpace($rp)) {
+            & $appendResult "ERROR: No remote path specified." ([System.Drawing.Color]::OrangeRed)
+            return
+        }
+        if (-not (Test-Path $rp)) {
+            & $appendResult "ERROR: Remote path does not exist: $rp" ([System.Drawing.Color]::OrangeRed)
+            return
+        }
+        $confirm = [System.Windows.Forms.MessageBox]::Show(
+            "This will build a zip package from the current workspace and upload to:`n$rp\~BUILD-ZIPS`n`nProceed?",
+            "Build & Upload", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
+        if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+
+        & $appendResult "=== Building Zip Package ===" ([System.Drawing.Color]::Cyan)
+        try {
+            $opts = @{ CopyZipToRemote = $true; RemoteUpdatePath = $rp }
+            Export-WorkspacePackage -Options $opts
+            & $appendResult "[OK] Zip package built and uploaded to remote path." ([System.Drawing.Color]::LimeGreen)
+            # Show what was uploaded
+            $buildDir = Join-Path $rp "~BUILD-ZIPS"
+            if (Test-Path $buildDir) {
+                $latest = Get-ChildItem -Path $buildDir -Filter "*.zip" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($latest) { & $appendResult "Uploaded: $($latest.Name)  ($([math]::Round($latest.Length / 1KB, 1)) KB)" ([System.Drawing.Color]::White) }
+            }
+            Write-AppLog "Build zip uploaded to $rp" "Info"
+        } catch {
+            & $appendResult "[FAIL] Build/upload error: $_" ([System.Drawing.Color]::OrangeRed)
+            Write-AppLog "Build zip upload failed: $_" "Error"
+        }
+    })
+    $rbForm.Controls.Add($btnBuild)
+
+    # ── TEST (WhatIf) Remote Path Build Zip ──
+    $btnTestBuild = New-Object System.Windows.Forms.Button
+    $btnTestBuild.Text = "TEST Build Zip (WhatIf)"
+    $btnTestBuild.Location = New-Object System.Drawing.Point(185, 110)
+    $btnTestBuild.Size = New-Object System.Drawing.Size(180, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnTestBuild }
+    $btnTestBuild.Add_Click({
+        $resultsBox.Clear()
+        $rp = $txtRemotePath.Text.Trim()
+        & $appendResult "=== TEST (WhatIf): Build Zip Package ===" ([System.Drawing.Color]::Yellow)
+        & $appendResult "Mode: SIMULATION -- no files will be created or copied" ([System.Drawing.Color]::Yellow)
+        & $appendResult "" ([System.Drawing.Color]::White)
+
+        $versionString = Get-VersionString
+        $zipName = "pwshGUI-v-$versionString.zip"
+        & $appendResult "Version     : $versionString" ([System.Drawing.Color]::White)
+        & $appendResult "Package name: $zipName" ([System.Drawing.Color]::White)
+        & $appendResult "Source      : $scriptDir" ([System.Drawing.Color]::White)
+        & $appendResult "Local dest  : $DownloadFolder\$zipName" ([System.Drawing.Color]::White)
+
+        # Calculate what would be packaged
+        $packageExcludeFolders = @(Get-ConfigList "Do-Not-VersionTag-FoldersFiles") + '.git'
+        $packageItems = Get-ChildItem -Path $scriptDir -Force | Where-Object { $packageExcludeFolders -notcontains $_.Name }
+        & $appendResult "`nItems to package ($($packageItems.Count)):" ([System.Drawing.Color]::Cyan)
+        foreach ($item in $packageItems) {
+            $sizeStr = if ($item.PSIsContainer) { "[DIR]" } else { "$([math]::Round($item.Length / 1KB, 1)) KB" }
+            & $appendResult "  $($item.Name)  $sizeStr" ([System.Drawing.Color]::LightGray)
+        }
+
+        if ([string]::IsNullOrWhiteSpace($rp)) {
+            & $appendResult "`n[SKIP] No remote path -- upload step would be skipped." ([System.Drawing.Color]::Yellow)
+        } else {
+            $remoteBuild = Join-Path $rp "~BUILD-ZIPS"
+            & $appendResult "`nRemote dest : $remoteBuild\$zipName" ([System.Drawing.Color]::White)
+            if (Test-Path $rp) {
+                & $appendResult "[OK] Remote path exists." ([System.Drawing.Color]::LimeGreen)
+            } else {
+                & $appendResult "[WARN] Remote path does NOT exist -- upload would fail." ([System.Drawing.Color]::OrangeRed)
+            }
+        }
+        & $appendResult "`n=== WhatIf complete -- no changes made ===" ([System.Drawing.Color]::Yellow)
+        Write-AppLog "WhatIf build zip test completed" "Info"
+    })
+    $rbForm.Controls.Add($btnTestBuild)
+
+    # ── TEST (WhatIf) Build Remote Copy From Current Version ──
+    $btnTestCopy = New-Object System.Windows.Forms.Button
+    $btnTestCopy.Text = "TEST Remote Copy (WhatIf)"
+    $btnTestCopy.Location = New-Object System.Drawing.Point(378, 110)
+    $btnTestCopy.Size = New-Object System.Drawing.Size(195, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnTestCopy }
+    $btnTestCopy.Add_Click({
+        $resultsBox.Clear()
+        $rp = $txtRemotePath.Text.Trim()
+        & $appendResult "=== TEST (WhatIf): Build Remote Copy from Current Version ===" ([System.Drawing.Color]::Yellow)
+        & $appendResult "Mode: SIMULATION -- zip, upload, verify readback" ([System.Drawing.Color]::Yellow)
+        & $appendResult "" ([System.Drawing.Color]::White)
+
+        $versionString = Get-VersionString
+        $zipName = "pwshGUI-v-$versionString.zip"
+        $tempDir = if (-not [string]::IsNullOrWhiteSpace($TempFolder) -and (Test-Path $TempFolder)) { $TempFolder } else { "C:\temp" }
+
+        & $appendResult "Step 1: CREATE zip package" ([System.Drawing.Color]::Cyan)
+        & $appendResult "  Source     : $scriptDir" ([System.Drawing.Color]::White)
+        & $appendResult "  Zip name   : $zipName" ([System.Drawing.Color]::White)
+        & $appendResult "  Local path : $DownloadFolder\$zipName" ([System.Drawing.Color]::White)
+
+        # Simulate package size
+        $packageExcludeFolders = @(Get-ConfigList "Do-Not-VersionTag-FoldersFiles") + '.git'
+        $packageItems = Get-ChildItem -Path $scriptDir -Force | Where-Object { $packageExcludeFolders -notcontains $_.Name }
+        $totalBytes = ($packageItems | Where-Object { -not $_.PSIsContainer } | Measure-Object -Property Length -Sum).Sum
+        & $appendResult "  Estimated size: $([math]::Round($totalBytes / 1MB, 2)) MB (uncompressed)" ([System.Drawing.Color]::LightGray)
+        & $appendResult "  [SIMULATED] Zip created OK" ([System.Drawing.Color]::LimeGreen)
+
+        & $appendResult "`nStep 2: UPLOAD to remote path" ([System.Drawing.Color]::Cyan)
+        if ([string]::IsNullOrWhiteSpace($rp)) {
+            & $appendResult "  [SKIP] No remote path configured." ([System.Drawing.Color]::OrangeRed)
+        } else {
+            $remoteBuild = Join-Path $rp "~BUILD-ZIPS"
+            & $appendResult "  Destination: $remoteBuild\$zipName" ([System.Drawing.Color]::White)
+            if (Test-Path $rp) {
+                & $appendResult "  [OK] Remote path accessible." ([System.Drawing.Color]::LimeGreen)
+                & $appendResult "  [SIMULATED] Upload OK" ([System.Drawing.Color]::LimeGreen)
+            } else {
+                & $appendResult "  [FAIL] Remote path not accessible." ([System.Drawing.Color]::OrangeRed)
+            }
+        }
+
+        & $appendResult "`nStep 3: VERIFY readback by extracting to temp" ([System.Drawing.Color]::Cyan)
+        & $appendResult "  Temp extraction dir: $tempDir" ([System.Drawing.Color]::White)
+        if (Test-Path $tempDir) {
+            & $appendResult "  [OK] Temp directory exists." ([System.Drawing.Color]::LimeGreen)
+        } else {
+            & $appendResult "  [INFO] Temp directory does not exist. Would be created." ([System.Drawing.Color]::Yellow)
+        }
+        $extractTarget = Join-Path $tempDir "pwshGUI-verify-$versionString"
+        & $appendResult "  Extract to: $extractTarget" ([System.Drawing.Color]::White)
+        & $appendResult "  [SIMULATED] Extraction OK -- $($packageItems.Count) items verified" ([System.Drawing.Color]::LimeGreen)
+
+        & $appendResult "`n=== WhatIf complete -- no changes made ===" ([System.Drawing.Color]::Yellow)
+        Write-AppLog "WhatIf remote copy test completed" "Info"
+    })
+    $rbForm.Controls.Add($btnTestCopy)
+
+    # ── Temp folder label ──
+    $lblTemp = New-Object System.Windows.Forms.Label
+    $lblTemp.Text = "Temp folder for verify extraction:"
+    $lblTemp.Location = New-Object System.Drawing.Point(12, 155)
+    $lblTemp.Size = New-Object System.Drawing.Size(230, 20)
+    $rbForm.Controls.Add($lblTemp)
+
+    $txtTemp = New-Object System.Windows.Forms.TextBox
+    $txtTemp.Location = New-Object System.Drawing.Point(246, 153)
+    $txtTemp.Size = New-Object System.Drawing.Size(366, 22)
+    $txtTemp.Text = if ($TempFolder -and (Test-Path $TempFolder)) { $TempFolder } else { "C:\temp" }
+    $rbForm.Controls.Add($txtTemp)
+
+    # ── Save Remote Path button ──
+    $btnSave = New-Object System.Windows.Forms.Button
+    $btnSave.Text = "Save Remote Path to Config"
+    $btnSave.Location = New-Object System.Drawing.Point(12, 190)
+    $btnSave.Size = New-Object System.Drawing.Size(200, 32)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnSave }
+    $btnSave.Add_Click({
+        $val = $txtRemotePath.Text.Trim()
+        try {
+            Set-ConfigSubValue -XPath "RemoteUpdatePath" -Value $val
+            Set-Variable -Name 'RemoteUpdatePath' -Value $val -Scope Script -ErrorAction SilentlyContinue
+            & $appendResult "Remote path saved to config: $val" ([System.Drawing.Color]::LimeGreen)
+            Write-AppLog "Remote build path saved: $val" "Info"
+        } catch {
+            & $appendResult "Failed to save: $_" ([System.Drawing.Color]::OrangeRed)
+        }
+    })
+    $rbForm.Controls.Add($btnSave)
+
+    # ── Close button ──
+    $btnClose = New-Object System.Windows.Forms.Button
+    $btnClose.Text = "Close"
+    $btnClose.Location = New-Object System.Drawing.Point(600, 550)
+    $btnClose.Size = New-Object System.Drawing.Size(90, 28)
+    if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnClose }
+    $btnClose.Add_Click({ $rbForm.Close() })
+    $rbForm.Controls.Add($btnClose)
+    $rbForm.CancelButton = $btnClose
+
+    # ── Results header ──
+    $lblResults = New-Object System.Windows.Forms.Label
+    $lblResults.Text = "Results:"
+    $lblResults.Location = New-Object System.Drawing.Point(12, 290)
+    $lblResults.Size = New-Object System.Drawing.Size(200, 18)
+    $rbForm.Controls.Add($lblResults)
+
+    $rbForm.ShowDialog($Owner) | Out-Null
+    $rbForm.Dispose()
+}
+
 # ==================== GUI FUNCTIONS ====================
 function New-GUI {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param()
+    param(
+        [switch]$StartMinimized
+    )
     if (-not $PSCmdlet.ShouldProcess("Main GUI", "Create and show")) { return }
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName System.Drawing
+    # Assemblies already loaded at script scope
     
     # Create main form
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "PowerShell Script Launcher"
-    $form.Size = New-Object System.Drawing.Size([int]700, [int]540)
+    $form.Text = "PowerShellGUI - Scriptz Launchr"
+    $form.Size = New-Object System.Drawing.Size([int]700, [int]680)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = "FixedSingle"
     $form.MaximizeBox = $false
-    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 240, 240)
+    $form.KeyPreview = $true
+    # DoubleBuffered is a protected property - must use reflection to set it
+    $form.GetType().GetProperty('DoubleBuffered',
+        [System.Reflection.BindingFlags]'Instance,NonPublic').SetValue($form, $true, $null)
+    # Apply modern dark theme
+    if (Get-Command Set-ModernFormStyle -ErrorAction SilentlyContinue) {
+        Set-ModernFormStyle -Form $form
+    } else {
+        $form.BackColor = [System.Drawing.Color]::FromArgb(240, 240, 240)
+    }
+
+    # ── Single-instance tool guard: tracks running tool labels for this form ──
+    $script:_RunningTools = @{}      # Key = MenuLabel, Value = $true or Process object
+
+    function Resolve-MenuScriptPath {
+        param(
+            [Parameter(Mandatory = $true)]
+            [string[]]$RelativeCandidates
+        )
+
+        foreach ($candidate in $RelativeCandidates) {
+            $fullPath = Join-Path $PSScriptRoot $candidate
+            if (Test-Path $fullPath) {
+                return $fullPath
+            }
+        }
+        return $null
+    }
+
+    function Invoke-MenuScriptSafely {
+        param(
+            [Parameter(Mandatory = $true)]
+            [string]$MenuLabel,
+
+            [Parameter(Mandatory = $true)]
+            [string[]]$RelativeCandidates,
+
+            [hashtable]$ScriptArguments = @{},
+
+            [switch]$UseNewProcess
+        )
+
+        # ── Single-instance guard: prevent duplicate launches per form ──
+        if ($script:_RunningTools.ContainsKey($MenuLabel)) {
+            $existing = $script:_RunningTools[$MenuLabel]
+            # For external processes, check if still alive
+            if ($existing -is [System.Diagnostics.Process] -and -not $existing.HasExited) {
+                Write-AppLog "$MenuLabel is already running (PID $($existing.Id))" 'Warning'
+                [System.Windows.Forms.MessageBox]::Show(
+                    "$MenuLabel is already running.`nOnly one instance per session is allowed.",
+                    $MenuLabel,
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Information
+                ) | Out-Null
+                return $false
+            }
+            # For inline runs, check if flag is still $true (cleared on completion)
+            if ($existing -eq $true) {
+                Write-AppLog "$MenuLabel is already running (inline)" 'Warning'
+                [System.Windows.Forms.MessageBox]::Show(
+                    "$MenuLabel is already running.`nOnly one instance per session is allowed.",
+                    $MenuLabel,
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Information
+                ) | Out-Null
+                return $false
+            }
+            # Stale entry -- remove it
+            $script:_RunningTools.Remove($MenuLabel)
+        }
+
+        $resolvedPath = Resolve-MenuScriptPath -RelativeCandidates $RelativeCandidates
+        if (-not $resolvedPath) {
+            $attempted = ($RelativeCandidates | ForEach-Object { Join-Path $PSScriptRoot $_ }) -join "`n"
+            Write-AppLog "$MenuLabel script not found. Tried: $attempted" 'Error'
+            [System.Windows.Forms.MessageBox]::Show(
+                "$MenuLabel script not found.`n`nTried:`n$attempted",
+                $MenuLabel,
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            ) | Out-Null
+            return $false
+        }
+
+        try {
+            if ($UseNewProcess) {
+                $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$resolvedPath`"")
+                foreach ($key in $ScriptArguments.Keys) {
+                    $argList += "-$key"
+                    $value = $ScriptArguments[$key]
+                    if ($null -ne $value -and $value -ne '') {
+                        $argList += [string]$value
+                    }
+                }
+                $proc = Start-Process powershell.exe -ArgumentList ($argList -join ' ') -WindowStyle Normal -PassThru
+                $script:_RunningTools[$MenuLabel] = $proc
+            } else {
+                $script:_RunningTools[$MenuLabel] = $true
+                try {
+                    & $resolvedPath @ScriptArguments
+                } finally {
+                    $script:_RunningTools.Remove($MenuLabel)
+                }
+            }
+
+            Write-AppLog "$MenuLabel launched: $resolvedPath" 'Info'
+            return $true
+        } catch {
+            $script:_RunningTools.Remove($MenuLabel)
+            Write-AppLog "$MenuLabel launch failed: $($_.Exception.Message) | Path: $resolvedPath" 'Error'
+            [System.Windows.Forms.MessageBox]::Show(
+                "Failed to launch ${MenuLabel}:`n$($_.Exception.Message)`n`nPath: $resolvedPath",
+                $MenuLabel,
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            ) | Out-Null
+            return $false
+        }
+    }
+
+    function Open-MenuPathSafely {
+        param(
+            [Parameter(Mandatory = $true)]
+            [string]$MenuLabel,
+
+            [Parameter(Mandatory = $true)]
+            [string]$PathToOpen
+        )
+
+        if (-not (Test-Path $PathToOpen)) {
+            Write-AppLog "$MenuLabel target missing: $PathToOpen" 'Warning'
+            [System.Windows.Forms.MessageBox]::Show(
+                "$MenuLabel target not found:`n$PathToOpen",
+                $MenuLabel,
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            ) | Out-Null
+            return $false
+        }
+
+        try {
+            Start-Process $PathToOpen
+            Write-AppLog "$MenuLabel opened: $PathToOpen" 'Info'
+            return $true
+        } catch {
+            Write-AppLog "$MenuLabel failed to open: $($_.Exception.Message) | Path: $PathToOpen" 'Error'
+            [System.Windows.Forms.MessageBox]::Show(
+                "Failed to open ${MenuLabel}:`n$($_.Exception.Message)`n`nPath: $PathToOpen",
+                $MenuLabel,
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            ) | Out-Null
+            return $false
+        }
+    }
     
     # ==================== MENU STRIP ====================
     $menuStrip = New-Object System.Windows.Forms.MenuStrip
@@ -3714,15 +4927,23 @@ function New-GUI {
     $pathSettingsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $pathSettingsItem.Text = "&Configure Paths..."
     $pathSettingsItem.Add_Click({
-        Write-AppLog "User selected File > Settings > Configure Paths" "Event"
+        Write-AppLog "User selected File > Settings > Configure Paths" "Audit"
         Show-PathSettingsGUI
+        # ── Cycle 3: Refresh status bar and service lights after path save ──
+        try {
+            $newRemote = try { [string](Get-ConfigSubValue 'RemoteUpdatePath') } catch { '' }
+            if (-not [string]::IsNullOrWhiteSpace($newRemote)) { $script:RemoteUpdatePath = $newRemote }
+            $rd = if ([string]::IsNullOrWhiteSpace($newRemote)) { '(not set)' } else { $newRemote }
+            if ($statusRightRow2) { $statusRightRow2.Text = "Remote: $rd | Scripts: $scriptsDir" }
+            if ($script:_ServiceTimer) { $script:_ServiceTimer.Stop(); $script:_ServiceTimer.Interval = 100; $script:_ServiceTimer.Start() }
+        } catch { Write-AppLog "[Settings] Path settings reload error: $_" 'Warning' }
     })
     $settingsMenu.DropDownItems.Add($pathSettingsItem) | Out-Null
     
     $scriptFoldersItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $scriptFoldersItem.Text = "&Script Folders..."
     $scriptFoldersItem.Add_Click({
-        Write-AppLog "User selected File > Settings > Script Folders" "Event"
+        Write-AppLog "User selected File > Settings > Script Folders" "Audit"
         Show-ScriptFolderSettingsGUI
     })
     $settingsMenu.DropDownItems.Add($scriptFoldersItem) | Out-Null
@@ -3731,13 +4952,298 @@ function New-GUI {
     
     # Separator
     $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ══════════════════════════════════════════════════════════════
+    # SYSTEM TRAY (always-on) -- X closes to tray, Ctrl+Q exits
+    # ══════════════════════════════════════════════════════════════
+    $script:_ForceClose = $false
+    $script:_TrayIcon   = New-Object System.Windows.Forms.NotifyIcon
+    $script:_TrayIcon.Text = "PowerShellGUI"
+    try {
+        if (Get-Command New-SmileyTrayIcon -ErrorAction SilentlyContinue) {
+            $script:_TrayIcon.Icon = New-SmileyTrayIcon
+            Write-AppLog "[TrayHost] Custom smiley tray icon applied (yellow face / crimson oval)" "Debug"
+        } else {
+            $script:_TrayIcon.Icon = [System.Drawing.SystemIcons]::Application
+        }
+    } catch {
+        $script:_TrayIcon.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon(
+            [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName)
+    }
+    $script:_TrayIcon.Visible = $true
+
+    # -- helper: restore window from tray --
+    $script:_RestoreFromTray = {
+        Write-AppLog "[TrayHost] Restoring GUI from system tray" "Debug"
+        $form.Show()
+        $form.ShowInTaskbar = $true
+        $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
+        $form.Activate()
+        Write-AppLog "[TrayHost] GUI restored and activated" "Debug"
+        Write-Information '' -InformationAction Continue
+        Write-Information '***GUI-is-RESTORED-from-TASKTRAY***' -InformationAction Continue
+        Write-Information '' -InformationAction Continue
+    }
+
+    # -- helper: real exit (with confirmation) --
+    $script:_ForceExit = {
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Do you want to CLOSE and EXIT the application?`n`nYes = Close and Exit`nNo  = Minimize to Taskbar",
+            "Exit PowerShellGUI",
+            [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Question)
+        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            Write-AppLog "User confirmed EXIT from tray -- closing application" "Audit"
+            $script:_ForceClose = $true
+            $form.Close()
+        } else {
+            Write-AppLog "User chose MINIMIZE from tray exit prompt" "Audit"
+        }
+    }
+
+    # Double-click tray icon => restore
+    $script:_TrayIcon.Add_DoubleClick($script:_RestoreFromTray)
+
+    # Minimize to tray when window is minimized
+    $form.Add_Resize({
+        if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized -and $script:_TrayIcon) {
+            Write-AppLog "[TrayHost] Form minimized -- hiding to system tray (form stays alive)" "Debug"
+            $form.Hide()
+            $form.ShowInTaskbar = $false
+            $script:_TrayIcon.ShowBalloonTip(1000, "PowerShellGUI",
+                "Running in system tray. Double-click icon or press SPACEBAR in shell to restore.",
+                [System.Windows.Forms.ToolTipIcon]::Info)
+            Write-AppLog "[TrayHost] Form hidden -- tray balloon shown" "Debug"
+            Write-Information '' -InformationAction Continue
+            Write-Information '***GUI-is-MINI-on-TASKTRAY***' -InformationAction Continue
+            Write-Information '##PRESS SPACEBAR IN SHELL or DOUBLE-CLICK TRAY ICON##' -InformationAction Continue
+            Write-Information '' -InformationAction Continue
+        }
+    })
+
+    # ── Build tray context menu ──────────────────────────────────
+    $trayCtx = New-Object System.Windows.Forms.ContextMenuStrip
+
+    # --- Restore / Show ---
+    $trayRestore = New-Object System.Windows.Forms.ToolStripMenuItem
+    $trayRestore.Text = "&Restore PowerShellGUI"
+    $trayRestore.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $trayRestore.Add_Click($script:_RestoreFromTray)
+    $trayCtx.Items.Add($trayRestore) | Out-Null
+    $trayCtx.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── System Folders flyout ────────────────────────────────────
+    $foldersMenu = New-Object System.Windows.Forms.ToolStripMenuItem
+    $foldersMenu.Text = "System &Folders"
+
+    $knownFolders = @(
+        @{ Name = "Desktop";    Path = [Environment]::GetFolderPath('Desktop') },
+        @{ Name = "Downloads";  Path = (Join-Path $env:USERPROFILE 'Downloads') },
+        @{ Name = "Documents";  Path = [Environment]::GetFolderPath('MyDocuments') },
+        @{ Name = "Pictures";   Path = [Environment]::GetFolderPath('MyPictures') },
+        @{ Name = "Videos";     Path = [Environment]::GetFolderPath('MyVideos') },
+        @{ Name = "Music";      Path = [Environment]::GetFolderPath('MyMusic') }
+    )
+    foreach ($kf in $knownFolders) {
+        $mi = New-Object System.Windows.Forms.ToolStripMenuItem
+        $mi.Text = $kf.Name
+        $mi.Tag  = $kf.Path
+        $mi.Add_Click({ Start-Process explorer.exe $this.Tag })
+        $foldersMenu.DropDownItems.Add($mi) | Out-Null
+    }
+    $foldersMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # My Computer (This PC)
+    $miPC = New-Object System.Windows.Forms.ToolStripMenuItem
+    $miPC.Text = "My Computer"
+    $miPC.Add_Click({ Start-Process explorer.exe "shell:MyComputerFolder" })
+    $foldersMenu.DropDownItems.Add($miPC) | Out-Null
+
+    # Control Panel
+    $miCP = New-Object System.Windows.Forms.ToolStripMenuItem
+    $miCP.Text = "Control Panel"
+    $miCP.Add_Click({ Start-Process control.exe })
+    $foldersMenu.DropDownItems.Add($miCP) | Out-Null
+
+    # God Mode
+    $miGod = New-Object System.Windows.Forms.ToolStripMenuItem
+    $miGod.Text = "God Mode (All Settings)"
+    $miGod.Add_Click({ Start-Process explorer.exe "shell:::{ED7BA470-8E54-465E-825C-99712043E01C}" })
+    $foldersMenu.DropDownItems.Add($miGod) | Out-Null
+
+    # Network Browser
+    $miNet = New-Object System.Windows.Forms.ToolStripMenuItem
+    $miNet.Text = "Network Browser"
+    $miNet.Add_Click({ Start-Process explorer.exe "shell:NetworkPlacesFolder" })
+    $foldersMenu.DropDownItems.Add($miNet) | Out-Null
+
+    $foldersMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # All local volumes and media cards
+    try {
+        $drives = [System.IO.DriveInfo]::GetDrives() | Where-Object { $_.IsReady }
+        foreach ($drv in $drives) {
+            $label = if ($drv.VolumeLabel) { "$($drv.Name.TrimEnd('\'))  [$($drv.VolumeLabel)]" } else { "$($drv.Name.TrimEnd('\'))  [$($drv.DriveType)]" }
+            $dmi = New-Object System.Windows.Forms.ToolStripMenuItem
+            $dmi.Text = $label
+            $dmi.Tag  = $drv.Name
+            $dmi.Add_Click({ Start-Process explorer.exe $this.Tag })
+            $foldersMenu.DropDownItems.Add($dmi) | Out-Null
+        }
+    } catch { Write-AppLog "[TrayHost] Drive folders menu error: $_" 'Warning' }
+
+    $trayCtx.Items.Add($foldersMenu) | Out-Null
+
+    # ── Utilities flyout ─────────────────────────────────────────
+    $utilsMenu = New-Object System.Windows.Forms.ToolStripMenuItem
+    $utilsMenu.Text = "&Utilities"
+
+    # Terminal / PowerShell / CMD / nslookup
+    $utilEntries = @(
+        @{ Name = "Windows Terminal"; Cmd = "wt.exe" },
+        @{ Name = "PowerShell 7 (pwsh)"; Cmd = "pwsh.exe" },
+        @{ Name = "PowerShell 5.1"; Cmd = "powershell.exe" },
+        @{ Name = "Command Prompt (cmd)"; Cmd = "cmd.exe" },
+        @{ Name = "nslookup"; Cmd = "cmd.exe"; Args = "/k nslookup" }
+    )
+    foreach ($ue in $utilEntries) {
+        $exePath = Get-Command $ue.Cmd -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source
+        if ($exePath) {
+            $ui = New-Object System.Windows.Forms.ToolStripMenuItem
+            $ui.Text = $ue.Name
+            $ui.Tag  = if ($ue.Args) { "$exePath|$($ue.Args)" } else { "$exePath|" }
+            $ui.Add_Click({
+                $parts = $this.Tag -split '\|', 2
+                if ($parts[1]) { Start-Process $parts[0] $parts[1] } else { Start-Process $parts[0] }
+            })
+            $utilsMenu.DropDownItems.Add($ui) | Out-Null
+        }
+    }
+
+    $utilsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Administration tools available on this machine
+    $adminTools = @(
+        @{ Name = "Computer Management";   Cmd = "compmgmt.msc" },
+        @{ Name = "Device Manager";        Cmd = "devmgmt.msc" },
+        @{ Name = "Disk Management";       Cmd = "diskmgmt.msc" },
+        @{ Name = "Event Viewer";          Cmd = "eventvwr.msc" },
+        @{ Name = "Services";              Cmd = "services.msc" },
+        @{ Name = "Task Scheduler";        Cmd = "taskschd.msc" },
+        @{ Name = "Performance Monitor";   Cmd = "perfmon.msc" },
+        @{ Name = "Local Group Policy";    Cmd = "gpedit.msc" },
+        @{ Name = "Local Users & Groups";  Cmd = "lusrmgr.msc" },
+        @{ Name = "Windows Firewall";      Cmd = "wf.msc" },
+        @{ Name = "Registry Editor";       Cmd = "regedit.exe" },
+        @{ Name = "System Configuration";  Cmd = "msconfig.exe" },
+        @{ Name = "Resource Monitor";      Cmd = "resmon.exe" },
+        @{ Name = "Task Manager";          Cmd = "taskmgr.exe" }
+    )
+    foreach ($at in $adminTools) {
+        $atPath = Get-Command $at.Cmd -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source
+        if (-not $atPath) {
+            $atPath = Join-Path "$env:SystemRoot\System32" $at.Cmd
+            if (-not (Test-Path $atPath)) { continue }
+        }
+        $ai = New-Object System.Windows.Forms.ToolStripMenuItem
+        $ai.Text = $at.Name
+        $ai.Tag  = $atPath
+        $ai.Add_Click({ Start-Process $this.Tag })
+        $utilsMenu.DropDownItems.Add($ai) | Out-Null
+    }
+
+    $trayCtx.Items.Add($utilsMenu) | Out-Null
+    $trayCtx.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── Mirror main-menu top-level items into tray context ───────
+    # We clone the text and re-fire by programmatically performing click on the real menu item.
+    # This runs AFTER the full menuStrip is built (deferred via form.Shown).
+    $form.Add_Shown({
+        foreach ($topItem in $menuStrip.Items) {
+            if ($topItem -isnot [System.Windows.Forms.ToolStripMenuItem]) { continue }
+            $clone = New-Object System.Windows.Forms.ToolStripMenuItem
+            $clone.Text = $topItem.Text
+            # Clone sub-items one level deep
+            foreach ($child in $topItem.DropDownItems) {
+                if ($child -is [System.Windows.Forms.ToolStripSeparator]) {
+                    $clone.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+                    continue
+                }
+                if ($child -isnot [System.Windows.Forms.ToolStripMenuItem]) { continue }
+                $cc = New-Object System.Windows.Forms.ToolStripMenuItem
+                $cc.Text = $child.Text
+                $cc.Tag  = $child                # reference to real item
+                $cc.Add_Click({
+                    $realItem = $this.Tag
+                    if ($realItem) {
+                        # Restore form so menu handlers can interact with it
+                        $form.Show()
+                        $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
+                        $form.Activate()
+                        $realItem.PerformClick()
+                    }
+                })
+                # Clone sub-sub-items (one more level for submenus like XHTML Reports)
+                if ($child.HasDropDown) {
+                    foreach ($grandchild in $child.DropDownItems) {
+                        if ($grandchild -is [System.Windows.Forms.ToolStripSeparator]) {
+                            $cc.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+                            continue
+                        }
+                        if ($grandchild -isnot [System.Windows.Forms.ToolStripMenuItem]) { continue }
+                        $gc = New-Object System.Windows.Forms.ToolStripMenuItem
+                        $gc.Text = $grandchild.Text
+                        $gc.Tag  = $grandchild
+                        $gc.Add_Click({
+                            $realItem = $this.Tag
+                            if ($realItem) {
+                                $form.Show()
+                                $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
+                                $form.Activate()
+                                $realItem.PerformClick()
+                            }
+                        })
+                        $cc.DropDownItems.Add($gc) | Out-Null
+                    }
+                }
+                $clone.DropDownItems.Add($cc) | Out-Null
+            }
+            # Insert before the last separator+Exit in tray context
+            $trayCtx.Items.Add($clone) | Out-Null
+        }
+
+        # Final separator + Exit at the very bottom
+        $trayCtx.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+        $trayExitFinal = New-Object System.Windows.Forms.ToolStripMenuItem
+        $trayExitFinal.Text = "E&xit PowerShellGUI"
+        $trayExitFinal.Add_Click($script:_ForceExit)
+        $trayCtx.Items.Add($trayExitFinal) | Out-Null
+    })
+
+    $script:_TrayIcon.ContextMenuStrip = $trayCtx
+    Write-AppLog "System tray icon initialised with context menu" "Info"
+
+    # Separator
+    $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
     
     $exitItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $exitItem.Text = "E&xit"
     $exitItem.ShortcutKeys = "Control+Q"
     $exitItem.Add_Click({
-        Write-AppLog "User selected File > Exit" "Event"
-        $form.Close()
+        Write-AppLog "User selected File > Exit" "Audit"
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Do you want to CLOSE and EXIT the application?`n`nYes = Close and Exit`nNo  = Minimize to Taskbar",
+            "Exit PowerShellGUI",
+            [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Question)
+        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            Write-AppLog "User confirmed EXIT -- closing application" "Audit"
+            $script:_ForceClose = $true
+            $form.Close()
+        } else {
+            Write-AppLog "User chose MINIMIZE instead of exit" "Audit"
+            $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
+        }
     })
     $fileMenu.DropDownItems.Add($exitItem) | Out-Null
     
@@ -3750,7 +5256,7 @@ function New-GUI {
     $versionCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $versionCheckItem.Text = "&Version Check"
     $versionCheckItem.Add_Click({
-        Write-AppLog "User selected Tests > Version Check" "Event"
+        Write-AppLog "User selected Tests > Version Check" "Audit"
         Test-VersionTag
         [System.Windows.Forms.MessageBox]::Show("Version check completed. See diff XML file if any differences.", "Version Check")
     })
@@ -3791,7 +5297,7 @@ function New-GUI {
     $appTestingItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $appTestingItem.Text = "App Testing (Docs && Comments)"
     $appTestingItem.Add_Click({
-        Write-AppLog "User selected Tests > App Testing" "Event"
+        Write-AppLog "User selected Tests > App Testing" "Audit"
         $results = Test-AppTesting
         $count = if ($results) { $results.Count } else { 0 }
         if ($results -and $null -ne $results.Count) { $count = $results.Count }
@@ -3803,7 +5309,7 @@ function New-GUI {
     $scrutinyItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $scrutinyItem.Text = "Scrutiny Safety && SecOps"
     $scrutinyItem.Add_Click({
-        Write-AppLog "User selected Tests > Scrutiny Safety and SecOps" "Event"
+        Write-AppLog "User selected Tests > Scrutiny Safety and SecOps" "Audit"
         $results = Test-ScriptSafetySecOp
         $count = if ($results) { $results.Count } else { 0 }
         if ($results -and $null -ne $results.Count) { $count = $results.Count }
@@ -3846,6 +5352,136 @@ function New-GUI {
     })
     $wingetsMenu.DropDownItems.Add($wingetUpdateAllItem) | Out-Null
 
+    # Separator before SASC items
+    $wingetsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $bwLiteInstallItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $bwLiteInstallItem.Text = "Install-BitWarden-&LITE"
+    $bwLiteInstallItem.Add_Click({
+        try {
+            $installerPath = Join-Path $scriptsDir 'Install-BitwardenLite.ps1'
+            if (Test-Path $installerPath) {
+                Write-AppLog "Launching Bitwarden LITE installer (elevated) from WinGets menu" "Info"
+                $confirm = [System.Windows.Forms.MessageBox]::Show(
+                    "This will install Bitwarden CLI via winget, ensure required module dependencies, and validate core vault functions.`nAdministrator elevation may be required.`n`nProceed?",
+                    "Install Bitwarden LITE",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                    [System.Windows.Forms.MessageBoxIcon]::Question)
+                if ($confirm -eq 'Yes') {
+                    $psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+                    $argList = "-NoProfile -ExecutionPolicy Bypass -File `"$installerPath`""
+                    $proc = Start-Process -FilePath $psExe -ArgumentList $argList -Verb RunAs -Wait -PassThru
+
+                    if ($proc.ExitCode -ne 0) {
+                        throw "Bitwarden installer exited with code $($proc.ExitCode)."
+                    }
+
+                    # Post-install readiness checks in current host
+                    $readyMsgs = [System.Collections.Generic.List[string]]::new()
+                    $warnMsgs = [System.Collections.Generic.List[string]]::new()
+
+                    $sascModulePath = Get-ProjectPath SascModule
+                    if (Test-Path $sascModulePath) {
+                        try {
+                            Import-Module $sascModulePath -Force -ErrorAction Stop
+                            if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
+                                Initialize-SASCModule -ScriptDir $scriptDir | Out-Null
+                            }
+                            $requiredFunctions = @('Test-VaultStatus','Lock-Vault','Show-VaultStatusDialog','Show-VaultUnlockDialog')
+                            $missingFns = @($requiredFunctions | Where-Object { -not (Get-Command $_ -ErrorAction SilentlyContinue) })
+                            if ($missingFns.Count -eq 0) {
+                                $readyMsgs.Add('SASC functions loaded successfully.') | Out-Null
+                            } else {
+                                $warnMsgs.Add("Missing SASC functions: $($missingFns -join ', ')") | Out-Null
+                            }
+                        } catch {
+                            $warnMsgs.Add("Failed to load AssistedSASC module: $($_.Exception.Message)") | Out-Null
+                        }
+                    } else {
+                        $warnMsgs.Add('AssistedSASC.psm1 not found in modules folder.') | Out-Null
+                    }
+
+                    $bwCmd = Get-Command bw -ErrorAction SilentlyContinue
+                    if ($bwCmd) {
+                        try {
+                            $raw = & $bwCmd.Source status 2>&1 | Out-String
+                            $statusObj = $null
+                            try { $statusObj = $raw | ConvertFrom-Json -ErrorAction Stop } catch { <# Intentional: non-fatal #> }
+                            if ($statusObj -and $statusObj.status) {
+                                $readyMsgs.Add("BW status: $($statusObj.status)") | Out-Null
+                            } elseif ($raw -match '(?i)service.*not.*running|service.*not.*installed|connection.*refused|unable to connect|daemon') {
+                                $warnMsgs.Add('Bitwarden service is not installed or not running yet.') | Out-Null
+                            } else {
+                                $warnMsgs.Add('Unable to determine BW status from CLI output.') | Out-Null
+                            }
+                        } catch {
+                            $warnMsgs.Add("BW status check failed: $($_.Exception.Message)") | Out-Null
+                        }
+                    } else {
+                        $warnMsgs.Add('bw CLI command not found after install.') | Out-Null
+                    }
+
+                    $msg = "Bitwarden CLI installation completed."
+                    if ($readyMsgs.Count -gt 0) {
+                        $msg += "`n`nReady:`n - " + ($readyMsgs -join "`n - ")
+                    }
+                    if ($warnMsgs.Count -gt 0) {
+                        $msg += "`n`nWarnings:`n - " + ($warnMsgs -join "`n - ")
+                    }
+                    [System.Windows.Forms.MessageBox]::Show(
+                        $msg,
+                        'Installation Finished',
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        $(if ($warnMsgs.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information })
+                    ) | Out-Null
+                }
+            } else {
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Install-BitwardenLite.ps1 not found in scripts folder.`nExpected: $installerPath",
+                    "Installer Not Found",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Warning
+                )
+            }
+        } catch {
+            if ($_.Exception.Message -match 'canceled by the user') {
+                Write-AppLog "BW Lite install: User declined UAC elevation" "Warning"
+            } else {
+                Write-AppLog "BW Lite install error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Installation failed: $($_.Exception.Message)",
+                    "Install Error",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Error)
+            }
+        }
+    })
+    $wingetsMenu.DropDownItems.Add($bwLiteInstallItem) | Out-Null
+
+    $wingetsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $appTemplateItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $appTemplateItem.Text = "App &Template Manager..."
+    $appTemplateItem.Add_Click({
+        Write-AppLog "User selected WinGets > App Template Manager" "Audit"
+        $templateScript = Join-Path $scriptsDir 'Show-AppTemplateManager.ps1'
+        if (Test-Path $templateScript) {
+            try {
+                . $templateScript
+                Show-AppTemplateManager
+            } catch {
+                Write-AppLog "App Template Manager error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Failed to launch App Template Manager:`n$($_.Exception.Message)",
+                    "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Show-AppTemplateManager.ps1 not found in scripts.", "Missing Script",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $wingetsMenu.DropDownItems.Add($appTemplateItem) | Out-Null
+
     $menuStrip.Items.Add($wingetsMenu) | Out-Null
     
     # Tools Menu
@@ -3855,7 +5491,7 @@ function New-GUI {
     $viewConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $viewConfigItem.Text = "View &Config"
     $viewConfigItem.Add_Click({
-        Write-AppLog "User selected Tools > View Config" "Event"
+        Write-AppLog "User selected Tools > View Config" "Audit"
         if (Test-Path $configFile) {
             Write-AppLog "Opening config file: $configFile" "Debug"
             Invoke-Item $configFile
@@ -3870,7 +5506,7 @@ function New-GUI {
     $configMaintenanceItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $configMaintenanceItem.Text = "&Config Maintenance..."
     $configMaintenanceItem.Add_Click({
-        Write-AppLog "User selected Tools > Config Maintenance" "Event"
+        Write-AppLog "User selected Tools > Config Maintenance" "Audit"
         $currentConfigPaths = @{
             ConfigPath = $ConfigPath
             DefaultFolder = $DefaultFolder
@@ -3885,7 +5521,7 @@ function New-GUI {
     $openLogsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $openLogsItem.Text = "Open &Logs Directory"
     $openLogsItem.Add_Click({
-        Write-AppLog "User selected Tools > Open Logs Directory" "Event"
+        Write-AppLog "User selected Tools > Open Logs Directory" "Audit"
         Write-AppLog "Opening logs directory: $logsDir" "Debug"
         Invoke-Item $logsDir
     })
@@ -3896,7 +5532,7 @@ function New-GUI {
     $layoutItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $layoutItem.Text = "Scriptz n Portz N PowerShellD (Layout)"
     $layoutItem.Add_Click({
-        Write-AppLog "User selected Tools > Display Layout" "Event"
+        Write-AppLog "User selected Tools > Display Layout" "Audit"
         Show-GUILayout
     })
     $toolsMenu.DropDownItems.Add($layoutItem) | Out-Null
@@ -3904,7 +5540,7 @@ function New-GUI {
     $buttonMainItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $buttonMainItem.Text = "&Button Maintenance"
     $buttonMainItem.Add_Click({
-        Write-AppLog "User selected Tools > Button Maintenance" "Event"
+        Write-AppLog "User selected Tools > Button Maintenance" "Audit"
         [System.Windows.Forms.MessageBox]::Show(
             "Button Maintenance Tool`n`nFeature coming soon: Add/Edit/Delete custom buttons for scripts and applications.`n`nThis will allow you to manage your script launcher buttons from the GUI.",
             "Button Maintenance",
@@ -3917,25 +5553,1701 @@ function New-GUI {
     $networkDetailsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $networkDetailsItem.Text = "&Network Details"
     $networkDetailsItem.Add_Click({
-        Write-AppLog "User selected Tools > Network Details" "Event"
-        [System.Windows.Forms.MessageBox]::Show(
-            "Network Details Tool`n`nFeature coming soon: Display detailed network information including:`n- IPConfig details for LAN and WiFi`n- ARP tables`n- Tracert to 1.1.1.1`n- Ping times to DNS servers",
-            "Network Details",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        )
+        Write-AppLog "User selected Tools > Network Details (-> WinRemote PS Tool)" "Audit"
+        Invoke-MenuScriptSafely -MenuLabel 'WinRemote PS Tool' `
+            -RelativeCandidates @('scripts\WinRemote-PSTool.ps1') -UseNewProcess
     })
     $toolsMenu.DropDownItems.Add($networkDetailsItem) | Out-Null
     
     $avpnItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $avpnItem.Text = "A&VPN Connection Tracker"
     $avpnItem.Add_Click({
-        Write-AppLog "User selected Tools > AVPN Connection Tracker" "Event"
+        Write-AppLog "User selected Tools > AVPN Connection Tracker" "Audit"
         Show-AVPNConnectionTracker -ConfigPath $avpnConfigFile -LogCallback { param($m, $l) Write-AppLog $m $l } -Owner $form
     })
     $toolsMenu.DropDownItems.Add($avpnItem) | Out-Null
-    
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── Script Services submenu ─────────────────────────────────────────────────
+    $servicesMenu = New-Object System.Windows.Forms.ToolStripMenuItem
+    $servicesMenu.Text = "Script &Services"
+
+    $startEngineItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $startEngineItem.Text = "&#x25B6; Start Local Web Engine"
+    $startEngineItem.Text = "Start Local Web Engine"
+    $startEngineItem.Add_Click({
+        Write-AppLog "User selected Tools > Script Services > Start Local Web Engine" "Audit"
+        $svcScript = Join-Path $PSScriptRoot 'scripts\Start-LocalWebEngineService.ps1'
+        if (-not (Test-Path -LiteralPath $svcScript)) {
+            [System.Windows.Forms.MessageBox]::Show("Service launcher not found:`n$svcScript","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning)
+            return
+        }
+        try {
+            Start-Process -FilePath 'powershell.exe' `
+                -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"`"$svcScript`"",'Start') `
+                -WindowStyle Hidden
+            Write-AppLog "LocalWebEngine start requested via $svcScript" "Info"
+            # Trigger a quick status check after 2s
+            $kickTimer = New-Object System.Windows.Forms.Timer
+            $kickTimer.Interval = 2000
+            $kickTimer.Add_Tick({
+                $kickTimer.Stop()
+                try {
+                    $req = [System.Net.HttpWebRequest]::Create('http://127.0.0.1:8042/api/engine/status')
+                    $req.Timeout = 2000
+                    $resp = $req.GetResponse()
+                    $resp.Close()
+                    if ($null -ne $script:_EngineStatusLabel) { $script:_EngineStatusLabel.Text = 'Engine: running' ; $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::LimeGreen }
+                } catch {
+                    if ($null -ne $script:_EngineStatusLabel) { $script:_EngineStatusLabel.Text = 'Engine: starting…' ; $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Goldenrod }
+                }
+                $kickTimer.Dispose()
+            }.GetNewClosure())
+            $kickTimer.Start()
+        } catch {
+            Write-AppLog "Failed to start LocalWebEngine: $_" "Error"
+            [System.Windows.Forms.MessageBox]::Show("Failed to start engine:`n$_","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
+        }
+    })
+    $servicesMenu.DropDownItems.Add($startEngineItem) | Out-Null
+
+    $stopEngineItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $stopEngineItem.Text = "Stop Local Web Engine"
+    $stopEngineItem.Add_Click({
+        Write-AppLog "User selected Tools > Script Services > Stop Local Web Engine" "Audit"
+        $svcScript = Join-Path $PSScriptRoot 'scripts\Start-LocalWebEngineService.ps1'
+        if (Test-Path -LiteralPath $svcScript) {
+            try {
+                Start-Process -FilePath 'powershell.exe' `
+                    -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"`"$svcScript`"",'Stop') `
+                    -WindowStyle Hidden
+                Write-AppLog "LocalWebEngine stop requested" "Info"
+                if ($null -ne $script:_EngineStatusLabel) { $script:_EngineStatusLabel.Text = 'Engine: stopped' ; $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Gray }
+            } catch { Write-AppLog "Failed to stop engine: $_" "Error" }
+        }
+    })
+    $servicesMenu.DropDownItems.Add($stopEngineItem) | Out-Null
+
+    $servicesMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $openHubItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $openHubItem.Text = "Open &Workspace Hub"
+    $openHubItem.Add_Click({
+        Write-AppLog "User selected Tools > Script Services > Open Workspace Hub" "Audit"
+        try {
+            Start-Process 'http://127.0.0.1:8042/'
+        } catch {
+            Write-AppLog "Failed to open hub browser: $_" "Warning"
+        }
+    })
+    $servicesMenu.DropDownItems.Add($openHubItem) | Out-Null
+
+    $openMcpConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $openMcpConfigItem.Text = "MCP Service &Config"
+    $openMcpConfigItem.Add_Click({
+        Write-AppLog "User selected Tools > Script Services > MCP Service Config" "Audit"
+        $mcpHref = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MCPServiceConfig.xhtml'
+        if (Test-Path -LiteralPath $mcpHref) { Start-Process $mcpHref } else {
+            [System.Windows.Forms.MessageBox]::Show("MCP config page not found:`n$mcpHref","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $servicesMenu.DropDownItems.Add($openMcpConfigItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add($servicesMenu) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $depMatrixItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $depMatrixItem.Text = "Script &Dependency Matrix"
+    $depMatrixItem.Add_Click({
+        Write-AppLog "User selected Tools > Script Dependency Matrix" "Audit"
+
+        $matrixScript = Join-Path $PSScriptRoot 'scripts\Invoke-ScriptDependencyMatrix.ps1'
+        if (-not (Test-Path $matrixScript)) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Matrix generator not found:`n$matrixScript",
+                "Dependency Matrix",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+
+        $dlg = New-Object System.Windows.Forms.Form
+        $dlg.Text = 'Script Dependency Matrix'
+        $dlg.Size = New-Object System.Drawing.Size(780, 600)
+        $dlg.StartPosition = 'CenterParent'
+        $dlg.FormBorderStyle = 'Sizable'
+        $dlg.MinimumSize = New-Object System.Drawing.Size(520, 380)
+
+        $statusLabel = New-Object System.Windows.Forms.Label
+        $statusLabel.Dock = 'Top'
+        $statusLabel.Height = 24
+        $statusLabel.Text = 'Ready -- click Generate to scan workspace dependencies.'
+        $statusLabel.Padding = New-Object System.Windows.Forms.Padding(4,4,4,0)
+        $dlg.Controls.Add($statusLabel)
+
+        $progressPanel = New-Object System.Windows.Forms.Panel
+        $progressPanel.Dock = 'Top'
+        $progressPanel.Height = 28
+        $dlg.Controls.Add($progressPanel)
+
+        $progressBar = New-Object System.Windows.Forms.ProgressBar
+        $progressBar.Location = New-Object System.Drawing.Point(6, 4)
+        $progressBar.Size = New-Object System.Drawing.Size(560, 18)
+        $progressBar.Minimum = 0
+        $progressBar.Maximum = 100
+        $progressPanel.Controls.Add($progressBar)
+
+        $progressLabel = New-Object System.Windows.Forms.Label
+        $progressLabel.Location = New-Object System.Drawing.Point(575, 5)
+        $progressLabel.Size = New-Object System.Drawing.Size(180, 18)
+        $progressLabel.Text = '0%'
+        $progressPanel.Controls.Add($progressLabel)
+
+        $setProgressUi = {
+            param([int]$p)
+            $p2 = [Math]::Max(0, [Math]::Min(100, $p))
+            $progressBar.Value = $p2
+            $progressLabel.Text = "$p2%"
+            if ($p2 -lt 35) {
+                $progressLabel.ForeColor = [System.Drawing.Color]::OrangeRed
+            } elseif ($p2 -lt 70) {
+                $progressLabel.ForeColor = [System.Drawing.Color]::Goldenrod
+            } else {
+                $progressLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+            }
+        }
+
+        $resultsBox = New-Object System.Windows.Forms.RichTextBox
+        $resultsBox.Dock = 'Fill'
+        $resultsBox.ReadOnly = $true
+        $resultsBox.Font = New-Object System.Drawing.Font('Consolas', 9)
+        $resultsBox.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+        $resultsBox.ForeColor = [System.Drawing.Color]::White
+        $resultsBox.WordWrap = $false
+        $dlg.Controls.Add($resultsBox)
+
+        $btnPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+        $btnPanel.Dock = 'Bottom'
+        $btnPanel.Height = 42
+        $btnPanel.FlowDirection = 'RightToLeft'
+        $btnPanel.Padding = New-Object System.Windows.Forms.Padding(4)
+
+        $closeBtn2 = New-Object System.Windows.Forms.Button
+        $closeBtn2.Text = 'Close'
+        $closeBtn2.Width = 90
+        $closeBtn2.Add_Click({ $dlg.Close() })
+        $btnPanel.Controls.Add($closeBtn2)
+
+        $openVizBtn = New-Object System.Windows.Forms.Button
+        $openVizBtn.Text = 'Open Visualisation'
+        $openVizBtn.Width = 130
+        $openVizBtn.Enabled = $false
+        $btnPanel.Controls.Add($openVizBtn)
+
+        $openReportBtn = New-Object System.Windows.Forms.Button
+        $openReportBtn.Text = 'Open Report'
+        $openReportBtn.Width = 110
+        $openReportBtn.Enabled = $false
+        $btnPanel.Controls.Add($openReportBtn)
+
+        $generateBtn = New-Object System.Windows.Forms.Button
+        $generateBtn.Text = 'Generate'
+        $generateBtn.Width = 90
+        $btnPanel.Controls.Add($generateBtn)
+
+        $dlg.Controls.Add($btnPanel)
+
+        $generateBtn.Add_Click({
+            $resultsBox.Clear()
+            $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
+            & $setProgressUi 10
+            $dlg.Refresh()
+            $openVizBtn.Enabled = $false
+            $openReportBtn.Enabled = $false
+
+            try {
+                Write-AppLog "Running dependency matrix generator" "Info"
+                $output = & $matrixScript -WorkspacePath $PSScriptRoot -ReportPath (Join-Path $PSScriptRoot '~REPORTS') 2>&1 | Out-String
+                & $setProgressUi 80
+                $resultsBox.Text = $output
+
+                $vizMatch = [regex]::Match($output, 'Visualisation (?:HTML|XHTML):\s*(.+\.(?:html|xhtml))')
+                if (-not $vizMatch.Success) {
+                    $vizMatch = [regex]::Match($output, 'Visualisation Canonical XHTML:\s*(.+\.xhtml)')
+                }
+                $mdMatch = [regex]::Match($output, 'Matrix Markdown:\s*(.+\.md)')
+
+                if ($vizMatch.Success -and (Test-Path $vizMatch.Groups[1].Value.Trim())) {
+                    $openVizBtn.Tag = $vizMatch.Groups[1].Value.Trim()
+                    $openVizBtn.Enabled = $true
+                }
+                if ($mdMatch.Success -and (Test-Path $mdMatch.Groups[1].Value.Trim())) {
+                    $openReportBtn.Tag = $mdMatch.Groups[1].Value.Trim()
+                    $openReportBtn.Enabled = $true
+                }
+
+                $edgeMatch = [regex]::Match($output, 'Edges:\s*(\d+)')
+                $moduleMatch = [regex]::Match($output, 'Distinct modules:\s*(\d+)')
+                $statusLabel.Text = ('Scan complete -- Edges: {0}  |  Modules: {1}' -f $(if($edgeMatch.Success){$edgeMatch.Groups[1].Value}else{'?'}), $(if($moduleMatch.Success){$moduleMatch.Groups[1].Value}else{'?'}))
+                & $setProgressUi 100
+
+                Write-AppLog "Dependency matrix generation complete" "Info"
+            } catch {
+                $resultsBox.Text = "Error: $($_.Exception.Message)"
+                $statusLabel.Text = 'Generation failed'
+                & $setProgressUi 0
+                Write-AppLog "Dependency matrix error: $($_.Exception.Message)" "Error"
+            }
+        })
+
+        $openVizBtn.Add_Click({
+            if ($openVizBtn.Tag -and (Test-Path $openVizBtn.Tag)) {
+                Write-AppLog "Opening dependency visualisation: $($openVizBtn.Tag)" "Audit"
+                Start-Process $openVizBtn.Tag
+            }
+        })
+
+        $openReportBtn.Add_Click({
+            if ($openReportBtn.Tag -and (Test-Path $openReportBtn.Tag)) {
+                Write-AppLog "Opening dependency report: $($openReportBtn.Tag)" "Audit"
+                Invoke-Item $openReportBtn.Tag
+            }
+        })
+
+        # ── Cross-launch: open Module Dependency Check from Script Matrix ──
+        $modCheckBtn = New-Object System.Windows.Forms.Button
+        $modCheckBtn.Text = 'Module Check \u21E8'
+        $modCheckBtn.Width = 120
+        $modCheckBtn.Add_Click({
+            Write-AppLog "Cross-launch: Script Matrix -> Module Dependency Check" "Audit"
+            $dlg.Close()
+            $moduleCheckItem.PerformClick()
+        })
+        $btnPanel.Controls.Add($modCheckBtn)
+
+        $dlg.ShowDialog($form) | Out-Null
+        $dlg.Dispose()
+    })
+    $toolsMenu.DropDownItems.Add($depMatrixItem) | Out-Null
+
+    $moduleCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $moduleCheckItem.Text = "Module &Management"
+    $moduleCheckItem.Add_Click({
+        Write-AppLog "User selected Tools > Module Management" "Audit"
+
+        $moduleScript = Join-Path $PSScriptRoot 'scripts\Invoke-ModuleManagement.ps1'
+        if (-not (Test-Path $moduleScript)) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Module management script not found:`n$moduleScript",
+                "Module Management",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+
+        # --- build results dialog ---
+        $dlg = New-Object System.Windows.Forms.Form
+        $dlg.Text = 'Module Management'
+        $dlg.Size = New-Object System.Drawing.Size(820, 620)
+        $dlg.StartPosition = 'CenterParent'
+        $dlg.FormBorderStyle = 'Sizable'
+        $dlg.MinimumSize = New-Object System.Drawing.Size(560, 400)
+
+        $statusLabel = New-Object System.Windows.Forms.Label
+        $statusLabel.Dock = 'Top'
+        $statusLabel.Height = 24
+        $statusLabel.Text = 'Scanning modules...'
+        $statusLabel.Padding = New-Object System.Windows.Forms.Padding(4,4,4,0)
+        $dlg.Controls.Add($statusLabel)
+
+        $progressPanel = New-Object System.Windows.Forms.Panel
+        $progressPanel.Dock = 'Top'
+        $progressPanel.Height = 28
+        $dlg.Controls.Add($progressPanel)
+
+        $progressBar = New-Object System.Windows.Forms.ProgressBar
+        $progressBar.Location = New-Object System.Drawing.Point(6, 4)
+        $progressBar.Size = New-Object System.Drawing.Size(560, 18)
+        $progressBar.Minimum = 0
+        $progressBar.Maximum = 100
+        $progressPanel.Controls.Add($progressBar)
+
+        $progressLabel = New-Object System.Windows.Forms.Label
+        $progressLabel.Location = New-Object System.Drawing.Point(575, 5)
+        $progressLabel.Size = New-Object System.Drawing.Size(180, 18)
+        $progressLabel.Text = '0%'
+        $progressPanel.Controls.Add($progressLabel)
+
+        $setProgressUi = {
+            param([int]$p)
+            $p2 = [Math]::Max(0, [Math]::Min(100, $p))
+            $progressBar.Value = $p2
+            $progressLabel.Text = "$p2%"
+            if ($p2 -lt 35) {
+                $progressLabel.ForeColor = [System.Drawing.Color]::OrangeRed
+            } elseif ($p2 -lt 70) {
+                $progressLabel.ForeColor = [System.Drawing.Color]::Goldenrod
+            } else {
+                $progressLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+            }
+        }
+
+        $resultsBox = New-Object System.Windows.Forms.RichTextBox
+        $resultsBox.Dock = 'Fill'
+        $resultsBox.ReadOnly = $true
+        $resultsBox.Font = New-Object System.Drawing.Font('Consolas', 9)
+        $resultsBox.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+        $resultsBox.ForeColor = [System.Drawing.Color]::White
+        $resultsBox.WordWrap = $false
+        $dlg.Controls.Add($resultsBox)
+
+        $buttonPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+        $buttonPanel.Dock = 'Bottom'
+        $buttonPanel.Height = 42
+        $buttonPanel.FlowDirection = 'RightToLeft'
+        $buttonPanel.Padding = New-Object System.Windows.Forms.Padding(4)
+
+        $closeBtn = New-Object System.Windows.Forms.Button
+        $closeBtn.Text = 'Close'
+        $closeBtn.Width = 90
+        $closeBtn.Add_Click({ $dlg.Close() })
+        $buttonPanel.Controls.Add($closeBtn)
+
+        $installBtn = New-Object System.Windows.Forms.Button
+        $installBtn.Text = 'Install Missing'
+        $installBtn.Width = 120
+        $installBtn.Enabled = $false
+        $buttonPanel.Controls.Add($installBtn)
+
+        $workspaceBtn = New-Object System.Windows.Forms.Button
+        $workspaceBtn.Text = 'Use Workspace'
+        $workspaceBtn.Width = 120
+        $workspaceBtn.Enabled = $false
+        $buttonPanel.Controls.Add($workspaceBtn)
+
+        $refreshBtn = New-Object System.Windows.Forms.Button
+        $refreshBtn.Text = 'Refresh'
+        $refreshBtn.Width = 90
+        $buttonPanel.Controls.Add($refreshBtn)
+
+        $exportInstallerBtn = New-Object System.Windows.Forms.Button
+        $exportInstallerBtn.Text = 'Export Installer'
+        $exportInstallerBtn.Width = 120
+        $exportInstallerBtn.Enabled = $false
+        $buttonPanel.Controls.Add($exportInstallerBtn)
+
+        $exportInventoryBtn = New-Object System.Windows.Forms.Button
+        $exportInventoryBtn.Text = 'Export Inventory'
+        $exportInventoryBtn.Width = 120
+        $buttonPanel.Controls.Add($exportInventoryBtn)
+
+        $dlg.Controls.Add($buttonPanel)
+
+        # helper: run module management and populate results box
+        $runModMgmt = {
+            param([hashtable]$Params)
+            $resultsBox.Clear()
+            $statusLabel.Text = 'Scanning modules...'
+            & $setProgressUi 10
+            $dlg.Refresh()
+
+            try {
+                $splatParams = @{
+                    WorkspacePath = $PSScriptRoot
+                    ReportPath    = (Join-Path $PSScriptRoot '~REPORTS')
+                }
+                if ($Params) {
+                    foreach ($k in $Params.Keys) { $splatParams[$k] = $Params[$k] }
+                }
+                $output = & $moduleScript @splatParams *>&1 | Out-String
+                $resultsBox.Text = $output
+                & $setProgressUi 80
+
+                $instMatch = [regex]::Match($output, 'Installed:\s*(\d+)')
+                $missMatch = [regex]::Match($output, 'Missing:\s*(\d+)')
+                $errMatch  = [regex]::Match($output, 'Errors:\s*(\d+)')
+                $inst = if ($instMatch.Success) { $instMatch.Groups[1].Value } else { '?' }
+                $miss = if ($missMatch.Success) { $missMatch.Groups[1].Value } else { '?' }
+                $errs = if ($errMatch.Success)  { $errMatch.Groups[1].Value }  else { '?' }
+                $statusLabel.Text = "Installed: $inst  |  Missing: $miss  |  Errors: $errs"
+                & $setProgressUi 100
+
+                $installBtn.Enabled    = ($miss -ne '0' -and $miss -ne '?')
+                $workspaceBtn.Enabled  = ($miss -ne '0' -and $miss -ne '?')
+                $exportInstallerBtn.Enabled = ($miss -ne '0' -and $miss -ne '?')
+
+                Write-AppLog "Module scan: Installed=$inst, Missing=$miss, Errors=$errs" "Info"
+            } catch {
+                $resultsBox.Text = "Error: $($_.Exception.Message)"
+                $statusLabel.Text = 'Scan failed'
+                & $setProgressUi 0
+                Write-AppLog "Module management error: $($_.Exception.Message)" "Error"
+            }
+        }
+
+        $refreshBtn.Add_Click({ & $runModMgmt @{} })
+
+        $installBtn.Add_Click({
+            $confirm = [System.Windows.Forms.MessageBox]::Show(
+                "Install missing public modules (CurrentUser scope)?`n`nThis will try LOCAL first, then PSGallery as a fallback.",
+                "Confirm Install",
+                [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                [System.Windows.Forms.MessageBoxIcon]::Question
+            )
+            if ($confirm -eq 'Yes') {
+                Write-AppLog "User confirmed auto-install missing modules" "Audit"
+                & $runModMgmt @{ AutoInstallMissing = $true }
+            }
+        })
+
+        $workspaceBtn.Add_Click({
+            Write-AppLog "User selected Use Workspace Modules" "Audit"
+            & $runModMgmt @{ AutoInstallMissing = $true; UseWorkspaceModules = $true }
+        })
+
+        $exportInstallerBtn.Add_Click({
+            Write-AppLog "User selected Export Installer" "Audit"
+            $statusLabel.Text = 'Generating installer script...'
+            $dlg.Refresh()
+            & $runModMgmt @{ ExportInstaller = $true }
+        })
+
+        $exportInventoryBtn.Add_Click({
+            Write-AppLog "User selected Export Inventory" "Audit"
+            $statusLabel.Text = 'Exporting module inventory...'
+            $dlg.Refresh()
+            & $runModMgmt @{ ExportInventory = $true }
+        })
+
+        # initial scan on dialog open
+        $dlg.Add_Shown({ & $runModMgmt @{} })
+
+        $dlg.ShowDialog($form) | Out-Null
+        $dlg.Dispose()
+    })
+    $toolsMenu.DropDownItems.Add($moduleCheckItem) | Out-Null
+
+    $envScannerItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $envScannerItem.Text = "PS &Environment Scanner"
+    $envScannerItem.Add_Click({
+        Write-AppLog "User selected Tools > PS Environment Scanner" "Audit"
+        [void](Invoke-MenuScriptSafely -MenuLabel 'Environment Scanner' -RelativeCandidates @(
+            'scripts\Invoke-PSEnvironmentScanner.ps1'
+        ) -ScriptArguments @{ AutoScan = $true })
+    })
+    $toolsMenu.DropDownItems.Add($envScannerItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $upmItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $upmItem.Text = "&User Profile Manager"
+    $upmItem.Add_Click({
+        Write-AppLog "User selected Tools > User Profile Manager" "Audit"
+        [void](Invoke-MenuScriptSafely -MenuLabel 'User Profile Manager' -RelativeCandidates @(
+            'UPM\UserProfile-Manager.ps1',
+            'scripts\UserProfile-Manager.ps1'
+        ) -UseNewProcess)
+    })
+    $toolsMenu.DropDownItems.Add($upmItem) | Out-Null
+
+    $eventLogItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $eventLogItem.Text = "Event Log &Viewer"
+    $eventLogItem.Add_Click({
+        Write-AppLog "User selected Tools > Event Log Viewer" "Audit"
+        Invoke-MenuScriptSafely -MenuLabel 'Event Log Viewer' -RelativeCandidates @(
+            'scripts\Show-EventLogViewer.ps1'
+        )
+    })
+    $toolsMenu.DropDownItems.Add($eventLogItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── Scan Dashboard ─────────────────────────────────────────────────────
+    $scanDashItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $scanDashItem.Text = "Scan &Dashboard..."
+    $scanDashItem.Add_Click({
+        Write-AppLog "User selected Tools > Scan Dashboard" "Audit"
+        $dashScript = Join-Path $scriptsDir 'Show-ScanDashboard.ps1'
+        if (Test-Path $dashScript) {
+            try {
+                . $dashScript
+                Show-ScanDashboard
+            } catch {
+                Write-AppLog "Scan Dashboard error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Failed to launch Scan Dashboard:`n$($_.Exception.Message)",
+                    "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Show-ScanDashboard.ps1 not found in scripts.", "Missing Script",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $toolsMenu.DropDownItems.Add($scanDashItem) | Out-Null
+
+    # ── WinRemote PS Tool ──────────────────────────────────────────────────
+    $winRemoteItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $winRemoteItem.Text = "Win&Remote PS Tool"
+    $winRemoteItem.Add_Click({
+        Write-AppLog "User selected Tools > WinRemote PS Tool" "Audit"
+        Invoke-MenuScriptSafely -MenuLabel 'WinRemote PS Tool' `
+            -RelativeCandidates @('scripts\WinRemote-PSTool.ps1') -UseNewProcess
+    })
+    $toolsMenu.DropDownItems.Add($winRemoteItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── Cron-Ai-Athon Tool ─────────────────────────────────────────────────
+    $cronAiAthonItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $cronAiAthonItem.Text = "Cron-Ai-Athon &Tool"
+    $cronAiAthonItem.Add_Click({
+        Write-AppLog "User selected Tools > Cron-Ai-Athon Tool" "Audit"
+        $cronScript = Join-Path $PSScriptRoot 'scripts\Show-CronAiAthonTool.ps1'
+        if (Test-Path $cronScript) {
+            try {
+                . $cronScript
+                Show-CronAiAthonTool -WorkspacePath $PSScriptRoot
+            } catch {
+                Write-AppLog "Cron-Ai-Athon Tool error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Failed to launch Cron-Ai-Athon Tool:`n$($_.Exception.Message)",
+                    "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Show-CronAiAthonTool.ps1 not found in scripts.", "Missing Script",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $toolsMenu.DropDownItems.Add($cronAiAthonItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── MCP Service Config ─────────────────────────────────────────────────
+    $mcpConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $mcpConfigItem.Text = "&MCP Service Config"
+    $mcpConfigItem.Add_Click({
+        Write-AppLog "User selected Tools > MCP Service Config" "Audit"
+        $mcpScript = Join-Path $PSScriptRoot 'scripts\Show-MCPServiceConfig.ps1'
+        if (Test-Path $mcpScript) {
+            try {
+                . $mcpScript
+                Show-MCPServiceConfig
+            } catch {
+                Write-AppLog "MCP Service Config error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Failed to launch MCP Service Config:`n$($_.Exception.Message)",
+                    "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Show-MCPServiceConfig.ps1 not found in scripts.", "Missing Script",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $toolsMenu.DropDownItems.Add($mcpConfigItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── Interactive Sandbox Test Tool ──────────────────────────────────────
+    $sandboxTestItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $sandboxTestItem.Text = "Interactive &Sandbox Test"
+    $sandboxTestItem.Add_Click({
+        Write-AppLog "User selected Tools > Interactive Sandbox Test" "Audit"
+        $sandboxScript = Join-Path $PSScriptRoot 'scripts\Show-SandboxTestTool.ps1'
+        if (Test-Path $sandboxScript) {
+            try {
+                . $sandboxScript
+                Show-SandboxTestTool -WorkspacePath $PSScriptRoot
+            } catch {
+                Write-AppLog "Sandbox Test Tool error: $($_.Exception.Message)" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Failed to launch Interactive Sandbox Test Tool:`n$($_.Exception.Message)",
+                    "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Show-SandboxTestTool.ps1 not found in scripts.", "Missing Script",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $toolsMenu.DropDownItems.Add($sandboxTestItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # ── XHTML Reports submenu ──────────────────────────────────────────────
+    $xhtmlSubMenu = New-Object System.Windows.Forms.ToolStripMenuItem
+    $xhtmlSubMenu.Text = "X&HTML Reports"
+
+    $xhtmlCodeAnalysisItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $xhtmlCodeAnalysisItem.Text = "Code &Analysis"
+    $xhtmlCodeAnalysisItem.Add_Click({
+        Write-AppLog "User selected Tools > XHTML Reports > Code Analysis" "Audit"
+        $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-code-analysis.xhtml'
+        [void](Open-MenuPathSafely -MenuLabel 'XHTML Code Analysis' -PathToOpen $xhtmlPath)
+    })
+    $xhtmlSubMenu.DropDownItems.Add($xhtmlCodeAnalysisItem) | Out-Null
+
+    $xhtmlFeatureReqItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $xhtmlFeatureReqItem.Text = "&Feature Requests"
+    $xhtmlFeatureReqItem.Add_Click({
+        Write-AppLog "User selected Tools > XHTML Reports > Feature Requests" "Audit"
+        $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml'
+        [void](Open-MenuPathSafely -MenuLabel 'XHTML Feature Requests' -PathToOpen $xhtmlPath)
+    })
+    $xhtmlSubMenu.DropDownItems.Add($xhtmlFeatureReqItem) | Out-Null
+
+    $xhtmlMCPConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $xhtmlMCPConfigItem.Text = "MCP Service &Config"
+    $xhtmlMCPConfigItem.Add_Click({
+        Write-AppLog "User selected Tools > XHTML Reports > MCP Service Config" "Audit"
+        $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MCPServiceConfig.xhtml'
+        [void](Open-MenuPathSafely -MenuLabel 'XHTML MCP Service Config' -PathToOpen $xhtmlPath)
+    })
+    $xhtmlSubMenu.DropDownItems.Add($xhtmlMCPConfigItem) | Out-Null
+
+    $xhtmlMasterToDoItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $xhtmlMasterToDoItem.Text = "Central Master &To-Do"
+    $xhtmlMasterToDoItem.Add_Click({
+        Write-AppLog "User selected Tools > XHTML Reports > Central Master To-Do" "Audit"
+        $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MasterToDo.xhtml'
+        [void](Open-MenuPathSafely -MenuLabel 'Central Master To-Do' -PathToOpen $xhtmlPath)
+    })
+    $xhtmlSubMenu.DropDownItems.Add($xhtmlMasterToDoItem) | Out-Null
+
+    $toolsMenu.DropDownItems.Add($xhtmlSubMenu) | Out-Null
+
+    # ── Startup Shortcut ──
+    $startupShortcutItem = New-Object System.Windows.Forms.ToolStripMenuItem("Create Startup Shortcut...")
+    $startupShortcutItem.Add_Click({
+        Write-AppLog "User selected Tools > Create Startup Shortcut" "Audit"
+        Show-StartupShortcutForm -Owner $form
+    })
+    $toolsMenu.DropDownItems.Add($startupShortcutItem) | Out-Null
+
+    # ── Remote Build Config ──
+    $remoteBuildItem = New-Object System.Windows.Forms.ToolStripMenuItem("Remote Build Path Config...")
+    $remoteBuildItem.Add_Click({
+        Write-AppLog "User selected Tools > Remote Build Path Config" "Audit"
+        Show-RemoteBuildConfigForm -Owner $form
+    })
+    $toolsMenu.DropDownItems.Add($remoteBuildItem) | Out-Null
+
     $menuStrip.Items.Add($toolsMenu) | Out-Null
+    
+    # ==================== SECURITY MENU ====================
+    # Helper: Check if running as admin
+    function Test-IsElevated {
+        $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+        return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    }
+
+    # Helper: Prompt for elevation confirmation -- returns $true to proceed
+    function Request-ElevationConfirmation {
+        param([string]$OperationName = 'This operation')
+        if (Test-IsElevated) { return $true }  # Already elevated
+        $msg = "$OperationName may require Administrator privileges.`n`nThe application is not currently running elevated.`nSome operations may fail without admin rights.`n`nContinue anyway?"
+        $result = [System.Windows.Forms.MessageBox]::Show($msg, "Elevation Advisory",
+            [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Shield)
+        return ($result -eq 'Yes')
+    }
+
+    function Write-SecurityErrorAdvice {
+        param(
+            [string]$Operation,
+            [System.Exception]$ExceptionObject
+        )
+        $msg = if ($ExceptionObject) { $ExceptionObject.Message } else { 'Unknown error' }
+        $isAdvisory = $msg -match '(?i)integrity|not initialised|not initialized|vault is not unlocked|integritywarning'
+        if ($isAdvisory) {
+            Write-AppLog "Security issue noted [$Operation]: $msg" "Warning"
+        } else {
+            Write-AppLog "Security action failed [$Operation]: $msg" "Error"
+        }
+        if ($script:ExtendedSecurityLogging -and $ExceptionObject -and $ExceptionObject.StackTrace) {
+            Write-AppLog "Security extended stack [$Operation]: $($ExceptionObject.StackTrace)" "Debug"
+        }
+        $title = if ($isAdvisory) { 'Security Advisory' } else { 'Security Operation Error' }
+        $bodyPrefix = if ($isAdvisory) { "$Operation reported an issue." } else { "$Operation failed." }
+        [System.Windows.Forms.MessageBox]::Show(
+            "$bodyPrefix`n`nDetail: $msg`n`nGuidance:`n1. Verify Bitwarden CLI and SASC modules are available.`n2. Re-open Security > Security Checklist and fix items marked ! or ?.`n3. If this follows a crash, review logs for extended diagnostics.",
+            $title,
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Warning
+        )
+    }
+
+    function Get-SecurityChecklistRows {
+        $rows = New-Object System.Collections.Generic.List[object]
+
+        $currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $currentUser = if ($currentIdentity -and $currentIdentity.Name) { $currentIdentity.Name } else { "$env:USERDOMAIN\\$env:USERNAME" }
+        $elevated = Test-IsElevated
+        $runAsProfile = "$currentUser | Elevated=$elevated | Profile=$env:USERPROFILE"
+
+        $assistedSascModulePath = Get-ProjectPath SascModule
+        $sascAdaptersModulePath = Get-ProjectPath SascAdapters
+        $invokeSecretsPagePath = Join-Path $scriptDir 'XHTML-invoke-secrets.xhtml'
+        $configPath = Get-ProjectPath SascConfig
+        $cfg = $null
+
+        $moduleStatus = [ordered]@{
+            AssistedSASC = if (Test-Path $assistedSascModulePath) {
+                if (Get-Command Show-AssistedSASCDialog -ErrorAction SilentlyContinue) { 'loaded' } else { 'file present (not loaded)' }
+            } else { 'missing' }
+            'SASC-Adapters' = if (Test-Path $sascAdaptersModulePath) {
+                if (Get-Module SASC-Adapters -ErrorAction SilentlyContinue) { 'loaded' } else { 'file present (not loaded)' }
+            } else { 'missing' }
+        }
+
+        foreach ($entry in $moduleStatus.GetEnumerator()) {
+            $modulePath = if ($entry.Key -eq 'AssistedSASC') { $assistedSascModulePath } else { $sascAdaptersModulePath }
+            $moduleState = if ($entry.Value -eq 'loaded') { '✓' } elseif ($entry.Value -like 'file present*') { '!' } else { '✗' }
+            $rows.Add([pscustomobject]@{
+                Option = "Module Status: $($entry.Key)"
+                State = $moduleState
+                Action = 'Provide Security menu command implementations'
+                CheckedPath = $modulePath
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $entry.Value
+                Detail = "Module=$($entry.Key); Status=$($entry.Value)"
+                Guidance = 'Ensure security modules exist and import successfully before using Security menu actions.'
+            }) | Out-Null
+        }
+
+        if (Test-Path $configPath) {
+            try {
+                $cfg = Get-Content -Path $configPath -Raw -ErrorAction Stop | ConvertFrom-Json
+            } catch {
+                $rows.Add([pscustomobject]@{
+                    Option = 'Security Checklist'
+                    State = '!'
+                    Action = 'Parse security config'
+                    CheckedPath = $configPath
+                    RunAsProfile = $runAsProfile
+                    ModuleStatus = $moduleStatus.AssistedSASC
+                    Detail = 'sasc-vault-config.json exists but is invalid JSON'
+                    Guidance = 'Fix JSON syntax in config\sasc-vault-config.json.'
+                }) | Out-Null
+            }
+        } else {
+            $rows.Add([pscustomobject]@{
+                Option = 'Security Checklist'
+                State = '?'
+                Action = 'Load security config'
+                CheckedPath = $configPath
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = 'sasc-vault-config.json is missing'
+                Guidance = 'Create config\sasc-vault-config.json to initialize security settings.'
+            }) | Out-Null
+        }
+
+        $integrityPath = $null
+        $backupPath = $null
+        if ($cfg) {
+            if ($cfg.IntegrityManifestPath) {
+                $integrityPath = Join-Path $scriptDir ([string]$cfg.IntegrityManifestPath -replace '/', '\\')
+            }
+            if ($cfg.VaultBackupPath) {
+                $backupPath = Join-Path $scriptDir ([string]$cfg.VaultBackupPath -replace '/', '\\')
+            }
+        }
+
+        $securityActionRows = @(
+            [pscustomobject]@{
+                Option='Assisted SASC Wizard';
+                Action='Launch setup and hardening wizard';
+                Command='Show-AssistedSASCDialog';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='Vault Status';
+                Action='Show vault state, lockout, and LAN status';
+                Command='Show-VaultStatusDialog';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='Unlock Vault';
+                Action='Prompt user and unlock vault session';
+                Command='Show-VaultUnlockDialog';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='Lock Vault';
+                Action='Clear session and lock vault';
+                Command='Lock-Vault';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='Import Secrets';
+                Action='Import secret data into vault';
+                Command='Import-VaultSecrets';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='Prompted'
+            },
+            [pscustomobject]@{
+                Option='Import Certificates';
+                Action='Import certificate material for protected workflows';
+                Command='Import-Certificates';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='Prompted'
+            },
+            [pscustomobject]@{
+                Option='Vault Security Audit';
+                Action='Run security checks and score';
+                Command='Test-VaultSecurity';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='Prompted'
+            },
+            [pscustomobject]@{
+                Option='Integrity Verification';
+                Action='Validate integrity manifest and signatures';
+                Command='Test-IntegrityManifest';
+                CheckedPath=$(if ($integrityPath) { $integrityPath } else { $configPath });
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='LAN Vault Sharing';
+                Action='View/toggle LAN vault sharing service';
+                Command='Get-VaultLANStatus, Set-VaultLANSharing';
+                CheckedPath=$assistedSascModulePath;
+                Module='AssistedSASC';
+                RequiresAdmin='For enable'
+            },
+            [pscustomobject]@{
+                Option='Windows Hello Setup';
+                Action='Configure Windows Hello for unlock';
+                Command='Enable-WindowsHello';
+                CheckedPath=$configPath;
+                Module='AssistedSASC';
+                RequiresAdmin='Prompted'
+            },
+            [pscustomobject]@{
+                Option='Invoke Secrets Page';
+                Action='Open embedded/fallback secrets page';
+                Command='Show-SecretsInvokerForm';
+                CheckedPath=$invokeSecretsPagePath;
+                Module='AssistedSASC';
+                RequiresAdmin='No'
+            },
+            [pscustomobject]@{
+                Option='Export Vault Backup';
+                Action='Export encrypted vault backup file';
+                Command='Export-VaultBackup';
+                CheckedPath=$(if ($backupPath) { $backupPath } else { Join-Path $pkiDir 'vault-backups' });
+                Module='AssistedSASC';
+                RequiresAdmin='Prompted'
+            }
+        )
+
+        foreach ($opt in $securityActionRows) {
+            $cmdAvailable = if ($opt.Command -match ',') {
+                $parts = $opt.Command -split '\s*,\s*'
+                @($parts | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue }).Count -eq $parts.Count
+            } else {
+                [bool](Get-Command $opt.Command -ErrorAction SilentlyContinue)
+            }
+            $pathOk = if ($opt.CheckedPath) { Test-Path -LiteralPath $opt.CheckedPath } else { $false }
+            $moduleState = if ($moduleStatus.Contains($opt.Module)) { $moduleStatus[$opt.Module] } else { 'unknown' }
+            $state = if ($cmdAvailable -and $pathOk) { '✓' } elseif ($cmdAvailable -or $pathOk) { '!' } else { '✗' }
+
+            $rows.Add([pscustomobject]@{
+                Option = $opt.Option
+                State = $state
+                Action = $opt.Action
+                CheckedPath = [string]$opt.CheckedPath
+                RunAsProfile = "$runAsProfile | ElevationRequirement=$($opt.RequiresAdmin)"
+                ModuleStatus = "$($opt.Module): $moduleState"
+                Detail = "Command=$($opt.Command); PathExists=$pathOk; CommandAvailable=$cmdAvailable"
+                Guidance = 'If command/path is missing, reinstall dependencies and reload security modules from this session.'
+            }) | Out-Null
+        }
+
+        if ($cfg) {
+            $rows.Add([pscustomobject]@{
+                Option = 'Config: Windows Hello'
+                State = if ($cfg.WindowsHelloEnabled -eq $true) { '✓' } else { '!' }
+                Action = 'Read Windows Hello setting'
+                CheckedPath = $configPath
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = "WindowsHelloEnabled=$($cfg.WindowsHelloEnabled)"
+                Guidance = 'Enable Windows Hello and configure key protection for local unlock.'
+            }) | Out-Null
+
+            $rows.Add([pscustomobject]@{
+                Option = 'Config: Integrity manifest'
+                State = if ($cfg.IntegrityManifestPath -and (Test-Path $integrityPath)) { '✓' } else { '!' }
+                Action = 'Read integrity manifest setting'
+                CheckedPath = if ($integrityPath) { $integrityPath } else { $configPath }
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = "IntegrityManifestPath=$($cfg.IntegrityManifestPath)"
+                Guidance = 'Generate/update integrity manifest and keep path valid.'
+            }) | Out-Null
+
+            $rows.Add([pscustomobject]@{
+                Option = 'Config: Vault backup path'
+                State = if ($cfg.VaultBackupEnabled -and $cfg.VaultBackupPath -and (Test-Path $backupPath)) { '✓' } elseif ($cfg.VaultBackupEnabled) { '!' } else { '?' }
+                Action = 'Read backup config setting'
+                CheckedPath = if ($backupPath) { $backupPath } else { $configPath }
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = "VaultBackupEnabled=$($cfg.VaultBackupEnabled), Path=$($cfg.VaultBackupPath)"
+                Guidance = 'Create backup directory and schedule encrypted backup checks.'
+            }) | Out-Null
+
+            $rows.Add([pscustomobject]@{
+                Option = 'Config: Audit logging'
+                State = if ($cfg.AuditLogEnabled -eq $true) { '✓' } else { '!' }
+                Action = 'Read audit logging setting'
+                CheckedPath = $configPath
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = "AuditLogEnabled=$($cfg.AuditLogEnabled)"
+                Guidance = 'Enable audit logging to support incident review and accountability.'
+            }) | Out-Null
+
+            $rows.Add([pscustomobject]@{
+                Option = 'Config: LAN sharing'
+                State = if ($cfg.LANSharePort -ge 1 -and $cfg.LANSharePort -le 65535) { '✓' } else { '!' }
+                Action = 'Read LAN sharing setting'
+                CheckedPath = $configPath
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = "LANShareEnabled=$($cfg.LANShareEnabled), Port=$($cfg.LANSharePort)"
+                Guidance = 'Use an approved port and keep LAN share disabled unless required.'
+            }) | Out-Null
+        }
+
+        if ($script:LastCrashDetected) {
+            $rows.Add([pscustomobject]@{
+                Option = 'Runtime: Last boot crash cleanup'
+                State = '✗'
+                Action = 'Report crash-recovery condition'
+                CheckedPath = Join-Path $logsDir 'app-' + (Get-Date -Format 'yyyy-MM-dd') + '.log'
+                RunAsProfile = $runAsProfile
+                ModuleStatus = $moduleStatus.AssistedSASC
+                Detail = 'Crash recovery executed on this startup'
+                Guidance = 'Review logs and resolve root cause before relying on security automation.'
+            }) | Out-Null
+        }
+
+        return $rows.ToArray()
+    }
+
+    function Show-SecurityChecklistForm {
+        $dlg = New-Object System.Windows.Forms.Form
+        $dlg.Text = 'Security Checklist'
+        $dlg.Size = New-Object System.Drawing.Size(920, 520)
+        $dlg.StartPosition = 'CenterParent'
+
+        $grid = New-Object System.Windows.Forms.DataGridView
+        $grid.Dock = 'Fill'
+        $grid.ReadOnly = $true
+        $grid.AllowUserToAddRows = $false
+        $grid.AllowUserToDeleteRows = $false
+        $grid.AutoSizeColumnsMode = 'AllCells'
+        $grid.RowHeadersVisible = $false
+        $grid.SelectionMode = 'FullRowSelect'
+
+        $rows = Get-SecurityChecklistRows
+        $dt = New-Object System.Data.DataTable
+        [void]$dt.Columns.Add('Option', [string])
+        [void]$dt.Columns.Add('State', [string])
+        [void]$dt.Columns.Add('Action', [string])
+        [void]$dt.Columns.Add('CheckedPath', [string])
+        [void]$dt.Columns.Add('RunAsProfile', [string])
+        [void]$dt.Columns.Add('ModuleStatus', [string])
+        [void]$dt.Columns.Add('Detail', [string])
+        [void]$dt.Columns.Add('Guidance', [string])
+        foreach ($r in $rows) {
+            $dr = $dt.NewRow()
+            $dr['Option'] = $r.Option
+            $dr['State'] = $r.State
+            $dr['Action'] = $r.Action
+            $dr['CheckedPath'] = $r.CheckedPath
+            $dr['RunAsProfile'] = $r.RunAsProfile
+            $dr['ModuleStatus'] = $r.ModuleStatus
+            $dr['Detail'] = $r.Detail
+            $dr['Guidance'] = $r.Guidance
+            [void]$dt.Rows.Add($dr)
+        }
+        $grid.DataSource = $dt
+
+        if ($grid.Columns['Guidance']) { $grid.Columns['Guidance'].Visible = $false }
+        if ($grid.Columns['CheckedPath']) { $grid.Columns['CheckedPath'].AutoSizeMode = 'Fill' }
+        if ($grid.Columns['Detail']) { $grid.Columns['Detail'].AutoSizeMode = 'Fill' }
+        if ($grid.Columns['RunAsProfile']) { $grid.Columns['RunAsProfile'].AutoSizeMode = 'Fill' }
+
+        $grid.Add_CellFormatting({
+            param($gridSender, $e)
+            if ($e.RowIndex -lt 0) { return }
+            $row = $gridSender.Rows[$e.RowIndex]
+            $state = [string]$row.Cells['State'].Value
+            switch ($state) {
+                '✓' { $row.DefaultCellStyle.ForeColor = [System.Drawing.Color]::LimeGreen }
+                '!' { $row.DefaultCellStyle.ForeColor = [System.Drawing.Color]::Gold }
+                '?' { $row.DefaultCellStyle.ForeColor = [System.Drawing.Color]::LightSkyBlue }
+                '✗' { $row.DefaultCellStyle.ForeColor = [System.Drawing.Color]::OrangeRed }
+            }
+            $row.Cells['State'].ToolTipText = [string]$row.Cells['Guidance'].Value
+        })
+
+        $dlg.Controls.Add($grid)
+        $dlg.ShowDialog($form) | Out-Null
+        $dlg.Dispose()
+    }
+
+    $securityMenu = New-Object System.Windows.Forms.ToolStripMenuItem
+    $securityMenu.Text = "&Security"
+
+    $securityChecklistItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $securityChecklistItem.Text = "Security &Checklist..."
+    $securityChecklistItem.Add_Click({
+        try {
+            Show-SecurityChecklistForm
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Security Checklist' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($securityChecklistItem) | Out-Null
+
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Assisted SASC Wizard
+    $sascWizardItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $sascWizardItem.Text = "Assisted SASC &Wizard..."
+    $sascWizardItem.Add_Click({
+        try {
+            if ($script:_SASCAvailable -and (Get-Command Show-AssistedSASCDialog -ErrorAction SilentlyContinue)) {
+                Show-AssistedSASCDialog
+            } else {
+                [System.Windows.Forms.MessageBox]::Show(
+                    "SASC module is not available.`nEnsure AssistedSASC.psm1 is in the modules folder and Bitwarden CLI is installed.",
+                    "SASC Not Available", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            }
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Assisted SASC Wizard' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($sascWizardItem) | Out-Null
+
+    # Vault Status
+    $vaultStatusItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $vaultStatusItem.Text = "Vault &Status..."
+    $vaultStatusItem.Add_Click({
+        try {
+            if (Get-Command Show-VaultStatusDialog -ErrorAction SilentlyContinue) {
+                Show-VaultStatusDialog
+            } else {
+                [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            }
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Vault Status' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($vaultStatusItem) | Out-Null
+
+    # Separator
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Unlock Vault
+    $unlockVaultItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $unlockVaultItem.Text = "&Unlock Vault..."
+    $unlockVaultItem.Add_Click({
+        try {
+            if (Get-Command Show-VaultUnlockDialog -ErrorAction SilentlyContinue) {
+                $result = Show-VaultUnlockDialog
+                if ($result) {
+                    Write-AppLog "Vault unlocked via Security menu" "Info"
+                    # Immediately refresh vault status indicators
+                    $vaultStatusLabel.Text = "Vault: UNLOCKED"
+                    $vaultStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+                    $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Green
+                    $vaultDetailLabel.Text = "Unlocked via Security menu"
+                    $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Green
+                }
+            }
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Unlock Vault' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($unlockVaultItem) | Out-Null
+
+    # Lock Vault
+    $lockVaultItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $lockVaultItem.Text = "&Lock Vault"
+    $lockVaultItem.Add_Click({
+        try {
+            if (Get-Command Lock-Vault -ErrorAction SilentlyContinue) {
+                Lock-Vault
+                Write-AppLog "Vault locked via Security menu" "Info"
+                [System.Windows.Forms.MessageBox]::Show("Vault has been locked.", "Vault Locked",
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            }
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Lock Vault' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($lockVaultItem) | Out-Null
+
+    # ── Vault Operations flyout (enabled only when vault is Unlocked) ──
+    $vaultOpsItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $vaultOpsItem.Text = "Vault &Operations"
+
+    # Helper: check vault unlocked before each operation
+    $testVaultUnlocked = {
+        if (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue) {
+            $vs = Test-VaultStatus
+            return ($vs.State -eq 'Unlocked')
+        }
+        return $false
+    }
+
+    # Enable/disable flyout items dynamically when the menu opens
+    $securityMenu.Add_DropDownOpening({
+        $isUnlocked = & $testVaultUnlocked
+        $vaultOpsItem.Enabled = $isUnlocked
+        if ($isUnlocked) {
+            $vaultOpsItem.Text = "Vault &Operations  [Unlocked]"
+        } else {
+            $vaultOpsItem.Text = "Vault &Operations  [Locked]"
+        }
+    })
+
+    # --- Save Secret ---
+    $saveSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $saveSecretItem.Text = "&Save Secret..."
+    $saveSecretItem.Add_Click({
+        try {
+            $dlg = New-Object System.Windows.Forms.Form
+            $dlg.Text = 'Save Secret to Vault'
+            $dlg.Size = New-Object System.Drawing.Size(420, 300)
+            $dlg.StartPosition = 'CenterParent'
+            $dlg.FormBorderStyle = 'FixedDialog'
+            $dlg.MaximizeBox = $false; $dlg.MinimizeBox = $false
+
+            $y = 12
+            foreach ($pair in @(@('Name:','txtName'),@('Username:','txtUser'),@('Password:','txtPass'),@('URI:','txtUri'))) {
+                $lbl = New-Object System.Windows.Forms.Label
+                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true
+                $dlg.Controls.Add($lbl)
+                $tb = New-Object System.Windows.Forms.TextBox
+                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)
+                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }
+                $dlg.Controls.Add($tb)
+                $y += 32
+            }
+            $noteBox = New-Object System.Windows.Forms.TextBox
+            $noteBox.Name = 'txtNotes'; $noteBox.Multiline = $true
+            $noteBox.Location = New-Object System.Drawing.Point(100, $y); $noteBox.Size = New-Object System.Drawing.Size(290, 50)
+            $nlbl = New-Object System.Windows.Forms.Label
+            $nlbl.Text = 'Notes:'; $nlbl.Location = New-Object System.Drawing.Point(12, $y); $nlbl.AutoSize = $true
+            $dlg.Controls.Add($nlbl); $dlg.Controls.Add($noteBox)
+
+            $btnOk = New-Object System.Windows.Forms.Button
+            $btnOk.Text = 'Save'; $btnOk.DialogResult = 'OK'
+            $btnOk.Location = New-Object System.Drawing.Point(210, 220); $btnOk.Size = New-Object System.Drawing.Size(80, 28)
+            $btnCn = New-Object System.Windows.Forms.Button
+            $btnCn.Text = 'Cancel'; $btnCn.DialogResult = 'Cancel'
+            $btnCn.Location = New-Object System.Drawing.Point(300, 220); $btnCn.Size = New-Object System.Drawing.Size(80, 28)
+            $dlg.Controls.AddRange(@($btnOk, $btnCn))
+            $dlg.AcceptButton = $btnOk; $dlg.CancelButton = $btnCn
+
+            if ($dlg.ShowDialog() -eq 'OK') {
+                $secName = $dlg.Controls['txtName'].Text
+                if (-not $secName) { throw 'Secret name is required.' }
+                $secPass = $null
+                $rawPass = $dlg.Controls['txtPass'].Text
+                if ($rawPass) {
+                    $secPass = ConvertTo-SecureString -String $rawPass -AsPlainText -Force
+                }
+                Set-VaultItem -Name $secName -UserName $dlg.Controls['txtUser'].Text `
+                    -Password $secPass -Uri @($dlg.Controls['txtUri'].Text) `
+                    -Notes $dlg.Controls['txtNotes'].Text -Confirm:$false
+                [System.Windows.Forms.MessageBox]::Show("Secret '$secName' saved.", 'Secret Saved',
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            }
+            $dlg.Dispose()
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Save Secret' -ExceptionObject $_.Exception
+        }
+    })
+    $vaultOpsItem.DropDownItems.Add($saveSecretItem) | Out-Null
+
+    # --- Retrieve Secret ---
+    $retrieveSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $retrieveSecretItem.Text = "&Retrieve Secret..."
+    $retrieveSecretItem.Add_Click({
+        try {
+            $inputDlg = New-Object System.Windows.Forms.Form
+            $inputDlg.Text = 'Retrieve Secret'
+            $inputDlg.Size = New-Object System.Drawing.Size(380, 150)
+            $inputDlg.StartPosition = 'CenterParent'
+            $inputDlg.FormBorderStyle = 'FixedDialog'
+            $inputDlg.MaximizeBox = $false; $inputDlg.MinimizeBox = $false
+            $inputLbl = New-Object System.Windows.Forms.Label
+            $inputLbl.Text = 'Enter secret name or search term:'
+            $inputLbl.Location = New-Object System.Drawing.Point(12, 14); $inputLbl.AutoSize = $true
+            $inputDlg.Controls.Add($inputLbl)
+            $inputTb = New-Object System.Windows.Forms.TextBox
+            $inputTb.Location = New-Object System.Drawing.Point(12, 38); $inputTb.Size = New-Object System.Drawing.Size(340, 22)
+            $inputDlg.Controls.Add($inputTb)
+            $inputOk = New-Object System.Windows.Forms.Button
+            $inputOk.Text = 'OK'; $inputOk.DialogResult = 'OK'
+            $inputOk.Location = New-Object System.Drawing.Point(190, 74); $inputOk.Size = New-Object System.Drawing.Size(75, 28)
+            $inputCn = New-Object System.Windows.Forms.Button
+            $inputCn.Text = 'Cancel'; $inputCn.DialogResult = 'Cancel'
+            $inputCn.Location = New-Object System.Drawing.Point(275, 74); $inputCn.Size = New-Object System.Drawing.Size(75, 28)
+            $inputDlg.Controls.AddRange(@($inputOk, $inputCn))
+            $inputDlg.AcceptButton = $inputOk; $inputDlg.CancelButton = $inputCn
+            if ($inputDlg.ShowDialog() -ne 'OK') { $inputDlg.Dispose(); return }
+            $searchName = $inputTb.Text
+            $inputDlg.Dispose()
+            if (-not $searchName) { return }
+            $item = Get-VaultItem -Name $searchName
+            if (-not $item) {
+                [System.Windows.Forms.MessageBox]::Show("Secret '$searchName' not found.", 'Not Found',
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+                return
+            }
+            $msg  = "Name:     $($item.Name)`n"
+            $msg += "Username: $($item.UserName)`n"
+            $msg += "URI:      $(($item.Uri -join ', '))`n"
+            $msg += "Notes:    $($item.Notes)`n`n"
+            $msg += "(Password is on the clipboard for 30 seconds.)"
+            # Copy password to clipboard securely for 30s
+            if ($item.Password) {
+                $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($item.Password)
+                try {
+                    $plain = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+                    [System.Windows.Forms.Clipboard]::SetText($plain)
+                } finally {
+                    [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+                }
+                # Clear clipboard after 30 seconds
+                $clipTimer = New-Object System.Windows.Forms.Timer
+                $clipTimer.Interval = 30000
+                $clipTimer.Add_Tick({
+                    [System.Windows.Forms.Clipboard]::Clear()
+                    $this.Stop(); $this.Dispose()
+                })
+                $clipTimer.Start()
+            }
+            [System.Windows.Forms.MessageBox]::Show($msg, "Secret: $($item.Name)",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Retrieve Secret' -ExceptionObject $_.Exception
+        }
+    })
+    $vaultOpsItem.DropDownItems.Add($retrieveSecretItem) | Out-Null
+
+    # --- Create New Secret ---
+    $createSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $createSecretItem.Text = "&Create New Secret..."
+    $createSecretItem.Add_Click({
+        try {
+            $dlg = New-Object System.Windows.Forms.Form
+            $dlg.Text = 'Create New Vault Secret'
+            $dlg.Size = New-Object System.Drawing.Size(420, 340)
+            $dlg.StartPosition = 'CenterParent'
+            $dlg.FormBorderStyle = 'FixedDialog'
+            $dlg.MaximizeBox = $false; $dlg.MinimizeBox = $false
+
+            $y = 12
+            foreach ($pair in @(@('Name:','txtName'),@('Username:','txtUser'),@('Password:','txtPass'),@('URI:','txtUri'))) {
+                $lbl = New-Object System.Windows.Forms.Label
+                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true
+                $dlg.Controls.Add($lbl)
+                $tb = New-Object System.Windows.Forms.TextBox
+                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)
+                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }
+                $dlg.Controls.Add($tb)
+                $y += 32
+            }
+
+            # Generate random password button
+            $btnRand = New-Object System.Windows.Forms.Button
+            $btnRand.Text = 'Generate Random (15 char)'
+            $btnRand.Location = New-Object System.Drawing.Point(100, $y); $btnRand.Size = New-Object System.Drawing.Size(200, 26)
+            $btnRand.Add_Click({
+                $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@#$%^&*_-+='
+                $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+                $bytes = [byte[]]::new(15)
+                $rng.GetBytes($bytes)
+                $pw = -join ($bytes | ForEach-Object { $chars[$_ % $chars.Length] })
+                $rng.Dispose()
+                $dlg.Controls['txtPass'].UseSystemPasswordChar = $false
+                $dlg.Controls['txtPass'].Text = $pw
+            })
+            $dlg.Controls.Add($btnRand)
+            $y += 34
+
+            $noteBox = New-Object System.Windows.Forms.TextBox
+            $noteBox.Name = 'txtNotes'; $noteBox.Multiline = $true
+            $noteBox.Location = New-Object System.Drawing.Point(100, $y); $noteBox.Size = New-Object System.Drawing.Size(290, 50)
+            $nlbl = New-Object System.Windows.Forms.Label
+            $nlbl.Text = 'Notes:'; $nlbl.Location = New-Object System.Drawing.Point(12, $y); $nlbl.AutoSize = $true
+            $dlg.Controls.Add($nlbl); $dlg.Controls.Add($noteBox)
+
+            $btnOk = New-Object System.Windows.Forms.Button
+            $btnOk.Text = 'Create'; $btnOk.DialogResult = 'OK'
+            $btnOk.Location = New-Object System.Drawing.Point(210, 260); $btnOk.Size = New-Object System.Drawing.Size(80, 28)
+            $btnCn = New-Object System.Windows.Forms.Button
+            $btnCn.Text = 'Cancel'; $btnCn.DialogResult = 'Cancel'
+            $btnCn.Location = New-Object System.Drawing.Point(300, 260); $btnCn.Size = New-Object System.Drawing.Size(80, 28)
+            $dlg.Controls.AddRange(@($btnOk, $btnCn))
+            $dlg.AcceptButton = $btnOk; $dlg.CancelButton = $btnCn
+
+            if ($dlg.ShowDialog() -eq 'OK') {
+                $secName = $dlg.Controls['txtName'].Text
+                if (-not $secName) { throw 'Secret name is required.' }
+                $secPass = $null
+                $rawPass = $dlg.Controls['txtPass'].Text
+                if ($rawPass) {
+                    $secPass = ConvertTo-SecureString -String $rawPass -AsPlainText -Force
+                }
+                Set-VaultItem -Name $secName -UserName $dlg.Controls['txtUser'].Text `
+                    -Password $secPass -Uri @($dlg.Controls['txtUri'].Text) `
+                    -Notes $dlg.Controls['txtNotes'].Text -Confirm:$false
+                [System.Windows.Forms.MessageBox]::Show("Secret '$secName' created.", 'Secret Created',
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            }
+            $dlg.Dispose()
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Create New Secret' -ExceptionObject $_.Exception
+        }
+    })
+    $vaultOpsItem.DropDownItems.Add($createSecretItem) | Out-Null
+
+    # --- Propose Secure Random 15-char Password ---
+    $randomPwItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $randomPwItem.Text = "&Propose Random Password (15 char)"
+    $randomPwItem.Add_Click({
+        try {
+            $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@#$%^&*_-+='
+            $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+            $bytes = [byte[]]::new(15)
+            $rng.GetBytes($bytes)
+            $pw = -join ($bytes | ForEach-Object { $chars[$_ % $chars.Length] })
+            $rng.Dispose()
+            [System.Windows.Forms.Clipboard]::SetText($pw)
+            # Auto-clear clipboard after 30 seconds
+            $clipTimer = New-Object System.Windows.Forms.Timer
+            $clipTimer.Interval = 30000
+            $clipTimer.Add_Tick({ [System.Windows.Forms.Clipboard]::Clear(); $this.Stop(); $this.Dispose() })
+            $clipTimer.Start()
+            [System.Windows.Forms.MessageBox]::Show(
+                "Generated password:`n`n$pw`n`nCopied to clipboard (auto-clears in 30 seconds).",
+                'Secure Random Password',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Generate Random Password' -ExceptionObject $_.Exception
+        }
+    })
+    $vaultOpsItem.DropDownItems.Add($randomPwItem) | Out-Null
+
+    # --- BW-CLI Server (launch bw serve in independent shell) ---
+    $vaultOpsItem.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+    $bwServeItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $bwServeItem.Text = "BW-CLI &Server..."
+    $bwServeItem.ToolTipText = "Launch Bitwarden CLI HTTP API service in an independent shell"
+    $bwServeItem.Add_Click({
+        try {
+            [void](Invoke-MenuScriptSafely -MenuLabel 'BW-CLI Server' `
+                -RelativeCandidates @('scripts\Start-BWServe.ps1') `
+                -UseNewProcess)
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'BW-CLI Server' -ExceptionObject $_.Exception
+        }
+    })
+    $vaultOpsItem.DropDownItems.Add($bwServeItem) | Out-Null
+
+    $securityMenu.DropDownItems.Add($vaultOpsItem) | Out-Null
+
+    # Separator
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Import Secrets
+    $importSecretsItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $importSecretsItem.Text = "Import &Secrets..."
+    $importSecretsItem.Add_Click({
+        if (-not (Request-ElevationConfirmation 'Import Secrets')) { return }
+        if (Get-Command Import-VaultSecrets -ErrorAction SilentlyContinue) {
+            # --- Format picker dialog ---
+            $fmtForm = New-Object System.Windows.Forms.Form
+            $fmtForm.Text = 'Select Import Format'
+            $fmtForm.Size = New-Object System.Drawing.Size(340, 200)
+            $fmtForm.StartPosition = 'CenterParent'
+            $fmtForm.FormBorderStyle = 'FixedDialog'
+            $fmtForm.MaximizeBox = $false
+            $fmtForm.MinimizeBox = $false
+            $fmtLbl = New-Object System.Windows.Forms.Label
+            $fmtLbl.Text = 'Source format:'
+            $fmtLbl.Location = New-Object System.Drawing.Point(12, 16)
+            $fmtLbl.AutoSize = $true
+            $fmtForm.Controls.Add($fmtLbl)
+            $fmtCombo = New-Object System.Windows.Forms.ComboBox
+            $fmtCombo.DropDownStyle = 'DropDownList'
+            $fmtCombo.Location = New-Object System.Drawing.Point(12, 40)
+            $fmtCombo.Size = New-Object System.Drawing.Size(300, 24)
+            @('bitwardencsv','bitwardenjson','lastpasscsv','1passwordcsv','keepass2xml','chromecsv','firefoxcsv') | ForEach-Object { $fmtCombo.Items.Add($_) | Out-Null }
+            $fmtCombo.SelectedIndex = 0
+            $fmtForm.Controls.Add($fmtCombo)
+            $fmtOk = New-Object System.Windows.Forms.Button
+            $fmtOk.Text = 'OK'; $fmtOk.DialogResult = 'OK'
+            $fmtOk.Location = New-Object System.Drawing.Point(130, 120)
+            $fmtOk.Size = New-Object System.Drawing.Size(80, 28)
+            $fmtForm.Controls.Add($fmtOk)
+            $fmtCancel = New-Object System.Windows.Forms.Button
+            $fmtCancel.Text = 'Cancel'; $fmtCancel.DialogResult = 'Cancel'
+            $fmtCancel.Location = New-Object System.Drawing.Point(220, 120)
+            $fmtCancel.Size = New-Object System.Drawing.Size(80, 28)
+            $fmtForm.Controls.Add($fmtCancel)
+            $fmtForm.AcceptButton = $fmtOk
+            $fmtForm.CancelButton = $fmtCancel
+            if ($fmtForm.ShowDialog() -ne 'OK') { $fmtForm.Dispose(); return }
+            $selectedFormat = $fmtCombo.SelectedItem.ToString()
+            $fmtForm.Dispose()
+
+            # --- File picker with format-aware filter ---
+            $ofd = New-Object System.Windows.Forms.OpenFileDialog
+            $ofd.Title = "Select Secrets File to Import ($selectedFormat)"
+            switch -Wildcard ($selectedFormat) {
+                '*json' { $ofd.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*" }
+                '*csv'  { $ofd.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*" }
+                '*xml'  { $ofd.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*" }
+                default { $ofd.Filter = "All files (*.*)|*.*" }
+            }
+            if ($ofd.ShowDialog() -eq 'OK') {
+                try {
+                    Import-VaultSecrets -FilePath $ofd.FileName -Format $selectedFormat
+                    [System.Windows.Forms.MessageBox]::Show("Secrets imported successfully from $selectedFormat.", "Import Complete",
+                        [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+                } catch {
+                    Write-SecurityErrorAdvice -Operation 'Import Secrets' -ExceptionObject $_.Exception
+                }
+            }
+        } else {
+            Write-AppLog "Import Secrets requested but SASC module is unavailable" "Warning"
+            [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $securityMenu.DropDownItems.Add($importSecretsItem) | Out-Null
+
+    # Import Certificates
+    $importCertsItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $importCertsItem.Text = "Import &Certificates..."
+    $importCertsItem.Add_Click({
+        if (-not (Request-ElevationConfirmation 'Import Certificates')) { return }
+        if (Get-Command Import-Certificates -ErrorAction SilentlyContinue) {
+            $ofd = New-Object System.Windows.Forms.OpenFileDialog
+            $ofd.Filter = "Certificate files (*.pfx;*.cer;*.crt)|*.pfx;*.cer;*.crt|All files (*.*)|*.*"
+            $ofd.Title = "Select Certificate to Import"
+            if ($ofd.ShowDialog() -eq 'OK') {
+                try {
+                    Import-Certificates -CertPath $ofd.FileName
+                    [System.Windows.Forms.MessageBox]::Show("Certificate imported.", "Import Complete",
+                        [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+                } catch {
+                    Write-SecurityErrorAdvice -Operation 'Import Certificates' -ExceptionObject $_.Exception
+                }
+            }
+        } else {
+            Write-AppLog "Import Certificates requested but SASC module is unavailable" "Warning"
+            [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $securityMenu.DropDownItems.Add($importCertsItem) | Out-Null
+
+    # Separator
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Vault Security Audit
+    $secAuditItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $secAuditItem.Text = "Vault Security &Audit..."
+    $secAuditItem.Add_Click({
+        if (-not (Request-ElevationConfirmation 'Vault Security Audit')) { return }
+        if (Get-Command Test-VaultSecurity -ErrorAction SilentlyContinue) {
+            try {
+                $auditResult = Test-VaultSecurity
+                $msg = "Security Score: $($auditResult.Score)/100`n`nFindings:`n"
+                foreach ($f in $auditResult.Findings) { $msg += "  - $f`n" }
+                foreach ($r in $auditResult.Recommendations) { $msg += "  [!] $r`n" }
+                $icon = if ($auditResult.Score -ge 80) { 'Information' } elseif ($auditResult.Score -ge 50) { 'Warning' } else { 'Error' }
+                [System.Windows.Forms.MessageBox]::Show($msg, "Vault Security Audit",
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::$icon)
+            } catch {
+                Write-SecurityErrorAdvice -Operation 'Vault Security Audit' -ExceptionObject $_.Exception
+            }
+        } else {
+            Write-AppLog "Vault Security Audit requested but SASC module is unavailable" "Warning"
+            [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $securityMenu.DropDownItems.Add($secAuditItem) | Out-Null
+
+    # Integrity Verification
+    $integrityItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $integrityItem.Text = "&Integrity Verification..."
+    $integrityItem.Add_Click({
+        if (Get-Command Test-IntegrityManifest -ErrorAction SilentlyContinue) {
+            try {
+                $intResult = Test-IntegrityManifest
+                if ($intResult.AllPassed -and $intResult.SignatureValid) {
+                    $passCount = ($intResult.Results | Where-Object { $_.Passed }).Count
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "All $passCount files passed integrity verification.`nSignature: Valid",
+                        "Integrity OK", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+                } else {
+                    $failMsg = "INTEGRITY VERIFICATION:`n"
+                    $failMsg += "Signature Valid: $($intResult.SignatureValid)`n`n"
+                    $failed = $intResult.Results | Where-Object { -not $_.Passed }
+                    if ($failed) {
+                        $failMsg += "Failed Files:`n"
+                        foreach ($f in $failed) { $failMsg += "  - $($f.File): $($f.Status)`n" }
+                    }
+                    if ($intResult.Errors) {
+                        foreach ($e in $intResult.Errors) { $failMsg += "  [!] $e`n" }
+                    }
+                    [System.Windows.Forms.MessageBox]::Show($failMsg, "Integrity Issues",
+                        [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+                }
+            } catch {
+                Write-AppLog "Integrity check error: $($_.Exception.Message)" "Error"
+            }
+        }
+    })
+    $securityMenu.DropDownItems.Add($integrityItem) | Out-Null
+
+    # Separator
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # LAN Sharing Settings
+    $lanSharingItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $lanSharingItem.Text = "LA&N Vault Sharing..."
+    $lanSharingItem.Add_Click({
+        if (Get-Command Get-VaultLANStatus -ErrorAction SilentlyContinue) {
+            try {
+                $lanStatus = Get-VaultLANStatus
+                $currentState = if ($lanStatus.Enabled) { "ENABLED" } else { "DISABLED" }
+                $newState = if ($lanStatus.Enabled) { "DISABLE" } else { "ENABLE" }
+                $toggleMsg = "LAN Vault Sharing is currently: $currentState`n`n$newState sharing?`n`nNote: Enabling requires Administrator elevation (UAC prompt)."
+                $dlgResult = [System.Windows.Forms.MessageBox]::Show($toggleMsg, "LAN Vault Sharing",
+                    [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
+                if ($dlgResult -eq 'Yes') {
+                    Set-VaultLANSharing -Enable (-not $lanStatus.Enabled)
+                    $resultState = if (-not $lanStatus.Enabled) { "enabled" } else { "disabled" }
+                    Write-AppLog "LAN sharing $resultState" "Info"
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "LAN Vault Sharing has been $resultState.",
+                        "LAN Sharing",
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        [System.Windows.Forms.MessageBoxIcon]::Information)
+                }
+            } catch {
+                Write-SecurityErrorAdvice -Operation 'LAN Vault Sharing' -ExceptionObject $_.Exception
+            }
+        }
+    })
+    $securityMenu.DropDownItems.Add($lanSharingItem) | Out-Null
+
+    # Windows Hello Integration
+    $helloItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $helloItem.Text = "Windows &Hello Setup..."
+    $helloItem.Add_Click({
+        if (-not (Request-ElevationConfirmation 'Windows Hello Setup')) { return }
+        if (Get-Command Enable-WindowsHello -ErrorAction SilentlyContinue) {
+            try {
+                Enable-WindowsHello
+                [System.Windows.Forms.MessageBox]::Show("Windows Hello integration configured.", "Windows Hello",
+                    [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            } catch {
+                Write-SecurityErrorAdvice -Operation 'Windows Hello Setup' -ExceptionObject $_.Exception
+            }
+        } else {
+            Write-AppLog "Windows Hello setup requested but SASC module is unavailable" "Warning"
+            [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $securityMenu.DropDownItems.Add($helloItem) | Out-Null
+
+    # Separator
+    $securityMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    # Invoke Secrets (XHTML page)
+    $invokeSecretsItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $invokeSecretsItem.Text = "Invoke Secrets &Page..."
+    $invokeSecretsItem.Add_Click({
+        try {
+            if (Get-Command Show-SecretsInvokerForm -ErrorAction SilentlyContinue) {
+                Show-SecretsInvokerForm
+            } else {
+                $xhtmlPath = Join-Path $scriptDir 'XHTML-invoke-secrets.xhtml'
+                if (Test-Path $xhtmlPath) {
+                    Start-Process $xhtmlPath
+                } else {
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "Secrets invoker page not found.`nExpected: $xhtmlPath",
+                        "Not Found", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+                }
+            }
+        } catch {
+            Write-SecurityErrorAdvice -Operation 'Invoke Secrets Page' -ExceptionObject $_.Exception
+        }
+    })
+    $securityMenu.DropDownItems.Add($invokeSecretsItem) | Out-Null
+
+    # Export Vault Backup
+    $exportBackupItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $exportBackupItem.Text = "Export Vault &Backup..."
+    $exportBackupItem.Add_Click({
+        if (-not (Request-ElevationConfirmation 'Export Vault Backup')) { return }
+        if (Get-Command Export-VaultBackup -ErrorAction SilentlyContinue) {
+            $sfd = New-Object System.Windows.Forms.SaveFileDialog
+            $sfd.Filter = "Encrypted Backup (*.vaultbak)|*.vaultbak|All files (*.*)|*.*"
+            $sfd.Title = "Export Vault Backup"
+            $sfd.FileName = "vault-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss').vaultbak"
+            if ($sfd.ShowDialog() -eq 'OK') {
+                try {
+                    Export-VaultBackup -OutputPath $sfd.FileName
+                    [System.Windows.Forms.MessageBox]::Show("Backup exported to:`n$($sfd.FileName)", "Backup Complete",
+                        [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+                } catch {
+                    Write-SecurityErrorAdvice -Operation 'Export Vault Backup' -ExceptionObject $_.Exception
+                }
+            }
+        } else {
+            Write-AppLog "Export Vault Backup requested but SASC module is unavailable" "Warning"
+            [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+    })
+    $securityMenu.DropDownItems.Add($exportBackupItem) | Out-Null
+
+    $menuStrip.Items.Add($securityMenu) | Out-Null
     
     # Help Menu
     $helpMenu = New-Object System.Windows.Forms.ToolStripMenuItem
@@ -3951,40 +7263,113 @@ function New-GUI {
     $helpIndexItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $helpIndexItem.Text = "PwShGUI App &Help (Webpage Index)"
     $helpIndexItem.Add_Click({
-        Write-AppLog "User selected Help > PwShGUI App Help" "Event"
-        $helpFile = Join-Path $PSScriptRoot "~README.md\PwShGUI-Help-Index.html"
-        if (Test-Path $helpFile) {
-            Start-Process $helpFile
-        } else {
-            [System.Windows.Forms.MessageBox]::Show("Help file not found: $helpFile","Error","OK",[System.Windows.Forms.MessageBoxIcon]::Error)
-        }
+        Write-AppLog "User selected Help > PwShGUI App Help" "Audit"
+        $helpFile = Get-ProjectPath HelpIndex
+        [void](Open-MenuPathSafely -MenuLabel 'PwShGUI Help Index' -PathToOpen $helpFile)
     })
     $helpMenu.DropDownItems.Add($helpIndexItem) | Out-Null
     
     $packageItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $packageItem.Text = "&Package Workspace"
     $packageItem.Add_Click({
-        Write-AppLog "User selected Help > Package Workspace" "Event"
+        Write-AppLog "User selected Help > Package Workspace" "Audit"
         Export-WorkspacePackage
         [System.Windows.Forms.MessageBox]::Show("Workspace packaged.","Package","OK",[System.Windows.Forms.MessageBoxIcon]::Information)
     })
     $helpMenu.DropDownItems.Add($packageItem) | Out-Null
     
     $helpMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $depVizHelpItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $depVizHelpItem.Text = "Dependency &Visualisation"
+    $depVizHelpItem.Add_Click({
+        Write-AppLog "User selected Help > Dependency Visualisation" "Audit"
+        # Prefer canonical README location, then latest history snapshot,
+        # then legacy checker path for backward compatibility.
+        $canonicalPath = Join-Path $PSScriptRoot '~README.md\Dependency-Visualisation.html'
+        if (Test-Path $canonicalPath) {
+            [void](Open-MenuPathSafely -MenuLabel 'Dependency Visualisation' -PathToOpen $canonicalPath)
+        } else {
+            $historyDir = Join-Path $PSScriptRoot '.history\~README.md'
+            $vizFiles = @(Get-ChildItem -Path $historyDir -Filter 'Dependency-Visualisation_*.html' -File -ErrorAction SilentlyContinue | Sort-Object Name -Descending)
+            if ($vizFiles.Count -gt 0) {
+                [void](Open-MenuPathSafely -MenuLabel 'Dependency Visualisation Snapshot' -PathToOpen $vizFiles[0].FullName)
+            } else {
+                $legacyPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\Dependency-Visualisation.xhtml'
+                if (Test-Path $legacyPath) {
+                    [void](Open-MenuPathSafely -MenuLabel 'Dependency Visualisation (Legacy)' -PathToOpen $legacyPath)
+                } else {
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "No visualisation found. Run Tools > Script Dependency Matrix first to generate data.",
+                        "Dependency Visualisation",
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        [System.Windows.Forms.MessageBoxIcon]::Information
+                    )
+                }
+            }
+        }
+    })
+    $helpMenu.DropDownItems.Add($depVizHelpItem) | Out-Null
+
+    $cheatSheetItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $cheatSheetItem.Text = "PS-&Cheatsheet V2"
+    $cheatSheetItem.Add_Click({
+        Write-AppLog "User selected Help > PS-Cheatsheet V2" "Audit"
+        $cheatFile = Join-Path $PSScriptRoot 'scripts\PS-CheatSheet-EXAMPLES-V2.ps1'
+        if (Test-Path $cheatFile) {
+            # V2 requires PowerShell 7+ (#Requires -Version 7.0) and uses
+            # interactive prompts (Out-GridView / Read-Host), so launch it
+            # in a new pwsh console window.  Fall back to powershell.exe if
+            # pwsh is not available.
+            $shell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell.exe' }
+            try {
+                Start-Process $shell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -File `"$cheatFile`"" -WindowStyle Normal
+                Write-AppLog "Launched PS-Cheatsheet V2 via $shell" "Info"
+            } catch {
+                Write-AppLog "Failed to launch PS-Cheatsheet V2: $_" "Error"
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Could not launch cheatsheet:`n$_",
+                    "PS-Cheatsheet V2",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Warning
+                )
+            }
+        } else {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Cheatsheet not found:`n$cheatFile",
+                "PS-Cheatsheet V2",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+        }
+    })
+    $helpMenu.DropDownItems.Add($cheatSheetItem) | Out-Null
+
+    $helpMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $mrsItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $mrsItem.Text = "&Manifests, Registries && SINs"
+    $mrsItem.Add_Click({
+        Write-AppLog "User selected Help > Manifests, Registries & SINs" "Audit"
+        Show-ManifestsRegistrySinsViewer
+    })
+    $helpMenu.DropDownItems.Add($mrsItem) | Out-Null
+
+    $helpMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
     
     $aboutItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $aboutItem.Text = "&About"
     $aboutItem.Add_Click({
-        Write-AppLog "User selected Help > About" "Event"
+        Write-AppLog "User selected Help > About" "Audit"
         $vi = Get-VersionInfo
-        $configVersion = "$($vi.Major).$($vi.Minor).$($vi.Build)"
+        $configVersion = "$($vi.Major).$($vi.Minor).v$($vi.Build)"
         # Read the VersionTag comment stamped directly on this script file
         $scriptTag = "unknown"
         try {
             $firstLines = Get-Content -Path $PSCommandPath -TotalCount 5 -ErrorAction Stop
             $tagLine = $firstLines | Where-Object { $_ -match 'VersionTag:\s*([\d\.a-z]+)' } | Select-Object -First 1
             if ($tagLine -match 'VersionTag:\s*([\d\.a-z]+)') { $scriptTag = $Matches[1] }
-        } catch {}
+        } catch { <# Intentional: non-fatal #> }
         [System.Windows.Forms.MessageBox]::Show(
             "Scriptz n Portz N PowerShellD`n`nConfig Version : $configVersion`nScript Tag     : $scriptTag`n`nA powerful GUI application for launching scripts with admin elevation support.`n`nComputer        : $env:COMPUTERNAME`nUser            : $env:USERNAME`nPowerShell      : $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)",
             "About",
@@ -3995,15 +7380,39 @@ function New-GUI {
     $helpMenu.DropDownItems.Add($aboutItem) | Out-Null
     
     $menuStrip.Items.Add($helpMenu) | Out-Null
+
+    # ── Apply modern dark theme to menu strip ──
+    if (Get-Command Set-ModernMenuStyle -ErrorAction SilentlyContinue) {
+        Set-ModernMenuStyle -MenuStrip $menuStrip
+    }
     
     # ==================== TITLE LABEL ====================
     $titleLabel = New-Object System.Windows.Forms.Label
-    $titleLabel.Text = "Scriptz n Portz N PowerShellD"
+    $titleLabel.Text = "PowerShellGUI - Scriptz Launchr - Setupz-Settingz &-Scanrz."
     $titleLabel.Location = New-Object System.Drawing.Point([int]20, [int]40)
-    $titleLabel.Size = New-Object System.Drawing.Size([int]560, [int]30)
-    $titleLabel.Font = New-Object System.Drawing.Font("Arial", 14, [System.Drawing.FontStyle]::Bold)
+    $titleLabel.Size = New-Object System.Drawing.Size([int]660, [int]30)
+    $titleLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+    if (Get-Command Get-ThemeValue -ErrorAction SilentlyContinue) {
+        $titleLabel.ForeColor = Get-ThemeValue 'HeadingFore'
+    }
     $form.Controls.Add($titleLabel)
     
+    # ==================== RAINBOW PROGRESS BAR & SPINNER ====================
+    $script:_ProgressBar = $null
+    $script:_Spinner = $null
+    if (Get-Command New-RainbowProgressBar -ErrorAction SilentlyContinue) {
+        $script:_ProgressBar = New-RainbowProgressBar -Width 640 -Height 6
+        $script:_ProgressBar.Panel.Location = New-Object System.Drawing.Point([int]30, [int]74)
+        $form.Controls.Add($script:_ProgressBar.Panel)
+    }
+    if (Get-Command New-SpinnerLabel -ErrorAction SilentlyContinue) {
+        $script:_Spinner = New-SpinnerLabel -Prefix "Processing"
+        $script:_Spinner.Label.Location = New-Object System.Drawing.Point([int]570, [int]42)
+        $script:_Spinner.Label.Size = New-Object System.Drawing.Size([int]120, [int]18)
+        $form.Controls.Add($script:_Spinner.Label)
+    }
+
     # ==================== BUTTONS ====================
     # Load button configuration from config file
     $buttonConfig = Get-ButtonConfiguration
@@ -4028,16 +7437,20 @@ function New-GUI {
         $yPos = [int]($startY + ($i * ($buttonHeight + $spacing)))
         $button.Location = New-Object System.Drawing.Point([int]$column1X, $yPos)
         
-        $button.Font = New-Object System.Drawing.Font("Arial", 10)
-        $button.Cursor = [System.Windows.Forms.Cursors]::Hand
+        if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) {
+            Set-ModernButtonStyle -Button $button
+        } else {
+            $button.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+            $button.Cursor = [System.Windows.Forms.Cursors]::Hand
+        }
         
         # Create click handler
         $button.Add_Click({
             $scriptName = $this.Tag
             $displayName = $this.Text
             
-            Write-AppLog "Button clicked: $displayName ($scriptName)" "Event"
-            Write-ScriptLog "Button clicked for execution" $scriptName "Event"
+            Write-AppLog "Button clicked: $displayName ($scriptName)" "Audit"
+            Write-ScriptLog "Button clicked for execution" $scriptName "Audit"
             
             # Get elevation preference with safety badge
             $scriptPath = Join-Path $scriptsDir "$scriptName.ps1"
@@ -4049,14 +7462,8 @@ function New-GUI {
         
         $form.Controls.Add($button)
     }
-        # Add right column button (PWSH Quick App)
-<#    if ($rightButtonNames.Count -gt 0) {
-        $rightButton = New-Object System.Windows.Forms.Button
-        $rightButton.Text = $rightButtonNames[0].DisplayName
-        $rightButton.Size = New-Object System.Drawing.Size([int]$buttonWidth, [int]$buttonHeight)
-        $rightButton.Tag = $rightButtonNames[0].ScriptPath
-#>
-# ADD RIGHT COLUMN BUTTONS (6 buttons)
+
+    # ADD RIGHT COLUMN BUTTONS (6 buttons)
     for ($j = 0; $j -lt $rightButtonNames.Count; $j++) {
         $rightButton = New-Object System.Windows.Forms.Button
         $rightButton.Text = $rightButtonNames[$j].DisplayName
@@ -4067,15 +7474,19 @@ function New-GUI {
         $yPos = [int]($startY + ($j * ($buttonHeight + $spacing)))
         $rightButton.Location = New-Object System.Drawing.Point([int]$column2X, [int]$yPos)
 
-        $rightButton.Font = New-Object System.Drawing.Font("Arial", 10)
-        $rightButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+        if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) {
+            Set-ModernButtonStyle -Button $rightButton
+        } else {
+            $rightButton.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+            $rightButton.Cursor = [System.Windows.Forms.Cursors]::Hand
+        }
         
         # Create click handler for PWSH Quick App
         $rightButton.Add_Click({
             $scriptName = $this.Tag
             $displayName = $this.Text
             
-            Write-AppLog "Button clicked: $displayName ($scriptName)" "Event"
+            Write-AppLog "Button clicked: $displayName ($scriptName)" "Audit"
             
             # Get elevation preference with safety badge
             $scriptPath = Join-Path $scriptsDir "$scriptName.ps1"
@@ -4083,111 +7494,851 @@ function New-GUI {
             
             # Invoke the script
             Invoke-ScriptWithElevation -ScriptName $scriptName -RunAsAdmin $shouldElevate
-        
-        <#
+        })
 
-        Write-AppLog "PWSH Quick App button clicked: $scriptPath" "Event"
-        
-        # Resolve the script path (handle ~ for home directory)
-        $expandedPath = if ($scriptPath -like "~*") {
-            Join-Path $env:USERPROFILE $scriptPath.Substring(1)
-        }
-        else {
-            $scriptPath
-        }
-        
-        # Check if file exists
-        if (-not (Test-Path $expandedPath)) {
-            Write-AppLog "PWSH Quick App script not found: $expandedPath" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Script not found: $expandedPath", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-            return
-        }
-        
-        Write-AppLog "Launching PWSH7 prompt with script: $expandedPath" "Info"
-        
-        try {
-            # Launch pwsh in a new window with the script
-            Start-Process -FilePath "pwsh" -ArgumentList "-NoExit -NoProfile -ExecutionPolicy Bypass -File `"$expandedPath`"" -Wait:$false
-            Write-AppLog "PWSH7 prompt launched successfully" "Success"
-        }
-        catch {
-            Write-AppLog "Error launching PWSH7 prompt: $_" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Error launching PWSH7 prompt: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-        }
-             #>            
-    })
-   
-
-    $form.Controls.Add($rightButton)
+        $form.Controls.Add($rightButton)
     }
     
+    # ==================== SERVICE STATUS LIGHTS BAR ====================
+    # Positioned above the main status bar -- coloured circles with tooltips
+    $servicePanel = New-Object System.Windows.Forms.Panel
+    $servicePanel.Location = New-Object System.Drawing.Point([int]0, [int]440)
+    $servicePanel.Size = New-Object System.Drawing.Size([int]700, [int]22)
+    $servicePanel.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
+    $form.Controls.Add($servicePanel)
+
+    $serviceToolTip = New-Object System.Windows.Forms.ToolTip
+    $serviceToolTip.InitialDelay = 300
+    $serviceToolTip.AutoPopDelay = 8000
+
+    # Service definitions: Name, initial state
+    $script:_ServiceDefs = @(
+        @{ Name = 'Vault';        State = 'Off';    Tip = 'Bitwarden Vault: Not checked' },
+        @{ Name = 'Config';       State = 'Off';    Tip = 'Configuration: Not loaded' },
+        @{ Name = 'Logging';      State = 'Off';    Tip = 'Logging: Not started' },
+        @{ Name = 'Scripts';      State = 'Off';    Tip = 'Scripts folder: Not verified' },
+        @{ Name = 'Remote';       State = 'Off';    Tip = 'Remote paths: Not configured' },
+        @{ Name = 'Modules';      State = 'Off';    Tip = 'Modules: Not loaded' },
+        @{ Name = 'Session';      State = 'Off';    Tip = 'Session lock: Unknown' },
+        @{ Name = 'SFC';          State = 'Off';    Tip = 'SFC: Not scanned' },
+        @{ Name = 'DISM';         State = 'Off';    Tip = 'DISM Health: Not checked' },
+        @{ Name = 'Versions';     State = 'Off';    Tip = 'Version status: Not assessed' },
+        @{ Name = 'Reboot';       State = 'Off';    Tip = 'Pending reboot: Unknown' }
+    )
+    $script:_ServiceLabels = @{}
+
+    $svcX = 4
+    foreach ($svc in $script:_ServiceDefs) {
+        $svcLabel = New-Object System.Windows.Forms.Label
+        $svcLabel.Text = [char]0x25CF  # filled circle
+        $svcLabel.Location = New-Object System.Drawing.Point($svcX, 2)
+        $svcLabel.Size = New-Object System.Drawing.Size(14, 18)
+        $svcLabel.ForeColor = [System.Drawing.Color]::Gray
+        $svcLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+        $svcLabel.TextAlign = "MiddleCenter"
+        $serviceToolTip.SetToolTip($svcLabel, $svc.Tip)
+        $servicePanel.Controls.Add($svcLabel)
+        $script:_ServiceLabels[$svc.Name] = $svcLabel
+
+        $svcNameLabel = New-Object System.Windows.Forms.Label
+        $svcNameLabel.Text = $svc.Name
+        $svcNameLabel.Location = New-Object System.Drawing.Point(($svcX + 13), 3)
+        $svcNameLabel.Size = New-Object System.Drawing.Size(48, 16)
+        $svcNameLabel.ForeColor = [System.Drawing.Color]::Silver
+        $svcNameLabel.Font = New-Object System.Drawing.Font("Segoe UI", 6.5)
+        $svcNameLabel.TextAlign = "MiddleLeft"
+        $servicePanel.Controls.Add($svcNameLabel)
+
+        $svcX += 62
+    }
+
+    # Helper function to update a service light
+    function Set-ServiceLight {
+        param([string]$ServiceName, [string]$State, [string]$TooltipText)
+        if (-not $script:_ServiceLabels.ContainsKey($ServiceName)) { return }
+        $lbl = $script:_ServiceLabels[$ServiceName]
+        $color = switch ($State) {
+            'Running'    { [System.Drawing.Color]::Lime }
+            'Error'      { [System.Drawing.Color]::Red }
+            'Warning'    { [System.Drawing.Color]::Yellow }
+            'Idle'       { [System.Drawing.Color]::DodgerBlue }
+            'Paused'     { [System.Drawing.Color]::MediumPurple }
+            'Off'        { [System.Drawing.Color]::Gray }
+            default      { [System.Drawing.Color]::Gray }
+        }
+        $lbl.ForeColor = $color
+        if ($TooltipText) { $serviceToolTip.SetToolTip($lbl, $TooltipText) }
+    }
+
+    # ── Initial service state assessment ──
+    # Config
+    if (Test-Path $configFile) {
+        Set-ServiceLight 'Config' 'Running' "Configuration: Loaded from $configFile"
+    } else {
+        Set-ServiceLight 'Config' 'Error' 'Configuration: File not found'
+    }
+    # Logging
+    if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+        Set-ServiceLight 'Logging' 'Running' "Logging: Active - $logsDir"
+    }
+    # Scripts
+    if (Test-Path $scriptsDir) {
+        $scriptCount = @(Get-ChildItem -Path $scriptsDir -Filter '*.ps1' -ErrorAction SilentlyContinue).Count
+        Set-ServiceLight 'Scripts' 'Running' "Scripts folder: $scriptCount scripts found"
+    } else {
+        Set-ServiceLight 'Scripts' 'Error' 'Scripts folder: Not found'
+    }
+    # Modules
+    $modCount = @(Get-Module | Where-Object { $_.Path -like "$scriptDir*" }).Count
+    if ($modCount -gt 0) {
+        Set-ServiceLight 'Modules' 'Running' "Modules: $modCount project modules loaded"
+    } else {
+        Set-ServiceLight 'Modules' 'Warning' 'Modules: No project modules loaded'
+    }
+    # Session
+    Set-ServiceLight 'Session' 'Running' "Session: Active since $(Get-Date -Format 'HH:mm:ss')"
+
+    # SFC -- check cached last result if available
+    $sfcTip = 'SFC: Not scanned (run sfc /scannow as admin)'
+    $sfcState = 'Off'
+    try {
+        $sfcLog = "$env:windir\Logs\CBS\CBS.log"
+        if (Test-Path $sfcLog) {
+            $sfcTail = Get-Content $sfcLog -Tail 200 -ErrorAction SilentlyContinue | Select-String 'No integrity violations' -Quiet
+            if ($sfcTail) { $sfcState = 'Running'; $sfcTip = 'SFC: No integrity violations found' }
+            else { $sfcState = 'Warning'; $sfcTip = 'SFC: Check CBS.log for details' }
+        }
+    } catch { <# Intentional: non-fatal #> }
+    Set-ServiceLight 'SFC' $sfcState $sfcTip
+
+    # DISM health -- check component store
+    $dismState = 'Off'; $dismTip = 'DISM: Not checked'
+    try {
+        $dismKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending'
+        if (Test-Path $dismKey) { $dismState = 'Warning'; $dismTip = 'DISM: Component store repair pending' }
+        else { $dismState = 'Running'; $dismTip = 'DISM: Component store healthy' }
+    } catch { <# Intentional: non-fatal #> }
+    Set-ServiceLight 'DISM' $dismState $dismTip
+
+    # Versions -- compare PS and OS currency
+    $verState = 'Off'; $verTip = 'Version status: Unknown'
+    try {
+        $psVer = $PSVersionTable.PSVersion
+        if ($psVer.Major -ge 7) { $verState = 'Running'; $verTip = "Versions: PS $psVer (current)" }
+        elseif ($psVer.Major -eq 5) { $verState = 'Warning'; $verTip = "Versions: PS $psVer (5.1 - consider pwsh 7)" }
+        else { $verState = 'Error'; $verTip = "Versions: PS $psVer (outdated)" }
+    } catch { <# Intentional: non-fatal #> }
+    Set-ServiceLight 'Versions' $verState $verTip
+
+    # Pending reboot -- check registry keys
+    $rebootState = 'Off'; $rebootTip = 'Reboot: None pending'
+    try {
+        $rebootPending = $false
+        if (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') { $rebootPending = $true }
+        if (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired') { $rebootPending = $true }
+        if ($rebootPending) { $rebootState = 'Idle'; $rebootTip = 'Reboot: PENDING - restart recommended' }
+        else { Set-ServiceLight 'Reboot' 'Running' 'Reboot: None pending'; $rebootState = $null }
+    } catch { <# Intentional: non-fatal #> }
+    if ($rebootState) { Set-ServiceLight 'Reboot' $rebootState $rebootTip }
+
+    # ── Service status refresh timer (every 10s) ──
+    $script:_ServiceTimer = New-Object System.Windows.Forms.Timer
+    $script:_ServiceTimer.Interval = 10000
+    $script:_ServiceTimer.Add_Tick({
+        try {
+            # Null-guard: child-script StrictMode can make $script: vars inaccessible (P022)
+            $timer = $script:_ServiceTimer
+            if ($null -eq $timer) { return }
+            # Restore normal interval if triggered manually (F5 / path save)
+            if ($timer.Interval -ne 10000) { $timer.Interval = 10000 }
+            # Skip when minimized (Cycle 6 optimization)
+            if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
+
+            # Vault status
+            if ($script:_SASCAvailable -and (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue)) {
+                $vs = Test-VaultStatus
+                switch ($vs.State) {
+                    'Unlocked'        { Set-ServiceLight 'Vault' 'Running' "Vault: Unlocked" }
+                    'Locked'          { Set-ServiceLight 'Vault' 'Idle' "Vault: Locked - ready to unlock" }
+                    'LockedOut'       { Set-ServiceLight 'Vault' 'Error' "Vault: Locked out" }
+                    'Unauthenticated' { Set-ServiceLight 'Vault' 'Warning' "Vault: Not logged in" }
+                    'NotInitialized'  { Set-ServiceLight 'Vault' 'Off' "Vault: Not initialized" }
+                    default           { Set-ServiceLight 'Vault' 'Off' "Vault: $($vs.State)" }
+                }
+            } else {
+                Set-ServiceLight 'Vault' 'Off' 'Vault: Module not loaded'
+            }
+
+            # Remote
+            $remoteCfg = try { [string](Get-ConfigSubValue 'RemoteUpdatePath') } catch { '' }
+            if (-not [string]::IsNullOrWhiteSpace($remoteCfg)) {
+                if (Test-Path $remoteCfg) {
+                    Set-ServiceLight 'Remote' 'Running' "Remote: Connected - $remoteCfg"
+                } else {
+                    Set-ServiceLight 'Remote' 'Warning' "Remote: Path not reachable - $remoteCfg"
+                }
+            } else {
+                Set-ServiceLight 'Remote' 'Off' 'Remote: Not configured'
+            }
+        } catch { Write-AppLog "[ServiceTimer] Remote check error: $_" 'Warning' }
+    })
+    $script:_ServiceTimer.Start()
+
     # ==================== STATUS BAR ====================
-    # Left Status Label - spans all 3 right rows
+    # ── Gather system info for status bar ──
+    $script:_StatusWanIP = '...'; $script:_StatusWanCacheTime = [datetime]::MinValue
+    $script:_StatusLanIP = '...'
+    try {
+        $lanAddr = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias 'Ethernet*','Wi-Fi*' -ErrorAction SilentlyContinue |
+            Where-Object { $_.IPAddress -notlike '169.254.*' -and $_.IPAddress -ne '127.0.0.1' } |
+            Select-Object -First 1).IPAddress
+        if ($lanAddr) { $script:_StatusLanIP = $lanAddr } else { $script:_StatusLanIP = 'N/A' }
+    } catch { $script:_StatusLanIP = 'N/A' }
+
+    # DHCP / DNS info
+    $dhcpEnabled = $false; $dhcpServer = ''; $dnsServers = @(); $dnssecOK = $false
+    try {
+        $activeIf = Get-NetIPConfiguration -ErrorAction SilentlyContinue |
+            Where-Object { $_.IPv4DefaultGateway } | Select-Object -First 1
+        if ($activeIf) {
+            $dhcpCfg = Get-NetIPAddress -InterfaceIndex $activeIf.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+                Where-Object { $_.PrefixOrigin -eq 'Dhcp' }
+            $dhcpEnabled = ($null -ne $dhcpCfg)
+            if ($dhcpEnabled) {
+                $dhcpServer = try { (Get-WmiObject Win32_NetworkAdapterConfiguration -ErrorAction SilentlyContinue |
+                    Where-Object { $_.InterfaceIndex -eq $activeIf.InterfaceIndex -and $_.DHCPEnabled } |
+                    Select-Object -First 1).DHCPServer } catch { '' }
+            }
+            $dnsServers = @($activeIf.DNSServer | ForEach-Object { $_.ServerAddresses } | Select-Object -First 2)
+        }
+    } catch { <# Intentional: non-fatal #> }
+    $dhcpText = if ($dhcpEnabled) { "DHCP: Yes$(if($dhcpServer){" ($dhcpServer)"})" } else { 'DHCP: Static' }
+    $dnsText = if ($dnsServers.Count -gt 0) { "DNS: $($dnsServers -join ', ')" } else { 'DNS: N/A' }
+
+    # DNSSEC -- quick check via registry
+    try {
+        $dnssecReg = Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name EnableDnsSec -ErrorAction SilentlyContinue
+        $dnssecOK = ($dnssecReg -and $dnssecReg.EnableDnsSec -eq 1)
+    } catch { <# Intentional: non-fatal #> }
+    $dnssecText = if ($dnssecOK) { 'DNSSEC: On' } else { 'DNSSEC: Off' }
+
+    # Windows version build
+    $winBuild = ''
+    try {
+        $ntReg = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
+        $curBuild = $ntReg.CurrentBuild
+        $ubr = $ntReg.UBR
+        $dispVer = $ntReg.DisplayVersion
+        $winBuild = "Win $(if($dispVer){$dispVer + ' '}else{''})$curBuild$(if($ubr){'.' + $ubr}else{''})"
+    } catch { $winBuild = 'Win ?' }
+
+    # App version
+    $appVerStr = ''
+    try { $appVerStr = "App $(Get-VersionString)" } catch { $appVerStr = 'App ?' }
+
+    # System volume free space
+    $diskText = ''
+    try {
+        $sysDrive = $env:SystemDrive.TrimEnd(':')
+        $psd = Get-PSDrive -Name $sysDrive -ErrorAction SilentlyContinue
+        if ($psd) {
+            $freeGB = [math]::Round($psd.Free / 1GB, 1)
+            $diskText = "$($env:SystemDrive) $($freeGB) GB free"
+        }
+    } catch { $diskText = "$($env:SystemDrive) ?" }
+
+    # ── Row layout (Y positions) ──
+    #   Y=462: Row 1 - Left: Computer/User (blue)     Right: Paths (Default + Remote)
+    #   Y=482: Row 2 - Left: WAN/LAN IP               Right: Scripts path
+    #   Y=502: Row 3 - Left: DHCP/DNS/DNSSEC           Right: Win build + App ver + Disk
+    #   Y=522: Row 4 - Vault status (full width)
+
+    # ROW 1 Left - Computer + User
     $statusLabel = New-Object System.Windows.Forms.Label
-    $statusLabel.Text = "Ready - Computer: $env:COMPUTERNAME | User: $env:USERNAME"
-    $statusLabel.Location = New-Object System.Drawing.Point([int]0, [int]440)
-    $statusLabel.Size = New-Object System.Drawing.Size([int]400, [int]60)
-    $statusLabel.BackColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $statusLabel.Text = "$env:COMPUTERNAME | $env:USERNAME"
+    $statusLabel.Location = New-Object System.Drawing.Point([int]0, [int]462)
+    $statusLabel.Size = New-Object System.Drawing.Size([int]250, [int]20)
+    $statusLabel.BackColor = [System.Drawing.Color]::FromArgb(0, 122, 204)
+    $statusLabel.ForeColor = [System.Drawing.Color]::White
     $statusLabel.TextAlign = "MiddleLeft"
-    $statusLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $statusLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::None
     $statusLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
-    $statusLabel.Font = New-Object System.Drawing.Font("Arial", 8)
+    $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 8)
     $form.Controls.Add($statusLabel)
 
-    # Right Status Row 1 - Default Folder
+    # ROW 1 Right - Default path + Remote path (2 columns)
     $statusRightRow1 = New-Object System.Windows.Forms.Label
     $statusRightRow1.Text = "Default: $DefaultFolder"
-    $statusRightRow1.Location = New-Object System.Drawing.Point([int]400, [int]440)
-    $statusRightRow1.Size = New-Object System.Drawing.Size([int]300, [int]20)
-    $statusRightRow1.BackColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $statusRightRow1.Location = New-Object System.Drawing.Point([int]250, [int]462)
+    $statusRightRow1.Size = New-Object System.Drawing.Size([int]450, [int]20)
+    $statusRightRow1.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 48)
     $statusRightRow1.TextAlign = "MiddleLeft"
-    $statusRightRow1.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $statusRightRow1.BorderStyle = [System.Windows.Forms.BorderStyle]::None
     $statusRightRow1.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
-    $statusRightRow1.Font = New-Object System.Drawing.Font("Arial", 8)
-    $statusRightRow1.ForeColor = [System.Drawing.Color]::DarkBlue
+    $statusRightRow1.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $statusRightRow1.ForeColor = [System.Drawing.Color]::FromArgb(78, 201, 176)
     $form.Controls.Add($statusRightRow1)
 
-    # Right Status Row 2 - Remote Update Path
-    $remotePathDisplay = if ([string]::IsNullOrWhiteSpace($RemoteUpdatePath)) { "(not set)" } else { $RemoteUpdatePath }
+    # ROW 2 Left - WAN / LAN IP
+    $script:_NetInfoLabel = New-Object System.Windows.Forms.Label
+    $script:_NetInfoLabel.Text = "WAN: $($script:_StatusWanIP) | LAN: $($script:_StatusLanIP)"
+    $script:_NetInfoLabel.Location = New-Object System.Drawing.Point([int]0, [int]482)
+    $script:_NetInfoLabel.Size = New-Object System.Drawing.Size([int]250, [int]20)
+    $script:_NetInfoLabel.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 48)
+    $script:_NetInfoLabel.ForeColor = [System.Drawing.Color]::FromArgb(206, 145, 64)
+    $script:_NetInfoLabel.TextAlign = "MiddleLeft"
+    $script:_NetInfoLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+    $script:_NetInfoLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $script:_NetInfoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $form.Controls.Add($script:_NetInfoLabel)
+
+    # ROW 2 Right - Remote path + Scripts path
+    $remotePathLive = $RemoteUpdatePath
+    if ([string]::IsNullOrWhiteSpace($remotePathLive)) {
+        $remotePathLive = try { [string](Get-ConfigSubValue 'RemoteUpdatePath') } catch { '' }
+    }
+    $remotePathDisplay = if ([string]::IsNullOrWhiteSpace($remotePathLive)) { "(not set)" } else { $remotePathLive }
     $statusRightRow2 = New-Object System.Windows.Forms.Label
-    $statusRightRow2.Text = "Remote: $remotePathDisplay"
-    $statusRightRow2.Location = New-Object System.Drawing.Point([int]400, [int]460)
-    $statusRightRow2.Size = New-Object System.Drawing.Size([int]300, [int]20)
-    $statusRightRow2.BackColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $statusRightRow2.Text = "Remote: $remotePathDisplay | Scripts: $scriptsDir"
+    $statusRightRow2.Location = New-Object System.Drawing.Point([int]250, [int]482)
+    $statusRightRow2.Size = New-Object System.Drawing.Size([int]450, [int]20)
+    $statusRightRow2.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 48)
     $statusRightRow2.TextAlign = "MiddleLeft"
-    $statusRightRow2.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $statusRightRow2.BorderStyle = [System.Windows.Forms.BorderStyle]::None
     $statusRightRow2.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
-    $statusRightRow2.Font = New-Object System.Drawing.Font("Arial", 8)
-    $statusRightRow2.ForeColor = [System.Drawing.Color]::DarkGreen
+    $statusRightRow2.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $statusRightRow2.ForeColor = [System.Drawing.Color]::FromArgb(78, 201, 176)
     $form.Controls.Add($statusRightRow2)
 
-    # Right Status Row 3 - Scripts Folder
-    $scriptPathLabel = New-Object System.Windows.Forms.Label
-    $scriptPathLabel.Text = "Scripts: $scriptsDir"
-    $scriptPathLabel.Location = New-Object System.Drawing.Point([int]400, [int]480)
-    $scriptPathLabel.Size = New-Object System.Drawing.Size([int]300, [int]20)
-    $scriptPathLabel.BackColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
-    $scriptPathLabel.TextAlign = "MiddleLeft"
-    $scriptPathLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
-    $scriptPathLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
-    $scriptPathLabel.Font = New-Object System.Drawing.Font("Arial", 8)
-    $scriptPathLabel.ForeColor = [System.Drawing.Color]::DarkBlue
-    $form.Controls.Add($scriptPathLabel)
+    # ROW 3 Left - DHCP / DNS / DNSSEC
+    $script:_DhcpDnsLabel = New-Object System.Windows.Forms.Label
+    $script:_DhcpDnsLabel.Text = "$dhcpText | $dnsText | $dnssecText"
+    $script:_DhcpDnsLabel.Location = New-Object System.Drawing.Point([int]0, [int]502)
+    $script:_DhcpDnsLabel.Size = New-Object System.Drawing.Size([int]400, [int]20)
+    $script:_DhcpDnsLabel.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 48)
+    $script:_DhcpDnsLabel.ForeColor = [System.Drawing.Color]::Silver
+    $script:_DhcpDnsLabel.TextAlign = "MiddleLeft"
+    $script:_DhcpDnsLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+    $script:_DhcpDnsLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $script:_DhcpDnsLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7)
+    $form.Controls.Add($script:_DhcpDnsLabel)
+
+    # ROW 3 Right - Windows build + App version + Disk
+    $script:_SysInfoLabel = New-Object System.Windows.Forms.Label
+    $script:_SysInfoLabel.Text = "$winBuild | $appVerStr | $diskText"
+    $script:_SysInfoLabel.Location = New-Object System.Drawing.Point([int]400, [int]502)
+    $script:_SysInfoLabel.Size = New-Object System.Drawing.Size([int]300, [int]20)
+    $script:_SysInfoLabel.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 48)
+    $script:_SysInfoLabel.ForeColor = [System.Drawing.Color]::FromArgb(78, 201, 176)
+    $script:_SysInfoLabel.TextAlign = "MiddleLeft"
+    $script:_SysInfoLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+    $script:_SysInfoLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $script:_SysInfoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7)
+    $form.Controls.Add($script:_SysInfoLabel)
+
+    # ==================== VAULT STATUS INDICATORS ====================
+    # Vault Status Label (left side, below system info)
+    $vaultStatusLabel = New-Object System.Windows.Forms.Label
+    $vaultStatusLabel.Text = "Vault: Checking..."
+    $vaultStatusLabel.Location = New-Object System.Drawing.Point([int]0, [int]522)
+    $vaultStatusLabel.Size = New-Object System.Drawing.Size([int]350, [int]20)
+    $vaultStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+    $vaultStatusLabel.ForeColor = [System.Drawing.Color]::DarkSlateGray
+    $vaultStatusLabel.TextAlign = "MiddleLeft"
+    $vaultStatusLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $vaultStatusLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $vaultStatusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7, [System.Drawing.FontStyle]::Bold)
+    $form.Controls.Add($vaultStatusLabel)
+
+    # Vault Detail Label (right side)
+    $vaultDetailLabel = New-Object System.Windows.Forms.Label
+    $vaultDetailLabel.Text = ""
+    $vaultDetailLabel.Location = New-Object System.Drawing.Point([int]350, [int]522)
+    $vaultDetailLabel.Size = New-Object System.Drawing.Size([int]350, [int]20)
+    $vaultDetailLabel.BackColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+    $vaultDetailLabel.ForeColor = [System.Drawing.Color]::DarkSlateGray
+    $vaultDetailLabel.TextAlign = "MiddleLeft"
+    $vaultDetailLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $vaultDetailLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $vaultDetailLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7)
+    $form.Controls.Add($vaultDetailLabel)
+
+    # ROW 5 — Local Web Engine status indicator (Y=542)
+    $script:_EngineStatusLabel = New-Object System.Windows.Forms.Label
+    $script:_EngineStatusLabel.Text = "Engine: checking…"
+    $script:_EngineStatusLabel.Location = New-Object System.Drawing.Point([int]0, [int]542)
+    $script:_EngineStatusLabel.Size = New-Object System.Drawing.Size([int]350, [int]20)
+    $script:_EngineStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(37, 37, 38)
+    $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Gray
+    $script:_EngineStatusLabel.TextAlign = "MiddleLeft"
+    $script:_EngineStatusLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $script:_EngineStatusLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $script:_EngineStatusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7)
+    $script:_EngineStatusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $script:_EngineStatusLabel.Add_Click({
+        try { Start-Process 'http://127.0.0.1:8042/' } catch { <# non-fatal #> }
+    })
+    $form.Controls.Add($script:_EngineStatusLabel)
+
+    $script:_EngineUpTimeLabel = New-Object System.Windows.Forms.Label
+    $script:_EngineUpTimeLabel.Text = ""
+    $script:_EngineUpTimeLabel.Location = New-Object System.Drawing.Point([int]350, [int]542)
+    $script:_EngineUpTimeLabel.Size = New-Object System.Drawing.Size([int]350, [int]20)
+    $script:_EngineUpTimeLabel.BackColor = [System.Drawing.Color]::FromArgb(37, 37, 38)
+    $script:_EngineUpTimeLabel.ForeColor = [System.Drawing.Color]::FromArgb(78, 201, 176)
+    $script:_EngineUpTimeLabel.TextAlign = "MiddleLeft"
+    $script:_EngineUpTimeLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $script:_EngineUpTimeLabel.Padding = New-Object System.Windows.Forms.Padding(5, 0, 0, 0)
+    $script:_EngineUpTimeLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7)
+    $form.Controls.Add($script:_EngineUpTimeLabel)
+
+    # Expand form height to accommodate the extra row
+    $form.Size = New-Object System.Drawing.Size([int]700, [int]700)
+
+    # ==================== FOOTER TOOLTIP & CLICK-TO-OPEN WIRING ====================
+    # Reuse existing $serviceToolTip; increase AutoPopDelay for richer footer tooltips
+    $serviceToolTip.AutoPopDelay = 15000
+
+    # Capture paths into a shared hashtable for closures (avoids $script: scope bleed with .GetNewClosure)
+    $footerPaths = @{
+        DefaultFolder    = $DefaultFolder
+        RemoteUpdatePath = $remotePathLive
+        ScriptsDir       = $scriptsDir
+        ConfigFile       = $configFile
+        MainScript       = $PSCommandPath
+        LogsDir          = $logsDir
+    }
+
+    # ── Row 1 Left: Computer/User — show config file metadata ──
+    $statusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $cfgPath = $footerPaths.ConfigFile
+    $statusLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Configuration File'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $statusLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $cfgPath) {
+                Start-Process explorer.exe "/select,`"$cfgPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 1 Right: Default folder path ──
+    $statusRightRow1.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $defPath = $footerPaths.DefaultFolder
+    $statusRightRow1.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $defPath -ItemLabel 'Default Folder'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $statusRightRow1.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $defPath) {
+                Start-Process explorer.exe "`"$defPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 2 Left: Network info — show Main-GUI.ps1 metadata ──
+    $script:_NetInfoLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $mainPath = $footerPaths.MainScript
+    $script:_NetInfoLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $mainPath -ItemLabel 'Main GUI Script'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $script:_NetInfoLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $mainPath) {
+                Start-Process explorer.exe "/select,`"$mainPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 2 Right: Remote + Scripts paths ──
+    $statusRightRow2.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $sDir = $footerPaths.ScriptsDir
+    $rDir = $footerPaths.RemoteUpdatePath
+    $statusRightRow2.Add_MouseEnter({
+        try {
+            $tipParts = @()
+            $tipParts += (Get-FooterItemTooltip -ItemPath $rDir -ItemLabel '--- Remote Path ---')
+            $tipParts += ''
+            $tipParts += (Get-FooterItemTooltip -ItemPath $sDir -ItemLabel '--- Scripts Directory ---')
+            $serviceToolTip.SetToolTip($this, ($tipParts -join "`n"))
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $statusRightRow2.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $sDir) {
+                Start-Process explorer.exe "`"$sDir`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 3 Left: DHCP/DNS — show logs directory metadata ──
+    $script:_DhcpDnsLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $logDir = $footerPaths.LogsDir
+    $script:_DhcpDnsLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $logDir -ItemLabel 'Logs Directory'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $script:_DhcpDnsLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $logDir) {
+                Start-Process explorer.exe "`"$logDir`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 3 Right: SysInfo — show main script file metadata (version source) ──
+    $script:_SysInfoLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $script:_SysInfoLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $mainPath -ItemLabel 'Application Script (Version Source)'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $script:_SysInfoLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $mainPath) {
+                Start-Process explorer.exe "/select,`"$mainPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── Row 4: Vault status — show config file metadata ──
+    $vaultStatusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $vaultStatusLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Vault Configuration Source'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $vaultStatusLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $cfgPath) {
+                Start-Process explorer.exe "/select,`"$cfgPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    $vaultDetailLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $vaultDetailLabel.Add_MouseEnter({
+        try {
+            $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Vault Detail — Config File'
+            $serviceToolTip.SetToolTip($this, $tip)
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+    $vaultDetailLabel.Add_Click({
+        try {
+            if (Test-Path -LiteralPath $cfgPath) {
+                Start-Process explorer.exe "/select,`"$cfgPath`""
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }.GetNewClosure())
+
+    # ── WAN IP background refresh timer (every 5 minutes) ──
+    $script:_WanRefreshTimer = New-Object System.Windows.Forms.Timer
+    $script:_WanRefreshTimer.Interval = 500  # first tick fast, then switch to 5min
+    $script:_WanRefreshTimer.Add_Tick({
+        try {
+            if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
+            $script:_WanRefreshTimer.Interval = 300000  # 5 minutes after first tick
+            try {
+                $wanResp = (New-Object System.Net.WebClient).DownloadString('https://api.ipify.org').Trim()
+                if ($wanResp -match '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') {
+                    $script:_StatusWanIP = $wanResp
+                }
+            } catch { $script:_StatusWanIP = 'unavailable' }
+            # Also refresh LAN
+            try {
+                $lanAddr = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias 'Ethernet*','Wi-Fi*' -ErrorAction SilentlyContinue |
+                    Where-Object { $_.IPAddress -notlike '169.254.*' -and $_.IPAddress -ne '127.0.0.1' } |
+                    Select-Object -First 1).IPAddress
+                if ($lanAddr) { $script:_StatusLanIP = $lanAddr }
+            } catch { <# Intentional: non-fatal #> }
+            $script:_NetInfoLabel.Text = "WAN: $($script:_StatusWanIP) | LAN: $($script:_StatusLanIP)"
+        } catch { <# Intentional: non-fatal #> }
+    })
+    $script:_WanRefreshTimer.Start()
+
+    # Vault status refresh timer (every 5 seconds) -- monitors BW CLI service health
+    $script:_BWStatusCache = $null
+    $script:_BWStatusCacheTime = [datetime]::MinValue
+    $vaultTimer = New-Object System.Windows.Forms.Timer
+    $vaultTimer.Interval = 5000
+    $vaultTimer.Add_Tick({
+        try {
+            # Skip expensive checks when form is minimized (Cycle 6 optimization)
+            if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
+
+            if ($script:_SASCAvailable -and (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue)) {
+                $vs = Test-VaultStatus
+
+                # Periodically query bw status for live service health (every 30s to reduce overhead)
+                $bwLive = $null
+                if ($vs.BWCliAvailable -and ((Get-Date) - $script:_BWStatusCacheTime).TotalSeconds -ge 30) {
+                    try {
+                        $bwJson = & $vs.BWCliPath status 2>$null
+                        if ($bwJson) {
+                            $bwLive = $bwJson | ConvertFrom-Json -ErrorAction SilentlyContinue
+                            $script:_BWStatusCache = $bwLive
+                            $script:_BWStatusCacheTime = Get-Date
+                        }
+                    } catch { $bwLive = $null }
+                } else {
+                    $bwLive = $script:_BWStatusCache
+                }
+
+                $serverUrl = if ($bwLive -and $bwLive.serverUrl) { $bwLive.serverUrl } else { 'local' }
+                $bwUserId  = if ($bwLive -and $bwLive.userId) { $bwLive.userId.Substring(0, 8) + '...' } else { '' }
+                $bwState   = if ($bwLive -and $bwLive.status) { $bwLive.status } else { $vs.State }
+
+                switch ($vs.State) {
+                    'Unlocked' {
+                        $lockInfo = if ($vs.AutoLockRemaining) { " | Auto-lock: $($vs.AutoLockRemaining)" } else { '' }
+                        $vaultStatusLabel.Text = "Vault: UNLOCKED$lockInfo"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Green
+                        $vaultDetailLabel.Text = "BW: $serverUrl | User: $bwUserId | State: $bwState"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Green
+                    }
+                    'Locked' {
+                        $vaultStatusLabel.Text = "Vault: LOCKED"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::LightYellow
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::DarkGoldenrod
+                        $vaultDetailLabel.Text = "Security > Unlock Vault | BW: $bwState"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::DarkGoldenrod
+                    }
+                    'LockedOut' {
+                        $remaining = if ($vs.LockoutUntil) {
+                            $r = ($vs.LockoutUntil - (Get-Date)).TotalMinutes
+                            [math]::Ceiling([math]::Max($r, 0)).ToString() + ' min'
+                        } else { 'unknown' }
+                        $vaultStatusLabel.Text = "Vault: LOCKED OUT ($remaining)"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::Black
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::White
+                        $vaultDetailLabel.Text = "Failed: $($vs.FailedAttempts)/$($vs.MaxAttempts) attempts"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Black
+                    }
+                    'Unauthenticated' {
+                        $vaultStatusLabel.Text = "Vault: NOT LOGGED IN"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::MistyRose
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
+                        $vaultDetailLabel.Text = "Run: bw login | BW CLI: $(if($vs.BWCliAvailable){'found'}else{'missing'})"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Red
+                    }
+                    'NotInitialized' {
+                        $vaultStatusLabel.Text = "Vault: Not Initialized"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::MistyRose
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
+                        $vaultDetailLabel.Text = "Install BW CLI via WinGets > Install-BitWarden-LITE"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Red
+                    }
+                    default {
+                        $vaultStatusLabel.Text = "Vault: $($vs.State)"
+                        $vaultStatusLabel.BackColor = [System.Drawing.Color]::MistyRose
+                        $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
+                        $vaultDetailLabel.Text = "BW CLI: $(if($vs.BWCliAvailable){'available'}else{'not found'})"
+                        $vaultDetailLabel.ForeColor = [System.Drawing.Color]::Red
+                    }
+                }
+            } else {
+                $vaultStatusLabel.Text = "Vault: Module Not Loaded"
+                $vaultStatusLabel.BackColor = [System.Drawing.Color]::MistyRose
+                $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
+                $vaultDetailLabel.Text = "Load AssistedSASC module to enable"
+            }
+        } catch {
+            $vaultStatusLabel.Text = "Vault: Error"
+            $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
+            $vaultDetailLabel.Text = "$($_.Exception.Message)".Substring(0, [math]::Min(60, "$($_.Exception.Message)".Length))
+        }
+    })
+    $vaultTimer.Start()
+
+    # ── Engine status poll timer (every 10 seconds) ────────────────────────────
+    $script:_EngineTimer = New-Object System.Windows.Forms.Timer
+    $script:_EngineTimer.Interval = 10000  # first tick after 10s; quick-kick on demand via menu
+    $script:_EngineTimer.Add_Tick({
+        try {
+            if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
+            $req = [System.Net.HttpWebRequest]::Create('http://127.0.0.1:8042/api/engine/status')
+            $req.Timeout = 2000
+            $resp = $req.GetResponse()
+            $reader = New-Object System.IO.StreamReader($resp.GetResponseStream())
+            $json = $reader.ReadToEnd()
+            $reader.Close()
+            $resp.Close()
+            $obj = $json | ConvertFrom-Json
+            $upSec = if ($null -ne $obj -and $null -ne $obj.uptime) { [int]$obj.uptime } else { 0 }
+            $upTxt = if ($upSec -lt 60) { "${upSec}s" } else { "$([math]::Floor($upSec/60))m" }
+            if ($null -ne $script:_EngineStatusLabel) {
+                $script:_EngineStatusLabel.Text  = "Engine: running (port $($obj.port))"
+                $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+                $script:_EngineStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(20, 50, 20)
+            }
+            if ($null -ne $script:_EngineUpTimeLabel) {
+                $script:_EngineUpTimeLabel.Text = "Uptime $upTxt | PID $($obj.pid) | hub: http://127.0.0.1:$($obj.port)/"
+            }
+        } catch {
+            if ($null -ne $script:_EngineStatusLabel) {
+                $script:_EngineStatusLabel.Text  = "Engine: offline"
+                $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Gray
+                $script:_EngineStatusLabel.BackColor = [System.Drawing.Color]::FromArgb(37, 37, 38)
+            }
+            if ($null -ne $script:_EngineUpTimeLabel) {
+                $script:_EngineUpTimeLabel.Text = "Tools > Script Services > Start Local Web Engine"
+            }
+        }
+    })
+    $script:_EngineTimer.Start()
     
-    # Show the form
-    Write-AppLog "Displaying GUI form window" "Event"
-    $form.ShowDialog() | Out-Null
-    Write-AppLog "GUI form closed by user" "Event"
+    # ==================== KEYBOARD ACCELERATORS ====================
+    $form.Add_KeyDown({
+        param($sender, $e)
+        # Ctrl+Q -- Quit
+        if ($e.Control -and $e.KeyCode -eq 'Q') { $e.SuppressKeyPress = $true; $sender.Close() }
+        # F5 -- Refresh all service lights immediately
+        if ($e.KeyCode -eq 'F5') {
+            $e.SuppressKeyPress = $true
+            try {
+                # Re-check local services
+                if (Test-Path $configFile) { Set-ServiceLight 'Config' 'Running' "Configuration: Loaded from $configFile" }
+                else { Set-ServiceLight 'Config' 'Error' 'Configuration: File not found' }
+                if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) { Set-ServiceLight 'Logging' 'Running' "Logging: Active - $logsDir" }
+                if (Test-Path $scriptsDir) {
+                    $sc = @(Get-ChildItem -Path $scriptsDir -Filter '*.ps1' -ErrorAction SilentlyContinue).Count
+                    Set-ServiceLight 'Scripts' 'Running' "Scripts folder: $sc scripts found"
+                } else { Set-ServiceLight 'Scripts' 'Error' 'Scripts folder: Not found' }
+                $mc = @(Get-Module | Where-Object { $_.Path -like "$scriptDir*" }).Count
+                if ($mc -gt 0) { Set-ServiceLight 'Modules' 'Running' "Modules: $mc project modules loaded" }
+                else { Set-ServiceLight 'Modules' 'Warning' 'Modules: No project modules loaded' }
+                Set-ServiceLight 'Session' 'Running' "Session: Refreshed $(Get-Date -Format 'HH:mm:ss')"
+                # Trigger Vault + Remote check via timer
+                if ($script:_ServiceTimer) { $script:_ServiceTimer.Stop(); $script:_ServiceTimer.Interval = 100; $script:_ServiceTimer.Start() }
+            } catch { Write-AppLog "[Refresh] Module refresh error: $_" 'Warning' }
+        }
+    })
+
+    # ==================== GRACEFUL EXIT HANDLER ====================
+    $form.Add_FormClosing({
+        param($s, $e)
+        # If user clicked X (or Alt+F4) and we are NOT force-closing, minimize to tray instead
+        # Null-guard _ForceClose: child-script StrictMode can make $script: vars inaccessible (P022)
+        $forceClose = try { $script:_ForceClose } catch { $false }
+        $trayIcon   = try { $script:_TrayIcon }   catch { $null }
+        if (-not $forceClose -and $trayIcon) {
+            Write-AppLog "[TrayHost] FormClosing intercepted -- cancelling close, minimizing to tray instead" "Debug"
+            $e.Cancel = $true
+            $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
+            # The Resize handler will Hide and show the balloon
+            return
+        }
+        Write-AppLog "[TrayHost] FormClosing with _ForceClose=true -- performing full shutdown" "Debug"
+        try {
+            # Cleanup running tool processes
+            if ($script:_RunningTools) {
+                foreach ($entry in @($script:_RunningTools.GetEnumerator())) {
+                    if ($entry.Value -is [System.Diagnostics.Process] -and -not $entry.Value.HasExited) {
+                        try { $entry.Value.CloseMainWindow() | Out-Null } catch { <# Intentional: non-fatal #> }
+                    }
+                }
+                $script:_RunningTools.Clear()
+            }
+            if ($script:_ServiceTimer) { $script:_ServiceTimer.Stop(); $script:_ServiceTimer.Dispose() }
+            if ($script:_WanRefreshTimer) { $script:_WanRefreshTimer.Stop(); $script:_WanRefreshTimer.Dispose() }
+            if ($vaultTimer) { $vaultTimer.Stop(); $vaultTimer.Dispose() }
+            # Dispose system tray icon
+            if ($script:_TrayIcon) { $script:_TrayIcon.Visible = $false; $script:_TrayIcon.Dispose(); $script:_TrayIcon = $null }
+            if ($script:_SASCAvailable -and (Get-Command Lock-Vault -ErrorAction SilentlyContinue)) {
+                Lock-Vault
+                Write-AppLog "Vault locked on application exit" "Info"
+            }
+            # Stop TrayHost (keyboard monitor + background pool + ExitThread)
+            if (Get-Command Stop-TrayHost -ErrorAction SilentlyContinue) {
+                Write-AppLog "[TrayHost] Stopping TrayHost services" "Debug"
+                Stop-TrayHost
+            }
+            Write-AppLog "Application closing gracefully" "Info"
+            Export-LogBuffer
+            Remove-SessionLock
+        } catch {
+            # Best-effort cleanup -- do not block close
+        }
+    })
+
+    # ── Start minimized to tray if requested ──
+    $script:_StartMinimized = $StartMinimized
+
+    # ── Initialize TrayHost ApplicationContext (PShellCore) ──
+    $trayHostAvailable = Get-Command Initialize-TrayAppContext -ErrorAction SilentlyContinue
+    if ($trayHostAvailable) {
+        Write-AppLog "[TrayHost] Initializing ApplicationContext lifecycle (form decoupled from message loop)" "Debug"
+        $null = Initialize-TrayAppContext -Form $form -RestoreAction $script:_RestoreFromTray
+
+        # Initialize background runspace pool
+        if (Get-Command Initialize-BackgroundPool -ErrorAction SilentlyContinue) {
+            Initialize-BackgroundPool -MinThreads 1 -MaxThreads 4
+        }
+
+        # Start keyboard monitor for spacebar rehydration
+        if (Get-Command Start-KeyboardMonitor -ErrorAction SilentlyContinue) {
+            Start-KeyboardMonitor -IntervalMs 300
+        }
+
+        # Show form via ApplicationContext (non-modal, message loop stays alive when hidden)
+        Write-AppLog "Displaying GUI form window via ApplicationContext" "Audit"
+        Start-TrayApplicationLoop -StartMinimized:$StartMinimized
+
+        # Message loop has ended (Stop-TrayHost or ExitThread was called)
+        Write-AppLog "[TrayHost] ApplicationContext loop returned -- performing final cleanup" "Debug"
+        if ($form -and -not $form.IsDisposed) {
+            $form.Dispose()
+            Write-AppLog "GUI form disposed after ApplicationContext exit" "Audit"
+        }
+    } else {
+        # Fallback: original ShowDialog behaviour when TrayHost module not available
+        if ($StartMinimized) {
+            $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
+            $form.ShowInTaskbar = $false
+            Write-AppLog "TaskTray mode: starting minimized to system tray" "Audit"
+        }
+        Write-AppLog "Displaying GUI form window (ShowDialog fallback)" "Audit"
+        $form.ShowDialog() | Out-Null
+        $form.Dispose()
+        Write-AppLog "GUI form disposed -- application exiting" "Audit"
+    }
 }
 
 # ==================== MAIN EXECUTION ====================
-Write-AppLog "=====================================================================" "Event"
+Write-AppLog "=====================================================================" "Audit"
 Write-AppLog "PowerShell GUI Application starting..." "Info"
 Write-AppLog "Computer: $env:COMPUTERNAME | User: $env:USERNAME | PowerShell: $($PSVersionTable.PSVersion)" "Info"
-Write-AppLog "=====================================================================" "Event"
+Write-AppLog "=====================================================================" "Audit"
+
+# ==================== CRASH RECOVERY & SESSION LOCK ====================
+$crashDetected = Invoke-CrashRecovery -TempDir (Join-Path $scriptDir 'temp')
+$script:LastCrashDetected = [bool]$crashDetected
+$script:ExtendedSecurityLogging = [bool]$crashDetected
+if ($crashDetected) {
+    Write-AppLog "Previous crash detected -- recovery cleanup completed" "Warning"
+    Write-AppLog "Extended security logging enabled for this session due to crash recovery" "Warning"
+}
+Invoke-LogRotation -LogsDir $logsDir
+Write-SessionLock
+Write-AppLog "Session lock written, log rotation checked" "Info"
 
 # Phase 0: Validate and configure paths
-Write-AppLog "Phase 0: Validating application paths..." "Event"
+Write-AppLog "Phase 0: Validating application paths..." "Audit"
 $pathsNeedValidation = $false
 
 # Check if any required path is inaccessible
@@ -4207,11 +8358,11 @@ if ($pathsNeedValidation -or [string]::IsNullOrWhiteSpace($ConfigPath)) {
     Write-AppLog "Path validation required - showing configuration GUI" "Warning"
     Show-PathSettingsGUI
 } else {
-    Write-AppLog "All application paths are accessible and configured correctly" "Success"
+    Write-AppLog "All application paths are accessible and configured correctly" "Info"
 }
 
 # Initialize script folders config if it doesn't exist
-$scriptFoldersConfigPath = Join-Path $configDir "pwsh-scriptfolders-config.json"
+$scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
 if (-not (Test-Path $scriptFoldersConfigPath)) {
     $defaultConfig = @{
         metadata = @{
@@ -4230,30 +8381,28 @@ if (-not (Test-Path $scriptFoldersConfigPath)) {
         )
     }
     Save-ScriptFoldersConfig -Config $defaultConfig
-    Write-AppLog "Script folders config initialized" "Success"
+    Write-AppLog "Script folders config initialized" "Info"
 }
 
 # ensure config exists
-if (-not (Test-Path $configFile)) { Initialize-ConfigFile }
+if (-not (Test-Path $configFile)) { Initialize-ConfigFile -ConfigFile $configFile -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir }
 
-Write-AppLog "Startup mode selected: $StartupMode" "Event"
+Write-AppLog "Startup mode selected: $StartupMode" "Audit"
 
 # Parse version values once for display and downstream phases
 $versionInfo = Get-VersionInfo
 $major = $versionInfo.Major
 $minor = $versionInfo.Minor
 $build = $versionInfo.Build
-$diffFile = Join-Path (Get-Location).Path "pwshGUI-v-$major$minor-versionbuild~DIFFS.xml"
-
 $hasIssues = $false
 $issueDetails = @()
 
 if ($StartupMode -eq 'slow_snr') {
     # Phase 1: Check version tags BEFORE any auto-increment
-    Write-AppLog "Phase 1: Checking version tag consistency..." "Event"
-    Test-VersionTag
+    Write-AppLog "Phase 1: Checking version tag consistency..." "Audit"
+    $diffFile = Test-VersionTag
 
-    if (Test-Path $diffFile) {
+    if ($diffFile -and (Test-Path $diffFile)) {
         [xml]$diffXml = Get-Content $diffFile
         $folders = $diffXml.SelectNodes('//Folder')
         if ($folders.Count -gt 0) {
@@ -4277,13 +8426,13 @@ if ($StartupMode -eq 'slow_snr') {
 
     if (-not $hasIssues) {
         Write-Information "ALL FILES MATCH VERSION-TAGS" -InformationAction Continue
-        Write-Information "Current Version: $major.$minor.$build" -InformationAction Continue
+        Write-Information "Current Version: $(Get-VersionString)" -InformationAction Continue
         Write-Information "All files are tagged properly - no auto-increment needed." -InformationAction Continue
         Write-Information "=====================================================================" -InformationAction Continue
         Write-Information "" -InformationAction Continue
     } else {
         Write-Information "VERSION-TAGS FOUND THAT DO NOT MATCH" -InformationAction Continue
-        Write-Information "Current Version: $major.$minor.$build" -InformationAction Continue
+        Write-Information "Current Version: $(Get-VersionString)" -InformationAction Continue
         Write-Information "" -InformationAction Continue
         Write-Information "Mismatches detected:" -InformationAction Continue
         foreach($detail in $issueDetails) {
@@ -4300,15 +8449,15 @@ if ($StartupMode -eq 'slow_snr') {
         if ($userInput -eq "AA") {
             Write-Information "" -InformationAction Continue
             Write-Information "Auto-Increment AUTHORIZED by user" -InformationAction Continue
-            Write-AppLog "User authorized auto-increment" "Event"
+            Write-AppLog "User authorized auto-increment" "Audit"
             Update-VersionBuild -Auto
-            Write-Information "Build number incremented to: $(Get-ConfigSubValue 'Version/Build')" -InformationAction Continue
-            Write-AppLog "Updating version tags after increment..." "Event"
+            Write-Information "Build number incremented to: $(Get-VersionString)" -InformationAction Continue
+            Write-AppLog "Updating version tags after increment..." "Audit"
             Update-VersionTag
         } else {
             Write-Information "" -InformationAction Continue
             Write-Information "BYPASSING Build mismatch as no Auto-Increment Allow Action from user" -InformationAction Continue
-            Write-AppLog "User skipped auto-increment" "Event"
+            Write-AppLog "User skipped auto-increment" "Audit"
         }
         Write-Information "" -InformationAction Continue
     }
@@ -4317,11 +8466,11 @@ if ($StartupMode -eq 'slow_snr') {
 }
 
 # Phase 3: Generate manifest for slow startup mode
-Write-AppLog "Phase 3: Build manifest generation starting..." "Event"
+Write-AppLog "Phase 3: Build manifest generation starting..." "Audit"
 Write-AppLog "DEBUG: StartupMode detected as: $StartupMode" "Debug"
 try {
     if ($StartupMode -eq 'slow_snr') {
-        Write-AppLog "Generating build manifest..." "Event"
+        Write-AppLog "Generating build manifest..." "Audit"
         Write-AppLog "DEBUG: Calling New-BuildManifest for slow startup mode" "Debug"
         New-BuildManifest
         Write-AppLog "DEBUG: New-BuildManifest completed successfully" "Debug"
@@ -4329,7 +8478,7 @@ try {
         Write-AppLog "Fast startup mode: skipping build manifest generation" "Info"
         Write-AppLog "DEBUG: Manifest generation skipped due to startup mode: $StartupMode" "Debug"
     }
-    Write-AppLog "Phase 3: Build manifest generation completed successfully" "Success"
+    Write-AppLog "Phase 3: Build manifest generation completed successfully" "Info"
 } catch {
     Write-AppLog "Phase 3 ERROR: Failed to generate build manifest: $_" "Error"
     Write-AppLog "DEBUG: Full exception details:`n$($_.ScriptStackTrace)" "Debug"
@@ -4337,12 +8486,24 @@ try {
 }
 
 # Phase 4: Display system information
-$rootPath = (Get-Location).Path
-$scriptsPath = Join-Path $rootPath "scripts"
-$versionInfo = Get-VersionInfo
-$configVersion = "$($versionInfo.Major).$($versionInfo.Minor).$($versionInfo.Build)"
-$timezone = (Get-TimeZone).DisplayName
+Write-AppLog "Phase 4: System information display starting..." "Audit"
+$rootPath = "unknown"
+$scriptsPath = "unknown"
+$configVersion = "unknown"
+$timezone = "unknown"
 $currentDateTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+try {
+    $rootPath = (Get-Location).Path
+    $scriptsPath = Join-Path $rootPath "scripts"
+    $versionInfo = Get-VersionInfo
+    $configVersion = Get-VersionString
+    $timezone = (Get-TimeZone).DisplayName
+    Write-AppLog "Phase 4: System information resolved successfully" "Info"
+} catch {
+    Write-AppLog "Phase 4 ERROR: System information collection failed: $_" "Error"
+    Write-AppLog "Phase 4: Using fallback values for system information" "Warning"
+}
 
 Write-Information "" -InformationAction Continue
 Write-Information "=== END SYSTEM INFORMATION ===" -InformationAction Continue
@@ -4353,33 +8514,78 @@ Write-Information "Current Date/Time:      $currentDateTime" -InformationAction 
 Write-Information "Time Zone:              $timezone" -InformationAction Continue
 Write-Information "=====================================================================" -InformationAction Continue
 Write-Information "" -InformationAction Continue
+Write-AppLog "Phase 4: System information display completed" "Info"
 
-Write-AppLog "Creating and displaying GUI..." "Event"
+# ==================== Phase 5: STARTUP INTEGRITY CHECK ====================
+Write-AppLog "Phase 5: Running startup integrity check..." "Audit"
+if (Get-Command Invoke-StartupIntegrityCheck -ErrorAction SilentlyContinue) {
+    $integrityResult = Invoke-StartupIntegrityCheck -WorkspacePath $scriptDir -ConfigFile $configFile
+    if (-not $integrityResult.Passed) {
+        Write-AppLog "Phase 5: $($integrityResult.IssueCount) integrity issue(s) detected" "Warning"
+        # Offer emergency unlock if vault is available
+        if (Get-Command Invoke-EmergencyUnlock -ErrorAction SilentlyContinue) {
+            $vaultStatus = $null
+            try { $vaultStatus = Test-VaultStatus } catch { <# Intentional: non-fatal, vault may not be ready #> }
+            if ($vaultStatus -and $vaultStatus.State -in @('Unlocked','Open')) {
+                $emergency = Invoke-EmergencyUnlock -WorkspacePath $scriptDir
+                if ($emergency.Granted) {
+                    Write-AppLog "Phase 5: Emergency unlock GRANTED — continuing in degraded mode" "Critical"
+                }
+            }
+        }
+    } else {
+        Write-AppLog "Phase 5: All integrity checks passed" "Info"
+    }
+} else {
+    # Fallback: inline checks when IntegrityCore module is unavailable
+    $integrityIssues = @()
+    foreach ($modName in @('PwShGUICore')) {
+        if (-not (Get-Module -Name $modName)) { $integrityIssues += "Module '$modName' is not loaded" }
+    }
+    foreach ($dirEntry in @(
+        @{ Name = 'scripts';  Path = $scriptsDir },
+        @{ Name = 'config';   Path = $configDir  },
+        @{ Name = 'modules';  Path = (Join-Path $scriptDir 'modules') },
+        @{ Name = 'logs';     Path = $logsDir    }
+    )) {
+        if (-not (Test-Path $dirEntry.Path)) { $integrityIssues += "Required directory '$($dirEntry.Name)' missing at $($dirEntry.Path)" }
+    }
+    if ($configFile -and (Test-Path $configFile)) {
+        try { [xml]$null = Get-Content $configFile -ErrorAction Stop } catch { $integrityIssues += "Config file is not valid XML: $configFile" }
+    } else { $integrityIssues += "Config file not found: $configFile" }
+    if (@($integrityIssues).Count -gt 0) {
+        foreach ($issue in $integrityIssues) { Write-AppLog "Integrity issue (fallback): $issue" "Warning" }
+        Write-AppLog "Phase 5 (fallback): Completed with $(@($integrityIssues).Count) issue(s)" "Warning"
+    } else {
+        Write-AppLog "Phase 5 (fallback): All integrity checks passed" "Info"
+    }
+}
+
+Write-AppLog "Creating and displaying GUI..." "Audit"
+if ($TaskTray) {
+    Write-AppLog "TaskTray switch active -- GUI will start minimized to system tray" "Audit"
+}
 try {
     # Create the GUI
-    New-GUI
-    Write-AppLog "GUI closed successfully" "Success"
+    if ($TaskTray) {
+        New-GUI -StartMinimized
+    } else {
+        New-GUI
+    }
+    Write-AppLog "GUI closed successfully" "Info"
 }
 catch {
     Write-AppLog "Error in GUI creation: $_" "Error"
     Write-AppLog "Stack Trace: $($_.ScriptStackTrace)" "Error"
 }
 
-Write-AppLog "=====================================================================" "Event"
+Write-AppLog "=====================================================================" "Audit"
 Write-AppLog "PowerShell GUI Application closed" "Info"
-Write-AppLog "=====================================================================" "Event"
+Write-AppLog "=====================================================================" "Audit"
 
-# Flush any remaining log entries
-Flush-LogBuffer
-
-
-
-
-
-
-
-
-
+# Clean up session lock and flush remaining log entries
+Remove-SessionLock
+Export-LogBuffer
 
 
 

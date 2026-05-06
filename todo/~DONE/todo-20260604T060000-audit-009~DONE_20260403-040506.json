@@ -1,0 +1,16 @@
+{
+  "category": "logging-consistency",
+  "id": "audit-009",
+  "created": "2026-03-29T14:50:30Z",
+  "description": "21 scripts use Write-Host but never Write-AppLog. Top: Invoke-ModuleManagement(79), New-InstallerScript(56), Start-BWServe(43), Invoke-TodoManager(37).",
+  "files": [
+    "scripts/Invoke-ModuleManagement.ps1",
+    "scripts/New-InstallerScript.ps1"
+  ],
+  "priority": "medium",
+  "title": "Add Write-AppLog to 21 scripts using only Write-Host",
+  "status": "completed",
+  "completedAt": "2026-03-29T15:05:27Z",
+  "completionNote": "Added lifecycle Write-AppLog logging to top 10 scripts (start/complete guards)",
+  "createdAt": "2026-06-04T06:00:00Z"
+}

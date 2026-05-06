@@ -1,0 +1,115 @@
+{
+  "sin_id": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+  "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
+  "description": "Accessing an element by numeric index (e.g. $arr[0], $parts[1]) on a variable that is $null or an empty collection throws System.Management.Automation.RuntimeException: 'Cannot index into a null array.' This differs from P022 (method/property on null) — P027 specifically targets subscript-bracket access on null/empty arrays. Common sources: (1) Get-ChildItem / Where-Object / -split / [regex]::Matches returning $null or empty, then indexing [0]; (2) .SelectedRows[0] in WinForms grids without .Count guard; (3) $Matches[1] after a failed -match; (4) string -split result indexed without element-count validation; (5) ConvertFrom-Json returning $null then indexed. Multiple fix strategies exist and must not regress each other — this pattern accommodates @() force-array, $null-ne guard, .Count-gt-0 precondition, and try/catch wrapping as valid remedies.",
+  "severity": "HIGH",
+  "category": "runtime-error",
+  "vector": "null-array-index",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-04-08T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Regex scan for numeric subscript access ($var[0], $var[1], $result[-1]) on variables that originate from pipeline commands, -split, regex matches, WinForms grid selections, or ConvertFrom-Json without a preceding null/count guard within 5 lines above",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "exception_message": "System.Management.Automation.RuntimeException: Cannot index into a null array.",
+  "exception_stack_highlight": "ScriptBlock.InvokeWithContext -> Pipeline.InvokeCommand",
+  "known_instances": [
+    "Show-ScanDashboard.ps1 L403: $grid.SelectedRows[0] — WinForms grid may have no selection",
+    "Show-ScanDashboard.ps1 L591: $dgvCpsr.SelectedRows[0] — WinForms grid CPSR tab",
+    "Show-ScanDashboard.ps1 L626: $files[0].Name — Get-ScanFiles may return empty",
+    "Show-ScanDashboard.ps1 L654: $files[0].Name — report files may be empty",
+    "Show-ScanDashboard.ps1 L804: $dgvReports.SelectedRows[0] — reports tab grid",
+    "Invoke-ScriptDependencyMatrix.ps1 L304: $m.Groups[1].Value — regex match may fail",
+    "Invoke-ScriptDependencyMatrix.ps1 L661: $parts[0] — string -split result",
+    "Invoke-ScriptDependencyMatrix.ps1 L662: $parts[1] — string -split second element may not exist",
+    "Invoke-ModuleManagement.ps1 — .Count access on pipeline results without @() guard (L211, L216, L464, L471, L519)"
+  ],
+  "known_fix_scenarios": {
+    "FIX-A-FORCE-ARRAY": {
+      "label": "@() force-array wrapper",
+      "description": "Wrap the source expression in @() to guarantee an array before indexing. Preferred when the source is a pipeline/cmdlet result.",
+      "example_before": "$files = Get-ChildItem -Filter '*.json'\n$first = $files[0]",
+      "example_after": "$files = @(Get-ChildItem -Filter '*.json')\nif ($files.Count -gt 0) { $first = $files[0] }",
+      "applies_to": ["pipeline-results", "cmdlet-output", "Where-Object", "Get-ChildItem"],
+      "regression_risk": "LOW — purely additive guard, no behaviour change when collection is non-null"
+    },
+    "FIX-B-COUNT-PRECONDITION": {
+      "label": ".Count -gt 0 precondition guard",
+      "description": "Check .Count before indexing. Suitable for arrays, lists, and DataGridView.SelectedRows.",
+      "example_before": "$selectedRow = $grid.SelectedRows[0]",
+      "example_after": "if (@($grid.SelectedRows).Count -gt 0) {\n    $selectedRow = $grid.SelectedRows[0]\n}",
+      "applies_to": ["WinForms-grids", "SelectedRows", "SelectedItems", "typed-lists"],
+      "regression_risk": "LOW — skips block when empty, but must ensure downstream code handles the skip"
+    },
+    "FIX-C-NULL-NE-GUARD": {
+      "label": "$null -ne variable guard",
+      "description": "Explicit null check before indexing. Required when the source variable itself may be $null (not just empty).",
+      "example_before": "$result = Get-Something\n$val = $result[0]",
+      "example_after": "$result = Get-Something\nif ($null -ne $result -and @($result).Count -gt 0) {\n    $val = $result[0]\n}",
+      "applies_to": ["nullable-returns", "ConvertFrom-Json", "try-catch-results"],
+      "regression_risk": "MEDIUM — if guard is too broad it may mask logic errors; ensure else-branch is handled"
+    },
+    "FIX-D-MATCH-GUARD": {
+      "label": "-match success guard before $Matches[N]",
+      "description": "Only access $Matches[N] inside the if-block of a successful -match. Never access $Matches after the conditional scope.",
+      "example_before": "$line -match '(\\d+)'\n$num = $Matches[1]",
+      "example_after": "if ($line -match '(\\d+)') {\n    $num = $Matches[1]\n}",
+      "applies_to": ["regex-matches", "$Matches", "Groups[N]"],
+      "regression_risk": "LOW — $Matches is only valid inside the if-true branch anyway"
+    },
+    "FIX-E-SPLIT-BOUNDS": {
+      "label": "-split result bounds check",
+      "description": "After -split, verify element count before accessing indexed elements. Prevents ArrayIndexOutOfRange on unexpected input.",
+      "example_before": "$parts = $line -split '\\|'\n$left = $parts[0]\n$right = $parts[1]",
+      "example_after": "$parts = @($line -split '\\|')\nif ($parts.Count -ge 2) {\n    $left = $parts[0]\n    $right = $parts[1]\n}",
+      "applies_to": ["-split-results", "string-parsing", "CSV-fields"],
+      "regression_risk": "MEDIUM — if the split-count assumption is wrong, silently skips; add logging in else-branch"
+    },
+    "FIX-F-TRYCATCH-WRAP": {
+      "label": "try/catch fallback wrapper",
+      "description": "Last-resort pattern for complex expressions where inline guards are impractical. Catch RuntimeException and log.",
+      "example_before": "$val = $complex.Expression.Chain[0].Deep",
+      "example_after": "try {\n    $val = $complex.Expression.Chain[0].Deep\n} catch [System.Management.Automation.RuntimeException] {\n    Write-AppLog -Message \"Null array index: $($_.Exception.Message)\" -Severity 'Warning'\n    $val = $null\n}",
+      "applies_to": ["deeply-nested-access", "third-party-data", "dynamic-structures"],
+      "regression_risk": "HIGH — masks the root cause; prefer FIX-A through FIX-E where possible"
+    }
+  },
+  "preventionRule": "Never index into an array, list, or collection result without verifying it is non-null and contains sufficient elements. Preferred fix order: FIX-D (match guard) > FIX-A (@() force-array) > FIX-B (.Count precondition) > FIX-E (-split bounds) > FIX-C ($null -ne guard) > FIX-F (try/catch last resort). In WinForms handlers, always use @($grid.SelectedRows).Count -gt 0 before [0]. After -match, only use $Matches inside the if-true block. After -split, check element count before accessing indexed elements.",
+  "scan_regex": "(?<![#'])(\\$\\w+)\\[\\d+\\]",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude": ".history;__pycache__;.venv;.venv-pygame312;node_modules;checkpoints",
+  "context_guard_regex": "\\.Count\\s*-gt\\s*0|\\.Count\\s*-ge\\s*\\d|@\\(\\$|\\$null\\s*-ne|-ne\\s*\\$null|\\.Length\\s*-gt\\s*0|if\\s*\\(\\$\\w+\\s*-match\\b|if\\s*\\(\\[regex\\]|\\$parts\\.Count|\\$\\w+\\.Success|ForEach-Object|Where-Object",
+  "context_guard_lines": 5,
+  "context_guard_direction": "above",
+  "inline_guard_regex": "@\\(|if\\s*\\(|\\.Count\\s*-gt|-match\\s|ContainsKey|Test-Path|try\\s*\\{",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$|Invoke-SINPatternScanner",
+  "remedy": "# FIX-A: Force-array before index\n# BEFORE (SIN)\n$files = Get-ChildItem -Filter '*.json'\n$first = $files[0]  # CRASH if no files\n# AFTER\n$files = @(Get-ChildItem -Filter '*.json')\nif ($files.Count -gt 0) { $first = $files[0] }\n\n# FIX-B: WinForms .SelectedRows guard\n# BEFORE (SIN)\n$row = $grid.SelectedRows[0]\n# AFTER\nif (@($grid.SelectedRows).Count -gt 0) {\n    $row = $grid.SelectedRows[0]\n}\n\n# FIX-D: Match guard for $Matches\n# BEFORE (SIN)\n$line -match '(\\d+)'\n$num = $Matches[1]\n# AFTER\nif ($line -match '(\\d+)') { $num = $Matches[1] }\n\n# FIX-E: -split bounds check\n# BEFORE (SIN)\n$parts = $key -split '\\|'\n$left = $parts[0]; $right = $parts[1]\n# AFTER\n$parts = @($key -split '\\|')\nif ($parts.Count -ge 2) { $left = $parts[0]; $right = $parts[1] }",
+  "tags": [
+    "runtime-error",
+    "null-array-index",
+    "winforms",
+    "regex-match",
+    "string-split",
+    "pipeline-result",
+    "ps51-compatible",
+    "pipeline-scan",
+    "regression-test"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "Pattern registered from recurring 'Cannot index into a null array' RuntimeException across Show-ScanDashboard, Invoke-ModuleManagement, and Invoke-ScriptDependencyMatrix. Six fix scenarios defined to prevent regression between competing remedies."
+}

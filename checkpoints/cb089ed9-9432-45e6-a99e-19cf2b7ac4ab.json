@@ -1,0 +1,102 @@
+{
+  "checkpoint_id": "cb089ed9-9432-45e6-a99e-19cf2b7ac4ab",
+  "focalpoint_instance": "FocalPoint-null-00",
+  "state_type": "orchestrator_state",
+  "state_data": {
+    "instance_id": "FocalPoint-null-00",
+    "active_tasks": {
+      "ff8e1d7b-623a-4648-bde3-7a8c4d93e623": {
+        "task_id": "ff8e1d7b-623a-4648-bde3-7a8c4d93e623",
+        "title": "Output Validation",
+        "description": "Validate incoming user request: 'test' for compliance, safety, and suitability before further allocation.",
+        "assigned_to": "ViewPoint-init",
+        "dispatched_by": "FocalPoint-null-00",
+        "status": "DISPATCHED",
+        "directive_snapshot": {
+          "directive_id": "23a19775-17b3-4af4-9720-3db3abc77fb1",
+          "agent_id": "ViewPoint-init",
+          "directive_text": "Review and validate the user request. If compliant, pass it back for orchestration; if not, flag and halt further processing.",
+          "directive_sha256": "7f924e3367959275d8aee55ae314bcad45aecbcffe61d1b5278a09b40d2cf418",
+          "received_at": "2026-03-01T14:23:11.193569Z",
+          "signed_by": "FocalPoint-null-00"
+        },
+        "fork_id": null,
+        "fork_option_label": null,
+        "parent_task_id": null,
+        "child_task_ids": [],
+        "retry_count": 0,
+        "max_retries": 3,
+        "last_error": null,
+        "progress_pct": 0.0,
+        "progress_notes": [],
+        "created_at": "2026-03-01T14:23:11.193597Z",
+        "dispatched_at": "2026-03-01T14:23:11.194078Z",
+        "started_at": null,
+        "completed_at": null,
+        "result": null,
+        "result_sha256": null,
+        "result_viewpoint_encoded": false,
+        "human_review_requested": false,
+        "human_review_notes": null
+      },
+      "035443ec-a2a6-4b68-ac53-82fad5ccb8fe": {
+        "task_id": "035443ec-a2a6-4b68-ac53-82fad5ccb8fe",
+        "title": "Simple Response Test",
+        "description": "Reply with a basic message to demonstrate sub-agent communication.",
+        "assigned_to": "EchoPoint-basic-01",
+        "dispatched_by": "FocalPoint-null-00",
+        "status": "DISPATCHED",
+        "directive_snapshot": {
+          "directive_id": "9c8786b4-cd5c-4606-a5e8-c8eaa29a003b",
+          "agent_id": "EchoPoint-basic-01",
+          "directive_text": "Provide a simple text reply that confirms receipt of the test message. No content processing is required.",
+          "directive_sha256": "bb4f19d1f376ebdf1d833dff468117a37a360c2f195a9669e11f9d6c142619f7",
+          "received_at": "2026-03-01T14:24:56.634444Z",
+          "signed_by": "FocalPoint-null-00"
+        },
+        "fork_id": null,
+        "fork_option_label": null,
+        "parent_task_id": null,
+        "child_task_ids": [],
+        "retry_count": 0,
+        "max_retries": 3,
+        "last_error": null,
+        "progress_pct": 0.0,
+        "progress_notes": [],
+        "created_at": "2026-03-01T14:24:56.634469Z",
+        "dispatched_at": "2026-03-01T14:24:56.634883Z",
+        "started_at": null,
+        "completed_at": null,
+        "result": null,
+        "result_sha256": null,
+        "result_viewpoint_encoded": false,
+        "human_review_requested": false,
+        "human_review_notes": null
+      }
+    },
+    "active_forks": {},
+    "completed_task_count": 0,
+    "failed_task_count": 0,
+    "version_loops_completed": 3,
+    "agent_registry_snapshot": [],
+    "last_checkpoint_id": null,
+    "started_at": "2026-03-01T14:22:45.348817Z",
+    "last_active_at": "2026-03-01T14:24:56.633970Z"
+  },
+  "active_task_ids": [
+    "ff8e1d7b-623a-4648-bde3-7a8c4d93e623",
+    "035443ec-a2a6-4b68-ac53-82fad5ccb8fe"
+  ],
+  "active_fork_ids": [],
+  "created_at": "2026-03-01T14:24:56.636373Z",
+  "state_sha256": "75a1ec244644bc4fee684e3b8fb3c1786376269e744056074d2a4699cbaa16d9",
+  "signature": "mHDokEwrx//oGUeUvZnzEaIxqJdT0Y2OGhtm7e7gNMoZOIT48QhuEWznbAemN7zMaR8vT4epqB41UaGkon9cOl3uGHS8jgFZCQiRRJ+u97vcPOrMyCGyF4zMtoyEqh4bvGE+6h5GuImNnM74jWHKN7/nVruTyvu9CcCb8cUHpRYUu9uwrB16IfD81jKqgSKUzIko04cHgChUwEZIoKf9hym4J7TV6gfuuaIY4OX8RysWVR+kSxej1R15dBCmLMQTYjuf4D699pBCLXBrVKkVoaIQ7kk73lMVlU1H+e+Awd0cOWZ0BZZ4zcGlvXN24xm4dLTNLmEfnk1NMG0TOSNdcw==",
+  "metadata": {
+    "allow_agent_archival_access": false,
+    "permitted_agent_ids": [],
+    "permitted_agent_public_keys": {},
+    "archive_sha256": "75a1ec244644bc4fee684e3b8fb3c1786376269e744056074d2a4699cbaa16d9",
+    "created_at": "2026-03-01T14:24:56.635779Z",
+    "archived_at": null
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PLANNED",
+  "category": "agent-registry",
+  "id": "advisory-003",
+  "priority": "low",
+  "description": "7 agents registered in agent_registry.json have no dedicated directory (ViewPoint-init, SecurityTriage-00, AgentReview-00, QualityControl-00, StandardsGuard-00, Code-B-iSmuth-00, Code-B-Tsted-00). Only FocalPoint-null-00 and koe-RumA-00 have agent directories. Creating dedicated folders would allow per-agent config, README, and runtime state files.",
+  "title": "Create agent directories for 7 registry-only agents",
+  "createdAt": "2026-03-29T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6819036Z"
+}

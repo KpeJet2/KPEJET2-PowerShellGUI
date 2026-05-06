@@ -1,0 +1,32 @@
+{
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "status": "DEFERRED",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "MEDIUM",
+  "id": "Bug-20260328082051-66076f4e",
+  "notes": "Matched existing sin: 1 functions with no try/catch blocks",
+  "executedAt": null,
+  "category": "error-handling",
+  "modified": "2026-03-28T00:20:51.7775673Z",
+  "result": null,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "acknowledged": null,
+  "description": "Script Script-F - LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+  "created": "2026-03-28T00:20:51.7775011Z",
+  "linkedFeatures": [],
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1"
+  ],
+  "linkedBugs": [],
+  "tags": [],
+  "executionAgent": "",
+  "parentId": "",
+  "completedAt": null,
+  "title": "1 functions with no try/catch blocks",
+  "sinId": "SIN-20260328082050-d343681b",
+  "type": "Bug",
+  "executionMethod": "",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase -- try/catch hardening deferred to dedicated error-handling sprint. All functions will be covered as part of bulk P002 remediation pass."
+}

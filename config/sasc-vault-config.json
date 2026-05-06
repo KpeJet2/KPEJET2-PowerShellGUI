@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "description": "SASC Vault Configuration — operational parameters only. No secrets stored here.",
+  "created": "2026-03-04T00:00:00Z",
+  "WindowsHelloEnabled": true,
+  "WindowsHelloBlob": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAADoDCuiLw+k+aGO/fANIQoQAAAAACAAAAAAAQZgAAAAEAACAAAADLs3LwS6wwzXqHv5CKa2X58jCnD3k1wDXyFnVZVmvOWwAAAAAOgAAAAAIAACAAAABpGyGDAn85et9GAXz95OuR4p8cOsUF/6xntHUdm2RjJiAAAABlxRNeP6ai4WcFN5MkFSecexbhomztcKiwYupJEBE3+0AAAABnfqbXH2Yojja/u91x65hTCLj4Sbouj4Bel5J1do6iEix061zqxZc5k3omJxGXD0Qo/Egmku9REuWHKMEIpW0J",
+  "LANShareEnabled": true,
+  "LANSharePort": 8087,
+  "AutoLockMinutes": 15,
+  "MaxFailedAttempts": 5,
+  "LockoutDurationMinutes": 30,
+  "VaultBackupEnabled": true,
+  "VaultBackupPath": "pki/vault-backups",
+  "IntegrityManifestPath": "config/sasc-integrity.sha256.json",
+  "AuditLogEnabled": true,
+  "UserLinks": []
+}

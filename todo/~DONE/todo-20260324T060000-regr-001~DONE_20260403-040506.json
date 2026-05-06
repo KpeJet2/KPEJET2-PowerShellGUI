@@ -1,0 +1,22 @@
+{
+  "todo_id": "regr-001",
+  "category": "regression",
+  "title": "Em Dash Parse Failures in PowerShell 5.1",
+  "description": "Unicode em dash U+2014 inside double-quoted strings causes parse errors in PowerShell 5.1 but not 7. Must use ASCII dashes in double-quoted strings. Previously found in 26 files. Regression guard: run PS 5.1 parse check after every code generation pass.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "CRITICAL",
+  "status": "DONE",
+  "created_at": "2026-03-24T06:00:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "Main-GUI.ps1",
+    "modules/AssistedSASC.psm1",
+    "tests/Invoke-GUISmokeTest.ps1",
+    "scripts/Invoke-PSEnvironmentScanner.ps1"
+  ],
+  "notes": "Regression detection: grep for \\u2014 in .ps1/.psm1 double-quoted strings. Discovered Session 2. Must validate after every edit pass.",
+  "id": "regr-001",
+  "createdAt": "2026-03-24T06:00:00Z",
+  "completedAt": "2026-03-31T01:06:46.9366461+08:00",
+  "resolution": "VERIFIED - 0 em dashes in active files"
+}

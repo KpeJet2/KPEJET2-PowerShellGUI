@@ -1,0 +1,2682 @@
+{
+  "_meta": {
+    "generatedAt": "2026-03-30T20:27:09Z",
+    "versionTag": "2603.B0.v27.0",
+    "description": "Machine-readable anti-pattern inventory for style remediation tracking",
+    "sourceGuide": "~README.md/STYLE-REMEDIATION-GUIDE.md"
+  },
+  "summary": {
+    "totalIssues": 444,
+    "emptyCatch": 127,
+    "silentImport": 15,
+    "writeHostInModule": 39,
+    "threeArgJoinPath": 175,
+    "hardcodedPath": 88
+  },
+  "issues": [
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 564,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Integrity check FAILED -- $(($result.Results | Where-Object Status -ne 'Pa"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 600,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Failed to set permissions on $Path -- $($_.Exception.Message)\" \"Warning\" }"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 786,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Integrity check detected issues; continuing in advisory mode\" \"Warning\" } "
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 837,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Auto-lock timer failed to start: $($_.Exception.Message)\" \"Warning\" } catc"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 872,
+      "pattern": "empty-catch",
+      "snippet": "try { & $script:_BWCliPath lock 2>&1 | Out-Null } catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 888,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Vault locked\" \"Info\" } catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1203,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Vault backup exported to $backupFile\" \"Info\" } catch { <# Intentional: non"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1502,
+      "pattern": "empty-catch",
+      "snippet": "try { $_.Kill() } catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1509,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: LAN vault sharing disabled\" \"Info\" } catch { <# Intentional: non-fatal #> "
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1934,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Setup: $Message\" $(if($Level -eq 'ERR'){'Error'}elseif($Level -eq 'WARN'){'"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 2221,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC: Unlock dialog error -- $errMsg\" \"Error\" } catch { <# Intentional: non-fata"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 15,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> return $PlainText }"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 28,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> return '' }"
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 146,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 182,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 277,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 380,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip malformed files #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 515,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip malformed #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 544,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip malformed #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 572,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip malformed #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 691,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 706,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $ageBuckets['gt30d']++ }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 885,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# skip malformed #> }"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 915,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return $true }"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 393,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $history = @() }"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 419,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @() }"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 165,
+      "pattern": "empty-catch",
+      "snippet": "try { [System.Windows.Forms.Application]::ExitThread() } catch { }"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 178,
+      "pattern": "empty-catch",
+      "snippet": "try { $script:_TrayBitmapRef.Dispose() } catch { }"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 372,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 377,
+      "pattern": "empty-catch",
+      "snippet": "try { $script:_BackgroundPool.Close() } catch { }"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 378,
+      "pattern": "empty-catch",
+      "snippet": "try { $script:_BackgroundPool.Dispose() } catch { }"
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 486,
+      "pattern": "empty-catch",
+      "snippet": "try { Remove-Item $_.FullName -Force -ErrorAction Stop; $purged++ } catch { <# Intentional: non-fata"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 68,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: Integrity check warning for $AdapterName -- $($_.Exception.Message"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 71,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: $AdapterName -- pre-flight passed\" \"Debug\" } catch { <# Intentiona"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 229,
+      "pattern": "empty-catch",
+      "snippet": "try { $hostName = ([System.Uri]::new($firstUri)).Host } catch { $hostName = $firstUri }"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 358,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: Azure connected via credential -- User: $($cred.UserName)\" \"Info\" "
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 395,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: ADDS credential verification failed for DC: $DomainController -- $"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 464,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: ISE launched with credential for: $TargetName\" \"Info\" } catch { <#"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 494,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: Vault unlocked via Windows Hello\" \"Info\" } catch { <# Intentional:"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 533,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"SASC-Adapter: Credential dialog completed for: $TargetName\" \"Info\" } catch { <# "
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 302,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[UserProfileManager] Config file scan error in $dir`: $_\" }"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 399,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 527,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 529,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[UserProfileManager] CertStore $hive error: $_\" }"
+    },
+    {
+      "file": "scripts/XHTML-Checker/XHTML-Invoke-AutomatedTests.ps1",
+      "line": 131,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# use default #> }"
+    },
+    {
+      "file": "scripts/Build-AgenticManifest.ps1",
+      "line": 602,
+      "pattern": "empty-catch",
+      "snippet": "} catch {}"
+    },
+    {
+      "file": "scripts/Invoke-CronProcessor.ps1",
+      "line": 209,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[CronProcessor] Feature parse error in $($f.Name): $_\" }"
+    },
+    {
+      "file": "scripts/Invoke-CronProcessor.ps1",
+      "line": 234,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[CronProcessor] Bug parse error in $($bf.Name): $_\" }"
+    },
+    {
+      "file": "scripts/Invoke-DataMigration.ps1",
+      "line": 68,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[DataMigration] Parse error in $($_.Name): $_\" }"
+    },
+    {
+      "file": "scripts/Invoke-ModuleManagement.ps1",
+      "line": 190,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ModuleManagement.ps1",
+      "line": 266,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ModuleManagement.ps1",
+      "line": 348,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-OrphanAudit.ps1",
+      "line": 100,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 56,
+      "pattern": "empty-catch",
+      "snippet": "try { Import-Module $coreModulePath -Force -ErrorAction SilentlyContinue } catch { <# Intentional: n"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 511,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 577,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $loadErr = $_.Exception.Message }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 586,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 669,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 737,
+      "pattern": "empty-catch",
+      "snippet": "try { $sig = Get-AuthenticodeSignature -FilePath $f.FullName -ErrorAction SilentlyContinue; if ($sig"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 755,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1098,
+      "pattern": "empty-catch",
+      "snippet": "try { $allContents[$_.FullName] = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue } catch"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1169,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1352,
+      "pattern": "empty-catch",
+      "snippet": "try { return [version]$normalized } catch { return $null }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 2233,
+      "pattern": "empty-catch",
+      "snippet": "try { $ds.DefaultView.RowFilter = ($parts -join ' OR ') } catch { $ds.DefaultView.RowFilter = '' }"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 2348,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 213,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 259,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 275,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 497,
+      "pattern": "empty-catch",
+      "snippet": "try { $srcContent = Get-Content -Path $src.fullPath -Raw -ErrorAction SilentlyContinue } catch {}"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 519,
+      "pattern": "empty-catch",
+      "snippet": "try { $helpContent = Get-Content -Path $src.fullPath -Raw -ErrorAction SilentlyContinue } catch {}"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 123,
+      "pattern": "empty-catch",
+      "snippet": "catch { return @{ s='FAIL'; m=\"Cannot write to folder: $p\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 179,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='ERROR'; m=\"Version parse error: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 213,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='FAIL'; m=\"DNS forward failed for $p`: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 221,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='FAIL'; m=\"DNS reverse failed for $p`: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 250,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='FAIL'; m=\"User not found: $p\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 259,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='ERROR'; m=\"Cannot query Administrators group: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 269,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='ERROR'; m=\"Cannot query BIOS: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 277,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='FAIL'; m=\"WinRM service not found\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 286,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='ERROR'; m=\"Cannot query WinRM listeners: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 299,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return @{ s='ERROR'; m=\"Cannot query OS version: $($_.Exception.Message)\" } }"
+    },
+    {
+      "file": "scripts/Invoke-TodoManager.ps1",
+      "line": 73,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $typeCounts.todos++ }"
+    },
+    {
+      "file": "scripts/Invoke-TodoManager.ps1",
+      "line": 148,
+      "pattern": "empty-catch",
+      "snippet": "try { $todos += (Get-Content $f.FullName -Raw | ConvertFrom-Json) } catch { Write-Warning \"[TodoMana"
+    },
+    {
+      "file": "scripts/Invoke-TodoManager.ps1",
+      "line": 291,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-Warning \"[TodoManager] File-ref search error: $_\" }"
+    },
+    {
+      "file": "scripts/New-InstallerScript.ps1",
+      "line": 181,
+      "pattern": "empty-catch",
+      "snippet": "try { if ([version]$existing.Version -lt [version]$MinimumVersion) { $needsUpdate = $true } } catch "
+    },
+    {
+      "file": "scripts/Script6.ps1",
+      "line": 273,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $result.Errors += \"$($_.FullName) : $_\" }"
+    },
+    {
+      "file": "scripts/Script6.ps1",
+      "line": 283,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $result.Errors += \"$($_.FullName) : $_\" }"
+    },
+    {
+      "file": "scripts/Script6.ps1",
+      "line": 294,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $result.Errors += \"$($_.FullName) : $_\" }"
+    },
+    {
+      "file": "scripts/Show-AppTemplateManager.ps1",
+      "line": 87,
+      "pattern": "empty-catch",
+      "snippet": "} catch { return $true }"
+    },
+    {
+      "file": "scripts/Show-AppTemplateManager.ps1",
+      "line": 455,
+      "pattern": "empty-catch",
+      "snippet": "try { Write-AppLog \"Installed $id via App Template Manager\" \"Info\" } catch { <# Intentional: non-fat"
+    },
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 547,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal -- file may be locked #> }"
+    },
+    {
+      "file": "scripts/Start-BWServe.ps1",
+      "line": 79,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $false }"
+    },
+    {
+      "file": "scripts/Start-BWServe.ps1",
+      "line": 85,
+      "pattern": "empty-catch",
+      "snippet": "try { $_.Kill(); $_.WaitForExit(5000) } catch { <# already gone #> }"
+    },
+    {
+      "file": "scripts/UserProfile-Manager.ps1",
+      "line": 81,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 139,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 169,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 178,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 840,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "tests/Invoke-AutomatedTests.ps1",
+      "line": 131,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# use default #> }"
+    },
+    {
+      "file": "tests/Invoke-ChaosTestConditions.ps1",
+      "line": 223,
+      "pattern": "empty-catch",
+      "snippet": "foreach ($fs in $lockedStreams) { try { $fs.Close(); $fs.Dispose() } catch { } }"
+    },
+    {
+      "file": "tests/Invoke-GUISmokeTest.ps1",
+      "line": 380,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "tests/Invoke-GUISmokeTest.ps1",
+      "line": 1602,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "tests/Invoke-SyntaxGuard.ps1",
+      "line": 184,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "tests/Invoke-SyntaxGuard.ps1",
+      "line": 213,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "tests/Run-AllTests.ps1",
+      "line": 124,
+      "pattern": "empty-catch",
+      "snippet": "} catch { $history = @() }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 243,
+      "pattern": "empty-catch",
+      "snippet": "} catch { <# Intentional: non-fatal #> }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 466,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"Nest operation failed for $path : $_\" \"Error\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 501,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"Move content failed for $($item.Path) : $_\" \"Error\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 530,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"Copy content failed for $($item.Path) : $_\" \"Error\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 654,
+      "pattern": "empty-catch",
+      "snippet": "catch { Write-AppLog \"Archive out-yonder failed for $($item.Path) : $_\" \"Error\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 684,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"Clear-clean failed for $($item.Path) : $_\" \"Error\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 827,
+      "pattern": "empty-catch",
+      "snippet": "catch { Write-AppLog \"Failed to save $($def.XPath): $_\" \"Warning\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 915,
+      "pattern": "empty-catch",
+      "snippet": "catch { Write-AppLog \"Sync copy failed: $($entry.Src) -> $($entry.Dst) : $_\" \"Error\"; $errorCount++ "
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1145,
+      "pattern": "empty-catch",
+      "snippet": "catch { Write-AppLog \"Failed to sign $($_.FullName): $_\" \"Warning\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1196,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"Failed to copy build zip to ${remoteBuildDir}: $_\" \"Warning\" }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 3337,
+      "pattern": "empty-catch",
+      "snippet": "try { Set-ConfigSubValue -XPath $xp -Value $val } catch { Write-AppLog \"Remote path save failed ($xp"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 6972,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 6981,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 6991,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7002,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7068,
+      "pattern": "empty-catch",
+      "snippet": "Select-Object -First 1).DHCPServer } catch { '' }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7072,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7080,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7156,
+      "pattern": "empty-catch",
+      "snippet": "$remotePathLive = try { [string](Get-ConfigSubValue 'RemoteUpdatePath') } catch { '' }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7243,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7245,
+      "pattern": "empty-catch",
+      "snippet": "} catch { }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7367,
+      "pattern": "empty-catch",
+      "snippet": "} catch { Write-AppLog \"[Refresh] Module refresh error: $_\" 'Warning' }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7388,
+      "pattern": "empty-catch",
+      "snippet": "try { $entry.Value.CloseMainWindow() | Out-Null } catch { }"
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 316,
+      "pattern": "silent-import",
+      "snippet": "Import-Module $pipelineModule -Force -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Install-BitwardenLite.ps1",
+      "line": 52,
+      "pattern": "silent-import",
+      "snippet": "Import-Module $coreModulePath -Force -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Install-BitwardenLite.ps1",
+      "line": 108,
+      "pattern": "silent-import",
+      "snippet": "Import-Module $name -Force -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 56,
+      "pattern": "silent-import",
+      "snippet": "try { Import-Module $coreModulePath -Force -ErrorAction SilentlyContinue } catch { <# Intentional: n"
+    },
+    {
+      "file": "scripts/Script6.ps1",
+      "line": 43,
+      "pattern": "silent-import",
+      "snippet": "Import-Module $modulePath -Force -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Show-AppTemplateManager.ps1",
+      "line": 15,
+      "pattern": "silent-import",
+      "snippet": "if (Test-Path $modulePath) { Import-Module $modulePath -Force -ErrorAction SilentlyContinue }"
+    },
+    {
+      "file": "scripts/Show-CronAiAthonTool.ps1",
+      "line": 45,
+      "pattern": "silent-import",
+      "snippet": "if (Test-Path $mp) { Import-Module $mp -Force -ErrorAction SilentlyContinue }"
+    },
+    {
+      "file": "scripts/Show-MCPServiceConfig.ps1",
+      "line": 14,
+      "pattern": "silent-import",
+      "snippet": "if (Test-Path $modulePath) { Import-Module $modulePath -Force -ErrorAction SilentlyContinue }"
+    },
+    {
+      "file": "scripts/Show-MCPServiceConfig.ps1",
+      "line": 176,
+      "pattern": "silent-import",
+      "snippet": "Import-Module $themeMod -Force -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 14,
+      "pattern": "silent-import",
+      "snippet": "if (Test-Path $modulePath) { Import-Module $modulePath -Force -ErrorAction SilentlyContinue }"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 23,
+      "pattern": "silent-import",
+      "snippet": "if (Test-Path $modulePath) { Import-Module $modulePath -Force -ErrorAction SilentlyContinue }"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 562,
+      "pattern": "silent-import",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameCheckin"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 805,
+      "pattern": "silent-import",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameCheckin"
+    },
+    {
+      "file": "tests/Run-AllTests.ps1",
+      "line": 48,
+      "pattern": "silent-import",
+      "snippet": "Import-Module Pester -MinimumVersion 5.0 -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "tests/Run-AllTests.ps1",
+      "line": 50,
+      "pattern": "silent-import",
+      "snippet": "Import-Module Pester -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 99,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"[PKI] Root CA created: $($cert.Thumbprint)\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 171,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"[PKI] SubCA created: $($cert.Thumbprint)\" -ForegroundColor Cyan"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 240,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"[PKI] Code Signing cert created: $($cert.Thumbprint)\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 316,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"[PKI] Exported to vault: $VaultItemName\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 343,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n=== Creating Full PKI Chain ===\" -ForegroundColor Cyan"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 345,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n[1/3] Root CA...\" -ForegroundColor Yellow"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 348,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n[2/3] Subordinate CA...\" -ForegroundColor Yellow"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 351,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n[3/3] Code Signing Certificate...\" -ForegroundColor Yellow"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 354,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n=== PKI Chain Complete ===\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 355,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Root CA:   $($root.Thumbprint)\""
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 356,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"SubCA:     $($sub.Thumbprint)\""
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 357,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"CodeSign:  $($cs.Thumbprint)\""
+    },
+    {
+      "file": "modules/PwShGUI-PSVersionStandards.psm1",
+      "line": 290,
+      "pattern": "write-host-in-module",
+      "snippet": "# Fallback to Write-Host if log function unavailable"
+    },
+    {
+      "file": "modules/PwShGUI-PSVersionStandards.psm1",
+      "line": 296,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"[$Level] $Msg\""
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 717,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`r$colorCode$bar $PercentComplete% $resetCode- $Status\" -NoNewline"
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 720,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"\""
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 439,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Credential loaded into `$$VariableName for: $TargetName\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 440,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"  Username: `$(`$$VariableName.UserName)\" -ForegroundColor Cyan"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 182,
+      "pattern": "write-host-in-module",
+      "snippet": "if ($queue.Count -eq 0) { Write-Host 'No SINs pending review.'; return }"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 184,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n=== SIN Governance Review Session ===\" -ForegroundColor Cyan"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 185,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Reviewer: $($script:_ReviewerID)  |  Queue: $($queue.Count) SINs`n\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 192,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host ('=' * 60) -ForegroundColor DarkGray"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 193,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"SIN:       $($sin.sin_id)\" -ForegroundColor Yellow"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 194,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Title:     $($sin.title)\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 195,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Severity:  $($sin.severity)\" -ForegroundColor $("
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 198,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Category:  $($sin.category)\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 199,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"File:      $($sin.file_path)\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 200,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Resolved:  $($sin.is_resolved)\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 201,
+      "pattern": "write-host-in-module",
+      "snippet": "if ($sin.description) { Write-Host \"Desc:      $($sin.description)\" }"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 202,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 206,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host '[A]pprove  [D]eny  [S]kip  [Q]uit: ' -ForegroundColor Green -NoNewline"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 215,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"  >> SINeProofed\" -ForegroundColor Green"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 221,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"  >> Denied\" -ForegroundColor Red"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 223,
+      "pattern": "write-host-in-module",
+      "snippet": "'S' { Write-Host \"  >> Skipped\" -ForegroundColor DarkYellow }"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 225,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`nSession ended early.\" -ForegroundColor Yellow"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 229,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 232,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"`n=== Review Summary ===\" -ForegroundColor Cyan"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 233,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Reviewed: $reviewed  Approved: $approved  Denied: $denied\""
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 304,
+      "pattern": "write-host-in-module",
+      "snippet": "Write-Host \"Report saved: $OutputPath\""
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 84,
+      "pattern": "3-arg-join-path",
+      "snippet": "$sascTuningPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config\\sasc-tuning.json'"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 432,
+      "pattern": "3-arg-join-path",
+      "snippet": "(Join-Path $script:_ModuleRoot 'modules' 'AssistedSASC.psm1'),"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 433,
+      "pattern": "3-arg-join-path",
+      "snippet": "(Join-Path $script:_ModuleRoot 'modules' 'SASC-Adapters.psm1'),"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 434,
+      "pattern": "3-arg-join-path",
+      "snippet": "(Join-Path $script:_ModuleRoot 'scripts' 'Install-BitwardenLite.ps1'),"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1783,
+      "pattern": "3-arg-join-path",
+      "snippet": "$secretsPage = if ($script:_ModuleRoot) { Join-Path $script:_ModuleRoot 'XHTML-invoke-secrets.xhtml' } else { $null }"
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "line": 1977,
+      "pattern": "3-arg-join-path",
+      "snippet": "$installerScript = if ($script:_ScriptsDir) { Join-Path $script:_ScriptsDir 'Install-BitwardenLite.ps1' } else { $null }"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 1865,
+      "pattern": "3-arg-join-path",
+      "snippet": "$defaultPath = Join-Path (Split-Path $ConfigPath -Parent) \"AVPN-inventory.csv\""
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 262,
+      "pattern": "3-arg-join-path",
+      "snippet": "Join-Path (Split-Path $file.FullName) $modPath"
+    },
+    {
+      "file": "modules/CronAiAthon-BugTracker.psm1",
+      "line": 314,
+      "pattern": "3-arg-join-path",
+      "snippet": "$pipelineModule = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'"
+    },
+    {
+      "file": "modules/CronAiAthon-EventLog.psm1",
+      "line": 249,
+      "pattern": "3-arg-join-path",
+      "snippet": "$syslogFile = Join-Path $logsDir ('PowerShellGUI' + $script:SyslogFileSuffix)"
+    },
+    {
+      "file": "modules/CronAiAthon-EventLog.psm1",
+      "line": 318,
+      "pattern": "3-arg-join-path",
+      "snippet": "$syslogFile = Join-Path (Join-Path $WorkspacePath 'logs') ('PowerShellGUI' + $script:SyslogFileSuffix)"
+    },
+    {
+      "file": "modules/CronAiAthon-EventLog.psm1",
+      "line": 358,
+      "pattern": "3-arg-join-path",
+      "snippet": "$syslogFile = Join-Path (Join-Path $WorkspacePath 'logs') ('PowerShellGUI' + $script:SyslogFileSuffix)"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 118,
+      "pattern": "3-arg-join-path",
+      "snippet": "return (Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json')"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 520,
+      "pattern": "3-arg-join-path",
+      "snippet": "$frPath = Join-Path (Join-Path (Join-Path $WorkspacePath 'scripts') 'XHTML-Checker') 'PsGUI-FeatureRequests.json'"
+    },
+    {
+      "file": "modules/CronAiAthon-Pipeline.psm1",
+      "line": 548,
+      "pattern": "3-arg-join-path",
+      "snippet": "$btPath = Join-Path (Join-Path (Join-Path $WorkspacePath 'scripts') 'XHTML-Checker') 'PsGUI-BugTracker.json'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 34,
+      "pattern": "3-arg-join-path",
+      "snippet": "return (Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-schedule.json')"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 39,
+      "pattern": "3-arg-join-path",
+      "snippet": "return (Join-Path (Join-Path $WorkspacePath 'logs') 'cron-aiathon-history.json')"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 180,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modPath = Join-Path (Join-Path $WorkspacePath 'modules') \"$mod.psm1\""
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 189,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreMod = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 197,
+      "pattern": "3-arg-join-path",
+      "snippet": "$regPath = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 205,
+      "pattern": "3-arg-join-path",
+      "snippet": "$schedPath = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-schedule.json'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 261,
+      "pattern": "3-arg-join-path",
+      "snippet": "$bugMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-BugTracker.psm1'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 269,
+      "pattern": "3-arg-join-path",
+      "snippet": "$pipeMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 277,
+      "pattern": "3-arg-join-path",
+      "snippet": "$pipeMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'"
+    },
+    {
+      "file": "modules/CronAiAthon-Scheduler.psm1",
+      "line": 286,
+      "pattern": "3-arg-join-path",
+      "snippet": "$pipeMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 267,
+      "pattern": "3-arg-join-path",
+      "snippet": "@{ Type = 'RootCA';       Path = (Join-Path $caPath 'RootCA.cer') },"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 268,
+      "pattern": "3-arg-join-path",
+      "snippet": "@{ Type = 'SubordinateCA'; Path = (Join-Path $subPath 'SubCA.cer') },"
+    },
+    {
+      "file": "modules/PKIChainManager.psm1",
+      "line": 269,
+      "pattern": "3-arg-join-path",
+      "snippet": "@{ Type = 'CodeSigning';  Path = (Join-Path $csPath 'CodeSign.cer') }"
+    },
+    {
+      "file": "modules/PwShGUI_AutoIssueFinder.psm1",
+      "line": 170,
+      "pattern": "3-arg-join-path",
+      "snippet": "return (Join-Path $SnapshotRoot ($hashText + \".txt\"))"
+    },
+    {
+      "file": "modules/PwShGUI_AutoIssueFinder.psm1",
+      "line": 309,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not $CheckpointPath) { $CheckpointPath = Join-Path $OutputRoot \"checkpoint.json\" }"
+    },
+    {
+      "file": "modules/PwShGUI_AutoIssueFinder.psm1",
+      "line": 310,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not $BaselinePath) { $BaselinePath = Join-Path $OutputRoot \"baseline.json\" }"
+    },
+    {
+      "file": "modules/PwShGUI-PSVersionStandards.psm1",
+      "line": 112,
+      "pattern": "3-arg-join-path",
+      "snippet": "$ConfigDir = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent)) 'config'"
+    },
+    {
+      "file": "modules/PwShGUI-PSVersionStandards.psm1",
+      "line": 172,
+      "pattern": "3-arg-join-path",
+      "snippet": "$ConfigDir = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent)) 'config'"
+    },
+    {
+      "file": "modules/PwShGUI-TrayHost.psm1",
+      "line": 17,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path $modulesDir 'PwShGUI-TrayHost.psm1') -Force"
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 17,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path $modulesDir 'PwShGUICore.psm1') -Force"
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 69,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not $LogsDir) { $LogsDir = Join-Path $ScriptDir 'logs' }"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 56,
+      "pattern": "3-arg-join-path",
+      "snippet": "$integrityPath = Join-Path (Split-Path $PSScriptRoot) 'config' 'sasc-integrity.sha256.json'"
+    },
+    {
+      "file": "modules/SASC-Adapters.psm1",
+      "line": 428,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path $PSScriptRoot) 'modules' 'AssistedSASC.psm1'"
+    },
+    {
+      "file": "modules/SINGovernance.psm1",
+      "line": 243,
+      "pattern": "3-arg-join-path",
+      "snippet": "[string]$OutputPath = (Join-Path (Split-Path $script:_SINRegistryPath -Parent) '~REPORTS\\SIN-Review-Report.xhtml')"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 322,
+      "pattern": "3-arg-join-path",
+      "snippet": "$taskbarPinDir = Join-Path $env:APPDATA 'Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar'"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 553,
+      "pattern": "3-arg-join-path",
+      "snippet": "$snippetDir = Join-Path $env:APPDATA 'Microsoft\\Windows PowerShell\\ISE\\Snippets'"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 625,
+      "pattern": "3-arg-join-path",
+      "snippet": "$wtAlt = Join-Path $env:LOCALAPPDATA 'Microsoft\\Windows Terminal\\settings.json'"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 849,
+      "pattern": "3-arg-join-path",
+      "snippet": "$fullPath = if ($fileName -match '^[A-Za-z]:\\\\') { $fileName } else { Join-Path $fontDir $fileName }"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 868,
+      "pattern": "3-arg-join-path",
+      "snippet": "$fullPath = if ($fileName -match '^[A-Za-z]:\\\\') { $fileName } else { Join-Path $userFontDir $fileName }"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 911,
+      "pattern": "3-arg-join-path",
+      "snippet": "$attr = Get-ItemProperty (Join-Path $_.PSPath 'Attributes') -EA SilentlyContinue"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 930,
+      "pattern": "3-arg-join-path",
+      "snippet": "$attr = Get-ItemProperty (Join-Path $_.PSPath 'Attributes') -EA SilentlyContinue"
+    },
+    {
+      "file": "modules/UserProfileManager.psm1",
+      "line": 1626,
+      "pattern": "3-arg-join-path",
+      "snippet": "$taskbarPinDir = Join-Path $env:APPDATA 'Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar'"
+    },
+    {
+      "file": "scripts/QUICK-APP/FOLDER-ROOT/DellCommandUpdate.ps1",
+      "line": 181,
+      "pattern": "3-arg-join-path",
+      "snippet": "$Installer = Join-Path -Path $env:TEMP -ChildPath (Split-Path $LatestDellCommandUpdate.URL -Leaf)"
+    },
+    {
+      "file": "scripts/QUICK-APP/FOLDER-ROOT/DellCommandUpdate.ps1",
+      "line": 275,
+      "pattern": "3-arg-join-path",
+      "snippet": "$Installer = Join-Path -Path $env:TEMP -ChildPath (Split-Path $LatestDotNet.URL -Leaf)"
+    },
+    {
+      "file": "scripts/QUICK-APP/REPAIR.ps1",
+      "line": 83,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/QUICK-APP/TEST.ps1",
+      "line": 81,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Build-AgenticManifest.ps1",
+      "line": 358,
+      "pattern": "3-arg-join-path",
+      "snippet": "if ($IncludeKernel -and (Test-Path (Join-Path $KernelDir 'core'))) {"
+    },
+    {
+      "file": "scripts/ConvertTo-FeatureToDo.ps1",
+      "line": 46,
+      "pattern": "3-arg-join-path",
+      "snippet": "$latestConfig = Join-Path $scriptDir 'config' 'feature-requests-latest.json'"
+    },
+    {
+      "file": "scripts/ConvertTo-FeatureToDo.ps1",
+      "line": 50,
+      "pattern": "3-arg-join-path",
+      "snippet": "$xhtmlDir = Join-Path $scriptDir 'scripts' 'XHTML-Checker'"
+    },
+    {
+      "file": "scripts/ConvertTo-FeatureToDo.ps1",
+      "line": 174,
+      "pattern": "3-arg-join-path",
+      "snippet": "$reportPath = Join-Path $reportDir \"feature-to-todo-$(Get-Date -Format 'yyyyMMdd-HHmmss').json\""
+    },
+    {
+      "file": "scripts/Install-BitwardenLite.ps1",
+      "line": 50,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Install-BitwardenLite.ps1",
+      "line": 431,
+      "pattern": "3-arg-join-path",
+      "snippet": "$backupDir = Join-Path $scriptDir 'pki' 'vault-backups'"
+    },
+    {
+      "file": "scripts/Invoke-DataMigration.ps1",
+      "line": 35,
+      "pattern": "3-arg-join-path",
+      "snippet": "$xhtmlDir   = Join-Path $scriptRoot 'scripts' 'XHTML-Checker'"
+    },
+    {
+      "file": "scripts/Invoke-DataMigration.ps1",
+      "line": 40,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not $FeatureJsonPath) { $FeatureJsonPath = Join-Path $xhtmlDir 'PsGUI-FeatureRequests.json' }"
+    },
+    {
+      "file": "scripts/Invoke-DataMigration.ps1",
+      "line": 41,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not $BugJsonPath)     { $BugJsonPath     = Join-Path $xhtmlDir 'PsGUI-BugTracker.json' }"
+    },
+    {
+      "file": "scripts/Invoke-FileChangeTracker.ps1",
+      "line": 144,
+      "pattern": "3-arg-join-path",
+      "snippet": "$absOld = if ([System.IO.Path]::IsPathRooted($OldFilePath)) { $OldFilePath } else { Join-Path $projectRoot $OldFilePath "
+    },
+    {
+      "file": "scripts/Invoke-FileChangeTracker.ps1",
+      "line": 145,
+      "pattern": "3-arg-join-path",
+      "snippet": "$absNew = if ([System.IO.Path]::IsPathRooted($NewFilePath)) { $NewFilePath } else { Join-Path $projectRoot $NewFilePath "
+    },
+    {
+      "file": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 364,
+      "pattern": "3-arg-join-path",
+      "snippet": "$null = & $matrixScript -WorkspacePath $WorkspacePath -ReportPath $reportsDir -TempPath (Join-Path $WorkspacePath 'temp'"
+    },
+    {
+      "file": "scripts/Invoke-ReleasePreFlight.ps1",
+      "line": 97,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modules = Get-ChildItem -Path (Join-Path $RootPath 'modules') -Filter '*.psm1' -File -ErrorAction SilentlyContinue"
+    },
+    {
+      "file": "scripts/Invoke-RenameProposal.ps1",
+      "line": 88,
+      "pattern": "3-arg-join-path",
+      "snippet": "Get-ChildItem -Path (Join-Path $projectRoot 'modules') -Filter '*.psm1' -File -ErrorAction SilentlyContinue |"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 139,
+      "pattern": "3-arg-join-path",
+      "snippet": "$historyDir = Join-Path $WorkspacePath '.history' $relative.Replace($file.Name, '')"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1020,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $ReportPath 'script-dependency-matrix-pointer.json') -Encoding UTF8"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1022,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $ReportPath 'module-references-pointer.json') -Encoding UTF8"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1030,
+      "pattern": "3-arg-join-path",
+      "snippet": "$vizTemplatePath = Join-Path $WorkspacePath '~README.md' 'Dependency-Visualisation.html'"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1050,
+      "pattern": "3-arg-join-path",
+      "snippet": "$vizOutPath = Join-Path $historyVizDir (\"Dependency-Visualisation_{0}.html\" -f $timestamp)"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1057,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $ReportPath 'dependency-visualisation-pointer.json') -Encoding UTF8"
+    },
+    {
+      "file": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "line": 1165,
+      "pattern": "3-arg-join-path",
+      "snippet": "$backupPath = Join-Path $ReportPath (\"system-backup-{0}.json\" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))"
+    },
+    {
+      "file": "scripts/Invoke-TestRoutine.ps1",
+      "line": 379,
+      "pattern": "3-arg-join-path",
+      "snippet": "$outFile = Join-Path $outDir \"test-routine-results_$(Get-Date -Format 'yyyyMMdd-HHmmss').json\""
+    },
+    {
+      "file": "scripts/Invoke-XhtmlReportTriage.ps1",
+      "line": 56,
+      "pattern": "3-arg-join-path",
+      "snippet": "destination = if ($decision -eq 'archive') { Join-Path $archiveDir $file.Name } else { $file.FullName }"
+    },
+    {
+      "file": "scripts/New-InstallerScript.ps1",
+      "line": 61,
+      "pattern": "3-arg-join-path",
+      "snippet": "$OutputFolder = Join-Path $WorkspacePath '~DOWNLOADS' 'INSTALLER-Scripts'"
+    },
+    {
+      "file": "scripts/PS-CheatSheet-EXAMPLES-V2.ps1",
+      "line": 164,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:OutputDir = Join-Path (Split-Path $PSCommandPath -Parent) '..\\Report'"
+    },
+    {
+      "file": "scripts/Script-F-ClonedFrom_MainGUI.ps1",
+      "line": 72,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Script-F-LinkToConfigJson.ps1",
+      "line": 32,
+      "pattern": "3-arg-join-path",
+      "snippet": "$configTemplateFile = Join-Path (Join-Path $parentDir \"config\") \"pwsh-app-config-BASE.json\""
+    },
+    {
+      "file": "scripts/Script-F.ps1",
+      "line": 72,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Script1.ps1",
+      "line": 78,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Script1.ps1",
+      "line": 1122,
+      "pattern": "3-arg-join-path",
+      "snippet": "Add-Content -Path (Join-Path $logsDir \"Script1-Summary-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt\") -Value $summaryText"
+    },
+    {
+      "file": "scripts/Show-AppTemplateManager.ps1",
+      "line": 14,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'modules\\PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Show-AppTemplateManager.ps1",
+      "line": 96,
+      "pattern": "3-arg-join-path",
+      "snippet": "$templateDir = Join-Path (Split-Path $PSScriptRoot -Parent) 'config\\APP-INSTALL-TEMPLATES'"
+    },
+    {
+      "file": "scripts/Show-MCPServiceConfig.ps1",
+      "line": 13,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'modules\\PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 13,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'modules\\PwShGUICore.psm1'"
+    },
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 416,
+      "pattern": "3-arg-join-path",
+      "snippet": "$scriptAvail = if (Test-Path (Join-Path $scriptsDir $def.Script)) { 'Yes' } else { 'No' }"
+    },
+    {
+      "file": "scripts/UserProfile-Manager.ps1",
+      "line": 33,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path -Parent $scriptDir) 'modules\\UserProfileManager.psm1'"
+    },
+    {
+      "file": "scripts/UserProfile-Manager.ps1",
+      "line": 35,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path -Parent $scriptDir) 'UPM\\modules\\UserProfileManager.psm1'"
+    },
+    {
+      "file": "scripts/WinRemote-PSTool.ps1",
+      "line": 22,
+      "pattern": "3-arg-join-path",
+      "snippet": "$modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'modules\\PwShGUICore.psm1'"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 25,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item (Join-Path $ws 'modules') -ItemType Directory -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 27,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content (Join-Path $ws 'modules\\bad.psm1') -Value 'function Test { if ($true) { }' -Encoding UTF8"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 36,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item (Join-Path $ws 'modules') -ItemType Directory -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 37,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item (Join-Path $ws 'scripts') -ItemType Directory -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 38,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item (Join-Path $ws 'config') -ItemType Directory -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "line": 40,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content (Join-Path $ws 'modules\\test.psm1') -Value 'function Test-It { return $true }' -Encoding UTF8"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 96,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 105,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 112,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 121,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 122,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'todo') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 193,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 194,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $wsPath 'todo') -Force | Out-Null"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 221,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $sinDir 'SIN-test.json') -Value $sin"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 230,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $sinDir 'SIN-resolved.json') -Value $sin"
+    },
+    {
+      "file": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "line": 243,
+      "pattern": "3-arg-join-path",
+      "snippet": "Set-Content -Path (Join-Path $todoDir 'test-001.json') -Value $testItem"
+    },
+    {
+      "file": "tests/Invoke-ChaosTestConditions.ps1",
+      "line": 64,
+      "pattern": "3-arg-join-path",
+      "snippet": "if ($item.PSIsContainer) { Copy-Item $item.FullName (Join-Path $StagingPath $item.Name) -Recurse -Force -EA SilentlyCont"
+    },
+    {
+      "file": "tests/Invoke-ChaosTestConditions.ps1",
+      "line": 65,
+      "pattern": "3-arg-join-path",
+      "snippet": "else { Copy-Item $item.FullName (Join-Path $StagingPath $item.Name) -Force -EA SilentlyContinue }"
+    },
+    {
+      "file": "tests/Invoke-ChaosTestConditions.ps1",
+      "line": 122,
+      "pattern": "3-arg-join-path",
+      "snippet": "$configs = Get-ChildItem (Join-Path $StagingPath 'config') -File -EA SilentlyContinue"
+    },
+    {
+      "file": "tests/Invoke-GUISmokeTest.ps1",
+      "line": 459,
+      "pattern": "3-arg-join-path",
+      "snippet": "ForEach-Object { Join-Path $scriptRoot $_ }"
+    },
+    {
+      "file": "tests/Invoke-GUISmokeTest.ps1",
+      "line": 884,
+      "pattern": "3-arg-join-path",
+      "snippet": "$scriptFnFiles = @(Get-ChildItem -Path (Join-Path $scriptRoot 'scripts') -File -Filter '*.ps1' -ErrorAction SilentlyCont"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 18,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 19,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'todo') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 20,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'sin_registry') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 88,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 89,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'todo') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 119,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'config') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "line": 120,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $script:wsPath 'todo') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 56,
+      "pattern": "3-arg-join-path",
+      "snippet": "$moduleFiles = Get-ChildItem -Path (Join-Path $script:scriptRoot 'modules') -Filter '*.psm1' -File -ErrorAction Silently"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 72,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:moduleDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'modules'"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 98,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:scriptFiles = Get-ChildItem -Path (Join-Path $script:scriptRoot 'scripts') -Filter '*.ps1' -File -ErrorAction Si"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 122,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:configDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'config'"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 141,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:sinDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'sin_registry'"
+    },
+    {
+      "file": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "line": 164,
+      "pattern": "3-arg-join-path",
+      "snippet": "$script:moduleDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'modules'"
+    },
+    {
+      "file": "tests/Invoke-SandboxSmokeTest.ps1",
+      "line": 65,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not (Test-Path (Join-Path $WorkspacePath 'Main-GUI.ps1'))) {"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 57,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 63,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 69,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AssistedSASC.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 75,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 81,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'UserProfileManager.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 120,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 162,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 163,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AVPN-Tracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 236,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 295,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Scheduler.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 332,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-BugTracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 375,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-EventLog.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 407,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AVPN-Tracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 450,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'UserProfileManager.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 509,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 562,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking -ErrorAction Silen"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 805,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking -ErrorAction Silen"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 838,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 933,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 934,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 935,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Scheduler.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 936,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-EventLog.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 937,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-BugTracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "line": 16,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $testWorkspace 'temp') -Force | Out-Null"
+    },
+    {
+      "file": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "line": 17,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $testWorkspace 'checkpoints') -Force | Out-Null"
+    },
+    {
+      "file": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "line": 18,
+      "pattern": "3-arg-join-path",
+      "snippet": "New-Item -ItemType Directory -Path (Join-Path $testWorkspace '~REPORTS\\CPSR') -Force | Out-Null"
+    },
+    {
+      "file": "tests/Test-TrayHostLifecycle.ps1",
+      "line": 34,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1') -Force"
+    },
+    {
+      "file": "tests/Test-TrayHostLifecycle.ps1",
+      "line": 39,
+      "pattern": "3-arg-join-path",
+      "snippet": "Import-Module (Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psm1') -Force"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 140,
+      "pattern": "3-arg-join-path",
+      "snippet": "$coreModulePath = Join-Path $scriptDir 'modules' 'PwShGUICore.psm1'"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 149,
+      "pattern": "3-arg-join-path",
+      "snippet": "$themeModulePath = Join-Path $scriptDir 'modules' 'PwShGUI-Theme.psm1'"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 155,
+      "pattern": "3-arg-join-path",
+      "snippet": "$trayHostModulePath = Join-Path $scriptDir 'modules' 'PwShGUI-TrayHost.psm1'"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 454,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (Test-Path $dest) { $dest = Join-Path $defaultFolder (\"{0}-{1}\" -f $key, (Get-Date -Format \"yyyyMMdd-HHmmss\")) }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 525,
+      "pattern": "3-arg-join-path",
+      "snippet": "if ($_.PSIsContainer) { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $target $_.Name) -Recurse -Force -Err"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 653,
+      "pattern": "3-arg-join-path",
+      "snippet": "try { Compress-Archive -Path (Join-Path $item.Path \"*\") -DestinationPath $zipPath -CompressionLevel Optimal -Force; Writ"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 727,
+      "pattern": "3-arg-join-path",
+      "snippet": "$backup = Join-Path $configDir (\"system-variables-backup-{0}.xml\" -f (Get-Date -Format \"yyyyMMdd-HHmmss\"))"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 753,
+      "pattern": "3-arg-join-path",
+      "snippet": "$backup = Join-Path $configDir (\"system-variables-backup-{0}.xml\" -f (Get-Date -Format \"yyyyMMdd-HHmmss\"))"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1168,
+      "pattern": "3-arg-join-path",
+      "snippet": "$listFile = Join-Path $env:TEMP (\"pwshgui_packlist_{0}.txt\" -f ([guid]::NewGuid().ToString(\"N\")))"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1254,
+      "pattern": "3-arg-join-path",
+      "snippet": "DownloadFolder = if ([string]::IsNullOrWhiteSpace($DownloadFolder)) { (Join-Path $scriptDir \"~DOWNLOADS\") } else { $Down"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1612,
+      "pattern": "3-arg-join-path",
+      "snippet": "$tempFile = Join-Path $env:TEMP (\"sfc-detectonly-\" + (Get-Date -Format \"yyyyMMdd-HHmmss\") + \".txt\")"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1683,
+      "pattern": "3-arg-join-path",
+      "snippet": "$logFile = Join-Path $logsDir (\"winget-upgrades-\" + (Get-Date -Format \"yyyyMMdd-HHmmss\") + \".txt\")"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 1937,
+      "pattern": "3-arg-join-path",
+      "snippet": "$listFile = Join-Path $env:TEMP (\"pwshgui_packlist_{0}.txt\" -f ([guid]::NewGuid().ToString(\"N\")))"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 3826,
+      "pattern": "3-arg-join-path",
+      "snippet": "if (-not (Test-Path $batPath)) { $batPath = Join-Path $scriptDir 'Launch-GUI.bat' }"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 4317,
+      "pattern": "3-arg-join-path",
+      "snippet": "$attempted = ($RelativeCandidates | ForEach-Object { Join-Path $PSScriptRoot $_ }) -join \"`n\""
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 4526,
+      "pattern": "3-arg-join-path",
+      "snippet": "@{ Name = \"Downloads\";  Path = (Join-Path $env:USERPROFILE 'Downloads') },"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 5169,
+      "pattern": "3-arg-join-path",
+      "snippet": "$output = & $matrixScript -WorkspacePath $PSScriptRoot -ReportPath (Join-Path $PSScriptRoot '~REPORTS') 2>&1 | Out-Strin"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 5723,
+      "pattern": "3-arg-join-path",
+      "snippet": "$integrityPath = Join-Path $scriptDir ([string]$cfg.IntegrityManifestPath -replace '/', '\\\\')"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 5726,
+      "pattern": "3-arg-join-path",
+      "snippet": "$backupPath = Join-Path $scriptDir ([string]$cfg.VaultBackupPath -replace '/', '\\\\')"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 5823,
+      "pattern": "3-arg-join-path",
+      "snippet": "CheckedPath=$(if ($backupPath) { $backupPath } else { Join-Path $pkiDir 'vault-backups' });"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 5914,
+      "pattern": "3-arg-join-path",
+      "snippet": "CheckedPath = Join-Path $logsDir 'app-' + (Get-Date -Format 'yyyy-MM-dd') + '.log'"
+    },
+    {
+      "file": "Main-GUI.ps1",
+      "line": 7666,
+      "pattern": "3-arg-join-path",
+      "snippet": "@{ Name = 'modules';  Path = (Join-Path $scriptDir 'modules') },"
+    },
+    {
+      "file": "View-Config.ps1",
+      "line": 112,
+      "pattern": "3-arg-join-path",
+      "snippet": "Write-Host \"  Scripts Directory: $(Join-Path $scriptDir 'scripts')\" -ForegroundColor Gray"
+    },
+    {
+      "file": "tests/AssistedSASC.Tests.ps1",
+      "line": 19,
+      "pattern": "hardcoded-path",
+      "snippet": "$result = Assert-SafePath -Path 'C:\\PowerShellGUI\\config'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 16,
+      "pattern": "hardcoded-path",
+      "snippet": "$script:WS = 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 51,
+      "pattern": "hardcoded-path",
+      "snippet": "$p = Join-Path 'C:\\PowerShellGUI\\modules' \"$_.psm1\""
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 57,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 63,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 69,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AssistedSASC.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 75,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 81,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'UserProfileManager.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 93,
+      "pattern": "hardcoded-path",
+      "snippet": "$xmlPath = 'C:\\PowerShellGUI\\config\\system-variables.xml'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 103,
+      "pattern": "hardcoded-path",
+      "snippet": "$jFiles = @(Get-ChildItem -Path 'C:\\PowerShellGUI\\config' -Filter '*.json' -File -Recurse -ErrorAction SilentlyContinue)"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 110,
+      "pattern": "hardcoded-path",
+      "snippet": "$sinDir = 'C:\\PowerShellGUI\\sin_registry'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 120,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 121,
+      "pattern": "hardcoded-path",
+      "snippet": "$regPath = Get-PipelineRegistryPath -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 131,
+      "pattern": "hardcoded-path",
+      "snippet": "$badJson = 'C:\\PowerShellGUI\\temp\\_test_bad.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 138,
+      "pattern": "hardcoded-path",
+      "snippet": "$xhtmlFiles = @(Get-ChildItem -Path 'C:\\PowerShellGUI' -Recurse -Filter '*.xhtml' -File -ErrorAction SilentlyContinue |"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 162,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 163,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AVPN-Tracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 172,
+      "pattern": "hardcoded-path",
+      "snippet": "$outPath = Export-CentralMasterToDo -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 178,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-CentralMasterToDo -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 189,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 198,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 200,
+      "pattern": "hardcoded-path",
+      "snippet": "$tempFile = 'C:\\PowerShellGUI\\temp\\_roundtrip_pipeline.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 208,
+      "pattern": "hardcoded-path",
+      "snippet": "$testCfg = 'C:\\PowerShellGUI\\temp\\_test_avpn_cfg.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 219,
+      "pattern": "hardcoded-path",
+      "snippet": "$testCfg = 'C:\\PowerShellGUI\\temp\\_test_avpn_save.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 236,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 244,
+      "pattern": "hardcoded-path",
+      "snippet": "$path = Get-PipelineRegistryPath -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 250,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Initialize-PipelineRegistry -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 254,
+      "pattern": "hardcoded-path",
+      "snippet": "$stats = Get-PipelineStatistics -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 273,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-PriorityAutoEscalation -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 277,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-SinRegistryFeedback -WorkspacePath 'C:\\PowerShellGUI' -BugItem (@{id='smoke-test';title='Smoke test bug';descri"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 285,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Test-SinBugLinkage -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 295,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Scheduler.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 303,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Initialize-CronSchedule -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 307,
+      "pattern": "hardcoded-path",
+      "snippet": "$path = Get-CronSchedulePath -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 312,
+      "pattern": "hardcoded-path",
+      "snippet": "$summary = Get-CronJobSummary -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 317,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Get-CronJobHistory -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 321,
+      "pattern": "hardcoded-path",
+      "snippet": "$results = Invoke-PreRequisiteCheck -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 332,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-BugTracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 340,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-ParseCheck -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 344,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-ParseCheck -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 348,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-DependencyCheck -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 352,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-DataValidationCheck -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 356,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-ErrorTrapAudit -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 360,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-XhtmlValidation -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 364,
+      "pattern": "hardcoded-path",
+      "snippet": "$results = Invoke-FullBugScan -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 375,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-EventLog.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 383,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Write-CronLog -Message 'SmokeTest entry' -Severity 'Informational' -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 387,
+      "pattern": "hardcoded-path",
+      "snippet": "$cfg = Get-EventLogConfig -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 392,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Write-SyslogFile -Message 'SmokeTest syslog' -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 407,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'AVPN-Tracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 415,
+      "pattern": "hardcoded-path",
+      "snippet": "$tc = 'C:\\PowerShellGUI\\temp\\_avpn_smoke.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 424,
+      "pattern": "hardcoded-path",
+      "snippet": "$tc = 'C:\\PowerShellGUI\\temp\\_avpn_get.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 433,
+      "pattern": "hardcoded-path",
+      "snippet": "$tc = 'C:\\PowerShellGUI\\temp\\_avpn_persist.json'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 450,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'UserProfileManager.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 509,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 517,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Initialize-CorePaths -ScriptDir 'C:\\PowerShellGUI\\scripts' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 521,
+      "pattern": "hardcoded-path",
+      "snippet": "Initialize-CorePaths -ScriptDir 'C:\\PowerShellGUI\\scripts'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 527,
+      "pattern": "hardcoded-path",
+      "snippet": "Initialize-CorePaths -ScriptDir 'C:\\PowerShellGUI\\scripts'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 533,
+      "pattern": "hardcoded-path",
+      "snippet": "$testDir = 'C:\\PowerShellGUI\\temp\\_assertdir_test'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 550,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Initialize-ConfigFile -ConfigFile 'C:\\PowerShellGUI\\config\\system-variables.xml' -LogsDir 'C:\\PowerShellGUI\\logs' -Con"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 562,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking -ErrorAction Silen"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 611,
+      "pattern": "hardcoded-path",
+      "snippet": "$path = Join-Path 'C:\\PowerShellGUI\\scripts' $Name"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 623,
+      "pattern": "hardcoded-path",
+      "snippet": "$path = Join-Path 'C:\\PowerShellGUI\\scripts' $Name"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 639,
+      "pattern": "hardcoded-path",
+      "snippet": "$mcpScript = 'C:\\PowerShellGUI\\scripts\\Show-MCPServiceConfig.ps1'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 667,
+      "pattern": "hardcoded-path",
+      "snippet": "$sdScript = 'C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 677,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Get-ScanFiles -Def $testDef -ReportPath 'C:\\PowerShellGUI\\~REPORTS' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 682,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Get-ScansetDiskSize -Def $testDef -ReportPath 'C:\\PowerShellGUI\\~REPORTS' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 691,
+      "pattern": "hardcoded-path",
+      "snippet": "$scriptsDir = 'C:\\PowerShellGUI\\scripts'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 705,
+      "pattern": "hardcoded-path",
+      "snippet": "$atmScript = 'C:\\PowerShellGUI\\scripts\\Show-AppTemplateManager.ps1'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 805,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUI-Theme.psm1') -Force -DisableNameChecking -ErrorAction Silen"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 838,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 846,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 877,
+      "pattern": "hardcoded-path",
+      "snippet": "$stats = Get-PipelineStatistics -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 933,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'PwShGUICore.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 934,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Pipeline.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 935,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-Scheduler.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 936,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-EventLog.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 937,
+      "pattern": "hardcoded-path",
+      "snippet": "Import-Module (Join-Path 'C:\\PowerShellGUI\\modules' 'CronAiAthon-BugTracker.psm1') -Force -DisableNameChecking"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 946,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 947,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Write-CronLog -Message \"Pipeline: $($items.Count) items\" -Severity 'Informational' -WorkspacePath 'C:\\PowerShellGUI' }"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 951,
+      "pattern": "hardcoded-path",
+      "snippet": "{ Invoke-ParseCheck -WorkspacePath 'C:\\PowerShellGUI' } | Should -Not -Throw"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 952,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 957,
+      "pattern": "hardcoded-path",
+      "snippet": "$preReq = Invoke-PreRequisiteCheck -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 958,
+      "pattern": "hardcoded-path",
+      "snippet": "$stats  = Get-PipelineStatistics -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 964,
+      "pattern": "hardcoded-path",
+      "snippet": "Initialize-CorePaths -ScriptDir 'C:\\PowerShellGUI\\scripts'"
+    },
+    {
+      "file": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "line": 966,
+      "pattern": "hardcoded-path",
+      "snippet": "$items = Get-PipelineItems -WorkspacePath 'C:\\PowerShellGUI'"
+    },
+    {
+      "file": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "line": 124,
+      "pattern": "hardcoded-path",
+      "snippet": "$lines = Get-Content (Join-Path 'C:\\PowerShellGUI' 'temp\\cpsr-actions-session.json')"
+    },
+    {
+      "file": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "line": 158,
+      "pattern": "hardcoded-path",
+      "snippet": "$ws = 'C:\\PowerShellGUI'"
+    }
+  ]
+}

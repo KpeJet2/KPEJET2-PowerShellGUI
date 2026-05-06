@@ -1,8 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 9 entries)
 <#
   .SYNOPSIS
     Installs Dell updates via Dell Command Update
@@ -100,6 +98,7 @@ function Remove-DellUpdateApps {
 
 function Install-DellCommandUpdate {
   [CmdletBinding(SupportsShouldProcess = $true)]
+  param()
   function Get-LatestDellCommandUpdate {
     # Set KB URL
     $DellKBURL = 'https://www.dell.com/support/kbdoc/en-us/000177325/dell-command-update'
@@ -155,7 +154,7 @@ function Install-DellCommandUpdate {
       if ($Arch -like 'arm*') { $DownloadObject = $DownloadObjects | Where-Object { $_.URL -like '*winarm*' } }
       else { $DownloadObject = $DownloadObjects | Where-Object { $_.URL -notlike '*winarm*' } }
     }
-    catch {}
+    catch { <# Intentional: non-fatal #> }
     finally {
       # Revert to fallback URL / SHA256 checksum if unable to retrieve from Dell
       if ($null -eq $DownloadObject.URL -or $null -eq $DownloadObject.Checksum) { 
@@ -231,6 +230,7 @@ function Install-DellCommandUpdate {
 
 function Install-DotNetDesktopRuntime {
   [CmdletBinding(SupportsShouldProcess = $true)]
+  param()
   function Get-LatestDotNetDesktopRuntime {
     try {
       $BaseURL = 'https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop'
@@ -244,7 +244,7 @@ function Install-DotNetDesktopRuntime {
       if ($DownloadPage -match 'id="checksum".*?([a-fA-F0-9]{128})') { $Checksum = $Matches[1] }
 
     }
-    catch {}
+    catch { <# Intentional: non-fatal #> }
     finally {
       # Confirm version number format
       if ($Version -notmatch '^\d+(\.\d+)+$') { 
@@ -369,6 +369,12 @@ if ($Reboot) {
   }
 }
 else { Write-Output "`nA reboot may be needed to complete the installation of driver and firmware updates." }
+
+
+
+
+
+
 
 
 

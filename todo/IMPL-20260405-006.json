@@ -1,0 +1,9 @@
+{
+  "type": "Items2ADD",
+  "category": "Quality",
+  "id": "IMPL-20260405-006",
+  "status": "OPEN",
+  "title": "Add SIN Scanner comment-line exclusion to reduce false positives",
+  "description": "P003/P005/P010/P012/P016/P017/P019 have high false positive rate from matching comments and string literals. Add comment-line filter.",
+  "priority": "MEDIUM"
+}

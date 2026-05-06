@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "versionTag": "2602.a.8",
+    "versionTag": "2604.B2.V31.0",
     "minimumPowerShellVersion": "5.1",
     "synopsis": "PowerShell GUI Application with Admin Elevation Support",
     "description": "A Windows Forms GUI application that provides a menu-driven interface to launch various PowerShell scripts with optional admin elevation, config file management, and comprehensive logging.",
@@ -10,9 +10,9 @@
     "outputs": "",
     "functionality": "For system administrators and IT professionals to easily access and run common maintenance scripts",
     "author": "The Establishment",
-    "version": "1.0.0",
+    "version": "2603.B0.v27.0",
     "created": "24th January 2026",
-    "modified": "16th February 2026",
+    "modified": "24th March 2026",
     "versionHistory": [
       {
         "version": "1.0.0",
@@ -234,7 +234,7 @@
               "name": "Level",
               "mandatory": false,
               "type": "string",
-              "validateSet": ["Info", "Warning", "Error", "Success", "Debug", "Event"],
+              "validateSet": ["Debug", "Info", "Warning", "Error", "Critical", "Audit"],
               "default": "Info"
             }
           ],
@@ -259,7 +259,7 @@
               "name": "Level",
               "mandatory": false,
               "type": "string",
-              "validateSet": ["Info", "Warning", "Error", "Success", "Debug", "Event"],
+              "validateSet": ["Debug", "Info", "Warning", "Error", "Critical", "Audit"],
               "default": "Info"
             }
           ],
@@ -371,5 +371,80 @@
     "moduleValidationPattern": "if (-not (Test-Path $avpnModulePath)) { Write-AppLog 'AVPN module not found at $avpnModulePath' 'Warning' }",
     "configFileFormat": "XML and JSON formats used for configuration persistence",
     "loggingPattern": "Dual logging to both application log and console output with severity-based formatting"
+  },
+  "baselineStandards": {
+    "versionTagFormat": "<YY><MM>.<minor>.<build>",
+    "versionTagRegex": "^\\d{4}\\.[a-z]\\.(\\d+)$",
+    "versionTagStackingOrder": "newest-on-top",
+    "canonicalConfigurationTag": ".CONFIGURATION BASE",
+    "requiredHeaderFields": [
+      ".SYNOPSIS",
+      ".DESCRIPTION",
+      ".NOTES",
+      ".CONFIGURATION BASE"
+    ],
+    "namingConventions": {
+      "scripts": "Verb-Noun (PascalCase, approved PowerShell verbs)",
+      "modules": "PascalCase.psm1",
+      "configs": "kebab-lower-case.json/.xml",
+      "logs": "lowercase-with-date.log",
+      "regex": {
+        "scripts": "^[A-Z][a-z]+-[A-Z][A-Za-z]+\\.ps1$",
+        "modules": "^[A-Z][A-Za-z]+\\.psm1$",
+        "configs": "^[a-z][a-z0-9-]+\\.(json|xml)$"
+      }
+    },
+    "canonicalDirectories": [
+      "modules",
+      "scripts",
+      "config",
+      "logs",
+      "logs/archive",
+      "temp",
+      "checkpoints",
+      "pki",
+      "agents",
+      "sin_registry",
+      "todo",
+      "Report",
+      "UPM",
+      "~README.md",
+      "~REPORTS",
+      "~DOWNLOADS"
+    ],
+    "sharedModule": {
+      "name": "PwShGUICore",
+      "path": "modules/PwShGUICore.psm1",
+      "exportedFunctions": [
+        "Write-AppLog",
+        "Write-ScriptLog",
+        "Export-LogBuffer",
+        "Wait-KeyOrTimeout",
+        "Request-LocalPath",
+        "Write-SessionLock",
+        "Remove-SessionLock",
+        "Invoke-CrashRecovery",
+        "Invoke-LogRotation",
+        "Initialize-CorePaths"
+      ]
+    },
+    "errorHandling": {
+      "defaultErrorActionPreference": "Stop",
+      "globalTrapRequired": true,
+      "tryCatchPatternRequired": true
+    },
+    "logging": {
+      "bufferSize": 50,
+      "defaultLevel": "Info",
+      "levels": ["Debug", "Info", "Warning", "Error", "Critical", "Audit"],
+      "rotationDays": 30,
+      "archiveFormat": "zip",
+      "archiveDirectory": "logs/archive"
+    },
+    "sessionLock": {
+      "filename": ".pwshgui-session.lock",
+      "format": "JSON",
+      "fields": ["PID", "StartTime", "HostName", "UserName"]
+    }
   }
 }

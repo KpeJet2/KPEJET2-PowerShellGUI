@@ -1,17 +1,17 @@
 {
-  "ExecutionMode": null,
-  "LogPath": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\LOG",
-  "SelectedFolders": [
-    "C:\\PowerShellGUI\\scripts",
-    "C:\\PowerShellGUI\\scripts\\QUICK-APP",
-    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT",
-    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master",
-    "C:\\Program Files\\WindowsPowerShell\\Modules",
-    "C:\\TEMP\\scripts",
-    "C:\\Users\\%USERNAME%\\Documents\\PowerShell",
-    "C:\\Users\\msaib\\OneDrive\\Documents\\PowerShell",
-    "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell",
-    "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell\\Scripts",
-    "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell\\Scripts\\Action1-DataSources"
-  ]
+    "LogPath":  "C:\\PowerShellGUI\\scripts\\QUICK-APP\\LOG",
+    "SelectedFolders":  [
+                            "C:\\PowerShellGUI\\scripts",
+                            "C:\\PowerShellGUI\\scripts\\QUICK-APP",
+                            "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT",
+                            "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master",
+                            "C:\\Program Files\\WindowsPowerShell\\Modules",
+                            "C:\\TEMP\\scripts",
+                            "C:\\Users\\%USERNAME%\\Documents\\PowerShell",
+                            "C:\\Users\\msaib\\OneDrive\\Documents\\PowerShell",
+                            "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell",
+                            "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell\\Scripts",
+                            "C:\\Users\\msaib\\OneDrive\\Documents\\WindowsPowerShell\\Scripts\\Action1-DataSources"
+                        ],
+    "ExecutionMode":  null
 }

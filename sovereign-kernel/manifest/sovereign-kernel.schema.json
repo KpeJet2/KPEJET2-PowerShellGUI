@@ -1,0 +1,311 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sovereign-kernel-v15-schema",
+  "title": "Sovereign Kernel Manifest Schema",
+  "description": "Validates the structure, types, and constraints of a Sovereign Kernel manifest.",
+  "type": "object",
+  "required": ["sovereign_kernel"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "sovereign_kernel": {
+      "type": "object",
+      "required": [
+        "version", "epoch_seal", "sovereign_core", "realms", "spines",
+        "transcendent_ring", "reflexive_crown", "meta_modules",
+        "operational_modules", "watchdogs", "tools_and_calls",
+        "sandbox_config", "crypto_config", "redundancy", "self_healing",
+        "versioning", "logging"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^v\\d+-cycle\\d+(-[a-zA-Z0-9]+)*$"
+        },
+        "epoch_seal": {
+          "type": "object",
+          "required": ["algorithm", "cipher_suite", "compression", "seal_version"],
+          "properties": {
+            "algorithm":      { "type": "string", "enum": ["HMAC-SHA512", "HMAC-SHA384", "HMAC-SHA256"] },
+            "sealed_at_utc":  { "type": ["string", "null"], "format": "date-time" },
+            "sealed_by":      { "type": "string", "minLength": 1 },
+            "hash":           { "type": ["string", "null"] },
+            "nonce":          { "type": ["string", "null"] },
+            "cipher_suite":   { "type": "string", "pattern": "^AES-256-(CBC|GCM)\\+HMAC-SHA(256|384|512)$" },
+            "compression":    { "type": "string", "enum": ["GZIP", "DEFLATE", "BROTLI", "NONE"] },
+            "seal_version":   { "type": "integer", "minimum": 1 }
+          }
+        },
+        "sovereign_core": {
+          "type": "object",
+          "required": ["owner", "sovereignty_model", "override_policy", "integrity"],
+          "properties": {
+            "owner":             { "type": "string", "minLength": 1 },
+            "sovereignty_model": { "type": "string", "enum": ["human_primacy_governance_first"] },
+            "override_policy": {
+              "type": "object",
+              "required": ["can_override", "cannot_be_overridden_by", "escalation_chain", "quorum_required"],
+              "properties": {
+                "can_override":            { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "cannot_be_overridden_by": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "escalation_chain":        { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "quorum_required":         { "type": "integer", "minimum": 1, "maximum": 5 },
+                "timeout_seconds":         { "type": "integer", "minimum": 1 }
+              }
+            },
+            "integrity": {
+              "type": "object",
+              "required": ["manifest_hash_algorithm"],
+              "properties": {
+                "manifest_hash_algorithm":        { "type": "string", "enum": ["SHA-512", "SHA-384", "SHA-256"] },
+                "manifest_hash":                  { "type": ["string", "null"] },
+                "last_verified_utc":              { "type": ["string", "null"] },
+                "auto_verify_interval_seconds":   { "type": "integer", "minimum": 10 }
+              }
+            }
+          }
+        },
+        "realms": {
+          "type": "object",
+          "required": ["above", "within", "below"],
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(above|within|below)$": {
+              "type": "object",
+              "required": ["keeper_module", "domain", "sandbox_tier", "isolation_level"],
+              "properties": {
+                "keeper_module":    { "type": "string", "minLength": 1 },
+                "domain":           { "type": "string", "minLength": 1 },
+                "sandbox_tier":     { "type": "integer", "minimum": 1, "maximum": 5 },
+                "isolation_level":  { "type": "string", "enum": ["full", "standard", "minimal", "none"] },
+                "max_subsandboxes": { "type": "integer", "minimum": 0, "maximum": 16 }
+              }
+            }
+          }
+        },
+        "spines": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z_]+_spine$": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "transcendent_ring": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "type": "object",
+              "required": ["role", "layer", "priority"],
+              "properties": {
+                "role":     { "type": "string" },
+                "layer":    { "type": "string" },
+                "priority": { "type": "integer", "minimum": 1 }
+              }
+            }
+          }
+        },
+        "reflexive_crown": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "type": "object",
+              "required": ["role", "layer", "priority"],
+              "properties": {
+                "role":     { "type": "string" },
+                "layer":    { "type": "string" },
+                "priority": { "type": "integer", "minimum": 1 }
+              }
+            }
+          }
+        },
+        "meta_modules": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "type": "object",
+              "required": ["function", "tier"],
+              "properties": {
+                "function":    { "type": "string" },
+                "tier":        { "type": "string", "enum": ["meta"] },
+                "hot_standby": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "operational_modules": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "type": "object",
+              "required": ["function", "tier"],
+              "properties": {
+                "function":  { "type": "string" },
+                "tier":      { "type": "string", "enum": ["operational"] },
+                "auto_heal": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "watchdogs": {
+          "type": "object",
+          "minProperties": 3,
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "type": "object",
+              "required": ["trigger", "vote_model", "priority", "can_halt"],
+              "properties": {
+                "trigger":    { "type": "string" },
+                "vote_model": { "type": "string", "pattern": "^\\d+_of_\\d+$" },
+                "priority":   { "type": "integer", "minimum": 1 },
+                "can_halt":   { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "tools_and_calls": {
+          "type": "object",
+          "required": ["outbound_firewall", "method_call_monitor"],
+          "properties": {
+            "outbound_firewall": {
+              "type": "object",
+              "required": ["log_all", "block_by_default", "fields", "governance_required"],
+              "properties": {
+                "log_all":                { "type": "boolean" },
+                "block_by_default":       { "type": "boolean" },
+                "fields":                 { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "governance_required":    { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "rate_limit_per_minute":  { "type": "integer", "minimum": 1 },
+                "allowlist_path":         { "type": "string" }
+              }
+            },
+            "method_call_monitor": {
+              "type": "object",
+              "required": ["log_all", "fields", "write_to"],
+              "properties": {
+                "log_all":        { "type": "boolean" },
+                "fields":         { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "write_to":       { "type": "string", "enum": ["IMMUTABLE_LEDGER"] },
+                "max_call_depth": { "type": "integer", "minimum": 1 },
+                "timeout_ms":     { "type": "integer", "minimum": 100 }
+              }
+            }
+          }
+        },
+        "sandbox_config": {
+          "type": "object",
+          "required": ["default_language_mode", "max_sandbox_depth", "para_virtualization"],
+          "properties": {
+            "default_language_mode": { "type": "string", "enum": ["ConstrainedLanguage", "RestrictedLanguage", "NoLanguage", "FullLanguage"] },
+            "max_sandbox_depth":     { "type": "integer", "minimum": 1, "maximum": 8 },
+            "para_virtualization": {
+              "type": "object",
+              "required": ["enabled", "isolation_layers", "resource_limits"],
+              "properties": {
+                "enabled":          { "type": "boolean" },
+                "isolation_layers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "resource_limits": {
+                  "type": "object",
+                  "properties": {
+                    "max_memory_mb":          { "type": "integer", "minimum": 32 },
+                    "max_cpu_percent":        { "type": "integer", "minimum": 1, "maximum": 100 },
+                    "max_threads":            { "type": "integer", "minimum": 1 },
+                    "max_execution_seconds":  { "type": "integer", "minimum": 1 }
+                  }
+                }
+              }
+            },
+            "subsandbox_defaults": {
+              "type": "object",
+              "properties": {
+                "inherit_parent_policy":  { "type": "boolean" },
+                "can_escalate":           { "type": "boolean" },
+                "auto_destroy_on_exit":   { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "crypto_config": {
+          "type": "object",
+          "required": ["symmetric_algorithm", "mac_algorithm", "hash_algorithm", "kdf", "kdf_iterations", "key_size_bits"],
+          "properties": {
+            "symmetric_algorithm":          { "type": "string", "enum": ["AES-256-CBC", "AES-256-GCM"] },
+            "mac_algorithm":                { "type": "string", "enum": ["HMAC-SHA512", "HMAC-SHA384", "HMAC-SHA256"] },
+            "hash_algorithm":               { "type": "string", "enum": ["SHA-512", "SHA-384", "SHA-256"] },
+            "kdf":                          { "type": "string", "enum": ["PBKDF2-SHA512", "PBKDF2-SHA256"] },
+            "kdf_iterations":               { "type": "integer", "minimum": 100000 },
+            "key_size_bits":                { "type": "integer", "enum": [256] },
+            "iv_size_bits":                 { "type": "integer", "enum": [128] },
+            "compression_algorithm":        { "type": "string", "enum": ["GZIP", "DEFLATE", "BROTLI"] },
+            "compression_level":            { "type": "string", "enum": ["Optimal", "Fastest", "NoCompression"] },
+            "min_cipher_score":             { "type": "integer", "minimum": 128 },
+            "auto_upgrade_cipher":          { "type": "boolean" },
+            "key_rotation_interval_hours":  { "type": "integer", "minimum": 1 },
+            "ephemeral_keys":               { "type": "boolean" }
+          }
+        },
+        "redundancy": {
+          "type": "object",
+          "required": ["ledger_replicas", "ledger_paths", "quorum_for_write"],
+          "properties": {
+            "ledger_replicas":        { "type": "integer", "minimum": 1 },
+            "ledger_paths":           { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "manifest_backup_count":  { "type": "integer", "minimum": 1 },
+            "quorum_for_write":       { "type": "integer", "minimum": 1 },
+            "sync_interval_seconds":  { "type": "integer", "minimum": 1 }
+          }
+        },
+        "self_healing": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled":                            { "type": "boolean" },
+            "integrity_check_interval_seconds":   { "type": "integer", "minimum": 10 },
+            "auto_restore_from_snapshot":          { "type": "boolean" },
+            "snapshot_path":                       { "type": "string" },
+            "max_snapshots":                       { "type": "integer", "minimum": 1 },
+            "degraded_mode_threshold":             { "type": "number", "minimum": 0, "maximum": 1 },
+            "full_halt_threshold":                 { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "versioning": {
+          "type": "object",
+          "required": ["doctrine_version", "current_cycle", "lineage"],
+          "properties": {
+            "doctrine_version": { "type": "string", "pattern": "^v\\d+$" },
+            "current_cycle":    { "type": "string", "pattern": "^cycle\\d+$" },
+            "lineage":          { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+            "branch_policy": {
+              "type": "object",
+              "properties": {
+                "allow_divergence":   { "type": "boolean" },
+                "max_drift_cycles":   { "type": "integer", "minimum": 0 },
+                "merge_strategy":     { "type": "string", "enum": ["fast_forward_only", "rebase", "merge_commit"] },
+                "rollback_depth":     { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "logging": {
+          "type": "object",
+          "required": ["immutable_ledger", "retention", "auditors"],
+          "properties": {
+            "immutable_ledger":   { "type": "boolean" },
+            "retention":          { "type": "string", "enum": ["indefinite", "365d", "180d", "90d", "30d"] },
+            "auditors":           { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "log_levels":         { "type": "array", "items": { "type": "string" } },
+            "default_level":      { "type": "string" },
+            "hash_chain":         { "type": "boolean" },
+            "compress_on_write":  { "type": "boolean" },
+            "encrypt_on_write":   { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}

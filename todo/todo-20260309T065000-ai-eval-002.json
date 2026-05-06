@@ -1,0 +1,22 @@
+{
+  "todo_id": "ai-eval-002",
+  "category": "maintenance",
+  "title": "JSON Schema Validation for Config Files",
+  "description": "Config files lack JSON schema definitions. Create .schema.json files with $schema references and validate on load to catch config drift early.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "HIGH",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "config/pwsh-app-config-BASE.json",
+    "config/AVPN_device-types.json",
+    "config/sasc-vault-config.json"
+  ],
+  "notes": "Prevents silent config corruption",
+  "id": "ai-eval-002",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:25:09.9479429+08:00",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.3369610Z"
+}

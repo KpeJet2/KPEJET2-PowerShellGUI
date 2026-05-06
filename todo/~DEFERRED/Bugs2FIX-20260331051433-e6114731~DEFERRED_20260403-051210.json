@@ -1,0 +1,33 @@
+{
+  "notes": "",
+  "suggestedBy": "CronAiAthon",
+  "description": "Fix for bug Bug-20260331051433-3c4e0a66: Script Script-E.ps1 has 1 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-E.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051433-e6114731",
+  "sessionModCount": 1,
+  "parentId": "Bug-20260331051433-3c4e0a66",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bugs2FIX",
+  "priority": "MEDIUM",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:14:33.7490212Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:14:33.7490813Z",
+  "sinId": ""
+}

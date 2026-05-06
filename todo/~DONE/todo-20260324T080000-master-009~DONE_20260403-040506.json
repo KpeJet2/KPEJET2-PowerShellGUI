@@ -1,0 +1,23 @@
+{
+  "id": "master-009",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "medium",
+  "status": "DONE",
+  "title": "Standardise XHTML DOCTYPE and add VersionTag to all XHTML files",
+  "description": "9 of 10 XHTML files lack VersionTag comments. DOCTYPE varies: most use XHTML 1.0 Strict, but Shop-ListedItems-Entry.xhtml uses Transitional and XHTML-invoke-secrets.xhtml uses XHTML 1.1. Standardise all to XHTML 1.0 Strict with VersionTag.",
+  "files": [
+    "Shop-ListedItems-Entry.xhtml",
+    "XHTML-invoke-secrets.xhtml",
+    "UPM/docs/UPM-UserGuide.xhtml",
+    "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+    "scripts/XHTML-Checker/XHTML-MasterToDo.xhtml",
+    "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml",
+    "scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml",
+    "scripts/XHTML-Checker/XHTML-code-analysis.xhtml",
+    "~README.md/PwShGUI-Checklists.xhtml"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:47:17Z",
+  "resolution": "COMPLETED: XHTML DOCTYPE standardization and VersionTag work done in CSS consolidation session"
+}

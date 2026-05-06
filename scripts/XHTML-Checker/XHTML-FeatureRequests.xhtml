@@ -1,0 +1,1655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B0.v1 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>PwShGUI — Feature Requests &amp; Documentation Hub</title>
+  <!-- External CSS: base → responsive → layout → accent -->
+  <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="../../styles/layout-tabs-white-wleftmenu.css" />
+  <link rel="stylesheet" href="../../styles/accent-feature-requests.css" />
+  <style type="text/css">
+    /* ── Reset ─────────────────────────────────────────── */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#f0f2f5;color:#222;line-height:1.5;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+    /* ── Top bar ───────────────────────────────────────── */
+    #topBar{background:linear-gradient(135deg,#1a3a5c,#2980b9);color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    #topBar h1{font-size:18px;font-weight:600}
+    #versionBadge{background:rgba(255,255,255,.18);padding:4px 14px;border-radius:12px;font-size:12px}
+
+    /* ── Tab bar ───────────────────────────────────────── */
+    #tabBar{display:flex;background:#2c3e50;flex-shrink:0}
+    .tab-btn{background:transparent;color:#aaa;border:none;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
+    .tab-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+    .tab-btn.active{color:#fff;border-bottom-color:#2980b9;background:rgba(41,128,185,.15)}
+
+    /* ── Main layout ───────────────────────────────────── */
+    #mainLayout{display:flex;flex:1;overflow:hidden}
+    #leftPane{flex:0 0 340px;background:#fff;border-right:1px solid #ccc;overflow-y:auto;padding:16px}
+    #rightPane{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#fafbfc}
+
+    /* ── Left pane ─────────────────────────────────────── */
+    .section-header{font-size:14px;font-weight:700;color:#1a3a5c;margin:14px 0 6px 0;border-bottom:2px solid #2980b9;padding-bottom:4px}
+    .section-header:first-child{margin-top:0}
+    .link-list{list-style:none;margin:0 0 10px 0;padding:0}
+    .link-list li{margin:3px 0}
+    .link-list a{text-decoration:none;color:#2980b9;font-size:13px;display:block;padding:3px 8px;border-radius:4px;transition:background .15s}
+    .link-list a:hover{background:#eaf2fa}
+    .link-list a::before{content:'\25B6 ';font-size:9px;color:#999}
+
+    /* ── Tab panels ────────────────────────────────────── */
+    .tab-panel{display:none;flex-direction:column;flex:1;overflow:hidden}
+    .tab-panel.active{display:flex}
+
+    /* ── Search ────────────────────────────────────────── */
+    #searchBox{padding:10px 14px;border-bottom:1px solid #ddd;background:#fff;flex-shrink:0}
+    #searchInput{width:100%;padding:8px 12px;border:1px solid #bbb;border-radius:6px;font-size:13px;outline:none}
+    #searchInput:focus{border-color:#2980b9;box-shadow:0 0 4px rgba(41,128,185,.3)}
+    #searchResults{display:none;background:#fffbe6;border:1px solid #e2c200;border-radius:4px;margin-top:6px;padding:6px 10px;font-size:12px;max-height:120px;overflow-y:auto}
+    #searchResults a{display:block;color:#2980b9;text-decoration:none;padding:2px 0}
+    #searchResults a:hover{text-decoration:underline}
+
+    /* ── Toolbar ───────────────────────────────────────── */
+    .toolbar{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid #ddd;background:#f4f6f9;flex-shrink:0;flex-wrap:wrap;align-items:center}
+    .tb-btn{background:#2980b9;color:#fff;border:none;padding:5px 12px;border-radius:4px;font-size:12px;cursor:pointer;white-space:nowrap}
+    .tb-btn:hover{background:#1a6fa0}
+    .tb-btn.danger{background:#c0392b}
+    .tb-btn.danger:hover{background:#962d22}
+    .tb-btn.secondary{background:#7f8c8d}
+    .tb-btn.secondary:hover{background:#636e72}
+    .tb-btn.success{background:#27ae60}
+    .tb-btn.success:hover{background:#1e8a4e}
+    .tb-btn.warning{background:#e67e22}
+    .tb-btn.warning:hover{background:#c76b15}
+    .tb-sep{border-left:1px solid #ccc;height:22px;align-self:center}
+    select.tb-select{padding:4px 6px;border:1px solid #aab;border-radius:4px;font-size:12px;background:#fff}
+    .action-log{background:#1e1e1e;border:1px solid #3c3c3c;border-radius:6px;margin:8px 14px;padding:8px 12px;max-height:160px;overflow-y:auto;font-family:'Cascadia Code','Consolas',monospace;font-size:11px;color:#d4d4d4;display:none}
+    .action-log .log-entry{margin:2px 0;line-height:1.5}
+    .action-log .log-ts{color:#569cd6}
+    .action-log .log-ok{color:#4ec9b0}
+    .action-log .log-err{color:#f44747}
+    .action-log .log-warn{color:#ce9140}
+    .action-log-toggle{font-size:11px;color:#569cd6;cursor:pointer;margin-left:8px;text-decoration:underline}
+
+    /* ── Tables ────────────────────────────────────────── */
+    .scroll-container{flex:1;overflow-y:auto;padding:10px 14px}
+    table.tree-table, table.data-table{width:100%;border-collapse:collapse;font-size:12px}
+    .tree-table th, .data-table th{background:#2c3e50;color:#fff;padding:6px 8px;text-align:left;font-weight:600;position:sticky;top:0;z-index:2}
+    .tree-table td, .data-table td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:middle}
+    .tree-table tr:hover, .data-table tr:hover{background:#eaf2fa}
+    .tree-table tr.selected, .data-table tr.selected{background:#d4e6f9}
+    .indent-spacer{display:inline-block;width:20px}
+    .row-toggle{cursor:pointer;font-size:11px;color:#888;margin-right:4px;user-select:none}
+    .row-toggle:hover{color:#2980b9}
+
+    /* ── Badges ────────────────────────────────────────── */
+    .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff;text-transform:uppercase}
+    .badge-proposed{background:#3498db}
+    .badge-alpha{background:#e67e22}
+    .badge-beta{background:#8e44ad}
+    .badge-released{background:#27ae60}
+    .badge-deferred{background:#95a5a6}
+    .badge-open{background:#e74c3c}
+    .badge-fixed{background:#27ae60}
+    .badge-wontfix{background:#95a5a6}
+    .badge-investigating{background:#f39c12}
+
+    /* ── Autosave flash ────────────────────────────────── */
+    #autosaveIndicator{position:fixed;top:48px;right:20px;background:#27ae60;color:#fff;padding:3px 12px;border-radius:0 0 6px 6px;font-size:11px;font-weight:600;opacity:0;transition:opacity .3s;z-index:100}
+    #autosaveIndicator.show{opacity:1}
+
+    /* ── Bug entry ─────────────────────────────────────── */
+    .bug-entry{padding:10px 14px;border-bottom:1px solid #ddd;background:#fff;flex-shrink:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .bug-entry select, .bug-entry input{padding:6px 10px;border:1px solid #bbb;border-radius:4px;font-size:13px}
+    .bug-entry select{min-width:220px}
+    .bug-entry input{flex:1;min-width:200px}
+    .bug-entry .hint{font-size:11px;color:#888;width:100%}
+
+    /* ── ToDo cards ────────────────────────────────────── */
+    .todo-card{background:#fff;border:1px solid #dde;border-radius:8px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:border-color .15s}
+    .todo-card:focus{outline:2px solid #2980b9;outline-offset:2px}
+    .todo-card h3{font-size:14px;color:#1a3a5c;margin-bottom:4px}
+    .todo-card .todo-meta{font-size:11px;color:#888;margin-bottom:6px}
+    .todo-card p{font-size:12px;line-height:1.5}
+    .todo-summary{display:flex;gap:12px;padding:8px 14px;background:#e8eef4;border-bottom:1px solid #ddd;font-size:12px;flex-shrink:0;flex-wrap:wrap;align-items:center}
+    .todo-summary .count-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff}
+    .todo-summary .count-badge.cnt-open{background:#e74c3c}
+    .todo-summary .count-badge.cnt-impl{background:#27ae60}
+    .todo-summary .count-badge.cnt-total{background:#2980b9}
+
+    /* ── Footer ────────────────────────────────────────── */
+    #footer{background:#2c3e50;color:#aaa;text-align:center;padding:4px;font-size:11px;flex-shrink:0}
+
+    .file-input-hidden{display:none}
+
+    /* ── Cross-reference panel ─────────────────────────── */
+    .xref-panel{border-top:1px solid #ddd;background:#f4f6f9;padding:10px 14px;max-height:220px;overflow-y:auto;flex-shrink:0}
+    .xref-panel h4{font-size:12px;color:#1a3a5c;margin-bottom:6px;cursor:pointer;user-select:none}
+    .xref-item{font-size:11px;color:#555;padding:2px 8px;border-left:3px solid #2980b9;margin:3px 0}
+    .xref-item .badge{font-size:9px;vertical-align:middle}
+
+    /* ── Action history section ─────────────────────────── */
+    .action-history{border-top:1px solid #ddd;background:#fafbfc;padding:10px 14px;max-height:180px;overflow-y:auto;flex-shrink:0}
+    .action-history h4{font-size:12px;color:#1a3a5c;margin-bottom:6px;cursor:pointer;user-select:none}
+    .action-entry{font-size:11px;color:#666;padding:2px 6px;border-bottom:1px dotted #eee}
+    .action-entry .action-time{color:#999;font-family:monospace;margin-right:6px}
+
+    /* ── Testing saved-routines pane ───────────────────── */
+    .test-layout{display:flex;flex:1;overflow:hidden}
+    .saves-pane{flex:0 0 240px;background:#fff;border-right:1px solid #ccc;display:flex;flex-direction:column;overflow:hidden}
+    .saves-pane .sp-header{background:#1a3a5c;color:#fff;padding:8px 12px;font-size:12px;font-weight:600;flex-shrink:0}
+    .saves-pane .sp-actions{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border-bottom:1px solid #ddd;background:#f4f6f9;flex-shrink:0}
+    .saves-pane .sp-actions button{font-size:11px;padding:3px 8px;border:none;border-radius:3px;cursor:pointer;color:#fff}
+    .saves-pane .sp-list{flex:1;overflow-y:auto;padding:4px}
+    .save-item{padding:6px 10px;margin:2px 0;border:1px solid #dde;border-radius:4px;font-size:11px;cursor:pointer;transition:background .15s;position:relative}
+    .save-item:hover{background:#eaf2fa}
+    .save-item.active{background:#d4e6f9;border-color:#2980b9}
+    .save-item .si-name{font-weight:600;color:#1a3a5c}
+    .save-item .si-meta{color:#888;font-size:10px;margin-top:2px}
+    .save-item .si-lock{position:absolute;top:6px;right:8px;font-size:12px}
+    .save-item.locked{border-color:#e67e22;background:#fef9f0}
+    .save-item.locked .si-lock{color:#e67e22}
+    .test-iframe-wrap{flex:1;overflow:hidden}
+  </style>
+</head>
+<body>
+
+<!-- Autosave flash -->
+<div id="autosaveIndicator">Autosaved</div>
+
+<!-- ════════════════════════ TOP BAR ════════════════════════ -->
+<div id="topBar">
+  <h1>PwShGUI &#x2014; Feature Requests &amp; Documentation Hub</h1>
+  <span id="versionBadge">Loading version&#x2026;</span>
+</div>
+
+<!-- ════════════════════════ TAB BAR ═══════════════════════ -->
+<div id="tabBar">
+  <button type="button" class="tab-btn active" data-tab="features">Feature Requests</button>
+  <button type="button" class="tab-btn" data-tab="todos">ToDos</button>
+  <button type="button" class="tab-btn" data-tab="bugs">Bug Tracker</button>
+  <button type="button" class="tab-btn" data-tab="testing">Testing Routine Builder</button>
+</div>
+
+<!-- ════════════════════════ MAIN LAYOUT ════════════════════ -->
+<div id="mainLayout">
+
+  <!-- ──── LEFT PANE ──── -->
+  <div id="leftPane">
+    <div class="section-header">Version Details</div>
+    <div id="versionDetails" style="font-size:12px;margin-bottom:12px">
+      <em>Loading&#x2026;</em>
+    </div>
+
+    <div class="section-header">Help Files</div>
+    <ul class="link-list" id="helpLinks">
+      <li><a href="../../~README.md/PwShGUI-Help-Index.html">PwShGUI-Help-Index.html</a></li>
+      <li><a href="../../~README.md/README.md">README.md</a></li>
+      <li><a href="../../~README.md/INDEX.md">INDEX.md</a></li>
+      <li><a href="../../~README.md/QUICK-START.md">QUICK-START.md</a></li>
+      <li><a href="../../~README.md/SETUP-GUIDE.md">SETUP-GUIDE.md</a></li>
+      <li><a href="../../~README.md/INSTALLATION-SUMMARY.md">INSTALLATION-SUMMARY.md</a></li>
+      <li><a href="../../~README.md/STARTUP-BEHAVIOR.md">STARTUP-BEHAVIOR.md</a></li>
+      <li><a href="../../~README.md/FILES-MANIFEST.md">FILES-MANIFEST.md</a></li>
+      <li><a href="../../~README.md/WORKSPACE-INVENTORY-CANONICAL.md">WORKSPACE-INVENTORY-CANONICAL.md</a></li>
+      <li><a href="../../~README.md/SYSTEM-INTERCONNECTION-MAP.md">SYSTEM-INTERCONNECTION-MAP.md</a></li>
+    </ul>
+
+    <div class="section-header">Standards &amp; Guides</div>
+    <ul class="link-list" id="standardsLinks">
+      <li><a href="../../~README.md/REFERENCE-CONSISTENCY-STANDARD.md">REFERENCE-CONSISTENCY-STANDARD.md</a></li>
+      <li><a href="../../~README.md/VERSION-UPDATES.md">VERSION-UPDATES.md</a></li>
+      <li><a href="../../~README.md/ENHANCEMENTS-LOG.md">ENHANCEMENTS-LOG.md</a></li>
+      <li><a href="../../~README.md/NETWORK-TOOLS-GUIDE.md">NETWORK-TOOLS-GUIDE.md</a></li>
+      <li><a href="../../~README.md/AVPN-TRACKER-GUIDE.md">AVPN-TRACKER-GUIDE.md</a></li>
+      <li><a href="../../~README.md/Dependency-Visualisation.html">Dependency-Visualisation.html</a></li>
+    </ul>
+
+    <div class="section-header">XHTML Tools</div>
+    <ul class="link-list" id="xhtmlLinks">
+      <li><a href="XHTML-code-analysis.xhtml">XHTML-code-analysis.xhtml</a></li>
+      <li><a href="XHTML-MasterToDo.xhtml" style="font-weight:700;color:#4ec9b0">Central Master To-Do</a></li>
+      <li><a href="XHTML-MCPServiceConfig.xhtml">MCP Service Config</a></li>
+      <li><a href="XHTML-TestingRoutineBuilder.xhtml">Testing Routine Builder</a></li>
+      <li><a href="../../~README.md/PwShGUI-Checklists.xhtml">Checklists Dashboard</a></li>
+      <li><a href="../../~README.md/PwShGUI-Checklists.xhtml" style="font-weight:700;color:#ce9140">Items2Do / Bugs2FIX / Feature2ADD</a></li>
+      <li><a href="../../Shop-ListedItems-Entry.xhtml">Shop-ListedItems-Entry.xhtml</a></li>
+      <li><a href="../../XHTML-invoke-secrets.xhtml">XHTML-invoke-secrets.xhtml</a></li>
+      <li><a href="../../UPM/docs/UPM-UserGuide.xhtml">UPM-UserGuide.xhtml</a></li>
+      <li><a href="../../~README.md/PwShGUI-Help-Index.html">PwShGUI-Help-Index.html</a></li>
+      <li><a href="../../~README.md/Dependency-Visualisation.html">Dependency-Visualisation.html</a></li>
+      <li><a href="../../~README.md/SURVEY-Viewpoints.html">SURVEY-Viewpoints.html</a></li>
+    </ul>
+
+    <div class="section-header">Status Workflow</div>
+    <div style="font-size:11px;line-height:1.7;padding:4px 0">
+      <span class="badge badge-proposed">Proposed</span> &#x2192; User or agent logs a feature<br/>
+      <span class="badge badge-alpha">ALPHA</span> &#x2192; AI agent implements &amp; self-tests<br/>
+      <span class="badge badge-beta">BETA</span> &#x2192; Human end-user real-world testing<br/>
+      <span class="badge badge-released">Released</span> &#x2192; Passed BETA, merged to mainline<br/>
+      <span class="badge badge-deferred">Deferred</span> &#x2192; Reviewed, intentionally postponed
+    </div>
+  </div>
+
+  <!-- ──── RIGHT PANE ──── -->
+  <div id="rightPane">
+
+    <!-- ════════════ TAB: FEATURES ════════════ -->
+    <div id="panelFeatures" class="tab-panel active">
+      <div id="searchBox">
+        <input type="text" id="searchInput" placeholder="Search documentation links and feature tree&#x2026;" />
+        <div id="searchResults"></div>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="tb-btn success" id="btnAdd" title="Add new feature row">&#x2795; Add</button>
+        <button type="button" class="tb-btn danger" id="btnDelete" title="Delete selected row">&#x2716; Delete</button>
+        <div class="tb-sep"></div>
+        <button type="button" class="tb-btn" id="btnUp" title="Move up">&#x25B2; Up</button>
+        <button type="button" class="tb-btn" id="btnDown" title="Move down">&#x25BC; Down</button>
+        <button type="button" class="tb-btn" id="btnIndent" title="Indent (make child)">&#x21E5; Indent</button>
+        <button type="button" class="tb-btn" id="btnOutdent" title="Outdent (make sibling)">&#x21E4; Outdent</button>
+        <div class="tb-sep"></div>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 0" for="selStatus">Status:</label>
+        <select class="tb-select" id="selStatus">
+          <option value="Proposed">Proposed</option>
+          <option value="ALPHA Testing">ALPHA Testing</option>
+          <option value="BETA Testing">BETA Testing</option>
+          <option value="Released">Released</option>
+          <option value="Deferred">Deferred</option>
+        </select>
+        <button type="button" class="tb-btn" id="btnSetStatus" title="Set status on selected row">Apply</button>
+        <div class="tb-sep"></div>
+        <button type="button" class="tb-btn secondary" id="btnCollapse">&#x25B6; Collapse</button>
+        <button type="button" class="tb-btn secondary" id="btnExpand">&#x25BC; Expand</button>
+        <div class="tb-sep"></div>
+        <button type="button" class="tb-btn warning" id="btnDownloadBackup" title="Export feature tree as JSON backup">&#x1F4E5; Export JSON</button>
+        <button type="button" class="tb-btn success" id="btnUploadRestore" title="Upload and restore from JSON">&#x1F4E4; Upload-Restore</button>
+        <input type="file" id="uploadRestoreFile" accept=".json" class="file-input-hidden" />
+        <button type="button" class="tb-btn" id="btnExportToDo" title="Export Proposed/ALPHA features as ToDo JSON for scripts/ConvertTo-FeatureToDo.ps1">&#x2705; Export-ToDo</button>
+        <button type="button" class="tb-btn success" id="btnConvertToTodo" title="Convert selected feature to an individual todo item">&#x1F4CB; Convert to ToDo</button>
+        <button type="button" class="tb-btn" id="btnSyncFeatures" style="background:#8e44ad" title="Sync features to central todo/ as individual JSON files">&#x21C4; Sync to Central</button>
+        <span id="pendingSyncFeatures" style="display:none;color:#e67e22;font-size:11px;font-weight:600">&#x26A0; Unsaved changes</span>
+        <button type="button" class="tb-btn secondary" id="btnReload">&#x21BB; Reload</button>
+      </div>
+      <div class="scroll-container" id="treeContainer">
+        <table class="tree-table" id="featureTable">
+          <thead>
+            <tr>
+              <th style="width:40%">Title</th>
+              <th style="width:10%">Status</th>
+              <th style="width:35%">Description</th>
+              <th style="width:15%">ID</th>
+            </tr>
+          </thead>
+          <tbody id="treeBody"></tbody>
+        </table>
+      </div>
+      <div class="xref-panel" id="featureXref" style="display:none">
+        <h4 onclick="togglePanel('featureXref')">&#x1F517; Related Central Items (click to collapse)</h4>
+        <div id="featureXrefContent"><em>Select a feature to see related bugs/todos from the central tracker.</em></div>
+      </div>
+      <div class="action-history" id="featureHistory" style="display:none">
+        <h4 onclick="togglePanel('featureHistory')">&#x1F4C3; Action History (click to collapse)</h4>
+        <div id="featureHistoryContent"><em>No actions recorded yet.</em></div>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: TODOS ════════════ -->
+    <div id="panelTodos" class="tab-panel" role="tabpanel" aria-label="ToDo Items">
+      <div class="toolbar">
+        <button type="button" class="tb-btn secondary" id="btnRefreshTodos" title="Re-scan todo/ folder for changes">&#x21BB; Refresh ToDos</button>
+        <button type="button" class="tb-btn" id="btnRenameProposal" style="background:#8e44ad" title="View 48hr cyclic rename proposals and last-run info">&#x1F4CB; Rename Proposals</button>
+        <div class="tb-sep"></div>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 0" for="todoStatusFilter">Status:</label>
+        <select class="tb-select" id="todoStatusFilter" title="Filter by status">
+          <option value="">All</option>
+          <option value="OPEN">Open</option>
+          <option value="IMPLEMENTED">Implemented</option>
+        </select>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 8px" for="todoCategoryFilter">Category:</label>
+        <select class="tb-select" id="todoCategoryFilter" title="Filter by category">
+          <option value="">All</option>
+        </select>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 8px" for="todoPriorityFilter">Priority:</label>
+        <select class="tb-select" id="todoPriorityFilter" title="Filter by priority">
+          <option value="">All</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 8px" for="todoSortBy">Sort:</label>
+        <select class="tb-select" id="todoSortBy" title="Sort order">
+          <option value="priority">Priority</option>
+          <option value="category">Category</option>
+          <option value="status">Status</option>
+          <option value="date">Date</option>
+          <option value="title">Title</option>
+        </select>
+        <div class="tb-sep"></div>
+        <span style="font-size:12px;color:#666">Sourced from workspace <code style="background:#e8eef4;padding:1px 5px;border-radius:3px;font-size:11px">todo/</code> folder via <code style="background:#e8eef4;padding:1px 5px;border-radius:3px;font-size:11px">_index.json</code></span>
+      </div>
+      <div class="todo-summary" id="todoSummary" role="status" aria-live="polite">
+        <span>Loading&#x2026;</span>
+      </div>
+      <div class="scroll-container" id="todoContainer" role="list" aria-label="Todo items list">
+        <div id="todoCards"><em style="color:#999">Click the ToDos tab to load&#x2026;</em></div>
+      </div>
+      <div class="action-log" id="actionLog"></div>
+    </div>
+
+    <!-- ════════════ TAB: BUGS ════════════ -->
+    <div id="panelBugs" class="tab-panel">
+      <div class="bug-entry">
+        <select id="bugScript" title="Select the script where the bug was found">
+          <option value="">&#x2014; Select Script &#x2014;</option>
+        </select>
+        <input type="text" id="bugNote" placeholder="Describe the bug and press Enter&#x2026;" title="Type bug description and press Enter to submit" />
+        <span class="hint">Select a script, type a description, press <strong>Enter</strong> to log. Auto-indexed and date-stamped.</span>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="tb-btn secondary" id="btnRefreshBugs">&#x21BB; Refresh</button>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 8px" for="bugStatusFilter">Filter:</label>
+        <select class="tb-select" id="bugStatusFilter">
+          <option value="">All</option>
+          <option value="Open">Open</option>
+          <option value="Fixed">Fixed</option>
+          <option value="Investigating">Investigating</option>
+          <option value="Won't Fix">Won&#x2019;t Fix</option>
+        </select>
+        <div class="tb-sep"></div>
+        <label style="font-size:12px;font-weight:600;margin:0 4px 0 0" for="bugStatusSet">Set Status:</label>
+        <select class="tb-select" id="bugStatusSet">
+          <option value="Open">Open</option>
+          <option value="Fixed">Fixed</option>
+          <option value="Investigating">Investigating</option>
+          <option value="Won't Fix">Won&#x2019;t Fix</option>
+        </select>
+        <button type="button" class="tb-btn" id="btnBugSetStatus">Apply</button>
+        <div class="tb-sep"></div>
+        <button type="button" class="tb-btn warning" id="btnBugDownload" title="Export bug tracker JSON">&#x1F4E5; Export Bugs JSON</button>
+        <button type="button" class="tb-btn success" id="btnBugUpload" title="Upload bug tracker JSON">&#x1F4E4; Upload Bugs</button>
+        <input type="file" id="uploadBugFile" accept=".json" class="file-input-hidden" />
+        <button type="button" class="tb-btn" id="btnSyncBugs" style="background:#8e44ad" title="Sync bugs to central todo/ as individual JSON files">&#x21C4; Sync to Central</button>
+        <span id="pendingSyncBugs" style="display:none;color:#e67e22;font-size:11px;font-weight:600">&#x26A0; Unsaved changes</span>
+      </div>
+      <div class="scroll-container" id="bugContainer">
+        <table class="data-table" id="bugTable">
+          <thead>
+            <tr>
+              <th style="width:8%">ID</th>
+              <th style="width:20%">Script</th>
+              <th style="width:10%">Status</th>
+              <th style="width:42%">Description</th>
+              <th style="width:20%">Date</th>
+            </tr>
+          </thead>
+          <tbody id="bugBody"></tbody>
+        </table>
+      </div>
+      <div class="xref-panel" id="bugXref" style="display:none">
+        <h4 onclick="togglePanel('bugXref')">&#x1F517; Related Central Items (click to collapse)</h4>
+        <div id="bugXrefContent"><em>Select a bug to see related features/todos from the central tracker.</em></div>
+      </div>
+      <div class="action-history" id="bugHistory" style="display:none">
+        <h4 onclick="togglePanel('bugHistory')">&#x1F4C3; Action History (click to collapse)</h4>
+        <div id="bugHistoryContent"><em>No actions recorded yet.</em></div>
+      </div>
+    </div>
+
+    <!-- ════════════ TAB: TESTING ROUTINE BUILDER ════════════ -->
+    <div id="panelTesting" class="tab-panel">
+      <div class="toolbar">
+        <span style="font-size:13px;font-weight:600;color:#1a3a5c">&#x1F9EA; Testing Routine Builder</span>
+        <span style="font-size:11px;color:#666;margin-left:8px">Build, save, load and run sequential test routines with 22 condition types.</span>
+        <div class="tb-sep"></div>
+        <button type="button" class="tb-btn success" id="btnQuickSave" title="Quick-save current routine to library">&#x1F4BE; Quick Save</button>
+        <button type="button" class="tb-btn warning" id="btnSaveAsNew" title="Save as a new routine (never overwrites)">&#x1F4CB; Save as New</button>
+        <button type="button" class="tb-btn" id="btnToggleLock" title="Lock/unlock the active saved routine">&#x1F512; Lock/Unlock</button>
+        <button type="button" class="tb-btn secondary" id="btnImportFile" title="Import a .json routine file into the library">&#x1F4C2; Import File</button>
+        <input type="file" id="importRoutineFile" accept=".json" class="file-input-hidden" />
+        <span id="dirtyIndicator" style="display:none;color:#e67e22;font-size:11px;font-weight:600;margin-left:6px">&#x26A0; Unsaved changes</span>
+      </div>
+      <div class="test-layout">
+        <!-- ── Saved Routines Pane ── -->
+        <div class="saves-pane" id="savesPane">
+          <div class="sp-header">&#x1F4C1; Saved Routines</div>
+          <div class="sp-list" id="savesList">
+            <div style="padding:16px;text-align:center;color:#999;font-size:11px">No saved routines yet.<br/>Use <strong>Save as New</strong> to create one.</div>
+          </div>
+        </div>
+        <!-- ── Iframe ── -->
+        <div class="test-iframe-wrap">
+          <iframe id="testIframe" src="XHTML-TestingRoutineBuilder.xhtml" style="width:100%;height:100%;border:none" title="Testing Routine Builder">Your browser does not support iframes.</iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ FOOTER ═════════════════════════ -->
+<div id="footer">PwShGUI Feature Requests &#x2014; AI Agent Review Pipeline &#x2014; ALPHA &#x2192; BETA &#x2192; Released</div>
+
+<!-- ════════════════════════ JAVASCRIPT ═════════════════════ -->
+<script type="text/javascript">
+//<![CDATA[
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBALS
+   ═══════════════════════════════════════════════════════════ */
+var FEATURE_JSON = 'PsGUI-FeatureRequests.json';
+var BUG_JSON     = 'PsGUI-BugTracker.json';
+var TODO_FOLDER  = '../../todo/';
+var LS_FEAT      = 'PsGUI_FeatureRequests';
+var LS_BUGS      = 'PsGUI_BugTracker';
+
+var featureData  = { meta:{}, features:[] };
+var bugData      = { meta:{}, bugs:[] };
+var flatRows     = [];
+var selectedIdx  = -1;
+var selectedBug  = -1;
+
+var SCRIPTS = [
+  'Main-GUI.ps1',
+  'View-Config.ps1',
+  'Launch-GUI.bat',
+  'Launch-GUI-quik_jnr.bat',
+  'Launch-GUI-slow_snr.bat',
+  'Launch-GUI-BUILD-VER.bat',
+  'modules/AVPN-Tracker.psm1',
+  'modules/PwShGUICore.psm1',
+  'modules/PwShGUI_AutoIssueFinder.psm1',
+  'modules/PwSh-HelpFilesUpdateSource-ReR.psm1',
+  'modules/UserProfileManager.psm1',
+  'scripts/Find-ModuleReferences.ps1',
+  'scripts/fix_check_version.ps1',
+  'scripts/fix_update_version.ps1',
+  'scripts/Invoke-OrphanAudit.ps1',
+  'scripts/Invoke-OrphanCleanup.ps1',
+  'scripts/Invoke-ReportRetention.ps1',
+  'scripts/Invoke-ScriptDependencyMatrix.ps1',
+  'scripts/Invoke-XhtmlReportTriage.ps1',
+  'scripts/New-InstallerScript.ps1',
+  'scripts/Test-ModuleDependencies.ps1',
+  'scripts/UserProfile-Manager.ps1',
+  'scripts/Script-A.ps1',
+  'scripts/Script-B.ps1',
+  'scripts/Script-C.ps1',
+  'scripts/Script-D.ps1',
+  'scripts/Script-E.ps1',
+  'scripts/Script-F.ps1',
+  'scripts/Script-F-ClonedFrom_MainGUI.ps1',
+  'scripts/Script-F - LinkToConfigJson.ps1',
+  'scripts/Script1.ps1',
+  'scripts/Script2.ps1',
+  'scripts/Script3.ps1',
+  'scripts/Script4.ps1',
+  'scripts/Script5.ps1',
+  'scripts/Script6.ps1',
+  'scripts/PS-CheatSheet-EXAMPLES.ps1',
+  'scripts/PS-CheatSheet-EXAMPLES-V2.ps1',
+  'scripts/XHTML-Checker/XHTML-Invoke-AutomatedTests.ps1',
+  'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',
+  'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',
+  'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml',
+  'scripts/Invoke-TestRoutine.ps1',
+  'scripts/Show-AppTemplateManager.ps1',
+  'scripts/Show-ScanDashboard.ps1',
+  'scripts/ConvertTo-FeatureToDo.ps1',
+  'scripts/Invoke-PSEnvironmentScanner.ps1',
+  'scripts/Invoke-ReferenceIntegrityCheck.ps1',
+  'scripts/Invoke-ModuleManagement.ps1',
+  'scripts/Install-BitwardenLite.ps1',
+  'modules/AssistedSASC.psm1',
+  'modules/SASC-Adapters.psm1',
+  'UPM/UserProfile-Manager.ps1',
+  'agents/focalpoint-null/Start-FocalPoint.ps1',
+  'agents/focalpoint-null/Chat-FocalPoint.ps1',
+  'scripts/Start-BWServe.ps1',
+  'scripts/WinRemote-PSTool.ps1',
+  'scripts/Show-EventLogViewer.ps1',
+  'scripts/XHTML-Checker/XHTML-EventLogs.xhtml',
+  'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',
+  'scripts/Invoke-TodoManager.ps1',
+  'scripts/Invoke-FileChangeTracker.ps1',
+  'scripts/Invoke-RenameProposal.ps1',
+  'scripts/Invoke-CyclicRenameCheck.ps1',
+  'scripts/Register-CyclicRenameTask.ps1'
+];
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════ */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function pad2(n){ return n<10?'0'+n:''+n; }
+function stamp(){var d=new Date();return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'_'+pad2(d.getHours())+pad2(d.getMinutes())+pad2(d.getSeconds());}
+function iso(){ return new Date().toISOString(); }
+
+function flash(){
+  var el=document.getElementById('autosaveIndicator');
+  el.className='show';setTimeout(function(){el.className='';},1200);
+}
+
+function dlBlob(json,name){
+  try{var b=new Blob([json],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
+  catch(e){alert('Download failed: '+e.message);}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+  var bs=document.querySelectorAll('#tabBar .tab-btn');
+  for(var i=0;i<bs.length;i++){
+    bs[i].addEventListener('click',function(){
+      for(var j=0;j<bs.length;j++) bs[j].className='tab-btn';
+      this.className='tab-btn active';
+      var ps=document.querySelectorAll('.tab-panel');
+      for(var k=0;k<ps.length;k++) ps[k].className='tab-panel';
+      var t=this.getAttribute('data-tab');
+      if(t==='features') document.getElementById('panelFeatures').className='tab-panel active';
+      else if(t==='todos'){document.getElementById('panelTodos').className='tab-panel active';loadTodos();}
+      else if(t==='bugs'){document.getElementById('panelBugs').className='tab-panel active';}
+      else if(t==='testing'){document.getElementById('panelTesting').className='tab-panel active';}
+    });
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   VERSION
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+  var el=document.getElementById('versionDetails'),badge=document.getElementById('versionBadge');
+  /* Fallback: extract version from the VersionTag comment at top of this file */
+  var fallbackVer='v2603.B0.v19';
+  try{
+    var nodes=document.childNodes;
+    for(var i=0;i<nodes.length;i++){
+      if(nodes[i].nodeType===8){
+        var cm=nodes[i].nodeValue;
+        var vm=cm.match(/VersionTag:\s*(\S+)/);
+        if(vm){fallbackVer='v'+vm[1];break;}
+      }
+    }
+  }catch(ignore){}
+  /* Try loading full details from system-variables.xml */
+  var x=new XMLHttpRequest();
+  x.open('GET','../../config/system-variables.xml',true);
+  x.onreadystatechange=function(){
+    if(x.readyState===4){
+      if(x.status===200||x.status===0){
+        try{
+          var p=new DOMParser(),xml=p.parseFromString(x.responseText,'application/xml');
+          function gTag(n){var t=xml.getElementsByTagName(n);return t&&t[0]?t[0].textContent:'?';}
+          var M=gTag('Major'),m=gTag('Minor'),b=gTag('Build');
+          var ps=gTag('PSVersion'),os=gTag('OSVersion');
+          var cn=gTag('ComputerName'),un=gTag('UserName');
+          badge.textContent='v'+M+'.'+m+'.'+b;
+          el.innerHTML='<strong>Version:</strong> '+M+'.'+m+'.'+b+'<br/><strong>PowerShell:</strong> '+ps+'<br/><strong>OS:</strong> '+os+'<br/><strong>Host:</strong> '+cn+'<br/><strong>User:</strong> '+un;
+        }catch(e){el.innerHTML='<em>Could not parse system-variables.xml</em>';badge.textContent=fallbackVer;}
+      }else{el.innerHTML='<em>system-variables.xml not reachable</em>';badge.textContent=fallbackVer;}
+    }
+  };
+  x.send(null);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+  var inp=document.getElementById('searchInput'),res=document.getElementById('searchResults');
+  function items(){
+    var a=[];
+    var ls=document.querySelectorAll('#leftPane .link-list a');
+    for(var i=0;i<ls.length;i++) a.push({t:ls[i].textContent,h:ls[i].getAttribute('href'),k:'doc'});
+    for(var j=0;j<flatRows.length;j++){var r=flatRows[j];a.push({t:r.id+' '+r.title+' '+r.description,h:null,k:'feat',i:j});}
+    return a;
+  }
+  inp.addEventListener('input',function(){
+    var q=inp.value.trim().toLowerCase();
+    if(!q){res.style.display='none';return;}
+    var its=items(),h='',c=0;
+    for(var k=0;k<its.length&&c<15;k++){
+      if(its[k].t.toLowerCase().indexOf(q)>=0){
+        if(its[k].k==='doc') h+='<a href="'+its[k].h+'">'+esc(its[k].t)+'</a>';
+        else h+='<a href="#" onclick="selectRow('+its[k].i+');return false;">[Feature] '+esc(flatRows[its[k].i].title)+'</a>';
+        c++;
+      }
+    }
+    if(!c) h='<em>No matches</em>';
+    res.innerHTML=h;res.style.display='block';
+  });
+  inp.addEventListener('blur',function(){setTimeout(function(){res.style.display='none';},200);});
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES — PERSISTENCE (localStorage autosave + pendingSync)
+   ═══════════════════════════════════════════════════════════ */
+var pendingSyncF = false;
+var pendingSyncB = false;
+
+function autoF(){
+  rebuildTree();featureData.meta.lastModified=iso();
+  try{localStorage.setItem(LS_FEAT,JSON.stringify(featureData));flash();}catch(e){}
+  pendingSyncF = true;
+  var el = document.getElementById('pendingSyncFeatures');
+  if (el) el.style.display = 'inline';
+}
+function loadFeatLS(){try{var r=localStorage.getItem(LS_FEAT);if(r){featureData=JSON.parse(r);return true;}}catch(e){}return false;}
+function loadFeatFile(cb){
+  var x=new XMLHttpRequest();x.open('GET',FEATURE_JSON+'?t='+Date.now(),true);
+  x.onreadystatechange=function(){if(x.readyState===4){if(x.status===200||x.status===0){try{featureData=JSON.parse(x.responseText);}catch(e){featureData={meta:{},features:[]};}}try{localStorage.setItem(LS_FEAT,JSON.stringify(featureData));}catch(e){}if(cb)cb();}};
+  x.send(null);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES — TREE LOGIC
+   ═══════════════════════════════════════════════════════════ */
+function flatN(n,d,a){a.push({id:n.id||'',title:n.title||'',status:n.status||'Proposed',description:n.description||'',depth:d,expanded:true,node:n});if(n.children)for(var i=0;i<n.children.length;i++)flatN(n.children[i],d+1,a);}
+function flatAll(){flatRows=[];for(var i=0;i<featureData.features.length;i++)flatN(featureData.features[i],0,flatRows);}
+
+function rebuildTree(){
+  var roots=[],stk=[];
+  for(var i=0;i<flatRows.length;i++){
+    var r=flatRows[i],n={id:r.id,title:r.title,status:r.status,description:r.description};
+    if(r.node&&r.node.created)n.created=r.node.created;
+    if(r.node&&r.node.reviewedBy)n.reviewedBy=r.node.reviewedBy;
+    if(r.node&&r.node.reviewedDate)n.reviewedDate=r.node.reviewedDate;
+    n.children=[];
+    while(stk.length>0&&stk[stk.length-1].d>=r.depth)stk.pop();
+    if(!stk.length)roots.push(n);else stk[stk.length-1].n.children.push(n);
+    stk.push({d:r.depth,n:n});
+  }
+  function pr(x){if(x.children&&!x.children.length)delete x.children;else if(x.children)for(var j=0;j<x.children.length;j++)pr(x.children[j]);}
+  for(var k=0;k<roots.length;k++)pr(roots[k]);
+  featureData.features=roots;
+}
+
+function sBadge(s){var c='badge-proposed',l=(s||'').toLowerCase();if(l.indexOf('alpha')>=0)c='badge-alpha';else if(l.indexOf('beta')>=0)c='badge-beta';else if(l.indexOf('released')>=0)c='badge-released';else if(l.indexOf('deferred')>=0)c='badge-deferred';return '<span class="badge '+c+'">'+esc(s||'Proposed')+'</span>';}
+function isHid(i){var d=flatRows[i].depth;for(var j=i-1;j>=0;j--){if(flatRows[j].depth<d){if(!flatRows[j].expanded)return true;d=flatRows[j].depth;}if(!flatRows[j].depth)break;}return false;}
+function hasCh(i){return i+1<flatRows.length&&flatRows[i+1].depth>flatRows[i].depth;}
+
+function renderT(){
+  var tb=document.getElementById('treeBody'),h='';
+  for(var i=0;i<flatRows.length;i++){
+    var r=flatRows[i];if(isHid(i))continue;
+    var sel=i===selectedIdx?' selected':'',ind='';
+    for(var d=0;d<r.depth;d++)ind+='<span class="indent-spacer"></span>';
+    var tog='';if(hasCh(i))tog='<span class="row-toggle" onclick="toggleRow('+i+')">'+(r.expanded?'\u25BC':'\u25B6')+'</span>';
+    h+='<tr class="tree-row'+sel+'" data-idx="'+i+'" onclick="selectRow('+i+')"><td>'+ind+tog+'<span>'+esc(r.title)+'</span></td><td>'+sBadge(r.status)+'</td><td>'+esc(r.description)+'</td><td style="font-family:monospace;font-size:11px">'+esc(r.id)+'</td></tr>';
+  }
+  if(!h)h='<tr><td colspan="4" style="text-align:center;color:#999;padding:30px">No features \u2014 click <strong>+ Add</strong> to start</td></tr>';
+  tb.innerHTML=h;
+}
+
+function selectRow(i){selectedIdx=i;renderT();}
+function toggleRow(i){flatRows[i].expanded=!flatRows[i].expanded;renderT();}
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES — TOOLBAR
+   ═══════════════════════════════════════════════════════════ */
+function genId(d,pid){
+  if(!d){var mx=0;for(var i=0;i<flatRows.length;i++){if(!flatRows[i].depth){var m=flatRows[i].id.match(/^F(\d+)/);if(m)mx=Math.max(mx,parseInt(m[1],10));}}return 'F'+String(mx+1).replace(/^(\d)$/,'00$1').replace(/^(\d\d)$/,'0$1');}
+  if(!pid)return 'F???';var cc=0;for(var j=0;j<flatRows.length;j++)if(flatRows[j].id.indexOf(pid+'.')===0&&flatRows[j].depth===d)cc++;return pid+'.'+(cc+1);
+}
+function parentId(i){if(i<0)return '';var d=flatRows[i].depth;for(var j=i-1;j>=0;j--)if(flatRows[j].depth<d)return flatRows[j].id;return '';}
+
+function pEdit(i,f){
+  var cur=flatRows[i][f]||'',v=prompt('Enter '+f+':',cur);
+  if(v!==null){flatRows[i][f]=v;if(flatRows[i].node)flatRows[i].node[f]=v;renderT();autoF();}
+}
+
+document.getElementById('btnAdd').addEventListener('click',function(){
+  var d=0,at=flatRows.length,pid='';
+  if(selectedIdx>=0){d=flatRows[selectedIdx].depth;pid=parentId(selectedIdx);at=selectedIdx+1;while(at<flatRows.length&&flatRows[at].depth>d)at++;}
+  var nr={id:genId(d,pid),title:'New Item',status:'Proposed',description:'',depth:d,expanded:true,node:{id:'',title:'New Item',status:'Proposed',description:'',created:iso().substring(0,10)}};
+  nr.node.id=nr.id;flatRows.splice(at,0,nr);selectedIdx=at;renderT();pEdit(at,'title');
+});
+
+document.getElementById('btnDelete').addEventListener('click',function(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length)return;
+  if(!confirm('Delete this item and all its children?'))return;
+  var d=flatRows[selectedIdx].depth,e=selectedIdx+1;while(e<flatRows.length&&flatRows[e].depth>d)e++;
+  flatRows.splice(selectedIdx,e-selectedIdx);if(selectedIdx>=flatRows.length)selectedIdx=flatRows.length-1;renderT();autoF();
+});
+
+document.getElementById('btnUp').addEventListener('click',function(){
+  if(selectedIdx<=0)return;var r=flatRows[selectedIdx],p=selectedIdx-1;
+  while(p>=0&&flatRows[p].depth>r.depth)p--;if(p<0||flatRows[p].depth!==r.depth)return;
+  var me=selectedIdx+1;while(me<flatRows.length&&flatRows[me].depth>r.depth)me++;
+  var sl=flatRows.splice(selectedIdx,me-selectedIdx);for(var i=0;i<sl.length;i++)flatRows.splice(p+i,0,sl[i]);
+  selectedIdx=p;renderT();autoF();
+});
+
+document.getElementById('btnDown').addEventListener('click',function(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length-1)return;var r=flatRows[selectedIdx];
+  var me=selectedIdx+1;while(me<flatRows.length&&flatRows[me].depth>r.depth)me++;
+  var nx=me;if(nx>=flatRows.length||flatRows[nx].depth!==r.depth)return;
+  var ne=nx+1;while(ne<flatRows.length&&flatRows[ne].depth>r.depth)ne++;
+  var sl=flatRows.splice(selectedIdx,me-selectedIdx);
+  flatRows.splice.apply(flatRows,[selectedIdx+(ne-me),0].concat(sl));
+  selectedIdx=selectedIdx+(ne-me);renderT();autoF();
+});
+
+document.getElementById('btnIndent').addEventListener('click',function(){
+  if(selectedIdx<=0)return;var r=flatRows[selectedIdx],pv=flatRows[selectedIdx-1];
+  if(pv.depth<r.depth)return;
+  var me=selectedIdx+1;while(me<flatRows.length&&flatRows[me].depth>r.depth)me++;
+  for(var i=selectedIdx;i<me;i++)flatRows[i].depth++;
+  flatRows[selectedIdx].id=genId(flatRows[selectedIdx].depth,parentId(selectedIdx));renderT();autoF();
+});
+
+document.getElementById('btnOutdent').addEventListener('click',function(){
+  if(selectedIdx<0)return;var r=flatRows[selectedIdx];if(r.depth<=0)return;
+  var me=selectedIdx+1;while(me<flatRows.length&&flatRows[me].depth>r.depth)me++;
+  for(var i=selectedIdx;i<me;i++)flatRows[i].depth--;
+  flatRows[selectedIdx].id=genId(flatRows[selectedIdx].depth,parentId(selectedIdx));renderT();autoF();
+});
+
+document.getElementById('btnSetStatus').addEventListener('click',function(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length)return;
+  flatRows[selectedIdx].status=document.getElementById('selStatus').value;renderT();autoF();
+});
+
+document.getElementById('btnCollapse').addEventListener('click',function(){for(var i=0;i<flatRows.length;i++)flatRows[i].expanded=false;renderT();});
+document.getElementById('btnExpand').addEventListener('click',function(){for(var i=0;i<flatRows.length;i++)flatRows[i].expanded=true;renderT();});
+
+document.getElementById('treeBody').addEventListener('dblclick',function(e){
+  var td=e.target.closest?e.target.closest('td'):e.target;if(!td)return;
+  var tr=td.parentNode,idx=parseInt(tr.getAttribute('data-idx'),10);if(isNaN(idx))return;
+  var ci=0,s=td;while(s.previousElementSibling){s=s.previousElementSibling;ci++;}
+  if(ci===0)pEdit(idx,'title');else if(ci===2)pEdit(idx,'description');else if(ci===3)pEdit(idx,'id');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES — DOWNLOAD-BACKUP / UPLOAD-RESTORE
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnDownloadBackup').addEventListener('click',function(){
+  rebuildTree();featureData.meta.lastModified=iso();
+  dlBlob(JSON.stringify(featureData,null,2),'PsGUI-FeatureRequests_BACKUP_'+stamp()+'.json');
+});
+
+document.getElementById('btnExportToDo').addEventListener('click',function(){
+  rebuildTree();
+  var todoItems=[];
+  function walk(nodes){
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i],s=(n.status||'Proposed').toLowerCase();
+      if(s==='proposed'||s.indexOf('alpha')>=0){
+        todoItems.push({todo_id:n.id||('feat-'+i+'-'+stamp()),category:'feature_request',title:n.title||'',description:n.description||'',source_feature_id:n.id||'',source_status:n.status||'Proposed',priority:s.indexOf('alpha')>=0?'HIGH':'MEDIUM',status:'OPEN',created_at:iso(),notes:'Exported from FeatureRequests XHTML'});
+      }
+      if(n.children)walk(n.children);
+    }
+  }
+  walk(featureData.features);
+  if(!todoItems.length){alert('No Proposed or ALPHA features found to convert.');return;}
+  dlBlob(JSON.stringify({schema:'PsGUI-FeatureToDo/1.0',generated:iso(),items:todoItems},null,2),'PsGUI-FeatureToDo_'+stamp()+'.json');
+  alert('Exported '+todoItems.length+' feature(s) as ToDo items.\n\nTo import into todo/ folder, run:\n  .\\scripts\\ConvertTo-FeatureToDo.ps1 -FeatureJsonPath <downloaded-file>');
+});
+
+/* ── Convert single selected feature to individual todo JSON ── */
+document.getElementById('btnConvertToTodo').addEventListener('click',function(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length){alert('Select a feature row first.');return;}
+  var n=flatRows[selectedIdx];
+  var statusMap={'Proposed':'OPEN','ALPHA Testing':'OPEN','BETA Testing':'OPEN','Released':'IMPLEMENTED','Deferred':'CLOSED'};
+  var priMap={'Proposed':'MEDIUM','ALPHA Testing':'HIGH','BETA Testing':'HIGH','Released':'LOW','Deferred':'LOW'};
+  var mapped=statusMap[n.status]||'OPEN';
+  var pri=priMap[n.status]||'MEDIUM';
+  var item={
+    todo_id:'feature-'+esc(n.id||('F'+stamp())),
+    category:'feature',
+    type:'feature',
+    title:n.title||'',
+    description:n.description||'',
+    priority:pri,
+    status:mapped,
+    source_id:n.id||'',
+    source_status:n.status||'Proposed',
+    created_at:n.created||iso(),
+    suggested_by:'XHTML-FeatureRequests',
+    file_refs:[],
+    notes:'Converted from individual FeatureRequests row ('+n.status+')',
+    status_history:[{status:mapped,timestamp:iso(),by:'ConvertToTodo'}]
+  };
+  dlBlob(JSON.stringify(item,null,2),'feature-'+esc(n.id||stamp())+'.json');
+  alert('Exported feature "'+esc(n.title)+'" as todo JSON.\n\nSave the file to the todo/ folder and run:\n  .\\scripts\\Invoke-TodoManager.ps1 -Reindex');
+});
+
+document.getElementById('btnUploadRestore').addEventListener('click',function(){
+  document.getElementById('uploadRestoreFile').click();
+});
+
+document.getElementById('uploadRestoreFile').addEventListener('change',function(ev){
+  var file=ev.target.files[0];if(!file)return;
+  var rd=new FileReader();
+  rd.onload=function(e){
+    try{
+      var inc=JSON.parse(e.target.result);
+      if(!inc.features){alert('Invalid feature JSON \u2014 missing "features" array.');return;}
+      rebuildTree();
+      if(featureData.features&&featureData.features.length>0){
+        dlBlob(JSON.stringify(featureData,null,2),'PsGUI-FeatureRequests_REPLACED_'+stamp()+'.bak');
+      }
+      featureData=inc;flatAll();selectedIdx=-1;renderT();autoF();
+      alert('Feature data restored.\nItems loaded: '+featureData.features.length);
+    }catch(ex){alert('Failed to parse JSON: '+ex.message);}
+  };
+  rd.readAsText(file);ev.target.value='';
+});
+
+document.getElementById('btnReload').addEventListener('click',function(){initFeatures();});
+
+/* ═══════════════════════════════════════════════════════════
+   TODOS — DYNAMIC INDEX-DRIVEN LOADER
+   ═══════════════════════════════════════════════════════════ */
+var allTodos=[];
+var todosLoaded=false;
+
+var PRIORITY_ORDER={'CRITICAL':0,'HIGH':1,'MEDIUM':2,'LOW':3};
+
+function todoStatusBadge(s){
+  var sl=(s||'').toUpperCase();
+  if(sl==='OPEN') return 'badge-open';
+  if(sl==='IMPLEMENTED'||sl==='CLOSED'||sl==='DONE') return 'badge-fixed';
+  return 'badge-investigating';
+}
+
+function todoPriorityBadge(p){
+  var pl=(p||'').toUpperCase();
+  if(pl==='CRITICAL') return 'badge-open';
+  if(pl==='HIGH') return 'badge-alpha';
+  if(pl==='MEDIUM') return 'badge-proposed';
+  return 'badge-deferred';
+}
+
+function buildCategoryFilter(){
+  var sel=document.getElementById('todoCategoryFilter');
+  var cats={},prev=sel.value;
+  for(var i=0;i<allTodos.length;i++){
+    var c=(allTodos[i].category||'uncategorized').toLowerCase();
+    cats[c]=true;
+  }
+  var sorted=[];for(var k in cats)sorted.push(k);sorted.sort();
+  sel.innerHTML='<option value="">All</option>';
+  for(var j=0;j<sorted.length;j++){
+    var o=document.createElement('option');o.value=sorted[j];o.textContent=sorted[j];sel.appendChild(o);
+  }
+  if(prev)sel.value=prev;
+}
+
+function filterAndSortTodos(){
+  var sf=document.getElementById('todoStatusFilter').value.toUpperCase();
+  var cf=document.getElementById('todoCategoryFilter').value.toLowerCase();
+  var pf=document.getElementById('todoPriorityFilter').value.toUpperCase();
+  var sort=document.getElementById('todoSortBy').value;
+
+  var out=[];
+  for(var i=0;i<allTodos.length;i++){
+    var t=allTodos[i];
+    if(sf && (t.status||'').toUpperCase()!==sf) continue;
+    if(cf && (t.category||'').toLowerCase()!==cf) continue;
+    if(pf && (t.priority||'').toUpperCase()!==pf) continue;
+    out.push(t);
+  }
+
+  out.sort(function(a,b){
+    if(sort==='priority'){
+      var pa=PRIORITY_ORDER[(a.priority||'LOW').toUpperCase()]||3;
+      var pb=PRIORITY_ORDER[(b.priority||'LOW').toUpperCase()]||3;
+      return pa-pb;
+    }
+    if(sort==='category') return (a.category||'').localeCompare(b.category||'');
+    if(sort==='status') return (a.status||'').localeCompare(b.status||'');
+    if(sort==='date') return (b.created_at||'').localeCompare(a.created_at||'');
+    if(sort==='title') return (a.title||'').localeCompare(b.title||'');
+    return 0;
+  });
+  return out;
+}
+
+function renderTodoSummary(){
+  var sum=document.getElementById('todoSummary');
+  var open=0,impl=0;
+  for(var i=0;i<allTodos.length;i++){
+    var s=(allTodos[i].status||'').toUpperCase();
+    if(s==='IMPLEMENTED'||s==='CLOSED'||s==='DONE') impl++; else open++;
+  }
+  sum.innerHTML='<strong>Total:</strong> <span class="count-badge cnt-total">'+allTodos.length+'</span> '+
+    '<strong>Open:</strong> <span class="count-badge cnt-open">'+open+'</span> '+
+    '<strong>Implemented:</strong> <span class="count-badge cnt-impl">'+impl+'</span>';
+}
+
+function renderTodos(){
+  var c=document.getElementById('todoCards');
+  var items=filterAndSortTodos();
+  if(!items.length){
+    c.innerHTML='<div class="todo-card" role="listitem"><p style="color:#999">No todo items match the current filters.</p></div>';
+    return;
+  }
+  var h='';
+  for(var i=0;i<items.length;i++){
+    var t=items[i];
+    h+='<div class="todo-card" role="listitem" tabindex="0" aria-label="'+esc(t.title||'Untitled')+'">';
+    h+='<h3>'+esc(t.title||'Untitled')+' <span class="badge '+todoStatusBadge(t.status)+'">'+esc(t.status||'UNKNOWN')+'</span> <span class="badge '+todoPriorityBadge(t.priority)+'">'+esc(t.priority||'')+'</span></h3>';
+    h+='<div class="todo-meta">';
+    h+='<strong>ID:</strong> '+esc(t.todo_id||'')+' | ';
+    h+='<strong>Category:</strong> '+esc(t.category||'')+' | ';
+    h+='<strong>By:</strong> '+esc(t.suggested_by||'')+' | ';
+    h+='<strong>Created:</strong> '+esc(t.created_at||'');
+    if(t.acknowledged_at) h+=' | <strong>Ack:</strong> '+esc(t.acknowledged_at);
+    h+='</div>';
+    h+='<p>'+esc(t.description||'')+'</p>';
+    if(t.notes) h+='<p style="margin-top:6px;color:#555"><strong>Notes:</strong> '+esc(t.notes)+'</p>';
+    if(t.affects && t.affects.length) h+='<p style="margin-top:4px;font-size:11px;color:#666"><strong>Affects:</strong> '+esc(t.affects.join(', '))+'</p>';
+    h+='</div>';
+  }
+  c.innerHTML=h;
+}
+
+function loadTodos(){
+  if(todosLoaded){renderTodos();return;}
+  var c=document.getElementById('todoCards');
+  c.innerHTML='<em style="color:#999">Loading todo index\u2026</em>';
+
+  var x=new XMLHttpRequest();
+  x.open('GET',TODO_FOLDER+'_index.json?t='+Date.now(),true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    var fileList=[];
+    if(x.status===200||x.status===0){
+      try{var idx=JSON.parse(x.responseText);fileList=idx.files||[];}catch(e){}
+    }
+    if(!fileList.length){
+      c.innerHTML='<div class="todo-card" role="listitem"><p style="color:#999">No todo items found. Run the index generator or add todo JSON files to the todo/ folder.</p></div>';
+      renderTodoSummary();
+      return;
+    }
+
+    allTodos=[];
+    var pending=fileList.length;
+    for(var f=0;f<fileList.length;f++){
+      (function(fn){
+        var r=new XMLHttpRequest();
+        r.open('GET',TODO_FOLDER+fn+'?t='+Date.now(),true);
+        r.onreadystatechange=function(){
+          if(r.readyState!==4)return;
+          if(r.status===200||r.status===0){
+            try{allTodos.push(JSON.parse(r.responseText));}catch(e){}
+          }
+          pending--;
+          if(pending<=0){
+            todosLoaded=true;
+            buildCategoryFilter();
+            renderTodoSummary();
+            renderTodos();
+          }
+        };
+        r.send(null);
+      })(fileList[f]);
+    }
+  };
+  x.send(null);
+}
+
+document.getElementById('btnRefreshTodos').addEventListener('click',function(){todosLoaded=false;allTodos=[];loadTodos();});
+document.getElementById('btnRenameProposal').addEventListener('click',function(){
+  var panel=document.getElementById('todoCards');
+  panel.innerHTML='<em style="color:#999">Loading cyclic rename state\u2026</em>';
+  var x=new XMLHttpRequest();
+  x.open('GET','../../config/cyclic-tasks.json?t='+Date.now(),true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    var state=null;
+    if(x.status===200||x.status===0){try{state=JSON.parse(x.responseText);}catch(e){}}
+    var h='<div class="todo-card"><h3>\u{1F4CB} Rename Proposal Check (48hr Cyclic)</h3>';
+    if(state&&state.cyclicRenameCheck){
+      var c=state.cyclicRenameCheck;
+      h+='<div class="meta">Last Run: <strong>'+esc(c.lastRun||'Never')+'</strong> | Interval: '+esc(String(c.intervalHours||48))+'h</div>';
+      if(c.lastResult){h+='<p>Proposals found: <strong>'+esc(String(c.lastResult.proposals||0))+'</strong> | ToDos created: <strong>'+esc(String(c.lastResult.todosCreated||0))+'</strong></p>';}
+    }else{
+      h+='<div class="meta">No cyclic state found. Run the task once to initialise.</div>';
+    }
+    h+='<p style="margin-top:8px;font-size:11px;color:#888">Command: <code>powershell -File scripts/Invoke-CyclicRenameCheck.ps1</code></p>';
+    h+='</div>';
+    /* Now show rename proposal todos */
+    if(todosLoaded&&allTodos.length){
+      var rp=[];for(var i=0;i<allTodos.length;i++){if((allTodos[i].category||'')==='maintenance'&&(allTodos[i].title||'').indexOf('Rename')>=0)rp.push(allTodos[i]);}
+      if(rp.length){
+        h+='<div class="todo-card"><h3>\u{1F4CB} Pending Rename Proposals ('+rp.length+')</h3>';
+        for(var j=0;j<rp.length;j++){var t=rp[j];h+='<div style="margin:4px 0;font-size:12px"><strong>'+esc(t.title||'')+'</strong> - '+esc(t.description||'')+'</div>';}
+        h+='</div>';
+      }
+    }
+    panel.innerHTML=h;
+  };
+  x.send(null);
+});
+document.getElementById('todoStatusFilter').addEventListener('change',function(){renderTodos();});
+document.getElementById('todoCategoryFilter').addEventListener('change',function(){renderTodos();});
+document.getElementById('todoPriorityFilter').addEventListener('change',function(){renderTodos();});
+document.getElementById('todoSortBy').addEventListener('change',function(){renderTodos();});
+
+/* ═══════════════════════════════════════════════════════════
+   BUGS — TRACKER
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+  var sel=document.getElementById('bugScript');
+  SCRIPTS.sort();
+  for(var i=0;i<SCRIPTS.length;i++){var o=document.createElement('option');o.value=SCRIPTS[i];o.textContent=SCRIPTS[i];sel.appendChild(o);}
+})();
+
+function autoB(){bugData.meta.lastModified=iso();try{localStorage.setItem(LS_BUGS,JSON.stringify(bugData));flash();}catch(e){}
+  pendingSyncB = true;
+  var el = document.getElementById('pendingSyncBugs');
+  if (el) el.style.display = 'inline';
+}
+function loadBugLS(){try{var r=localStorage.getItem(LS_BUGS);if(r){bugData=JSON.parse(r);return true;}}catch(e){}return false;}
+function loadBugFile(cb){
+  var x=new XMLHttpRequest();x.open('GET',BUG_JSON+'?t='+Date.now(),true);
+  x.onreadystatechange=function(){if(x.readyState===4){if(x.status===200||x.status===0){try{bugData=JSON.parse(x.responseText);}catch(e){bugData={meta:{},bugs:[]};}}try{localStorage.setItem(LS_BUGS,JSON.stringify(bugData));}catch(e){}if(cb)cb();}};
+  x.send(null);
+}
+
+function bBadge(s){var c='badge-open',l=(s||'').toLowerCase();if(l==='fixed')c='badge-fixed';else if(l==='investigating')c='badge-investigating';else if(l==="won't fix"||l==='wontfix')c='badge-wontfix';return '<span class="badge '+c+'">'+esc(s||'Open')+'</span>';}
+
+function renderB(){
+  var tb=document.getElementById('bugBody'),flt=document.getElementById('bugStatusFilter').value,h='';
+  var bugs=bugData.bugs||[];
+  for(var i=bugs.length-1;i>=0;i--){
+    var b=bugs[i];if(flt&&(b.status||'Open')!==flt)continue;
+    var sel=i===selectedBug?' selected':'';
+    h+='<tr class="'+sel+'" data-bidx="'+i+'" onclick="selectBug('+i+')"><td style="font-family:monospace">BUG-'+esc(String(b.id))+'</td><td>'+esc(b.script)+'</td><td>'+bBadge(b.status)+'</td><td>'+esc(b.description)+'</td><td style="font-size:11px">'+esc(b.created)+'</td></tr>';
+  }
+  if(!h)h='<tr><td colspan="5" style="text-align:center;color:#999;padding:30px">No bugs logged. Select a script and describe the issue above.</td></tr>';
+  tb.innerHTML=h;
+}
+
+function selectBug(i){selectedBug=i;renderB();}
+
+document.getElementById('bugNote').addEventListener('keydown',function(ev){
+  if(ev.keyCode===13||ev.key==='Enter'){
+    ev.preventDefault();
+    var scr=document.getElementById('bugScript').value,note=this.value.trim();
+    if(!scr){alert('Please select a script first.');return;}
+    if(!note)return;
+    if(!bugData.bugs)bugData.bugs=[];
+    var nid=bugData.bugs.length>0?bugData.bugs[bugData.bugs.length-1].id+1:1;
+    bugData.bugs.push({id:nid,script:scr,status:'Open',description:note,created:iso()});
+    this.value='';renderB();autoB();
+  }
+});
+
+document.getElementById('btnBugSetStatus').addEventListener('click',function(){
+  if(selectedBug<0||!bugData.bugs||selectedBug>=bugData.bugs.length)return;
+  bugData.bugs[selectedBug].status=document.getElementById('bugStatusSet').value;
+  renderB();autoB();
+});
+
+document.getElementById('bugStatusFilter').addEventListener('change',function(){renderB();});
+document.getElementById('btnRefreshBugs').addEventListener('click',function(){loadBugLS();renderB();});
+
+document.getElementById('btnBugDownload').addEventListener('click',function(){
+  bugData.meta.lastModified=iso();
+  dlBlob(JSON.stringify(bugData,null,2),'PsGUI-BugTracker_BACKUP_'+stamp()+'.json');
+});
+
+document.getElementById('btnBugUpload').addEventListener('click',function(){
+  document.getElementById('uploadBugFile').click();
+});
+
+document.getElementById('uploadBugFile').addEventListener('change',function(ev){
+  var file=ev.target.files[0];if(!file)return;
+  var rd=new FileReader();
+  rd.onload=function(e){
+    try{
+      var inc=JSON.parse(e.target.result);
+      if(!inc.bugs){alert('Invalid bug JSON \u2014 missing "bugs" array.');return;}
+      if(bugData.bugs&&bugData.bugs.length>0){
+        dlBlob(JSON.stringify(bugData,null,2),'PsGUI-BugTracker_REPLACED_'+stamp()+'.bak');
+      }
+      bugData=inc;renderB();autoB();
+      alert('Bug data restored.\nBugs loaded: '+bugData.bugs.length);
+    }catch(ex){alert('Failed to parse JSON: '+ex.message);}
+  };
+  rd.readAsText(file);ev.target.value='';
+});
+
+/* ═══════════════════════════════════════════════════════════
+   SYNC TO CENTRAL — FEATURES
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnSyncFeatures').addEventListener('click',function(){
+  rebuildTree();
+  var items=[];
+  function walkSync(nodes,parentId){
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      var statusMap={'Proposed':'OPEN','ALPHA Testing':'OPEN','BETA Testing':'OPEN','Released':'IMPLEMENTED','Deferred':'CLOSED'};
+      var mapped=statusMap[n.status]||'OPEN';
+      var priMap={'Proposed':'MEDIUM','ALPHA Testing':'HIGH','BETA Testing':'HIGH','Released':'LOW','Deferred':'LOW'};
+      var pri=priMap[n.status]||'MEDIUM';
+      items.push({
+        todo_id:'feature-'+esc(n.id||('F'+stamp())),
+        category:'feature',
+        type:'feature',
+        title:n.title||'',
+        description:n.description||'',
+        priority:pri,
+        status:mapped,
+        source_id:n.id||'',
+        source_status:n.status||'Proposed',
+        parent_id:parentId||'',
+        created_at:n.created||iso(),
+        suggested_by:n.reviewedBy||'XHTML-FeatureRequests',
+        file_refs:[],
+        notes:'Synced from FeatureRequests XHTML ('+n.status+')',
+        status_history:[{status:mapped,timestamp:iso(),by:'SyncToCenter'}]
+      });
+      if(n.children)walkSync(n.children,n.id);
+    }
+  }
+  walkSync(featureData.features,'');
+  if(!items.length){alert('No features to sync.');return;}
+  /* Bundle as multi-item export file for Invoke-DataMigration.ps1 consumption */
+  var bundle={
+    schema:'PsGUI-SyncExport/1.0',
+    type:'feature',
+    generated:iso(),
+    source:'XHTML-FeatureRequests',
+    items:items
+  };
+  dlBlob(JSON.stringify(bundle,null,2),'PsGUI-FeatureSync_'+stamp()+'.json');
+  pendingSyncF=false;
+  var el=document.getElementById('pendingSyncFeatures');if(el)el.style.display='none';
+  alert('Exported '+items.length+' feature(s) for central sync.\n\nTo import, run:\n  .\\scripts\\Invoke-DataMigration.ps1 -Force');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   SYNC TO CENTRAL — BUGS
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('btnSyncBugs').addEventListener('click',function(){
+  var bugs=bugData.bugs||[];
+  if(!bugs.length){alert('No bugs to sync.');return;}
+  var items=[];
+  for(var i=0;i<bugs.length;i++){
+    var b=bugs[i];
+    var statusMap={'Open':'OPEN','Fixed':'IMPLEMENTED','Investigating':'OPEN',"Won't Fix":'CLOSED'};
+    var mapped=statusMap[b.status]||'OPEN';
+    items.push({
+      todo_id:'bug-xhtml-'+b.id,
+      category:'bug',
+      type:'bug',
+      title:'['+esc(b.script)+'] '+esc(b.description),
+      description:b.description||'',
+      priority:'HIGH',
+      status:mapped,
+      severity:'HIGH',
+      source_id:'BUG-'+b.id,
+      created_at:b.created||iso(),
+      suggested_by:'XHTML-BugTracker',
+      file_refs:b.script?[b.script]:[],
+      notes:'Synced from BugTracker XHTML ('+b.status+')',
+      status_history:[{status:mapped,timestamp:iso(),by:'SyncToCenter'}]
+    });
+  }
+  var bundle={
+    schema:'PsGUI-SyncExport/1.0',
+    type:'bug',
+    generated:iso(),
+    source:'XHTML-BugTracker',
+    items:items
+  };
+  dlBlob(JSON.stringify(bundle,null,2),'PsGUI-BugSync_'+stamp()+'.json');
+  pendingSyncB=false;
+  var el=document.getElementById('pendingSyncBugs');if(el)el.style.display='none';
+  alert('Exported '+items.length+' bug(s) for central sync.\n\nTo import, run:\n  .\\scripts\\Invoke-DataMigration.ps1 -Force');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   CROSS-REFERENCE — Load central items and match
+   ═══════════════════════════════════════════════════════════ */
+var centralItems = [];
+var centralLoaded = false;
+
+function loadCentralItems(cb){
+  if(centralLoaded){if(cb)cb();return;}
+  var x=new XMLHttpRequest();
+  x.open('GET',TODO_FOLDER+'_index.json?t='+Date.now(),true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    var fileList=[];
+    if(x.status===200||x.status===0){try{var idx=JSON.parse(x.responseText);fileList=idx.files||[];}catch(e){}}
+    if(!fileList.length){centralLoaded=true;if(cb)cb();return;}
+    centralItems=[];var pending=fileList.length;
+    for(var f=0;f<fileList.length;f++){
+      (function(fn){
+        var r=new XMLHttpRequest();r.open('GET',TODO_FOLDER+fn+'?t='+Date.now(),true);
+        r.onreadystatechange=function(){
+          if(r.readyState!==4)return;
+          if(r.status===200||r.status===0){try{centralItems.push(JSON.parse(r.responseText));}catch(e){}}
+          pending--;if(pending<=0){centralLoaded=true;if(cb)cb();}
+        };r.send(null);
+      })(fileList[f]);
+    }
+  };x.send(null);
+}
+
+function showFeatureXref(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length)return;
+  var feat=flatRows[selectedIdx];
+  var panel=document.getElementById('featureXref');
+  var content=document.getElementById('featureXrefContent');
+  panel.style.display='block';
+  loadCentralItems(function(){
+    var matches=[];
+    var fid=feat.id||'';
+    var ftitle=(feat.title||'').toLowerCase();
+    for(var i=0;i<centralItems.length;i++){
+      var ci=centralItems[i];
+      var sid=(ci.source_id||'').toLowerCase();
+      var ctitle=(ci.title||'').toLowerCase();
+      var cdesc=(ci.description||'').toLowerCase();
+      if(sid&&fid&&sid.toLowerCase().indexOf(fid.toLowerCase())>=0){matches.push(ci);continue;}
+      if(ftitle&&(ctitle.indexOf(ftitle)>=0||cdesc.indexOf(ftitle)>=0))matches.push(ci);
+    }
+    if(!matches.length){content.innerHTML='<em>No related items found in central tracker for "'+esc(feat.title)+'".</em>';return;}
+    var h='<strong>'+matches.length+' related item(s) for "'+esc(feat.title)+'":</strong><br/>';
+    for(var j=0;j<matches.length;j++){
+      var m=matches[j];
+      h+='<div class="xref-item">';
+      h+='<span class="badge badge-'+(m.status||'open').toLowerCase()+'">'+esc(m.status||'OPEN')+'</span> ';
+      h+='<strong>'+esc(m.type||'todo')+'</strong>: '+esc(m.title||'')+'  <span style="color:#888">('+esc(m.todo_id||'')+')</span>';
+      h+='</div>';
+    }
+    content.innerHTML=h;
+  });
+}
+
+function showBugXref(){
+  if(selectedBug<0||!bugData.bugs||selectedBug>=bugData.bugs.length)return;
+  var bug=bugData.bugs[selectedBug];
+  var panel=document.getElementById('bugXref');
+  var content=document.getElementById('bugXrefContent');
+  panel.style.display='block';
+  loadCentralItems(function(){
+    var matches=[];
+    var bscript=(bug.script||'').toLowerCase();
+    var bdesc=(bug.description||'').toLowerCase();
+    for(var i=0;i<centralItems.length;i++){
+      var ci=centralItems[i];
+      var refs=(ci.file_refs||[]).concat(ci.affects||[]);
+      for(var r=0;r<refs.length;r++){
+        if(bscript&&refs[r].toLowerCase().indexOf(bscript)>=0){matches.push(ci);break;}
+      }
+      if(matches[matches.length-1]===ci)continue;
+      if(bdesc&&(ci.title||'').toLowerCase().indexOf(bdesc.substring(0,30))>=0)matches.push(ci);
+    }
+    if(!matches.length){content.innerHTML='<em>No related items found for BUG-'+bug.id+' ('+esc(bug.script)+').</em>';return;}
+    var h='<strong>'+matches.length+' related item(s) for BUG-'+bug.id+' ('+esc(bug.script)+'):</strong><br/>';
+    for(var j=0;j<matches.length;j++){
+      var m=matches[j];
+      h+='<div class="xref-item">';
+      h+='<span class="badge badge-'+(m.status||'open').toLowerCase()+'">'+esc(m.status||'OPEN')+'</span> ';
+      h+='<strong>'+esc(m.type||'todo')+'</strong>: '+esc(m.title||'')+'  <span style="color:#888">('+esc(m.todo_id||'')+')</span>';
+      h+='</div>';
+    }
+    content.innerHTML=h;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACTION HISTORY — Load from todo/action-log.json
+   ═══════════════════════════════════════════════════════════ */
+var actionLog = null;
+
+function loadActionHistory(targetId){
+  var el=document.getElementById(targetId);
+  if(!el)return;
+  if(actionLog!==null){renderActionHistory(actionLog,el);return;}
+  var x=new XMLHttpRequest();
+  x.open('GET',TODO_FOLDER+'action-log.json?t='+Date.now(),true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    if(x.status===200||x.status===0){
+      try{actionLog=JSON.parse(x.responseText);}catch(e){actionLog={actions:[]};}
+    }else{actionLog={actions:[]};}
+    renderActionHistory(actionLog,el);
+  };x.send(null);
+}
+
+function renderActionHistory(log,el){
+  var actions=(log&&log.actions)||[];
+  if(!actions.length){el.innerHTML='<em>No actions recorded yet.</em>';return;}
+  /* Show newest first, limit to 50 */
+  var h='';
+  var start=Math.max(0,actions.length-50);
+  for(var i=actions.length-1;i>=start;i--){
+    var a=actions[i];
+    h+='<div class="action-entry">';
+    h+='<span class="action-time">'+esc(a.timestamp||'')+'</span>';
+    h+=esc(a.action||a.description||'');
+    if(a.item_id)h+=' <span style="color:#2980b9">['+esc(a.item_id)+']</span>';
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+
+function togglePanel(id){
+  var el=document.getElementById(id);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+
+/* Wire xref to row selection */
+var origSelectRow=selectRow;
+selectRow=function(i){origSelectRow(i);showFeatureXref();};
+var origSelectBug=selectBug;
+selectBug=function(i){origSelectBug(i);showBugXref();};
+
+/* Wire action history toggle buttons to tab switching */
+(function(){
+  var bs=document.querySelectorAll('#tabBar .tab-btn');
+  for(var i=0;i<bs.length;i++){
+    bs[i].addEventListener('click',function(){
+      var t=this.getAttribute('data-tab');
+      if(t==='features'){
+        document.getElementById('featureHistory').style.display='block';
+        loadActionHistory('featureHistoryContent');
+      }
+      if(t==='bugs'){
+        document.getElementById('bugHistory').style.display='block';
+        loadActionHistory('bugHistoryContent');
+      }
+    });
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   SAVED TESTING ROUTINES — Library (localStorage backed)
+   ═══════════════════════════════════════════════════════════ */
+var LS_ROUTINES = 'PsGUI_SavedTestRoutines';
+var activeRoutineKey = null;
+var routineDirty = false;
+
+function getRoutineLib() {
+  try { return JSON.parse(localStorage.getItem(LS_ROUTINES)) || {}; } catch(e) { return {}; }
+}
+function putRoutineLib(lib) {
+  localStorage.setItem(LS_ROUTINES, JSON.stringify(lib));
+}
+function genRoutineKey(name) {
+  return 'tr_' + name.replace(/[^a-zA-Z0-9_-]/g,'-').toLowerCase() + '_' + Date.now();
+}
+
+function renderSavesList() {
+  var el = document.getElementById('savesList');
+  if (!el) return;
+  var lib = getRoutineLib();
+  var keys = Object.keys(lib);
+  if (!keys.length) {
+    el.innerHTML = '<div style="padding:16px;text-align:center;color:#999;font-size:11px">No saved routines yet.<br/>Use <strong>Save as New</strong> to create one.</div>';
+    return;
+  }
+  keys.sort(function(a,b){ return (lib[b].meta.lastModified||'').localeCompare(lib[a].meta.lastModified||''); });
+  var h = '';
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i], r = lib[k], m = r.meta || {};
+    var isActive = k === activeRoutineKey ? ' active' : '';
+    var isLocked = m.locked ? ' locked' : '';
+    h += '<div class="save-item' + isActive + isLocked + '" data-key="' + esc(k) + '" onclick="loadRoutineFromLib(\'' + esc(k) + '\')">';
+    h += '<div class="si-name">' + esc(m.name || 'Untitled') + '</div>';
+    h += '<div class="si-meta">' + (r.steps ? r.steps.length : 0) + ' steps';
+    if (m.lastModified) h += ' | ' + m.lastModified.substring(0,10);
+    h += '</div>';
+    if (m.locked) h += '<div class="si-lock" title="Locked">&#x1F512;</div>';
+    h += '</div>';
+  }
+  el.innerHTML = h;
+}
+
+function setDirty(d) {
+  routineDirty = d;
+  var ind = document.getElementById('dirtyIndicator');
+  if (ind) ind.style.display = d ? 'inline' : 'none';
+}
+
+function promptSaveIfDirty() {
+  if (!routineDirty) return true;
+  return confirm('You have unsaved changes to the current routine. Discard them?');
+}
+
+function requestRoutineFromIframe() {
+  var iframe = document.getElementById('testIframe');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ action:'getRoutine' }, '*');
+  }
+}
+
+function sendRoutineToIframe(data) {
+  var iframe = document.getElementById('testIframe');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ action:'loadRoutine', data:data }, '*');
+  }
+}
+
+function loadRoutineFromLib(key) {
+  if (!promptSaveIfDirty()) return;
+  var lib = getRoutineLib();
+  var r = lib[key];
+  if (!r) { alert('Routine not found in library.'); return; }
+  activeRoutineKey = key;
+  sendRoutineToIframe(r);
+  setDirty(false);
+  renderSavesList();
+}
+
+function saveRoutineToLib(data, forceNew) {
+  var lib = getRoutineLib();
+  var meta = data.meta || {};
+  if (!forceNew && activeRoutineKey && lib[activeRoutineKey]) {
+    if (lib[activeRoutineKey].meta && lib[activeRoutineKey].meta.locked) {
+      alert('This routine is LOCKED. Use Save as New or unlock it first.');
+      return;
+    }
+    meta.lastModified = new Date().toISOString();
+    data.meta = meta;
+    lib[activeRoutineKey] = data;
+  } else {
+    var name = meta.name || 'Untitled Routine';
+    if (forceNew) {
+      name = prompt('Name for new saved routine:', name + ' (copy)');
+      if (!name) return;
+      meta.name = name;
+    }
+    meta.lastModified = new Date().toISOString();
+    meta.locked = false;
+    data.meta = meta;
+    var key = genRoutineKey(name);
+    lib[key] = data;
+    activeRoutineKey = key;
+  }
+  putRoutineLib(lib);
+  setDirty(false);
+  renderSavesList();
+}
+
+function toggleRoutineLock() {
+  if (!activeRoutineKey) { alert('Select a saved routine first.'); return; }
+  var lib = getRoutineLib();
+  var r = lib[activeRoutineKey];
+  if (!r) return;
+  if (!r.meta) r.meta = {};
+  r.meta.locked = !r.meta.locked;
+  putRoutineLib(lib);
+  renderSavesList();
+  alert('Routine is now ' + (r.meta.locked ? 'LOCKED' : 'UNLOCKED') + '.');
+}
+
+/* Listen for postMessage from iframe */
+window.addEventListener('message', function(ev) {
+  if (!ev.data || typeof ev.data !== 'object') return;
+  if (ev.data.action === 'routineData') {
+    if (ev.data._saveMode === 'quickSave') {
+      saveRoutineToLib(ev.data.data, false);
+    } else if (ev.data._saveMode === 'saveAsNew') {
+      saveRoutineToLib(ev.data.data, true);
+    }
+  }
+  if (ev.data.action === 'routineChanged') {
+    setDirty(true);
+  }
+});
+
+/* Toolbar buttons */
+(function(){
+  var btnSave = document.getElementById('btnQuickSave');
+  var btnNew  = document.getElementById('btnSaveAsNew');
+  var btnLock = document.getElementById('btnToggleLock');
+  var btnImp  = document.getElementById('btnImportFile');
+  var fileImp = document.getElementById('importRoutineFile');
+
+  if (btnSave) btnSave.addEventListener('click', function() {
+    var iframe = document.getElementById('testIframe');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ action:'getRoutine', _saveMode:'quickSave' }, '*');
+    }
+  });
+  if (btnNew) btnNew.addEventListener('click', function() {
+    var iframe = document.getElementById('testIframe');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ action:'getRoutine', _saveMode:'saveAsNew' }, '*');
+    }
+  });
+  if (btnLock) btnLock.addEventListener('click', toggleRoutineLock);
+
+  if (btnImp) btnImp.addEventListener('click', function() { if(fileImp) fileImp.click(); });
+  if (fileImp) fileImp.addEventListener('change', function(ev) {
+    var file = ev.target.files[0];
+    if (!file) return;
+    var rd = new FileReader();
+    rd.onload = function(e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (!data.steps || !data.steps.length) { alert('No steps in file.'); return; }
+        if (!data.meta) data.meta = {};
+        data.meta.locked = false;
+        data.meta.lastModified = new Date().toISOString();
+        var name = data.meta.name || file.name.replace(/\.json$/i,'');
+        data.meta.name = name;
+        var lib = getRoutineLib();
+        var key = genRoutineKey(name);
+        lib[key] = data;
+        putRoutineLib(lib);
+        activeRoutineKey = key;
+        sendRoutineToIframe(data);
+        setDirty(false);
+        renderSavesList();
+        alert('Imported "' + name + '" (' + data.steps.length + ' steps).');
+      } catch(ex) { alert('Failed to parse: ' + ex.message); }
+    };
+    rd.readAsText(file);
+    ev.target.value = '';
+  });
+
+  /* Init saves list on Testing tab activation */
+  var tabs = document.querySelectorAll('#tabBar .tab-btn');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener('click', function() {
+      if (this.getAttribute('data-tab') === 'testing') renderSavesList();
+    });
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   EXTENDED LOGGING — Manual action log with error trapping
+   ═══════════════════════════════════════════════════════════ */
+var _actionLogEntries = [];
+var _actionLogVisible = false;
+
+function actionLogAdd(level, msg) {
+  var ts = new Date().toISOString().substring(11, 23);
+  var cls = level === 'ok' ? 'log-ok' : level === 'err' ? 'log-err' : level === 'warn' ? 'log-warn' : '';
+  _actionLogEntries.push('<div class="log-entry"><span class="log-ts">[' + esc(ts) + ']</span> <span class="' + cls + '">' + esc(msg) + '</span></div>');
+  if (_actionLogEntries.length > 200) _actionLogEntries.shift();
+  renderActionLog();
+}
+
+function renderActionLog() {
+  var el = document.getElementById('actionLog');
+  if (!el) return;
+  if (_actionLogEntries.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#569cd6;font-weight:600">Action Log (' + _actionLogEntries.length + ')</span><span class="action-log-toggle" onclick="document.getElementById(\'actionLog\').style.display=\'none\'">Hide</span></div>' + _actionLogEntries.join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+/* Auto-log: error trapping for bug entries */
+function trapAndLogBug(description, script) {
+  try {
+    var bugEntry = { id: (bugData.bugs || []).length > 0 ? bugData.bugs[bugData.bugs.length - 1].id + 1 : 1, script: script || 'XHTML-FeatureRequests.xhtml', status: 'Open', description: description, created: iso() };
+    if (!bugData.bugs) bugData.bugs = [];
+    bugData.bugs.push(bugEntry);
+    autoB();
+    actionLogAdd('err', 'Auto-logged bug BUG-' + bugEntry.id + ': ' + description);
+  } catch (e) {
+    try { localStorage.setItem('PsGUI_LastError', JSON.stringify({ ts: iso(), msg: description, err: e.message })); } catch (ex) { /* silent */ }
+  }
+}
+
+/* Global error handler — auto-create Bugs2FIX for JS errors */
+window.onerror = function(msg, url, line) {
+  var desc = 'JS Error: ' + msg + ' (line ' + line + ')';
+  actionLogAdd('err', desc);
+  trapAndLogBug(desc, 'XHTML-FeatureRequests.xhtml');
+  return false;
+};
+
+/* Wrap manual button clicks with logging */
+(function() {
+  var btnLog = {
+    'btnRefreshTodos': 'Refresh ToDos',
+    'btnRenameProposal': 'View Rename Proposals',
+    'btnConvertToTodo': 'Convert Feature to ToDo',
+    'btnSyncFeatures': 'Sync Features to Central',
+    'btnSyncBugs': 'Sync Bugs to Central',
+    'btnExportToDo': 'Export Features as ToDo'
+  };
+  for (var id in btnLog) {
+    (function(bid, label) {
+      var btn = document.getElementById(bid);
+      if (btn) {
+        var origClick = btn.onclick;
+        btn.addEventListener('click', function() { actionLogAdd('ok', 'Manual: ' + label); }, true);
+      }
+    })(id, btnLog[id]);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════ */
+function initFeatures(){
+  if(loadFeatLS()){flatAll();selectedIdx=-1;renderT();}
+  else loadFeatFile(function(){flatAll();selectedIdx=-1;renderT();});
+}
+function initBugs(){
+  if(!loadBugLS()) loadBugFile(function(){renderB();});
+  else renderB();
+}
+
+initFeatures();
+initBugs();
+
+//]]>
+</script>
+</body>
+</html>
+
+
+
+
+

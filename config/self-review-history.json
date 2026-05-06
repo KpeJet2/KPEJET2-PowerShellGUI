@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "schema": "SelfReviewHistory/1.0",
+    "updated": "2026-04-04T15:24:39.8559204Z"
+  },
+  "runs": [
+    {
+      "runId": "SR-20260404232439",
+      "timestamp": "2026-04-04T15:24:39.8500074Z",
+      "mode": "full",
+      "compositeScore": 0.5165,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.0,
+          "detail": "0/39 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.5,
+          "detail": "Pipeline metrics unavailable: The running command stopped because the preference variable \"ErrorActionPreference\" or common parameter is set to Stop: At C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:207 char:5\r\n+     }\r\n+     ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:222 char:1\r\n+ }\r\n+ ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:405 char:1\r\n+ }\r\n+ ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:428 char:8\r\n+     try {\r\n+        ~\r\nMissing '=' operator after key in hash literal."
+        },
+        "ErrorRate": {
+          "score": 0.355,
+          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
+        },
+        "CodeStyle": {
+          "score": 0.4,
+          "detail": "Write-Host occurrences in modules: 36; functions missing [CmdletBinding()]: 188/278"
+        },
+        "FormatCongruency": {
+          "score": 0.982,
+          "detail": "1/114 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.7,
+          "detail": "No DocFreshness reports found -- assuming OK."
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [],
+      "improvements": [],
+      "feedbackItems": [],
+      "runtimeSeconds": 0.26,
+      "dryRun": false
+    }
+  ]
+}

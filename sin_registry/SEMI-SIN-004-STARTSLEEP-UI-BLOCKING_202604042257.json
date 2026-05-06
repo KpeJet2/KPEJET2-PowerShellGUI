@@ -1,0 +1,60 @@
+{
+  "sin_id": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING_202604042257",
+  "sin_class": "SemiSin",
+  "title": "Start-Sleep in UI-adjacent code can freeze WinForms responsiveness",
+  "description": "Start-Sleep blocks the current thread entirely. When called on the WinForms UI thread, it freezes the application — no repaints, no event processing, no user interaction. This is acceptable in background jobs, retry loops with timeouts, test automation (waiting for windows), and server startup checks. But in GUI event handlers, toolbar callbacks, or menu click handlers, it should be replaced with Timer-based delays or async patterns. Files examined: Main-GUI.ps1 event handlers, module functions called from GUI context.",
+  "severity": "PENANCE",
+  "category": "ui-responsiveness",
+  "vector": "thread-blocking",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T12:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Start-Sleep in .ps1 files (flag for review, not auto-fail)",
+  "is_security_related": false,
+  "preventionRule": "Never use Start-Sleep in WinForms event handlers. Use System.Windows.Forms.Timer for delayed actions, or offload blocking work to background runspaces via Invoke-BackgroundTask (PwShGUI-TrayHost module).",
+  "scan_type": "REGEX_ADVISORY",
+  "scan_regex": "Start-Sleep\\s+-(Seconds|Milliseconds)\\s+\\d+",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "scan_exclude_dirs": [
+    ".history",
+    "node_modules",
+    "__pycache__",
+    "temp",
+    ".venv",
+    ".venv-pygame312"
+  ],
+  "scan_exceptions": [
+    "tests/",
+    "scripts/Start-BWServe.ps1"
+  ],
+  "remedy": "For UI code: replace Start-Sleep with a System.Windows.Forms.Timer or move blocking logic to a background runspace. For non-UI code (tests, server startup, retry loops): acceptable, but add a comment explaining the wait purpose.",
+  "tags": [
+    "semisin",
+    "penance",
+    "start-sleep",
+    "ui-blocking",
+    "winforms",
+    "post-test"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING",
+    "previous_file": "SEMI-SIN-004-STARTSLEEP-UI-BLOCKING.json",
+    "reindexed_at": "2026-04-04T14:57:30.8102018Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

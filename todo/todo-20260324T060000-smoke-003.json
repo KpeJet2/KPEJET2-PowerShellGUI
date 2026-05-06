@@ -1,0 +1,23 @@
+{
+  "todo_id": "smoke-003",
+  "category": "smoke-test",
+  "title": "XHTML Strict Parse Validation on All .xhtml Files",
+  "description": "All .xhtml files must pass strict XML parse. Use [xml](Get-Content path) in PS or xmllint --noout. Check after every XHTML edit. Current files: 8 workspace XHTML files.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-24T06:00:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+    "scripts/XHTML-Checker/XHTML-MasterToDo.xhtml",
+    "scripts/XHTML-Checker/XHTML-code-analysis.xhtml",
+    "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml"
+  ],
+  "notes": "Routine: foreach ($f in Get-ChildItem -Recurse -Filter *.xhtml) { [xml](Get-Content $f.FullName -Raw) }. Session 3 fixed VersionTag comments in 3 files.",
+  "id": "smoke-003",
+  "createdAt": "2026-03-24T06:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.5981181Z"
+}

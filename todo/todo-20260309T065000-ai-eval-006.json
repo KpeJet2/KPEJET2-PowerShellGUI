@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-006",
+  "category": "maintenance",
+  "title": "Automated Config Backup Rotation",
+  "description": "Add Initialize-ConfigBackupRotation to PwShGUICore that auto-backs up system-variables.xml daily, keeps last 30 days, exports to ZIP weekly.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "modules/PwShGUICore.psm1",
+    "config/"
+  ],
+  "notes": null,
+  "id": "ai-eval-006",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.3778281Z"
+}

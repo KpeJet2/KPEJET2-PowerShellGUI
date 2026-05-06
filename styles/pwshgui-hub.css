@@ -1,0 +1,141 @@
+/* VersionTag: 2604.B1.V32.0 */
+/* pwshgui-hub.css — Workspace Hub navigation card grid & sidebar layout */
+
+/* ── Hub layout ────────────────────────────────────────────────────── */
+.hub-layout {
+  display: flex;
+  height: calc(100vh - 42px);
+  overflow: hidden;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────── */
+.hub-sidebar {
+  width: 200px;
+  min-width: 160px;
+  background: var(--panel, #252526);
+  border-right: 1px solid #1a3060;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.hub-sidebar-title {
+  padding: 10px 12px 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #3a5080;
+  border-bottom: 1px solid #142040;
+}
+.hub-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #7a9acc;
+  border-bottom: 1px solid #0d1a2a;
+  text-decoration: none;
+  transition: background .12s, color .12s;
+}
+.hub-nav-item:hover    { background: #0d1a2a; color: #c0d4f0; }
+.hub-nav-item.active   { background: #0a2040; color: #4a9eff; border-left: 3px solid #4a9eff; }
+.hub-nav-icon { font-size: 14px; flex-shrink: 0; }
+
+/* ── Main content area ──────────────────────────────────────────────── */
+.hub-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--bg, #1e1e1e);
+}
+.hub-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #2a5080;
+  margin: 0 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #142040;
+}
+
+/* ── Tool cards ─────────────────────────────────────────────────────── */
+.hub-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.hub-card {
+  background: #0b1628;
+  border: 1px solid #142040;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, transform .1s;
+  text-decoration: none;
+  display: block;
+}
+.hub-card:hover {
+  border-color: #4a9eff;
+  box-shadow: 0 0 14px rgba(74, 158, 255, 0.18);
+  transform: translateY(-1px);
+}
+.hub-card-icon  { font-size: 22px; margin-bottom: 6px; }
+.hub-card-title { font-size: 13px; color: #c0d4f0; font-weight: 600; margin: 0 0 4px; }
+.hub-card-desc  { font-size: 10px; color: #4a6080; line-height: 1.5; }
+.hub-card-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+.badge-green  { background: #14432a; color: #4ade80; border: 1px solid #22c55e; }
+.badge-yellow { background: #3a2d00; color: #fbbf24; border: 1px solid #ca8a04; }
+.badge-red    { background: #3a0a0a; color: #f87171; border: 1px solid #dc2626; }
+.badge-grey   { background: #1a2030; color: #4a6080; border: 1px solid #2a3a50; }
+
+/* ── Scan history timeline ──────────────────────────────────────────── */
+.hub-timeline { list-style: none; padding: 0; margin: 0; }
+.hub-timeline li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #0d1a2a;
+  font-size: 11px;
+  color: #7a9acc;
+}
+.hub-timeline li:last-child { border-bottom: none; }
+.tl-dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: #1a3060; }
+.tl-label { flex: 1; color: #aac; }
+.tl-meta  { color: #3a5070; font-size: 10px; white-space: nowrap; }
+.tl-size  { color: #2a4060; font-size: 10px; white-space: nowrap; }
+
+/* ── Live status strip ──────────────────────────────────────────────── */
+.hub-status-strip {
+  background: #050a14;
+  border: 1px solid #142040;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.hub-status-title { font-size: 10px; color: #2a5080; text-transform: uppercase; letter-spacing: .5px; }
+.hub-status-phases { display: flex; gap: 6px; flex-wrap: wrap; }
+.hub-phase-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #0a1424;
+  border: 1px solid #1a3060;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+.hub-phase-dot { width: 7px; height: 7px; border-radius: 50%; }
+.hub-phase-lbl { color: #8899bb; }

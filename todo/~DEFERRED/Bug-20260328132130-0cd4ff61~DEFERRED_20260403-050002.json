@@ -1,0 +1,32 @@
+{
+  "status": "DEFERRED",
+  "created": "2026-03-28T05:21:30.4364573Z",
+  "source": "BugTracker",
+  "category": "error-handling",
+  "modified": "2026-03-28T05:21:30.4365027Z",
+  "executionAgent": "",
+  "plannedAt": "2026-03-31T01:38:21Z",
+  "priority": "MEDIUM",
+  "completedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1"
+  ],
+  "linkedBugs": [],
+  "executionMethod": "",
+  "acknowledged": null,
+  "sinId": "SIN-20260328082049-dbcb8434",
+  "result": null,
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "type": "Bug",
+  "sessionModCount": 1,
+  "linkedFeatures": [],
+  "parentId": "",
+  "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+  "tags": [],
+  "title": "7 functions with no try/catch blocks",
+  "executedAt": null,
+  "id": "Bug-20260328132130-0cd4ff61",
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "createdAt": "2026-03-28T00:00:00Z",
+  "resolution": "DEFERRED: MegaCycle2-ErrorHandling-Phase -- try/catch hardening deferred to dedicated error-handling sprint. All functions will be covered as part of bulk P002 remediation pass."
+}

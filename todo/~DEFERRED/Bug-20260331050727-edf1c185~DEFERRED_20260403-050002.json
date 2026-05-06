@@ -1,0 +1,33 @@
+{
+  "result": null,
+  "linkedFeatures": [],
+  "executedAt": null,
+  "executionAgent": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "modified": "2026-03-30T21:07:27.0945332Z",
+  "sessionModCount": 1,
+  "executionMethod": "",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "category": "error-handling",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "MEDIUM",
+  "parentId": "",
+  "acknowledged": null,
+  "status": "DEFERRED",
+  "id": "Bug-20260331050727-edf1c185",
+  "linkedBugs": [],
+  "notes": "Matched existing sin: 7 functions with no try/catch blocks",
+  "title": "7 functions with no try/catch blocks",
+  "tags": [],
+  "completedAt": null,
+  "created": "2026-03-30T21:07:27.0944899Z",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1"
+  ],
+  "sinId": "SIN-20260328082049-dbcb8434",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "type": "Bug",
+  "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks"
+}

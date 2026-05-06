@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2604.B2.V31.0 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bitwarden Vault Checklist</title>
+  <link rel="stylesheet" href="styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="styles/pwshgui-responsive.css" />
+  <style type="text/css">
+    body { font-family: Segoe UI, Tahoma, sans-serif; margin: 0; padding: 16px; background: #0d1117; color: #c9d1d9; }
+    h1 { margin: 0 0 12px; font-size: 20px; color: #58a6ff; }
+    h2 { margin: 0 0 8px; font-size: 14px; color: #8b949e; border-bottom: 1px solid #30363d; padding-bottom: 4px; }
+    h3 { margin: 8px 0 4px; font-size: 13px; color: #58a6ff; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; }
+    .full { grid-column: 1 / span 2; }
+    label { display: block; margin: 6px 0 3px; font-weight: 600; font-size: 13px; color: #8b949e; }
+    input, select, textarea { width: 100%; box-sizing: border-box; border: 1px solid #30363d; border-radius: 6px; padding: 7px 10px; background: #0d1117; color: #c9d1d9; font-size: 13px; }
+    textarea { min-height: 60px; resize: vertical; font-family: Consolas, monospace; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .actions { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+    button { border: 0; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: #238636; color: #fff; }
+    .btn-danger  { background: #da3633; color: #fff; }
+    .btn-info    { background: #1f6feb; color: #fff; }
+    .btn-alt     { background: #30363d; color: #c9d1d9; border: 1px solid #484f58; }
+    .btn-warn    { background: #d29922; color: #0d1117; }
+    .output { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 10px; font-family: Consolas, monospace; font-size: 12px; color: #7ee787; min-height: 60px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+    .stat-box { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 10px; text-align: center; }
+    .stat-val { font-size: 22px; font-weight: bold; color: #58a6ff; }
+    .stat-label { font-size: 11px; color: #8b949e; margin-top: 2px; }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { padding: 5px 0; border-bottom: 1px solid #21262d; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .checklist input[type="checkbox"] { width: auto; accent-color: #238636; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .tag-ok   { background: #238636; color: #fff; }
+    .tag-warn { background: #d29922; color: #0d1117; }
+    .tag-err  { background: #da3633; color: #fff; }
+    .tag-info { background: #1f6feb; color: #fff; }
+    .note { font-size: 11px; color: #484f58; margin-top: 4px; }
+    .mono { font-family: Consolas, monospace; font-size: 12px; background: #0d1117; padding: 2px 6px; border-radius: 4px; color: #7ee787; }
+    .hidden { display: none; }
+    iframe { width: 100%; height: 240px; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; }
+    .readme-section { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; margin-top: 8px; font-size: 13px; line-height: 1.6; }
+    .readme-section code { background: #21262d; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+    .flash { animation: flashPulse 0.6s ease; }
+    @keyframes flashPulse { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <h1>Bitwarden Vault Checklist</h1>
+
+  <div class="grid">
+    <!-- ════════════ LEFT COL: Connection + Command Builder ════════════ -->
+    <div>
+      <!-- Connection Status -->
+      <div class="card">
+        <h2>Connection &amp; Status</h2>
+        <div class="row">
+          <div>
+            <label for="bwServer">BW Server URI</label>
+            <input id="bwServer" type="text" value="https://vault.bitwarden.com" />
+          </div>
+          <div>
+            <label for="bwNetworkMode">Network Mode</label>
+            <select id="bwNetworkMode">
+              <option value="cloud">Cloud (bitwarden.com)</option>
+              <option value="self-hosted">Self-Hosted</option>
+              <option value="offline">Offline (cached)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 8px;">
+          <div>
+            <label for="bwEmail">Email</label>
+            <input id="bwEmail" type="text" placeholder="user@example.com" />
+          </div>
+          <div>
+            <label for="bwSessionKey">Session Key</label>
+            <input id="bwSessionKey" type="password" placeholder="(from bw unlock)" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="buildCmd('status')">Check Status</button>
+          <button class="btn-info" onclick="buildCmd('login')">Login</button>
+          <button class="btn-warn" onclick="buildCmd('unlock')">Unlock</button>
+          <button class="btn-danger" onclick="buildCmd('lock')">Lock</button>
+          <button class="btn-alt" onclick="buildCmd('logout')">Logout</button>
+        </div>
+        <div id="statusIndicator" class="note" style="margin-top: 6px;">Status: Not checked</div>
+      </div>
+
+      <!-- Command Builder -->
+      <div class="card" style="margin-top: 12px;">
+        <h2>CLI Command Builder</h2>
+        <div class="row">
+          <div>
+            <label for="cmdAction">Action</label>
+            <select id="cmdAction" onchange="updateCmdFields()">
+              <option value="status">bw status</option>
+              <option value="login">bw login</option>
+              <option value="unlock">bw unlock</option>
+              <option value="lock">bw lock</option>
+              <option value="logout">bw logout</option>
+              <option value="sync">bw sync</option>
+              <option value="list-items">bw list items</option>
+              <option value="list-folders">bw list folders</option>
+              <option value="list-collections">bw list collections</option>
+              <option value="list-orgs">bw list organizations</option>
+              <option value="get-item">bw get item</option>
+              <option value="create-item">bw create item</option>
+              <option value="edit-item">bw edit item</option>
+              <option value="delete-item">bw delete item</option>
+              <option value="export">bw export</option>
+              <option value="import">bw import</option>
+              <option value="generate">bw generate</option>
+              <option value="config-server">bw config server</option>
+            </select>
+          </div>
+          <div>
+            <label for="cmdSearch">Search / Item ID</label>
+            <input id="cmdSearch" type="text" placeholder="search term or UUID" />
+          </div>
+        </div>
+        <div class="row" id="cmdExtraRow" style="margin-top: 8px;">
+          <div>
+            <label for="cmdFormat">Output Format</label>
+            <select id="cmdFormat">
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="table">Table (jq)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cmdFlags">Extra Flags</label>
+            <input id="cmdFlags" type="text" placeholder="--organizationid UUID" />
+          </div>
+        </div>
+        <label for="cmdOutput" style="margin-top: 8px;">Generated Command</label>
+        <div class="output" id="cmdOutput" onclick="copyCmd()">bw status</div>
+        <div class="actions">
+          <button class="btn-primary" onclick="generateCmd()">Build Command</button>
+          <button class="btn-info" onclick="copyCmd()">Copy to Clipboard</button>
+          <button class="btn-alt" onclick="clearCmd()">Clear</button>
+        </div>
+        <div class="note">Click the command box or "Copy" to copy. Paste into PowerShell terminal.</div>
+      </div>
+
+      <!-- Password Generator -->
+      <div class="card" style="margin-top: 12px;">
+        <h2>Password Generator</h2>
+        <div class="row3">
+          <div>
+            <label for="genLength">Length</label>
+            <input id="genLength" type="number" value="20" min="8" max="128" />
+          </div>
+          <div>
+            <label for="genType">Type</label>
+            <select id="genType">
+              <option value="password">Password</option>
+              <option value="passphrase">Passphrase</option>
+            </select>
+          </div>
+          <div>
+            <label>Options</label>
+            <div style="display:flex; gap:8px; padding-top:4px;">
+              <label style="font-weight:normal; font-size:12px;"><input type="checkbox" id="genUpper" checked="checked" /> A-Z</label>
+              <label style="font-weight:normal; font-size:12px;"><input type="checkbox" id="genSpecial" checked="checked" /> !@#</label>
+              <label style="font-weight:normal; font-size:12px;"><input type="checkbox" id="genDigits" checked="checked" /> 0-9</label>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="buildGenCmd()">Generate Command</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ RIGHT COL: Vault Stats + Checklist ════════════ -->
+    <div>
+      <!-- Vault Stats -->
+      <div class="card">
+        <h2>Vault Summary</h2>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-val" id="statLogins">--</div>
+            <div class="stat-label">Logins</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statCards">--</div>
+            <div class="stat-label">Cards</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statNotes">--</div>
+            <div class="stat-label">Secure Notes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statIdentities">--</div>
+            <div class="stat-label">Identities</div>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 8px;">
+          <div class="stat-box">
+            <div class="stat-val" id="statFolders">--</div>
+            <div class="stat-label">Folders</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statOrgs">--</div>
+            <div class="stat-label">Organizations</div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top: 8px;">
+          <button class="btn-info" onclick="buildCmd('list-items')">Refresh Items</button>
+          <button class="btn-alt" onclick="buildCmd('sync')">Sync Vault</button>
+        </div>
+        <div class="note">Paste <code>bw list items --session KEY | jq length</code> output into stats fields to update counts.</div>
+        <div class="row" style="margin-top: 8px;">
+          <div><label for="statsInput">Paste item counts (logins,cards,notes,ids,folders,orgs)</label>
+               <input id="statsInput" type="text" placeholder="142,5,23,3,12,2" /></div>
+          <div style="display:flex; align-items:flex-end;"><button class="btn-primary" onclick="updateStats()">Update Stats</button></div>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="card" style="margin-top: 12px;">
+        <h2>Vault Health Checklist</h2>
+        <ul class="checklist">
+          <li><input type="checkbox" id="chk1" /> <span>BW CLI installed (<span class="mono">bw --version</span>)</span></li>
+          <li><input type="checkbox" id="chk2" /> <span>Server configured (cloud or self-hosted)</span></li>
+          <li><input type="checkbox" id="chk3" /> <span>Login authenticated (<span class="mono">bw login</span>)</span></li>
+          <li><input type="checkbox" id="chk4" /> <span>Vault unlocked (<span class="mono">bw unlock</span>)</span></li>
+          <li><input type="checkbox" id="chk5" /> <span>Session key stored securely (env var or DPAPI)</span></li>
+          <li><input type="checkbox" id="chk6" /> <span>Vault synced recently (<span class="mono">bw sync</span>)</span></li>
+          <li><input type="checkbox" id="chk7" /> <span>Master password rotated within 90 days</span></li>
+          <li><input type="checkbox" id="chk8" /> <span>2FA/TOTP enabled on Bitwarden account</span></li>
+          <li><input type="checkbox" id="chk9" /> <span>Emergency access configured</span></li>
+          <li><input type="checkbox" id="chk10" /> <span>Vault export backup taken (encrypted JSON)</span></li>
+          <li><input type="checkbox" id="chk11" /> <span>Weak/reused passwords identified and rotated</span></li>
+          <li><input type="checkbox" id="chk12" /> <span>Windows Hello / biometric unlock enabled</span></li>
+        </ul>
+        <div class="actions">
+          <button class="btn-primary" onclick="checkAll()">Check All</button>
+          <button class="btn-alt" onclick="uncheckAll()">Reset</button>
+        </div>
+        <div id="checkScore" class="note" style="margin-top: 6px;">Score: 0 / 12</div>
+      </div>
+    </div>
+
+    <!-- ════════════ FULL WIDTH: History + README ════════════ -->
+    <div class="card full">
+      <h2>Command History</h2>
+      <div class="output" id="cmdHistory" style="min-height: 80px; max-height: 160px;">// Commands will appear here as you build them...</div>
+      <div class="actions">
+        <button class="btn-alt" onclick="clearHistory()">Clear History</button>
+        <button class="btn-info" onclick="exportHistory()">Export History</button>
+      </div>
+    </div>
+
+    <div class="card full">
+      <h2>Quick Reference &amp; README</h2>
+      <div class="readme-section">
+        <h3>Installation</h3>
+        <p><code>winget install Bitwarden.CLI</code> or <code>npm install -g @bitwarden/cli</code></p>
+        <p>Verify: <code>bw --version</code> (requires 2024.x+)</p>
+
+        <h3>Authentication Flow</h3>
+        <ol>
+          <li><code>bw config server https://vault.bitwarden.com</code> (or self-hosted URL)</li>
+          <li><code>bw login user@example.com</code> (interactive master password prompt)</li>
+          <li><code>bw unlock</code> → outputs <code>$env:BW_SESSION = "..."</code></li>
+          <li>Set the session key: <code>$env:BW_SESSION = "your-session-key"</code></li>
+        </ol>
+
+        <h3>Common Operations</h3>
+        <table style="width:100%; font-size:12px; border-collapse:collapse;">
+          <tr style="border-bottom:1px solid #30363d;">
+            <td style="padding:4px;"><code>bw list items --session $KEY</code></td>
+            <td style="padding:4px;">List all vault items as JSON</td>
+          </tr>
+          <tr style="border-bottom:1px solid #30363d;">
+            <td style="padding:4px;"><code>bw get item "Site Name" --session $KEY</code></td>
+            <td style="padding:4px;">Get a specific item by name or UUID</td>
+          </tr>
+          <tr style="border-bottom:1px solid #30363d;">
+            <td style="padding:4px;"><code>bw generate -ulns --length 24</code></td>
+            <td style="padding:4px;">Generate a 24-char password (upper, lower, number, special)</td>
+          </tr>
+          <tr style="border-bottom:1px solid #30363d;">
+            <td style="padding:4px;"><code>bw export --format encrypted_json --session $KEY</code></td>
+            <td style="padding:4px;">Export encrypted vault backup</td>
+          </tr>
+          <tr>
+            <td style="padding:4px;"><code>bw sync --session $KEY</code></td>
+            <td style="padding:4px;">Force-sync vault with server</td>
+          </tr>
+        </table>
+
+        <h3>AssistedSASC Integration</h3>
+        <p>This project uses <code>AssistedSASC.psm1</code> for vault integration with Windows Hello (DPAPI).
+           Session keys are encrypted at rest via <code>Enable-WindowsHello</code> and decrypted on-the-fly
+           via <code>Get-WindowsHelloPassword</code>. See <code>config/sasc-vault-config.json</code>.</p>
+
+        <h3>Security Notes</h3>
+        <ul>
+          <li>Never store the master password or session key in scripts (SIN P001)</li>
+          <li>Use <code>$env:BW_SESSION</code> in the current process only — do not persist to profile</li>
+          <li>Lock the vault when not in active use: <code>bw lock</code></li>
+          <li>Encrypted exports use Argon2id key derivation — store the export password separately</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+    var history = [];
+
+    function el(id) { return document.getElementById(id); }
+
+    function buildCmd(action) {
+      el('cmdAction').value = action;
+      generateCmd();
+    }
+
+    function generateCmd() {
+      var action = el('cmdAction').value;
+      var search = el('cmdSearch').value.trim();
+      var format = el('cmdFormat').value;
+      var flags  = el('cmdFlags').value.trim();
+      var session = el('bwSessionKey').value.trim();
+      var email  = el('bwEmail').value.trim();
+      var server = el('bwServer').value.trim();
+      var cmd = '';
+
+      switch (action) {
+        case 'status':      cmd = 'bw status'; break;
+        case 'login':       cmd = 'bw login' + (email ? ' ' + email : ''); break;
+        case 'unlock':      cmd = 'bw unlock'; break;
+        case 'lock':        cmd = 'bw lock'; break;
+        case 'logout':      cmd = 'bw logout'; break;
+        case 'sync':        cmd = 'bw sync'; break;
+        case 'list-items':  cmd = 'bw list items' + (search ? ' --search "' + search + '"' : ''); break;
+        case 'list-folders':    cmd = 'bw list folders'; break;
+        case 'list-collections':cmd = 'bw list collections'; break;
+        case 'list-orgs':   cmd = 'bw list organizations'; break;
+        case 'get-item':    cmd = 'bw get item' + (search ? ' "' + search + '"' : ' UUID'); break;
+        case 'create-item': cmd = 'bw create item'; break;
+        case 'edit-item':   cmd = 'bw edit item' + (search ? ' ' + search : ' UUID'); break;
+        case 'delete-item': cmd = 'bw delete item' + (search ? ' ' + search : ' UUID'); break;
+        case 'export':      cmd = 'bw export --format encrypted_json'; break;
+        case 'import':      cmd = 'bw import'; break;
+        case 'generate':    buildGenCmd(); return;
+        case 'config-server': cmd = 'bw config server ' + server; break;
+        default: cmd = 'bw ' + action;
+      }
+
+      if (session) { cmd += ' --session "' + session.substring(0,4) + '****"'; }
+      if (flags) { cmd += ' ' + flags; }
+      if (format === 'table' && action.indexOf('list') === 0) { cmd += ' | jq -r ".[] | [.name, .id] | @tsv"'; }
+
+      el('cmdOutput').textContent = cmd;
+      addHistory(cmd);
+    }
+
+    function buildGenCmd() {
+      var len = el('genLength').value || 20;
+      var type = el('genType').value;
+      if (type === 'passphrase') {
+        el('cmdOutput').textContent = 'bw generate --passphrase --words 4 --separator -';
+      } else {
+        var flags = '-l';
+        if (el('genUpper').checked)  flags += 'u';
+        if (el('genDigits').checked) flags += 'n';
+        if (el('genSpecial').checked) flags += 's';
+        var cmd = 'bw generate ' + flags + ' --length ' + len;
+        el('cmdOutput').textContent = cmd;
+      }
+      addHistory(el('cmdOutput').textContent);
+    }
+
+    function copyCmd() {
+      var text = el('cmdOutput').textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        el('cmdOutput').className = 'output flash';
+        setTimeout(function() { el('cmdOutput').className = 'output'; }, 600);
+      }
+    }
+
+    function clearCmd() {
+      el('cmdOutput').textContent = 'bw status';
+      el('cmdSearch').value = '';
+      el('cmdFlags').value = '';
+    }
+
+    function addHistory(cmd) {
+      var ts = new Date().toLocaleTimeString();
+      history.push('[' + ts + '] ' + cmd);
+      el('cmdHistory').textContent = history.join('\n');
+      el('cmdHistory').scrollTop = el('cmdHistory').scrollHeight;
+    }
+
+    function clearHistory() { history = []; el('cmdHistory').textContent = '// Cleared'; }
+
+    function exportHistory() {
+      var blob = new Blob([history.join('\n')], { type: 'text/plain' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bw-cmd-history-' + new Date().toISOString().slice(0,10) + '.txt';
+      a.click();
+    }
+
+    function updateStats() {
+      var parts = el('statsInput').value.split(',');
+      var ids = ['statLogins','statCards','statNotes','statIdentities','statFolders','statOrgs'];
+      for (var i = 0; i < ids.length && i < parts.length; i++) {
+        el(ids[i]).textContent = parts[i].trim() || '--';
+      }
+    }
+
+    function updateCmdFields() { /* placeholder for conditional field visibility */ }
+
+    function refreshCheckScore() {
+      var total = 12, checked = 0;
+      for (var i = 1; i <= total; i++) {
+        if (el('chk' + i).checked) checked++;
+      }
+      el('checkScore').textContent = 'Score: ' + checked + ' / ' + total;
+      el('checkScore').style.color = checked === total ? '#7ee787' : checked >= 8 ? '#d29922' : '#c9d1d9';
+    }
+
+    function checkAll() {
+      for (var i = 1; i <= 12; i++) el('chk' + i).checked = true;
+      refreshCheckScore();
+    }
+
+    function uncheckAll() {
+      for (var i = 1; i <= 12; i++) el('chk' + i).checked = false;
+      refreshCheckScore();
+    }
+
+    // Wire checkbox change events
+    (function() {
+      for (var i = 1; i <= 12; i++) {
+        el('chk' + i).onchange = refreshCheckScore;
+      }
+    })();
+  //]]>
+  </script>
+</body>
+</html>

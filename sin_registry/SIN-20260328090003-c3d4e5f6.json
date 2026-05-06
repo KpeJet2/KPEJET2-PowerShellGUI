@@ -1,0 +1,40 @@
+{
+  "sin_id": "SIN-20260328090003-c3d4e5f6",
+  "title": "Join-Path 3-argument calls incompatible with PowerShell 5.1",
+  "description": "PowerShell 5.1 Join-Path only accepts 2 positional arguments (Path, ChildPath). Calls like Join-Path $a $b $c fail with 'A positional parameter cannot be found that accepts argument'. PowerShell 7 accepts unlimited path segments. All 4 CronAiAthon modules used 3-argument Join-Path calls.",
+  "category": "compatibility",
+  "severity": "MEDIUM",
+  "file_path": "modules/CronAiAthon-Pipeline.psm1, modules/CronAiAthon-BugTracker.psm1, modules/CronAiAthon-Scheduler.psm1, modules/CronAiAthon-EventLog.psm1",
+  "agent_id": "FocalPoint-null-00",
+  "reported_by": "Code-B-Tsted",
+  "is_resolved": true,
+  "occurrence_count": 12,
+  "regression_count": 0,
+  "created_at": "2026-03-28T09:00:03Z",
+  "last_seen_at": "2026-03-28T09:00:03Z",
+  "detection_method": "Parse-time error detection under PowerShell 5.1",
+  "sessionModCount": 1,
+  "fix_applied": {
+    "fix_id": "FIX-20260328090003-c3d4e5f6",
+    "description": "Nested all 3-argument Join-Path calls into 2-argument pairs: Join-Path (Join-Path $a $b) $c. This is compatible with both PS 5.1 and PS 7.",
+    "files_modified": [
+      "modules/CronAiAthon-Pipeline.psm1",
+      "modules/CronAiAthon-BugTracker.psm1",
+      "modules/CronAiAthon-Scheduler.psm1",
+      "modules/CronAiAthon-EventLog.psm1"
+    ],
+    "pattern": "Join-Path (Join-Path $a $b) $c instead of Join-Path $a $b $c",
+    "trust_level": "trusted",
+    "pilot_count": 12,
+    "verified_at": "2026-03-28T09:00:03Z"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "sin_id": "SIN-20260328090004-d4e5f6a7",
+  "title": "Empty or corrupt config JSON files crash Initialize-PipelineRegistry and Get-PipelineItems",
+  "description": "When config/cron-aiathon-pipeline.json was empty, whitespace-only, or contained invalid JSON, ConvertFrom-Json returned $null which cascaded into null-ref errors throughout the pipeline module. Get-CentralMasterToDo also crashed when checking properties on $null objects under StrictMode.",
+  "category": "robustness",
+  "severity": "MEDIUM",
+  "file_path": "modules/CronAiAthon-Pipeline.psm1",
+  "agent_id": "FocalPoint-null-00",
+  "reported_by": "Code-B-Tsted",
+  "is_resolved": true,
+  "occurrence_count": 3,
+  "regression_count": 0,
+  "created_at": "2026-03-28T09:00:04Z",
+  "last_seen_at": "2026-03-28T09:00:04Z",
+  "detection_method": "Runtime testing with empty and corrupted config files",
+  "sessionModCount": 1,
+  "fix_applied": {
+    "fix_id": "FIX-20260328090004-d4e5f6a7",
+    "description": "Added null/empty content guards in Initialize-PipelineRegistry and Get-PipelineItems. Used PSObject.Properties check for safe property access under StrictMode in Get-CentralMasterToDo. Fall back to empty array when config is unreadable.",
+    "files_modified": [
+      "modules/CronAiAthon-Pipeline.psm1"
+    ],
+    "pattern": "Guard ConvertFrom-Json with content emptiness check; use PSObject.Properties for StrictMode-safe property access",
+    "trust_level": "test-piloted",
+    "pilot_count": 5,
+    "verified_at": "2026-03-28T09:00:04Z"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

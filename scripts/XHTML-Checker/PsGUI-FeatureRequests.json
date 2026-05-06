@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "lastModified": "2026-04-05T05:37:11.3136306+08:00",
+    "source": "CronProcessor"
+  },
+  "features": [
+    {
+      "id": "F001",
+      "status": "Proposed",
+      "created": "2026-03-27T23:35:26.623Z",
+      "description": "",
+      "title": "Secrets Management"
+    }
+  ]
+}

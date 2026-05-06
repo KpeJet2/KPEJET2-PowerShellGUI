@@ -1,0 +1,41 @@
+# VersionTag: 2604.B0.v1
+/* PwShGUI Mobile/Responsive CSS | v26 | Import AFTER pwshgui-base.css */
+@media screen and (max-width:900px){
+:root{--pad:12px;--gap:10px;--fs-base:13px;--fs-heading:16px}
+.filter-bar{flex-direction:column}
+.filter-bar input[type=search],.filter-bar input[type=text],.filter-bar select{width:100%;min-width:unset}
+table{font-size:11px}
+thead th,tbody td{padding:6px 8px}
+.tab-bar button{padding:8px 12px;font-size:11px}
+}
+@media screen and (max-width:600px){
+:root{--pad:8px;--gap:8px;--fs-base:12px;--fs-sm:11px;--fs-heading:15px;--radius:4px}
+body{padding:0}
+.app-header{padding:10px;font-size:15px;flex-wrap:wrap}
+.tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab-bar button{padding:8px 10px;font-size:10px;min-width:max-content}
+.card{padding:10px;margin-bottom:8px}
+.card-header{font-size:14px}
+table,thead,tbody,th,td,tr{display:block}
+thead{display:none}
+tbody tr{margin-bottom:8px;border:1px solid var(--border);border-radius:var(--radius);padding:8px}
+tbody td{padding:4px 0;border:none;text-align:left}
+tbody td::before{content:attr(data-label);font-weight:600;color:var(--fg-subtle);display:block;font-size:10px;text-transform:uppercase}
+.filter-bar{padding:8px}
+.status-bar{flex-direction:column;gap:4px}
+.iframe-history{height:150px}
+button,.btn{padding:10px 16px;font-size:13px}
+}
+@media screen and (max-width:380px){
+:root{--fs-base:11px;--fs-heading:14px}
+.app-header{font-size:14px}
+.tab-bar button{font-size:9px;padding:6px 8px}
+}
+@media print{
+body{background:#fff;color:#000}
+.app-header{background:#333;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tab-bar,.filter-bar,.status-bar{display:none}
+.card{border:1px solid #ccc;break-inside:avoid}
+button,.btn{display:none}
+}
+

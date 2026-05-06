@@ -1,0 +1,12 @@
+{
+  "status": "PLANNED",
+  "category": "logging-consistency",
+  "id": "advisory-002",
+  "priority": "low",
+  "description": "After audit-009 addressed the top 10 scripts, 41 lower-volume scripts still use only Write-Host with no Write-AppLog. Lower priority than audit-009 targets. Scripts include: PS-CheatSheet-EXAMPLES-V2 (206 WH), PS-CheatSheet-EXAMPLES (61 WH), Invoke-SandboxSmokeTest (28 WH), XHTML-Invoke-AutomatedTests (21 WH), SINGovernance.psm1 (21 WH), and 36 others.",
+  "title": "Add Write-AppLog to remaining 41 Write-Host-only scripts",
+  "createdAt": "2026-03-29T00:00:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.6735454Z"
+}

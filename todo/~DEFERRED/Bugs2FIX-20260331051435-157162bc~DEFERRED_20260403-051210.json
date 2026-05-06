@@ -1,0 +1,33 @@
+{
+  "notes": "",
+  "suggestedBy": "CronAiAthon",
+  "description": "Fix for bug Bug-20260331051435-a18186f5: Script Script-F-LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+  "acknowledged": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F-LinkToConfigJson.ps1"
+  ],
+  "executionAgent": "",
+  "linkedBugs": [],
+  "linkedFeatures": [],
+  "status": "DEFERRED",
+  "id": "Bugs2FIX-20260331051435-157162bc",
+  "sessionModCount": 1,
+  "parentId": "Bug-20260331051435-a18186f5",
+  "plannedAt": null,
+  "tags": [],
+  "type": "Bugs2FIX",
+  "priority": "MEDIUM",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "category": "error-handling",
+  "executedAt": null,
+  "source": "BugTracker",
+  "completedAt": null,
+  "created": "2026-03-30T21:14:35.8257147Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "result": null,
+  "modified": "2026-03-30T21:14:35.8257632Z",
+  "sinId": ""
+}

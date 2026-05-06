@@ -1,0 +1,21 @@
+{
+  "todo_id": "ai-eval-008",
+  "category": "feature",
+  "title": "Real-time Log Viewer Panel",
+  "description": "Add -ShowLiveLog toggle in Main-GUI Help menu that opens a real-time log tail form using FileSystemWatcher and RichTextBox with color-coded severity levels.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "MEDIUM",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "Main-GUI.ps1",
+    "modules/PwShGUICore.psm1"
+  ],
+  "notes": null,
+  "id": "ai-eval-008",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:47:17Z",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.3967894Z"
+}

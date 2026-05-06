@@ -1,7 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
+# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 $rootPath = Split-Path -Parent $PSScriptRoot
 $path = Join-Path $rootPath 'Main-GUI.ps1'
 $lines = Get-Content $path
@@ -40,13 +39,22 @@ $newfunc = @(
 '        }',
 '    }',
 '    Compare-ExcludedFolders -workspace $workspace -diffs ([ref]$diffs)',
-'    $diffFile = Join-Path $workspace.Path ("pwshGUI-v-$major$minor-versionbuild~DIFFS.txt")',
+'    $stamp = Get-Date -Format ''yyyyMMdd-HHmm''',
+'    $diffFile = Join-Path $versionsDir "PwShGUI-v-$expected~DIFFS-$stamp.txt"',
 '    $diffs | Out-File -FilePath $diffFile -Encoding UTF8',
+'    return $diffFile',
 '}'
 )
 $newContent = $before + $newfunc + $after
 $newContent | Set-Content $path -Encoding UTF8
 Write-Host 'Check-VersionTags rewritten'
+
+
+
+
+
+
+
 
 
 

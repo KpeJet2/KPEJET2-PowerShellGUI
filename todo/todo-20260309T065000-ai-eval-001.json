@@ -1,0 +1,22 @@
+{
+  "todo_id": "ai-eval-001",
+  "category": "security",
+  "title": "Input Validation in WinForms",
+  "description": "Forms including password fields and path inputs lack comprehensive validation. Implement validators for empty fields, path existence, regex patterns, and injection prevention in textbox inputs before processing.",
+  "suggested_by": "Code-INspectre (Claude Opus 4.6)",
+  "priority": "HIGH",
+  "status": "PLANNED",
+  "created_at": "2026-03-09T06:50:00Z",
+  "acknowledged_at": null,
+  "affects": [
+    "Main-GUI.ps1",
+    "Show-AppTemplateManager.ps1",
+    "WinRemote-PSTool.ps1"
+  ],
+  "notes": "Security hardening — OWASP input validation best practices",
+  "id": "ai-eval-001",
+  "createdAt": "2026-03-09T06:50:00Z",
+  "plannedAt": "2026-03-31T01:25:09.9479429+08:00",
+  "type": "ToDo",
+  "modified": "2026-04-03T07:12:40.3285411Z"
+}

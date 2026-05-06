@@ -1,0 +1,46 @@
+{
+  "sin_id": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257",
+  "title": "Import-Module with -ErrorAction SilentlyContinue masks load failures",
+  "description": "Using Import-Module with -ErrorAction SilentlyContinue hides module load failures, causing downstream CommandNotFoundException errors that are extremely hard to diagnose. The real cause (missing module) is masked by the symptom (missing function). Already tracked as SIN-20260330-SCANDASH-SILENTIMPORT but this formalises the scan pattern.",
+  "severity": "HIGH",
+  "category": "error-handling",
+  "vector": "silent-import-masking",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T03:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Import-Module calls with SilentlyContinue",
+  "is_security_related": false,
+  "preventionRule": "Import-Module calls in production scripts must use -ErrorAction Stop or be wrapped in try/catch with explicit error logging. SilentlyContinue is only acceptable in probing contexts (e.g. 'if module exists') followed by an explicit availability check.",
+  "scan_regex": "Import-Module\\s+[^|]*-ErrorAction\\s+SilentlyContinue",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Replace -ErrorAction SilentlyContinue with -ErrorAction Stop inside a try/catch that logs the failure. Or use -ErrorAction Stop without try/catch to fail fast.",
+  "tags": [
+    "import",
+    "module-load",
+    "silent",
+    "diagnostics",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT",
+    "previous_file": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT.json",
+    "reindexed_at": "2026-04-04T14:57:30.6082063Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "file_exclusion_regex": "error-handling-templates|CheatSheet|EXAMPLES"
+}

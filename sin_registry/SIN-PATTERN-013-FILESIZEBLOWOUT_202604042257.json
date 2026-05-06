@@ -1,0 +1,46 @@
+{
+  "sin_id": "SIN-PATTERN-013-FILESIZEBLOWOUT_202604042257",
+  "title": "Script file exceeds 5MB threshold indicating potential content multiplication",
+  "description": "Script files exceeding 5MB are almost certainly corrupted by content multiplication (recursive paste, regex replacement loop, or tool duplication). Normal PowerShell scripts rarely exceed 500KB. The 296MB Main-GUI.ps1 incident (SIN-20260329-VERSIONTAG-CORRUPTION) was caused by exactly this pattern. Already checked by SyntaxGuard (check #1) but this SIN adds automated quarantine.",
+  "severity": "CRITICAL",
+  "category": "file-corruption",
+  "vector": "content-multiplication",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T03:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "File size check: Get-ChildItem -File | Where Length -gt 5MB",
+  "is_security_related": false,
+  "preventionRule": "Any .ps1/.psm1 file over 5MB must be quarantined and reviewed. Over 20MB is auto-flagged as CRITICAL corruption.",
+  "scan_regex": "FILE_SIZE_CHECK",
+  "scan_logic": "Get-ChildItem *.ps1,*.psm1 | Where-Object { $_.Length -gt 5MB }",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy": "Compare file against last known-good checkpoint. Trim duplicated content. Restore from epoch backup if available via PwShGUI-VersionManager.",
+  "tags": [
+    "file-size",
+    "corruption",
+    "multiplication",
+    "quarantine",
+    "pipeline-scan"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SIN-PATTERN-013-FILESIZEBLOWOUT",
+    "previous_file": "SIN-PATTERN-013-FILESIZEBLOWOUT.json",
+    "reindexed_at": "2026-04-04T14:57:30.6900598Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

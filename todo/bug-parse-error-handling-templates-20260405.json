@@ -1,0 +1,16 @@
+{
+  "priority": "HIGH",
+  "status": "OPEN",
+  "title": "Parse error in error-handling-templates.ps1",
+  "created_at": "2026-04-05T04:38:50.4249165+08:00",
+  "severity": "HIGH",
+  "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+  "suggested_by": "CronProcessor-DeepTest",
+  "todo_id": "bug-parse-error-handling-templates-20260405",
+  "type": "bug",
+  "file_refs": [
+    "config\\error-handling-templates.ps1"
+  ],
+  "category": "bug",
+  "notes": "Auto-detected by cron deep-test cycle"
+}

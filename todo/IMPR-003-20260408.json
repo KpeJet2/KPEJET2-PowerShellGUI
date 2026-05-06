@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-003-20260408",
+  "title": "Rollback Auto-Checkpoint on Scan",
+  "description": "Auto-checkpoint before destructive scan phases if workspace delta >5%. Zero-effort safety net.",
+  "status": "PENDING_APPROVAL",
+  "priority": "MEDIUM",
+  "effort": "2-3h",
+  "affectedFiles": "scripts/Invoke-StaticWorkspaceScan.ps1,scripts/Invoke-WorkspaceRollback.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

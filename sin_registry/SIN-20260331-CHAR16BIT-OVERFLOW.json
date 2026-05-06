@@ -1,0 +1,65 @@
+{
+  "sin_id": "SIN-20260331-CHAR16BIT-OVERFLOW",
+  "title": "[char] cast overflow: supplementary Unicode codepoints exceed System.Char 16-bit limit",
+  "description": "PowerShell [char] type is System.Char (16-bit, max 0xFFFF / 65535). Codepoints above U+FFFF (supplementary planes: emoji, symbols) such as 0x1F50D (128269 decimal, magnifying glass) throw 'Cannot convert value to type System.Char: Value was either too large or too small for a character'. This pattern silently passes syntax checking but crashes at runtime when the cast is evaluated.",
+  "rootCause": "[char] is a .NET System.Char (UTF-16 code unit). Supplementary Unicode characters (U+10000 to U+10FFFF) require surrogate pairs and cannot be represented by a single [char]. Developers copy emoji codepoint values from Unicode charts without realising the 16-bit limit.",
+  "resolution": "Option A: Remove the [char] cast and use a UTF-8 string literal directly (e.g. '🔍'). Option B: Use [char]::ConvertFromUtf32(0x1F50D) which returns a surrogate pair string. Option C: Replace with a BMP-safe alternative character (e.g. 0x2315 for search icon).",
+  "preventionRule": "SCAN: Any [char] cast with value > 0xFFFF (65535 decimal) is invalid. Regex: \\[char\\]\\s*(0x[1-9a-fA-F][0-9a-fA-F]{4,}|[6-9]\\d{4}|[1-9]\\d{5,}). REMEDY: Replace with [char]::ConvertFromUtf32() or a BMP string literal.",
+  "affectedFiles": [
+    "scripts/Invoke-PSEnvironmentScanner.ps1"
+  ],
+  "affectedFunctions": [
+    "Environment Scanner filter panel builder"
+  ],
+  "severity": "HIGH",
+  "category": "type-cast-overflow",
+  "vector": "unicode-supplementary-plane",
+  "detected": "2026-03-31T02:19:39Z",
+  "resolved": "2026-03-31T02:20:00Z",
+  "status": "resolved",
+  "is_resolved": true,
+  "occurrence_count": 1,
+  "regression_count": 0,
+  "created_at": "2026-03-31T02:19:39Z",
+  "last_seen_at": "2026-03-31T02:19:39Z",
+  "version": "2603.B0.v27.0",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Runtime error log analysis: Write-AppLog at Main-GUI.ps1:4364 captured 'Cannot convert value 128269 to type System.Char'",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "sessionModCount": 1,
+  "tags": [
+    "char-overflow",
+    "unicode",
+    "supplementary-plane",
+    "emoji",
+    "type-cast",
+    "runtime-crash",
+    "v27"
+  ],
+  "fix_applied": {
+    "fix_id": "FIX-20260331-CHAR16BIT-OVERFLOW",
+    "description": "Removed dead [char]0x1F50D assignment at line 2196 which was immediately overwritten by 'Filter:' string on line 2197. The emoji cast was unreachable output but threw before the overwrite could execute.",
+    "files_modified": [
+      "scripts/Invoke-PSEnvironmentScanner.ps1"
+    ],
+    "pattern": "Remove [char] casts > 0xFFFF; use [char]::ConvertFromUtf32() or BMP alternatives",
+    "trust_level": "trusted",
+    "pilot_count": 1,
+    "verified_at": "2026-03-31T02:20:00Z"
+  },
+  "scan_regex": "\\[char\\]\\s*(0x[1-9a-fA-F][0-9a-fA-F]{4,}|[6-9]\\d{4}|[1-9]\\d{5,})",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

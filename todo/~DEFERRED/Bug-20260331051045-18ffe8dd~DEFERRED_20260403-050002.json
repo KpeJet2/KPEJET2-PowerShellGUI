@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "result": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1"
+  ],
+  "executionAgent": "",
+  "type": "Bug",
+  "sinId": "SIN-20260331045607-8c5928ca",
+  "sessionModCount": 1,
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "completedAt": null,
+  "linkedBugs": [],
+  "acknowledged": null,
+  "notes": "Matched existing sin: 12 functions with no try/catch blocks",
+  "executionMethod": "",
+  "priority": "MEDIUM",
+  "category": "error-handling",
+  "tags": [],
+  "created": "2026-03-30T21:10:45.0174493Z",
+  "description": "Script PwShGUI-VersionManager.psm1 has 12 functions but zero try/catch blocks",
+  "modified": "2026-03-30T21:10:45.0175005Z",
+  "outlineVersion": "v0",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "parentId": "",
+  "title": "12 functions with no try/catch blocks",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "source": "BugTracker",
+  "plannedAt": null,
+  "status": "DEFERRED",
+  "id": "Bug-20260331051045-18ffe8dd"
+}

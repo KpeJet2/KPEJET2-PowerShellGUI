@@ -1,0 +1,9 @@
+{
+  "type": "Items2ADD",
+  "category": "Pipeline",
+  "id": "IMPL-20260405-002",
+  "status": "OPEN",
+  "title": "Wire Invoke-ScriptDependencyMatrix into CronProcessor Step 7d",
+  "description": "TASK-DepMap scheduled but never runs. No CronProcessor wiring. Add as periodic step.",
+  "priority": "HIGH"
+}

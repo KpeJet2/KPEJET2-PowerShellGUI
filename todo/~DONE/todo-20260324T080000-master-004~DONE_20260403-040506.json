@@ -1,0 +1,19 @@
+{
+  "id": "master-004",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "maintenance",
+  "priority": "high",
+  "status": "DONE",
+  "title": "Synchronise BAT launcher version comments to 2603.B0.v19",
+  "description": "All 5 BAT launchers have stale version comments (2602.a.11 or 2602.a.13). Update internal Version comment to 2603.B0.v19. Also add /TASKTRAY parsing to Launch-GUI-BUILD-VER.bat and Launch-GUI-SmokeTest.bat which lack it.",
+  "files": [
+    "Launch-GUI.bat",
+    "Launch-GUI-quik_jnr.bat",
+    "Launch-GUI-slow_snr.bat",
+    "Launch-GUI-BUILD-VER.bat",
+    "Launch-GUI-SmokeTest.bat"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "completedAt": "2026-03-31T01:20:52.3008596+08:00",
+  "resolution": "FIXED - All BAT launchers at v27.0"
+}

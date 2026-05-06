@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>User Profile Manager — User Guide</title>
+  <style type="text/css">
+    :root {
+      --bg:       #1a1a2e;
+      --card:     #16213e;
+      --accent:   #0f3460;
+      --hi:       #e94560;
+      --text:     #e0e0e0;
+      --subtle:   #8a8a9a;
+      --green:    #4caf82;
+      --amber:    #e0a030;
+      --border:   #2a2a4a;
+      --code-bg:  #0d1117;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    a { color: var(--hi); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 240px; height: 100vh;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 24px 0 40px;
+    }
+    #sidebar .brand {
+      padding: 0 20px 20px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--hi);
+      letter-spacing: 0.04em;
+    }
+    #sidebar .brand span { color: var(--subtle); font-size: 11px; display: block; font-weight: 400; }
+    #sidebar nav ul { list-style: none; }
+    #sidebar nav ul li a {
+      display: block;
+      padding: 7px 20px;
+      color: var(--subtle);
+      font-size: 13px;
+      transition: background 0.15s, color 0.15s;
+    }
+    #sidebar nav ul li a:hover { background: var(--accent); color: #fff; text-decoration: none; }
+    #sidebar nav ul li.section {
+      padding: 14px 20px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--hi);
+    }
+    #content {
+      margin-left: 240px;
+      padding: 40px 48px 80px;
+      max-width: 1100px;
+    }
+
+    /* ── Typography ─────────────────────────────────────── */
+    h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+    h2 { font-size: 20px; color: var(--hi); margin: 48px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    h3 { font-size: 15px; color: var(--amber); margin: 28px 0 10px; }
+    p  { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 0 0 12px 22px; }
+    li { margin-bottom: 4px; }
+    .subtitle { color: var(--subtle); font-size: 13px; margin-bottom: 32px; }
+
+    /* ── Callout boxes ──────────────────────────────────── */
+    .callout {
+      border-left: 4px solid var(--hi);
+      background: var(--card);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 16px 0;
+    }
+    .callout.tip   { border-color: var(--green); }
+    .callout.warn  { border-color: var(--amber); }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* ── Code ───────────────────────────────────────────── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      overflow-x: auto;
+      font-size: 12.5px;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      margin: 10px 0 18px;
+      color: #c9d1d9;
+    }
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 12px;
+      color: #58a6ff;
+    }
+    .kw  { color: #ff79c6; }
+    .fn  { color: #50fa7b; }
+    .st  { color: #f1fa8c; }
+    .cm  { color: #6272a4; }
+    .va  { color: #8be9fd; }
+    .nu  { color: #bd93f9; }
+
+    /* ── Operations table ──────────────────────────────── */
+    .ops-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 16px 0 32px;
+    }
+    .ops-table thead tr {
+      background: var(--accent);
+      color: #fff;
+    }
+    .ops-table th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .ops-table tbody tr { border-bottom: 1px solid var(--border); }
+    .ops-table tbody tr:hover { background: rgba(15,52,96,0.4); }
+    .ops-table td { padding: 9px 12px; vertical-align: top; }
+    .ops-table td.idx { color: var(--subtle); font-size: 11px; text-align: center; width: 36px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 1px 2px;
+    }
+    .badge.yes  { background: rgba(76,175,130,0.2); color: var(--green); }
+    .badge.no   { background: rgba(138,138,154,0.15); color: var(--subtle); }
+    .badge.warn { background: rgba(224,160,48,0.2); color: var(--amber); }
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      background: var(--accent);
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: monospace;
+      color: #8be9fd;
+      margin: 1px 2px;
+    }
+
+    /* ── Status bar diagram ─────────────────────────────── */
+    .statusbar-demo {
+      display: flex;
+      background: #0d0d1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 12px;
+      font-family: monospace;
+    }
+    .sb-part {
+      padding: 7px 14px;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .sb-part:last-child { border-right: none; flex: 1; }
+    .sb-upn  { color: #58a6ff; }
+    .sb-pc   { color: var(--text); }
+    .sb-adm  { color: var(--amber); font-weight: bold; }
+    .sb-stat { color: var(--subtle); }
+
+    /* ── Folder tree ──────────────────────────────────────── */
+    .folder-tree {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-family: 'Cascadia Code', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #c9d1d9;
+    }
+    .folder-tree .dir  { color: #58a6ff; }
+    .folder-tree .file { color: #c9d1d9; }
+    .folder-tree .note { color: var(--subtle); font-style: italic; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      margin-left: 240px;
+      padding: 20px 48px;
+      border-top: 1px solid var(--border);
+      color: var(--subtle);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SIDEBAR ════════════════════════════════ -->
+<div id="sidebar">
+  <div class="brand">UPM<span>User Profile Manager v1.4</span></div>
+  <nav>
+    <ul>
+      <li class="section">Getting Started</li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#folder-structure">Folder Structure</a></li>
+      <li><a href="#launching">Launching</a></li>
+
+      <li class="section">Interface</li>
+      <li><a href="#status-bar">Status Bar</a></li>
+      <li><a href="#menu-bar">Menu Bar</a></li>
+      <li><a href="#tab-view">VIEW Tab</a></li>
+      <li><a href="#tab-save">SAVE Tab</a></li>
+      <li><a href="#tab-compare">COMPARE Tab</a></li>
+      <li><a href="#tab-restore">RESTORE Tab</a></li>
+
+      <li class="section">Capture Operations</li>
+      <li><a href="#capture-index">Indexed Operations Table</a></li>
+      <li><a href="#save-examples">Save Examples</a></li>
+      <li><a href="#restore-examples">Restore Examples</a></li>
+
+      <li class="section">Advanced</li>
+      <li><a href="#whatif">WhatIf Simulation</a></li>
+      <li><a href="#encryption">Encryption</a></li>
+      <li><a href="#logging">Session Logging</a></li>
+      <li><a href="#profile-format">Profile File Format</a></li>
+    </ul>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════ MAIN CONTENT ════════════════════════════ -->
+<div id="content">
+
+  <h1>User Profile Manager</h1>
+  <p class="subtitle">Complete visual guide — v1.4.0 · PowerShell 5.1+ · Windows 10/11</p>
+
+  <!-- ── Overview ──────────────────────────────────────── -->
+  <h2 id="overview">Overview</h2>
+  <p>
+    <strong>User Profile Manager (UPM)</strong> is a Windows PowerShell WinForms application that
+    captures, saves, compares, and restores Windows user profile settings across 23 categories —
+    from installed applications and PowerShell environments to display layout, certificates,
+    fonts, and regional settings.
+  </p>
+  <p>
+    Profiles are stored as <code>.upjson</code> files and can optionally be protected with
+    AES-256-CBC + PBKDF2-SHA256 encryption.  A full diff engine lets you compare any saved
+    snapshot to the current live state, and the RESTORE tab lets you selectively replay changes
+    with an automatic rollback snapshot.
+  </p>
+
+  <!-- ── Requirements ─────────────────────────────────────── -->
+  <h2 id="requirements">Requirements</h2>
+  <ul>
+    <li>Windows 10 or Windows 11</li>
+    <li>PowerShell 5.1 or PowerShell 7+</li>
+    <li><strong>winget</strong> — Windows Package Manager (for Winget Applications capture)</li>
+    <li>Windows Terminal (optional — for Terminal Configuration capture)</li>
+    <li>PowerShell ISE (optional — for ISE Configuration capture)</li>
+    <li>Run with <strong>Administrator</strong> rights to capture machine-scope items (drivers, fonts, HKLM)</li>
+  </ul>
+  <div class="callout warn">
+    <strong>&#9888; UAC Elevation</strong>
+    Some capture categories (Print Drivers, Machine Fonts, HKLM registry) require elevation.
+    The status bar shows <strong>&#9650; ADMIN</strong> when running elevated.
+    Launch via <code>Launch-GUI.bat</code> which prompts for elevation automatically.
+  </div>
+
+  <!-- ── Folder Structure ───────────────────────────────────── -->
+  <h2 id="folder-structure">Folder Structure</h2>
+  <div class="folder-tree">
+    <span class="dir">UPM\</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="file">UserProfile-Manager.ps1</span>   <span class="note"># main GUI script</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="dir">modules\</span><br/>
+    <span>&#9474;    &#9492;&#9472;&#9472; </span><span class="file">UserProfileManager.psm1</span>   <span class="note"># 23-function capture module</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="dir">docs\</span><br/>
+    <span>&#9474;    &#9500;&#9472;&#9472; </span><span class="file">UPM-UserGuide.xhtml</span>   <span class="note"># this file</span><br/>
+    <span>&#9474;    &#9492;&#9472;&#9472; </span><span class="file">VERSION-HISTORY.md</span>   <span class="note"># changelog</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="dir">config\</span>   <span class="note"># AVPN device types, custom config</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="dir">Report\</span>   <span class="note"># XHTML report exports</span><br/>
+    <span>&#9500;&#9472;&#9472; </span><span class="dir">logs\</span>   <span class="note"># optional local logs</span><br/>
+    <span>&#9492;&#9472;&#9472; </span><span class="dir">%TEMP%\UPM-Backups\&lt;ProfileName&gt;\</span>   <span class="note"># session log files</span>
+  </div>
+
+  <!-- ── Launching ────────────────────────────────────────── -->
+  <h2 id="launching">Launching</h2>
+  <p>Double-click <code>Launch-GUI.bat</code> in the parent <code>PowerShellGUI\</code> folder,
+  or run directly:</p>
+<pre><span class="cm"># From PowerShell (auto-elevates if not admin)</span>
+<span class="fn">Set-Location</span> <span class="st">'c:\PowerShellGUI\UPM'</span>
+<span class="fn">.\UserProfile-Manager.ps1</span></pre>
+  <p>The launcher batch file calls <code>PowerShell.exe -ExecutionPolicy Bypass</code> so no
+  profile-wide execution policy change is needed.</p>
+
+  <!-- ── Status Bar ───────────────────────────────────────── -->
+  <h2 id="status-bar">Status Bar</h2>
+  <p>The status bar at the bottom of the window is split into four segments:</p>
+  <div class="statusbar-demo">
+    <div class="sb-part sb-upn">alice@contoso.com</div>
+    <div class="sb-part sb-pc">DESKTOP-XPS15</div>
+    <div class="sb-part sb-adm">&#9650; ADMIN</div>
+    <div class="sb-part sb-stat">Ready — 0 profiles in store</div>
+  </div>
+  <br/>
+  <ul>
+    <li><strong>UPN</strong> — Active Directory User Principal Name (<code>user@domain</code>), or
+        <code>USERNAME@USERDNSDOMAIN</code> for local accounts</li>
+    <li><strong>Computer</strong> — NetBIOS computer name (<code>$env:COMPUTERNAME</code>)</li>
+    <li><strong>Admin</strong> — <strong style="color:#e0a030">&#9650; ADMIN</strong> (amber) when elevated,
+        <span style="color:#8a8a9a">&#9679; USER</span> otherwise</li>
+    <li><strong>Status</strong> — live operation feedback (capture progress, save confirmation, errors)</li>
+  </ul>
+
+  <!-- ── Menu Bar ─────────────────────────────────────────── -->
+  <h2 id="menu-bar">Menu Bar</h2>
+  <h3>File Menu</h3>
+  <ul>
+    <li><strong>New Capture</strong> — triggers a full live capture (same as the CAPTURE button on VIEW tab)</li>
+    <li><strong>Save Profile</strong> — opens the SAVE tab</li>
+    <li><strong>Open Profile Store Folder</strong> — opens the profiles directory in Explorer</li>
+    <li><strong>Open Log Folder</strong> — opens <code>%TEMP%\UPM-Backups</code> in Explorer</li>
+    <li><strong>Exit</strong> — closes the application</li>
+  </ul>
+  <h3>Help Menu</h3>
+  <ul>
+    <li><strong>User Guide</strong> — opens this XHTML file in your default browser</li>
+    <li><strong>Version History</strong> — opens <code>VERSION-HISTORY.md</code> in VS Code / Notepad</li>
+    <li><strong>WhatIf Simulation</strong> — opens the <a href="#whatif">WhatIf dialog</a></li>
+  </ul>
+
+  <!-- ── Tabs ─────────────────────────────────────────────── -->
+  <h2 id="tab-view">VIEW Tab</h2>
+  <p>Shows a live tree view of the current user profile state. Click <strong>CAPTURE NOW</strong>
+  to run all 23 capture functions and populate the tree. Expand each category node to inspect
+  sub-items. The capture runs asynchronously and updates the status bar with progress.</p>
+  <div class="callout tip">
+    <strong>&#128161; Tip</strong>
+    Run a capture first before switching to COMPARE or RESTORE — those tabs require a live snapshot.
+  </div>
+
+  <h2 id="tab-save">SAVE Tab</h2>
+  <p>Saves the current live snapshot to a <code>.upjson</code> profile file.</p>
+  <ul>
+    <li>Enter a <strong>Profile Name</strong> (used as the file base name and log sub-directory)</li>
+    <li>Choose a <strong>Save Path</strong> (defaults to the configured Profile Store folder)</li>
+    <li>Toggle <strong>Encrypt</strong> to protect the profile with AES-256-CBC encryption —
+        you will be prompted to enter and confirm a password</li>
+    <li>Click <strong>SAVE PROFILE</strong></li>
+  </ul>
+
+  <h2 id="tab-compare">COMPARE Tab</h2>
+  <p>Diff the current live snapshot against any saved profile.</p>
+  <ul>
+    <li>Select a saved profile from the <strong>Profile</strong> combo box</li>
+    <li>Click <strong>COMPARE</strong> — the grids populate with colour-coded differences</li>
+    <li>Green rows = items present in the saved profile but absent now (<em>removed</em>)</li>
+    <li>Amber rows = items present now but absent in the saved profile (<em>added</em>)</li>
+    <li>Each category has its own sub-tab within the Compare view</li>
+  </ul>
+
+  <h2 id="tab-restore">RESTORE Tab</h2>
+  <p>Selectively restore settings from a saved profile back to the live system.</p>
+  <ul>
+    <li>Select a source profile</li>
+    <li>Tick the categories you want to restore</li>
+    <li>Enable <strong>Create Rollback Snapshot</strong> (recommended) — saves the current state first</li>
+    <li>Click <strong>START RESTORE</strong></li>
+    <li>Review the log panel — <span style="color:#4caf82">&#10004; Restored</span>,
+        <span style="color:#8a8a9a">&#8211; Skipped</span>,
+        <span style="color:#e94560">&#10008; Error</span></li>
+    <li>Use <strong>ROLLBACK</strong> to revert if something went wrong</li>
+  </ul>
+
+  <!-- ── Capture Operations Table ──────────────────────────── -->
+  <h2 id="capture-index">Indexed Capture Operations</h2>
+  <p>All 23 capture operations are registered in <code>$script:CaptureIndex</code>.
+  The table below lists each operation with its data key, tree tags, and support flags.</p>
+
+  <table class="ops-table">
+    <thead>
+      <tr>
+        <th class="idx">#</th>
+        <th>Category</th>
+        <th>Function</th>
+        <th>DataKey</th>
+        <th>Tree Tags</th>
+        <th>Save</th>
+        <th>Compare</th>
+        <th>Restore</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="idx">1</td>
+        <td>Winget Applications</td>
+        <td><code>Get-WingetApplications</code></td>
+        <td><code>WingetApplications</code></td>
+        <td><span class="tag">winget</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+      </tr>
+      <tr>
+        <td class="idx">2</td>
+        <td>PowerShell Environment</td>
+        <td><code>Get-PSEnvironment</code></td>
+        <td><code>PSEnvironment</code></td>
+        <td><span class="tag">psver</span><span class="tag">psmod</span><span class="tag">psscripts</span><span class="tag">psprofiles</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">3</td>
+        <td>User App Configs</td>
+        <td><code>Get-UserAppConfigs</code></td>
+        <td><code>UserAppConfigs</code></td>
+        <td><span class="tag">regleys</span><span class="tag">cfgfiles</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">4</td>
+        <td>Taskbar Layout</td>
+        <td><code>Get-TaskbarLayout</code></td>
+        <td><code>TaskbarLayout</code></td>
+        <td><span class="tag">taskbar</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+      </tr>
+      <tr>
+        <td class="idx">5</td>
+        <td>Print Drivers</td>
+        <td><code>Get-PrintDrivers</code></td>
+        <td><code>PrintDrivers</code></td>
+        <td><span class="tag">printdrivers</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">6</td>
+        <td>MIME Types</td>
+        <td><code>Get-MimeTypes</code></td>
+        <td><code>MimeTypes</code></td>
+        <td><span class="tag">mimetypes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+      </tr>
+      <tr>
+        <td class="idx">7</td>
+        <td>WiFi Profiles</td>
+        <td><code>Get-WiFiProfiles</code></td>
+        <td><code>WiFiProfiles</code></td>
+        <td><span class="tag">wifi</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">8</td>
+        <td>Recent Locations MRU</td>
+        <td><code>Get-MRULocations</code></td>
+        <td><code>MRULocations</code></td>
+        <td><span class="tag">mru_typed</span><span class="tag">mru_run</span><span class="tag">mru_opensave</span><span class="tag">mru_exts</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">9</td>
+        <td>Certificates</td>
+        <td><code>Get-CertificateStores</code></td>
+        <td><code>Certificates</code></td>
+        <td><span class="tag">certs_user</span><span class="tag">certs_lm</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">10</td>
+        <td>ISE Configuration</td>
+        <td><code>Get-ISEConfiguration</code></td>
+        <td><code>ISEConfiguration</code></td>
+        <td><span class="tag">ise_profile</span><span class="tag">ise_snip</span><span class="tag">ise_reg</span><span class="tag">ise_opts</span><span class="tag">ise_addons</span><span class="tag">ise_recent</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">11</td>
+        <td>Terminal Configuration</td>
+        <td><code>Get-TerminalConfiguration</code></td>
+        <td><code>TerminalConfiguration</code></td>
+        <td><span class="tag">terminal_con</span><span class="tag">terminal_wt</span><span class="tag">terminal_profiles</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">12</td>
+        <td>PS Repositories</td>
+        <td><code>Get-PSHelpRepositories</code></td>
+        <td><code>PSHelpRepositories</code></td>
+        <td><span class="tag">pshelp</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">13</td>
+        <td>Screensaver Settings</td>
+        <td><code>Get-ScreensaverSettings</code></td>
+        <td><code>ScreensaverSettings</code></td>
+        <td><span class="tag">screensaver</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">14</td>
+        <td>Power Configuration</td>
+        <td><code>Get-PowerConfiguration</code></td>
+        <td><code>PowerConfiguration</code></td>
+        <td><span class="tag">power</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">15</td>
+        <td>Display Layout</td>
+        <td><code>Get-DisplayLayout</code></td>
+        <td><code>DisplayLayout</code></td>
+        <td><span class="tag">display_dpi</span><span class="tag">display_pm</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">16</td>
+        <td>Regional &amp; Language</td>
+        <td><code>Get-RegionalSettings</code></td>
+        <td><code>RegionalSettings</code></td>
+        <td><span class="tag">regional</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">17</td>
+        <td>Environment Variables</td>
+        <td><code>Get-EnvironmentVariables</code></td>
+        <td><code>EnvironmentVariables</code></td>
+        <td><span class="tag">envvars_user</span><span class="tag">envvars_machine</span><span class="tag">envvars_process</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">18</td>
+        <td>Mapped Drives</td>
+        <td><code>Get-MappedDrives</code></td>
+        <td><code>MappedDrives</code></td>
+        <td><span class="tag">mappeddrives</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">19</td>
+        <td>Installed Fonts</td>
+        <td><code>Get-InstalledFonts</code></td>
+        <td><code>InstalledFonts</code></td>
+        <td><span class="tag">fonts</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">20</td>
+        <td>Language &amp; Speech</td>
+        <td><code>Get-LanguageAndSpeech</code></td>
+        <td><code>LanguageAndSpeech</code></td>
+        <td><span class="tag">lang_packs</span><span class="tag">lang_sr</span><span class="tag">lang_tts</span><span class="tag">lang_dict</span><span class="tag">lang_custom</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">21</td>
+        <td>Quick Access Links</td>
+        <td><code>Get-QuickAccessLinks</code></td>
+        <td><code>QuickAccessLinks</code></td>
+        <td><span class="tag">qa_folders</span><span class="tag">qa_files</span><span class="tag">qa_pinned</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">22</td>
+        <td>Explorer Folder View</td>
+        <td><code>Get-ExplorerFolderView</code></td>
+        <td><code>ExplorerFolderView</code></td>
+        <td><span class="tag">exp_adv</span><span class="tag">exp_gen</span><span class="tag">exp_view</span><span class="tag">exp_bag</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+      <tr>
+        <td class="idx">23</td>
+        <td>Search Providers</td>
+        <td><code>Get-SearchProviders</code></td>
+        <td><code>SearchProviders</code></td>
+        <td><span class="tag">search_ie</span><span class="tag">search_ws</span><span class="tag">search_cor</span></td>
+        <td><span class="badge yes">Yes</span></td>
+        <td><span class="badge no">No</span></td>
+        <td><span class="badge no">No</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── Save Examples ─────────────────────────────────────── -->
+  <h2 id="save-examples">Save Code Examples</h2>
+  <p>Each capture function can be called independently from the PowerShell prompt after importing the module.</p>
+<pre><span class="cm"># Import the module</span>
+<span class="kw">Import-Module</span> <span class="st">'c:\PowerShellGUI\UPM\modules\UserProfileManager.psm1'</span>
+
+<span class="cm"># 1 — Winget Applications</span>
+<span class="va">$apps</span> = <span class="fn">Get-WingetApplications</span>
+<span class="va">$apps</span> | <span class="fn">Select-Object</span> Name, Id, Version | <span class="fn">Format-Table</span>
+
+<span class="cm"># 2 — PowerShell Environment</span>
+<span class="va">$psenv</span> = <span class="fn">Get-PSEnvironment</span>
+<span class="va">$psenv</span>.Modules | <span class="fn">Select-Object</span> Name, Version | <span class="fn">Sort-Object</span> Name
+
+<span class="cm"># 7 — WiFi Profiles</span>
+<span class="va">$wifi</span> = <span class="fn">Get-WiFiProfiles</span>
+<span class="va">$wifi</span> | <span class="fn">Select-Object</span> ProfileName, Authentication, Encryption
+
+<span class="cm"># 9 — Certificates</span>
+<span class="va">$certs</span> = <span class="fn">Get-CertificateStores</span>
+<span class="va">$certs</span>.UserStore | <span class="fn">Select-Object</span> Subject, Thumbprint, NotAfter</pre>
+
+  <!-- ── Restore Examples ───────────────────────────────────── -->
+  <h2 id="restore-examples">Restore Code Examples</h2>
+  <p>Categories marked <span class="badge yes">Yes</span> for Restore have automated restore logic inside the module.
+  Categories marked <span class="badge no">No</span> can be restored manually using the patterns below.</p>
+
+<pre><span class="cm"># 1 — Restore Winget Applications (automated)</span>
+<span class="cm"># The RESTORE tab runs the equivalent of:</span>
+<span class="kw">foreach</span> (<span class="va">$app</span> <span class="kw">in</span> <span class="va">$profile</span>.Data.WingetApplications.Missing) {
+    winget install --exact --id <span class="va">$app</span>.Id --silent --accept-source-agreements
+}
+
+<span class="cm"># 3 — User App Config registry (manual pattern)</span>
+<span class="kw">foreach</span> (<span class="va">$key</span> <span class="kw">in</span> <span class="va">$profile</span>.Data.UserAppConfigs.RegistryKeys) {
+    <span class="kw">foreach</span> (<span class="va">$v</span> <span class="kw">in</span> <span class="va">$key</span>.Values) {
+        <span class="fn">Set-ItemProperty</span> -Path <span class="va">$key</span>.KeyPath -Name <span class="va">$v</span>.Name -Value <span class="va">$v</span>.Value
+    }
+}
+
+<span class="cm"># 12 — Register missing PS Repositories</span>
+<span class="kw">foreach</span> (<span class="va">$repo</span> <span class="kw">in</span> <span class="va">$profile</span>.Data.PSHelpRepositories.Missing) {
+    <span class="fn">Register-PSRepository</span> -Name <span class="va">$repo</span>.Name `
+        -SourceLocation <span class="va">$repo</span>.SourceLocation `
+        -InstallationPolicy <span class="va">$repo</span>.InstallationPolicy
+}
+
+<span class="cm"># 18 — Reconnect Mapped Drives</span>
+<span class="kw">foreach</span> (<span class="va">$drive</span> <span class="kw">in</span> <span class="va">$profile</span>.Data.MappedDrives) {
+    <span class="fn">New-SmbMapping</span> -LocalPath <span class="va">$drive</span>.Drive -RemotePath <span class="va">$drive</span>.NetworkPath -Persistent <span class="va">$true</span>
+}</pre>
+
+  <!-- ── WhatIf ────────────────────────────────────────────── -->
+  <h2 id="whatif">WhatIf Simulation</h2>
+  <p>The <strong>WhatIf Simulation</strong> dialog (Help &#8594; WhatIf Simulation) lets you preview
+  what any save or restore operation would do without making any changes.</p>
+  <ol>
+    <li>Open <strong>Help &#8594; WhatIf Simulation</strong></li>
+    <li>Select one or more operations from the list (all 23 are shown)</li>
+    <li>Choose <strong>Save mode</strong> or <strong>Restore mode</strong></li>
+    <li>Click <strong>Run WhatIf</strong></li>
+    <li>Review the HTML output in the results panel — it shows exactly which registry keys,
+        files, or commands would be touched</li>
+  </ol>
+  <div class="callout tip">
+    <strong>&#128161; Tip</strong>
+    WhatIf mode never writes to disk or registry. It is safe to run on production machines
+    before committing to a full capture or restore.
+  </div>
+
+  <!-- ── Encryption ───────────────────────────────────────── -->
+  <h2 id="encryption">Encryption</h2>
+  <p>When you tick <strong>Encrypt</strong> on the SAVE tab, the profile data is protected with:</p>
+  <ul>
+    <li><strong>AES-256-CBC</strong> symmetric encryption</li>
+    <li><strong>PBKDF2-SHA256</strong> key derivation with 200,000 iterations</li>
+    <li>32-byte random salt stored in the profile <code>Meta</code> envelope</li>
+    <li>16-byte random IV generated per save</li>
+  </ul>
+  <p>The password is never stored.  To load or restore an encrypted profile you must provide
+  the same password used when saving.</p>
+  <div class="callout warn">
+    <strong>&#9888; Password Loss</strong>
+    There is no password recovery mechanism.  If you lose the password the profile data
+    cannot be decrypted.
+  </div>
+
+  <!-- ── Logging ──────────────────────────────────────────── -->
+  <h2 id="logging">Session Logging</h2>
+  <p>UPM writes a single log file per session.  The log path is:</p>
+<pre>%TEMP%\UPM-Backups\&lt;ProfileName&gt;\UserProfile-Manager-&lt;COMPUTER&gt;-&lt;USER&gt;-&lt;yyyyMMdd-HHmmss&gt;.log</pre>
+  <p>The timestamp is fixed at startup so all log entries for a session go into one file.
+  When you save a profile, the log directory is updated to use the profile name as the sub-folder
+  via <code>Update-LogProfile</code>.  Log entries look like:</p>
+<pre>[2026-03-01 14:23:11] [INFO]  UPM started. User=alice@contoso.com Computer=DESKTOP Admin=True
+[2026-03-01 14:23:18] [INFO]  Capture initiated by user
+[2026-03-01 14:23:22] [INFO]  Capture complete: 847 apps, 12 modules, 23 categories
+[2026-03-01 14:23:45] [INFO]  Save initiated: profile='Work-2026-03' path='D:\Profiles'
+[2026-03-01 14:23:45] [INFO]  Save complete: D:\Profiles\Work-2026-03.upjson
+[2026-03-01 14:24:01] [INFO]  Compare initiated against: Work-2026-01
+[2026-03-01 14:24:02] [INFO]  Compare diff computed
+[2026-03-01 14:30:55] [INFO]  Restore started: source profile='Work-2026-01'
+[2026-03-01 14:31:02] [INFO]  Restore complete</pre>
+
+  <!-- ── Profile Format ─────────────────────────────────────── -->
+  <h2 id="profile-format">Profile File Format</h2>
+  <p>Profile files use the <code>.upjson</code> extension and contain a JSON object with two top-level keys:</p>
+<pre>{
+  <span class="st">"Meta"</span>: {
+    <span class="st">"ProfileName"</span>: <span class="st">"Work-2026-03"</span>,
+    <span class="st">"CaptureDate"</span>: <span class="st">"2026-03-01T14:23:45"</span>,
+    <span class="st">"Computer"</span>:    <span class="st">"DESKTOP-XPS15"</span>,
+    <span class="st">"User"</span>:        <span class="st">"alice"</span>,
+    <span class="st">"UPMVersion"</span>:  <span class="st">"1.4.0"</span>,
+    <span class="st">"Encrypted"</span>:   <span class="kw">false</span>,
+    <span class="st">"Salt"</span>:        <span class="kw">null</span>
+  },
+  <span class="st">"Data"</span>: {
+    <span class="st">"WingetApplications"</span>: [ ... ],
+    <span class="st">"PSEnvironment"</span>: { ... },
+    <span class="cm">/* ... 21 more data keys ... */</span>
+  }
+}</pre>
+  <p>For encrypted profiles, <code>Data</code> is a Base64-encoded string (the AES ciphertext)
+  and <code>Meta.Encrypted</code> is <code>true</code>.  The <code>Salt</code> field holds the
+  hex-encoded 32-byte PBKDF2 salt.</p>
+
+</div><!-- end #content -->
+
+<footer>
+  User Profile Manager — User Guide · v1.4.0 · Generated 2026-03-01
+</footer>
+
+</body>
+</html>

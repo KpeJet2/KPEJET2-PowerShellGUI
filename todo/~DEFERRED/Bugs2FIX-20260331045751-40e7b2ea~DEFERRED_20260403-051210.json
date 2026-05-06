@@ -1,0 +1,33 @@
+{
+  "executedAt": null,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-F.ps1"
+  ],
+  "priority": "MEDIUM",
+  "linkedBugs": [],
+  "notes": "",
+  "plannedAt": null,
+  "executionAgent": "",
+  "sinId": "",
+  "result": null,
+  "status": "DEFERRED",
+  "completedAt": null,
+  "outlinePhase": "assessment",
+  "acknowledged": null,
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "outlineVersion": "v0",
+  "tags": [],
+  "source": "BugTracker",
+  "suggestedBy": "CronAiAthon",
+  "created": "2026-03-30T20:57:51.5075107Z",
+  "linkedFeatures": [],
+  "category": "error-handling",
+  "executionMethod": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "id": "Bugs2FIX-20260331045751-40e7b2ea",
+  "parentId": "Bug-20260331045749-f11ca71d",
+  "sessionModCount": 1,
+  "description": "Fix for bug Bug-20260331045749-f11ca71d: Script Script-F.ps1 has 1 functions but zero try/catch blocks",
+  "modified": "2026-03-30T20:57:51.5075908Z",
+  "type": "Bugs2FIX"
+}

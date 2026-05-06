@@ -1,8 +1,6 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+﻿# VersionTag: 2604.B2.V31.0
+# VersionBuildHistory:
+#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 9 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -51,108 +49,55 @@ pwsh-app-config-BASE.json
 # Stop on errors
 $ErrorActionPreference = "Stop"
 
-# Define LOCAL script directory and paths
+# Define LOCAL script directory and GLOBAL project root
 $localRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $parentDir = Split-Path -Parent $localRoot
+$scriptDir = $parentDir
 
-function Request-LocalPath {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Label,
+# Define GLOBAL directories and Files
+$configDir       = Join-Path $scriptDir "config"
+$modulesDir      = Join-Path $scriptDir "modules"
+$logsDir         = Join-Path $scriptDir "logs"
+$scriptsDir      = Join-Path $scriptDir "scripts"
+$reportsDir      = Join-Path $scriptDir "~REPORTS"
+$configFile      = Join-Path $configDir "system-variables.xml"
+$linksConfigFile = Join-Path $configDir "links.xml"
+$avpnConfigFile  = Join-Path $configDir "AVPN-devices.json"
+$avpnModulePath  = Join-Path $modulesDir "AVPN-Tracker.psm1"
 
-        [Parameter(Mandatory = $true)]
-        [string]$DefaultValue,
-
-        [int]$TimeoutSeconds = 9
-    )
-
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName System.Drawing
-
-    $result = $DefaultValue
-    $timedOut = $false
-    $remaining = $TimeoutSeconds
-
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Local config: $Label"
-    $form.Size = New-Object System.Drawing.Size(520, 180)
-    $form.StartPosition = "CenterScreen"
-    $form.FormBorderStyle = "FixedDialog"
-    $form.MaximizeBox = $false
-    $form.MinimizeBox = $false
-    $form.Topmost = $true
-
-    $promptLabel = New-Object System.Windows.Forms.Label
-    $promptLabel.Text = "Enter value for $Label (blank uses default):"
-    $promptLabel.Location = New-Object System.Drawing.Point(12, 12)
-    $promptLabel.Size = New-Object System.Drawing.Size(490, 18)
-    $form.Controls.Add($promptLabel)
-
-    $textBox = New-Object System.Windows.Forms.TextBox
-    $textBox.Text = $DefaultValue
-    $textBox.Location = New-Object System.Drawing.Point(12, 36)
-    $textBox.Size = New-Object System.Drawing.Size(490, 20)
-    $form.Controls.Add($textBox)
-
-    $countdownLabel = New-Object System.Windows.Forms.Label
-    $countdownLabel.Text = "Auto-continue in $remaining s"
-    $countdownLabel.Location = New-Object System.Drawing.Point(12, 64)
-    $countdownLabel.Size = New-Object System.Drawing.Size(490, 18)
-    $form.Controls.Add($countdownLabel)
-
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Text = "OK"
-    $okButton.Location = New-Object System.Drawing.Point(346, 100)
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.Controls.Add($okButton)
-
-    $cancelButton = New-Object System.Windows.Forms.Button
-    $cancelButton.Text = "Use Default"
-    $cancelButton.Location = New-Object System.Drawing.Point(426, 100)
-    $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-    $form.Controls.Add($cancelButton)
-
-    $form.AcceptButton = $okButton
-    $form.CancelButton = $cancelButton
-
-    $timer = New-Object System.Windows.Forms.Timer
-    $timer.Interval = 1000
-    $timer.Add_Tick({
-        $script:remaining--
-        if ($script:remaining -le 0) {
-            $script:timedOut = $true
-            $timer.Stop()
-            $form.Close()
-        } else {
-            $countdownLabel.Text = "Auto-continue in $script:remaining s"
-        }
-    })
-
-    $form.Add_Shown({ $timer.Start() })
-    $dialogResult = $form.ShowDialog()
-    $timer.Stop()
-
-    if (-not $timedOut -and $dialogResult -eq [System.Windows.Forms.DialogResult]::OK) {
-        $result = if ([string]::IsNullOrWhiteSpace($textBox.Text)) { $DefaultValue } else { $textBox.Text }
-    }
-
-    return $result
+# Create GLOBAL directories if they don't exist
+foreach ($dir in @($scriptDir, $configDir, $modulesDir, $logsDir, $reportsDir, $scriptsDir)) {
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+}
+foreach ($file in @($configFile, $linksConfigFile, $avpnConfigFile)) {
+    if (-not (Test-Path $file)) { New-Item -ItemType File -Path $file -Force | Out-Null }
 }
 
-# Define LOCAL region Configuration
-$ConfigPath = Join-Path $parentDir "config"
-$DefaultFolder = $parentDir
-$TempFolder = Join-Path $parentDir "temp"
-$ReportFolder = Join-Path $parentDir "~REPORTS"
+# ==================== MODULE IMPORTS ====================
+# Import PwShGUICore FIRST -- provides Write-AppLog, Request-LocalPath, etc.
+$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
+if (Test-Path $coreModulePath) {
+    Import-Module $coreModulePath -Force
+    Initialize-CorePaths -ScriptDir $scriptDir
+} else {
+    Write-Warning "PwShGUICore module not found at $coreModulePath"
+}
+
+# ==================== LOCAL PATH CONFIGURATION ====================
+# Request-LocalPath is now provided by PwShGUICore module.
+$ConfigPath     = Join-Path $parentDir "config"
+$DefaultFolder  = $parentDir
+$TempFolder     = Join-Path $parentDir "temp"
+$ReportFolder   = Join-Path $parentDir "~REPORTS"
 $DownloadFolder = Join-Path $parentDir "~DOWNLOADS"
 
-if (-not $ConfigPath) { $ConfigPath = Request-LocalPath -Label "ConfigPath" -DefaultValue $ConfigPath -TimeoutSeconds 9 }
+if (-not $ConfigPath)    { $ConfigPath    = Request-LocalPath -Label "ConfigPath"    -DefaultValue $ConfigPath    -TimeoutSeconds 9 }
 if (-not $DefaultFolder) { $DefaultFolder = Request-LocalPath -Label "DefaultFolder" -DefaultValue $DefaultFolder -TimeoutSeconds 9 }
-if (-not $TempFolder) { $TempFolder = Request-LocalPath -Label "TempFolder" -DefaultValue $TempFolder -TimeoutSeconds 9 }
-if (-not $ReportFolder) { $ReportFolder = Request-LocalPath -Label "ReportFolder" -DefaultValue $ReportFolder -TimeoutSeconds 9 }
+if (-not $TempFolder)    { $TempFolder    = Request-LocalPath -Label "TempFolder"    -DefaultValue $TempFolder    -TimeoutSeconds 9 }
+if (-not $ReportFolder)  { $ReportFolder  = Request-LocalPath -Label "ReportFolder"  -DefaultValue $ReportFolder  -TimeoutSeconds 9 }
 if (-not $DownloadFolder) { $DownloadFolder = Request-LocalPath -Label "DownloadFolder" -DefaultValue $DownloadFolder -TimeoutSeconds 9 }
 
-# Local path validation log buffer (flushed after logging functions are defined)
+# Local path validation log buffer
 $localPathValidation = @()
 function Add-LocalPathValidation {
     param([string]$Message)
@@ -215,74 +160,7 @@ if ($DownloadFolder) {
     Add-LocalPathValidation "Missing local path: DownloadFolder not set"
 }
 
-# Define GLOBAL script directory and Files
-$scriptDir = $parentDir
-$configDir = Join-Path $scriptDir "config"
-$modulesDir = Join-Path $scriptDir "modules"
-$logsDir = Join-Path $scriptDir "logs"
-$scriptsDir = Join-Path $scriptDir "scripts"
-$reportsDir = Join-Path $scriptDir "~REPORTS"
-$configFile = Join-Path $configDir "system-variables.xml"
-$linksConfigFile = Join-Path $configDir "links.xml"
-$avpnConfigFile = Join-Path $configDir "AVPN-devices.json"
-$avpnModulePath = Join-Path $modulesDir "AVPN-Tracker.psm1"
-
-# Create GLOBAL directories if they don't exist
-if (-not (Test-Path $scriptDir)) { New-Item -ItemType Directory -Path $scriptDir -Force | Out-Null }
-if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
-if (-not (Test-Path $modulesDir)) { New-Item -ItemType Directory -Path $modulesDir -Force | Out-Null }
-if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
-if (-not (Test-Path $reportsDir)) { New-Item -ItemType Directory -Path $reportsDir -Force | Out-Null }
-if (-not (Test-Path $scriptsDir)) { New-Item -ItemType Directory -Path $scriptsDir -Force | Out-Null }
-if (-not (Test-Path $configFile)) { New-Item -ItemType File -Path $configFile -Force | Out-Null }
-if (-not (Test-Path $linksConfigFile)) { New-Item -ItemType File -Path $linksConfigFile -Force | Out-Null }
-if (-not (Test-Path $avpnConfigFile)) { New-Item -ItemType File -Path $avpnConfigFile -Force | Out-Null }
-
-# ==================== LOGGING FUNCTIONS ====================
-function Write-AppLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-    
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $logFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd').log"
-    
-    $logEntry = "[$timestamp] [$Level] $Message"
-    Add-Content -Path $logFile -Value $logEntry -ErrorAction SilentlyContinue
-    
-    # Also write to console without Write-Host
-    switch ($Level) {
-        "Warning" { Write-Warning $logEntry }
-        "Error" { Write-Error $logEntry -ErrorAction Continue }
-        default { Write-Information $logEntry -InformationAction Continue }
-    }
-}
-
-function Write-ScriptLog {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        
-        [Parameter(Mandatory = $true)]
-        [string]$ScriptName,
-        
-        [ValidateSet("Info", "Warning", "Error", "Success", "Debug", "Event")]
-        [string]$Level = "Info"
-    )
-    
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $hostname = $env:COMPUTERNAME
-    $scriptLogFile = Join-Path $logsDir "$hostname-$(Get-Date -Format 'yyyy-MM-dd')_PwShGui-SCRIPTS.log"
-    
-    $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"
-    Add-Content -Path $scriptLogFile -Value $logEntry -ErrorAction SilentlyContinue
-}
-
+# Flush path validation to logs
 if ($localPathValidation.Count -gt 0) {
     foreach ($entry in $localPathValidation) {
         Write-AppLog $entry "Info"
@@ -298,58 +176,7 @@ if (Test-Path $avpnModulePath) {
 }
 
 # ==================== PROGRESS & DISPLAY FUNCTIONS ====================
-function Get-RainbowColor {
-    param([int]$Step)
-    
-    $colors = @(
-        @{R=255; G=0;   B=0},    # Red
-        @{R=255; G=127; B=0},    # Orange
-        @{R=255; G=255; B=0},    # Yellow
-        @{R=0;   G=255; B=0},    # Green
-        @{R=0;   G=0;   B=255},  # Blue
-        @{R=75;  G=0;   B=130},  # Indigo
-        @{R=148; G=0;   B=211}   # Violet
-    )
-    
-    $index = $Step % $colors.Count
-    return $colors[$index]
-}
-
-function Write-RainbowProgress {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Activity,
-        
-        [Parameter(Mandatory = $true)]
-        [int]$PercentComplete,
-        
-        [Parameter(Mandatory = $true)]
-        [string]$Status,
-        
-        [int]$Step = 0,
-        
-        [string]$CurrentOperation = ""
-    )
-    
-    $color = Get-RainbowColor -Step $Step
-    
-    # Create visual progress bar
-    $barLength = 50
-    $completed = [Math]::Floor(($PercentComplete / 100) * $barLength)
-    $remaining = $barLength - $completed
-    
-    $bar = ("[" + ("█" * $completed) + ("░" * $remaining) + "]")
-    
-    # Color the percentage based on rainbow cycle
-    $colorCode = "`e[38;2;$($color.R);$($color.G);$($color.B)m"
-    $resetCode = "`e[0m"
-    
-    Write-Host "`r$colorCode$bar $PercentComplete% $resetCode- $Status" -NoNewline
-    
-    if ($PercentComplete -ge 100) {
-        Write-Host ""  # New line when complete
-    }
-}
+# Get-RainbowColor and Write-RainbowProgress are now provided by PwShGUICore module.
 
 function Invoke-CommandWithProgress {
     param(
@@ -392,7 +219,7 @@ function Invoke-CommandWithProgress {
         $elapsedSeconds = [Math]::Floor($elapsed.TotalSeconds)
         
         # Update progress every second
-        if ($elapsedSeconds -lt $EstimatedSeconds) {
+        if ($elapsedSeconds -lt $EstimatedSeconds -and $EstimatedSeconds -gt 0) {
             $percentComplete = [Math]::Floor(($elapsedSeconds / $EstimatedSeconds) * 100)
         } else {
             $percentComplete = 95 + ($elapsedSeconds - $EstimatedSeconds)
@@ -427,8 +254,8 @@ function Invoke-CommandWithProgress {
         Write-Host "  Items processed: $itemCount" -ForegroundColor Gray
     }
     
-    Write-AppLog "Completed: $StepName (Duration: $([Math]::Round($finalElapsed, 2))s)" "Success"
-    Write-ScriptLog "Step $StepNumber completed with $itemCount items" "Script1" "Success"
+    Write-AppLog "Completed: $StepName (Duration: $([Math]::Round($finalElapsed, 2))s)" "Info"
+    Write-ScriptLog "Step $StepNumber completed with $itemCount items" "Script1" "Info"
     
     return $result
 }
@@ -725,8 +552,8 @@ function Export-XHTMLReport {
     $xhtml | Out-File -FilePath $reportPath -Encoding UTF8 -Force
     
     Write-Host "  📄 Report saved: $fileName" -ForegroundColor Green
-    Write-AppLog "XHTML report generated: $reportPath" "Success"
-    Write-ScriptLog "Generated $ReportType report with $itemCount items" "Script1" "Success"
+    Write-AppLog "XHTML report generated: $reportPath" "Info"
+    Write-ScriptLog "Generated $ReportType report with $itemCount items" "Script1" "Info"
     
     # Open in default browser
     Start-Process $reportPath
@@ -837,7 +664,7 @@ function Export-ComprehensiveXHTMLReport {
     $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     $adminWarningHtml = ""
     if (-not $isAdmin) {
-        $adminWarningHtml = "<div class=\"admin-warning\">WARNING - THIS WAS NOT RAN WITH ADMIN RIGHTS - Admin execution rights are required for the correct Exec values</div>"
+        $adminWarningHtml = '<div class="admin-warning">WARNING - THIS WAS NOT RAN WITH ADMIN RIGHTS - Admin execution rights are required for the correct Exec values</div>'
     }
 
     # Build summary section if provided
@@ -1149,8 +976,8 @@ function Export-ComprehensiveXHTMLReport {
     Write-Host "  ✓ Comprehensive report saved: $fileName" -ForegroundColor Green
     Write-Host "  ✓ Total sections: $($ReportSections.Count)" -ForegroundColor Cyan
     Write-Host "  ✓ Total items: $totalItems" -ForegroundColor Cyan
-    Write-AppLog "Comprehensive XHTML report generated: $reportPath" "Success"
-    Write-ScriptLog "Generated comprehensive report with $($ReportSections.Count) sections and $totalItems items" "Script1" "Success"
+    Write-AppLog "Comprehensive XHTML report generated: $reportPath" "Info"
+    Write-ScriptLog "Generated comprehensive report with $($ReportSections.Count) sections and $totalItems items" "Script1" "Info"
     
     # Open in default browser
     Start-Process $reportPath
@@ -1159,31 +986,7 @@ function Export-ComprehensiveXHTMLReport {
 }
 
 # ==================== CONFIG FUNCTIONS ====================
-function Initialize-ConfigFile {
-    Write-AppLog "Creating system variables config file..." "Info"
-    
-    $systemVars = @{
-        ComputerName = $env:COMPUTERNAME
-        UserName = $env:USERNAME
-        UserDomain = $env:USERDOMAIN
-        OSVersion = [System.Environment]::OSVersion.VersionString
-        ProcessorCount = $env:PROCESSOR_COUNT
-        SystemRoot = $env:SystemRoot
-        Windows = $env:Windows
-        ProgramFiles = $env:ProgramFiles
-        ProgramFiles_x86 = ${env:ProgramFiles(x86)}
-        AppData = $env:APPDATA
-        LocalAppData = $env:LOCALAPPDATA
-        Temp = $env:TEMP
-        PSVersion = $PSVersionTable.PSVersion.ToString()
-        PowerShellVersion = $PSVersionTable.PSVersion.Major
-        ExecutionDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        LogDirectory = $logsDir
-    }
-    
-    $systemVars | Export-Clixml -Path $configFile -Force
-    Write-AppLog "System variables config file created: $configFile" "Success"
-}
+# Initialize-ConfigFile is now provided by PwShGUICore module (unused in this script).
 
 # ==================== SCRIPT MAIN EXECUTION ====================
 $scriptStartTime = Get-Date
@@ -1316,7 +1119,7 @@ Duration: $([Math]::Round($totalDuration, 2)) seconds
 ================================
 "@
 
-Add-Content -Path (Join-Path $logsDir "Script1-Summary-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt") -Value $summaryText
+Add-Content -Path (Join-Path $logsDir "Script1-Summary-$(Get-Date -Format 'yyyyMMdd-HHmmss').txt") -Value $summaryText -Encoding UTF8
 
 $reportSections = @(
     @{ Title = "Local User Accounts"; Data = $userData },
@@ -1353,8 +1156,8 @@ Write-Host "`n⏱  Total Execution Time: $([Math]::Round($totalDuration, 2)) sec
 Write-Host ""
 
 Write-Host "✓ USER MANAGEMENT AUDIT COMPLETED SUCCESSFULLY!" -ForegroundColor Green
-Write-AppLog "Script1 execution completed successfully. Duration: $([Math]::Round($totalDuration, 2))s" "Success"
-Write-ScriptLog "All steps completed. Summary saved to logs." "Script1" "Success"
+Write-AppLog "Script1 execution completed successfully. Duration: $([Math]::Round($totalDuration, 2))s" "Info"
+Write-ScriptLog "All steps completed. Summary saved to logs." "Script1" "Info"
 
 Write-Host "`nPress any key to continue (will auto-continue in 7 seconds)..." -ForegroundColor Gray
 $timeout = 7
@@ -1370,6 +1173,13 @@ while ($timer.Elapsed.TotalSeconds -lt $timeout) {
 }
 $timer.Stop()
 Write-Host "`n"
+
+
+
+
+
+
+
 
 
 

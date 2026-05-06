@@ -1,0 +1,60 @@
+{
+  "sin_id": "SEMI-SIN-003-WRITEHOST-IN-MODULE_202604042257",
+  "sin_class": "SemiSin",
+  "title": "Write-Host in module functions bypasses pipeline and redirection",
+  "description": "Write-Host writes directly to the host console, bypassing the PowerShell pipeline. Output cannot be captured, redirected, piped, or tested. In module functions, this prevents callers from processing output programmatically. Write-Output, Write-Verbose, or Write-Information should be used instead. Write-Host is acceptable in interactive scripts (UI rendering, progress display, console formatting) but should be flagged in reusable module functions that may be called by automation or tests.",
+  "severity": "PENANCE",
+  "category": "pipeline-compatibility",
+  "vector": "output-bypass",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 0,
+  "created_at": "2026-03-31T12:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Write-Host calls in .psm1 module files (excluding comment lines)",
+  "is_security_related": false,
+  "preventionRule": "In module functions, use Write-Output for data, Write-Verbose for diagnostics, Write-Information for host messages that support redirection. Reserve Write-Host for interactive UI-only contexts.",
+  "scan_type": "REGEX_ADVISORY",
+  "scan_regex": "^\\s*Write-Host\\s",
+  "scan_file_pattern": "*.psm1",
+  "scan_exclude_dirs": [
+    ".history",
+    "node_modules",
+    "__pycache__",
+    "temp",
+    ".venv",
+    ".venv-pygame312"
+  ],
+  "scan_exceptions": [
+    "SINGovernance.psm1",
+    "PwShGUICore.psm1"
+  ],
+  "remedy": "Replace Write-Host with Write-Verbose (for debug/diagnostic), Write-Output (for data), or Write-Information (for host info that supports -InformationAction). Keep Write-Host only for UI rendering like progress bars and interactive prompts.",
+  "tags": [
+    "semisin",
+    "penance",
+    "write-host",
+    "pipeline",
+    "module",
+    "post-test"
+  ],
+  "reindex_metadata": {
+    "previous_sin_id": "SEMI-SIN-003-WRITEHOST-IN-MODULE",
+    "previous_file": "SEMI-SIN-003-WRITEHOST-IN-MODULE.json",
+    "reindexed_at": "2026-04-04T14:57:30.8031094Z",
+    "reindex_format": "v2-timestamped"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": ""
+}

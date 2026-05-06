@@ -1,0 +1,12 @@
+﻿{
+  "id": "IMPR-009-20260408",
+  "title": "Weekly Intelligence Report",
+  "description": "Invoke-WeeklyIntelligenceReport.ps1 aggregates SIN trend, coverage delta, route stats, TODO backlog age. Output styled HTML.",
+  "status": "PENDING_APPROVAL",
+  "priority": "MEDIUM",
+  "effort": "6-8h",
+  "affectedFiles": "scripts/Invoke-WeeklyIntelligenceReport.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": null
+}

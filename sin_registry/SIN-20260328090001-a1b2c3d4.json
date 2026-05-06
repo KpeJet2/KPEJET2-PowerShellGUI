@@ -1,0 +1,39 @@
+{
+  "sin_id": "SIN-20260328090001-a1b2c3d4",
+  "title": "PS 5.1 ConvertFrom-Json array unwrapping causes .Count failures and null-ref crashes",
+  "description": "ConvertFrom-Json in PowerShell 5.1 returns $null for empty arrays and a bare object (not array) for single-element arrays. Calling .Count on these under StrictMode throws 'property Count cannot be found'. Fixed by wrapping all ConvertFrom-Json results with @() and using ,@() return pattern to preserve empty arrays through the pipeline.",
+  "category": "compatibility",
+  "severity": "HIGH",
+  "file_path": "modules/CronAiAthon-Pipeline.psm1, modules/CronAiAthon-Scheduler.psm1, scripts/Show-CronAiAthonTool.ps1",
+  "agent_id": "FocalPoint-null-00",
+  "reported_by": "Code-B-Tsted",
+  "is_resolved": true,
+  "occurrence_count": 8,
+  "regression_count": 0,
+  "created_at": "2026-03-28T09:00:01Z",
+  "last_seen_at": "2026-03-28T09:00:01Z",
+  "detection_method": "Runtime testing under PowerShell 5.1 with StrictMode",
+  "sessionModCount": 1,
+  "fix_applied": {
+    "fix_id": "FIX-20260328090001-a1b2c3d4",
+    "description": "Wrapped all ConvertFrom-Json calls with @() to force array context. Used ,@() return pattern in Get-PipelineItems to preserve empty arrays through PS pipeline unwrapping. Added @() around pipeline filter results before .Count access.",
+    "files_modified": [
+      "modules/CronAiAthon-Pipeline.psm1",
+      "modules/CronAiAthon-Scheduler.psm1",
+      "scripts/Show-CronAiAthonTool.ps1"
+    ],
+    "pattern": "@(ConvertFrom-Json ...) and ,@(result) return pattern",
+    "trust_level": "test-piloted",
+    "pilot_count": 5,
+    "verified_at": "2026-03-28T09:00:01Z"
+  },
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

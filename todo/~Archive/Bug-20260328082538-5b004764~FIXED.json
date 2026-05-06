@@ -1,0 +1,39 @@
+﻿{
+  "id": "Bug-20260328082538-5b004764",
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "executionAgent": "",
+  "tags": [],
+  "executedAt": null,
+  "linkedFeatures": [],
+  "sinId": "SIN-20260328082539-1ef56337",
+  "category": "parsing",
+  "plannedAt": null,
+  "parentId": "",
+  "result": null,
+  "linkedBugs": [],
+  "notes": "New sin created: SIN-20260328082539-1ef56337",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES.ps1"
+  ],
+  "title": "Unexpected token '?' in expression or statement.",
+  "executionMethod": "",
+  "modified": "2026-03-28T00:25:38.9482923Z",
+  "description": "Parse error in PS-CheatSheet-EXAMPLES.ps1 line 79: Unexpected token '?' in expression or statement.",
+  "priority": "HIGH",
+  "type": "Bug",
+  "created": "2026-03-28T00:25:38.9482923Z",
+  "sessionModCount": 1,
+  "source": "BugTracker",
+  "acknowledged": null,
+  "createdAt": "2026-03-28T00:00:00Z",
+  "completedAt": "2026-03-31T01:19:14.6506808+08:00",
+  "resolution": "FIXED - BOM + prior ?? cleanup. CheatSheet PS7 demos excluded.",
+  "archiveMetadata": {
+    "archivedAt": "2026-04-03T04:05:07",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}
