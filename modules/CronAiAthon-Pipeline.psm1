@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -1124,9 +1124,9 @@ function Get-PipelineHealthMetrics {
     }
 
     return [ordered]@{
-        totalItems       = $items.Count
-        openItems        = $open.Count
-        closedItems      = $closed.Count
+        totalItems       = @($items).Count
+        openItems        = @($open).Count
+        closedItems      = @($closed).Count
         createdPerDay    = $createdPerDay
         closedPerDay     = $closedPerDay
         meanTimeToClose  = $meanTimeToClose
@@ -1171,7 +1171,7 @@ function Resolve-ItemCategory {
     if ($lower -in $script:ValidCategories) { return $lower }
 
     # Fuzzy mapping for common variants
-    $map = @{
+    $map = [ordered]@{
         'parse'     = 'parsing'
         'render'    = 'rendering'
         'compat'    = 'compatibility'
@@ -1896,7 +1896,7 @@ function Test-BugSinResolved {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [string]$SinId
+        [Parameter(Mandatory)] [AllowEmptyString()] [string]$SinId
     )
 
     if ([string]::IsNullOrWhiteSpace($SinId)) { return $true }

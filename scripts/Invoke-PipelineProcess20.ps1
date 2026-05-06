@@ -39,7 +39,41 @@ function Write-PipeLog {
     Write-Host $line
 }
 
+# Optional adapter for normalized event emission.
+$adapter = Join-Path $WorkspacePath 'modules\PwShGUI-EventLogAdapter.psm1'
+$adapterLoaded = $false
+if (Test-Path $adapter) {
+    try {
+        Import-Module $adapter -Force -DisableNameChecking
+        $adapterLoaded = $true
+    } catch { <# Intentional: non-fatal -- adapter optional #> }
+}
+
+$script:PipeEventSeq = 0
+$script:PipeActionId = 'pipe20-' + ([guid]::NewGuid().ToString().Substring(0,8))
+$script:PipeEditor = [string]$env:USERNAME
+
+function New-PipeEventId {
+    $script:PipeEventSeq++
+    return [int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), $script:PipeEventSeq)
+}
+
+function Emit-PipeEvent {
+    param(
+        [string]$Severity = 'Info',
+        [string]$Message,
+        [string]$Corr = '',
+        [string]$ItemId = '',
+        [string]$ItemType = ''
+    )
+    if (-not $adapterLoaded) { return }
+    try {
+        Write-EventLogNormalized -Scope pipeline -Component 'Invoke-PipelineProcess20' -Message $Message -Severity $Severity -CorrId $Corr -WorkspacePath $WorkspacePath -EventId (New-PipeEventId) -ItemId $ItemId -ItemType $ItemType -ActionId $script:PipeActionId -AgentId $Agent -Editor $script:PipeEditor
+    } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+}
+
 Write-PipeLog "Pipeline-Process20 starting (BugCount=$BugCount, DryRun=$($DryRun.IsPresent))"
+Emit-PipeEvent -Severity 'Info' -Message ("Pipeline-Process20 starting (BugCount={0}, DryRun={1})" -f $BugCount, $DryRun.IsPresent)
 
 # 1) Load all BUG-*.json
 $bugFiles = @(Get-ChildItem -Path $todoDir -Filter 'BUG-*.json' -File -ErrorAction SilentlyContinue)
@@ -69,6 +103,7 @@ $selected = @($openBugs | Sort-Object @{ Expression = {
     if ($_.Data.PSObject.Properties.Name -contains 'created') { [string]$_.Data.created } else { '' }
 } } | Select-Object -First $BugCount)
 Write-PipeLog "Selected $($selected.Count) bugs for IN-PROGRESS transition"
+Emit-PipeEvent -Severity 'Info' -Message ("Selected {0} bug(s) for IN-PROGRESS transition" -f $selected.Count)
 
 $nowIso = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
 $movedCount = 0
@@ -83,9 +118,12 @@ foreach ($item in $selected) {
     if (-not $DryRun) {
         ($b | ConvertTo-Json -Depth 10) | Set-Content -Path $item.File -Encoding UTF8
     }
+    $eventBugId = if ($b.PSObject.Properties.Name -contains 'id') { [string]$b.id } else { (Split-Path $item.File -Leaf) }
+    Emit-PipeEvent -Severity 'Audit' -Message ("Bug {0} moved to IN-PROGRESS" -f $eventBugId) -Corr $eventBugId -ItemId $eventBugId -ItemType 'Bug'
     $movedCount++
 }
 Write-PipeLog "$movedCount bugs flipped to IN-PROGRESS"
+Emit-PipeEvent -Severity 'Info' -Message ("{0} bug(s) flipped to IN-PROGRESS" -f $movedCount)
 
 # 4) Promote resurfacing bug titles to SIN candidates (recorded as JSON entries; do not overwrite registry numbers >= 031)
 $sinFixesDir = Join-Path $sinDir 'candidates'
@@ -115,12 +153,15 @@ foreach ($g in $titleGroups) {
     $promotedCount++
 }
 Write-PipeLog "$promotedCount SIN candidates written to sin_registry/candidates/"
+Emit-PipeEvent -Severity 'Info' -Message ("{0} SIN candidate(s) promoted from resurfacing bugs" -f $promotedCount)
 
 # 5) Convert FEATURE-F001 -> series of Items2Do under PENDING_APPROVAL
 $featureFile = Get-ChildItem -Path $todoDir -Filter 'FEATURE-*.json' -File | Select-Object -First 1
 if ($featureFile) {
     $feature = Get-Content $featureFile.FullName -Raw | ConvertFrom-Json
     Write-PipeLog "Processing feature: $($feature.title) ($($feature.id))"
+    $featureId = if ($feature.PSObject.Properties.Name -contains 'id') { [string]$feature.id } else { $featureFile.BaseName }
+    Emit-PipeEvent -Severity 'Info' -Message ("Processing feature decomposition for {0}" -f $featureId) -Corr $featureId -ItemId $featureId -ItemType 'FeatureRequest'
 
     # Decompose into Items2Do (specific to Secrets Management feature)
     $subItems = @(
@@ -161,9 +202,11 @@ if ($featureFile) {
         if (-not $DryRun) {
             ($newItem | ConvertTo-Json -Depth 10) | Set-Content -Path $outFile -Encoding UTF8
         }
+        Emit-PipeEvent -Severity 'Audit' -Message ("Created pending approval todo {0} from feature {1}" -f $tid, $featureId) -Corr $featureId -ItemId $tid -ItemType 'ToDo'
         $createdItems++
     }
     Write-PipeLog "$createdItems Items2Do written under PENDING_APPROVAL (feature decomposition of $($feature.id))"
+    Emit-PipeEvent -Severity 'Info' -Message ("Created {0} pending approval todo item(s) from feature {1}" -f $createdItems, $featureId) -Corr $featureId -ItemId $featureId -ItemType 'FeatureRequest'
 
     # Mark feature as IN-PROGRESS (decomposed)
     if ($feature.PSObject.Properties.Name -contains 'status') { $feature.status = 'IN-PROGRESS' }
@@ -173,11 +216,14 @@ if ($featureFile) {
     if (-not $DryRun) {
         ($feature | ConvertTo-Json -Depth 10) | Set-Content -Path $featureFile.FullName -Encoding UTF8
     }
+    Emit-PipeEvent -Severity 'Audit' -Message ("Feature {0} moved to IN-PROGRESS after decomposition" -f $featureId) -Corr $featureId -ItemId $featureId -ItemType 'FeatureRequest'
 } else {
     Write-PipeLog "No FEATURE-*.json found to decompose" 'WARN'
+    Emit-PipeEvent -Severity 'Warning' -Message 'No FEATURE-*.json found to decompose'
 }
 
 Write-PipeLog "Pipeline-Process20 complete. Log: $logFile"
+Emit-PipeEvent -Severity 'Info' -Message ("Pipeline-Process20 complete: bugsMoved={0}, sinCandidates={1}, featureItems={2}, dryRun={3}" -f $movedCount, $promotedCount, $(if ($featureFile) { $createdItems } else { 0 }), $DryRun.IsPresent)
 
 [PSCustomObject]@{
     bugsMovedToInProgress    = $movedCount

@@ -1,0 +1,3 @@
+{"ts":"2026-05-06T21:27:25.7500909Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":41592,"source":""}
+{"ts":"2026-05-06T21:27:58.9768435Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":38396,"source":""}
+{"ts":"2026-05-06T21:29:26.9107202Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":16828,"source":""}

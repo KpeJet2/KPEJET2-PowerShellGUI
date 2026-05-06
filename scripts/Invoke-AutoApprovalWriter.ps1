@@ -59,10 +59,28 @@ $adapter = Join-Path $WorkspacePath 'modules\PwShGUI-EventLogAdapter.psm1'
 $adapterLoaded = $false
 if (Test-Path $adapter) { try { Import-Module $adapter -Force -DisableNameChecking; $adapterLoaded = $true } catch { <# Intentional: non-fatal -- adapter optional #> } }
 
+$script:AaEventSeq = 0
+$script:AaActionId = 'auto-approval-' + ([guid]::NewGuid().ToString().Substring(0,8))
+$script:AaAgentId = 'auto-approval-writer'
+$script:AaEditor = [string]$env:USERNAME
+
+function New-AaEventId {
+    $script:AaEventSeq++
+    return [int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), $script:AaEventSeq)
+}
+
 function Emit-Event {
-    param([string]$Sev, [string]$Msg, [string]$Corr = '')
+    param(
+        [string]$Sev,
+        [string]$Msg,
+        [string]$Corr = '',
+        [string]$ItemId = '',
+        [string]$ItemType = 'ToDo'
+    )
     if ($adapterLoaded) {
-        try { Write-EventLogNormalized -Scope pipeline -Component 'AutoApprovalWriter' -Message $Msg -Severity $Sev -CorrId $Corr -WorkspacePath $WorkspacePath } catch { <# Intentional: non-fatal -- emit best-effort #> }
+        try {
+            Write-EventLogNormalized -Scope pipeline -Component 'AutoApprovalWriter' -Message $Msg -Severity $Sev -CorrId $Corr -WorkspacePath $WorkspacePath -EventId (New-AaEventId) -ItemId $ItemId -ItemType $ItemType -ActionId $script:AaActionId -AgentId $script:AaAgentId -Editor $script:AaEditor
+        } catch { <# Intentional: non-fatal -- emit best-effort #> }
     }
 }
 
@@ -72,6 +90,7 @@ $nowIso = $now.ToString('o')
 $cutoff = $now.AddDays(-$AgeDays)
 
 Write-AaLog "Auto-approval writer starting (AgeDays=$AgeDays cutoff=$($cutoff.ToString('o')) DryRun=$($DryRun.IsPresent) MaxPerRun=$MaxPerRun)"
+Emit-Event -Sev 'Info' -Msg ("Auto-approval writer starting (AgeDays={0}, DryRun={1}, MaxPerRun={2})" -f $AgeDays, $DryRun.IsPresent, $MaxPerRun)
 
 $files = @(Get-ChildItem -LiteralPath $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
 $promoted = 0
@@ -88,13 +107,28 @@ foreach ($f in $files) {
     if ($status -ne 'PENDING_APPROVAL') { continue }
 
     # Determine anchor timestamp.
-    $anchor = ''
+    $anchor = $null
     foreach ($p in @('plannedAt','modified','created','createdAt')) {
-        if ($obj.PSObject.Properties.Name -contains $p -and $obj.$p) { $anchor = [string]$obj.$p; break }
+        if ($obj.PSObject.Properties.Name -contains $p -and $null -ne $obj.$p -and [string]$obj.$p) { $anchor = $obj.$p; break }
     }
-    if (-not $anchor) { Write-AaLog "Skip (no timestamp): $($f.Name)" 'Warning'; $skipped++; continue }
+    if ($null -eq $anchor) { Write-AaLog "Skip (no timestamp): $($f.Name)" 'Warning'; $skipped++; continue }
     $anchorDt = $null
-    try { $anchorDt = [DateTime]::Parse($anchor).ToUniversalTime() } catch { $skipped++; continue }
+    try {
+        if ($anchor -is [DateTime]) {
+            $anchorDt = $anchor.ToUniversalTime()
+        } else {
+            $anchorText = [string]$anchor
+            try {
+                $anchorDt = [DateTime]::Parse($anchorText, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
+            } catch {
+                $anchorDt = [DateTime]::Parse($anchorText).ToUniversalTime()
+            }
+        }
+    } catch {
+        Write-AaLog "Skip (invalid timestamp '$anchor' in $($f.Name)): $($_.Exception.Message)" 'Warning'
+        $skipped++
+        continue
+    }
     if ($anchorDt -gt $cutoff) { continue }
 
     # Promote.
@@ -117,11 +151,11 @@ foreach ($f in $files) {
     $promoted++
     $processed += [ordered]@{ id = $id; title = $title; ageDays = [Math]::Round(($now - $anchorDt).TotalDays, 1); file = $f.Name }
     Write-AaLog ("AUTO_APPROVED: {0} ({1}, {2:N1}d old)" -f $id, $title, ($now - $anchorDt).TotalDays)
-    Emit-Event 'Audit' ("Auto-approved {0}: {1} ({2:N1}d)" -f $id, $title, ($now - $anchorDt).TotalDays) $id
+    Emit-Event -Sev 'Audit' -Msg ("Auto-approved {0}: {1} ({2:N1}d)" -f $id, $title, ($now - $anchorDt).TotalDays) -Corr $id -ItemId $id -ItemType 'ToDo'
 }
 
 Write-AaLog "Summary: promoted=$promoted skipped=$skipped totalScanned=$(@($files).Count)"
-Emit-Event 'Info' "AutoApproval cycle complete: promoted=$promoted skipped=$skipped"
+Emit-Event -Sev 'Info' -Msg "AutoApproval cycle complete: promoted=$promoted skipped=$skipped"
 
 # Rebuild bundle (best-effort).
 if (-not $DryRun -and $promoted -gt 0) {

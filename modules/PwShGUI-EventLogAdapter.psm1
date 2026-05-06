@@ -90,6 +90,13 @@ function Write-EventLogNormalized {
         [string]$Severity = 'Info',
         [string]$CorrId   = '',
         [string]$Source   = '',
+        [object]$EventId  = $null,
+        [string]$ItemId   = '',
+        [string]$ItemType = '',
+        [string]$ActionId = '',
+        [string]$AgentId  = '',
+        [string]$Editor   = '',
+        [string]$Route    = '',
         [string]$WorkspacePath = $PSScriptRoot
     )
     $row = [ordered]@{
@@ -103,6 +110,14 @@ function Write-EventLogNormalized {
         pid       = $PID
         source    = $Source
     }
+    if ($null -ne $EventId -and ("$EventId").Length -gt 0) { $row.eventId = $EventId }
+    if ($ItemId)   { $row.itemId   = $ItemId }
+    if ($ItemType) { $row.itemType = $ItemType }
+    if ($ActionId) { $row.actionId = $ActionId }
+    if ($AgentId)  { $row.agentId  = $AgentId }
+    if ($Editor)   { $row.editor   = $Editor }
+    if ($Route)    { $row.route    = $Route }
+
     $dir  = Get-EventLogNormalizedDir -WorkspacePath $WorkspacePath
     $file = Join-Path $dir ("$Scope-" + (Get-Date -Format 'yyyyMMdd') + '.jsonl')
     $line = ($row | ConvertTo-Json -Depth 5 -Compress)

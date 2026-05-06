@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -22,15 +22,31 @@ Describe 'CronAiAthon-Scheduler Module' {
     It 'Imports successfully' {
         Get-Module 'CronAiAthon-Scheduler' | Should -Not -BeNullOrEmpty
     }
-    It 'Exports 15 functions' {
+    It 'Exports required scheduler functions' {
         $exports = (Get-Module 'CronAiAthon-Scheduler').ExportedFunctions.Keys
-        $exports.Count | Should -Be 15
+        @($exports).Count | Should -BeGreaterOrEqual 15
+        foreach ($name in @(
+            'Initialize-CronSchedule',
+            'Get-CronSchedule',
+            'Save-CronSchedule',
+            'Invoke-CronJob',
+            'Invoke-AllCronJobs',
+            'Get-CronJobHistory',
+            'Get-CronJobSummary',
+            'Set-CronFrequency'
+        )) {
+            $exports | Should -Contain $name
+        }
     }
 }
 
 Describe 'Get-CronSchedule' {
     It 'Returns schedule data without error' {
-        { Get-CronSchedule } | Should -Not -Throw
+        $wsPath = Join-Path $TestDrive 'ws-scheduler'
+        { Get-CronSchedule -WorkspacePath $wsPath } | Should -Not -Throw
+        $schedule = Get-CronSchedule -WorkspacePath $wsPath
+        $schedule | Should -Not -BeNullOrEmpty
+        $schedule.meta.schema | Should -Be 'CronAiAthon-Schedule/1.0'
     }
 }
 

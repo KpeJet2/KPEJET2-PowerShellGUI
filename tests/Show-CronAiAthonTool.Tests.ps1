@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,6 +57,7 @@ Describe 'Show-CronAiAthonTool — Dot-source loadability' {
         { . $script:ScriptPath } | Should -Not -Throw
     }
     It 'Primary function Show-CronAiAthonTool is defined after dot-source' {
+        . $script:ScriptPath
         Get-Command 'Show-CronAiAthonTool' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
     }
 }

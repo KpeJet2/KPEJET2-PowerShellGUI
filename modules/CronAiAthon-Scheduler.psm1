@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -53,6 +53,19 @@ function Get-CronSchedulePath {
 function Get-CronHistoryPath {
     param([string]$WorkspacePath)
     return (Join-Path (Join-Path $WorkspacePath 'logs') 'cron-aiathon-history.json')
+}
+
+function Get-CronSchedule {
+    <#
+    .SYNOPSIS
+      Return the current Cron-Ai-Athon schedule object.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent)
+    )
+
+    return (Initialize-CronSchedule -WorkspacePath $WorkspacePath)
 }
 
 function Initialize-CronSchedule {
@@ -1516,6 +1529,7 @@ function Show-SchedulerHelp {
 #>
 Export-ModuleMember -Function @(
     'Initialize-CronSchedule',
+    'Get-CronSchedule',
     'Save-CronSchedule',
     'Invoke-PreRequisiteCheck',
     'Invoke-CronJob',

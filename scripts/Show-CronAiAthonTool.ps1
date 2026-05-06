@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -2969,7 +2969,7 @@ function Show-CronAiAthonTool {
   SIN-PATTERN-003  No SilentlyContinue on Import-Module (use try/catch)
   SIN-PATTERN-004  Always wrap .Count with @() for PS 5.1 null safety
   SIN-PATTERN-010  No Invoke-Expression with dynamic strings (security risk)
-  SIN-PATTERN-022  Null guard before method calls (PS 5.1 no ?. operator)
+    SIN-PATTERN-022  Null guard before method calls (PS 5.1 has no null-conditional operator)
 
   📖 Full SIN registry: sin_registry/ (18 blocking + 6 advisory patterns)
   🔍 Scanner: tests\Invoke-SINPatternScanner.ps1

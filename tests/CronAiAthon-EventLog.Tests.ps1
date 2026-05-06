@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V45.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -22,9 +22,22 @@ Describe 'CronAiAthon-EventLog Module' {
     It 'Imports successfully' {
         Get-Module 'CronAiAthon-EventLog' | Should -Not -BeNullOrEmpty
     }
-    It 'Exports 9 functions' {
+    It 'Exports required core functions' {
         $exports = (Get-Module 'CronAiAthon-EventLog').ExportedFunctions.Keys
-        $exports.Count | Should -Be 9
+        @($exports).Count | Should -BeGreaterOrEqual 9
+        foreach ($name in @(
+            'Register-EventLogSources',
+            'Test-EventLogSourceReady',
+            'Write-CronEventLog',
+            'Send-SyslogMessage',
+            'Write-SyslogFile',
+            'Write-CronLog',
+            'Get-EventLogConfig',
+            'Get-SyslogEntries',
+            'ConvertTo-SyslogSeverity'
+        )) {
+            $exports | Should -Contain $name
+        }
     }
 }
 

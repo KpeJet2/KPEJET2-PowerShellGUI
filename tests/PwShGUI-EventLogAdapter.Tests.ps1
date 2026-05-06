@@ -45,6 +45,20 @@ Describe 'EventLogAdapter -- Write/Get round-trip' {
         @($foundRows).Count   | Should -Be 1
         $foundRows[0].severity | Should -Be 'WARN'
     }
+
+    It 'writes optional provenance fields when provided' {
+        $corr = 'PESTER-PROV-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
+        Write-EventLogNormalized -Scope pipeline -Component 'PesterTest' -Message 'provenance-check' -Severity 'Info' -CorrId $corr -EventId 123456789 -ItemId 'TODO-PA-123' -ItemType 'ToDo' -ActionId 'action-xyz' -AgentId 'PesterAgent' -Editor 'PesterEditor' -WorkspacePath $script:Ws | Out-Null
+        $env = Get-EventLogNormalized -Scope pipeline -Tail 100 -WorkspacePath $script:Ws
+        $row = @($env.items | Where-Object { $_.corrId -eq $corr }) | Select-Object -First 1
+        $row | Should -Not -BeNullOrEmpty
+        $row.eventId | Should -Be 123456789
+        $row.itemId | Should -Be 'TODO-PA-123'
+        $row.itemType | Should -Be 'ToDo'
+        $row.actionId | Should -Be 'action-xyz'
+        $row.agentId | Should -Be 'PesterAgent'
+        $row.editor | Should -Be 'PesterEditor'
+    }
 }
 
 Describe 'EventLogAdapter -- root aggregate' {
