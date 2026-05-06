@@ -1,0 +1,14 @@
+{
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "title": "Scheduler task failure: TASK-DocRebuild",
+  "taskId": "TASK-DocRebuild",
+  "id": "BUG-SCHED-40006938",
+  "status": "OPEN",
+  "source": "CronAiAthon-Scheduler",
+  "createdAt": "2026-05-06T17:37:31.5980226Z",
+  "priority": "High",
+  "detail": "IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605070137.json)",
+  "lastUpdated": "2026-05-06T17:37:31.5980226Z",
+  "description": "IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605070137.json)"
+}

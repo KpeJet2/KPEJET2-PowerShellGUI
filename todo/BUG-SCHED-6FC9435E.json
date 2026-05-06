@@ -1,13 +1,18 @@
-﻿{
-    "id":  "BUG-SCHED-6FC9435E",
-    "category":  "SchedulerFailure",
-    "type":  "Bug",
-    "lastUpdated":  "2026-05-04T11:49:56.5302602Z",
-    "taskId":  "TASK-DocRebuild",
-    "createdAt":  "2026-05-04T11:49:56.5302602Z",
-    "status":  "OPEN",
-    "title":  "Scheduler task failure: TASK-DocRebuild",
-    "source":  "CronAiAthon-Scheduler",
-    "detail":  "Manifest: Exception calling \"GetFileName\" with \"1\" argument(s): \"Illegal characters in path.\"; IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605041949.json)",
-    "priority":  "High"
+{
+  "id": "BUG-SCHED-6FC9435E",
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "lastUpdated": "2026-05-04T11:49:56.5302602Z",
+  "taskId": "TASK-DocRebuild",
+  "createdAt": "2026-05-04T11:49:56.5302602Z",
+  "status": "IN-PROGRESS",
+  "title": "Scheduler task failure: TASK-DocRebuild",
+  "source": "CronAiAthon-Scheduler",
+  "detail": "Manifest: Exception calling \"GetFileName\" with \"1\" argument(s): \"Illegal characters in path.\"; IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605041949.json)",
+  "priority": "High",
+  "modified": "2026-05-06T17:28:18.8542535Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-05-06T17:28:18.8542535Z",
+  "notes": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+  "description": "Manifest: Exception calling \"GetFileName\" with \"1\" argument(s): \"Illegal characters in path.\"; IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605041949.json)"
 }

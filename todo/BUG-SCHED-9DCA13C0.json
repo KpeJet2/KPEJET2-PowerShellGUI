@@ -1,0 +1,14 @@
+{
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "title": "Scheduler task failure: TASK-PipelineProcess",
+  "taskId": "TASK-PipelineProcess",
+  "id": "BUG-SCHED-9DCA13C0",
+  "status": "OPEN",
+  "source": "CronAiAthon-Scheduler",
+  "createdAt": "2026-05-06T17:37:07.8160983Z",
+  "priority": "High",
+  "detail": "The property 'description' cannot be found on this object. Verify that the property exists.",
+  "lastUpdated": "2026-05-06T17:37:07.8160983Z",
+  "description": "The property 'description' cannot be found on this object. Verify that the property exists."
+}

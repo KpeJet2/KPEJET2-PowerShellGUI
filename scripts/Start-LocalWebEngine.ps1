@@ -62,28 +62,125 @@ Start-LocalWebEngine.ps1 — Unified Launcher/Service
 }
 
 # Main control flow
+if ([string]::IsNullOrEmpty($WorkspacePath)) {
+    $WorkspacePath = Split-Path $PSScriptRoot -Parent
+}
+if ($AsService -and $Action -eq 'Start') {
+    $Action = 'RunAsService'
+}
+
 switch ($Action) {
     'Start' {
-        # TODO: Implement negotiation/version check, safe restart, port fallback
-        # If another instance is healthy, return status/version
-        # If not, try to restart or prompt user
-        # If port busy, try next port up to PortRetryMax
-        # Start engine normally
+        # Continue into canonical in-process engine startup flow below.
     }
     'Stop' {
-        # TODO: Implement stop logic (find PID, signal/kill, cleanup)
+        $baseUrl = "http://127.0.0.1:$Port"
+        $stopRequested = $false
+        try {
+            $csrfResp = Invoke-WebRequest -Uri ($baseUrl + '/api/csrf-token') -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+            $csrfObj = $csrfResp.Content | ConvertFrom-Json
+            $token = if ($null -ne $csrfObj -and $csrfObj.PSObject.Properties.Name -contains 'csrfToken') { [string]$csrfObj.csrfToken } else { '' }
+            if (-not [string]::IsNullOrWhiteSpace($token)) {
+                $headers = @{ 'X-CSRF-Token' = $token; 'Content-Type' = 'application/json' }
+                Invoke-WebRequest -Uri ($baseUrl + '/api/engine/stop') -Method Post -Headers $headers -Body '{}' -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop | Out-Null
+                Write-Host "Stop requested via HTTP API on port $Port" -ForegroundColor Yellow
+                $stopRequested = $true
+            }
+        } catch {
+            Write-Host "Stop API request failed: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+
+        if (-not $stopRequested) {
+            $logsDir = Join-Path $WorkspacePath 'logs'
+            $stopSignal = Join-Path $logsDir 'engine.stop'
+            $pidFile = Join-Path $logsDir 'engine.pid'
+            $pidValue = $null
+            $pidRunning = $false
+
+            if (Test-Path -LiteralPath $pidFile) {
+                try {
+                    $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+                    if ($pidText -match '^\d+$') {
+                        $pidValue = [int]$pidText
+                        $pidRunning = @((Get-Process -Id $pidValue -ErrorAction SilentlyContinue)).Count -gt 0
+                    }
+                } catch {
+                    $pidRunning = $false
+                }
+            }
+
+            if ($pidRunning) {
+                try {
+                    New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
+                    Set-Content -LiteralPath $stopSignal -Value '1' -Encoding UTF8 -Force
+                    Write-Host "Stop signal file written: $stopSignal" -ForegroundColor Yellow
+                    $stopRequested = $true
+                } catch {
+                    Write-Host "Failed to write stop signal: $($_.Exception.Message)" -ForegroundColor DarkYellow
+                }
+
+                if ($Force -and $null -ne $pidValue) {
+                    try {
+                        Stop-Process -Id $pidValue -Force -ErrorAction Stop
+                        Write-Host "Force-stopped engine PID $pidValue" -ForegroundColor Yellow
+                        $stopRequested = $true
+                    } catch {
+                        Write-Host "Force stop failed: $($_.Exception.Message)" -ForegroundColor Red
+                    }
+                }
+            } else {
+                if (Test-Path -LiteralPath $stopSignal) {
+                    Remove-Item -LiteralPath $stopSignal -Force -ErrorAction SilentlyContinue
+                }
+                Write-Host "Engine is not running on port $Port. Nothing to stop." -ForegroundColor DarkYellow
+                exit 0
+            }
+        }
+
+        if ($stopRequested) { exit 0 }
+        exit 1
     }
     'Restart' {
-        # TODO: Stop then Start
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } else { $null }
+        if ($null -eq $hostExe) {
+            Write-Host 'No PowerShell host available for restart.' -ForegroundColor Red
+            exit 1
+        }
+
+        $scriptPath = $MyInvocation.MyCommand.Path
+        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $scriptPath -Action Stop -Port $Port -WorkspacePath $WorkspacePath -NoLaunchBrowser:$NoLaunchBrowser -Force:$Force
+        Start-Sleep -Milliseconds 700
+        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $scriptPath -Action Start -Port $Port -WorkspacePath $WorkspacePath -NoLaunchBrowser:$NoLaunchBrowser -Force:$Force
+        exit $LASTEXITCODE
     }
     'Status' {
-        # TODO: Query engine status/version, print result
+        $statusUrl = "http://127.0.0.1:$Port/api/engine/status"
+        try {
+            $resp = Invoke-WebRequest -Uri $statusUrl -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop
+            Write-Host $resp.Content
+            exit 0
+        } catch {
+            Write-Host "Engine offline on port $Port" -ForegroundColor Yellow
+            exit 1
+        }
     }
     'LaunchWebpage' {
-        # TODO: Open browser to engine URL
+        Start-Process "http://127.0.0.1:$Port/"
+        exit 0
     }
     'RunAsService' {
-        # TODO: Start as background service (hidden window, PID tracking)
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } else { $null }
+        if ($null -eq $hostExe) {
+            Write-Host 'No PowerShell host available for RunAsService.' -ForegroundColor Red
+            exit 1
+        }
+
+        $serviceArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$MyInvocation.MyCommand.Path,'-Action','Start','-Port',$Port,'-WorkspacePath',$WorkspacePath)
+        if ($NoLaunchBrowser) { $serviceArgs += @('-NoLaunchBrowser') }
+        if ($Force) { $serviceArgs += @('-Force') }
+        $svcProc = Start-Process -FilePath $hostExe -ArgumentList $serviceArgs -PassThru -WindowStyle Hidden
+        Write-Host "RunAsService launched hidden PID $($svcProc.Id) on port $Port" -ForegroundColor Cyan
+        exit 0
     }
     default {
         Write-Host "Unknown action: $Action" -ForegroundColor Red
@@ -947,6 +1044,12 @@ Write-BootstrapLog "HttpListener initialising on http://127.0.0.1:$Port/" 'INFO'
 try {
     $listener.Start()
     Register-ConsoleShutdownHandler
+    $pidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+    try {
+        Set-Content -LiteralPath $pidFile -Value $PID -Encoding UTF8 -Force
+    } catch {
+        Write-BootstrapLog "Unable to write PID file at ${pidFile}: $_" 'WARN'
+    }
     Write-Host ""
     Write-Host "  PowerShellGUI Local Web Engine" -ForegroundColor Cyan
     Write-Host "  Listening on http://127.0.0.1:$Port/" -ForegroundColor Cyan
@@ -1192,7 +1295,7 @@ try {
                 break
             }
             # ── Generic static file fallback (workspace-relative) ────────
-            '^/(.+\.(xhtml|html|css|js|json|png|jpg|gif|svg|ico))$' {
+            '^/(.+\.(xhtml|html|md|css|js|json|png|jpg|gif|svg|ico))$' {
                 $relFile = $Matches[1] -replace '/', '\'  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 # P009: validate path does not escape workspace
                 if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
@@ -1209,6 +1312,14 @@ try {
     }
 } finally {
     Unregister-ConsoleShutdownHandler
+    $pidFileCleanup = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+    if (Test-Path -LiteralPath $pidFileCleanup) {
+        try {
+            Remove-Item -LiteralPath $pidFileCleanup -Force -ErrorAction Stop
+        } catch {
+            Write-EngineLog "PID cleanup warning: $($_.Exception.Message)" -Level 'WARN'
+        }
+    }
     $listener.Stop()
     $listener.Close()
     $exitKind = if ($script:_ExitClean) { 'CLEAN_STOP' } else { 'DIRTY_EXIT' }

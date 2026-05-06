@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../../styles/pwshgui-responsive.css" />
   <link rel="stylesheet" href="../../styles/layout-mastertight-wleftmenu.css" />
   <style type="text/css">
-  /* Layout: kpe-CSS_MasterTight-wLeftMENU | VersionTag: 2603.B0.v27.0 */
+  /* Layout: kpe-CSS_MasterTight-wLeftMENU | VersionTag: 2605.B2.V31.7 */
   :root{--bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;--border:#3e3e42;--fg:#d4d4d4;
     --fg-dim:#888;--accent:#007acc;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;
     --info:#569cd6;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
@@ -46,6 +46,7 @@
   .folder-color{width:12px;height:12px;border-radius:3px;flex-shrink:0}
   .folder-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .folder-count{font-size:10px;color:var(--fg-dim)}
+  .folder-meta{font-size:9px;color:var(--fg-dim);padding:0 8px 6px 26px;line-height:1.3}
 
   /* ── venn canvas ── */
   #canvasWrap{flex:1;position:relative;overflow:hidden}
@@ -61,8 +62,14 @@
   /* ── right detail panel ── */
   #rightPane{width:320px;min-width:200px;background:var(--panel);border-left:1px solid var(--border);
     display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+  #rightPane.collapsed{display:none}
+  #rightResizer{width:6px;cursor:col-resize;background:linear-gradient(180deg,#2c2c31,#3a3a41);flex-shrink:0}
+  #rightResizer.hidden{display:none}
   #rightPane .sec-hdr{font-size:12px;font-weight:700;color:var(--accent);
-    padding:10px 12px 6px;border-bottom:1px solid var(--border)}
+    padding:8px 10px 6px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pane-actions{display:flex;align-items:center;gap:6px}
+  .pane-actions .mini{font-size:10px;padding:2px 7px;border:1px solid var(--border);background:var(--bg-alt);color:var(--fg);border-radius:4px;cursor:pointer}
+  .pane-actions .mini:hover{filter:brightness(1.15)}
   .detail-scroll{flex:1;overflow-y:auto;padding:8px 12px}
   .detail-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
     padding:10px;margin-bottom:8px}
@@ -93,6 +100,26 @@
   .btn:hover{filter:brightness(1.15)}
   .btn-outline{background:transparent;border:1px solid var(--border);color:var(--fg)}
   .btn-outline:hover{background:var(--bg-alt)}
+  .btn-metrics{background:#2f7d57}
+  .btn-metrics:hover{filter:brightness(1.1)}
+
+  #metricsPanel{position:absolute;right:14px;top:14px;width:420px;max-width:calc(100% - 28px);
+    max-height:78%;overflow:auto;z-index:80;background:rgba(28,28,32,0.98);border:1px solid var(--border);
+    border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:12px;display:none}
+  #metricsPanel h3{font-size:13px;color:var(--accent);margin-bottom:8px}
+  #metricsPanel .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+  #metricsPanel .chip{font-size:10px;border:1px solid var(--border);border-radius:10px;padding:3px 8px;color:var(--fg-dim)}
+  #metricsPanel .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+  #metricsPanel .kpi div{background:#202026;border:1px solid var(--border);border-radius:6px;padding:6px}
+  #metricsPanel .kpi b{display:block;font-size:13px;color:var(--pass)}
+  #metricsPanel .kpi span{font-size:10px;color:var(--fg-dim)}
+  #metricsPanel table{width:100%;border-collapse:collapse;font-size:10px}
+  #metricsPanel th,#metricsPanel td{border-bottom:1px solid var(--border);padding:4px 6px;text-align:left}
+  #metricsPanel th{color:var(--info);font-weight:600}
+  #metricsPanel a{color:#8ecbff;text-decoration:none}
+  #metricsPanel a:hover{text-decoration:underline}
+  #metricsPanel.pinned{position:relative;right:auto;top:auto;width:360px;max-width:360px;max-height:none;height:100%;
+    border-left:1px solid var(--border);border-radius:0;box-shadow:none;background:var(--panel);display:block}
 
   /* ── status bar ── */
   #statusBar{background:var(--panel);border-top:1px solid var(--border);
@@ -109,7 +136,7 @@
   <!-- ═══════════ TOP BAR ═══════════ -->
   <div id="topBar">
     <h1>&#x1F50D; PwShGUI-XHTML - Visualisation Venn</h1>
-    <span class="ver-badge">v2604.B0.V1.2</span>
+    <span class="ver-badge" id="headerVersion">v2605.B2.V31.7</span>
   </div>
   <!-- ═══════════ FILTER BAR ═══════════ -->
   <div id="filterBar">
@@ -125,6 +152,16 @@
     <button class="btn" id="btnRefresh" type="button">Refresh</button>
     <button class="btn btn-outline" id="btnSelectAll" type="button">Select All</button>
     <button class="btn btn-outline" id="btnInvert" type="button">Invert</button>
+    <select id="metricsSource" title="Metrics source">
+      <option value="auto">Metrics: Auto</option>
+      <option value="CHANGELOG.md">CHANGELOG.md</option>
+      <option value="~README.md/CHANGELOG.md">~README.md/CHANGELOG.md</option>
+      <option value="~README.md/FILES-MANIFEST.md">~README.md/FILES-MANIFEST.md</option>
+      <option value="point">Point-In-Time</option>
+    </select>
+    <input type="date" id="metricsPointDate" title="Point-in-time date" />
+    <button class="btn btn-metrics" id="btnMetrics" type="button">Metrics Menu</button>
+    <button class="btn btn-outline" id="btnPinMetrics" type="button">Pin Metrics</button>
     <button class="btn btn-outline" id="btnExportSVG" type="button">Export SVG</button>
   </div>
 
@@ -140,11 +177,14 @@
     <div id="canvasWrap">
       <svg id="vennCanvas" xmlns="http://www.w3.org/2000/svg"></svg>
       <div id="tooltip" class="venn-tooltip"></div>
+      <div id="metricsPanel"></div>
     </div>
+
+    <div id="rightResizer" title="Resize Selection Detail pane"></div>
 
     <!-- right: detail panel -->
     <div id="rightPane">
-      <div class="sec-hdr">Selection Detail</div>
+      <div class="sec-hdr"><span>Selection Detail</span><span class="pane-actions"><button class="mini" id="btnCollapseDetail" type="button">Collapse</button></span></div>
       <div id="detailPanel" class="detail-scroll">
         <p class="detail-placeholder">Click a circle to inspect</p>
       </div>
@@ -164,7 +204,7 @@
 
   <script type="text/javascript">
   //<![CDATA[
-  /* ── PwShGUI Dependency Venn – v2603.B0.v27.0 ── */
+  /* ── PwShGUI Dependency Venn – v2605.B2.V31.7 ── */
   (function(){
     'use strict';
 
@@ -181,10 +221,27 @@
       '.js':'#dcdcaa','.bat':'#d7ba7d','.txt':'#d4d4d4','.csv':'#b5cea8','.bin':'#808080'
     };
 
+    var CURRENT_VERSION = '2605.B2.V31.7';
+    var WORKSPACE_FOLDER_HINTS = [
+      'scripts','scripts/XHTML-Checker','modules','config','tests','styles','todo','docs','agents',
+      'tools','logs','reports','Report','temp','UPM','gallery','pki','sin_registry','sovereign-kernel',
+      '~README.md','~REPORTS','CarGame','Fing-mcp'
+    ];
+    var METRIC_FILES = [
+      '../../CHANGELOG.md',
+      '../../~README.md/CHANGELOG.md',
+      '../../~README.md/FILES-MANIFEST.md'
+    ];
+
     /* ── state ── */
-    var DATA = {folders:[], files:[]};
+    var DATA = {folders:[], files:[], metrics:[]};
     var selectedFolders = {};
-    var hoveredFolder = null;
+    var metricPanelVisible = false;
+    var metricsPinned = false;
+    var metricRawFiles = {};
+    var manifestVersion = '';
+    var isResizingRightPane = false;
+    var rightPaneWidth = 320;
 
     /* ── DOM refs ── */
     var svg = document.getElementById('vennCanvas');
@@ -192,6 +249,11 @@
     var detailEl = document.getElementById('detailPanel');
     var tooltipEl = document.getElementById('tooltip');
     var legendEl = document.getElementById('legendBar');
+    var metricsPanelEl = document.getElementById('metricsPanel');
+    var mainEl = document.getElementById('main');
+    var canvasWrapEl = document.getElementById('canvasWrap');
+    var rightPaneEl = document.getElementById('rightPane');
+    var rightResizerEl = document.getElementById('rightResizer');
 
     /* ════════════════════════════════════════════
        DATA: Load from embedded workspace scan
@@ -199,6 +261,8 @@
        or provide inline fallback.
        ════════════════════════════════════════════ */
     function loadData(){
+      loadMetricFiles();
+
       /* Try fetch from vis-data-final.json (generated by Build-AgenticManifest or scan script) */
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '../../temp/vis-data-final.json', true);
@@ -223,24 +287,45 @@
       if(raw.nodes){
         for(var i=0;i<raw.nodes.length;i++){
           var n = raw.nodes[i];
+          if((n.type || '').toLowerCase() === 'directory') continue;
           var parts = (n.id||'').replace(/\\/g,'/').split('/');
           var folder = parts.length > 1 ? parts.slice(0,-1).join('/') : '(root)';
           var ext = '.' + ((n.id||'').split('.').pop()||'').toLowerCase();
-          if(!folderMap[folder]) folderMap[folder] = {name:folder,files:[],totalSize:0};
+          var modifiedAt = toDateString(n.modifiedOn || n.lastModified || n.updatedAt || n.mtime || '');
+          var versionIssued = toDateString(n.versionIssuedDate || n.versionDate || n.releasedOn || '');
           var fObj = {name:parts[parts.length-1]||n.id, path:n.id, folder:folder, ext:ext,
-            size:n.sizeBytes||0, version:n.version||'', type:n.type||'unknown'};
-          folderMap[folder].files.push(fObj);
-          folderMap[folder].totalSize += (n.sizeBytes||0);
+            size:n.sizeBytes||0, version:n.version||'', type:n.type||'unknown',
+            modifiedAt:modifiedAt, versionIssued:versionIssued};
+
+          var chains = buildFolderChain(folder);
+          for(var c=0;c<chains.length;c++){
+            var chainName = chains[c];
+            if(!folderMap[chainName]){
+              folderMap[chainName] = {
+                name:chainName, files:[], totalSize:0, latestChange:'', latestVersionIssued:'', depth:getDepth(chainName)
+              };
+            }
+            folderMap[chainName].files.push(fObj);
+            folderMap[chainName].totalSize += (n.sizeBytes||0);
+            folderMap[chainName].latestChange = pickLatest(folderMap[chainName].latestChange, modifiedAt);
+            folderMap[chainName].latestVersionIssued = pickLatest(folderMap[chainName].latestVersionIssued, versionIssued);
+          }
           files.push(fObj);
         }
       }
+
+      ensureHintFolders(folderMap);
       var folders = [];
       for(var k in folderMap){
         if(folderMap.hasOwnProperty(k)){
           folders.push(folderMap[k]);
         }
       }
-      folders.sort(function(a,b){return b.totalSize - a.totalSize;});
+      folders.sort(function(a,b){
+        if(a.depth !== b.depth) return a.depth - b.depth;
+        if(a.files.length !== b.files.length) return b.files.length - a.files.length;
+        return a.name.localeCompare(b.name);
+      });
       DATA.folders = folders;
       DATA.files = files;
       initUI();
@@ -265,7 +350,23 @@
       ];
       var allFiles = [];
       for(var i=0;i<dirs.length;i++) allFiles = allFiles.concat(dirs[i].files);
-      DATA.folders = dirs;
+      var folderMap = indexFoldersByName(dirs);
+      for(var d=0;d<dirs.length;d++){
+        dirs[d].latestChange = randomPastDate(45);
+        dirs[d].latestVersionIssued = randomPastDate(120);
+        dirs[d].depth = getDepth(dirs[d].name);
+      }
+      ensureHintFolders(folderMap);
+      var expanded = [];
+      for(var key in folderMap){
+        if(folderMap.hasOwnProperty(key)) expanded.push(folderMap[key]);
+      }
+      expanded.sort(function(a,b){
+        if(a.depth !== b.depth) return a.depth - b.depth;
+        if(a.files.length !== b.files.length) return b.files.length - a.files.length;
+        return a.name.localeCompare(b.name);
+      });
+      DATA.folders = expanded;
       DATA.files = allFiles;
       initUI();
     }
@@ -275,7 +376,7 @@
       for(var i=0;i<count;i++){
         arr.push({name:'file'+(i+1)+ext, path:folder+'/file'+(i+1)+ext,
           folder:folder, ext:ext, size:avgSize + Math.floor(Math.random()*avgSize*0.4-avgSize*0.2),
-          version:'2603.B0.v27.0', type:ext.replace('.','')});
+          version:CURRENT_VERSION, type:ext.replace('.','')});
       }
       return arr;
     }
@@ -287,6 +388,7 @@
       buildFolderList();
       buildExtFilter();
       buildLegend();
+      syncHeaderAndManifestVersion();
       for(var i=0;i<DATA.folders.length && i<8;i++){
         selectedFolders[DATA.folders[i].name] = true;
       }
@@ -294,6 +396,7 @@
       drawVenn();
       updateStats();
       wireEvents();
+      renderMetricsPanel();
     }
 
     function buildFolderList(){
@@ -303,10 +406,16 @@
         var div = document.createElement('div');
         div.className = 'folder-item';
         div.setAttribute('data-folder', f.name);
+        var indent = f.depth > 0 ? 'padding-left:' + (8 + (f.depth * 10)) + 'px' : '';
         div.innerHTML = '<span class="folder-color" style="background:'+PALETTE[i%PALETTE.length]+'"></span>'
-          + '<span class="folder-name" title="'+esc(f.name)+'">'+esc(f.name)+'</span>'
+          + '<span class="folder-name" style="'+indent+'" title="'+esc(f.name)+'">'+esc(f.name)+'</span>'
           + '<span class="folder-count">'+f.files.length+'</span>';
         folderListEl.appendChild(div);
+
+        var meta = document.createElement('div');
+        meta.className = 'folder-meta';
+        meta.textContent = 'Last change: ' + (f.latestChange || 'n/a') + ' | Version issued: ' + (f.latestVersionIssued || 'n/a');
+        folderListEl.appendChild(meta);
       }
     }
 
@@ -346,7 +455,9 @@
 
       var selected = [];
       for(var i=0;i<DATA.folders.length;i++){
-        if(selectedFolders[DATA.folders[i].name]) selected.push({idx:i, folder:DATA.folders[i]});
+        if(selectedFolders[DATA.folders[i].name] && isFolderFilteredIn(DATA.folders[i])){
+          selected.push({idx:i, folder:DATA.folders[i]});
+        }
       }
       if(selected.length === 0) return;
 
@@ -569,14 +680,57 @@
       });
       document.getElementById('btnRefresh').addEventListener('click', function(){ loadData(); });
       document.getElementById('btnExportSVG').addEventListener('click', exportSVG);
+      document.getElementById('btnMetrics').addEventListener('click', toggleMetricsMenu);
+      document.getElementById('btnPinMetrics').addEventListener('click', togglePinMetrics);
+      document.getElementById('btnCollapseDetail').addEventListener('click', toggleDetailPane);
+
+      rightResizerEl.addEventListener('mousedown', startRightPaneResize);
+      document.addEventListener('mousemove', onRightPaneResize);
+      document.addEventListener('mouseup', stopRightPaneResize);
 
       /* Filters */
       document.getElementById('filterSearch').addEventListener('input', filterFolderList);
       document.getElementById('filterExt').addEventListener('change', function(){ drawVenn(); });
       document.getElementById('filterMinFiles').addEventListener('change', function(){ drawVenn(); });
+      document.getElementById('metricsSource').addEventListener('change', renderMetricsPanel);
+      document.getElementById('metricsPointDate').addEventListener('change', renderMetricsPanel);
 
       /* Resize */
       window.addEventListener('resize', function(){ drawVenn(); });
+    }
+
+    function toggleDetailPane(){
+      var btn = document.getElementById('btnCollapseDetail');
+      var collapsed = rightPaneEl.classList.toggle('collapsed');
+      if(collapsed){
+        rightResizerEl.classList.add('hidden');
+        btn.textContent = 'Expand';
+      } else {
+        rightResizerEl.classList.remove('hidden');
+        btn.textContent = 'Collapse';
+        rightPaneEl.style.width = rightPaneWidth + 'px';
+      }
+      drawVenn();
+    }
+
+    function startRightPaneResize(e){
+      if(rightPaneEl.classList.contains('collapsed')) return;
+      isResizingRightPane = true;
+      e.preventDefault();
+    }
+
+    function onRightPaneResize(e){
+      if(!isResizingRightPane) return;
+      var rect = mainEl.getBoundingClientRect();
+      var desired = rect.right - e.clientX;
+      var bounded = Math.max(220, Math.min(680, desired));
+      rightPaneWidth = bounded;
+      rightPaneEl.style.width = bounded + 'px';
+      drawVenn();
+    }
+
+    function stopRightPaneResize(){
+      isResizingRightPane = false;
     }
 
     function filterFolderList(){
@@ -584,7 +738,11 @@
       var items = folderListEl.querySelectorAll('.folder-item');
       for(var i=0;i<items.length;i++){
         var name = (items[i].getAttribute('data-folder')||'').toLowerCase();
-        items[i].style.display = (!q || name.indexOf(q) >= 0) ? '' : 'none';
+        var visible = (!q || name.indexOf(q) >= 0);
+        items[i].style.display = visible ? '' : 'none';
+        if(items[i].nextSibling && items[i].nextSibling.className === 'folder-meta'){
+          items[i].nextSibling.style.display = visible ? '' : 'none';
+        }
       }
     }
 
@@ -603,6 +761,8 @@
       var html = '<h4>'+esc(folder.name)+'</h4>';
       html += '<div class="tt-row"><span class="tt-label">Files:</span><span class="tt-val">'+folder.files.length+'</span></div>';
       html += '<div class="tt-row"><span class="tt-label">Size:</span><span class="tt-val">'+formatBytes(folder.totalSize)+'</span></div>';
+      html += '<div class="tt-row"><span class="tt-label">Last change:</span><span class="tt-val">'+esc(folder.latestChange || 'n/a')+'</span></div>';
+      html += '<div class="tt-row"><span class="tt-label">Version issued:</span><span class="tt-val">'+esc(folder.latestVersionIssued || 'n/a')+'</span></div>';
       var exts = Object.keys(extMap).sort(function(a,b){return extMap[b]-extMap[a];});
       for(var j=0;j<exts.length && j<5;j++){
         html += '<div class="tt-row"><span class="tt-label">'+esc(exts[j])+'</span><span class="tt-val">'+extMap[exts[j]]+'</span></div>';
@@ -632,17 +792,168 @@
 
     function updateStats(){
       var selCount = 0, totalFiles = 0, totalSize = 0;
+      var latestChange = '';
       for(var i=0;i<DATA.folders.length;i++){
         if(selectedFolders[DATA.folders[i].name]){
           selCount++;
           totalFiles += DATA.folders[i].files.length;
           totalSize += DATA.folders[i].totalSize;
+          latestChange = pickLatest(latestChange, DATA.folders[i].latestChange || '');
         }
       }
       document.getElementById('statFolders').textContent = 'Folders: ' + DATA.folders.length;
       document.getElementById('statFiles').textContent = 'Files: ' + totalFiles;
       document.getElementById('statSize').textContent = 'Total: ' + formatBytes(totalSize);
-      document.getElementById('statSelected').textContent = 'Selected: ' + selCount;
+      document.getElementById('statSelected').textContent = 'Selected: ' + selCount + (latestChange ? ' | Last: ' + latestChange : '');
+    }
+
+    function loadMetricFiles(){
+      DATA.metrics = [];
+      metricRawFiles = {};
+      for(var i=0;i<METRIC_FILES.length;i++){
+        fetchMetricFile(METRIC_FILES[i]);
+      }
+    }
+
+    function fetchMetricFile(path){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', path, true);
+      xhr.onload = function(){
+        if(xhr.status === 200 || xhr.status === 0){
+          metricRawFiles[path] = xhr.responseText || '';
+          mergeMetrics(parseVersionMetrics(path, xhr.responseText || ''));
+          if(path.indexOf('FILES-MANIFEST.md') >= 0){
+            manifestVersion = extractManifestVersion(xhr.responseText || '');
+          }
+          syncHeaderAndManifestVersion();
+          if(metricPanelVisible) renderMetricsPanel();
+        }
+      };
+      xhr.send();
+    }
+
+    function parseVersionMetrics(source, text){
+      var lines = text.split(/\r?\n/);
+      var metrics = [];
+      for(var i=0;i<lines.length;i++){
+        var line = lines[i];
+        var m = line.match(/(\d{4}\.B\d+\.V\d+\.\d+)/);
+        if(!m) continue;
+        var dateMatch = line.match(/(20\d{2}-\d{2}-\d{2}|20\d{6})/);
+        var issued = '';
+        if(dateMatch){
+          issued = normalizeLooseDate(dateMatch[1]);
+        }
+        metrics.push({source:source, version:m[1], date:issued, line:(i+1), note:line.replace(/^\s*[-#*]+\s*/, '')});
+      }
+      return metrics;
+    }
+
+    function mergeMetrics(items){
+      var seen = {};
+      for(var i=0;i<DATA.metrics.length;i++){
+        seen[DATA.metrics[i].source + '|' + DATA.metrics[i].version + '|' + DATA.metrics[i].line] = true;
+      }
+      for(var j=0;j<items.length;j++){
+        var key = items[j].source + '|' + items[j].version + '|' + items[j].line;
+        if(!seen[key]){
+          DATA.metrics.push(items[j]);
+          seen[key] = true;
+        }
+      }
+      DATA.metrics.sort(function(a,b){
+        var da = a.date || '0000-00-00';
+        var db = b.date || '0000-00-00';
+        if(da === db) return a.version < b.version ? 1 : -1;
+        return da < db ? 1 : -1;
+      });
+    }
+
+    function toggleMetricsMenu(){
+      metricPanelVisible = !metricPanelVisible;
+      metricsPanelEl.style.display = metricPanelVisible ? 'block' : 'none';
+      if(metricPanelVisible) renderMetricsPanel();
+    }
+
+    function togglePinMetrics(){
+      metricsPinned = !metricsPinned;
+      var pinBtn = document.getElementById('btnPinMetrics');
+      if(metricsPinned){
+        metricsPanelEl.classList.add('pinned');
+        mainEl.insertBefore(metricsPanelEl, rightResizerEl);
+        metricPanelVisible = true;
+        metricsPanelEl.style.display = 'block';
+        pinBtn.textContent = 'Unpin Metrics';
+      } else {
+        metricsPanelEl.classList.remove('pinned');
+        canvasWrapEl.appendChild(metricsPanelEl);
+        metricsPanelEl.style.display = metricPanelVisible ? 'block' : 'none';
+        pinBtn.textContent = 'Pin Metrics';
+      }
+      renderMetricsPanel();
+      drawVenn();
+    }
+
+    function renderMetricsPanel(){
+      var source = document.getElementById('metricsSource').value;
+      var pointDate = document.getElementById('metricsPointDate').value;
+      var active = [];
+      for(var i=0;i<DATA.metrics.length;i++){
+        var row = DATA.metrics[i];
+        if(source !== 'auto' && source !== 'point' && row.source.indexOf(source) < 0) continue;
+        if(source === 'point' && pointDate && row.date && row.date > pointDate) continue;
+        active.push(row);
+      }
+      if(source === 'point' && !pointDate){
+        active = [];
+      }
+
+      var latest = active.length ? active[0].version : CURRENT_VERSION;
+      var oldest = active.length ? active[active.length-1].version : CURRENT_VERSION;
+
+      var links = ''
+        + '<a href="../../CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a>'
+        + ' | <a href="../../~README.md/CHANGELOG.md" target="_blank" rel="noopener">~README.md/CHANGELOG.md</a>'
+        + ' | <a href="../../~README.md/FILES-MANIFEST.md" target="_blank" rel="noopener">~README.md/FILES-MANIFEST.md</a>';
+
+      var html = '<h3>Metrics Menu</h3>'
+        + '<div class="row"><span class="chip">Header: '+esc(CURRENT_VERSION)+'</span>'
+        + '<span class="chip">Manifest: '+esc(manifestVersion || 'pending-load')+'</span>'
+        + '<span class="chip">Metric points: '+active.length+'</span></div>'
+        + '<div class="kpi">'
+        + '<div><b>'+esc(latest)+'</b><span>Latest version</span></div>'
+        + '<div><b>'+esc(oldest)+'</b><span>Oldest in view</span></div>'
+        + '<div><b>'+DATA.folders.length+'</b><span>Recursive folders</span></div>'
+        + '<div><b>'+DATA.files.length+'</b><span>Files indexed</span></div>'
+        + '</div>'
+        + '<div class="row">'+links+'</div>'
+        + '<table><thead><tr><th>Date</th><th>Version</th><th>Source</th><th>Entry</th></tr></thead><tbody>';
+
+      for(var j=0;j<active.length && j<25;j++){
+        html += '<tr><td>'+esc(active[j].date || 'n/a')+'</td><td>'+esc(active[j].version)+'</td><td>'+esc(shortSource(active[j].source))+'</td><td>'+esc(trimText(active[j].note, 66))+'</td></tr>';
+      }
+      if(!active.length){
+        html += '<tr><td colspan="4">No points match current source/date filter.</td></tr>';
+      }
+      html += '</tbody></table>';
+
+      metricsPanelEl.innerHTML = html;
+    }
+
+    function syncHeaderAndManifestVersion(){
+      var badge = document.getElementById('headerVersion');
+      if(badge){
+        var text = 'v' + CURRENT_VERSION;
+        if(manifestVersion && manifestVersion !== CURRENT_VERSION){
+          text += ' | manifest ' + manifestVersion;
+        }
+        badge.textContent = text;
+      }
+    }
+
+    function extractManifestVersion(text){
+      var m = text.match(/#\s*VersionTag:\s*(\d{4}\.B\d+\.V\d+\.\d+)/);
+      return m ? m[1] : '';
     }
 
     /* ── helpers ── */
@@ -656,6 +967,74 @@
       if(b < 1024) return b + ' B';
       if(b < 1048576) return (b/1024).toFixed(1) + ' KB';
       return (b/1048576).toFixed(1) + ' MB';
+    }
+    function buildFolderChain(folder){
+      var normalized = folder && folder !== '.' ? folder.replace(/^\/+|\/+$/g, '') : '(root)';
+      if(!normalized || normalized === '(root)') return ['(root)'];
+      var parts = normalized.split('/');
+      var out = ['(root)'];
+      for(var i=0;i<parts.length;i++){
+        out.push(parts.slice(0, i+1).join('/'));
+      }
+      return out;
+    }
+    function ensureHintFolders(folderMap){
+      for(var i=0;i<WORKSPACE_FOLDER_HINTS.length;i++){
+        var hint = WORKSPACE_FOLDER_HINTS[i];
+        if(!folderMap[hint]){
+          folderMap[hint] = {name:hint, files:[], totalSize:0, latestChange:'', latestVersionIssued:'', depth:getDepth(hint)};
+        }
+      }
+    }
+    function indexFoldersByName(arr){
+      var map = {};
+      for(var i=0;i<arr.length;i++) map[arr[i].name] = arr[i];
+      return map;
+    }
+    function getDepth(name){
+      if(!name || name === '(root)') return 0;
+      return name.split('/').length;
+    }
+    function pickLatest(a,b){
+      if(!a) return b || '';
+      if(!b) return a;
+      return a > b ? a : b;
+    }
+    function toDateString(val){
+      if(!val) return '';
+      var d = new Date(val);
+      if(isNaN(d.getTime())) return normalizeLooseDate(String(val));
+      return d.toISOString().substring(0,10);
+    }
+    function normalizeLooseDate(s){
+      if(!s) return '';
+      if(/^20\d{2}-\d{2}-\d{2}$/.test(s)) return s;
+      if(/^20\d{6}$/.test(s)) return s.substring(0,4) + '-' + s.substring(4,6) + '-' + s.substring(6,8);
+      return '';
+    }
+    function shortSource(path){
+      var p = path.replace('..\\/..\\/','');
+      var bits = p.split('/');
+      return bits.length > 2 ? bits.slice(bits.length-2).join('/') : p;
+    }
+    function isFolderFilteredIn(folder){
+      var minFiles = parseInt(document.getElementById('filterMinFiles').value || '0', 10);
+      var ext = document.getElementById('filterExt').value || '';
+      if(folder.files.length < minFiles) return false;
+      if(!ext) return true;
+      for(var i=0;i<folder.files.length;i++){
+        if(folder.files[i].ext === ext) return true;
+      }
+      return false;
+    }
+    function trimText(s,max){
+      var val = String(s || '');
+      return val.length > max ? val.substring(0,max-1) + '…' : val;
+    }
+    function randomPastDate(maxDays){
+      var now = new Date().getTime();
+      var offset = Math.floor(Math.random() * maxDays) * 86400000;
+      return new Date(now - offset).toISOString().substring(0,10);
     }
     function esc(s){
       var d = document.createElement('div');

@@ -1,13 +1,18 @@
-﻿{
-    "id":  "BUG-SCHED-0D26B6FF",
-    "category":  "SchedulerFailure",
-    "type":  "Bug",
-    "lastUpdated":  "2026-05-04T11:51:35.1749346Z",
-    "taskId":  "TASK-TabErrorFix",
-    "createdAt":  "2026-05-04T11:51:35.1749346Z",
-    "status":  "OPEN",
-    "title":  "Scheduler task failure: TASK-TabErrorFix",
-    "source":  "CronAiAthon-Scheduler",
-    "detail":  "TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the property exists.",
-    "priority":  "High"
+{
+  "id": "BUG-SCHED-0D26B6FF",
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "lastUpdated": "2026-05-04T11:51:35.1749346Z",
+  "taskId": "TASK-TabErrorFix",
+  "createdAt": "2026-05-04T11:51:35.1749346Z",
+  "status": "IN-PROGRESS",
+  "title": "Scheduler task failure: TASK-TabErrorFix",
+  "source": "CronAiAthon-Scheduler",
+  "detail": "TabErrorFix: The property 'tags' cannot be found on this object. Verify that the property exists.",
+  "priority": "High",
+  "modified": "2026-05-06T17:28:18.8542535Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-05-06T17:28:18.8542535Z",
+  "notes": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+  "description": "TabErrorFix: The property 'tags' cannot be found on this object. Verify that the property exists."
 }

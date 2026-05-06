@@ -157,8 +157,8 @@ foreach ($pf in $patternFiles) {
 
         # Determine version scope and filter against -Runtime
         $scope = if ($props -contains 'ps_version_scope') { "$($def.ps_version_scope)" } else { 'BOTH' }
-        if ($Runtime -eq 'PS7'  -and $scope -eq 'PS51') { continue }   # PS5.1-only pattern — skip for PS7 target
-        if ($Runtime -eq 'PS51' -and $scope -eq 'PS7')  { continue }   # PS7-only pattern — skip for PS5.1 target
+        if ($Runtime -eq 'PS7'  -and $scope -eq 'PS51') { continue }   # PS5.1-only pattern - skip for PS7 target
+        if ($Runtime -eq 'PS51' -and $scope -eq 'PS7')  { continue }   # PS7-only pattern - skip for PS5.1 target
 
         $p = [ordered]@{
             SinId             = "$($def.sin_id)"
@@ -261,7 +261,7 @@ $totalSuppressed = 0
 
 foreach ($pat in $patterns) {
 
-    # ── Special binary/size scan logic for BINARY_CHECK / FILE_SIZE_CHECK patterns ──
+    # -- Special binary/size scan logic for BINARY_CHECK / FILE_SIZE_CHECK patterns --
     if ($pat.ScanRegex -eq 'BINARY_CHECK') {
         $patRaw = 0; $patSupp = 0; $patFinds = 0
         foreach ($file in $allFiles) {
@@ -316,7 +316,7 @@ foreach ($pat in $patterns) {
         $patternSummary.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; rawMatches=$patRaw; suppressed=$patSupp; findings=$patFinds })
         continue
     }
-    # ── End special scan logic ──
+    # -- End special scan logic --
 
     $compiledScan    = [regex]::new($pat.ScanRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
     $compiledExclude = if ($null -ne $pat.FileExcludeRegex)  { [regex]::new($pat.FileExcludeRegex,  [System.Text.RegularExpressions.RegexOptions]::IgnoreCase) } else { $null }
@@ -345,7 +345,7 @@ foreach ($pat in $patterns) {
             $line = $lineArr[$i]
             if ([string]::IsNullOrWhiteSpace($line))    { continue }
 
-            # ── Track multi-line context (block comments + here-strings) ──
+            # -- Track multi-line context (block comments + here-strings) --
             if ($inBlockComment) {
                 if ($line -match '#>') { $inBlockComment = $false }
                 continue  # always skip block-comment body lines (incl. closing #>)
@@ -498,7 +498,7 @@ if (-not $Quiet) {
     }
 }
 
-# ── Baseline ratchet (computed BEFORE result-object emit) ──────────────────
+# -- Baseline ratchet (computed BEFORE result-object emit) --
 # Build current counts per SIN id, compare against baseline, compute regressions.
 $currentCounts = @{}
 foreach ($f in $findings) {
@@ -522,7 +522,7 @@ if (-not [string]::IsNullOrWhiteSpace($BaselineJson) -and (Test-Path -LiteralPat
             $base = if ($baseCounts.ContainsKey($sinId)) { [int]$baseCounts[$sinId] } else { 0 }
             if ($cur -gt $base) { $regressions += [pscustomobject]@{ sinId = $sinId; baseline = $base; current = $cur; delta = ($cur - $base) } }
         }
-        # Improvements: baseline > current (or current absent) — opportunity to ratchet down
+        # Improvements: baseline > current (or current absent) - opportunity to ratchet down
         foreach ($sinId in $baseCounts.Keys) {
             $cur = if ($currentCounts.ContainsKey($sinId)) { [int]$currentCounts[$sinId] } else { 0 }
             $base = [int]$baseCounts[$sinId]
@@ -590,7 +590,7 @@ if ($FailOnCritical -and $critCount -gt 0) {
             $blockReason = "$($regressions.Count) regression(s): " + (($regressions | ForEach-Object { "$($_.sinId): $($_.baseline)->$($_.current) (+$($_.delta))" }) -join '; ')
         } elseif ($RatchetMode -eq 'Strict' -and $improvements.Count -gt 0) {
             $blockNeeded = $true
-            $blockReason = "Strict mode: $($improvements.Count) un-recorded improvement(s) — refresh baseline (-UpdateBaseline): " + (($improvements | ForEach-Object { "$($_.sinId): $($_.baseline)->$($_.current) (-$($_.delta))" }) -join '; ')
+            $blockReason = "Strict mode: $($improvements.Count) un-recorded improvement(s) - refresh baseline (-UpdateBaseline): " + (($improvements | ForEach-Object { "$($_.sinId): $($_.baseline)->$($_.current) (-$($_.delta))" }) -join '; ')
         }
         if ($blockNeeded) {
             Write-ScanLog "[PIPELINE BLOCKED] $blockReason" 'Red'

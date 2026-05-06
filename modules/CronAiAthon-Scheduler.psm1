@@ -1120,6 +1120,7 @@ function Invoke-CronJob {
                 priority    = if ($b2fDetail -match 'DEAD-LETTER') { 'Critical' } else { 'High' }
                 source      = 'CronAiAthon-Scheduler'
                 taskId      = $TaskId
+                description = $b2fDetail
                 detail      = $b2fDetail
                 createdAt   = $endTime.ToUniversalTime().ToString('o')
                 lastUpdated = $endTime.ToUniversalTime().ToString('o')

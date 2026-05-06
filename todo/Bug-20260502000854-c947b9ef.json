@@ -1,56 +1,44 @@
-﻿{
-    "id":  "Bug-20260502000854-c947b9ef",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Parse error in New-PwShGUIModule.ps1 line 50: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
-    "lastSeenAt":  "2026-05-01T16:08:54.3363887Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
-    "parentId":  "",
-    "type":  "Bug",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-05-01T16:08:54.3363887Z",
-    "priority":  "HIGH",
-    "suggestedBy":  "CronAiAthon-BugTracker",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "SIN-20260502000854-2e8a2875",
-    "bugReferrals":  [
-
-                     ],
-    "implementedAt":  null,
-    "notes":  "New sin created: SIN-20260502000854-2e8a2875",
-    "category":  "parsing",
-    "reopenedAt":  null,
-    "created":  "2026-05-01T16:08:54.3363887Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-05-01T16:08:54.3363887Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bug-20260502000854-c947b9ef",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Parse error in New-PwShGUIModule.ps1 line 50: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+  "lastSeenAt": "2026-05-01T16:08:54.3363887Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+  "parentId": "",
+  "type": "Bug",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-05-01T16:08:54.3363887Z",
+  "priority": "HIGH",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1"
+  ],
+  "plannedAt": "2026-05-06T17:28:18.8542535Z",
+  "linkedBugs": [],
+  "status": "IN-PROGRESS",
+  "sinId": "SIN-20260502000854-2e8a2875",
+  "bugReferrals": [],
+  "implementedAt": null,
+  "notes": "New sin created: SIN-20260502000854-2e8a2875 | Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+  "category": "parsing",
+  "reopenedAt": null,
+  "created": "2026-05-01T16:08:54.3363887Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "CronAiAthon-Pipeline",
+  "modified": "2026-05-06T17:28:18.8542535Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null
 }

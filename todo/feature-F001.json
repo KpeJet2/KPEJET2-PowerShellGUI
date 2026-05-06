@@ -11,7 +11,7 @@
   "created_at": "2026-03-27T23:35:26.623Z",
   "suggested_by": "XHTML-FeatureRequests",
   "file_refs": [],
-  "notes": "Converted from individual FeatureRequests row (ALPHA Testing) | Decomposed into 7 PENDING_APPROVAL items at 2026-04-28T19:35:44.7113721Z",
+  "notes": "Converted from individual FeatureRequests row (ALPHA Testing) | Decomposed into 7 PENDING_APPROVAL items at 2026-04-28T19:35:44.7113721Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-06T17:28:18.8542535Z",
   "status_history": [
     {
       "status": "OPEN",
@@ -22,7 +22,7 @@
   "id": "feature-F001",
   "createdAt": "2026-03-01T00:00:00Z",
   "plannedAt": "2026-03-31T01:25:09.9479429+08:00",
-  "modified": "2026-04-28T19:35:44.7113721Z",
+  "modified": "2026-05-06T17:28:18.8542535Z",
   "triagedAt": "2026-04-04T18:57:30.3245535Z",
   "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
 }

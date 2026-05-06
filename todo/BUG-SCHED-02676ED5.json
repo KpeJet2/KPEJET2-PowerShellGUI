@@ -1,0 +1,14 @@
+{
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "title": "Scheduler task failure: TASK-BugScan",
+  "taskId": "TASK-BugScan",
+  "id": "BUG-SCHED-02676ED5",
+  "status": "OPEN",
+  "source": "CronAiAthon-Scheduler",
+  "createdAt": "2026-05-06T17:37:05.6083232Z",
+  "priority": "High",
+  "detail": "The term 'Write-AppLog' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+  "lastUpdated": "2026-05-06T17:37:05.6083232Z",
+  "description": "The term 'Write-AppLog' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+}

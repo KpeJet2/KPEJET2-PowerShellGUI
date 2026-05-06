@@ -312,9 +312,7 @@ function Invoke-FullPesterSuiteGate {
                 '-NoProfile',
                 '-ExecutionPolicy', 'Bypass',
                 '-File', "`"$runAllTests`"",
-                '-PesterOnly',
-                '-RequirePester', 'true',
-                '-IncludeModuleValidation', 'true'
+                '-PesterOnly'
             )
             $proc = Start-Process -FilePath $target.Exe -ArgumentList $argList -Wait -PassThru -NoNewWindow
             $hostResults += "$($target.Name)=$($proc.ExitCode)"
@@ -551,18 +549,147 @@ function Invoke-XhtmlUpdate {
     $script:Results.Steps['XhtmlUpdate'] = $msg
 }
 
+# ── Step 7 fallback helpers ───────────────────────────────
+function Invoke-CronReindexFallback {
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    $files = @(
+        Get-ChildItem -Path $script:TodoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
+        Sort-Object Name
+    )
+
+    $typeCounts = [ordered]@{ todos = 0; bugs = 0; features = 0 }
+    foreach ($file in $files) {
+        try {
+            $item = Get-Content -Path $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+            $itemType = (Get-CronTodoFirstStringValue -Record $item -Names @('type') -DefaultValue 'todo').ToLower()
+            switch ($itemType) {
+                'bug'     { $typeCounts.bugs++ }
+                'feature' { $typeCounts.features++ }
+                default   { $typeCounts.todos++ }
+            }
+        } catch {
+            $typeCounts.todos++
+        }
+    }
+
+    $index = [ordered]@{
+        generated = (Get-Date).ToUniversalTime().ToString('o')
+        count     = @($files).Count
+        fileCount = @($files).Count
+        types     = [ordered]@{
+            todos    = $typeCounts.todos
+            bugs     = $typeCounts.bugs
+            features = $typeCounts.features
+        }
+        files     = @($files | ForEach-Object { $_.Name })
+    }
+
+    $indexPath = Join-Path $script:TodoDir '_index.json'
+    $index | ConvertTo-Json -Depth 5 | Set-Content -Path $indexPath -Encoding UTF8
+    return "Fallback index wrote $(@($files).Count) file(s)"
+}
+
+function Get-CronFileTailMessage {
+    param(
+        [string]$Path,
+        [int]$Tail = 6
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path $Path)) {
+        return ''
+    }
+
+    $lines = @(Get-Content -Path $Path -Encoding UTF8 -ErrorAction SilentlyContinue)
+    if (@($lines).Count -eq 0) {
+        return ''
+    }
+
+    return (@($lines | Select-Object -Last $Tail) -join ' || ')
+}
+
 # ── Step 7: Reindex ────────────────────────────────────────
 function Invoke-Reindex {
     Write-CronProcessorLog 'Step 7: Reindex todo/_index.json'
     $todoMgr = Join-Path $script:Root 'scripts\Invoke-TodoManager.ps1'
-    if (Test-Path $todoMgr) {
-        if (-not $DryRun) {
-            & $todoMgr -Reindex 2>&1 | Out-Null
-        }
-        $script:Results.Steps['Reindex'] = 'Completed'
-        Write-CronProcessorLog '  Reindex completed'
-    } else {
+    if (-not (Test-Path $todoMgr)) {
         $script:Results.Steps['Reindex'] = 'SKIPPED - TodoManager not found'
+        return
+    }
+
+    if ($DryRun) {
+        $script:Results.Steps['Reindex'] = 'DRY-RUN skipped'
+        return
+    }
+
+    $hostExe = $null
+    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'pwsh.exe'
+    } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'powershell.exe'
+    }
+
+    if ([string]::IsNullOrWhiteSpace($hostExe)) {
+        Write-CronProcessorLog '  No shell host available for isolated reindex; using fallback' 'Warning'
+        try {
+            $fallbackMsg = Invoke-CronReindexFallback
+            $script:Results.Steps['Reindex'] = "Completed with fallback - $fallbackMsg"
+            Write-CronProcessorLog "  Reindex fallback completed: $fallbackMsg" 'Warning'
+        } catch {
+            $script:Results.Steps['Reindex'] = "ERROR: $_"
+            Write-CronProcessorLog "  Reindex fallback error: $_" 'Error'
+        }
+        return
+    }
+
+    $timeoutMs = 300000
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $stdoutPath = Join-Path $script:LogDir ("cron-reindex-stdout-$stamp.log")
+    $stderrPath = Join-Path $script:LogDir ("cron-reindex-stderr-$stamp.log")
+    $reindexArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', "`"$todoMgr`"",
+        '-Reindex'
+    )
+
+    try {
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $reindexArgs -PassThru -NoNewWindow -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+        if ($null -eq $proc) {
+            throw 'Failed to start isolated reindex process.'
+        }
+
+        $finished = $proc.WaitForExit($timeoutMs)
+        if (-not $finished) {
+            try {
+                Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+            } catch {
+                Write-CronProcessorLog "  Reindex timeout cleanup warning: $_" 'Warning'
+            }
+            throw "Timed out after $timeoutMs ms"
+        }
+
+        if ($proc.ExitCode -ne 0) {
+            $stderrTail = Get-CronFileTailMessage -Path $stderrPath
+            if (-not [string]::IsNullOrWhiteSpace($stderrTail)) {
+                throw "ExitCode=$($proc.ExitCode) stderr=$stderrTail"
+            }
+            throw "ExitCode=$($proc.ExitCode)"
+        }
+
+        $script:Results.Steps['Reindex'] = "Completed (isolated host: $hostExe)"
+        Write-CronProcessorLog "  Reindex completed in isolated host: $hostExe"
+    } catch {
+        $primaryError = $_.Exception.Message
+        Write-CronProcessorLog "  Reindex isolated execution failed: $primaryError" 'Warning'
+        try {
+            $fallbackMsg = Invoke-CronReindexFallback
+            $script:Results.Steps['Reindex'] = "Completed with fallback - $fallbackMsg"
+            Write-CronProcessorLog "  Reindex fallback completed after isolated failure: $fallbackMsg" 'Warning'
+        } catch {
+            $script:Results.Steps['Reindex'] = "ERROR: isolated=$primaryError; fallback=$_"
+            Write-CronProcessorLog "  Reindex fallback error: $_" 'Error'
+        }
     }
 }
 

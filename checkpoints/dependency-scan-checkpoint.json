@@ -1,48 +1,48 @@
-﻿{
-    "lastFullScan":  "",
-    "phases":  {
-                   "scripts":  {
-                                   "count":  2411,
-                                   "status":  "done",
-                                   "completedAt":  "2026-05-04T19:50:37.6864042+08:00",
-                                   "error":  "",
-                                   "durationMs":  37068
-                               },
-                   "dns_resolution":  {
-                                          "count":  73,
-                                          "status":  "done",
-                                          "completedAt":  "2026-05-04T19:51:25.6247010+08:00",
-                                          "error":  "",
-                                          "durationMs":  85006
-                                      },
-                   "folders":  {
-                                   "count":  415,
-                                   "status":  "done",
-                                   "completedAt":  "2026-05-04T19:50:15.9195300+08:00",
-                                   "error":  "",
-                                   "durationMs":  15306
-                               },
-                   "urls_ips":  {
-                                    "count":  2136,
-                                    "status":  "done",
-                                    "completedAt":  "2026-05-04T19:50:37.7031147+08:00",
-                                    "error":  "",
-                                    "durationMs":  37085
-                                },
-                   "configs":  {
-                                   "count":  63,
-                                   "status":  "done",
-                                   "completedAt":  "2026-05-04T19:50:47.5727972+08:00",
-                                   "error":  "",
-                                   "durationMs":  46954
-                               },
-                   "modules":  {
-                                   "count":  141,
-                                   "status":  "done",
-                                   "completedAt":  "2026-05-04T19:50:37.6657658+08:00",
-                                   "error":  "",
-                                   "durationMs":  37048
-                               }
-               },
-    "version":  "2604.B1.V32.0"
+{
+  "lastFullScan": "",
+  "phases": {
+    "scripts": {
+      "count": 318,
+      "durationMs": 8886,
+      "error": "",
+      "completedAt": "2026-05-07T01:37:41.9792987+08:00",
+      "status": "done"
+    },
+    "folders": {
+      "count": 176,
+      "durationMs": 5048,
+      "error": "",
+      "completedAt": "2026-05-07T01:37:38.1399796+08:00",
+      "status": "done"
+    },
+    "urls_ips": {
+      "count": 55,
+      "durationMs": 8893,
+      "error": "",
+      "completedAt": "2026-05-07T01:37:41.9865093+08:00",
+      "status": "done"
+    },
+    "modules": {
+      "count": 95,
+      "durationMs": 8877,
+      "error": "",
+      "completedAt": "2026-05-07T01:37:41.9703939+08:00",
+      "status": "done"
+    },
+    "dns_resolution": {
+      "count": 39,
+      "durationMs": 35062,
+      "error": "",
+      "completedAt": "2026-05-07T01:38:08.1548853+08:00",
+      "status": "done"
+    },
+    "configs": {
+      "count": 66,
+      "durationMs": 19806,
+      "error": "",
+      "completedAt": "2026-05-07T01:37:52.8990499+08:00",
+      "status": "done"
+    }
+  },
+  "version": "2604.B1.V32.0"
 }

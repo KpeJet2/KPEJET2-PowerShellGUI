@@ -111,14 +111,12 @@
     }
     /* ── Tooltip system ── */
     [data-tip]{position:relative;}
-    [data-tip]:hover::after{
-      content:attr(data-tip);
-      position:absolute;bottom:calc(100% + 7px);left:50%;
-      transform:translateX(-50%);
+    .tip-bubble{
+      position:fixed;left:0;top:0;display:none;
       background:#111114;border:1px solid #3f3f46;color:#d4d4d4;
       font-size:10px;line-height:1.4;padding:5px 9px;
-      border-radius:5px;white-space:pre-wrap;max-width:260px;
-      z-index:9999;pointer-events:none;
+      border-radius:5px;white-space:pre-wrap;max-width:300px;
+      z-index:99999;pointer-events:none;
       box-shadow:0 3px 8px rgba(0,0,0,.7);
     }
     /* ── Stats strip ── */
@@ -344,9 +342,9 @@
   <!-- ── Header ── -->
   <div class="hdr">
     &#x1F3E0; Workspace Hub
-    <span class="hdr-ver">2604.B1.V32.3</span>
+    <span class="hdr-ver">2605.B2.V31.7</span>
     <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
-    <span id="engStatus" class="eng-status-lbl" data-tip="LocalWebEngine uptime and PID">&#x2014;</span>
+    <a id="engStatusLink" class="eng-status-lbl" href="#" target="_blank" rel="noopener" data-tip="LocalWebEngine runtime status. When engine is up this becomes a live link to Service Hub with PID and PORT details.">&#x2014;</a>
     <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Live mode: verify/start via API route. File mode: shows local launch guidance and opens launcher when possible.">&#x25B6; Start Engine</button>
     <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Live mode: stop confirmation + API stop. File mode: graceful fallback guidance if remote control is unavailable.">&#x25A0; Stop</button>
   </div>
@@ -579,14 +577,16 @@
       <div id="secMonitor" style="display:none">
         <div class="hub-section-title">WebEngine Monitor</div>
         <div class="runtime-note" id="runtimeNoteMonitor">Loading runtime guidance...</div>
-        <div class="eng-monitor-grid">
-          <div class="eng-stat-card"><div class="eng-stat-label">Status</div><div class="eng-stat-value" id="monStatus">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Uptime</div><div class="eng-stat-value" id="monUptime">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">PID</div><div class="eng-stat-value" id="monPid">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Port</div><div class="eng-stat-value" id="monPort">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Server Time</div><div class="eng-stat-value" id="monTime" style="font-size:14px">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Config Detection</div><div class="eng-stat-value" id="monCfg">&#x2014;</div></div>
+
+        <div class="evt-filter-bar" style="margin-top:10px">
+          <details id="monFieldPicker" style="min-width:320px">
+            <summary class="scan-btn" style="display:inline-block;list-style:none;cursor:pointer">&#x1F5C3; Monitor Fields</summary>
+            <div id="monFieldChecks" style="margin-top:6px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 10px"></div>
+          </details>
+          <span id="monToolbarDynamic" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"></span>
         </div>
+
+        <div class="eng-monitor-grid" id="monGrid"></div>
         <div style="margin-top:12px">
           <label style="font-size:10px;color:var(--fg-sub);margin-right:6px">Data Mode:
             <select id="monDataMode" onchange="setMonitorDataMode(this.value)">
@@ -714,6 +714,8 @@
     <span id="sbarRight" class="st-ok">&#x2714; Initialising&#x2026;</span>
   </div>
 
+  <div id="tipBubble" class="tip-bubble"></div>
+
   <script type="text/javascript">
   //<![CDATA[
   (function(){
@@ -748,6 +750,30 @@
   var _approvalSelected = {};
   var _approvalSort = 'priority-desc';
   var _codeCopyCats = { rows: [], filtered: [], loadedAt: null, sourceRefresh: [] };
+  var SERVICE_HUB_PATH = '/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml';
+  var ENGINE_STATUS_STALE_MS = 45000;
+  var _monitorLastScanIso = null;
+  var _engineLastLiveIso = null;
+  var MONITOR_FIELDS = [
+    { key:'status', label:'Status', type:'state', group:'controls' },
+    { key:'uptime', label:'Uptime', type:'state', group:'info' },
+    { key:'lastScanTime', label:'Last Scan', type:'time', group:'info' },
+    { key:'startupTime', label:'Startup Time', type:'time', group:'info' },
+    { key:'pid', label:'PID', type:'id', group:'info' },
+    { key:'port', label:'Port', type:'id', group:'info' },
+    { key:'serverTime', label:'Server Time', type:'time', group:'info' },
+    { key:'heartbeat', label:'Heartbeat', type:'state', group:'toggles' },
+    { key:'clients', label:'Web Clients', type:'count', group:'logs' },
+    { key:'queueLength', label:'Request Queue', type:'count', group:'logs' },
+    { key:'requestsTotal', label:'Requests Total', type:'count', group:'logs' },
+    { key:'requestsServed', label:'Requests Served', type:'count', group:'logs' },
+    { key:'requestsFailed', label:'Requests Failed', type:'count', group:'logs' },
+    { key:'config', label:'Config Detection', type:'state', group:'toggles' }
+  ];
+  var _monitorSelected = {
+    status:true, uptime:true, lastScanTime:true, startupTime:true, pid:true, port:true, serverTime:true, heartbeat:true,
+    clients:true, queueLength:true, requestsTotal:true, requestsServed:true, requestsFailed:true, config:true
+  };
   var STATIC_BOOTSTRAP_DATA_SOURCES = {
     schemaVersion: 'HubDataSources/1.0',
     updatedAt: '2026-04-26T00:00:00Z',
@@ -1438,41 +1464,6 @@
     });
   }
   window.retestDataSource = retestDataSource;
-
-  function addLiveSource() {
-    var nEl = document.getElementById('srcNameInput');
-    var uEl = document.getElementById('srcUrlInput');
-    var name = nEl ? String(nEl.value || '').trim() : '';
-    var url = uEl ? _normalizeBaseUrl(uEl.value || '') : '';
-    if (!name || !url) {
-      _setSourceMessage('Enter source name and base URL', 'warn');
-      return;
-    }
-    if (!window.confirm('Validate and add live source "' + name + '"?\nURL: ' + url)) { return; }
-    var candidate = {
-      id: 'src_' + (new Date().getTime()),
-      name: name,
-      baseUrl: url,
-      enabled: true,
-      isDefault: false,
-      healthy: false,
-      lastChecked: null,
-      remoteSchemaVersion: null,
-      transformId: 'compat-v1'
-    };
-    _setSourceMessage('Confirming live connection before add...', 'warn');
-    validateSourceConnection(candidate).then(function(validSrc) {
-      _dataSources.push(validSrc);
-      _persistDataSourceConfig();
-      renderDataSources();
-      if (nEl) { nEl.value = ''; }
-      if (uEl) { uEl.value = ''; }
-      _setSourceMessage('Source added and verified: ' + validSrc.name, 'ok');
-    }).catch(function(badSrc) {
-      _setSourceMessage('Source not added: ' + (badSrc.lastError || 'validation failed'), 'err');
-    });
-  }
-  window.addLiveSource = addLiveSource;
 
   function refreshDataSourceHealth() {
     _setSourceMessage('Validating all sources...', 'warn');
@@ -3065,30 +3056,154 @@
   }
 
   /* ── Engine status indicator ── */
-  function updateEngineStatus(data) {
+  function _readMetric(data, keys, fallback) {
+    if (!data) { return fallback; }
+    for (var i = 0; i < keys.length; i++) {
+      var path = keys[i];
+      var parts = path.split('.');
+      var cur = data;
+      for (var p = 0; p < parts.length; p++) {
+        if (cur && cur[parts[p]] !== undefined && cur[parts[p]] !== null) { cur = cur[parts[p]]; }
+        else { cur = null; break; }
+      }
+      if (cur !== null && cur !== undefined && cur !== '') { return cur; }
+    }
+    return fallback;
+  }
+
+  function _toIsoStringOrNull(value) {
+    if (value === null || value === undefined || value === '') { return null; }
+    if (value instanceof Date) {
+      var tDate = value.getTime();
+      return isNaN(tDate) ? null : value.toISOString();
+    }
+    var d = new Date(value);
+    var t = d.getTime();
+    if (isNaN(t)) { return null; }
+    return d.toISOString();
+  }
+
+  function _formatLocalTimestamp(value) {
+    var iso = _toIsoStringOrNull(value);
+    if (!iso) { return '—'; }
+    var d = new Date(iso);
+    return isNaN(d.getTime()) ? '—' : d.toLocaleString();
+  }
+
+  function _secondsSinceIso(iso) {
+    var safeIso = _toIsoStringOrNull(iso);
+    if (!safeIso) { return null; }
+    var t = new Date(safeIso).getTime();
+    if (isNaN(t)) { return null; }
+    var now = Date.now();
+    if (now < t) { return 0; }
+    return Math.floor((now - t) / 1000);
+  }
+
+  function _resolveEngineDisplayState(t, meta) {
+    var m = meta || {};
+    var fromCache = !!m.fromCache;
+    var hbBad = (t.heartbeat === false || t.heartbeat === 'dead' || t.heartbeat === 'stale' || t.heartbeat === 'down');
+    var liveAgeSec = _secondsSinceIso(_engineLastLiveIso);
+    var staleLive = (liveAgeSec === null) ? true : (liveAgeSec > Math.floor(ENGINE_STATUS_STALE_MS / 1000));
+    var stale = fromCache || staleLive;
+    var running = !!(t.running && t.responding && !hbBad && !stale);
+    return {
+      running: running,
+      stale: stale,
+      hbBad: hbBad,
+      liveAgeSec: liveAgeSec,
+      fromCache: fromCache
+    };
+  }
+
+  function _normalizeEngineTelemetry(data) {
+    var d = data || {};
+    var running = !!_readMetric(d, ['running','isRunning','state.running'], false);
+    var responding = !!_readMetric(d, ['responding','isResponding','health.responding'], running);
+    var uptime = parseInt(_readMetric(d, ['uptime','uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
+    var pid = _readMetric(d, ['pid','processId','enginePid','runtime.pid'], null);
+    var port = _readMetric(d, ['port','listenPort','httpPort','runtime.port'], null);
+    var serverTime = _readMetric(d, ['serverTime','timestamp','now','runtime.serverTime'], null);
+    var heartbeat = _readMetric(d, ['heartbeat.ok','heartbeat.status','isHeartbeatAlive','health.heartbeat'], null);
+    if (typeof heartbeat === 'string') { heartbeat = heartbeat.toLowerCase(); }
+    var clients = parseInt(_readMetric(d, ['localWebClientsConnected','connectedClients','webClients.connected','clients.connected','stats.clientsConnected'], 0), 10) || 0;
+    var queueLength = parseInt(_readMetric(d, ['requestQueueLength','queue.length','requestQueue.length','stats.requestQueueLength'], 0), 10) || 0;
+    var requestsTotal = parseInt(_readMetric(d, ['requests.total','totalRequests','requestTotal','stats.requestsTotal'], 0), 10) || 0;
+    var requestsServed = parseInt(_readMetric(d, ['requests.served','requests.success','servedRequests','stats.requestsServed'], 0), 10) || 0;
+    var requestsFailed = parseInt(_readMetric(d, ['requests.failed','failedRequests','stats.requestsFailed'], 0), 10) || 0;
+    var startupTime = _toIsoStringOrNull(_readMetric(d, ['startupTime','startTime','startedAt','processStartTime','runtime.startedAt','stats.startedAt'], null));
+    var hbAgeSec = parseInt(_readMetric(d, ['heartbeat.ageSec','heartbeatAgeSec','heartbeatAge','health.heartbeatAgeSec','health.heartbeatAge'], -1), 10);
+    if (isNaN(hbAgeSec) || hbAgeSec < 0) {
+      var hbAt = _toIsoStringOrNull(_readMetric(d, ['heartbeat.at','heartbeat.timestamp','lastHeartbeat','lastHeartbeatAt','health.lastHeartbeatAt'], null));
+      if (hbAt) {
+        var calc = _secondsSinceIso(hbAt);
+        hbAgeSec = (calc === null) ? -1 : calc;
+      } else {
+        hbAgeSec = -1;
+      }
+    }
+    if (!startupTime && serverTime && uptime > 0) {
+      var st = new Date(serverTime);
+      if (!isNaN(st.getTime())) {
+        startupTime = new Date(st.getTime() - (uptime * 1000)).toISOString();
+      }
+    }
+    return {
+      running: running, responding: responding, uptime: uptime, pid: pid, port: port, serverTime: serverTime,
+      heartbeat: heartbeat, clients: clients, queueLength: queueLength,
+      requestsTotal: requestsTotal, requestsServed: requestsServed, requestsFailed: requestsFailed,
+      startupTime: startupTime, heartbeatAgeSec: hbAgeSec
+    };
+  }
+
+  function _formatUptime(upSec) {
+    var u = parseInt(upSec || 0, 10) || 0;
+    if (u < 60) { return u + 's'; }
+    if (u < 3600) { return Math.floor(u/60) + 'm ' + (u%60) + 's'; }
+    return Math.floor(u/3600) + 'h ' + Math.floor((u%3600)/60) + 'm';
+  }
+
+  function updateEngineStatus(data, meta) {
     var dot = document.getElementById('wsDot');
-    var lbl = document.getElementById('engStatus');
-    if (!dot || !lbl) { return; }
-    if (!data || !data.running) {
-      dot.className = 'ws-dot err';
-      lbl.textContent = 'Engine offline';
+    var link = document.getElementById('engStatusLink');
+    if (!dot || !link) { return; }
+    var t = _normalizeEngineTelemetry(data);
+    var state = _resolveEngineDisplayState(t, meta);
+    if (!state.running) {
+      if (state.stale) {
+        dot.className = 'ws-dot warn';
+        link.textContent = 'Engine status stale (waiting for live heartbeat)';
+      } else {
+        dot.className = 'ws-dot err';
+        link.textContent = 'Engine offline';
+      }
+      link.href = '#';
+      link.removeAttribute('target');
       return;
     }
-    var upSec = data.uptime || 0;
-    var upTxt = upSec < 60 ? upSec + 's' : Math.floor(upSec / 60) + 'm';
-    if (data.responding) {
+    var info = 'Engine up ' + _formatUptime(t.uptime) + ' | PID:' + (t.pid || '—') + ' | PORT:' + (t.port || '—');
+    if (t.heartbeatAgeSec >= 0) {
+      info += ' | HB age:' + t.heartbeatAgeSec + 's';
+    }
+    if (t.responding && !state.hbBad) {
       dot.className = 'ws-dot ok';
-      lbl.textContent = 'Engine up ' + upTxt;
+      link.textContent = info;
     } else {
       dot.className = 'ws-dot warn';
-      lbl.textContent = 'Engine starting…';
+      link.textContent = info + (state.hbBad ? ' | heartbeat issue' : ' | starting');
     }
+    link.href = _joinSourceUrl(ENGINE_BASE, SERVICE_HUB_PATH);
+    link.setAttribute('target', '_blank');
   }
 
   function pollEngineStatus() {
     fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false)
-      .then(function(res){ updateEngineStatus(res.data); })
-      .catch(function(){ updateEngineStatus(null); });
+      .then(function(res){
+        if (res && !res.fromCache) { _engineLastLiveIso = new Date().toISOString(); }
+        updateEngineStatus(res.data, { fromCache: !!(res && res.fromCache) });
+      })
+      .catch(function(){ updateEngineStatus(null, { fromCache: false }); });
   }
 
   function startEngine() {
@@ -3300,6 +3415,49 @@
     el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
   }
 
+  function initTooltipSystem() {
+    var bubble = document.getElementById('tipBubble');
+    if (!bubble) { return; }
+    function showTip(target, ev) {
+      var tip = target.getAttribute('data-tip');
+      if (!tip) { return; }
+      bubble.textContent = tip;
+      bubble.style.display = 'block';
+      positionTip(ev);
+    }
+    function hideTip() {
+      bubble.style.display = 'none';
+      bubble.textContent = '';
+    }
+    function positionTip(ev) {
+      if (bubble.style.display !== 'block') { return; }
+      var pad = 10;
+      var vw = window.innerWidth || document.documentElement.clientWidth;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var rect = bubble.getBoundingClientRect();
+      var x = (ev.clientX || 0) + 12;
+      var y = (ev.clientY || 0) - rect.height - 12;
+      if (x + rect.width + pad > vw) { x = vw - rect.width - pad; }
+      if (x < pad) { x = pad; }
+      if (y < pad) { y = (ev.clientY || 0) + 14; }
+      if (y + rect.height + pad > vh) { y = vh - rect.height - pad; }
+      bubble.style.left = x + 'px';
+      bubble.style.top = y + 'px';
+    }
+    document.addEventListener('mouseover', function(ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('[data-tip]') : null;
+      if (!t) { return; }
+      showTip(t, ev);
+    });
+    document.addEventListener('mousemove', function(ev) { positionTip(ev); });
+    document.addEventListener('mouseout', function(ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('[data-tip]') : null;
+      if (!t) { return; }
+      hideTip();
+    });
+    window.addEventListener('scroll', hideTip, true);
+  }
+
   function _setFooterPill(id, text, cssClass) {
     var el = document.getElementById(id);
     if (!el) { return; }
@@ -3332,33 +3490,121 @@
   }
 
   /* ── WebEngine Monitor ── */
-  function refreshMonitor() {
-    var sEl = document.getElementById('monStatus');
-    var uEl = document.getElementById('monUptime');
-    var pEl = document.getElementById('monPid');
-    var poEl = document.getElementById('monPort');
-    var tEl = document.getElementById('monTime');
-    var cfgEl = document.getElementById('monCfg');
-    _updateModeLabel();
-    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
-      var d = res.data;
-      if (sEl) { sEl.textContent = d.running ? '\u2705 Running' + (res.fromCache ? ' (cache)' : '') : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
-      if (uEl) {
-        var up = d.uptime || 0;
-        uEl.textContent = up < 60 ? up + 's' : up < 3600 ? Math.floor(up/60) + 'm ' + (up%60) + 's' : Math.floor(up/3600) + 'h ' + Math.floor((up%3600)/60) + 'm';
-        uEl.className = 'eng-stat-value ok';
+  function initMonitorFieldPicker() {
+    var wrap = document.getElementById('monFieldChecks');
+    if (!wrap) { return; }
+    var html = '';
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      var checked = _monitorSelected[f.key] ? ' checked="checked"' : '';
+      html += '<label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:5px;cursor:pointer">'
+        + '<input type="checkbox" data-mon-field="' + escAttr(f.key) + '"' + checked + ' style="accent-color:var(--accent)" />'
+        + '<span>' + escHtml(f.label) + '</span></label>';
+    }
+    wrap.innerHTML = html;
+    wrap.addEventListener('change', function(ev){
+      var t = ev.target;
+      if (!t || !t.getAttribute) { return; }
+      var key = t.getAttribute('data-mon-field');
+      if (!key) { return; }
+      _monitorSelected[key] = !!t.checked;
+      renderMonitorToolbar();
+      renderMonitorGrid(_lastMonitorTelemetry);
+    });
+    renderMonitorToolbar();
+  }
+
+  function renderMonitorToolbar() {
+    var host = document.getElementById('monToolbarDynamic');
+    if (!host) { return; }
+    var groups = { controls:0, logs:0, toggles:0, info:0 };
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      if (_monitorSelected[f.key]) { groups[f.group] = (groups[f.group] || 0) + 1; }
+    }
+    var html = '';
+    if (groups.controls > 0) {
+      html += '<span class="scan-btn" title="Controls for selected monitor fields">Controls (' + groups.controls + ')</span>';
+    }
+    if (groups.logs > 0) {
+      html += '<button class="scan-btn" onclick="loadMonitorLog()" title="Reload log block for selected log metrics">Logs (' + groups.logs + ')</button>';
+    }
+    if (groups.toggles > 0) {
+      html += '<button class="scan-btn" onclick="refreshMonitor()" title="Refresh toggled metrics and engine heartbeat">Toggles (' + groups.toggles + ')</button>';
+    }
+    if (groups.info > 0) {
+      html += '<span class="scan-btn" title="Informational field group">Info (' + groups.info + ')</span>';
+    }
+    host.innerHTML = html;
+  }
+
+  var _lastMonitorTelemetry = null;
+  var _lastMonitorFromCache = false;
+  var _monitorConfigStatus = '—';
+  var _monitorConfigStatusClass = '';
+
+  function renderMonitorGrid(tel) {
+    var grid = document.getElementById('monGrid');
+    if (!grid) { return; }
+    var state = tel ? _resolveEngineDisplayState(tel, { fromCache: _lastMonitorFromCache }) : null;
+    var valueMap = {
+      status: tel ? (state.running ? '✅ Running' : (state.stale ? '⚠ Stale/Unknown' : '❌ Stopped')) : '—',
+      uptime: tel ? _formatUptime(tel.uptime) : '—',
+      lastScanTime: _monitorLastScanIso ? _formatLocalTimestamp(_monitorLastScanIso) : '—',
+      startupTime: tel && tel.startupTime ? _formatLocalTimestamp(tel.startupTime) : '—',
+      pid: tel && tel.pid ? String(tel.pid) : '—',
+      port: tel && tel.port ? String(tel.port) : '—',
+      serverTime: tel && tel.serverTime ? new Date(tel.serverTime).toLocaleString() : '—',
+      heartbeat: tel ? ((tel.heartbeat === true || tel.heartbeat === 'ok' || tel.heartbeat === 'alive') ? '✅ Alive' : (tel.heartbeat ? String(tel.heartbeat) : '—')) : '—',
+      clients: tel ? String(tel.clients) : '—',
+      queueLength: tel ? String(tel.queueLength) : '—',
+      requestsTotal: tel ? String(tel.requestsTotal) : '—',
+      requestsServed: tel ? String(tel.requestsServed) : '—',
+      requestsFailed: tel ? String(tel.requestsFailed) : '—',
+      config: _monitorConfigStatus || '—'
+    };
+
+    var html = '';
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      if (!_monitorSelected[f.key]) { continue; }
+      var val = valueMap[f.key] !== undefined ? valueMap[f.key] : '—';
+      var valCls = 'eng-stat-value';
+      if (f.key === 'status') {
+        if (state && state.running) { valCls += ' ok'; }
+        else if (state && state.stale) { valCls += ' warn'; }
+        else { valCls += ' err'; }
       }
-      if (pEl) { pEl.textContent = d.pid || '\u2014'; pEl.className = 'eng-stat-value'; }
-      if (poEl) { poEl.textContent = d.port || '\u2014'; poEl.className = 'eng-stat-value'; }
-      if (tEl) { tEl.textContent = d.serverTime ? new Date(d.serverTime).toLocaleString() : '\u2014'; }
-      verifyConfigDetection(cfgEl);
+      if (f.key === 'requestsFailed' && tel && tel.requestsFailed > 0) { valCls += ' err'; }
+      if (f.key === 'config' && _monitorConfigStatusClass) { valCls += ' ' + _monitorConfigStatusClass; }
+      html += '<div class="eng-stat-card"><div class="eng-stat-label">' + escHtml(f.label) + '</div><div class="' + valCls + '">' + escHtml(val) + '</div></div>';
+    }
+    if (!html) {
+      html = '<div class="eng-stat-card"><div class="eng-stat-label">Monitor</div><div class="eng-stat-value">Select fields above</div></div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function refreshMonitor() {
+    _updateModeLabel();
+    _monitorLastScanIso = new Date().toISOString();
+    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
+      var telemetry = _normalizeEngineTelemetry(res.data);
+      _lastMonitorTelemetry = telemetry;
+      _lastMonitorFromCache = !!res.fromCache;
+      if (!res.fromCache) { _engineLastLiveIso = new Date().toISOString(); }
+      renderMonitorToolbar();
+      renderMonitorGrid(telemetry);
+      updateEngineStatus(res.data, { fromCache: !!res.fromCache });
+      verifyConfigDetection();
+      setStatus(res.fromCache ? 'Monitor loaded from cache' : 'Monitor loaded from live source', res.fromCache ? 'warn' : 'ok', 'right');
     }).catch(function(){
-      if (sEl) { sEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Offline mode' : '\u274C Offline'; sEl.className = 'eng-stat-value err'; }
-      if (uEl) { uEl.textContent = '\u2014'; uEl.className = 'eng-stat-value err'; }
-      if (pEl) { pEl.textContent = '\u2014'; }
-      if (poEl) { poEl.textContent = '\u2014'; }
-      if (tEl) { tEl.textContent = '\u2014'; }
-      if (cfgEl) { cfgEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Offline cache mode' : '\u274C Engine offline'; cfgEl.className = 'eng-stat-value err'; }
+      _lastMonitorTelemetry = null;
+      _lastMonitorFromCache = false;
+      renderMonitorToolbar();
+      renderMonitorGrid(null);
+      updateEngineStatus(null, { fromCache: false });
+      verifyConfigDetection();
     });
   }
   window.refreshMonitor = refreshMonitor;
@@ -3382,19 +3628,17 @@
   window.loadMonitorLog = loadMonitorLog;
 
   /* ── Config detection verification ── */
-  function verifyConfigDetection(cfgEl) {
+  function verifyConfigDetection() {
     fetchSectionData('configMenus', '/api/config/menus', { method: 'GET' }, false).then(function(res){
       var d = res.data;
       var ok = !!(d && (d.menus || Array.isArray(d)));
-      if (cfgEl) {
-        cfgEl.textContent = ok ? ('\u2705 Config loaded' + (res.fromCache ? ' (cached)' : '')) : '\u26A0 Config empty';
-        cfgEl.className = 'eng-stat-value ' + (ok ? 'ok' : '');
-      }
+      _monitorConfigStatus = ok ? ('✅ Config loaded' + (res.fromCache ? ' (cached)' : '')) : '⚠ Config empty';
+      _monitorConfigStatusClass = ok ? 'ok' : '';
+      renderMonitorGrid(_lastMonitorTelemetry);
     }).catch(function(){
-      if (cfgEl) {
-        cfgEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Config unavailable in cache' : '\u274C Config not detected';
-        cfgEl.className = 'eng-stat-value err';
-      }
+      _monitorConfigStatus = (_effectiveDataMode() === 'offline') ? '⚠ Config unavailable in cache' : '❌ Config not detected';
+      _monitorConfigStatusClass = 'err';
+      renderMonitorGrid(_lastMonitorTelemetry);
     });
   }
 
@@ -3444,7 +3688,7 @@
     if (_isFileProtocol()) { return; }
     if (!_csrfToken) { return; }
     try {
-      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: '2604.B1.V32.3' });
+      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: '2605.B2.V31.7' });
       if (navigator.sendBeacon) {
         var blob = new Blob([payload], { type: 'application/json' });
         navigator.sendBeacon(ENGINE_BASE + '/api/runtime/tool-exit', blob);
@@ -3472,6 +3716,8 @@
         renderEvtPresets();
         renderDataSources();
         bindCodeCopyCatsEvents();
+        initTooltipSystem();
+        initMonitorFieldPicker();
         _updateModeLabel();
         _setRuntimeNotes();
         refreshDataSourceHealth();

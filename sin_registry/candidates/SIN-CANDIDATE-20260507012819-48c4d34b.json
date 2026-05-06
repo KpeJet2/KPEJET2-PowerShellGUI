@@ -1,0 +1,15 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-48c4d34b",
+  "title": "Resurfacing bug pattern: Parse error in Show-CronAiAthonTool.ps1",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "bug-parse-Show-CronAiAthonTool-20260502.json",
+    "bug-parse-Show-CronAiAthonTool-20260504.json"
+  ],
+  "affected_files": [],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

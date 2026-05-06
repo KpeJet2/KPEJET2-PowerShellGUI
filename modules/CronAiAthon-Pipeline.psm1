@@ -64,6 +64,41 @@ if (-not (Get-Command -Name Write-AppLog -ErrorAction SilentlyContinue)) {
     }
 }
 
+function Get-PipelineDescriptionValue {
+    <#
+    .SYNOPSIS  Resolve an item's description with fallbacks for mixed schemas.
+    #>
+    [OutputType([string])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] $Item,
+        [string]$Default = ''
+    )
+
+    if ($null -eq $Item) { return $Default }
+
+    if ($Item -is [System.Collections.IDictionary]) {
+        foreach ($name in @('description', 'detail', 'notes')) {
+            if ($Item.Contains($name)) {
+                $value = [string]$Item[$name]
+                if (-not [string]::IsNullOrWhiteSpace($value)) { return $value }
+            }
+        }
+        return $Default
+    }
+
+    if ($null -eq $Item.PSObject) { return $Default }
+    $propNames = $Item.PSObject.Properties.Name
+    foreach ($name in @('description', 'detail', 'notes')) {
+        if ($propNames -contains $name) {
+            $value = [string]$Item.PSObject.Properties[$name].Value
+            if (-not [string]::IsNullOrWhiteSpace($value)) { return $value }
+        }
+    }
+
+    return $Default
+}
+
 # ========================== PIPELINE ITEM SCHEMA ==========================
 
 function New-PipelineItem {
@@ -387,6 +422,9 @@ function Add-PipelineItem {
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [hashtable]$Item
     )
+
+    # Normalize description so strict-mode property access remains safe downstream.
+    $Item['description'] = Get-PipelineDescriptionValue -Item $Item -Default ''
 
     $Item.type = ConvertTo-PipelineItemType -Type $Item.type
     if ($Item.Contains('status')) {
@@ -718,7 +756,7 @@ function Invoke-SinRegistryFeedback {
         $newSin = [ordered]@{
             sin_id           = $sinId
             title            = $BugItem.title
-            description      = $BugItem.description
+            description      = (Get-PipelineDescriptionValue -Item $BugItem -Default '')
             category         = $BugItem.category
             severity         = $BugItem.priority
             file_path        = if (@($BugItem.affectedFiles).Count -gt 0) { @($BugItem.affectedFiles)[0] } else { '' }
@@ -755,9 +793,10 @@ function ConvertTo-Bugs2FIX {
         [string[]]$BugReferrals = @()
     )
 
+    $bugDescription = Get-PipelineDescriptionValue -Item $BugItem -Default ''
     $refIds = @(@($BugReferrals) + @($BugItem.id) | Select-Object -Unique)
     $fixItem = New-PipelineItem -Type 'Bugs2FIX' -Title "FIX: $($BugItem.title)" `
-        -Description "Fix for bug $($BugItem.id): $($BugItem.description)" `
+        -Description "Fix for bug $($BugItem.id): $bugDescription" `
         -Priority $BugItem.priority -Source 'BugTracker' -Category $BugItem.category `
         -AffectedFiles @($BugItem.affectedFiles) -SuggestedBy 'CronAiAthon' `
         -ParentId $BugItem.id -BugReferrals $refIds
@@ -809,12 +848,14 @@ function Get-CentralMasterToDo {
     # 1. Pipeline registry items
     $pipelineItems = Get-PipelineItems -WorkspacePath $WorkspacePath
     foreach ($pi in $pipelineItems) {
+        if ($null -eq $pi) { continue }
         $piProps = $pi.PSObject.Properties
+        $piDescription = Get-PipelineDescriptionValue -Item $pi -Default ''
         $master += [ordered]@{
             id              = $pi.id
             type            = ConvertTo-PipelineItemType -Type $pi.type
             title           = $pi.title
-            description     = $pi.description
+            description     = $piDescription
             priority        = $pi.priority
             status          = ConvertTo-PipelineStatus -Status $pi.status
             source          = if ($piProps.Name -contains 'source') { $pi.source } else { 'unknown' }
@@ -1478,11 +1519,11 @@ function Invoke-PipelineBatchCycle {
     .SYNOPSIS  Process pipeline items in configurable small batches.
     .DESCRIPTION
         Selects up to BatchSize items whose status matches TargetStatus (default: IN_PROGRESS)
-        and attempts to advance each one toward completion.  Advancement logic:
-          - Bug/SchedulerFailure items → calls Invoke-BugToPipelineProcessor if available
-          - Items with all 'steps' marked done → transitions to TESTING
-          - Items stale beyond StaleDays with no updates → transitions to BLOCKED with a note
-          - All others → records a lastChecked audit stamp without a state change
+                and attempts to advance each one toward completion.  Advancement logic:
+                    - Bug/SchedulerFailure items -> calls Invoke-BugToPipelineProcessor if available
+                    - Items with all 'steps' marked done -> transitions to TESTING
+                    - Items stale beyond StaleDays with no updates -> transitions to BLOCKED with a note
+                    - All others -> records a lastChecked audit stamp without a state change
         Returns a summary hashtable: batchSize, target, processed, advanced, stalled, skipped, errors.
     .PARAMETER WorkspacePath  Root workspace path.
     .PARAMETER BatchSize      Maximum items to process per cycle (default: 10).
@@ -1528,7 +1569,7 @@ function Invoke-PipelineBatchCycle {
             try {
                 $advanced = $false
 
-                # 1. Bug items — delegate to BugToPipelineProcessor
+                # 1. Bug items - delegate to BugToPipelineProcessor
                 $isBug = ($item.type -in @('Bug','bug','BUG','SchedulerFailure'))
                 if ($isBug -and (Get-Command 'Invoke-BugToPipelineProcessor' -ErrorAction SilentlyContinue)) {
                     if (-not $WhatIf) {
@@ -1541,18 +1582,18 @@ function Invoke-PipelineBatchCycle {
                     }
                 }
 
-                # 2. Steps-based completion — all steps done → advance to TESTING
+                # 2. Steps-based completion - all steps done -> advance to TESTING
                 if (-not $advanced -and $item.PSObject.Properties['steps']) {
                     $steps = @($item.steps)
                     if ($steps.Count -gt 0 -and ($steps | Where-Object { $_.done -ne $true }).Count -eq 0) {
                         if (-not $WhatIf) {
-                            Update-PipelineItemStatus -WorkspacePath $WorkspacePath -ItemId $itemId -NewStatus 'TESTING' -Notes 'All steps complete — auto-advanced by BatchCycle' | Out-Null
+                            Update-PipelineItemStatus -WorkspacePath $WorkspacePath -ItemId $itemId -NewStatus 'TESTING' -Notes 'All steps complete - auto-advanced by BatchCycle' | Out-Null
                         }
                         $advanced = $true
                     }
                 }
 
-                # 3. Stale check — no update within StaleDays → BLOCKED
+                # 3. Stale check - no update within StaleDays -> BLOCKED
                 if (-not $advanced) {
                     $tsRaw = if ($item.PSObject.Properties['lastUpdated'] -and $item.lastUpdated) { $item.lastUpdated }
                              elseif ($item.PSObject.Properties['executedAt'] -and $item.executedAt) { $item.executedAt }
@@ -1570,7 +1611,7 @@ function Invoke-PipelineBatchCycle {
                     }
                 }
 
-                # 4. Audit stamp — record lastChecked, no state change
+                # 4. Audit stamp - record lastChecked, no state change
                 if ($advanced) {
                     $result.advanced++
                 } else {
@@ -1768,7 +1809,7 @@ function Invoke-BugStatusRollup {
         }
     }
     if ($null -eq $bugItem) {
-        Write-AppLog -Message "Invoke-BugStatusRollup: Bug '$BugItemId' not found — may not be a Bug type item." -Level Debug
+        Write-AppLog -Message "Invoke-BugStatusRollup: Bug '$BugItemId' not found - may not be a Bug type item." -Level Debug
         return
     }
 

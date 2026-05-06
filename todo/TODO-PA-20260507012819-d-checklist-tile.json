@@ -1,0 +1,26 @@
+{
+  "id": "TODO-PA-20260507012819-d-checklist-tile",
+  "todo_id": "TODO-PA-20260507012819-d-checklist-tile",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Add Secrets-Vault tile to BW-Vault-Checklist.xhtml + Checklists-TEST",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "MEDIUM",
+  "status": "PENDING_APPROVAL",
+  "source_id": "feature-F001",
+  "source_status": "IN-PROGRESS",
+  "parentId": "feature-F001",
+  "created": "2026-05-06T17:28:18.8542535Z",
+  "createdAt": "2026-05-06T17:28:18.8542535Z",
+  "modified": "2026-05-06T17:28:18.8542535Z",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN-PROGRESS",
+  "status_history": [
+    {
+      "status": "PENDING_APPROVAL",
+      "timestamp": "2026-05-06T17:28:18.8542535Z",
+      "by": "CronAiAthon-Pipeline"
+    }
+  ]
+}

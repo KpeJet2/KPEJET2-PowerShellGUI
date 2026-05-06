@@ -40,7 +40,7 @@ exec pwsh -NoProfile -ExecutionPolicy Bypass -Command "
   \$staged = @(git diff --cached --name-only --diff-filter=ACMR | Where-Object { \$_ -match '\.(ps1|psm1|psd1)\$' });
   if (@(\$staged).Count -eq 0) { exit 0 }
   Write-Host '[pre-commit] Running SIN scanner on staged PS files...' -ForegroundColor Cyan;
-  & .\tests\Invoke-SINPatternScanner.ps1 -Paths \$staged -RatchetMode Permissive -BaselineJson config\sin-baseline.json -OutputJson reports\sin-scan-precommit.json -FailOnCritical;
+    & .\tests\Invoke-SINPatternScanner.ps1 -IncludeFiles \$staged -RatchetMode Permissive -BaselineJson config\sin-baseline.json -OutputJson reports\sin-scan-precommit.json -FailOnCritical;
   exit \$LASTEXITCODE
 "
 '@
