@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -296,7 +300,7 @@ function Get-NikrAgiRetort {
     $shuffled = $script:NikrRetortAgents | Sort-Object { Get-Random }
     $result   = [ordered]@{ agent1 = $null; line1 = $null; agent2 = $null; line2 = $null }
 
-    $a1   = $shuffled[0]
+    $a1   = $shuffled[0]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
     $result.agent1 = $a1.agent
     $result.line1  = $a1.lines[(Get-Random -Minimum 0 -Maximum $a1.lines.Count)]
 
@@ -481,6 +485,18 @@ function Invoke-NikrAgiSquabble {
     }
 }
 
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Get-NikrAgiComment',
     'Get-NikrAgiCutoff',
@@ -492,5 +508,10 @@ Export-ModuleMember -Function @(
     'Initialize-NikrAgiKey',
     'Invoke-NikrAgiSquabble'
 )
+
+
+
+
+
 
 

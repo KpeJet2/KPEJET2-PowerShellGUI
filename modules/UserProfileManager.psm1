@@ -1,10 +1,16 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 3 entries)
 #Requires -Version 5.1
 <#
 .SYNOPSIS
     UserProfileManager -- capture, save, compare, and restore a full Windows user profile snapshot.
+# TODO: HelpMenu | Show-UserProfileHelp | Actions: Load|Save|Reset|Export|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Captures: winget applications, PowerShell version/modules/scripts, user application registry
@@ -23,9 +29,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  CONSTANTS
-# ─────────────────────────────────────────────────────────────────────────────
 $script:ProfileSchemaVersion = '1.0'
 $script:PBKDF2_Iterations     = 600000
 $script:AES_KeySize            = 256
@@ -34,9 +38,7 @@ $script:SaltSize               = 32   # bytes
 $script:ProfileFileExt         = '.upjson'
 $script:RollbackSubDir         = 'Rollbacks'
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  ENCRYPTION HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
 
 function New-AesKey {
     <#
@@ -145,9 +147,7 @@ function Get-AutoRollbackPassword {
     [Convert]::ToBase64String($hashBytes)
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  DATA CAPTURE FUNCTIONS
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Get-WingetApplications {
     <#
@@ -419,9 +419,7 @@ function Get-MimeTypes {
     return ($result | Sort-Object { $_['Extension'] })
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  EXTENDED CAPTURE FUNCTIONS
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Get-WiFiProfiles {
     param()
@@ -804,9 +802,7 @@ function Get-RegionalSettings {
     return $data
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  ADDITIONAL CAPTURE FUNCTIONS
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Get-EnvironmentVariables {
     param()
@@ -1157,9 +1153,7 @@ function Get-SearchProviders {
     return $data
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  PROFILE SNAPSHOT ORCHESTRATION
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Get-ProfileSnapshot {
     <#
@@ -1294,9 +1288,7 @@ function Get-ProfileSnapshot {
     return $snapshot
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  SAVE / LOAD
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Save-ProfileSnapshot {
     <#
@@ -1377,9 +1369,7 @@ function Import-ProfileSnapshot {
     return $snapshot
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  COMPARISON
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Compare-ProfileSnapshot {
     <#
@@ -1538,9 +1528,7 @@ function Compare-ConfigFileLists {
     return $result
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  RESTORE
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Restore-ProfileSnapshot {
     <#
@@ -1698,9 +1686,7 @@ function Restore-ProfileSnapshot {
     return $result
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  PROFILE STORE HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
 
 function Get-ProfileList {
     <#
@@ -1742,9 +1728,19 @@ function Get-ProfileList {
     return $files
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
 #  EXPORTS
-# ─────────────────────────────────────────────────────────────────────────────
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Get-WingetApplications',
     'Get-PSEnvironment',
@@ -1778,6 +1774,11 @@ Export-ModuleMember -Function @(
     'Restore-ProfileSnapshot',
     'Get-ProfileList'
 )
+
+
+
+
+
 
 
 

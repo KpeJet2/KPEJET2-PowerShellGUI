@@ -23,6 +23,15 @@ if %ERRORLEVEL% equ 0 (
 
 %PS_CMD% -NoProfile -ExecutionPolicy Bypass -File "%~dp0tests\Invoke-ChaosTestConditions.ps1" -RunSmokeTest -HeadlessOnly
 
+set "exitCode=%ERRORLEVEL%"
+if "%exitCode%"=="0" (
+    call "%~dp0SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+    if not "%ERRORLEVEL%"=="0" set "exitCode=%ERRORLEVEL%"
+    call "%~dp0SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+    if not "%ERRORLEVEL%"=="0" set "exitCode=%ERRORLEVEL%"
+)
+
 echo.
-echo Exit code: %ERRORLEVEL%
+echo Exit code: %exitCode%
 pause
+exit /b %exitCode%

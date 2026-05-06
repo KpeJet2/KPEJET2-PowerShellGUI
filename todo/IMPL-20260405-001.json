@@ -2,7 +2,7 @@
   "type": "Items2ADD",
   "category": "Pipeline",
   "id": "IMPL-20260405-001",
-  "status": "OPEN",
+  "status": "DONE",
   "title": "Expand Report Retention to cover all ~REPORTS/* categories",
   "description": "Invoke-ReportRetention only rotates orphan files. 150+ unmanaged timestamped files in ~REPORTS/ causing disk bloat.",
   "priority": "HIGH"

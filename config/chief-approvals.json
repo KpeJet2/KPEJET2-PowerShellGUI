@@ -1,0 +1,7 @@
+{
+  "_version": "2604.B2.V31.0",
+  "_schema": "chief-approvals/1.0",
+  "_description": "Chief approval workflow state for PowerShellGUI workspace inclusion reviews.",
+  "bypassExpiry": null,
+  "approvals": []
+}

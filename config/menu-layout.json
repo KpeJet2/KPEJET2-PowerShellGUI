@@ -1,17 +1,39 @@
 {
-  "version": "1.0",
-  "generated": "2026-04-08T00:00:00",
+  "version": "1.1",
+  "generated": "2026-04-17T00:00:00",
   "menus": [
     {
       "id": "main-nav",
       "label": "Navigation",
       "style": "sidebar",
       "items": [
-        { "id": "nav-hub",         "label": "Dashboard",       "icon": "\uD83C\uDFE0", "action": "navigate", "target": "/",                     "tooltip": "Workspace Hub"                  },
-        { "id": "nav-depvis",      "label": "Dependency Map",  "icon": "\uD83D\uDDFA", "action": "navigate", "target": "/pages/dependency-vis",  "tooltip": "Workspace Dependency Visualizer"},
-        { "id": "nav-scan-dash",   "label": "Scan Dashboard",  "icon": "\uD83D\uDCCA", "action": "navigate", "target": "/pages/scan-dashboard",  "tooltip": "Scan Results Dashboard"         },
-        { "id": "nav-menubuilder", "label": "Menu Builder",    "icon": "\uD83C\uDF9B", "action": "navigate", "target": "/pages/menu-builder",    "tooltip": "WYSIWYG Menu Editor"            },
-        { "id": "nav-bw-vault",    "label": "BW Vault",        "icon": "\uD83D\uDD10", "action": "navigate", "target": "/pages/bw-vault",        "tooltip": "Bitwarden Vault Checklist"      }
+        { "id": "nav-hub",         "label": "Dashboard",              "icon": "\uD83C\uDFE0", "action": "navigate", "target": "/",                                          "tooltip": "Workspace Hub"                     },
+        { "id": "nav-depvis",      "label": "Dependency Map",         "icon": "\uD83D\uDDFA", "action": "navigate", "target": "/pages/dependency-vis",                       "tooltip": "Workspace Dependency Visualizer"   },
+        { "id": "nav-scan-dash",   "label": "Scan Dashboard",         "icon": "\uD83D\uDCCA", "action": "navigate", "target": "/pages/scan-dashboard",                       "tooltip": "Scan Results Dashboard"            },
+        { "id": "nav-menubuilder", "label": "Menu Builder",           "icon": "\uD83C\uDF9B", "action": "navigate", "target": "/pages/menu-builder",                         "tooltip": "WYSIWYG Menu Editor"               },
+        { "id": "nav-bw-vault",    "label": "BW Vault",               "icon": "\uD83D\uDD10", "action": "navigate", "target": "/pages/bw-vault",                             "tooltip": "Bitwarden Vault Checklist"         },
+        { "id": "nav-mastertodo",  "label": "Master To-Do",           "icon": "\u2705",       "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-MasterToDo.xhtml",           "tooltip": "Full task manager with filters"    },
+        { "id": "nav-features",    "label": "Feature Requests",       "icon": "\uD83D\uDCA1", "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",      "tooltip": "Track and vote on feature ideas"   },
+        { "id": "nav-codeanalysis","label": "Code Analysis",          "icon": "\uD83D\uDCC8", "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-code-analysis.xhtml",        "tooltip": "Code quality metrics viewer"       },
+        { "id": "nav-depreport",   "label": "Dependency Report",      "icon": "\uD83D\uDD0E", "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-DependencyVis.xhtml",        "tooltip": "Tabular dependency cross-reference"},
+        { "id": "nav-checklist",   "label": "Checklist Runner",       "icon": "\uD83D\uDCDD", "action": "navigate", "target": "/scripts/XHTML-Checker/PwShGUI-Checklists_COPY_XHTML-Checker.xhtml", "tooltip": "Pre-flight and release checklists" },
+        { "id": "nav-mcp",         "label": "MCP Service Config",     "icon": "\u2699",       "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml",     "tooltip": "MCP server endpoint manager"       },
+        { "id": "nav-testing",     "label": "Testing Builder",        "icon": "\uD83E\uDDEA", "action": "navigate", "target": "/scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml", "tooltip": "Automated test routine builder"    },
+        { "id": "nav-shop",        "label": "Shop Listed Items",      "icon": "\uD83D\uDED2", "action": "navigate", "target": "/Shop-ListedItems-Entry.xhtml",                            "tooltip": "Compare item prices across stores" },
+        { "id": "nav-secrets",     "label": "Secrets Invoke",         "icon": "\uD83D\uDD11", "action": "navigate", "target": "/XHTML-invoke-secrets.xhtml",                              "tooltip": "DPAPI vault operations front-end"  },
+        { "id": "nav-dataviz",     "label": "Data Relational Viz",    "icon": "\uD83D\uDD78", "action": "navigate", "target": "/XHTML-DataRelationalViz.xhtml",                           "tooltip": "AI wizard data visualization"      },
+        { "id": "nav-changelog",   "label": "Changelog Viewer",       "icon": "\uD83D\uDCDD", "action": "navigate", "target": "/XHTML-ChangelogViewer.xhtml",                             "tooltip": "Browse changelog entries"          },
+        { "id": "nav-depvizroot",  "label": "Dependency Viz (Root)",  "icon": "\uD83D\uDD0D", "action": "navigate", "target": "/XHTML-DependencyVis.xhtml",                               "tooltip": "Root-level dependency visualization"},
+        { "id": "nav-chkv1",       "label": "Checklists V1 Root",     "icon": "\u2611",       "action": "navigate", "target": "/PwShGUI-Checklists_V1-ROOT.xhtml",                        "tooltip": "V1 root checklist with gates"      },
+        { "id": "nav-implsteps",   "label": "Implementation Steps",   "icon": "\uD83D\uDCC3", "action": "navigate", "target": "/~README.md/Implementation-Steps.xhtml",                   "tooltip": "Feature implementation guide"      },
+        { "id": "nav-secguide",    "label": "Security Setup Guide",   "icon": "\uD83D\uDEE1", "action": "navigate", "target": "/~README.md/SECURITY-SETUP-GUIDE.xhtml",                   "tooltip": "Security config walkthrough"       },
+        { "id": "nav-survey",      "label": "Survey Viewpoints",      "icon": "\uD83D\uDCCA", "action": "navigate", "target": "/~README.md/SURVEY-Viewpoints.html",                       "tooltip": "User survey results dashboard"     },
+        { "id": "nav-sinboard",    "label": "SIN Scoreboard",         "icon": "\u26A0",       "action": "navigate", "target": "/~REPORTS/SIN-Scoreboard.xhtml",                            "tooltip": "SIN scan scoreboard"               },
+        { "id": "nav-upmguide",    "label": "UPM User Guide",         "icon": "\uD83D\uDCD6", "action": "navigate", "target": "/UPM/docs/UPM-UserGuide.xhtml",                            "tooltip": "UPM reference guide"               },
+        { "id": "nav-chktest",     "label": "Checklists (Test)",      "icon": "\uD83E\uDDEA", "action": "navigate", "target": "/~README.md/PwShGUI-Checklists-TEST.xhtml",                 "tooltip": "Test copy of checklists"           },
+        { "id": "nav-chkreadme",   "label": "Checklists (README)",    "icon": "\u2705",       "action": "navigate", "target": "/~README.md/PwShGUI-Checklists.xhtml",                      "tooltip": "README bundled checklists"         },
+        { "id": "nav-helpindex",   "label": "Help Index",             "icon": "\uD83D\uDCD6", "action": "navigate", "target": "/~README.md/PwShGUI-Help-Index.html",                       "tooltip": "PwShGUI help documentation"        },
+        { "id": "nav-monitor",     "label": "Engine Monitor",         "icon": "\u2699",       "action": "navigate", "target": "/pages/engine-monitor",                                     "tooltip": "WebEngine health monitor"          }
       ]
     },
     {

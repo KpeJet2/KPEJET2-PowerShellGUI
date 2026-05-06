@@ -1,11 +1,12 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2604.B2.V31.0
 # VersionBuildHistory:
+#   2604.B2.V31.0  2026-04-12  (version aligned)
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)
 REM ============================================================
 REM  Launch-GUI-BUILD-VER.bat  |  Build / Version Mode
 REM  Author   : The Establishment
-REM  Version  : 2603.B0.v27.0
-REM  Modified : 24 Mar 2026
+REM  Version  : 2604.B2.V31.0
+REM  Modified : 12 Apr 2026
 REM  Purpose  : Launches Main-GUI.ps1 in quik_jnr mode for
 REM             build and version-tag update operations.
 REM             Falls back to powershell.exe if pwsh 7+ absent.

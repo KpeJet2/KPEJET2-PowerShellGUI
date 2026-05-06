@@ -6,7 +6,7 @@
   "description": "agents/focalpoint-null/ contains Start-FocalPoint.ps1 and Chat-FocalPoint.ps1 but has no README, no entry in MODULE-FUNCTION-INDEX.md, and no cross-reference in agentic-manifest.json. The name 'focalpoint-null' is unclear. Either: (a) add a README.md to the agent folder documenting its purpose, inputs, outputs, and relationship to other agents, or (b) determine it is abandoned and archive to ~DOWNLOADS/archive/. Check git log / OrphanAudit for last meaningful change before deciding.",
   "suggested_by": "redundancy audit 2026-04-03",
   "priority": "LOW",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:07Z",
   "createdAt": "2026-04-03T00:00:07Z",
   "acknowledged_at": null,

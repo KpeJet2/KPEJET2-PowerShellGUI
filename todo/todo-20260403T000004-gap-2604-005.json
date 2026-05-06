@@ -6,10 +6,10 @@
   "description": "Three Script-F legacy/copy files exist in scripts/ and are no longer needed: Script-F-Copy.ps1, Script-F-Copy2.ps1, Script-F-ClonedFrom_MainGUI.ps1. These create duplicate function names (P011) and inflate manifest/scan output. Confirm they are not referenced by any import or test, then delete. Check OrphanAudit report to confirm they appear as orphans before removing.",
   "suggested_by": "redundancy audit 2026-04-03",
   "priority": "MEDIUM",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:04Z",
   "createdAt": "2026-04-03T00:00:04Z",
-  "acknowledged_at": null,
+  "acknowledged_at": "2026-04-10T00:00:00Z",
   "affects": [
     "scripts/Script-F-Copy.ps1",
     "scripts/Script-F-Copy2.ps1",

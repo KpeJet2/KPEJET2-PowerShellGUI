@@ -1,4 +1,10 @@
-﻿#Requires -Version 5.1
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     PwShGUI Cron Processor - 10-minute automated maintenance cycle.
@@ -109,7 +115,7 @@ function Invoke-ManifestRevision {
 function Invoke-DeepTest {
     Write-CronProcessorLog 'Step 3: Deep parse validation'
     $scripts = Get-ChildItem -Path $script:Root -Include '*.ps1','*.psm1' -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notlike '*\.history*' -and $_.FullName -notlike '*node_modules*' }
+        Where-Object { $_.FullName -notlike '*\.history*' -and $_.FullName -notlike '*node_modules*' -and $_.FullName -notlike '*remediation-backups*' -and $_.FullName -notlike '*~REPORTS*' }
     $pass = 0; $fail = 0; $failFiles = @()
     foreach ($s in $scripts) {
         $errors = $null
@@ -127,7 +133,7 @@ function Invoke-DeepTest {
                         category    = 'bug'
                         type        = 'bug'
                         title       = "Parse error in $($s.Name)"
-                        description = "Parse validation failed: $($errors[0].Message)"
+                        description = "Parse validation failed: $($errors[0].Message)"  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
                         priority    = 'HIGH'
                         severity    = 'HIGH'
                         status      = 'OPEN'
@@ -161,12 +167,17 @@ function Invoke-SINPatternScan {
         return
     }
     try {
-        $scanResult = & $scanner -WorkspacePath $script:Root -Quiet -FailOnCritical:$false
-        $total = if ($scanResult -and $scanResult.totalFindings) { $scanResult.totalFindings } else { 0 }
-        $crit  = if ($scanResult -and $scanResult.critical)      { $scanResult.critical }      else { 0 }
+        $scanResult = & $scanner -WorkspacePath $script:Root -Quiet -FailOnCritical
+        $total = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'totalFindings') { [int]$scanResult.totalFindings } else { 0 }
+        $crit  = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'critical')      { [int]$scanResult.critical }      else { 0 }
         $msg = "SIN scan: $total finding(s), $crit critical"
         Write-CronProcessorLog "  $msg"
-        $script:Results.Steps['SINPatternScan'] = $msg
+        if ($crit -gt 0) {
+            $script:Results.Steps['SINPatternScan'] = "BLOCKED: $crit CRITICAL SIN finding(s) -- $msg"
+            Write-CronProcessorLog "  [PIPELINE BLOCKED] $crit CRITICAL SIN finding(s) detected" 'Error'
+        } else {
+            $script:Results.Steps['SINPatternScan'] = $msg
+        }
     } catch {
         Write-CronProcessorLog "  SIN pattern scan error: $_" 'Error'
         $script:Results.Steps['SINPatternScan'] = "ERROR: $_"
@@ -197,6 +208,69 @@ function Invoke-SINRemedyAttempt {
     } catch {
         Write-CronProcessorLog "  SIN remedy engine error: $_" 'Error'
         $script:Results.Steps['SINRemedyEngine'] = "ERROR: $_"
+    }
+}
+
+# ── Step 4: Bug discovery ──────────────────────────────────
+function Invoke-ScheduledTaskDispatch {
+    <#
+    .SYNOPSIS  Step 3.7: Dispatch frequency-based scheduled tasks that are now due.
+    .DESCRIPTION
+        Reads cron-aiathon-schedule.json and calls Invoke-CronJob for every
+        enabled task whose lastRun + frequency window has elapsed (or has never run).
+        Skips tasks disabled in the schedule.  Each dispatched task updates its own
+        lastRun via Invoke-CronJob → Save-CronSchedule so the next cycle correctly
+        suppresses it until the next frequency window.
+    #>
+    Write-CronProcessorLog 'Step 3.7: Scheduled task dispatch'
+    if ($DryRun) {
+        $script:Results.Steps['ScheduledTaskDispatch'] = 'DRY-RUN skipped'
+        return
+    }
+    $schedulerMod = Join-Path $script:Root 'modules\CronAiAthon-Scheduler.psm1'
+    if (-not (Test-Path $schedulerMod)) {
+        $script:Results.Steps['ScheduledTaskDispatch'] = 'SKIPPED - CronAiAthon-Scheduler.psm1 not found'
+        Write-CronProcessorLog '  Scheduler module not found, skipping' 'Warning'
+        return
+    }
+    try {
+        Import-Module $schedulerMod -Force -ErrorAction Stop
+        $schedule = Initialize-CronSchedule -WorkspacePath $script:Root
+        $now      = Get-Date
+        $ran = 0; $skipped = 0; $errors = 0
+        foreach ($task in @($schedule.tasks)) {
+            if (-not $task.enabled) { $skipped++; continue }
+            # Determine if the task is due
+            $isDue = $false
+            if (-not $task.lastRun) {
+                $isDue = $true
+            } else {
+                try {
+                    $lastRunDt = [datetime]::Parse($task.lastRun)
+                    $freqMins  = [int]$task.frequency
+                    $isDue     = ($now - $lastRunDt).TotalMinutes -ge $freqMins
+                } catch {
+                    $isDue = $true  # unparseable lastRun — treat as overdue
+                }
+            }
+            if (-not $isDue) { $skipped++; continue }
+            Write-CronProcessorLog "  Dispatching task: $($task.id) [$($task.type)]"
+            try {
+                $jobResult = Invoke-CronJob -WorkspacePath $script:Root -TaskId $task.id
+                $status = if ($jobResult.success) { 'OK' } else { 'FAIL' }
+                Write-CronProcessorLog "  Task $($task.id): $status — $($jobResult.detail)"
+                $ran++
+            } catch {
+                Write-CronProcessorLog "  Task $($task.id) ERROR: $_" 'Error'
+                $errors++
+            }
+        }
+        $msg = "Dispatched: $ran ran, $skipped skipped, $errors errors"
+        Write-CronProcessorLog "  $msg"
+        $script:Results.Steps['ScheduledTaskDispatch'] = $msg
+    } catch {
+        Write-CronProcessorLog "  Scheduled task dispatch error: $_" 'Error'
+        $script:Results.Steps['ScheduledTaskDispatch'] = "ERROR: $_"
     }
 }
 
@@ -375,8 +449,13 @@ function Invoke-IntegrityGate {
 
     try {
         Import-Module $pipeMod -Force -ErrorAction Stop
+
+        # Check integrity BEFORE refresh — so the result reflects actual drift state.
+        # Refreshing first would always make isHealthy=true, making failure detection dead code.
+        $preRefreshIntegrity = Test-PipelineArtifactIntegrity -WorkspacePath $script:Root -IncludeStaleCheck
+
+        # Now refresh artifacts so dashboards stay current regardless of gate result
         $refreshResult = Invoke-PipelineArtifactRefresh -WorkspacePath $script:Root
-        $integrity = Test-PipelineArtifactIntegrity -WorkspacePath $script:Root -IncludeStaleCheck
 
         $reportDir = Join-Path (Join-Path $script:Root '~REPORTS') 'PipelineIntegrity'
         if (-not (Test-Path $reportDir)) {
@@ -384,14 +463,15 @@ function Invoke-IntegrityGate {
         }
         $reportPath = Join-Path $reportDir ("cron-integrity-{0}.json" -f (Get-Date -Format 'yyMMddHHmm'))
         [ordered]@{
-            generatedAt = (Get-Date).ToUniversalTime().ToString('o')
-            source = 'Invoke-CronProcessor.ps1'
-            refreshed = $refreshResult
-            integrity = $integrity
+            generatedAt       = (Get-Date).ToUniversalTime().ToString('o')
+            source            = 'Invoke-CronProcessor.ps1'
+            preRefreshChecked = $true
+            refreshed         = $refreshResult
+            integrity         = $preRefreshIntegrity
         } | ConvertTo-Json -Depth 12 | Set-Content -Path $reportPath -Encoding UTF8
 
-        if (-not $integrity.isHealthy) {
-            $failedChecks = @($integrity.checks.GetEnumerator() | Where-Object { -not $_.Value })
+        if (-not $preRefreshIntegrity.isHealthy) {
+            $failedChecks = @($preRefreshIntegrity.checks.GetEnumerator() | Where-Object { -not $_.Value })
             $failureDetail = if (@($failedChecks).Count -gt 0) {
                 @($failedChecks | ForEach-Object { $_.Key }) -join ', '
             } else {
@@ -507,6 +587,33 @@ function Invoke-ManifestRebuild {
     }
 }
 
+# ── Step 7b-ii: Version Alignment Cross-Validate (IMPL-20260405-003) ───────
+function Invoke-VersionAlignmentCrossValidate {
+    Write-CronProcessorLog 'Step 7b-ii: Version alignment cross-validate'
+    $vatScript = Join-Path $script:Root 'scripts\Invoke-VersionAlignmentTool.ps1'
+    if (-not (Test-Path $vatScript)) {
+        $script:Results.Steps['VersionAlignCrossValidate'] = 'SKIPPED - Invoke-VersionAlignmentTool.ps1 not found'
+        Write-CronProcessorLog '  Invoke-VersionAlignmentTool.ps1 not found, skipping' 'Warning'
+        return
+    }
+    if ($DryRun) {
+        $script:Results.Steps['VersionAlignCrossValidate'] = 'DRY-RUN skipped'
+        return
+    }
+    try {
+        $vatResult = & $vatScript -CrossValidate -WorkspacePath $script:Root 2>&1
+        $script:Results.Steps['VersionAlignCrossValidate'] = 'Completed'
+        Write-CronProcessorLog '  Version alignment cross-validate passed'
+        $vatResult | Where-Object { $_ -match 'WARN|FAIL|mismatch' } | ForEach-Object {
+            Write-CronProcessorLog "  VAT: $_" 'Warning'
+        }
+    } catch {
+        Write-CronProcessorLog "  Version alignment cross-validate error: $_" 'Warning'
+        $script:Results.Steps['VersionAlignCrossValidate'] = "WARNING: $_"
+        # Non-fatal — version drift is informational, not a cycle blocker
+    }
+}
+
 # ── Step 7c: Todo Bundle Rebuild ───────────────────────────
 function Invoke-TodoBundleRebuild {
     Write-CronProcessorLog 'Step 7c: Todo bundle rebuild'
@@ -572,6 +679,7 @@ Invoke-ManifestRevision
 Invoke-DeepTest
 Invoke-SINPatternScan
 Invoke-SINRemedyAttempt
+Invoke-ScheduledTaskDispatch
 Invoke-ErrorHandlingComplianceScan
 Invoke-EncodingValidation
 Invoke-BugDiscovery
@@ -580,6 +688,7 @@ Invoke-XhtmlUpdate
 Invoke-Reindex
 Invoke-DirectoryTreeRebuild
 Invoke-ManifestRebuild
+Invoke-VersionAlignmentCrossValidate
 Invoke-TodoBundleRebuild
 Invoke-SelfReviewCheck
 Invoke-IntegrityGate
@@ -599,3 +708,19 @@ if (Get-Command Write-ProcessBanner -ErrorAction SilentlyContinue) {
 if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
     throw "Integrity gate FAILED: $integrityStep"
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

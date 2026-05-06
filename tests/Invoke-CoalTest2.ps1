@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # SS-004 exempt: Start-Sleep calls are test timing delays for WinForms automation
 # Author   : The Establishment
 # Date     : 2026-03-28
@@ -677,7 +681,19 @@ Register-CoalTest @{
 
 Register-CoalTest @{
     Id     = 'GUI-P0-ModuleExportAudit'
-    Name   = 'Module Export-ModuleMember correctness'
+    Name   = 'Module 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember correctness'
     Group  = 'GUI-Phase0-Headless'
     Source = 'Invoke-GUISmokeTest.ps1'
     Action = {
@@ -687,8 +703,32 @@ Register-CoalTest @{
             $src   = [System.IO.File]::ReadAllText($m.FullName, [System.Text.Encoding]::UTF8)
             $fnDefs = @([regex]::Matches($src, '(?m)^\s*function\s+([A-Z][\w-]+)', 'IgnoreCase') |
                 ForEach-Object { $_.Groups[1].Value })
-            if ($src -match 'Export-ModuleMember') {
-                $em = [regex]::Matches($src, 'Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', `
+            if ($src -match '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember') {
+                $em = [regex]::Matches($src, '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', `
                     'IgnoreCase,Singleline')
                 foreach ($match in $em) {
                     $exported = $match.Groups[1].Value -split '[,\s]+' |
@@ -1940,4 +1980,8 @@ if ($crashCnt -eq 0) {
 
 # Exit code: 1 if any FAILs, 0 otherwise
 if ($failCnt -gt 0) { exit 1 } else { exit 0 }
+
+
+
+
 

@@ -1,0 +1,16 @@
+{
+  "title": "Parse error in Main-GUI.ps1",
+  "description": "Parse validation failed: Missing expression after ','.",
+  "created_at": "2026-04-12T12:09:47.7241483+08:00",
+  "todo_id": "bug-parse-Main-GUI-20260412",
+  "priority": "HIGH",
+  "severity": "HIGH",
+  "suggested_by": "CronProcessor-DeepTest",
+  "type": "bug",
+  "notes": "Auto-detected by cron deep-test cycle",
+  "category": "bug",
+  "status": "OPEN",
+  "file_refs": [
+    "Main-GUI.ps1"
+  ]
+}

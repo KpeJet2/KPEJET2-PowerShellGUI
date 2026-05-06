@@ -1,4 +1,10 @@
-﻿# VersionTag: 2604.B1.V32.5
+# VersionTag: 2604.B2.V32.7
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Launcher
 # Start-LocalWebEngine.ps1
 # Loopback HTTP/WebSocket server for PowerShellGUI workspace tools.
 # Listens on http://127.0.0.1:8042/ — serves XHTML pages, APIs, and WebSocket progress.
@@ -25,16 +31,65 @@
     .\Start-LocalWebEngine.ps1 -Help
 #>
 [CmdletBinding()]
+
+[CmdletBinding()]
 param(
-    [int]$Port              = 8042,
-    [string]$WorkspacePath  = '',
+    [ValidateSet('Start','Stop','Restart','Status','LaunchWebpage','Help','RunAsService')]
+    [string]$Action = 'Start',
+    [int]$Port = 8042,
+    [string]$WorkspacePath = '',
     [switch]$NoLaunchBrowser,
-    [switch]$Help
+    [switch]$Help,
+    [switch]$AsService,
+    [switch]$Force,
+    [int]$PortRetryMax = 5
 )
 
-if ($Help) {
-    Get-Help $MyInvocation.MyCommand.Path -Detailed
+
+# Unified help
+if ($Help -or $Action -eq 'Help') {
+    Write-Host @"
+Start-LocalWebEngine.ps1 — Unified Launcher/Service
+  -Action Start|Stop|Restart|Status|LaunchWebpage|Help|RunAsService
+  -Port <int>              # Port to bind (default: 8042)
+  -WorkspacePath <path>    # Workspace root
+  -NoLaunchBrowser         # Suppress browser launch
+  -AsService               # Run as background service
+  -Force                   # Force restart/stop
+  -PortRetryMax <n>        # Max port increments if busy
+  -Help                    # Show this help
+"@
     exit 0
+}
+
+# Main control flow
+switch ($Action) {
+    'Start' {
+        # TODO: Implement negotiation/version check, safe restart, port fallback
+        # If another instance is healthy, return status/version
+        # If not, try to restart or prompt user
+        # If port busy, try next port up to PortRetryMax
+        # Start engine normally
+    }
+    'Stop' {
+        # TODO: Implement stop logic (find PID, signal/kill, cleanup)
+    }
+    'Restart' {
+        # TODO: Stop then Start
+    }
+    'Status' {
+        # TODO: Query engine status/version, print result
+    }
+    'LaunchWebpage' {
+        # TODO: Open browser to engine URL
+    }
+    'RunAsService' {
+        # TODO: Start as background service (hidden window, PID tracking)
+    }
+    default {
+        Write-Host "Unknown action: $Action" -ForegroundColor Red
+        exit 1
+    }
 }
 
 Set-StrictMode -Version Latest
@@ -64,7 +119,7 @@ function Write-EngineLog {
     $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $line = "[$ts][$Level] $Msg"
     Write-Host $line
-    try { Add-Content -LiteralPath $script:EngineLogFile -Value $line -Encoding UTF8 } catch { }
+    try { Add-Content -LiteralPath $script:EngineLogFile -Value $line -Encoding UTF8 } catch { <# Intentional: non-fatal — log write cannot recurse into itself #> }
 }
 
 # Bootstrap log: written BEFORE HttpListener starts — survives engine non-start
@@ -73,7 +128,7 @@ function Write-BootstrapLog {
     $ts   = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $line = "[$ts][BOOT][$Level] $Msg"
     Write-Host $line
-    try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { }
+    try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { <# Intentional: non-fatal — bootstrap log write cannot recurse into itself #> }
     if ($Level -eq 'ERROR' -or $Level -eq 'WARN') {
         $null = $script:_BootstrapErrors.Add([pscustomobject]@{ ts = $ts; level = $Level; msg = $Msg })
     }
@@ -90,7 +145,7 @@ try {
     $conn = $tcpTest.BeginConnect('127.0.0.1', $Port, $null, $null)
     $portInUse = $conn.AsyncWaitHandle.WaitOne(300)
     if ($portInUse) {
-        try { $tcpTest.EndConnect($conn) } catch { }
+        try { $tcpTest.EndConnect($conn) } catch { <# Intentional: non-fatal, TCP EndConnect cleanup #> }
         Write-BootstrapLog "Port $Port may already be in use" 'WARN'
     } else {
         Write-BootstrapLog "Port $Port is available" 'INFO'
@@ -117,17 +172,19 @@ try {
 if ($null -ne $cfg -and $null -ne $cfg.port) { $Port = [int]$cfg.port }
 
 # ─── Import core module ────────────────────────────────────────────────────────
-$coreModPath = Join-Path $WorkspacePath 'modules'
-$coreModPath = Join-Path $coreModPath 'PwShGUICore.psm1'
-if (Test-Path -LiteralPath $coreModPath) {
+
+# Import core module using manifest (.psd1)
+$coreManifestPath = Join-Path $WorkspacePath 'modules'
+$coreManifestPath = Join-Path $coreManifestPath 'PwShGUICore.psd1'
+if (Test-Path -LiteralPath $coreManifestPath) {
     try {
-        Import-Module $coreModPath -Force
-        Write-BootstrapLog 'PwShGUICore.psm1 imported successfully' 'INFO'
+        Import-Module $coreManifestPath -Force
+        Write-BootstrapLog 'PwShGUICore.psd1 imported successfully' 'INFO'
     } catch {
-        Write-BootstrapLog "PwShGUICore.psm1 import failed: $_" 'ERROR'
+        Write-BootstrapLog "PwShGUICore.psd1 import failed: $_" 'ERROR'
     }
 } else {
-    Write-BootstrapLog "PwShGUICore.psm1 not found at: $coreModPath" 'WARN'
+    Write-BootstrapLog "PwShGUICore.psd1 not found at: $coreManifestPath" 'WARN'
 }
 
 # ─── Generate CSRF session token ───────────────────────────────────────────────
@@ -140,7 +197,15 @@ $rng.Dispose()
 # ─── WebSocket client registry ─────────────────────────────────────────────────
 $WsClients = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
 
-function Broadcast-WsMessage {
+<#
+.SYNOPSIS
+Send a JSON message to all connected WebSocket clients.
+.DESCRIPTION
+Iterates through all registered WebSocket clients and sends the provided JSON message. Removes dead connections.
+.PARAMETER JsonMessage
+The JSON string to send to all clients.
+#>
+function Send-WsMessage {
     [CmdletBinding()]
     param([string]$JsonMessage)
     $encodedBytes = [System.Text.Encoding]::UTF8.GetBytes($JsonMessage)
@@ -166,6 +231,14 @@ function Broadcast-WsMessage {
 }
 
 # ─── Helper: safe file read ────────────────────────────────────────────────────
+<#
+.SYNOPSIS
+Safely read a file from the workspace, validating the path.
+.DESCRIPTION
+Validates and normalizes the provided relative path, blocks traversal, and ensures the file is within the workspace before reading.
+.PARAMETER RelativePath
+The relative path to the file within the workspace.
+#>
 function Read-WorkspaceFile {
     [CmdletBinding()]
     param([string]$RelativePath)
@@ -184,6 +257,22 @@ function Read-WorkspaceFile {
 }
 
 # ─── Helper: build HTTP response ──────────────────────────────────────────────
+<#
+.SYNOPSIS
+Send an HTTP response with headers and body.
+.DESCRIPTION
+Builds and sends an HTTP response with security and CORS headers, content type, and body.
+.PARAMETER Context
+The HttpListenerContext for the response.
+.PARAMETER StatusCode
+HTTP status code to send (default 200).
+.PARAMETER ContentType
+MIME type for the response.
+.PARAMETER Body
+Response body as a string.
+.PARAMETER ExtraHeaders
+Additional headers to set.
+#>
 function Send-Response {
     [CmdletBinding()]
     param(
@@ -200,8 +289,17 @@ function Send-Response {
     $resp.Headers.Set('X-Content-Type-Options', 'nosniff')
     $resp.Headers.Set('X-Frame-Options', 'SAMEORIGIN')
     $resp.Headers.Set('Content-Security-Policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:$Port ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
     $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    # CORS — allow file:// and localhost origins (engine is 127.0.0.1 only)
+    $reqOrigin = $Context.Request.Headers['Origin']
+    if ($reqOrigin -and ($reqOrigin -match '^(https?://127\.0\.0\.1|file://)')) {
+        $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+    } else {
+        $resp.Headers.Set('Access-Control-Allow-Origin', 'http://127.0.0.1:' + $Port)
+    }
+    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token')
+    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, OPTIONS')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
     $resp.ContentLength64 = $bytes.Length
@@ -211,6 +309,18 @@ function Send-Response {
     } catch { <# client disconnected #> }
 }
 
+<#
+.SYNOPSIS
+Send a JSON response to the client.
+.DESCRIPTION
+Serializes the provided object to JSON and sends it as an HTTP response.
+.PARAMETER Context
+The HttpListenerContext for the response.
+.PARAMETER Object
+The object to serialize to JSON.
+.PARAMETER StatusCode
+HTTP status code to send (default 200).
+#>
 function Send-Json {
     [CmdletBinding()]
     param($Context, $Object, [int]$StatusCode = 200)
@@ -218,6 +328,18 @@ function Send-Json {
     Send-Response -Context $Context -StatusCode $StatusCode -ContentType 'application/json; charset=utf-8' -Body $json
 }
 
+<#
+.SYNOPSIS
+Send an error response as JSON.
+.DESCRIPTION
+Sends a JSON error object with a message and code.
+.PARAMETER Context
+The HttpListenerContext for the response.
+.PARAMETER StatusCode
+HTTP status code to send (default 400).
+.PARAMETER Message
+Error message to include in the response.
+#>
 function Send-Error {
     [CmdletBinding()]
     param($Context, [int]$StatusCode = 400, [string]$Message = 'Bad Request')
@@ -225,7 +347,15 @@ function Send-Error {
 }
 
 # ─── Route: GET /api/scan/status ──────────────────────────────────────────────
-function Handle-ScanStatus {
+<#
+.SYNOPSIS
+Get the current scan checkpoint and progress.
+.DESCRIPTION
+Returns the latest scan checkpoint and progress log as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-ScanStatus {
     [CmdletBinding()]
     param($Context)
     $cpSub  = if ($null -ne $cfg -and $null -ne $cfg.paths -and
@@ -251,7 +381,15 @@ function Handle-ScanStatus {
 }
 
 # ─── Route: GET /api/scan/crashes ─────────────────────────────────────────────
-function Handle-ScanCrashes {
+<#
+.SYNOPSIS
+Get recent scan crash dumps.
+.DESCRIPTION
+Returns up to 50 recent scan crash dump files as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-ScanCrashes {
     [CmdletBinding()]
     param($Context)
     $crashSub = if ($null -ne $cfg -and $null -ne $cfg.paths -and
@@ -276,7 +414,15 @@ function Handle-ScanCrashes {
 }
 
 # ─── Route: GET /api/engine/status ───────────────────────────────────────────
-function Handle-EngineStatus {
+<#
+.SYNOPSIS
+Get the current engine status and uptime.
+.DESCRIPTION
+Returns engine running status, PID, port, uptime, and server time as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-EngineStatus {
     [CmdletBinding()]
     param($Context)
     Send-Json -Context $Context -Object @{
@@ -293,7 +439,15 @@ $script:_EngineStartTime  = (Get-Date -Format 'o')
 $script:_EngineStartEpoch = [System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency
 
 # ─── Route: GET /api/engine/log?name=stdout|stderr|service ───────────────────
-function Handle-EngineLog {
+<#
+.SYNOPSIS
+Get the latest engine log lines.
+.DESCRIPTION
+Returns the last 50 lines from the specified engine log file as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-EngineLog {
     [CmdletBinding()]
     param($Context)
     # Allowed log file names only — prevent path traversal
@@ -314,7 +468,15 @@ function Handle-EngineLog {
 }
 
 # ─── Route: GET /api/engine/events  (aggregated structured event log) ────────
-function Handle-EngineEvents {
+<#
+.SYNOPSIS
+Get recent engine event log entries.
+.DESCRIPTION
+Returns up to 2000 recent event log entries from all engine logs as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-EngineEvents {
     [CmdletBinding()]
     param($Context)
     $tailParam = $Context.Request.QueryString['tail']
@@ -364,7 +526,15 @@ function Handle-EngineEvents {
 }
 
 # ─── Route: GET /api/engine/logs/list ────────────────────────────────────────
-function Handle-EngineLogsList {
+<#
+.SYNOPSIS
+List all known engine log files and their status.
+.DESCRIPTION
+Returns a list of known engine log files, their existence, and size as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-EngineLogsList {
     [CmdletBinding()]
     param($Context)
     $logsDir = Join-Path $WorkspacePath 'logs'
@@ -385,7 +555,17 @@ function Handle-EngineLogsList {
 }
 
 # ─── Route: POST /api/scan/full | /api/scan/incremental ───────────────────────
-function Handle-TriggerScan {
+<#
+.SYNOPSIS
+Trigger a dependency scan job.
+.DESCRIPTION
+Starts a background job to run the dependency scan manager script.
+.PARAMETER Context
+The HttpListenerContext for the request.
+.PARAMETER ScanMode
+The scan mode to use (full or incremental).
+#>
+function Invoke-Scan {
     [CmdletBinding()]
     param($Context, [string]$ScanMode)
     # CSRF check — token must match header X-CSRF-Token
@@ -406,12 +586,20 @@ function Handle-TriggerScan {
         & powershell.exe -NoProfile -NonInteractive -File $script -Mode $mode -WorkspacePath $ws
     } -ArgumentList $managerScript, $ScanMode, $WorkspacePath
     $msg = [ordered]@{ event = 'scan_started'; mode = $ScanMode; timestamp = (Get-Date -Format 'o') }
-    Broadcast-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
+    Send-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
     Send-Json -Context $Context -Object @{ accepted = $true; mode = $ScanMode } -StatusCode 202
 }
 
 # ─── Route: POST /api/scan/static ────────────────────────────────────────────
-function Handle-TriggerStaticScan {
+<#
+.SYNOPSIS
+Trigger a static workspace scan job.
+.DESCRIPTION
+Starts a background job to run the static workspace scan script.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Invoke-StaticScan {
     [CmdletBinding()]
     param($Context)
     $incomingToken = $Context.Request.Headers['X-CSRF-Token']
@@ -431,12 +619,20 @@ function Handle-TriggerStaticScan {
         & powershell.exe -NoProfile -NonInteractive -File $script -WorkspacePath $ws
     } -ArgumentList $staticScript, $WorkspacePath
     $msg = [ordered]@{ event = 'scan_started'; mode = 'Static'; timestamp = (Get-Date -Format 'o') }
-    Broadcast-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
+    Send-WsMessage -JsonMessage ($msg | ConvertTo-Json -Depth 3)
     Send-Json -Context $Context -Object @{ accepted = $true; mode = 'Static' } -StatusCode 202
 }
 
 # ─── Route: GET /api/agent/stats ──────────────────────────────────────────────
-function Handle-AgentStats {
+<#
+.SYNOPSIS
+Get agent call statistics.
+.DESCRIPTION
+Returns agent call statistics from the stats file or by running the stats script.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-AgentStats {
     [CmdletBinding()]
     param($Context)
     # Try live stats file first; compute 24h/7d counts from JSONL logs
@@ -468,7 +664,15 @@ function Handle-AgentStats {
 }
 
 # ─── Route: GET /api/config/menus ─────────────────────────────────────────────
-function Handle-GetMenus {
+<#
+.SYNOPSIS
+Get the workspace menu layout.
+.DESCRIPTION
+Returns the menu layout JSON from the config directory.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-Menus {
     [CmdletBinding()]
     param($Context)
     $menuFile = Join-Path $WorkspacePath 'config'
@@ -481,7 +685,15 @@ function Handle-GetMenus {
 }
 
 # ─── Route: POST /api/config/menus ────────────────────────────────────────────
-function Handle-SaveMenus {
+<#
+.SYNOPSIS
+Save the workspace menu layout.
+.DESCRIPTION
+Saves the provided menu layout JSON to the config directory.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Save-Menus {
     [CmdletBinding()]
     param($Context)
     $incomingToken = $Context.Request.Headers['X-CSRF-Token']
@@ -503,8 +715,66 @@ function Handle-SaveMenus {
     }
 }
 
+# ─── Route: GET /api/workspace/files ──────────────────────────────────────────
+<#
+.SYNOPSIS
+List workspace files matching given extensions.
+.DESCRIPTION
+Returns a list of files in the workspace matching the provided extensions as JSON.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-WorkspaceFiles {
+    [CmdletBinding()]
+    param($Context)
+    $ext = $Context.Request.QueryString['ext']
+    if ([string]::IsNullOrWhiteSpace($ext)) { $ext = '*.xhtml,*.html,*.json,*.css,*.js' }
+    $includePatterns = $ext.Split(',') | ForEach-Object { $_.Trim() }
+    $excludeDirs = @('.git','.venv','.venv-pygame312','.history','node_modules','CarGame','~DOWNLOADS')
+    $results = @()
+    foreach ($pattern in $includePatterns) {
+        $files = Get-ChildItem -Path $WorkspacePath -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue
+        foreach ($f in $files) {
+            $skip = $false
+            foreach ($ed in $excludeDirs) {
+                if ($f.FullName -match [regex]::Escape("\$ed\")) { $skip = $true; break }
+            }
+            if (-not $skip) {
+                $relPath = $f.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/'
+                $results += [ordered]@{
+                    name     = $f.Name
+                    path     = $relPath
+                    size     = $f.Length
+                    modified = $f.LastWriteTime.ToString('o')
+                }
+            }
+        }
+    }
+    # Deduplicate by path
+    $seen = @{}
+    $unique = @()
+    foreach ($r in $results) {
+        if (-not $seen.ContainsKey($r.path)) {
+            $seen[$r.path] = $true
+            $unique += $r
+        }
+    }
+    $unique = @($unique | Sort-Object { $_.path })
+    Send-Json -Context $Context -Object @{ files = $unique; count = @($unique).Count }
+}
+
 # ─── Route: static file serve ─────────────────────────────────────────────────
-function Handle-StaticFile {
+<#
+.SYNOPSIS
+Serve a static file from the workspace.
+.DESCRIPTION
+Reads and returns the content of a static file from the workspace.
+.PARAMETER Context
+The HttpListenerContext for the request.
+.PARAMETER RelPath
+The relative path to the file to serve.
+#>
+function Get-StaticFile {
     [CmdletBinding()]
     param($Context, [string]$RelPath)
     $content = Read-WorkspaceFile -RelativePath $RelPath
@@ -525,7 +795,15 @@ function Handle-StaticFile {
 }
 
 # ─── WebSocket handler (runs in scriptblock via background runspace) ───────────
-function Handle-WebSocket {
+<#
+.SYNOPSIS
+Handle a WebSocket connection for real-time events.
+.DESCRIPTION
+Accepts a WebSocket connection, registers the client, and manages the message loop.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Start-WebSocketHandler {
     [CmdletBinding()]
     param([System.Net.HttpListenerContext]$Context)
     try {
@@ -597,13 +875,18 @@ $pgPath    = Join-Path $WorkspacePath $pgScanSub
 $script:lastProgressContent = ''
 
 try {
+    # Use GetContextAsync + Task.Wait(ms) instead of BeginGetContext + AsyncWaitHandle.WaitOne
+    # — the old APM pattern (BeginGetContext) has broken AsyncWaitHandle signalling in .NET 8+ (PS 7.x).
+    # GetContextAsync works reliably on both .NET Framework 4.7.2 (PS 5.1) and .NET 8/9 (PS 7.x).
+    $pendingTask = $null
     while ($listener.IsListening) {
         $context = $null
         try {
-            $asyncResult = $listener.BeginGetContext($null, $null)
+            if ($null -eq $pendingTask) {
+                $pendingTask = $listener.GetContextAsync()
+            }
             # Wait with timeout to allow graceful shutdown
-            $asyncResult.AsyncWaitHandle.WaitOne(500) | Out-Null
-            if (-not $asyncResult.IsCompleted) {
+            if (-not $pendingTask.Wait(500)) {
                 # Check for graceful stop signal written by /api/engine/stop
                 $stopSig = Join-Path $WorkspacePath 'logs'
                 $stopSig = Join-Path $stopSig 'engine.stop'
@@ -619,16 +902,18 @@ try {
                         $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
                         if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
                             $script:lastProgressContent = $raw
-                            Broadcast-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                            Send-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
                         }
                     }
                 } catch { <# non-fatal — progress file may not exist yet #> }
                 continue
             }
-            $context = $listener.EndGetContext($asyncResult)
+            $context = $pendingTask.Result
+            $pendingTask = $null  # consumed — next iteration starts a new async accept
         } catch [System.Net.HttpListenerException] {
             break  # Listener stopped
         } catch {
+            $pendingTask = $null  # discard faulted task
             continue
         }
 
@@ -685,21 +970,27 @@ try {
                     if ($null -ne $wsId -and $null -ne $wsClients) {
                         $wsClients.TryRemove($wsId, [ref]$removed) | Out-Null
                     }
-                    if ($null -ne $ws) { try { $ws.Dispose() } catch { } }
+                    if ($null -ne $ws) { try { $ws.Dispose() } catch { <# Intentional: non-fatal, WebSocket disposal #> } }
                 }
             }).AddArgument($wsCtxRef).AddArgument($wsClRef).AddArgument($wsTokRef)
             $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
             continue
         }
 
+        # ── CORS preflight ────────────────────────────────────────────────
+        if ($method -eq 'OPTIONS') {
+            Send-Response -Context $context -StatusCode 204 -Body ''
+            continue
+        }
+
         # ── API routes ───────────────────────────────────────────────────
         switch -Regex ($url) {
             '^/api/scan/status$' {
-                if ($method -eq 'GET') { Handle-ScanStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-ScanStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/crashes$' {
-                if ($method -eq 'GET') { Handle-ScanCrashes -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-ScanCrashes -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/full$' {
@@ -716,6 +1007,10 @@ try {
             }
             '^/api/agent/stats$' {
                 if ($method -eq 'GET') { Handle-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/workspace/files$' {
+                if ($method -eq 'GET') { Handle-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/config/menus$' {
@@ -754,7 +1049,7 @@ try {
                         # Write stop-signal file (ThreadPool workitems cannot reach $script: scope)
                         $stopSig = Join-Path $WorkspacePath 'logs'
                         $stopSig = Join-Path $stopSig 'engine.stop'
-                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { }
+                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { <# Intentional: non-fatal — stop signal file write failure does not prevent shutdown #> }
                         Write-EngineLog 'Stop requested via /api/engine/stop' -Level 'INFO'
                         $script:_ExitClean = $true
                     }
@@ -780,13 +1075,24 @@ try {
             }
             # ── Static assets ────────────────────────────────────────────
             '^/styles/(.+)$' {
-                $file = $Matches[1]
+                $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 Handle-StaticFile -Context $context -RelPath "styles\$file"
                 break
             }
             '^/scripts/(.+)$' {
-                $file = $Matches[1]
+                $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 Handle-StaticFile -Context $context -RelPath "scripts\$file"
+                break
+            }
+            # ── Generic static file fallback (workspace-relative) ────────
+            '^/(.+\.(xhtml|html|css|js|json|png|jpg|gif|svg|ico))$' {
+                $relFile = $Matches[1] -replace '/', '\'  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
+                # P009: validate path does not escape workspace
+                if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
+                    Send-Error -Context $context -StatusCode 400 -Message 'Invalid path'
+                } else {
+                    Handle-StaticFile -Context $context -RelPath $relFile
+                }
                 break
             }
             default {
@@ -816,11 +1122,27 @@ try {
         try {
             $crashJson = $crashEvent | ConvertTo-Json -Depth 4
             Add-Content -LiteralPath $script:CrashLogFile -Value $crashJson -Encoding UTF8
-        } catch { }
+        } catch { <# Intentional: non-fatal — crash log write failure cannot be recovered within crash handler #> }
         # Invoke crash cleanup script if it exists
         $cleanupScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-EngineCrashCleanup.ps1'
         if (Test-Path -LiteralPath $cleanupScript) {
-            try { & $cleanupScript -WorkspacePath $WorkspacePath -Silent } catch { }
+            try { & $cleanupScript -WorkspacePath $WorkspacePath -Silent } catch { <# Intentional: non-fatal, cleanup is best-effort in crash handler #> }
         }
     }
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

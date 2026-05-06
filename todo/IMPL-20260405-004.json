@@ -2,7 +2,7 @@
   "type": "Items2ADD",
   "category": "Coverage",
   "id": "IMPL-20260405-004",
-  "status": "OPEN",
+  "status": "DONE",
   "title": "Create Pester tests for 4 untested modules",
   "description": "LaunchTelemetry, ConvoVault, IntegrityCore, TrayHost have zero Pester coverage.",
   "priority": "HIGH"

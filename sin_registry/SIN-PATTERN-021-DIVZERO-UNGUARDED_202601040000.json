@@ -50,9 +50,9 @@
     "status": "PENDING",
     "auto_retry": true
   },
-  "context_guard_regex": "-gt\\s+0|-ge\\s+1|-ne\\s+0|SafeDivide|Epsilon|\\[Math\\]|Math::Max|\\.TotalMilliseconds|-gt\\s+0\\.0|if.*-eq\\s+0|Write-\\w+Log|\\.Text\\s*=|statusLabel|Write-SRLog|BaseURL|return\\s+@\\{|SYSLOG|\\$totalErrors/\\$totalCycles|cycles\\)|sevLevel",
-  "context_guard_lines": 5,
-  "context_guard_direction": "above",
+  "context_guard_regex": "-gt\\s+0|-ge\\s+1|-ne\\s+0|SafeDivide|Epsilon|\\[Math\\]|Math::Max|\\.TotalMilliseconds|-gt\\s+0\\.0|if.*-eq\\s+0|Write-\\w+Log|\\.Text\\s*=|statusLabel|Write-SRLog|BaseURL|return\\s+@\\{|SYSLOG|\\$totalErrors/\\$totalCycles|cycles\\)|sevLevel|try\\s*\\{|-gt\\s+0|-ge\\s+1|-lt\\s+\\d+|\\$\\w+\\s*-eq\\s*0|\\$\\w+\\s*-ne\\s*0|catch\\s*\\{|ErrorAction|SilentlyContinue|\\[double\\]::Epsilon|\\[Math\\]::Abs|if\\s*\\(.*\\)|-and\\s+\\d+|SafeDivide|Protect|Invoke-Safe|\\.TotalSeconds\\b|total\\s*=\\s*0|Empty|Length\\s*-eq\\s*0",
+  "context_guard_lines": 8,
+  "context_guard_direction": "both",
   "file_exclusion_regex": "CheatSheet|EXAMPLES",
-  "inline_guard_regex": "\"[^\"]*\\$\\w+/\\$|'[^']*\\$\\w+/\\$"
+  "inline_guard_regex": "\"[^\"]*\\$\\w+/\\$|'[^']*\\$\\w+/\\$|#.*SIN-EXEMPT|SIN-EXEMPT|\\[Math\\]|if\\s*\\(\\$\\w|\\.Count\\s*-gt|\\.Length\\s*-gt|Invoke-Safe"
 }

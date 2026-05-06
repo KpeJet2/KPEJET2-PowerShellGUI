@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Encoding compliance validator — checks BOM presence and double-encoding (P023).
@@ -49,7 +53,7 @@ function Test-FileEncoding {
     $hasBOM = ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
 
     # Check for BOM artifact (0x3F at byte 3 after valid BOM)
-    if ($hasBOM -and $byteCount -gt 3 -and $bytes[3] -eq 0x3F) {
+    if ($hasBOM -and $byteCount -gt 3 -and $bytes[3] -eq 0x3F) {  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
         $script:Findings += [PSCustomObject]@{
             Type     = 'BOM_ARTIFACT'
             Severity = 'HIGH'
@@ -60,9 +64,9 @@ function Test-FileEncoding {
 
     # Check for double-encoded BOM (C3 AF C2 BB C2 BF instead of EF BB BF)
     if ($byteCount -ge 6) {
-        if ($bytes[0] -eq 0xC3 -and $bytes[1] -eq 0xAF -and
-            $bytes[2] -eq 0xC2 -and $bytes[3] -eq 0xBB -and
-            $bytes[4] -eq 0xC2 -and $bytes[5] -eq 0xBF) {
+        if ($bytes[0] -eq 0xC3 -and $bytes[1] -eq 0xAF -and  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
+            $bytes[2] -eq 0xC2 -and $bytes[3] -eq 0xBB -and  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
+            $bytes[4] -eq 0xC2 -and $bytes[5] -eq 0xBF) {  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
             $script:Findings += [PSCustomObject]@{
                 Type     = 'DOUBLE_ENCODED_BOM'
                 Severity = 'CRITICAL'
@@ -160,3 +164,19 @@ if (-not $Quiet) {
     medium        = @($medium).Count
     findings      = $script:Findings
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

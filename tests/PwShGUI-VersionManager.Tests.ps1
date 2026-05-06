@@ -1,5 +1,9 @@
 #Requires -Version 5.1
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
     PwShGUI-VersionManager.Tests.ps1
     Pester v5 tests for PwShGUI-VersionManager module
@@ -9,7 +13,7 @@
 
 BeforeAll {
     $modulePath = Join-Path $PSScriptRoot '..\modules\PwShGUI-VersionManager.psm1'
-    Import-Module $modulePath -Force
+    Import-Module $modulePath -Force -DisableNameChecking
     $testWorkspace = Join-Path $env:TEMP 'PwShGUI-VersionManager-Tests'
     if (Test-Path $testWorkspace) { Remove-Item $testWorkspace -Recurse -Force }
     New-Item -ItemType Directory -Path $testWorkspace -Force | Out-Null
@@ -79,7 +83,7 @@ Describe 'Format-VersionTag' {
 Describe 'Get-FileVersion / Set-FileVersion' {
     BeforeEach {
         $testFile = Join-Path $env:TEMP "version-test-$(Get-Random).psm1"
-        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.0`nfunction Test-Something { }" -Encoding UTF8
+        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.2`nfunction Test-Something { }" -Encoding UTF8
     }
 
     AfterEach {
@@ -102,7 +106,7 @@ Describe 'Get-FileVersion / Set-FileVersion' {
 Describe 'Step-MinorVersion' {
     BeforeEach {
         $testFile = Join-Path $env:TEMP "step-minor-test-$(Get-Random).psm1"
-        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.0`nfunction Test-Bump { }" -Encoding UTF8
+        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.2`nfunction Test-Bump { }" -Encoding UTF8
     }
 
     AfterEach {
@@ -172,4 +176,20 @@ Describe 'Get-WorkspaceVersionInventory' {
         @($inv).Count | Should -BeGreaterThan 0
     }
 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

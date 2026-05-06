@@ -1,4 +1,10 @@
-﻿#Requires -Version 5.1
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Launcher
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     BW-CLI Server -- Launch Bitwarden CLI HTTP API service.
@@ -23,7 +29,7 @@ param(
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
-function Write-Banner {
+function Write-Banner {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Text, [ConsoleColor]$Color = 'Cyan')
     $bar = '═' * 60
     Write-Host $bar -ForegroundColor $Color
@@ -230,3 +236,19 @@ if ($choice -eq 'stop') {
 if (Test-Path $tempScript) { Remove-Item $tempScript -Force -ErrorAction SilentlyContinue }
 
 Write-Host "`n  BW-CLI Server launcher finished." -ForegroundColor DarkGray
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

@@ -1,6 +1,5 @@
 {
   "tags": [],
-  "notes": "",
   "modified": "2026-03-28T16:06:07.9634982Z",
   "result": null,
   "completedAt": null,
@@ -23,10 +22,12 @@
   "category": "normalization",
   "affectedFiles": [],
   "created": "2026-03-28T16:06:07.96326Z",
-  "status": "PLANNED",
+  "status": "DONE",
   "acknowledged": null,
   "executionAgent": "",
   "outlinePhase": "assessment",
   "createdAt": "2026-03-29T00:00:00Z",
-  "plannedAt": "2026-03-31T01:25:02.3316177+08:00"
+  "plannedAt": "2026-03-31T01:25:02.3316177+08:00",
+  "notes": "Superseded by earlier duplicate todo",
+  "resolved_at": "2026-04-10T07:35:59.0352435+08:00"
 }

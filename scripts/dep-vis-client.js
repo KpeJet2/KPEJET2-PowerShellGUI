@@ -269,9 +269,17 @@
         var pct = Math.floor((pg.completedPhases / pg.totalPhases) * 100);
         if (bar) bar.style.width = pct + '%';
         if (msg) msg.textContent = 'Scanning... ' + pg.completedPhases + '/' + pg.totalPhases + ' phases';
+      } else if (pg.status === 'running' && typeof pg.progress === 'number') {
+        if (bar) bar.style.width = Math.max(0, Math.min(100, pg.progress)) + '%';
+        if (msg) msg.textContent = pg.statusMessage || ('Scanning... ' + pg.progress + '%');
       } else if (pg.status === 'done') {
         if (bar) bar.style.width = '100%';
         if (msg) msg.textContent = 'Scan complete';
+        fetchCrashes();
+      } else if (pg.status === 'partial') {
+        if (bar) bar.style.width = '100%';
+        if (msg) msg.textContent = 'Scan complete with warnings';
+        addLog('Scan completed with warnings: ' + (pg.error || 'partial result'), 'warn');
         fetchCrashes();
       } else if (pg.status === 'error') {
         if (bar) bar.style.width = '0';

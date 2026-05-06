@@ -81,5 +81,28 @@
     "minRunsForDimensionDisable": 20,
     "suppressRejectedForDays": 30
   },
-  "suggested_overrides": []
+  "suggested_overrides": [
+    {
+      "id": "SRSUG-20260412124557-freq-reduce",
+      "field": "fullFrequencyMinutes",
+      "currentValue": 360,
+      "suggestedValue": 300,
+      "reason": "Engine consistently completes in ~2s. Reducing frequency saves scheduler overhead.",
+      "basedOnRuns": 3,
+      "confidence": "LOW",
+      "status": "PENDING",
+      "createdAt": "2026-04-12T04:45:57.9439576Z"
+    },
+    {
+      "id": "SRSUG-20260418154312-SINCompliance-reduce",
+      "field": "dimensions.SINCompliance.weight",
+      "currentValue": 0.2,
+      "suggestedValue": 0.17,
+      "reason": "SINCompliance is very stable (stddev=0). Modest weight reduction frees capacity for volatile dimensions.",
+      "basedOnRuns": 5,
+      "confidence": "LOW",
+      "status": "PENDING",
+      "createdAt": "2026-04-18T07:43:12.1973030Z"
+    }
+  ]
 }

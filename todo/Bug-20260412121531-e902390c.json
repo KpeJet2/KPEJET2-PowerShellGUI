@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:15:31.5570129Z",
+  "title": "Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412121531-e902390c",
+  "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:15:31.5570878Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412121531-e6de1eb8",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412121531-e6de1eb8",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1"
+  ]
+}

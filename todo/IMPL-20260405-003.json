@@ -2,7 +2,7 @@
   "type": "Items2ADD",
   "category": "Quality",
   "id": "IMPL-20260405-003",
-  "status": "OPEN",
+  "status": "DONE",
   "title": "Wire Invoke-VersionAlignmentTool -CrossValidate as pipeline gate",
   "description": "Add after ManifestRebuild step to catch version drift automatically.",
   "priority": "HIGH"

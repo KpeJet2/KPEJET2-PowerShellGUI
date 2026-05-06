@@ -1,10 +1,16 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
+# FileRole: Module
 <#
 .SYNOPSIS  SINGovernance - SIN review, approval, and SINeProofed workflow.
 .DESCRIPTION
     Provides interactive Chief review of SIN registry entries with
     SHA-512 sealed approval (SINeProofed), ledger integration, and
     XHTML report generation.
+# TODO: HelpMenu | Show-SINGovernanceHelp | Actions: Scan|Register|Audit|Report|Help | Spec: config/help-menu-registry.json
     
     Workflow:
     1. Get-SINReviewQueue   - list pending SINs
@@ -306,6 +312,18 @@ $rows
 }
 
 # ── Exports ──────────────────────────────────────────────────
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-SINGovernance'
     'Get-SINReviewQueue'
@@ -314,4 +332,9 @@ Export-ModuleMember -Function @(
     'Start-SINReview'
     'Export-SINReviewReport'
 )
+
+
+
+
+
 

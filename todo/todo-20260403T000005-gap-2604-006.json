@@ -6,7 +6,7 @@
   "description": "sin_registry/ stores 24 definition files (SIN-PATTERN-*.json, SEMI-SIN-*.json) plus scanner output writes SIN instance records to ~REPORTS/SINScanner/ and ~REPORTS/SemiSin/. The ReportRetention cron task handles ~REPORTS/ subdirectories but the sin_registry instance logs (if any) are not included. Add sin_registry/ log cleanup (if applicable) to Invoke-ReportRetention. Also confirm SINScanner/SemiSin report dirs have retention configured correctly (threshold: 30 days to archive zip).",
   "suggested_by": "redundancy audit 2026-04-03",
   "priority": "LOW",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:05Z",
   "createdAt": "2026-04-03T00:00:05Z",
   "acknowledged_at": null,

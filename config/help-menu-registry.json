@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "schema": "help-menu-registry/v1",
+    "description": "Centralised help-menu specifications for all modules and scripts. Pipeline step Invoke-HelpMenuCompliance.ps1 reads this to audit compliance.",
+    "created": "2026-04-16",
+    "lastModified": "2026-04-16",
+    "compactTodoFormat": "# TODO: HelpMenu | Show-<FnName> | Actions: <csv> | Spec: config/help-menu-registry.json"
+  },
+  "modules": {
+    "AssistedSASC": {
+      "helpFn": "Show-AssistedSASCHelp",
+      "actions": ["Scan", "Report", "Reset", "Help"],
+      "params": { "-ScanDepth": "int", "-TargetPath": "str", "-IncludeArchived": "switch" },
+      "logFile": "sasc-events",
+      "status": "TODO"
+    },
+    "AVPN-Tracker": {
+      "helpFn": "Show-AVPNTrackerHelp",
+      "actions": ["Connect", "Disconnect", "Status", "Refresh", "Help"],
+      "params": { "-Profile": "str", "-Timeout": "int", "-RetryCount": "int" },
+      "logFile": "avpn-events",
+      "status": "TODO"
+    },
+    "CronAiAthon-BugTracker": {
+      "helpFn": "Show-BugTrackerHelp",
+      "actions": ["Scan", "Report", "Triage", "Export", "Help"],
+      "params": { "-Severity": "str[]", "-MaxResults": "int", "-IncludeClosed": "switch" },
+      "logFile": "bugtracker-events",
+      "status": "TODO"
+    },
+    "CronAiAthon-EventLog": {
+      "helpFn": "Show-EventLogHelp",
+      "actions": ["Write", "Query", "Export", "Rotate", "Help"],
+      "params": { "-Severity": "str", "-Source": "str", "-MaxEntries": "int", "-DateRange": "str" },
+      "logFile": "eventlog-events",
+      "status": "TODO"
+    },
+    "CronAiAthon-Pipeline": {
+      "helpFn": "Show-PipelineHelp",
+      "actions": ["Register", "Run", "Status", "Reset", "Help"],
+      "params": { "-PipelineName": "str", "-Force": "switch", "-DryRun": "switch", "-MaxConcurrent": "int" },
+      "logFile": "pipeline-events",
+      "status": "TODO"
+    },
+    "CronAiAthon-Scheduler": {
+      "helpFn": "Show-SchedulerHelp",
+      "actions": ["Schedule", "Pause", "Resume", "Cancel", "List", "Help"],
+      "params": { "-TaskType": "str", "-Priority": "str", "-CronExpr": "str", "-RunNow": "switch" },
+      "logFile": "scheduler-events",
+      "status": "TODO"
+    },
+    "Get-LaunchTelemetry": {
+      "helpFn": "Show-TelemetryHelp",
+      "actions": ["Collect", "Report", "Export", "Help"],
+      "params": { "-Fields": "str[]", "-OutputFormat": "str", "-IncludeHistory": "switch" },
+      "logFile": "telemetry-events",
+      "status": "TODO"
+    },
+    "PKIChainManager": {
+      "helpFn": "Show-PKIHelp",
+      "actions": ["Validate", "Import", "Export", "Audit", "Help"],
+      "params": { "-CertPath": "str", "-Thumbprint": "str", "-Store": "str", "-CheckExpiry": "switch" },
+      "logFile": "pki-events",
+      "status": "TODO"
+    },
+    "PwShGUI_AutoIssueFinder": {
+      "helpFn": "Show-AutoIssueFinderHelp",
+      "actions": ["Scan", "Report", "Fix", "Help"],
+      "params": { "-TargetPath": "str", "-FixMode": "str", "-Severity": "str[]" },
+      "logFile": "autoissuefinder-events",
+      "status": "TODO"
+    },
+    "PwShGUI-ConvoVault": {
+      "helpFn": "Show-ConvoVaultHelp",
+      "actions": ["Store", "Retrieve", "Search", "Purge", "Help"],
+      "params": { "-VaultPath": "str", "-ConvoId": "str", "-MaxAge": "int", "-Encrypt": "switch" },
+      "logFile": "convovault-events",
+      "status": "TODO"
+    },
+    "PwShGUICore": {
+      "helpFn": "Show-CoreHelp",
+      "actions": ["Init", "Status", "Reset", "Help"],
+      "params": { "-ConfigPath": "str", "-LogLevel": "str", "-BufferSize": "int" },
+      "logFile": "core-events",
+      "status": "TODO"
+    },
+    "PwShGUI-IntegrityCore": {
+      "helpFn": "Show-IntegrityCoreHelp",
+      "actions": ["Verify", "Baseline", "Compare", "Report", "Help"],
+      "params": { "-HashAlgorithm": "str", "-BaselinePath": "str", "-IncludeHidden": "switch" },
+      "logFile": "integrity-events",
+      "status": "TODO"
+    },
+    "PwShGUI-NetworkTools": {
+      "helpFn": "Show-NetworkToolsHelp",
+      "actions": ["Ping", "Trace", "Resolve", "Scan", "Help"],
+      "params": { "-Target": "str", "-Port": "int", "-Timeout": "int", "-Protocol": "str" },
+      "logFile": "nettools-events",
+      "status": "TODO"
+    },
+    "PwShGUI-PSVersionStandards": {
+      "helpFn": "Show-VersionStandardsHelp",
+      "actions": ["Check", "Enforce", "Report", "Help"],
+      "params": { "-TargetVersion": "str", "-StrictMode": "switch", "-IncludeModules": "switch" },
+      "logFile": "verstandards-events",
+      "status": "TODO"
+    },
+    "PwShGUI-SchemaTranslator": {
+      "helpFn": "Show-SchemaTranslatorHelp",
+      "actions": ["Translate", "Validate", "Export", "Help"],
+      "params": { "-InputFormat": "str", "-OutputFormat": "str", "-SchemaPath": "str" },
+      "logFile": "schema-events",
+      "status": "TODO"
+    },
+    "PwShGUI-Theme": {
+      "helpFn": "Show-ThemeHelp",
+      "actions": ["Apply", "Preview", "Reset", "List", "Help"],
+      "params": { "-ThemeName": "str", "-AccentColor": "str", "-DarkMode": "switch", "-HighContrast": "switch" },
+      "logFile": "theme-events",
+      "status": "TODO"
+    },
+    "PwShGUI-TrayHost": {
+      "helpFn": "Show-TrayHostHelp",
+      "actions": ["Start", "Stop", "Status", "Minimize", "Help"],
+      "params": { "-Icon": "str", "-Tooltip": "str", "-ContextMenu": "str[]" },
+      "logFile": "trayhost-events",
+      "status": "TODO"
+    },
+    "PwShGUI-VersionManager": {
+      "helpFn": "Show-VersionManagerHelp",
+      "actions": ["Bump", "Align", "Audit", "Tag", "Help"],
+      "params": { "-Component": "str", "-Force": "switch", "-DryRun": "switch", "-Scope": "str" },
+      "logFile": "verman-events",
+      "status": "TODO"
+    },
+    "PwSh-HelpFilesUpdateSource-ReR": {
+      "helpFn": "Show-HelpFilesHelp",
+      "actions": ["Update", "Check", "Download", "Help"],
+      "params": { "-Module": "str[]", "-Culture": "str", "-SourceUri": "str" },
+      "logFile": "helpfiles-events",
+      "status": "TODO"
+    },
+    "RE-memorAiZ": {
+      "helpFn": "Show-REMemorAiZHelp",
+      "actions": ["Inventory", "Recall", "Store", "Prune", "Help"],
+      "params": { "-MemoryScope": "str", "-MaxAge": "int", "-Format": "str", "-SearchTerm": "str" },
+      "logFile": "memoraiz-events",
+      "status": "TODO"
+    },
+    "SASC-Adapters": {
+      "helpFn": "Show-SASCAdaptersHelp",
+      "actions": ["Load", "Unload", "List", "Test", "Help"],
+      "params": { "-AdapterName": "str", "-Config": "str", "-Force": "switch" },
+      "logFile": "sasc-events",
+      "status": "TODO"
+    },
+    "SINGovernance": {
+      "helpFn": "Show-SINGovernanceHelp",
+      "actions": ["Scan", "Register", "Audit", "Report", "Help"],
+      "params": { "-Pattern": "str[]", "-Severity": "str", "-ExcludePath": "str[]", "-Fix": "switch" },
+      "logFile": "singovern-events",
+      "status": "TODO"
+    },
+    "UserProfileManager": {
+      "helpFn": "Show-UserProfileHelp",
+      "actions": ["Load", "Save", "Reset", "Export", "Help"],
+      "params": { "-ProfileName": "str", "-SettingKey": "str", "-Value": "str", "-Merge": "switch" },
+      "logFile": "userprofile-events",
+      "status": "TODO"
+    },
+    "WorkspaceIntentReview": {
+      "helpFn": "Show-IntentReviewHelp",
+      "actions": ["Review", "Report", "Classify", "Help"],
+      "params": { "-Scope": "str", "-IncludeTests": "switch", "-OutputFormat": "str" },
+      "logFile": "intentreview-events",
+      "status": "TODO"
+    }
+  },
+  "scripts": {
+    "Start-LocalWebEngineService": {
+      "helpFn": "Show-HelpMenu",
+      "actions": ["Start", "Stop", "Restart", "Status", "Help"],
+      "params": { "-Port": "int", "-WorkspacePath": "str", "-SeparateTerminal": "switch", "-PollInterval": "int", "-MaxWait": "int" },
+      "logFile": "engine-events",
+      "status": "DONE"
+    }
+  },
+  "commonSwitches": {
+    "eventLevel": { "param": "-EventLevel", "values": ["Debug", "Info", "Warning", "Error", "Critical"], "default": "Info" },
+    "logToFile":  { "param": "-LogToFile",  "values": ["auto", "<path>"], "description": "Write events to logs/{logFile}-{ts}.log" },
+    "rainbow":    { "param": "-ShowRainbow", "type": "bool", "default": true, "description": "Animated rainbow progress indicator" },
+    "verbose":    { "param": "-Verbose", "description": "PowerShell verbose stream" }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:37:43.7801353Z",
+  "title": "Missing closing ')' in subexpression.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412123743-6c7b6e87",
+  "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 497: Missing closing ')' in subexpression.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:37:43.7801715Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412123743-8c891e3c",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412123743-8c891e3c",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+  ]
+}

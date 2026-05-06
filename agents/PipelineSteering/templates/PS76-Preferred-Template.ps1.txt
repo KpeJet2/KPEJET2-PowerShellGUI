@@ -1,0 +1,27 @@
+# VersionTag: YYMM.B0.V1.0
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    PS7.6-first template with structured PS5.1 compatibility provisioning.
+.DESCRIPTION
+    Preferred behavior runs on PS7.6+. Legacy branch is reserved for tested
+    PS5.1 compatibility and should use consistent fallback wrappers.
+#>
+
+function Invoke-CompatFallback {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [scriptblock]$Modern,
+        [Parameter(Mandatory)] [scriptblock]$Legacy
+    )
+
+    if ($PSVersionTable.PSVersion -ge [version]'7.6') {
+        & $Modern
+    } else {
+        & $Legacy
+    }
+}

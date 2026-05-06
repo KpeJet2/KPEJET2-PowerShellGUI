@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Setup
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
 #Requires -Version 5.1
@@ -53,7 +58,7 @@ if (Test-Path $coreModulePath) {
     Initialize-CorePaths -ScriptDir $scriptDir -ErrorAction SilentlyContinue
 }
 
-function Write-Log {
+function Write-Log {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [string]$Message,
         [ValidateSet('Debug','Info','Warning','Error','Critical','Audit')]
@@ -552,6 +557,22 @@ Write-Log "Installation complete: $($result | ConvertTo-Json -Depth 5 -Compress)
 return $result
 
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

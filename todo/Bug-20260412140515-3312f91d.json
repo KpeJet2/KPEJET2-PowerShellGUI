@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:05:15.5619163Z",
+  "title": "12 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412140515-3312f91d",
+  "description": "Script koe-RumA.psm1 has 12 functions but zero try/catch blocks",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:05:15.5619496Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260331045607-8c5928ca",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "notes": "Matched existing sin: 12 functions with no try/catch blocks",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\agents\\koe-RumA\\core\\koe-RumA.psm1"
+  ]
+}

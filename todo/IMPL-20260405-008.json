@@ -2,7 +2,7 @@
   "type": "Bugs2FIX",
   "category": "Pipeline",
   "id": "IMPL-20260405-008",
-  "status": "OPEN",
+  "status": "DONE",
   "title": "Wire 11 never-run scheduled tasks into CronProcessor dispatch",
   "description": "11 of 19 tasks in cron-aiathon-schedule.json have lastRun null. Enabled but never triggered. Wire or disable.",
   "priority": "MEDIUM"

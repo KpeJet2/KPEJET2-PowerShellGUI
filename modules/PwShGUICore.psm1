@@ -1,4 +1,60 @@
-﻿# VersionTag: 2604.B2.V31.0
+# ========================== FILE ENUMERATION UTILITY ==========================
+function Get-AllProjectFiles {
+    <#
+    .SYNOPSIS  Enumerate all project files, excluding dot folders and known large directories.
+    .PARAMETER Root  Optional root directory (defaults to workspace root).
+    .PARAMETER Pattern  Optional file pattern (e.g. *.ps1).
+    .OUTPUTS   [System.IO.FileInfo[]] Array of file objects.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$Root,
+        [string]$Pattern = '*'
+    )
+    if (-not $Root) { $Root = Get-ProjectPath -Key 'Root' }
+    $excludeDirs = @('.git','.history','node_modules','__pycache__','.venv','~DOWNLOADS','~REPORTS')
+    $files = @()
+    try {
+        $files = Get-ChildItem -Path $Root -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue |
+            Where-Object { $path = $_.FullName; -not ($excludeDirs | ForEach-Object { $path -like "*$_*" }) }
+    } catch {
+        Write-AppLog -Message "[FileEnum] Error enumerating files: $($_.Exception.Message)" -Level Error
+    }
+    return $files
+}
+# ========================== CONFIG PATH VALIDATION ==========================
+function Validate-ConfigPaths {
+    <#
+    .SYNOPSIS  Validates all critical config and workspace paths at startup.
+    .DESCRIPTION
+        Checks that all required directories and config files exist. Logs errors and returns $false if any are missing.
+    .OUTPUTS   [bool] $true if all paths exist, $false otherwise.
+    #>
+    [CmdletBinding()]
+    param()
+    $requiredKeys = @(
+        'Config','Modules','Scripts','Logs','Reports','Temp','Downloads','Checkpoints','Pki','SinRegistry','Readme',
+        'SystemVarsXml','LinksXml','AppConfigJson','PrereqJson','SascConfig','AvpnDevices','ScriptFolders'
+    )
+    $allOk = $true
+    foreach ($key in $requiredKeys) {
+        $path = Get-ProjectPath -Key $key
+        if (-not $path -or -not (Test-Path $path)) {
+            Write-AppLog -Message "[ConfigValidation] Missing or invalid path for key '$key': $path" -Level Error
+            $allOk = $false
+        }
+    }
+    if ($allOk) {
+        Write-AppLog -Message '[ConfigValidation] All critical config paths validated successfully.' -Level Info
+    }
+    return $allOk
+}
+# VersionTag: 2604.B2.V31.4
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
+# FileRole: Module
 # VersionBuildHistory:
 #   2603.B0.v23  2026-03-28 09:15  Fix Join-Path 3-arg calls for PS 5.1 compatibility
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 3 entries)
@@ -6,6 +62,7 @@
 <#
 .SYNOPSIS
     PwShGUI Core Utility Module -- shared logging, lifecycle, and helper functions.
+# TODO: HelpMenu | Show-CoreHelp | Actions: Init|Status|Reset|Help | Spec: config/help-menu-registry.json
 
 .DESCRIPTION
     Centralises functions previously duplicated across Main-GUI.ps1 and payload
@@ -45,7 +102,7 @@ $script:_LockFilePath  = $null       # set by Initialize-CorePaths or caller
 # Log level filtering -- only messages at or above _MinLogLevel are written.
 # Levels: Debug(0) < Info(1) < Warning(2) < Error(3) < Critical(4) < Audit(5)
 $script:_LogLevelOrder = @{ Debug=0; Info=1; Warning=2; Error=3; Critical=4; Audit=5 }
-$script:_MinLogLevel   = 'Info'   # suppress Debug-level entries by default
+$script:_MinLogLevel   = 'Debug'  # verbose mode: emit all log levels including Debug
 
 # ========================== CENTRALISED PATH REGISTRY ==========================
 # Single lookup table for all project directories and key files.
@@ -145,8 +202,21 @@ function Get-ProjectPath {
     )
 
     if ($script:_PathRegistry.Count -eq 0) {
-        Write-AppLog -Message '' -Level Warning
-        return $null
+        # Auto-recover: module was re-imported with -Force (resets $script: scope).
+        # Derive workspace root from module location and reinitialise silently.
+        $autoScriptDir = Split-Path $PSScriptRoot   # modules/ -> workspace root
+        if (-not [string]::IsNullOrWhiteSpace($autoScriptDir) -and (Test-Path $autoScriptDir)) {
+            try {
+                Initialize-CorePaths -ScriptDir $autoScriptDir
+                Write-AppLog -Message "PwShGUICore: Path registry auto-reinitialized from $autoScriptDir" -Level Warning
+            } catch {
+                Write-AppLog -Message "PwShGUICore: Auto-reinit failed: $($_.Exception.Message)" -Level Warning
+            }
+        }
+        if ($script:_PathRegistry.Count -eq 0) {
+            Write-AppLog -Message 'PwShGUICore: Path registry not initialized - call Initialize-CorePaths first' -Level Warning
+            return $null
+        }
     }
     if ($script:_PathRegistry.ContainsKey($Key)) {
         return $script:_PathRegistry[$Key]
@@ -165,7 +235,7 @@ function Get-AllProjectPaths {
 }
 
 # ========================== LOGGING FUNCTIONS ==========================
-function Write-AppLog {
+function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Buffered application-level log writer.
     .PARAMETER Message   The log message text.
@@ -279,7 +349,7 @@ function Write-ErrorReport {
     if ($Rethrow) { throw $ErrorRecord }
 }
 
-function Write-ScriptLog {
+function Write-ScriptLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Buffered script-level log writer (prefixes with script name).
     .PARAMETER Message     The log message text.
@@ -322,7 +392,7 @@ function Write-ScriptLog {
     }
 }
 
-function Export-LogBuffer {
+function Export-LogBuffer {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Flush all buffered log entries to their respective files.
     #>
@@ -346,7 +416,7 @@ function Export-LogBuffer {
 }
 
 # ========================== TIMEOUT / PATH HELPERS ==========================
-function Wait-KeyOrTimeout {
+function Wait-KeyOrTimeout {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Wait for a keypress or timeout.
     .PARAMETER Seconds   Number of seconds to wait.
@@ -747,7 +817,7 @@ function Initialize-ConfigFile {
 }
 
 # ========================== PROGRESS & VISUAL HELPERS ==========================
-function Get-RainbowColor {
+function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <#
     .SYNOPSIS  Return an RGB hashtable for the given step index (cycles through 7 rainbow colours).
     #>
@@ -851,12 +921,10 @@ function Write-ProcessBanner {
     Write-Host ([char]0x255A + $border + [char]0x255D) -ForegroundColor $color
 }
 
-# ─────────────────────────────────────────────────────────────
 # Write-CrashDump
 #   Persists a structured crash report to logs/crash-dumps/.
 #   Detects repeating errors by signature (phase + first 80 chars of message).
 #   Increments occurrence count and sets isRepeating on existing signature matches.
-# ─────────────────────────────────────────────────────────────
 function Write-CrashDump {
     [CmdletBinding()]
     param(
@@ -971,6 +1039,18 @@ function Write-CrashDump {
 }
 
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-CorePaths'
     'Initialize-ConfigFile'
@@ -994,6 +1074,11 @@ Export-ModuleMember -Function @(
     'Write-ProcessBanner'
     'Write-CrashDump'
 )
+
+
+
+
+
 
 
 

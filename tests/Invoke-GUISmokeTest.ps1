@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # SS-004 exempt: All Start-Sleep calls are intentional test timing delays for UI Automation synchronization
 # VersionBuildHistory:
 #   2603.B0.v26  2026-04-04       Add Phase 0x/0y/0z: SIN registry completeness, log level filter, backlog health checks
@@ -166,9 +170,9 @@ function Get-LaunchGuiMenuTargets {
     $quickApp = Join-Path $scriptRoot 'scripts\QUICK-APP'
 
     $fixed = @(
-        Join-Path $root 'Launch-GUI-quik_jnr.bat',
-        Join-Path $root 'Launch-GUI-slow_snr.bat',
-        Join-Path $root 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml'
+        (Join-Path $root 'Launch-GUI-quik_jnr.bat')
+        (Join-Path $root 'Launch-GUI-slow_snr.bat')
+        (Join-Path $root 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml')
     )
     foreach ($f in $fixed) {
         if (Test-Path $f) {
@@ -479,7 +483,7 @@ if ($runPhase0) {
     # ── 0g: Orphan file detection ─────────────────────────────────────────
     # Find .ps1 files under scripts/ not referenced by any menu item, button config,
     # or other known caller in Main-GUI.ps1
-    $orphanScriptsDir = Join-Path $workspace 'scripts'
+    $orphanScriptsDir = Join-Path $scriptRoot 'scripts'
     if (Test-Path $orphanScriptsDir) {
         $mainContent = ''
         if (Test-Path $mainScript) {
@@ -487,7 +491,7 @@ if ($runPhase0) {
             if ($mainLines) { $mainContent = $mainLines -join "`n" }
         }
         $configContent = ''
-        $configXml = Join-Path $workspace 'config\system-variables.xml'
+        $configXml = Join-Path $scriptRoot 'config\system-variables.xml'
         if (Test-Path $configXml) {
             $configLines = Get-Content $configXml -ErrorAction SilentlyContinue
             if ($configLines) { $configContent = $configLines -join "`n" }
@@ -741,10 +745,46 @@ if ($runPhase0) {
         $content = [System.IO.File]::ReadAllText($psm.FullName, [System.Text.Encoding]::UTF8)
         $fnDefs = @([regex]::Matches($content, '(?m)^\s*function\s+([A-Z][\w-]+)', 'IgnoreCase') |
             ForEach-Object { $_.Groups[1].Value })
-        # Check for Export-ModuleMember
-        $hasExplicitExport = $content -match 'Export-ModuleMember'
+        # Check for 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember
+        $hasExplicitExport = $content -match '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember'
         if ($hasExplicitExport) {
-            $exportMatches = [regex]::Matches($content, 'Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', 'IgnoreCase,Singleline')
+            $exportMatches = [regex]::Matches($content, '
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', 'IgnoreCase,Singleline')
             $exportedNames = @()
             foreach ($em in $exportMatches) {
                 $names = $em.Groups[1].Value -split '[,\s]+' | ForEach-Object { $_.Trim("'", '"', ' ') } | Where-Object { $_ -and $_ -ne '*' }
@@ -765,7 +805,19 @@ if ($runPhase0) {
                 $modAuditPass++
             }
         } else {
-            Write-TestLog 'INFO' 'Phase0' 'ModExportAudit' "$($psm.Name) -- no Export-ModuleMember (all $($fnDefs.Count) functions exported by default)"
+            Write-TestLog 'INFO' 'Phase0' 'ModExportAudit' "$($psm.Name) -- no 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember (all $($fnDefs.Count) functions exported by default)"
             $modAuditPass++
         }
     }
@@ -1136,7 +1188,7 @@ if ($runPhase0) {
         $sinPatternFiles  = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SIN-PATTERN-*.json' -File -ErrorAction SilentlyContinue)
         $semiSinFiles     = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SEMI-SIN-*.json'    -File -ErrorAction SilentlyContinue)
         $sinInstanceFiles = @(Get-ChildItem -Path $sinRegistryPath -Filter 'SIN-2*.json'        -File -ErrorAction SilentlyContinue)
-        $minExpectedPatterns = 20
+        $minExpectedPatterns = 28
         $minExpectedSemiSins = 6
         $patCount = @($sinPatternFiles).Count
         $semiCount = @($semiSinFiles).Count
@@ -1850,6 +1902,10 @@ if ($script:appProcess -and -not $script:appProcess.HasExited) {
 # ══════════════════════════════════════════════════════════════════════════════
 Show-Report
 if (@($results | Where-Object { $_.Status -eq 'FAIL' }).Count -gt 0) { exit 1 } else { exit 0 }
+
+
+
+
 
 
 

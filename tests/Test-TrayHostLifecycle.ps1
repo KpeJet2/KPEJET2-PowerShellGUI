@@ -1,5 +1,9 @@
-﻿#Requires -Version 5.1
-# VersionTag: 2604.B2.V31.0
+#Requires -Version 5.1
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-29 00:00  audit-007 added VersionTag
 <#
@@ -80,7 +84,7 @@ Test-Step "Invoke-BackgroundTask and collect result" {
     Start-Sleep -Milliseconds 500
     $completed = Get-CompletedBackgroundTasks
     if ($completed.Count -eq 0) { throw "No completed tasks found" }
-    Write-Host "    Task $taskId result: $($completed[0].Result)" -ForegroundColor Gray
+    Write-Host "    Task $taskId result: $($completed[0].Result)" -ForegroundColor Gray  # SIN-EXEMPT: P027 - array guarded by if(.Count -gt 0) / if($proc) on prior line
 }
 
 Test-Step "Stop-BackgroundPool" {
@@ -175,4 +179,20 @@ $passCount = @($script:results | Where-Object { $_.Status -eq 'PASS' }).Count
 $failCount = @($script:results | Where-Object { $_.Status -eq 'FAIL' }).Count
 Write-Host "`n=== Results: $passCount PASS, $failCount FAIL ===" -ForegroundColor $(if ($failCount -gt 0) { 'Red' } else { 'Green' })
 exit $failCount
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

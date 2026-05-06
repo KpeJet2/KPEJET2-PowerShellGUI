@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bugs2FIX-20260421020755-0a879409",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Fix for bug Bug-20260421020706-16157b4d: Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 178: Unexpected token \u0027VersionTag\u0027 in expression or statement.",
+    "lastSeenAt":  "2026-04-20T18:07:55.2272585Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "FIX: Unexpected token \u0027VersionTag\u0027 in expression or statement.",
+    "parentId":  "Bug-20260421020706-16157b4d",
+    "type":  "Bugs2FIX",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-04-20T18:07:55.2272585Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "CronAiAthon",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+                         "Bug-20260421020706-16157b4d"
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "parsing",
+    "reopenedAt":  null,
+    "created":  "2026-04-20T18:07:55.2272585Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-04-20T18:07:55.2272585Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

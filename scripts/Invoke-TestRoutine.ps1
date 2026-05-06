@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -88,7 +93,7 @@ Write-Host "========================================`n" -ForegroundColor Cyan
 # ── Result collector ──────────────────────────────────────
 $results = [System.Collections.Generic.List[pscustomobject]]::new()
 
-function Add-Result {
+function Add-Result {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Status, [string]$Label, [string]$Type, [string]$Param, [string]$Message, [string]$Remediation)
     $results.Add([pscustomobject]@{
         Status      = $Status
@@ -154,7 +159,7 @@ function Test-StepAppInstalled([string]$p) {
 
 function Test-StepAppRunning([string]$p) {
     $proc = Get-Process -Name $p -ErrorAction SilentlyContinue
-    if ($proc) { return @{ s='PASS'; m="Process running: $p (PID: $($proc[0].Id))" } }
+    if ($proc) { return @{ s='PASS'; m="Process running: $p (PID: $($proc[0].Id))" } }  # SIN-EXEMPT: P027 - array guarded by if(.Count -gt 0) / if($proc) on prior line
     else { return @{ s='FAIL'; m="Process not running: $p" } }
 }
 
@@ -175,7 +180,7 @@ function Test-StepAppVersionHigher([string]$p) {
                 $cur = [version]($app[0].DisplayVersion -replace '[^0-9.]', '')
                 $min = [version]$minVer
                 if ($cur -ge $min) { return @{ s='PASS'; m="$appName v$($app[0].DisplayVersion) >= $minVer" } }
-                else { return @{ s='FAIL'; m="$appName v$($app[0].DisplayVersion) < $minVer" } }
+                else { return @{ s='FAIL'; m="$appName v$($app[0].DisplayVersion) < $minVer" } }  # SIN-EXEMPT: P027 - array guarded by if(.Count -gt 0) / if($proc) on prior line
             } catch { return @{ s='ERROR'; m="Version parse error: $($_.Exception.Message)" } }
         }
     }
@@ -392,5 +397,21 @@ if ($OutputJson) {
 }
 
 return $results
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
 
 

@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:29:24.5551052Z",
+  "title": "1 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412142924-e1e980d9",
+  "description": "Script ConvertTo-FeatureToDo.ps1 has 1 functions but zero try/catch blocks",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:29:24.5551492Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260328082050-d343681b",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "notes": "Matched existing sin: 1 functions with no try/catch blocks",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1"
+  ]
+}

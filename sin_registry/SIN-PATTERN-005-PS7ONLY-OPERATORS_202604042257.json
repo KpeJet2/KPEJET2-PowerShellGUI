@@ -5,6 +5,8 @@
   "severity": "MEDIUM",
   "category": "compatibility",
   "vector": "ps7-only-syntax",
+  "ps_version_scope": "PS51",
+  "ps_version_scope_note": "These operators (??, ?., ??=) are valid and preferred in PS7.6 target code. Only flag when scan runtime is PS51 or Both.",
   "status": "pattern-defined",
   "is_resolved": false,
   "occurrence_count": 0,

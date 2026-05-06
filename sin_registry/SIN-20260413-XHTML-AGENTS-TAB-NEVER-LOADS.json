@@ -1,0 +1,33 @@
+{
+  "sin_id": "SIN-20260413-XHTML-AGENTS-TAB-NEVER-LOADS",
+  "title": "PwShGUI-Checklists.xhtml (~README.md) — Agents tab never renders: hash nav broken, no showTab hook, status label stuck at 'Loading...'",
+  "description": "Three independent bugs cause the Agents tab in ~README.md/PwShGUI-Checklists.xhtml to appear blank:\n\n1. HASH NAV: The IIFE at page bottom resolves window.location.hash (e.g. '#Agents') to a DOM element by exact ID only. The Agents tab element has id='agents-tab' but the URL uses '#Agents' or '#agents', so document.getElementById() returns null and showTab() is never called. Hash never activates the correct tab.\n\n2. SHOWTAB HOOK MISSING: showTab() switches tab visibility but has no dispatch for id='agents-tab'. By contrast, items2do/bugs2fix call loadAllItems() and auto-pipeline calls loadPipeline() on first view. Agents tab had no equivalent hook — it relied solely on the page-load loadAgentRegistry() call which fires before the browser has fully parsed the DOM in some contexts, or returns empty on file:// protocol XHR failures without retry.\n\n3. STATUS LABEL STUCK: renderAgentTable() skipped the status label update if textContent matched /[Rr]efreshing|[Ll]oading/. The initialization call sets the label to 'Loading...' and since XHR is async, renderAgentTable() runs while the label still reads 'Loading...' — the guard then prevents the final count from ever being written.",
+  "category": "xhtml-javascript",
+  "severity": "MEDIUM",
+  "file_path": "~README.md/PwShGUI-Checklists.xhtml",
+  "line_number": "737 (showTab), 1430 (loadAgentRegistry), 1720 (status label guard), 1756 (hash IIFE)",
+  "function_name": "showTab, renderAgentTable, hash IIFE",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User (#Agents tab never loading agent registry)",
+  "is_resolved": true,
+  "resolution": "1) Hash nav IIFE now tries raw hash, lowercase, and lowercase+'-tab' suffix so '#Agents', '#agents', '#agents-tab' all resolve to the agents-tab div and call showTab() correctly.\n2) showTab() now has an 'agents-tab' branch: if data was never loaded, calls loadAgentRegistry(); otherwise calls renderAgentTable() to re-render with current filters.\n3) Status label guard changed from /[Rr]efreshing|[Ll]oading/ to /[Rr]efreshing/ only — renderAgentTable() always writes the final count and turns the label green on success.",
+  "occurrence_count": 1,
+  "created_at": "2026-04-13T00:00:00Z",
+  "last_seen_at": "2026-04-13T00:00:00Z",
+  "detection_method": "User-reported: Agents tab shows no content. Code review of showTab(), hash IIFE, and renderAgentTable() confirmed all three defects. JSON data files (agent_registry.json, agentic-manifest.json, agent-call-stats.json) confirmed to exist on disk.",
+  "root_cause": "Hash nav used exact-ID match only; showTab lacked an agents-tab handler; status label guard was too broad, blocking the final update when XHR completed normally.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "related_sins": [],
+  "tags": ["xhtml", "javascript", "agents-tab", "hash-nav", "showTab", "status-label", "PwShGUI-Checklists"],
+  "fix_files": ["~README.md/PwShGUI-Checklists.xhtml"],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "notes": "Fixed in session 2026-04-13. Three independent JS defects corrected."
+  }
+}

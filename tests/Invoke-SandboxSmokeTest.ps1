@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Launches a Windows Sandbox instance for isolated PwShGUI smoke testing.
@@ -163,9 +167,46 @@ Write-Host "[OK] WSB config: $wsbPath" -ForegroundColor Green
 Write-Host "`n[Launch] Starting Windows Sandbox..." -ForegroundColor Cyan
 $sandboxProc = Start-Process $sandboxExe -ArgumentList "`"$wsbPath`"" -PassThru
 
+# -- Load waiting jokes for long-wait entertainment
+$script:_WaitJokes = @()
+$jokesPath = Join-Path (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)) 'config\waiting-jokes.json'
+if (Test-Path $jokesPath) {
+    try {
+        $jokeData = Get-Content $jokesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $script:_WaitJokes = @($jokeData.jokes)
+        Write-Host "[Init] Loaded $(@($script:_WaitJokes).Count) waiting jokes." -ForegroundColor DarkGray
+    } catch { <# Intentional: jokes are optional #> }
+}
+$script:_JokeIndex = 0
+function Show-WaitJoke {
+    if (@($script:_WaitJokes).Count -eq 0) { return }
+    $j = @($script:_WaitJokes)[$script:_JokeIndex % @($script:_WaitJokes).Count]
+    $script:_JokeIndex++
+    Write-Host ''
+    Write-Host '  +' + ('─' * 64) + '+' -ForegroundColor DarkCyan
+    Write-Host ('  | ' + '  Waiting Room Wisdom  ').PadRight(66) + '|' -ForegroundColor DarkCyan
+    Write-Host '  +' + ('─' * 64) + '+' -ForegroundColor DarkCyan
+    # Word-wrap at 62 chars
+    $words = $j -split ' '
+    $line = ''; $lineLen = 0
+    foreach ($w in $words) {
+        if (($lineLen + $w.Length + 1) -gt 62) {
+            Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan
+            $line = $w + ' '; $lineLen = $w.Length + 1
+        } else { $line += $w + ' '; $lineLen += $w.Length + 1 }
+    }
+    if ($line.Trim()) { Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan }
+    Write-Host '  +' + ('─' * 64) + '+' -ForegroundColor DarkCyan
+    Write-Host ''
+}
+
 # Poll for completion
-$doneFlag = Join-Path $OutputPath 'DONE.flag'
-$elapsed = 0; $interval = 5
+$doneFlag   = Join-Path $OutputPath 'DONE.flag'
+$elapsed    = 0
+$interval   = 5
+$jokeEvery  = 30                    # show a joke every N seconds once joke-mode active
+$jokeStart  = 90                    # start jokes after 90 seconds (1m30s)
+$lastJokeSec = 0
 Write-Host "[Wait] Polling for completion (timeout: ${Timeout}s)..." -ForegroundColor DarkGray
 while ($elapsed -lt $Timeout) {
     Start-Sleep -Seconds $interval
@@ -179,7 +220,15 @@ while ($elapsed -lt $Timeout) {
         Write-Host "[Done] Sandbox exited. (${elapsed}s)" -ForegroundColor Yellow
         break
     }
-    if (($elapsed % 30) -eq 0) { Write-Host "  ... waiting (${elapsed}s / ${Timeout}s)" -ForegroundColor DarkGray }
+    # Regular progress tick
+    if (($elapsed % 30) -eq 0) {
+        Write-Host "  ... waiting (${elapsed}s / ${Timeout}s)" -ForegroundColor DarkGray
+    }
+    # Joke mode: 90 seconds onwards, every $jokeEvery seconds
+    if ($elapsed -ge $jokeStart -and ($elapsed - $lastJokeSec) -ge $jokeEvery) {
+        $lastJokeSec = $elapsed
+        Show-WaitJoke
+    }
 }
 if ($elapsed -ge $Timeout) { Write-Host "[TIMEOUT] Did not complete within ${Timeout}s." -ForegroundColor Red }
 
@@ -213,4 +262,20 @@ Write-Host "$("=" * 68)`n" -ForegroundColor Magenta
     TimeoutUsed  = $elapsed
     ResultFiles  = @($resultFiles | Select-Object -ExpandProperty Name -EA SilentlyContinue)
 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Version 5.1
 <#
 .SYNOPSIS  CI test orchestrator -- runs Pester + smoke test + shell-matrix.
@@ -32,7 +36,44 @@ $results = [ordered]@{
     completedAt  = $null
     pester       = $null
     smoke        = $null
+    fileTypeRoutines = $null
     summary      = [ordered]@{ total = 0; passed = 0; failed = 0; skipped = 0 }
+}
+
+function Invoke-FileTypeRoutineSet {
+    $routineScript = Join-Path $testsDir 'Invoke-FileTypeFireUpAllEnginesRoutine.ps1'
+    if (-not (Test-Path -LiteralPath $routineScript)) {
+        return [ordered]@{ status = 'SKIPPED'; reason = 'File-type routine script not found'; failedRoutines = 0; routines = @() }
+    }
+
+    $routineResults = @()
+    foreach ($kind in @('Script','Html')) {
+        try {
+            $routineResults += @(& $routineScript -FileType $kind -WorkspacePath $scriptRoot -Limit 10 -Quiet)
+        } catch {
+            $routineResults += [pscustomobject]@{
+                routineName = "SmokeTest-$kind-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose"
+                fileType = $kind.ToUpperInvariant()
+                status = 'ERROR'
+                lastRunAt = (Get-Date).ToUniversalTime().ToString('o')
+                lastFieldRecordAt = (Get-Date).ToUniversalTime().ToString('o')
+                filesProcessed = 0
+                passed = 0
+                failed = 1
+                improvementsYielded = $_.ToString()
+                logPath = ''
+                inventoryPath = '~REPORTS/smoke-filetype-agent-inventory.json'
+                records = @()
+            }
+        }
+    }
+
+    $failedRoutines = @($routineResults | Where-Object { $_.status -ne 'PASSED' }).Count
+    return [ordered]@{
+        status = if ($failedRoutines -gt 0) { 'FAILED' } else { 'PASSED' }
+        failedRoutines = $failedRoutines
+        routines = $routineResults
+    }
 }
 
 # ── Pester Tests ──────────────────────────────────────────────────────────────
@@ -45,9 +86,9 @@ if (-not $SmokeOnly) {
         Write-Host "[WARN] Pester module not installed. Install with: Install-Module Pester -Force -SkipPublisherCheck" -ForegroundColor Yellow
         $results.pester = @{ status = 'SKIPPED'; reason = 'Pester not installed' }
     } else {
-        try { Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop } catch { <# Intentional: fallback to any Pester version below #> }
-        if (-not (Get-Module Pester)) {
-            try { Import-Module Pester -ErrorAction Stop } catch { Write-Warning "Failed to import Pester: $_" }
+        try { Import-Module Pester -MinimumVersion 5.0 -Force -ErrorAction Stop } catch { <# Intentional: fallback to any Pester version below #> }
+        if (-not (Get-Module Pester | Where-Object { $_.Version -ge [version]'5.0' })) {
+            try { Import-Module Pester -Force -ErrorAction Stop } catch { Write-Warning "Failed to import Pester: $_" }
         }
 
         $pesterFiles = Get-ChildItem -Path $testsDir -Filter '*.Tests.ps1' -File | Sort-Object Name
@@ -157,6 +198,14 @@ if ($allTestsPassed) {
     $results['semiSinPenance'] = @{ status = 'SKIPPED'; reason = 'Prior tests had failures' }
 }
 
+# ── File-Type FireUp Routines ───────────────────────────────────────────────
+Write-Host "`n========== FILE-TYPE FIREUP ROUTINES ==========" -ForegroundColor Cyan
+try {
+    $results.fileTypeRoutines = Invoke-FileTypeRoutineSet
+} catch {
+    $results.fileTypeRoutines = @{ status = 'ERROR'; message = $_.ToString(); failedRoutines = 1; routines = @() }
+}
+
 # ── Finalize ──────────────────────────────────────────────────────────────────
 $results.completedAt = (Get-Date).ToUniversalTime().ToString('o')
 
@@ -189,7 +238,27 @@ if ($results.semiSinPenance) {
     $penText  = if ($results.semiSinPenance.status -eq 'COMPLETED') { "$($results.semiSinPenance.status) (Penance Warnings: $($results.semiSinPenance.penanceWarnings))" } else { "$($results.semiSinPenance.status)" }
     Write-Host "Penance:  $penText" -ForegroundColor $penColor
 }
+if ($results.fileTypeRoutines) {
+    $routineColor = if ($results.fileTypeRoutines.status -eq 'PASSED') { 'Green' } else { 'Red' }
+    Write-Host "FileType: $($results.fileTypeRoutines.status)" -ForegroundColor $routineColor
+}
 Write-Host "Results:  $historyPath" -ForegroundColor Gray
 
-if ($results.summary.failed -gt 0) { exit 1 } else { exit 0 }
+if (($results.summary.failed -gt 0) -or ($results.fileTypeRoutines -and $results.fileTypeRoutines.failedRoutines -gt 0)) { exit 1 } else { exit 0 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

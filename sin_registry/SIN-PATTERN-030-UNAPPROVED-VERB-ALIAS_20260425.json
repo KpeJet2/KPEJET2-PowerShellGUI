@@ -1,0 +1,14 @@
+{
+  "id": "SIN-PATTERN-030-UNAPPROVED-VERB-ALIAS",
+  "title": "Unapproved Verb or Alias in Function Name",
+  "description": "Functions must use only approved PowerShell verbs. Detected use of non-standard verbs (e.g., 'Handle-', 'Broadcast-') or aliases in function names.",
+  "severity": "Blocking",
+  "category": "Naming/Standards",
+  "detection": "Scan for function definitions using non-approved verbs or custom prefixes (e.g., 'Handle-', 'Broadcast-').",
+  "remediation": "Rename functions to use approved PowerShell verbs. For example, use 'Get-', 'Set-', 'Invoke-', 'Start-', 'Stop-', 'Test-', etc.",
+  "examples": [
+    "function Handle-ScanStatus { ... }  # Not approved",
+    "function Broadcast-WsMessage { ... }  # Not approved"
+  ],
+  "date_added": "2026-04-25"
+}

@@ -1,0 +1,24 @@
+﻿{
+    "runId":  "testrun-20260412045157",
+    "startedAt":  "2026-04-11T20:51:57.9487484Z",
+    "completedAt":  "2026-04-11T20:57:32.4982936Z",
+    "pester":  {
+                   "message":  "A parameter cannot be found that matches parameter name \u0027Configuration\u0027.",
+                   "status":  "ERROR"
+               },
+    "smoke":  null,
+    "summary":  {
+                    "total":  0,
+                    "passed":  0,
+                    "failed":  0,
+                    "skipped":  0
+                },
+    "sinPatternScan":  {
+                           "message":  "The property \u0027critical\u0027 cannot be found on this object. Verify that the property exists.",
+                           "status":  "ERROR"
+                       },
+    "semiSinPenance":  {
+                           "status":  "SKIPPED",
+                           "reason":  "Prior tests had failures"
+                       }
+}

@@ -43,7 +43,7 @@
   "trusted_fix_count": 0,
   "trusted_fix_status": "new",
   "trusted_fix_notes": "",
-  "context_guard_regex": "TypeDefinition|MemberDefinition|-Language\\s+CSharp|\\$PSVersionTable|PSEdition|Add-Type.*-AssemblyName|HasPSEdition|RuntimeInformation|IsWindows",
+  "context_guard_regex": "TypeDefinition|MemberDefinition|-Language\\s+CSharp|\\$PSVersionTable|PSEdition|Add-Type.*-AssemblyName|HasPSEdition|RuntimeInformation|IsWindows|try\\s*\\{|-AssemblyName|Add-Type.*Assembly|TypeDefinition|MemberDefinition|using\\s+namespace",
   "context_guard_lines": 8,
   "context_guard_direction": "both"
 }

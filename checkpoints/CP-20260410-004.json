@@ -1,0 +1,35 @@
+{
+  "id": "CP-20260410-004",
+  "timestamp": "2026-04-10T09:35:38.1444207+08:00",
+  "session": "resumed-session-20260410",
+  "description": "Finalized PipeGAP/todo artifact alignment by fixing pipeline refresh logging dependency, restoring master aggregation rebuild, hardening PipeGAP PS5 compatibility, and re-running full PipeGAP with rebuild.",
+  "completedItems": [
+    "todo-artifact-refresh-path-restored",
+    "master-aggregated-rebuild-restored",
+    "pipegap-ps5-parser-compatibility-fix",
+    "pipegap-workspacepath-default-hardening"
+  ],
+  "filesModified": [
+    "modules/CronAiAthon-Pipeline.psm1",
+    "scripts/Invoke-TodoManager.ps1",
+    "scripts/Invoke-PipeGAP.ps1"
+  ],
+  "validation": {
+    "todoReindex": "PASS",
+    "pipegapRun": "PASS",
+    "pipegapSummary": {
+      "workplanChecked": 99,
+      "workplanUnchecked": 372,
+      "openTodos": 0,
+      "activeSessionGaps": 0,
+      "relicScripts": 82,
+      "parseFailures": 8,
+      "staleArtifacts": 1
+    }
+  },
+  "notes": [
+    "Invoke-TodoManager -Reindex now refreshes _master-aggregated.json via pipeline refresh path with in-module logger fallback.",
+    "PipeGAP now executes successfully under Windows PowerShell after ASCII/BOM compatibility normalization and WorkspacePath fallback initialization."
+  ],
+  "previousCheckpoint": "CP-20260410-003"
+}
