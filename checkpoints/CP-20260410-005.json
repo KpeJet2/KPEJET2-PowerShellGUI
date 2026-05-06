@@ -15,7 +15,7 @@
     "scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/MS Graph/_LIB_/MGLibrary.ps1",
     "scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/WinSystemManagement/_LIB_/bginfo.ps1",
     "scripts/Invoke-ReportRetention.ps1",
-    "scripts/Start-LocalWebEngineService.ps1",
+    "scripts/Start-LocalWebEngine.ps1",
     "sovereign-kernel/core/AgentRegistry.psm1"
   ],
   "validation": {
@@ -25,3 +25,4 @@
     "active_session_gaps": 0
   }
 }
+

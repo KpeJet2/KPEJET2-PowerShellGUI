@@ -1,3 +1,4 @@
+# VersionTag: 2605.B2.V31.7
 <#
 .SYNOPSIS
   Windows Terminal Layout & Profile Manager with GUI, layout memory, ping grid, ARP, and config backup/restore.
@@ -553,4 +554,5 @@ $form.Add_FormClosing({
 <# ToDo:
     Stub: list pending work here.
 #>
+
 

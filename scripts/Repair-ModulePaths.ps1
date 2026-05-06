@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -183,6 +183,34 @@ try {
     Write-Host "      This may be a module-specific issue, not a path issue.`n"
 }
 
+# Validate module accessibility and exported commands after path repair
+$validatorScript = Join-Path $workspaceRoot 'tests\Invoke-ModuleGalleryValidator.ps1'
+if (Test-Path -LiteralPath $validatorScript) {
+    Write-Host "[5/5] Running module validator audit..." -NoNewline
+    try {
+        $validatorJson = Join-Path (Join-Path $workspaceRoot 'temp') ("repair-module-validator-{0}.json" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        & $validatorScript -WorkspacePath $workspaceRoot -TestPS51 -TestPS7 -TestSystemContext -Quiet -OutputJson $validatorJson | Out-Null
+        if (Test-Path -LiteralPath $validatorJson) {
+            $audit = Get-Content -LiteralPath $validatorJson -Raw -Encoding UTF8 | ConvertFrom-Json
+            $failCount = if ($audit.PSObject.Properties.Name -contains 'verdictFAIL') { [int]$audit.verdictFAIL } else { 0 }
+            $warnCount = if ($audit.PSObject.Properties.Name -contains 'verdictWARN') { [int]$audit.verdictWARN } else { 0 }
+            if ($failCount -gt 0) {
+                Write-Host " ✗" -ForegroundColor Red
+                Write-Error "Module validator found $failCount failing module(s). See: $validatorJson"
+                exit 1
+            }
+            Write-Host " ✓" -ForegroundColor Green
+            Write-Host "      Module validator passed (warnings: $warnCount). JSON: $validatorJson`n"
+        } else {
+            Write-Host " ⚠" -ForegroundColor Yellow
+            Write-Warning "Module validator did not produce JSON output."
+        }
+    } catch {
+        Write-Host " ⚠" -ForegroundColor Yellow
+        Write-Warning "Module validator execution failed: $_"
+    }
+}
+
 # Summary
 Write-Host "╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
 Write-Host "║  REPAIR COMPLETE                                                  ║" -ForegroundColor Green
@@ -210,6 +238,7 @@ exit 0
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -28,9 +28,23 @@ Describe 'SASC-Adapters Module' {
     }
 }
 
-Describe 'Get-SASCAdapterList' {
-    It 'Returns adapter list without error' {
-        { Get-SASCAdapterList } | Should -Not -Throw
+Describe 'SASC-Adapters export contract' {
+    It 'Exports the expected public adapter commands' {
+        $expected = @(
+            'Connect-ADDSWithVault',
+            'Connect-AzureWithVault',
+            'Get-VaultCredentialForScript',
+            'Invoke-MRemoteNGSession',
+            'Invoke-PuTTYSession',
+            'Invoke-WindowsHelloAuth',
+            'Open-ISEWithCredential',
+            'Set-CredentialDialogFill'
+        )
+        $exports = @((Get-Module 'SASC-Adapters').ExportedFunctions.Keys)
+        foreach ($name in $expected) {
+            $exports | Should -Contain $name
+            Get-Command $name -ErrorAction Stop | Should -Not -BeNullOrEmpty
+        }
     }
 }
 
@@ -46,6 +60,7 @@ Describe 'Get-SASCAdapterList' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

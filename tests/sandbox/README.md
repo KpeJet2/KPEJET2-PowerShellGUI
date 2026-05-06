@@ -1,3 +1,4 @@
+# VersionTag: 2605.B2.V31.7
 # Interactive Sandbox Test Tool
 
 **Version:** 2604.B1.v1.0  
@@ -293,3 +294,4 @@ For issues, feature requests, or contributions:
 **Status:** ✅ Production-ready  
 **Maintenance:** Active  
 **Dependencies:** Windows Sandbox feature, PowerShell 5.1+, Main-GUI.ps1
+

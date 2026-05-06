@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bugs2FIX-20260504184008-b039674c",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Fix for bug Bug-20260504183819-01465c42: Script bad.ps1 has 1 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T10:40:08.0743101Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "FIX: 1 functions with no try/catch blocks",
+    "parentId":  "Bug-20260504183819-01465c42",
+    "type":  "Bugs2FIX",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T10:40:08.0732944Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\temp\\p027-manual-verify\\bad.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+                         "Bug-20260504183819-01465c42"
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T10:40:08.0732944Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T10:40:08.0732944Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

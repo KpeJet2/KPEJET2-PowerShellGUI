@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2604.B1.V1.4 -->
+<!-- VersionTag: 2605.B2.V31.7 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -467,7 +467,7 @@
     <div class="ft-row">
       <span class="ft-ref ft-xhtml" title="This file — V1-ROOT snapshot of the PS environment checklist hub">PwShGUI-Checklists_V1-ROOT.xhtml</span>
       <span class="ft-ref ft-xhtml" title="Master ToDo Viewer">scripts/XHTML-Checker/XHTML-MasterToDo.xhtml</span>
-      <span class="ft-ref ft-xhtml" title="Dependency Venn Diagram">scripts/XHTML-Checker/XHTML-DependencyVis.xhtml</span>
+      <span class="ft-ref ft-xhtml" title="Dependency Venn Diagram">scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml</span>
       <span class="ft-ref ft-html" title="Dependency Visualisation Graph">~README.md/Dependency-Visualisation.html</span>
     </div>
   </div>
@@ -1452,5 +1452,13 @@ window.togglePanel=togglePanel;
 })();
 //]]>
 </script>
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="./styles/eventlog-view.css"/>
+<script src="./scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="root" data-title="V1-ROOT Events" data-tail="500"></div>
+<div class="evlv-mount" data-scope="cron" data-title="CronAiAthon Events" data-tail="500"></div>
+<div class="evlv-mount" data-scope="gui" data-title="GUI Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+

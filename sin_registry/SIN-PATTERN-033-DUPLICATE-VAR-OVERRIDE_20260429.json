@@ -1,0 +1,17 @@
+{
+  "id": "SIN-PATTERN-033-DUPLICATE-VAR-OVERRIDE",
+  "title": "Duplicate top-level var assignments silently override the first",
+  "description": "When a sync script's regex anchor matches the FIRST `var X = [...].join(...);` block but a later duplicate `X = [...].join(...);` (without `var`) exists in the same script tag, the duplicate wins at runtime, silently overriding the freshly synced data. Symptom: viewer Browse tab shows stale or empty data despite a successful sync run reporting N entries written.",
+  "severity": "Blocking",
+  "category": "JS/State-Integrity",
+  "detection": "After any sync that writes a top-level identifier, grep-assert exactly one assignment exists:\n  ([regex]::Matches($content,'(?m)^(var\\s+)?IDENT\\s*=')).Count -eq 1\nFlag any file where Count > 1.",
+  "remediation": "1) Add a post-sync invariant check that fails the build if duplicate assignments are detected. 2) Prefer a guarded assignment pattern (e.g. `if (typeof X === 'undefined') { var X = ... }`) so accidental duplicates are caught at parse time. 3) When fixing legacy duplicates, delete the stale block by line range, do NOT rely on the regex sync to replace it.",
+  "examples": [
+    "# Bad — sync only updates the first match; duplicate later wins\nvar CHANGELOG_CONTENT = ['fresh data'].join('\\n');\n// ... 2000 lines later ...\nCHANGELOG_CONTENT = ['stale data'].join('\\n');  // <-- this one wins",
+    "# Good — single canonical assignment, post-sync grep asserts count==1"
+  ],
+  "occurrences_observed": 3,
+  "first_observed": "2026-04-28",
+  "related_sins": ["SIN-PATTERN-031"],
+  "date_added": "2026-04-29"
+}

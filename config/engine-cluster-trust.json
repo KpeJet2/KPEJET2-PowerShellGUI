@@ -1,0 +1,13 @@
+﻿{
+    "schemaVersion":  "LocalWebEngineClusterTrust/1.0",
+    "clusterName":  "pwshgui-XPS15-MS",
+    "role":  "STANDALONE",
+    "nodeId":  "20260428-162702-662-svc",
+    "masterNode":  "127.0.0.1",
+    "allowPeerInterop":  false,
+    "sharedKey":  "Wlr7wBYreQETp00+EggD9xL80evPlzDc",
+    "peers":  [
+
+              ],
+    "updatedAt":  "2026-04-28T16:27:05.3386737+08:00"
+}

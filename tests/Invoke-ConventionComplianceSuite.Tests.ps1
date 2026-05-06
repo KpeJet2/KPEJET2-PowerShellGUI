@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.3
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -556,7 +556,7 @@ Describe 'Log Infrastructure' {
             Get-ChildItem $script:LogsDir -Filter '*.log' -File -ErrorAction SilentlyContinue |
             Where-Object { $_.Length -eq 0 }
         )
-        $empty | ForEach-Object { $_.Name } | Should -BeNullOrEmpty -Because 'Zero-byte .log files indicate a broken logging write path (check Write-AppLog / Out-File calls)'
+        $empty | ForEach-Object { $_.Name } | Should -BeNullOrEmpty -Because 'Zero-byte .log files indicate a broken logging write path (check Write-AppLog / OutFile calls)' # SIN-EXEMPT:P017
     }
 }
 
@@ -626,6 +626,7 @@ Describe 'Manifest Alignment' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

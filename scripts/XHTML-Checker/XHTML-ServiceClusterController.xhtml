@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2605.B2.V31.7 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Service Cluster Controller</title>
+  <style type="text/css">
+    :root {
+      --bg: #0f1824;
+      --panel: #172638;
+      --panel-2: #203248;
+      --ink: #e6edf3;
+      --muted: #9cb3c9;
+      --line: #2f435d;
+      --accent: #4fb6ff;
+      --accent-2: #6de5b2;
+      --warn: #ffc56a;
+      --bad: #ff7e86;
+      --ok: #62e09b;
+      --radius: 10px;
+      --gap: 10px;
+      --font: "Segoe UI", Tahoma, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(1400px 700px at 5% -20%, #233957 0%, var(--bg) 60%);
+      color: var(--ink);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      height: 100vh;
+    }
+    .rail {
+      background: linear-gradient(180deg, #0f1b2a 0%, #101725 100%);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 6px;
+      gap: 8px;
+    }
+    .rail-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid #314860;
+      background: #16263a;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 11px;
+      line-height: 1.1;
+      padding: 2px;
+    }
+    .rail-btn:hover { border-color: var(--accent); }
+    .shell {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(23, 38, 56, 0.92);
+      padding: 10px 12px;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .title {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 14px;
+    }
+    .pill {
+      border: 1px solid #31506d;
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 3px 8px;
+      color: var(--muted);
+    }
+    .btn {
+      border: 1px solid #33516c;
+      background: #1a2c40;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn:hover { border-color: var(--accent); color: #ffffff; }
+    .btn-primary {
+      background: linear-gradient(180deg, #216699, #1a4b73);
+      border-color: #3d84ba;
+    }
+    .spacer { margin-left: auto; }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 0;
+    }
+    .flyout {
+      border-right: 1px solid var(--line);
+      background: rgba(19, 30, 45, 0.95);
+      overflow: auto;
+      padding: 10px;
+    }
+    .flyout h3 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .menu-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      text-decoration: none;
+      border: 1px solid #2f455f;
+      background: #17293e;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 12px;
+    }
+    .menu-item:hover { border-color: var(--accent); }
+    .menu-item small { color: var(--muted); display: block; }
+    .content {
+      min-width: 0;
+      overflow: auto;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #1a2c40 0%, #15263a 100%);
+      padding: 10px;
+    }
+    .card h4 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .metric {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .metric.ok { color: var(--ok); }
+    .metric.warn { color: var(--warn); }
+    .metric.bad { color: var(--bad); }
+    .blade-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .blade {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(25, 39, 57, 0.9);
+      overflow: hidden;
+      min-height: 210px;
+    }
+    .blade-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #2d425c;
+      background: linear-gradient(180deg, #22364f 0%, #1a2d43 100%);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .blade-body {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    input[type=text], select, textarea {
+      width: 100%;
+      border: 1px solid #35506d;
+      background: #142538;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-family: var(--font);
+      font-size: 12px;
+    }
+    textarea { min-height: 78px; resize: vertical; }
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .table th, .table td {
+      border-bottom: 1px solid #2d425c;
+      padding: 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table th { color: var(--muted); font-weight: 600; }
+    .tiny { font-size: 10px; color: var(--muted); }
+    .status-ok { color: var(--ok); }
+    .status-warn { color: var(--warn); }
+    .status-bad { color: var(--bad); }
+    .status-info { color: var(--accent); }
+    .hidden { display: none; }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .flyout { max-height: 240px; border-right: none; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="rail">
+      <button class="rail-btn" id="btnFlyout" type="button">Menu</button>
+      <button class="rail-btn" id="btnRefresh" type="button">Live</button>
+      <button class="rail-btn" id="btnTheme" type="button">Theme</button>
+    </div>
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">Local Service Cluster Controller</div>
+        <span class="pill" id="engineRolePill">Role: STANDALONE</span>
+        <span class="pill" id="engineConnPill">Engine: checking...</span>
+        <button class="btn" id="btnOpenHub" type="button">Open Hub</button>
+        <button class="btn" id="btnOpenMenuBuilder" type="button">Open Menu Builder</button>
+        <div class="spacer"></div>
+        <select id="pollRate" title="Live polling interval">
+          <option value="2000">Live: 2s</option>
+          <option value="4000">Live: 4s</option>
+          <option value="7000">Live: 7s</option>
+        </select>
+        <button class="btn btn-primary" id="btnStopEngine" type="button">Stop Engine</button>
+      </div>
+      <div class="layout">
+        <aside class="flyout" id="flyoutPanel">
+          <h3>MainGUI Mirror Menu</h3>
+          <div class="tiny">Data source: config/menu-layout.json via /api/config/menus</div>
+          <div class="menu-list" id="mirrorMenu"></div>
+          <h3>Quick Flyout Tools</h3>
+          <div class="menu-list">
+            <a class="menu-item" href="/pages/service-cluster-controller"><span>Service Cluster Controller<small>Current page</small></span><span>&gt;</span></a>
+            <a class="menu-item" href="/pages/engine-monitor"><span>Engine Monitor Alias<small>Symmetric route</small></span><span>&gt;</span></a>
+            <a class="menu-item" href="/api/mcp/servers"><span>MCP Server JSON<small>Runtime MCP status</small></span><span>&gt;</span></a>
+          </div>
+        </aside>
+        <main class="content">
+          <section class="cards">
+            <article class="card"><h4>Requests</h4><div class="metric" id="mRequestCount">0</div></article>
+            <article class="card"><h4>WebSocket Clients</h4><div class="metric ok" id="mWsCount">0</div></article>
+            <article class="card"><h4>Queue Running</h4><div class="metric warn" id="mQueueRunning">0</div></article>
+            <article class="card"><h4>Queue Failed</h4><div class="metric bad" id="mQueueFailed">0</div></article>
+            <article class="card"><h4>Trusted Peers</h4><div class="metric status-info" id="mPeerCount">0</div></article>
+            <article class="card"><h4>MCP Servers</h4><div class="metric" id="mMcpCount">0</div></article>
+          </section>
+
+          <section class="blade-grid">
+            <article class="blade">
+              <div class="blade-head">Cluster Controls</div>
+              <div class="blade-body">
+                <div class="row">
+                  <label>Node Role<select id="clusterRole"><option>STANDALONE</option><option>MASTER</option><option>CLONE</option></select></label>
+                  <label>Master Node<input type="text" id="clusterMaster" placeholder="127.0.0.1" /></label>
+                </div>
+                <label><input type="checkbox" id="clusterInterop" /> Allow REST interop with trusted peers</label>
+                <button class="btn btn-primary" id="btnSaveRole" type="button">Save Cluster Role</button>
+                <div class="tiny" id="clusterMeta"></div>
+              </div>
+            </article>
+
+            <article class="blade">
+              <div class="blade-head">Peer Registry</div>
+              <div class="blade-body">
+                <div class="row">
+                  <label>Node Id<input type="text" id="peerNodeId" placeholder="clone-01" /></label>
+                  <label>Peer URL<input type="text" id="peerBaseUrl" placeholder="http://127.0.0.1:8043" /></label>
+                </div>
+                <button class="btn" id="btnAddPeer" type="button">Add Trusted Peer</button>
+                <div class="tiny">Cluster key auth is required for remote announce endpoint.</div>
+                <div id="peerList"></div>
+              </div>
+            </article>
+
+            <article class="blade">
+              <div class="blade-head">Realtime Job Queue</div>
+              <div class="blade-body">
+                <div class="row">
+                  <label>Job Name<input type="text" id="jobName" value="interop-task" /></label>
+                  <label>HTTP Method<select id="jobMethod"><option>POST</option><option>PUT</option><option>GET</option></select></label>
+                </div>
+                <label>Target URL<input type="text" id="jobUrl" placeholder="http://127.0.0.1:8043/api/cluster/announce" /></label>
+                <label>Body JSON<textarea id="jobBody" class="mono">{"nodeId":"local-node","baseUrl":"http://127.0.0.1:8042","role":"MASTER"}</textarea></label>
+                <button class="btn" id="btnQueueJob" type="button">Queue Interop Job</button>
+                <div id="queueList"></div>
+              </div>
+            </article>
+
+            <article class="blade">
+              <div class="blade-head">Client Security</div>
+              <div class="blade-body">
+                <div class="tiny">Block by client key in format ip|user-agent (copied from live connections table).</div>
+                <label>Blocked Client Keys<textarea id="blockedKeys" class="mono" placeholder="127.0.0.1|Mozilla/5.0"></textarea></label>
+                <label><input type="checkbox" id="requireClusterKey" checked="checked" /> Require X-Cluster-Key for cluster interop APIs</label>
+                <button class="btn" id="btnSaveSecurity" type="button">Save Security Controls</button>
+                <div id="clientList"></div>
+              </div>
+            </article>
+
+            <article class="blade">
+              <div class="blade-head">MCP + Pipeline</div>
+              <div class="blade-body">
+                <div id="mcpTableWrap"></div>
+                <div id="pipelineTableWrap"></div>
+              </div>
+            </article>
+
+            <article class="blade">
+              <div class="blade-head">Agentic / Admin Launchpad</div>
+              <div class="blade-body">
+                <div id="toolStatusWrap"></div>
+                <div class="tiny">The launch list mirrors MainGUI-linked tools and local service admin surfaces.</div>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function () {
+    'use strict';
+
+    var API = 'http://127.0.0.1:8042';
+    var csrfToken = '';
+    var pollTimer = null;
+    var darkAlt = false;
+
+    function byId(id) { return document.getElementById(id); }
+    function safeText(v) { return (v === null || v === undefined) ? '' : String(v); }
+
+    function fetchJson(path, options) {
+      return fetch(API + path, options || {}).then(function (r) {
+        return r.json();
+      });
+    }
+
+    function withCsrf(headers) {
+      var h = headers || {};
+      h['Content-Type'] = 'application/json';
+      if (csrfToken) { h['X-CSRF-Token'] = csrfToken; }
+      return h;
+    }
+
+    function updateMetric(id, value) {
+      byId(id).textContent = safeText(value);
+    }
+
+    function renderMirrorMenu(menuObj) {
+      var host = byId('mirrorMenu');
+      host.innerHTML = '';
+      if (!menuObj || !menuObj.menus) {
+        host.innerHTML = '<div class="tiny status-bad">Menu layout unavailable</div>';
+        return;
+      }
+      menuObj.menus.forEach(function (m) {
+        (m.items || []).forEach(function (it) {
+          if (!it || !it.target) { return; }
+          var a = document.createElement('a');
+          a.className = 'menu-item';
+          a.href = it.target;
+          a.innerHTML = '<span>' + safeText(it.label || it.id) + '<small>' + safeText(it.tooltip || it.target) + '</small></span><span>&gt;</span>';
+          host.appendChild(a);
+        });
+      });
+    }
+
+    function renderPeers(cluster) {
+      var peers = (cluster && cluster.peers) ? cluster.peers : [];
+      var html = '<table class="table"><thead><tr><th>Node</th><th>URL</th><th>Role</th><th>Last Heartbeat</th></tr></thead><tbody>';
+      peers.forEach(function (p) {
+        html += '<tr><td class="mono">' + safeText(p.nodeId) + '</td><td class="mono">' + safeText(p.baseUrl) + '</td><td>' + safeText(p.role || p.trust || '') + '</td><td>' + safeText(p.lastHeartbeat || '-') + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('peerList').innerHTML = html;
+    }
+
+    function renderQueue(data) {
+      var jobs = (data && data.jobs) ? data.jobs : [];
+      var html = '<table class="table"><thead><tr><th>Job</th><th>Status</th><th>Client</th><th>Queued</th></tr></thead><tbody>';
+      jobs.slice(0, 10).forEach(function (j) {
+        html += '<tr><td class="mono">' + safeText(j.name) + '</td><td>' + safeText(j.status) + '</td><td class="mono">' + safeText(j.sourceClient) + '</td><td>' + safeText(j.queuedAt) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('queueList').innerHTML = html;
+    }
+
+    function renderClients(data) {
+      var clients = (data && data.clients) ? data.clients : [];
+      var html = '<table class="table"><thead><tr><th>Client Key</th><th>Hits</th><th>WS</th><th>Last Seen</th></tr></thead><tbody>';
+      clients.slice(0, 20).forEach(function (c) {
+        html += '<tr><td class="mono">' + safeText(c.clientKey) + '</td><td>' + safeText(c.hits) + '</td><td>' + (c.webSocketConnected ? 'Yes' : 'No') + '</td><td>' + safeText(c.lastSeen) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('clientList').innerHTML = html;
+    }
+
+    function renderMcp(data) {
+      var rows = (data && data.servers) ? data.servers : [];
+      var html = '<table class="table"><thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Target</th></tr></thead><tbody>';
+      rows.forEach(function (r) {
+        html += '<tr><td class="mono">' + safeText(r.name) + '</td><td>' + safeText(r.type) + '</td><td>' + safeText(r.status) + '</td><td class="mono">' + safeText(r.target) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('mcpTableWrap').innerHTML = html;
+      updateMetric('mMcpCount', rows.length);
+    }
+
+    function renderPipeline(data) {
+      var tasks = (data && data.tasks) ? data.tasks : [];
+      var html = '<table class="table"><thead><tr><th>Task</th><th>Status</th></tr></thead><tbody>';
+      tasks.slice(0, 10).forEach(function (t) {
+        html += '<tr><td class="mono">' + safeText(t.name || t.id || 'task') + '</td><td>' + safeText(t.status || t.enabled || '-') + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('pipelineTableWrap').innerHTML = html;
+    }
+
+    function renderTools(data) {
+      var rows = (data && data.tools) ? data.tools : [];
+      var html = '<table class="table"><thead><tr><th>Name</th><th>Path</th><th>Available</th></tr></thead><tbody>';
+      rows.forEach(function (t) {
+        var cls = t.available ? 'status-ok' : 'status-bad';
+        html += '<tr><td>' + safeText(t.name) + '</td><td class="mono">' + safeText(t.relPath) + '</td><td class="' + cls + '">' + (t.available ? 'YES' : 'NO') + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      byId('toolStatusWrap').innerHTML = html;
+    }
+
+    function refreshAll() {
+      Promise.all([
+        fetchJson('/api/csrf-token'),
+        fetchJson('/api/engine/metrics'),
+        fetchJson('/api/cluster/status'),
+        fetchJson('/api/queue/jobs?limit=20'),
+        fetchJson('/api/engine/clients'),
+        fetchJson('/api/mcp/servers'),
+        fetchJson('/api/pipeline/scheduled'),
+        fetchJson('/api/agentic/tools/status'),
+        fetchJson('/api/config/menus'),
+        fetchJson('/api/security/client-controls')
+      ]).then(function (all) {
+        csrfToken = all[0].csrfToken || csrfToken;
+
+        var metrics = all[1] || {};
+        var clusterStatus = all[2] || {};
+        var queueStatus = all[3] || {};
+
+        updateMetric('mRequestCount', (metrics.engine || {}).requestCount || 0);
+        updateMetric('mWsCount', (metrics.engine || {}).webSocketClients || 0);
+        updateMetric('mQueueRunning', (metrics.queue || {}).running || 0);
+        updateMetric('mQueueFailed', (metrics.queue || {}).failed || 0);
+        updateMetric('mPeerCount', (metrics.cluster || {}).peerCount || 0);
+
+        var role = ((metrics.cluster || {}).role || 'STANDALONE');
+        byId('engineRolePill').textContent = 'Role: ' + role;
+        byId('engineConnPill').textContent = 'Engine: online';
+
+        byId('clusterRole').value = role;
+        byId('clusterMaster').value = safeText((metrics.cluster || {}).masterNode || '127.0.0.1');
+        byId('clusterInterop').checked = !!((metrics.cluster || {}).allowPeerInterop);
+        byId('clusterMeta').textContent = 'Cluster: ' + safeText((metrics.cluster || {}).clusterName) + ' | Uptime(s): ' + safeText((metrics.engine || {}).uptimeSeconds || 0);
+
+        renderPeers(clusterStatus.cluster || {});
+        renderQueue(queueStatus);
+        renderClients(all[4]);
+        renderMcp(all[5]);
+        renderPipeline(all[6]);
+        renderTools(all[7]);
+        renderMirrorMenu(all[8]);
+
+        var controls = all[9] || {};
+        byId('blockedKeys').value = ((controls.blockedClientKeys || []).join('\n'));
+        byId('requireClusterKey').checked = !!controls.requireClusterKey;
+        var b = byId('engineOfflineBanner'); if (b) { b.style.display = 'none'; }
+      }).catch(function (err) {
+        byId('engineConnPill').textContent = 'Engine: offline';
+        var banner = byId('engineOfflineBanner');
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'engineOfflineBanner';
+          banner.style.cssText = 'background:#3b1d1d;color:#ffb3b3;border:1px solid #c0392b;border-radius:6px;padding:10px 14px;margin:10px;font-size:13px;line-height:1.4';
+          var p = document.body;
+          if (p && p.firstChild) { p.insertBefore(banner, p.firstChild); } else if (p) { p.appendChild(banner); }
+        }
+        var hint = (location.protocol === 'file:')
+          ? 'Page opened via file:// — browser may block fetch to http://127.0.0.1:8042. Launch via Launch-GUI.bat (which starts the engine and serves this page over http).'
+          : 'Local engine on http://127.0.0.1:8042 is not responding. Start it with: powershell -File scripts/Start-LocalWebEngine.ps1';
+        banner.innerHTML = '<strong>Engine offline</strong> — cluster data unavailable.<br/>' + hint + '<br/><span style="opacity:.7;font-size:11px">Last error: ' + (err && err.message ? String(err.message) : 'fetch failed') + '</span>';
+      });
+    }
+
+    function postJson(path, body) {
+      return fetch(API + path, {
+        method: 'POST',
+        headers: withCsrf({}),
+        body: JSON.stringify(body || {})
+      }).then(function (r) { return r.json(); });
+    }
+
+    byId('btnOpenHub').onclick = function () { window.location.href = '/'; };
+    byId('btnOpenMenuBuilder').onclick = function () { window.location.href = '/pages/menu-builder'; };
+
+    byId('btnStopEngine').onclick = function () {
+      postJson('/api/engine/stop', {}).then(function () {
+        byId('engineConnPill').textContent = 'Engine: stopping';
+      });
+    };
+
+    byId('btnSaveRole').onclick = function () {
+      postJson('/api/cluster/role', {
+        role: byId('clusterRole').value,
+        masterNode: byId('clusterMaster').value,
+        allowPeerInterop: byId('clusterInterop').checked
+      }).then(refreshAll);
+    };
+
+    byId('btnAddPeer').onclick = function () {
+      postJson('/api/cluster/peers/add', {
+        nodeId: byId('peerNodeId').value,
+        baseUrl: byId('peerBaseUrl').value,
+        trust: 'trusted'
+      }).then(refreshAll);
+    };
+
+    byId('btnQueueJob').onclick = function () {
+      var body = {};
+      try { body = JSON.parse(byId('jobBody').value || '{}'); } catch (e) { body = {}; }
+      postJson('/api/queue/jobs', {
+        name: byId('jobName').value,
+        type: 'rest-interop',
+        payload: {
+          method: byId('jobMethod').value,
+          url: byId('jobUrl').value,
+          body: body
+        }
+      }).then(refreshAll);
+    };
+
+    byId('btnSaveSecurity').onclick = function () {
+      var keys = byId('blockedKeys').value.split(/\r?\n/).map(function (x) { return x.trim(); }).filter(function (x) { return x.length > 0; });
+      postJson('/api/security/client-controls', {
+        blockedClientKeys: keys,
+        requireClusterKey: byId('requireClusterKey').checked
+      }).then(refreshAll);
+    };
+
+    byId('pollRate').onchange = function () {
+      if (pollTimer) { window.clearInterval(pollTimer); }
+      var ms = parseInt(byId('pollRate').value, 10) || 2000;
+      pollTimer = window.setInterval(refreshAll, ms);
+    };
+
+    byId('btnFlyout').onclick = function () {
+      var panel = byId('flyoutPanel');
+      if (panel.className.indexOf('hidden') >= 0) { panel.className = panel.className.replace('hidden', ''); }
+      else { panel.className += ' hidden'; }
+    };
+
+    byId('btnTheme').onclick = function () {
+      darkAlt = !darkAlt;
+      var root = document.documentElement;
+      if (darkAlt) {
+        root.style.setProperty('--bg', '#1b1021');
+        root.style.setProperty('--panel', '#2a1832');
+        root.style.setProperty('--panel-2', '#392247');
+        root.style.setProperty('--line', '#5b3e68');
+        root.style.setProperty('--accent', '#f2a65a');
+        root.style.setProperty('--accent-2', '#79f2c0');
+      } else {
+        root.style.setProperty('--bg', '#0f1824');
+        root.style.setProperty('--panel', '#172638');
+        root.style.setProperty('--panel-2', '#203248');
+        root.style.setProperty('--line', '#2f435d');
+        root.style.setProperty('--accent', '#4fb6ff');
+        root.style.setProperty('--accent-2', '#6de5b2');
+      }
+    };
+
+    byId('btnRefresh').onclick = refreshAll;
+
+    refreshAll();
+    pollTimer = window.setInterval(refreshAll, 2000);
+  }());
+  //]]>
+  </script>
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="..\../styles/eventlog-view.css"/>
+<script src="..\../scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="service" data-title="Cluster Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
+</body>
+</html>
+

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -189,6 +189,7 @@ function Get-SchemaTransformPlan {
     .EXAMPLE
         Get-SchemaTransformPlan -FromSchema 'DependencyMap/0.9'
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -364,6 +365,7 @@ Export-ModuleMember -Function @(
     'Get-SchemaTransformPlan',
     'Convert-ScanSchema'
 )
+
 
 
 

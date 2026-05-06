@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V33.6
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -72,7 +72,7 @@ $registry = Get-Content -LiteralPath $RegistryFile -Raw -Encoding UTF8 | Convert
 function Get-CompactTodoLine {
     param([string]$HelpFn, [string[]]$Actions)
     $actStr = $Actions -join '|'
-    return "# TODO: HelpMenu | $HelpFn | Actions: $actStr | Spec: config/help-menu-registry.json"
+    return "# TODO: HelpMenu | $HelpFn | Actions: $actStr | Spec: config/help-menu-registry.json"  # SIN-EXEMPT:P016 -- generates compliance markers, not stale debt
 }
 
 # ─── Scan a File ──────────────────────────────────────────────────────────────
@@ -282,6 +282,7 @@ exit $exitCode
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

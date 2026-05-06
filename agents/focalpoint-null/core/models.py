@@ -1,7 +1,7 @@
-# VersionTag: 2604.B2.V31.0
-# VersionTag: 2604.B2.V31.0
-# VersionTag: 2604.B2.V31.0
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
 """
 FocalPoint-null Core Data Models
 Pydantic models for all system entities: agents, tasks, forks, checkpoints, log entries.
@@ -474,7 +474,7 @@ class CompilerOutput(BaseModel):
 
 # ─────────────────────────────────────────────
 # MULTI-MODEL PARALLEL DISPATCH — MultiModelProxy-00
-# VersionTag: 2604.B2.V31.0 (added multi-model orchestration support)
+# VersionTag: 2605.B2.V31.7
 # ─────────────────────────────────────────────
 
 class ModelEndpointConfig(BaseModel):
@@ -565,6 +565,7 @@ class ConsensusResult(BaseModel):
     fusion_applied: bool = False
     fusion_notes: List[str] = Field(default_factory=list)
     evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.V1.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -439,10 +439,17 @@ if (-not $engineWasRunning) {
             }
         } else {
             Write-Warn "Stop request returned HTTP $($stopResp.StatusCode)"
-            # Fallback via service script
-            Write-Info "Falling back to service Stop action..."
-            $svcScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Start-LocalWebEngineService.ps1'
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $svcScript -Action Stop -Port $Port -WorkspacePath $WorkspacePath -ShowRainbow $false
+            Write-Warn 'Falling back to PID-based stop...'
+            $pidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+            if (Test-Path -LiteralPath $pidFile) {
+                $pid2 = [int](Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+                if ($pid2 -gt 0) {
+                    try {
+                        Stop-Process -Id $pid2 -Force -ErrorAction SilentlyContinue
+                        Write-Pass "Force-stopped PID $pid2"
+                    } catch { Write-Warn "Could not force-stop PID $pid2" }
+                }
+            }
         }
     } else {
         Write-Info "Engine left running (PID in logs/engine.pid)"
@@ -458,9 +465,7 @@ if (-not $engineWasRunning) {
             Start-Sleep -Seconds 2
             Write-Pass "Engine stop requested"
         } else {
-            $svcScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Start-LocalWebEngineService.ps1'
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $svcScript -Action Stop -Port $Port -WorkspacePath $WorkspacePath -ShowRainbow $false
-            Write-Pass "Engine stopped via service controller"
+            Write-Warn 'Engine stop API did not respond cleanly; no service wrapper fallback is used.'
         }
     } else {
         Write-Info "Engine left running"
@@ -485,6 +490,7 @@ exit $exitCode
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

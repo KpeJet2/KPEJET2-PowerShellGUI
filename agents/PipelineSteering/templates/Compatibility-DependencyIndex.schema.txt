@@ -1,3 +1,4 @@
+# VersionTag: 2605.B2.V31.7
 # Compatibility Dependency Index Schema
 # Each item must use:
 #   SupportedItemName.version.(indexID)
@@ -7,3 +8,4 @@
 # FilePath,MimeType,Language,DefaultSupportTarget,DependencyItems,Products
 # Example DependencyItems value:
 # CronAiAthon-Scheduler.1.0.(12),Write-AppLog.2.4.(2),UnknownItem.0.0.(0)
+

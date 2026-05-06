@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bugs2FIX-20260504171101-bae98b32",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Fix for bug Bug-20260504170952-d846a08e: Script PwShGUI-CoverageReport.psm1 has 1 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T09:11:01.5546934Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "FIX: 1 functions with no try/catch blocks",
+    "parentId":  "Bug-20260504170952-d846a08e",
+    "type":  "Bugs2FIX",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T09:11:01.5546934Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+                         "Bug-20260504170952-d846a08e"
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T09:11:01.5536806Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T09:11:01.5546934Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

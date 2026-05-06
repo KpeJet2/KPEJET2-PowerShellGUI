@@ -39,7 +39,7 @@ function Scan-ForSinPattern028 {
     Write-SteerLog "Scan-ForSinPattern028: found $(@($results).Count) SIN-PATTERN-028 violation(s)" 'Warning'
     return @($results)
 }
-# VersionTag: 2604.B2.V33.1
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -240,7 +240,7 @@ function New-CompatibilityStandardsTemplates {
         [PSCustomObject]@{
             Path    = Join-Path $dir 'PS76-Preferred-Template.ps1.txt'
             Content = @'
-# VersionTag: YYMM.B0.V1.0
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -382,6 +382,8 @@ function New-WorkspaceCompatibilityIndex {
     $extMap = @{
         '.ps1'   = @{ Mime = 'text/x-powershell'; Language = 'PowerShell'; DefaultSupportTarget = 'PS5.1+PS7.6' }
         '.psm1'  = @{ Mime = 'text/x-powershell'; Language = 'PowerShell'; DefaultSupportTarget = 'PS5.1+PS7.6' }
+        '.psd1'  = @{ Mime = 'text/x-powershell'; Language = 'PowerShellManifest'; DefaultSupportTarget = 'PS5.1+PS7.6' }
+        '.py'    = @{ Mime = 'text/x-python'; Language = 'Python'; DefaultSupportTarget = 'Python3' }
         '.xhtml' = @{ Mime = 'application/xhtml+xml'; Language = 'XHTML'; DefaultSupportTarget = 'Browser-XHTML1' }
         '.html'  = @{ Mime = 'text/html'; Language = 'HTML'; DefaultSupportTarget = 'Browser-HTML5' }
         '.json'  = @{ Mime = 'application/json'; Language = 'JSON'; DefaultSupportTarget = 'Data-Exchange' }
@@ -943,6 +945,7 @@ Export-ModuleMember -Function @(
     'Invoke-CompatibilityMatrixAudit'
     'New-WorkspaceCompatibilityIndex'
 )
+
 
 
 

@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2605.B2.V31.7 -->
+<!-- FileRole: XhtmlTool -->
+<!-- SchemaVersion: PipelineMgmt/1.0 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pipeline Manager - PwShGUI</title>
+    <style type="text/css">
+    /* ── CSS Variables (Dark VS Code Theme) ── */
+    :root {
+      --bg: #1e1e1e;
+      --bg-alt: #2d2d30;
+      --panel: #252526;
+      --control: #333337;
+      --control-fg: #dcdcdc;
+      --accent: #007acc;
+      --accent-green: #4ec9b0;
+      --accent-orange: #ce913c;
+      --accent-red: #f44747;
+      --fg: #d4d4d4;
+      --fg-sub: #969696;
+      --border: #3f3f46;
+      --btn-bg: #37373c;
+      --btn-hover: #46464e;
+      --btn-fg: #e6e6e6;
+      --pass: #4ec9b0;
+      --warn: #dcdcaa;
+      --fail: #f44747;
+      --info: #569cd6;
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --font-mono: 'Cascadia Code', 'Consolas', monospace;
+      --fs: 13px;
+      --fs-sm: 11px;
+      --fs-lg: 15px;
+      --fs-hdr: 18px;
+      --gap: 12px;
+      --pad: 16px;
+      --radius: 6px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: var(--fs);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── App Header ── */
+    .app-header {
+      background: var(--accent);
+      color: #fff;
+      padding: var(--pad);
+      font-size: var(--fs-hdr);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--gap);
+      flex-shrink: 0;
+    }
+
+    .app-header .icon { font-size: 20px; }
+    .app-header .title { flex: 1; }
+    .app-header .version { font-size: var(--fs-sm); opacity: 0.7; }
+
+    /* ── Tab Navigation ── */
+    .tabs-nav {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 2px;
+      padding: 0 var(--pad);
+      flex-shrink: 0;
+      min-height: 40px;
+      align-items: flex-end;
+    }
+
+    .tab-btn {
+      font-family: var(--font);
+      font-size: var(--fs);
+      background: var(--panel);
+      color: var(--fg-sub);
+      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--bg-alt);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { background: var(--control); color: var(--fg); }
+    .tab-btn.active {
+      background: var(--bg);
+      color: var(--accent);
+      border-bottom-color: var(--bg);
+      font-weight: 600;
+    }
+
+    /* ── Main Content ── */
+    .app-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--pad);
+    }
+
+    .tab-content.active { display: flex; flex-direction: column; }
+
+    /* ── Flowchart SVG ── */
+    .flowchart-container {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      margin-bottom: var(--gap);
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .flowchart-canvas {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+    }
+
+    /* ── Pipeline Step Card ── */
+    .step-card {
+      background: var(--control);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      margin-bottom: var(--gap);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .step-card:hover {
+      background: var(--panel);
+      border-left-color: var(--accent-green);
+      box-shadow: 0 4px 12px rgba(0, 122, 204, 0.2);
+    }
+
+    .step-card.error { border-left-color: var(--fail); }
+    .step-card.warning { border-left-color: var(--warn); }
+    .step-card.success { border-left-color: var(--pass); }
+
+    .step-title {
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 6px;
+    }
+
+    .step-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .status-open { background: var(--info); color: #fff; }
+    .status-in-progress { background: var(--accent); color: #fff; }
+    .status-done { background: var(--pass); color: #000; }
+    .status-failed { background: var(--fail); color: #fff; }
+    .status-blocked { background: var(--warn); color: #000; }
+
+    /* ── Agent Card ── */
+    .agent-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      margin-bottom: var(--gap);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+    }
+
+    .agent-info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .agent-label {
+      font-size: var(--fs-sm);
+      color: var(--fg-sub);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .agent-value {
+      font-size: var(--fs);
+      color: var(--fg);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Metrics Grid ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+    }
+
+    .metric-box {
+      background: var(--control);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: var(--fs-sm);
+      color: var(--fg-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fs-sm);
+      margin-top: var(--gap);
+    }
+
+    thead th {
+      background: var(--control);
+      color: var(--fg);
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+    }
+
+    tbody td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:nth-child(even) { background: var(--bg-alt); }
+    tbody tr:hover { background: var(--control); }
+
+    /* ── Buttons ── */
+    button, .btn {
+      font-family: var(--font);
+      font-size: var(--fs-sm);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover, .btn:hover { background: var(--btn-hover); }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-accent:hover { background: #1084d7; }
+
+    /* ── Status Bar ── */
+    .status-bar {
+      background: var(--accent);
+      color: #fff;
+      padding: 8px var(--pad);
+      font-size: var(--fs-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    /* ── Filter Bar ── */
+    .filter-bar {
+      display: flex;
+      gap: var(--gap);
+      padding: var(--pad);
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: var(--gap);
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+      font-family: var(--font);
+      font-size: var(--fs);
+      background: var(--control);
+      color: var(--control-fg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+    }
+
+    .filter-bar input { flex: 1; min-width: 150px; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-error { background: var(--fail); color: #fff; }
+    .badge-warning { background: var(--warn); color: #000; }
+    .badge-success { background: var(--pass); color: #000; }
+    .badge-info { background: var(--info); color: #fff; }
+
+        .section-title {
+            color: var(--accent);
+            margin: 0 0 12px 0;
+            font-size: 16px;
+        }
+
+        .section-title-spaced {
+            margin-top: 20px;
+        }
+
+        .muted-note {
+            font-size: var(--fs-sm);
+            color: var(--fg-sub);
+            margin-top: var(--gap);
+        }
+
+        .select-minw {
+            min-width: 140px;
+        }
+
+        .table-no-margin {
+            margin-top: 0;
+        }
+
+    @media (max-width: 900px) {
+      .agent-card { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      :root { --pad: 10px; --gap: 8px; --fs: 12px; }
+      .metrics-grid { grid-template-columns: 1fr; }
+      .tab-btn { padding: 6px 10px; font-size: 11px; }
+    }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <span class="icon">⚙️</span>
+        <span class="title">Pipeline Manager</span>
+        <span class="version">v26 (2604.B0.V1.0)</span>
+    </div>
+
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab-btn" onclick="switchTab('flowchart')">Flow Chart</button>
+        <button class="tab-btn" onclick="switchTab('agents')">Agents</button>
+        <button class="tab-btn" onclick="switchTab('items')">Pipeline Items</button>
+        <button class="tab-btn" onclick="switchTab('metrics')">Metrics</button>
+    </div>
+
+    <div class="app-container">
+        <!-- ── TAB: OVERVIEW ── -->
+        <div id="overview" class="tab-content active">
+            <div class="filter-bar">
+                <input type="text" placeholder="Filter..." id="overviewFilter" onkeyup="applyFilter('overview')" />
+                <button class="btn-accent" onclick="loadPipelineData()">Reload</button>
+            </div>
+
+            <h3 class="section-title">Pipeline Status Summary</h3>
+            <div class="metrics-grid" id="summaryMetrics">
+                <div class="metric-box"><div class="metric-value">--</div><div class="metric-label">Total Items</div></div>
+                <div class="metric-box"><div class="metric-value">--</div><div class="metric-label">Open</div></div>
+                <div class="metric-box"><div class="metric-value">--</div><div class="metric-label">In Progress</div></div>
+                <div class="metric-box"><div class="metric-value">--</div><div class="metric-label">Done</div></div>
+            </div>
+
+            <h3 class="section-title section-title-spaced">Recent Items</h3>
+            <div id="recentItems"></div>
+        </div>
+
+        <!-- ── TAB: FLOWCHART ── -->
+        <div id="flowchart" class="tab-content">
+            <h3 class="section-title">Pipeline Process Flow</h3>
+            <div class="flowchart-container">
+                <svg class="flowchart-canvas" id="flowchartSvg" width="100%" height="100%" viewBox="0 0 1000 600">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#569cd6" />
+                        </marker>
+                    </defs>
+                    <!-- Flowchart will be drawn here by JavaScript -->
+                </svg>
+            </div>
+            <p class="muted-note">
+                Pipeline stages: OPEN → PLANNED → IN_PROGRESS → TESTING → DONE | FAILED → CLOSED
+            </p>
+        </div>
+
+        <!-- ── TAB: AGENTS ── -->
+        <div id="agents" class="tab-content">
+            <div class="filter-bar">
+                <input type="text" placeholder="Filter agents..." id="agentFilter" onkeyup="applyFilter('agents')" />
+                <button class="btn-accent" onclick="loadAgentManifest()">Reload</button>
+            </div>
+
+            <h3 class="section-title">Registered Agents</h3>
+            <div id="agentsList"></div>
+        </div>
+
+        <!-- ── TAB: PIPELINE ITEMS ── -->
+        <div id="items" class="tab-content">
+            <div class="filter-bar">
+                <input type="text" placeholder="Search..." id="itemsFilter" onkeyup="applyFilter('items')" />
+                <select id="itemTypeFilter" onchange="applyFilter('items')" class="select-minw">
+                    <option value="">All Types</option>
+                    <option value="FeatureRequest">Feature Request</option>
+                    <option value="Bug">Bug</option>
+                    <option value="Items2ADD">Items 2 Add</option>
+                    <option value="Bugs2FIX">Bugs 2 Fix</option>
+                    <option value="ToDo">To Do</option>
+                </select>
+                <select id="itemStatusFilter" onchange="applyFilter('items')" class="select-minw">
+                    <option value="">All Status</option>
+                    <option value="OPEN">Open</option>
+                    <option value="PLANNED">Planned</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="TESTING">Testing</option>
+                    <option value="DONE">Done</option>
+                    <option value="BLOCKED">Blocked</option>
+                    <option value="FAILED">Failed</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+                <button class="btn-accent" onclick="loadPipelineData()">Reload</button>
+            </div>
+
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody"></tbody>
+            </table>
+        </div>
+
+        <!-- ── TAB: METRICS ── -->
+        <div id="metrics" class="tab-content">
+            <h3 class="section-title">Pipeline Metrics</h3>
+            <div class="metrics-grid" id="detailedMetrics">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <h3 class="section-title section-title-spaced">Item Distribution</h3>
+            <table id="metricsTable" class="table-no-margin">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody id="metricsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span id="statusText">Ready</span>
+        <span id="countText">0 items</span>
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    // When opened via http (engine running), use /api. When opened via file://, fall back to relative JSON paths.
+    const IS_FILE_PROTO = (location.protocol === 'file:');
+    const API_BASE = IS_FILE_PROTO ? '' : '/api';
+    const PIPELINE_URL = IS_FILE_PROTO ? './config/cron-aiathon-pipeline.json' : (API_BASE + '/pipeline/registry');
+    const MANIFEST_URL = IS_FILE_PROTO ? './config/agentic-manifest.json'      : (API_BASE + '/config/agentic-manifest');
+    let pipelineData = null;
+    let agentManifest = null;
+
+    function switchTab(tabName) {
+        const tabs = document.querySelectorAll('.tab-content');
+        const btns = document.querySelectorAll('.tab-btn');
+        tabs.forEach(t => t.classList.remove('active'));
+        btns.forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+
+        if (tabName === 'flowchart') { drawFlowchart(); }
+    }
+
+    // file:// safe loader: tries fetch first, falls back to XMLHttpRequest (which honours status===0 for local files)
+    function loadJsonAny(url) {
+        return new Promise(function(resolve, reject) {
+            // Prefer fetch on http(s) origins
+            if (!IS_FILE_PROTO && typeof fetch === 'function') {
+                fetch(url).then(function(r){ return r.json(); }).then(resolve).catch(reject);
+                return;
+            }
+            // file:// — XHR with status===0 acceptance
+            try {
+                var x = new XMLHttpRequest();
+                x.open('GET', url + (url.indexOf('?')<0 ? '?t=' : '&t=') + Date.now(), true);
+                x.onreadystatechange = function() {
+                    if (x.readyState !== 4) return;
+                    if (x.status === 200 || x.status === 0) {
+                        try { resolve(JSON.parse(x.responseText || 'null')); }
+                        catch (e) { reject(e); }
+                    } else {
+                        reject(new Error('HTTP ' + x.status));
+                    }
+                };
+                x.onerror = function(){ reject(new Error('XHR error (browser may block file:// access — open via Launch-GUI.bat to start the local engine, or use Firefox)')); };
+                x.send(null);
+            } catch (e) { reject(e); }
+        });
+    }
+
+    async function loadPipelineData() {
+        try {
+            setStatus('Loading pipeline data...', 'info');
+            pipelineData = await loadJsonAny(PIPELINE_URL);
+            renderPipelineUI();
+            setStatus('Pipeline data loaded' + (IS_FILE_PROTO ? ' (file://)' : ''), 'ok');
+        } catch (error) {
+            console.error('Load failed:', error);
+            setStatus('Error loading data: ' + error.message, 'err');
+            var s = document.getElementById('summaryMetrics');
+            if (s) { s.innerHTML = '<div class="metric-box" style="grid-column:1/-1"><div class="metric-label" style="color:#e74c3c">Pipeline data unavailable. ' + (IS_FILE_PROTO ? 'Browser blocked file:// access — launch via Launch-GUI.bat to start the local engine.' : 'Engine offline — start scripts/Start-LocalWebEngine.ps1.') + '</div></div>'; }
+        }
+    }
+
+    async function loadAgentManifest() {
+        try {
+            setStatus('Loading agent manifest...', 'info');
+            agentManifest = await loadJsonAny(MANIFEST_URL);
+            renderAgentList();
+            setStatus('Agent manifest loaded' + (IS_FILE_PROTO ? ' (file://)' : ''), 'ok');
+        } catch (error) {
+            console.error('Load failed:', error);
+            setStatus('Error loading agents: ' + error.message, 'err');
+            var a = document.getElementById('agentsList');
+            if (a) { a.innerHTML = '<p style="color:#e74c3c">Agent manifest unavailable. ' + (IS_FILE_PROTO ? 'Browser blocked file:// access — launch via Launch-GUI.bat.' : 'Engine offline.') + '</p>'; }
+        }
+    }
+
+    function renderPipelineUI() {
+        if (!pipelineData) return;
+        
+        const stats = pipelineData.statistics || {};
+        const summaryDiv = document.getElementById('summaryMetrics');
+        const total = (pipelineData.featureRequests || []).length +
+                      (pipelineData.bugs || []).length +
+                      (pipelineData.items2ADD || []).length +
+                      (pipelineData.bugs2FIX || []).length +
+                      (pipelineData.todos || []).length;
+        
+        summaryDiv.innerHTML = `
+            <div class="metric-box"><div class="metric-value">${total}</div><div class="metric-label">Total Items</div></div>
+            <div class="metric-box"><div class="metric-value">${countByStatus('OPEN')}</div><div class="metric-label">Open</div></div>
+            <div class="metric-box"><div class="metric-value">${countByStatus('IN_PROGRESS')}</div><div class="metric-label">In Progress</div></div>
+            <div class="metric-box"><div class="metric-value">${countByStatus('DONE')}</div><div class="metric-label">Done</div></div>
+        `;
+
+        renderRecentItems();
+        renderItemsTable();
+        renderMetrics();
+        document.getElementById('countText').textContent = total + ' items';
+    }
+
+    function countByStatus(status) {
+        if (!pipelineData) return 0;
+        let count = 0;
+        const lists = [pipelineData.featureRequests || [], pipelineData.bugs || [], 
+                       pipelineData.items2ADD || [], pipelineData.bugs2FIX || [], pipelineData.todos || []];
+        lists.forEach(list => {
+            count += (list.filter(i => i.status === status) || []).length;
+        });
+        return count;
+    }
+
+    function renderRecentItems() {
+        const recentDiv = document.getElementById('recentItems');
+        const allItems = getAllItems().sort((a,b) => new Date(b.modified) - new Date(a.modified)).slice(0, 5);
+        
+        recentDiv.innerHTML = allItems.map(item => `
+            <div class="step-card ${item.status.toLowerCase()}">
+                <div class="step-title">${escapeHtml(item.title)}</div>
+                <span class="step-status status-${item.status.toLowerCase()}">${item.status}</span>
+                <span class="badge badge-${item.priority.toLowerCase()}">${item.priority}</span>
+                <div style="font-size: var(--fs-sm); color: var(--fg-sub); margin-top: 8px;">${escapeHtml(item.description.substring(0, 80))}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderItemsTable() {
+        const tbody = document.getElementById('itemsBody');
+        const allItems = getAllItems();
+        
+        tbody.innerHTML = allItems.map(item => `
+            <tr>
+                <td style="font-family: var(--font-mono); font-size: 11px;">${escapeHtml(item.id)}</td>
+                <td><span class="badge badge-info">${item.type}</span></td>
+                <td>${escapeHtml(item.title)}</td>
+                <td><span class="step-status status-${item.status.toLowerCase()}">${item.status}</span></td>
+                <td>${item.priority}</td>
+                <td>${new Date(item.created).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderAgentList() {
+        const agentDiv = document.getElementById('agentsList');
+        if (!agentManifest || !agentManifest.agents) {
+            agentDiv.innerHTML = '<p>No agents found</p>';
+            return;
+        }
+
+        agentDiv.innerHTML = agentManifest.agents.slice(0, 10).map(agent => `
+            <div class="agent-card">
+                <div class="agent-info-group">
+                    <div class="agent-label">Agent</div>
+                    <div class="agent-value">${escapeHtml(agent.name)}</div>
+                </div>
+                <div class="agent-info-group">
+                    <div class="agent-label">Functions</div>
+                    <div class="agent-value">${agent.functionCount || 0}</div>
+                </div>
+                <div class="agent-info-group">
+                    <div class="agent-label">Tier</div>
+                    <div class="agent-value">${escapeHtml(agent.tier || 'unknown')}</div>
+                </div>
+                <div class="agent-info-group">
+                    <div class="agent-label">Version</div>
+                    <div class="agent-value">${escapeHtml(agent.version || 'unknown')}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderMetrics() {
+        const metricsDiv = document.getElementById('detailedMetrics');
+        const metricsBody = document.getElementById('metricsBody');
+        const stats = pipelineData.statistics || {};
+
+        metricsDiv.innerHTML = `
+            <div class="metric-box"><div class="metric-value">${stats.totalItemsCreated || 0}</div><div class="metric-label">Items Created</div></div>
+            <div class="metric-box"><div class="metric-value">${stats.totalBugsFound || 0}</div><div class="metric-label">Bugs Found</div></div>
+            <div class="metric-box"><div class="metric-value">${stats.totalPlans || 0}</div><div class="metric-label">Plans Made</div></div>
+            <div class="metric-box"><div class="metric-value">${stats.totalErrors || 0}</div><div class="metric-label">Errors</div></div>
+        `;
+
+        metricsBody.innerHTML = `
+            <tr><td>Feature Requests</td><td>${(pipelineData.featureRequests || []).length}</td></tr>
+            <tr><td>Bugs</td><td>${(pipelineData.bugs || []).length}</td></tr>
+            <tr><td>Items 2 Add</td><td>${(pipelineData.items2ADD || []).length}</td></tr>
+            <tr><td>Bugs 2 Fix</td><td>${(pipelineData.bugs2FIX || []).length}</td></tr>
+            <tr><td>To Do Items</td><td>${(pipelineData.todos || []).length}</td></tr>
+        `;
+    }
+
+    function drawFlowchart() {
+        const svg = document.getElementById('flowchartSvg');
+        if (!svg || !pipelineData) return;
+
+        // State machine diagram
+        const states = [
+            {label: 'OPEN', x: 100, y: 150},
+            {label: 'PLANNED', x: 250, y: 150},
+            {label: 'IN_PROGRESS', x: 400, y: 150},
+            {label: 'TESTING', x: 550, y: 150},
+            {label: 'DONE', x: 700, y: 150},
+            {label: 'BLOCKED', x: 400, y: 350},
+            {label: 'FAILED', x: 250, y: 350},
+            {label: 'CLOSED', x: 700, y: 350}
+        ];
+
+        const stateElements = states.map(state => `
+            <g>
+                <rect x="${state.x - 45}" y="${state.y - 25}" width="90" height="50" 
+                      fill="var(--control)" stroke="var(--border)" stroke-width="2" rx="5" />
+                <text x="${state.x}" y="${state.y + 5}" text-anchor="middle" 
+                      font-size="12" fill="var(--fg)" font-weight="600">${state.label}</text>
+            </g>
+        `).join('');
+
+        const arrows = [
+            {x1: 145, y1: 150, x2: 205, y2: 150},
+            {x1: 295, y1: 150, x2: 355, y2: 150},
+            {x1: 445, y1: 150, x2: 505, y2: 150},
+            {x1: 595, y1: 150, x2: 655, y2: 150},
+            {x1: 400, y1: 175, x2: 400, y2: 325},
+            {x1: 400, y1: 325, x2: 290, y2: 325},
+            {x1: 250, y1: 325, x2: 250, y2: 175},
+            {x1: 650, y1: 325, x2: 700, y2: 175}
+        ];
+
+        const arrowElements = arrows.map(arr => 
+            `<line x1="${arr.x1}" y1="${arr.y1}" x2="${arr.x2}" y2="${arr.y2}" 
+                   stroke="var(--info)" stroke-width="2" marker-end="url(#arrowhead)" />`
+        ).join('');
+
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#569cd6" />
+                </marker>
+            </defs>
+            ${arrowElements}
+            ${stateElements}
+        `;
+    }
+
+    function getAllItems() {
+        if (!pipelineData) return [];
+        return [
+            ...(pipelineData.featureRequests || []),
+            ...(pipelineData.bugs || []),
+            ...(pipelineData.items2ADD || []),
+            ...(pipelineData.bugs2FIX || []),
+            ...(pipelineData.todos || [])
+        ];
+    }
+
+    function applyFilter(tabName) {
+        // Filter logic would go here
+        console.log('Filter applied for tab:', tabName);
+    }
+
+    function setStatus(msg, level) {
+        const statusEl = document.getElementById('statusText');
+        if (statusEl) {
+            statusEl.textContent = msg;
+            statusEl.style.color = level === 'err' ? 'var(--fail)' : 
+                                   level === 'warn' ? 'var(--warn)' : 'var(--pass)';
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Auto-load on page init
+    window.onload = function() {
+        loadPipelineData();
+        loadAgentManifest();
+    };
+    //]]>
+    </script>
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="./styles/eventlog-view.css"/>
+<script src="./scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="pipeline" data-title="Pipeline Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
+</body>
+</html>
+

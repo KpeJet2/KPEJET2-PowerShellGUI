@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -57,7 +57,7 @@ function Assert-AdapterReady {
 
     # Run throttled integrity check
     try {
-        $integrityPath = Join-Path (Split-Path $PSScriptRoot) 'config' 'sasc-integrity.sha256.json'
+        $integrityPath = Join-Path (Join-Path (Split-Path $PSScriptRoot) 'config') 'sasc-integrity.sha256.json'
         if (Test-Path -LiteralPath $integrityPath) {
             $intResult = Test-IntegrityManifest
             if (-not $intResult.AllPassed) {
@@ -69,10 +69,10 @@ function Assert-AdapterReady {
         throw  # Re-throw security exceptions
     } catch {
         # Non-security errors during integrity check -- log but continue
-        try { Write-AppLog "SASC-Adapter: Integrity check warning for $AdapterName -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: Integrity check warning for $AdapterName -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
-    try { Write-AppLog "SASC-Adapter: $AdapterName -- pre-flight passed" "Debug" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC-Adapter: $AdapterName -- pre-flight passed" "Debug" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 }
 
 function Find-Executable {
@@ -115,6 +115,7 @@ function Invoke-PuTTYSession {
     .PARAMETER UsePuTTY      Launch PuTTY GUI instead of plink CLI.
     #>
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'UseKey', Justification='Reserved for PuTTY -i private-key flag; PFX/PEM resolution path TBD.')]
     param(
         [Parameter(Mandatory)] [string]$TargetName,
         [string]$TargetHost,
@@ -181,7 +182,7 @@ function Invoke-PuTTYSession {
             Start-Process -FilePath $exePath -ArgumentList $argList
         }
 
-        try { Write-AppLog "SASC-Adapter: PuTTY session opened -- $($cred.UserName)@${TargetHost}:${Port}" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: PuTTY session opened -- $($cred.UserName)@${TargetHost}:${Port}" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     } finally {
         $passwordPlain = $null
     }
@@ -201,6 +202,8 @@ function Invoke-MRemoteNGSession {
     .PARAMETER ConnectionFile    Path to existing confCons.xml (optional).
     #>
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ConnectionFile', Justification='Reserved for mRemoteNG XML import path; conn-file ingest TBD.')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseUsingScopeModifierInNewRunspaces', '', Justification='Start-Job scriptblock receives $path via -ArgumentList (param-bound); $using: scope modifier is neither needed nor compatible with -ArgumentList. PSSA AST cannot distinguish param-bound vars from outer-scope captures inside Start-Job.')]
     param(
         [Parameter(Mandatory)] [string]$TargetName,
         [ValidateSet('SSH2','RDP','VNC','Telnet','HTTP','HTTPS')]
@@ -292,7 +295,7 @@ function Invoke-MRemoteNGSession {
             }
         } -ArgumentList $tempFile | Out-Null
 
-        try { Write-AppLog "SASC-Adapter: mRemoteNG session opened -- $($cred.UserName)@$hostName ($Protocol)" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: mRemoteNG session opened -- $($cred.UserName)@$hostName ($Protocol)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     } finally {
         $passwordPlain = $null
     }
@@ -349,11 +352,11 @@ function Connect-AzureWithVault {
         $connectParams['CertificateThumbprint'] = $thumbprint
 
         Connect-AzAccount @connectParams
-        try { Write-AppLog "SASC-Adapter: Azure connected via certificate -- App: $appId" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: Azure connected via certificate -- App: $appId" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     } else {
         $connectParams['Credential'] = $cred
         Connect-AzAccount @connectParams
-        try { Write-AppLog "SASC-Adapter: Azure connected via credential -- User: $($cred.UserName)" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: Azure connected via credential -- User: $($cred.UserName)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 }
 
@@ -386,14 +389,14 @@ function Connect-ADDSWithVault {
             try {
                 Import-Module ActiveDirectory -ErrorAction Stop
                 Get-ADDomainController -Server $DomainController -Credential $cred -ErrorAction Stop | Out-Null
-                try { Write-AppLog "SASC-Adapter: ADDS credential verified against DC: $DomainController" "Info" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC-Adapter: ADDS credential verified against DC: $DomainController" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             } catch {
-                try { Write-AppLog "SASC-Adapter: ADDS credential verification failed for DC: $DomainController -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC-Adapter: ADDS credential verification failed for DC: $DomainController -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             }
         }
     }
 
-    try { Write-AppLog "SASC-Adapter: ADDS credential retrieved for: $TargetName (user: $($cred.UserName))" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC-Adapter: ADDS credential retrieved for: $TargetName (user: $($cred.UserName))" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $cred
 }
 
@@ -419,7 +422,7 @@ function Open-ISEWithCredential {
 
     if (-not $PSCmdlet.ShouldProcess("ISE with credential $TargetName", "Launch")) { return }
 
-    $modulePath = Join-Path (Split-Path $PSScriptRoot) 'modules' 'AssistedSASC.psm1'
+    $modulePath = Join-Path (Join-Path (Split-Path $PSScriptRoot) 'modules') 'AssistedSASC.psm1'
 
     # Create temp startup script
     $tempScript = Join-Path $env:TEMP "sasc-ise-startup-$(Get-Random).ps1"
@@ -455,7 +458,7 @@ try {
     }
 
     Start-Process -FilePath $isePath -ArgumentList "-NoExit -File `"$tempScript`""
-    try { Write-AppLog "SASC-Adapter: ISE launched with credential for: $TargetName" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC-Adapter: ISE launched with credential for: $TargetName" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 }
 
 #  ADAPTER: Windows Hello Authentication
@@ -483,11 +486,11 @@ function Invoke-WindowsHelloAuth {
     try {
         $result = Unlock-Vault -UseWindowsHello
         if ($result) {
-            try { Write-AppLog "SASC-Adapter: Vault unlocked via Windows Hello" "Info" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC-Adapter: Vault unlocked via Windows Hello" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
         return $result
     } catch {
-        try { Write-AppLog "SASC-Adapter: Windows Hello auth failed -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: Windows Hello auth failed -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         throw
     }
 }
@@ -506,11 +509,13 @@ function Set-CredentialDialogFill {
     .PARAMETER Caption       Dialog caption text.
     .OUTPUTS   [PSCredential] Final credential from the dialog.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$TargetName,
         [string]$Caption = "Authenticate -- $TargetName"
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-CredentialDialogFill', 'Modify')) { return }
+
 
     Assert-AdapterReady -AdapterName 'CredentialDialog'
 
@@ -520,7 +525,7 @@ function Set-CredentialDialogFill {
     $dialogCred = Get-Credential -UserName $vaultCred.UserName -Message $Caption
 
     if ($dialogCred) {
-        try { Write-AppLog "SASC-Adapter: Credential dialog completed for: $TargetName" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Adapter: Credential dialog completed for: $TargetName" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     return $dialogCred
 }
@@ -601,6 +606,7 @@ Export-ModuleMember -Function @(
     'Set-CredentialDialogFill',
     'Get-VaultCredentialForScript'
 )
+
 
 
 

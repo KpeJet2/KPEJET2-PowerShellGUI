@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bugs2FIX-20260504181557-a1290090",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Fix for bug Bug-20260504181450-17818540: Script Script-A.ps1 has 1 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T10:15:57.2518287Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "FIX: 1 functions with no try/catch blocks",
+    "parentId":  "Bug-20260504181450-17818540",
+    "type":  "Bugs2FIX",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T10:15:57.2518287Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\scripts\\Script-A.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+                         "Bug-20260504181450-17818540"
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T10:15:57.2518287Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T10:15:57.2518287Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

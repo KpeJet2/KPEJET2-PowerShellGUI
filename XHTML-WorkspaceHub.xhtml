@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- VersionTag: 2604.B1.V32.3 -->
+
+<!-- VersionTag: 2605.B2.V31.7 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -188,6 +189,21 @@
       border-color:#f44747 !important;
     }
     .hub-card.cfg-error .hub-card-badge{background:#3a0000;color:#ff6464}
+    @keyframes missing-qmark-pulse{
+      0%{background:#6b1c1c;color:#ffd66b;border-color:#ffcf5a;transform:scale(1)}
+      50%{background:#9a2f00;color:#fff3b0;border-color:#ffe084;transform:scale(1.08)}
+      100%{background:#6b1c1c;color:#ffd66b;border-color:#ffcf5a;transform:scale(1)}
+    }
+    .hub-card.link-missing{border-color:#c65a5a !important;box-shadow:inset 0 0 0 1px rgba(198,90,90,.45)}
+    .hub-card.link-missing .hub-card-title{color:#ffd3d3}
+    .hub-card-missing-badge{
+      position:absolute;top:6px;right:6px;z-index:3;
+      min-width:18px;height:18px;line-height:16px;text-align:center;
+      border-radius:999px;border:1px solid #ffcf5a;font-size:12px;font-weight:700;
+      animation:missing-qmark-pulse 1.1s ease-in-out infinite;
+      box-shadow:0 0 0 1px rgba(0,0,0,.35);
+      pointer-events:none;
+    }
     /* ── WebEngine Monitor section ── */
     .eng-monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
     .eng-stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
@@ -300,6 +316,26 @@
     .scan-spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--border);
       border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
       margin-right:6px;vertical-align:middle}
+    /* -- Code Copy-Cats -- */
+    .ccc-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:8px 10px;background:#12131b;border:1px solid #2a2d39;border-radius:var(--radius);margin-bottom:10px}
+    .ccc-field{display:flex;flex-direction:column;gap:3px;min-width:160px}
+    .ccc-field label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.4px}
+    .ccc-field input,.ccc-field select{background:#1a1a1a;border:1px solid var(--border);color:var(--fg);padding:4px 6px;font-family:var(--font);font-size:11px;border-radius:var(--radius)}
+    .ccc-field select[multiple]{min-height:84px}
+    .ccc-status{font-size:10px;color:var(--fg-sub);margin:6px 0 8px}
+    .ccc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px}
+    .ccc-card{background:#0f1118;border:1px solid #2a2f40;border-radius:6px;padding:10px}
+    .ccc-card h4{font-size:13px;color:#9cdcfe;margin-bottom:5px}
+    .ccc-meta{font-size:10px;color:#7f8ea8;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+    .ccc-snippet{position:relative;background:#0a0d14;border:1px solid #263249;border-radius:6px;padding:10px 10px 28px;font-family:'Cascadia Code',Consolas,monospace;font-size:11px;white-space:pre-wrap;word-break:break-word;color:#d4d4d4;min-height:88px}
+    .ccc-copy{position:absolute;right:7px;bottom:6px;font-size:10px;padding:2px 7px;border:1px solid #3f5a82;background:#16243d;color:#9ec4ff;border-radius:4px;cursor:pointer}
+    .ccc-help{margin-top:8px;font-size:11px;color:#c7c7c7;line-height:1.45}
+    .ccc-sw{margin-top:6px;border-collapse:collapse;width:100%;font-size:10px}
+    .ccc-sw th,.ccc-sw td{border-bottom:1px solid #252a36;padding:3px 4px;vertical-align:top;text-align:left}
+    .ccc-sw th{color:#88a1c5;background:#131926}
+    .ccc-link{color:#9cdcfe;text-decoration:none}
+    .ccc-link:hover{text-decoration:underline}
+    .ccc-empty{padding:20px;text-align:center;color:var(--fg-sub);background:#111;border:1px dashed #333;border-radius:6px}
   </style>
 </head>
 <body>
@@ -364,9 +400,11 @@
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
       <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="WebEngine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Engine Monitor</button>
       <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
+      <button class="hub-section-btn hub-nav-item"        id="navCodeCopyCats" onclick="showSection('codecopycats')" data-tip="Copy-ready snippets with switch/help details and compound filters"><span class="hub-nav-icon">&#x1F98B;</span>Code Copy-Cats</button>
       <div class="hub-sidebar-links">
         <a class="hub-sidebar-link" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help Index in a new window">&#x1F4D6; Help Index (local file)</a>
         <a class="hub-sidebar-link" id="helpHostedLink" href="http://127.0.0.1:8042/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help via WebEngine (requires engine running)">&#x1F310; Help Index (engine hosted)</a>
+        <a class="hub-sidebar-link" href="XHTML-WorkspaceHub.xhtml?section=codecopycats" target="_blank" rel="noopener" title="Open Code Copy-Cats in a new window">&#x1F98B; Code Copy-Cats</a>
       </div>
     </div>
 
@@ -571,6 +609,52 @@
         </div>
       </div>
 
+      <div id="secCodeCopyCats" style="display:none">
+        <div class="hub-section-title">Code Copy-Cats</div>
+        <div class="ccc-toolbar">
+          <div class="ccc-field" style="min-width:200px">
+            <label for="cccSearch">Search</label>
+            <input type="text" id="cccSearch" placeholder="script, switch, purpose, dependency" />
+          </div>
+          <div class="ccc-field">
+            <label for="cccMatchMode">Compile Mode</label>
+            <select id="cccMatchMode">
+              <option value="and">AND</option>
+              <option value="or">OR</option>
+            </select>
+          </div>
+          <div class="ccc-field" style="min-width:240px">
+            <label for="cccNotTokens">NOT Tokens (comma separated)</label>
+            <input type="text" id="cccNotTokens" placeholder="deprecated,legacy" />
+          </div>
+          <div class="ccc-field">
+            <label for="cccVerbFilter">Verbs</label>
+            <select id="cccVerbFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccPurposeFilter">Purposes</label>
+            <select id="cccPurposeFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccObjectiveFilter">Functional Objectives</label>
+            <select id="cccObjectiveFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccDependencyFilter">Dependency Relations</label>
+            <select id="cccDependencyFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field" style="min-width:220px">
+            <label for="cccScriptFilter">Script Files</label>
+            <select id="cccScriptFilter" multiple="multiple"></select>
+          </div>
+          <button class="scan-btn" id="cccApplyBtn">Apply Filter</button>
+          <button class="scan-btn" id="cccResetBtn">Reset</button>
+          <button class="scan-btn" id="cccCopyUrlBtn">Copy Filter URL</button>
+        </div>
+        <div class="ccc-status" id="cccStatus">Loading Code Copy-Cats data...</div>
+        <div id="cccResults" class="ccc-grid"><div class="ccc-empty">Loading snippets...</div></div>
+      </div>
+
     </div><!-- hub-main -->
   </div><!-- hub-layout -->
 
@@ -629,6 +713,7 @@
   var _sortMode   = 'default';
   var _groupFilter = 'all'; /* 'all' or a specific group tag */
   var _selectedTools = {};  /* id -> true for checked tool cards */
+  var _toolHrefAvailability = {}; /* normalized href -> ok|missing|unknown */
   var LOCAL_SCHEMA_VERSION = 'WorkspaceHubData/1.0';
   var SCHEMA_TRANSFORMS = {
     'WorkspaceHubData/1.0': 'compat-v1',
@@ -643,6 +728,7 @@
   var _approvalItems = [];
   var _approvalSelected = {};
   var _approvalSort = 'priority-desc';
+  var _codeCopyCats = { rows: [], filtered: [], loadedAt: null, sourceRefresh: [] };
   var STATIC_BOOTSTRAP_DATA_SOURCES = {
     schemaVersion: 'HubDataSources/1.0',
     updatedAt: '2026-04-26T00:00:00Z',
@@ -742,12 +828,13 @@
   /* ── Built-in tool registry ── */
   var TOOLS = [
     { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools', groups:['Core'] },
+    { title:'Code Copy-Cats',         icon:'&#x1F98B;', desc:'Copy-ready snippets with switch/help details and compound filters', href:'XHTML-WorkspaceHub.xhtml?section=codecopycats',       section:'tools', groups:['Core','Reporting'] },
     { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools', groups:['Scanning','Reporting'] },
     { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools', groups:['Core','Config'] },
     { title:'Master To-Do',           icon:'&#x2705;',  desc:'Full task manager with filters and priority tracking',         href:'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',         section:'tools', groups:['Core','DevOps'] },
     { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools', groups:['DevOps'] },
     { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
-    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-DependencyVis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
     { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools', groups:['Checklists'] },
     { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
     { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
@@ -756,7 +843,7 @@
     { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools', groups:['Security'] },
     { title:'Data Relational Viz',    icon:'&#x1F578;', desc:'Interrelational data visualization with AI wizard and foresight modelling', href:'XHTML-DataRelationalViz.xhtml', section:'tools', badge:'NEW', groups:['Data','Reporting'] },
     { title:'Changelog Viewer',       icon:'&#x1F4DD;', desc:'Browse workspace changelog entries with filtering and search',href:'XHTML-ChangelogViewer.xhtml',                            section:'tools', groups:['Reporting','DevOps'] },
-    { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'XHTML-DependencyVis.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
     { title:'Checklists V1 Root',      icon:'&#x2611;',  desc:'Version 1 root checklist with structured pre-flight gates', href:'PwShGUI-Checklists_V1-ROOT.xhtml',                       section:'tools', groups:['Checklists'] },
     { title:'Implementation Steps',    icon:'&#x1F4C3;', desc:'Step-by-step implementation guide for project features',    href:'~README.md/Implementation-Steps.xhtml',                 section:'tools', groups:['DevOps'] },
     { title:'Security Setup Guide',    icon:'&#x1F6E1;', desc:'Security configuration and DPAPI setup walkthrough',        href:'~README.md/SECURITY-SETUP-GUIDE.xhtml',                 section:'tools', groups:['Security'] },
@@ -768,7 +855,7 @@
   ];
 
   /* ── Section navigation ── */
-  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources'];
+  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources','CodeCopyCats'];
 
   function showSection(name) {
     for (var i = 0; i < _sections.length; i++) {
@@ -786,6 +873,7 @@
     if (name === 'monitor')    { refreshMonitor(); }
     if (name === 'reports')    { loadReports(); }
     if (name === 'sources')    { renderDataSources(); }
+    if (name === 'codecopycats') { ensureCodeCopyCatsLoaded(); }
   }
   window.showSection = showSection;
 
@@ -1413,6 +1501,42 @@
     });
   }
 
+  function _normalizeWorkspacePath(path) {
+    var p = String(path || '').replace(/\\/g, '/').replace(/^\.?\//, '');
+    while (p.indexOf('//') !== -1) { p = p.replace(/\/\//g, '/'); }
+    return p.toLowerCase();
+  }
+
+  function _isExternalHref(href) {
+    var h = String(href || '').toLowerCase();
+    return h.indexOf('http://') === 0 || h.indexOf('https://') === 0 || h.indexOf('file://') === 0;
+  }
+
+  function refreshToolLinkAvailability() {
+    return fetchSectionData('reportsList', '/api/workspace/files?ext=*.json,*.xhtml,*.html', { method: 'GET' }, false)
+      .then(function(res) {
+        var files = (res && res.data && Array.isArray(res.data.files)) ? res.data.files : [];
+        var fileMap = {};
+        for (var i = 0; i < files.length; i++) {
+          var p = _normalizeWorkspacePath(files[i] && files[i].path ? files[i].path : '');
+          if (p) { fileMap[p] = true; }
+        }
+
+        _toolHrefAvailability = {};
+        for (var j = 0; j < TOOLS.length; j++) {
+          var href = TOOLS[j].href || '';
+          var key = _normalizeWorkspacePath(href);
+          if (!key) { continue; }
+          if (_isExternalHref(href)) { _toolHrefAvailability[key] = 'ok'; continue; }
+          _toolHrefAvailability[key] = fileMap[key] ? 'ok' : 'missing';
+        }
+      })
+      .catch(function() {
+        _toolHrefAvailability = {};
+      });
+  }
+  window.refreshToolLinkAvailability = refreshToolLinkAvailability;
+
   /* ── Tool cards ── */
   function renderToolCards(extraItems) {
     var cards = document.getElementById('toolCards');
@@ -1452,7 +1576,13 @@
       var t = allTools[i];
       var chkId = 'chk_' + t._idx;
       var checked = _selectedTools[t._idx] ? ' checked="checked"' : '';
-      html += '<a class="hub-card" href="' + escAttr(t.href) + '" title="' + escAttr(t.title) + '" data-idx="' + t._idx + '" onclick="return onCardClick(event,' + t._idx + ')">' +
+      var hrefKey = _normalizeWorkspacePath(t.href || '');
+      var linkState = _toolHrefAvailability[hrefKey] || 'unknown';
+      var linkMissing = (linkState === 'missing');
+      var cardClass = 'hub-card' + (linkMissing ? ' link-missing' : '');
+      var cardHref = linkMissing ? '#' : t.href;
+      var cardTitle = t.title + (linkMissing ? ' (missing target)' : '');
+      html += '<a class="' + cardClass + '" href="' + escAttr(cardHref) + '" title="' + escAttr(cardTitle) + '" data-idx="' + t._idx + '" data-link-state="' + linkState + '" onclick="return onCardClick(event,' + t._idx + ')">' +
         '<input type="checkbox" class="hub-card-chk" id="' + chkId + '"' + checked + ' onclick="onCardCheck(event,' + t._idx + ')" title="Select ' + escAttr(t.title) + '" />' +
         '<div class="hub-card-icon">' + t.icon + '</div>' +
         '<div class="hub-card-title">' + escHtml(t.title) + '</div>' +
@@ -1469,6 +1599,9 @@
         }
         html += '</div>';
       }
+      if (linkMissing) {
+        html += '<span class="hub-card-missing-badge" title="Missing link target">?</span>';
+      }
       html += '<span class="hub-card-badge badge-grey" id="badge_' + t._idx + '">loading&#x2026;</span>' +
         '</a>';
     }
@@ -1482,6 +1615,12 @@
   function onCardClick(ev, idx) {
     /* If checkbox was clicked, don't navigate */
     if (ev.target.type === 'checkbox') { return true; }
+    var node = ev.currentTarget;
+    if (node && node.getAttribute('data-link-state') === 'missing') {
+      ev.preventDefault();
+      setStatus('Tool target is missing: tile retained with warning badge', 'warn', 'right');
+      return false;
+    }
     return true; /* allow default navigation */
   }
   window.onCardClick = onCardClick;
@@ -1582,6 +1721,443 @@
       html += '<option value="' + escAttr(allGroups[j]) + '">' + escHtml(allGroups[j]) + '</option>';
     }
     sel.innerHTML = html;
+  }
+
+  /* -- Code Copy-Cats -- */
+  function _basename(path) {
+    var p = String(path || '').replace(/\\/g, '/');
+    var i = p.lastIndexOf('/');
+    return i >= 0 ? p.substring(i + 1) : p;
+  }
+
+  function _cleanList(v) {
+    if (Array.isArray(v)) { return v; }
+    if (!v) { return []; }
+    return [v];
+  }
+
+  function _toListText(v) {
+    var arr = _cleanList(v);
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      var t = String(arr[i] || '').trim();
+      if (t) { out.push(t); }
+    }
+    return out;
+  }
+
+  function _versionFromInlineComment(content) {
+    var txt = String(content || '');
+    var m = txt.match(/(?:#|<!--)\s*VersionTag:\s*([^\r\n<]+)/i);
+    return m ? String(m[1] || '').trim() : '';
+  }
+
+  function _buildSnippet(path, switches) {
+    var cmd = '& .\\' + String(path || '').replace(/\\/g, '/');
+    if (switches && switches.length > 0) {
+      for (var i = 0; i < switches.length; i++) {
+        var sw = switches[i] || {};
+        var ex = String(sw.example || '').trim();
+        if (ex) { cmd += ' ' + ex; }
+      }
+    }
+    return cmd;
+  }
+
+  function _splitCsv(v) {
+    var text = String(v || '');
+    if (!text) { return []; }
+    var parts = text.split(',');
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var s = String(parts[i] || '').trim();
+      if (s) { out.push(s); }
+    }
+    return out;
+  }
+
+  function _getSelectValues(id) {
+    var sel = document.getElementById(id);
+    if (!sel) { return []; }
+    var vals = [];
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].selected && sel.options[i].value) { vals.push(sel.options[i].value); }
+    }
+    return vals;
+  }
+
+  function _setSelectValues(id, values) {
+    var sel = document.getElementById(id);
+    if (!sel) { return; }
+    var map = {};
+    for (var i = 0; i < values.length; i++) { map[values[i]] = true; }
+    for (var j = 0; j < sel.options.length; j++) {
+      sel.options[j].selected = !!map[sel.options[j].value];
+    }
+  }
+
+  function _populateMultiSelect(id, values) {
+    var sel = document.getElementById(id);
+    if (!sel) { return; }
+    var sorted = values.slice().sort();
+    var html = '';
+    for (var i = 0; i < sorted.length; i++) {
+      html += '<option value="' + escAttr(sorted[i]) + '">' + escHtml(sorted[i]) + '</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function _rowText(row) {
+    var bits = [];
+    bits.push(row.name || '');
+    bits.push(row.path || '');
+    bits.push(row.version || '');
+    bits.push(row.helpSummary || '');
+    bits.push((row.purpose || []).join(' '));
+    bits.push((row.objectives || []).join(' '));
+    bits.push((row.dependencies || []).join(' '));
+    bits.push((row.verbs || []).join(' '));
+    var sw = row.switches || [];
+    for (var i = 0; i < sw.length; i++) {
+      bits.push(sw[i].name || '');
+      bits.push(sw[i].description || '');
+      bits.push(sw[i].example || '');
+    }
+    return bits.join(' ').toLowerCase();
+  }
+
+  function _compileCodeCopyCatsRows(manifest, helpReg, launchSwitchText, launchQuickText) {
+    var scripts = (manifest && Array.isArray(manifest.scripts)) ? manifest.scripts : [];
+    var rows = [];
+    var i;
+    var helpScripts = helpReg && helpReg.scripts ? helpReg.scripts : {};
+    var commonSwitches = helpReg && helpReg.commonSwitches ? helpReg.commonSwitches : {};
+
+    for (i = 0; i < scripts.length; i++) {
+      var s = scripts[i] || {};
+      var scriptPath = String(s.path || '').replace(/\\/g, '/');
+      if (!scriptPath) { continue; }
+      var base = _basename(scriptPath);
+      var fn = _cleanList(s.functions);
+      var verbs = [];
+      var purposes = _toListText(s.fileRole);
+      var objectives = [];
+      var deps = _toListText(s.dependencies);
+
+      for (var f = 0; f < fn.length; f++) {
+        var fname = String(fn[f] && fn[f].function ? fn[f].function : '');
+        if (fname) {
+          var dash = fname.indexOf('-');
+          if (dash > 0) {
+            var vb = fname.substring(0, dash);
+            if (verbs.indexOf(vb) === -1) { verbs.push(vb); }
+          }
+          objectives.push(fname);
+        }
+      }
+
+      var helpSpec = helpScripts[String(s.name || '')] || null;
+      var sw = [];
+      if (helpSpec && helpSpec.params) {
+        var pKeys = Object.keys(helpSpec.params);
+        for (var pk = 0; pk < pKeys.length; pk++) {
+          sw.push({ name: pKeys[pk], description: String(helpSpec.params[pKeys[pk]] || ''), example: pKeys[pk] });
+        }
+      }
+      var cKeys = Object.keys(commonSwitches);
+      for (var ck = 0; ck < cKeys.length; ck++) {
+        var cs = commonSwitches[cKeys[ck]] || {};
+        var csName = String(cs.param || '');
+        if (!csName) { continue; }
+        var found = false;
+        for (var sx = 0; sx < sw.length; sx++) { if (sw[sx].name === csName) { found = true; break; } }
+        if (!found) {
+          sw.push({ name: csName, description: String(cs.description || ''), example: csName });
+        }
+      }
+
+      rows.push({
+        name: String(s.name || base),
+        path: scriptPath,
+        version: String(s.version || ''),
+        verbs: verbs,
+        purpose: purposes,
+        objectives: objectives,
+        dependencies: deps,
+        switches: sw,
+        helpSummary: helpSpec && helpSpec.helpFn ? ('HelpFn: ' + helpSpec.helpFn) : 'Help: not mapped',
+        snippet: _buildSnippet(scriptPath, sw)
+      });
+    }
+
+    rows.unshift({
+      name: 'Launch-GUI',
+      path: 'Launch-GUI.bat',
+      version: _versionFromInlineComment(launchSwitchText) || _versionFromInlineComment(launchQuickText),
+      verbs: ['Launch','Start','Use'],
+      purpose: ['Launcher','Runtime Selection','Execution Policy'],
+      objectives: ['Select PowerShell runtime','Apply script security mode','Launch selected GUI mode'],
+      dependencies: ['Main-GUI.ps1','Launch-CFRMenu.bat','scripts/Test-Prerequisites.ps1'],
+      switches: [
+        { name:'/usepsv:5', description:'Force PowerShell 5.1 path and skip PS7 prompt.', example:'/usepsv:5' },
+        { name:'/usepsv7', description:'Force PowerShell 7 path and skip PS7 prompt.', example:'/usepsv7' },
+        { name:'/skipps7', description:'Skip PS7 detection/installation prompt.', example:'/skipps7' },
+        { name:'/scriptsec:1', description:'Bypass policy for current session only.', example:'/scriptsec:1' },
+        { name:'/scriptsec:2', description:'Set RemoteSigned at CurrentUser scope.', example:'/scriptsec:2' },
+        { name:'/scriptsec:3', description:'Set RemoteSigned at LocalMachine scope (admin).', example:'/scriptsec:3' },
+        { name:'/scriptsec:4', description:'Set Unrestricted at CurrentUser scope.', example:'/scriptsec:4' },
+        { name:'/scriptsec:5', description:'Show manual policy instructions.', example:'/scriptsec:5' },
+        { name:'/scriptsec:6', description:'Continue without policy changes.', example:'/scriptsec:6' },
+        { name:'/skippolicy', description:'Skip script policy menu.', example:'/skippolicy' },
+        { name:'/TASKTRAY', description:'Pass TASKTRAY mode to child scripts.', example:'/TASKTRAY' }
+      ],
+      helpSummary: 'Switches/usage sourced from Launch-GUI help reference docs.',
+      snippet: 'Launch-GUI.bat /usepsv7 /scriptsec:1 /TASKTRAY'
+    });
+
+    return rows;
+  }
+
+  function _loadTextFile(path) {
+    return fetch(path, { method: 'GET' }).then(function(r) {
+      if (!r.ok) { throw new Error('http ' + r.status); }
+      return r.text();
+    });
+  }
+
+  function _loadJsonFile(path) {
+    return fetch(path, { method: 'GET' }).then(function(r) {
+      if (!r.ok) { throw new Error('http ' + r.status); }
+      return r.json();
+    });
+  }
+
+  function _buildCodeCopyCatsFilters(rows) {
+    var verbs = [];
+    var purposes = [];
+    var objectives = [];
+    var deps = [];
+    var scripts = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      scripts.push(r.path);
+      var lists = [r.verbs || [], r.purpose || [], r.objectives || [], r.dependencies || []];
+      var bags = [verbs, purposes, objectives, deps];
+      for (var li = 0; li < lists.length; li++) {
+        for (var lj = 0; lj < lists[li].length; lj++) {
+          var v = String(lists[li][lj] || '').trim();
+          if (v && bags[li].indexOf(v) === -1) { bags[li].push(v); }
+        }
+      }
+    }
+    _populateMultiSelect('cccVerbFilter', verbs);
+    _populateMultiSelect('cccPurposeFilter', purposes);
+    _populateMultiSelect('cccObjectiveFilter', objectives);
+    _populateMultiSelect('cccDependencyFilter', deps);
+    _populateMultiSelect('cccScriptFilter', scripts);
+  }
+
+  function _deepLinkForCodeCopyCats(row) {
+    var qs = [];
+    qs.push('section=codecopycats');
+    qs.push('scripts=' + encodeURIComponent(row.path));
+    return 'XHTML-WorkspaceHub.xhtml?' + qs.join('&');
+  }
+
+  function _renderCodeCopyCatsRows(rows) {
+    var wrap = document.getElementById('cccResults');
+    var status = document.getElementById('cccStatus');
+    if (!wrap || !status) { return; }
+    if (!rows || rows.length === 0) {
+      wrap.innerHTML = '<div class="ccc-empty">No snippets match the current filters.</div>';
+      status.textContent = '0 rows shown | data refreshed: ' + (_codeCopyCats.loadedAt || 'unknown');
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      html += '<div class="ccc-card">' +
+        '<h4>' + escHtml(r.name) + '</h4>' +
+        '<div class="ccc-meta"><span>' + escHtml(r.path) + '</span><span>Version: ' + escHtml(r.version || 'n/a') + '</span></div>' +
+        '<div class="ccc-snippet" id="cccSnippet_' + i + '">' + escHtml(r.snippet || '') +
+          '<button class="ccc-copy" onclick="copyCodeCopyCatsSnippet(' + i + ')">Copy</button>' +
+        '</div>' +
+        '<div class="ccc-help"><strong>Purpose:</strong> ' + escHtml((r.purpose || []).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Objectives:</strong> ' + escHtml((r.objectives || []).slice(0, 6).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Dependencies:</strong> ' + escHtml((r.dependencies || []).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Help:</strong> ' + escHtml(r.helpSummary || 'n/a') + '<br/>' +
+          '<a class="ccc-link" href="' + escAttr(_deepLinkForCodeCopyCats(r)) + '" target="_blank" rel="noopener">Open prefiltered view</a>' +
+        '</div>';
+      var sw = r.switches || [];
+      if (sw.length > 0) {
+        html += '<table class="ccc-sw"><thead><tr><th>Switch</th><th>Explanation</th><th>Snippet</th></tr></thead><tbody>';
+        for (var s = 0; s < sw.length; s++) {
+          html += '<tr><td>' + escHtml(sw[s].name || '') + '</td><td>' + escHtml(sw[s].description || '') + '</td><td>' + escHtml(sw[s].example || '') + '</td></tr>';
+        }
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    }
+    wrap.innerHTML = html;
+    status.textContent = rows.length + ' rows shown | data refreshed: ' + (_codeCopyCats.loadedAt || 'unknown') + ' | sources: ' + (_codeCopyCats.sourceRefresh || []).join(' ; ');
+  }
+
+  function _applyCodeCopyCatsFilter() {
+    var modeEl = document.getElementById('cccMatchMode');
+    var searchEl = document.getElementById('cccSearch');
+    var notEl = document.getElementById('cccNotTokens');
+    var mode = modeEl ? String(modeEl.value || 'and').toLowerCase() : 'and';
+    var search = searchEl ? String(searchEl.value || '').trim().toLowerCase() : '';
+    var notTokens = _splitCsv(notEl ? notEl.value : '').map(function(v){ return v.toLowerCase(); });
+    var verbs = _getSelectValues('cccVerbFilter');
+    var purposes = _getSelectValues('cccPurposeFilter');
+    var objectives = _getSelectValues('cccObjectiveFilter');
+    var deps = _getSelectValues('cccDependencyFilter');
+    var scripts = _getSelectValues('cccScriptFilter');
+
+    var rows = _codeCopyCats.rows || [];
+    var out = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var text = _rowText(r);
+      var checks = [];
+      if (verbs.length > 0) { checks.push(verbs.some(function(v){ return (r.verbs || []).indexOf(v) >= 0; })); }
+      if (purposes.length > 0) { checks.push(purposes.some(function(v){ return (r.purpose || []).indexOf(v) >= 0; })); }
+      if (objectives.length > 0) { checks.push(objectives.some(function(v){ return (r.objectives || []).indexOf(v) >= 0; })); }
+      if (deps.length > 0) { checks.push(deps.some(function(v){ return (r.dependencies || []).indexOf(v) >= 0; })); }
+      if (scripts.length > 0) { checks.push(scripts.indexOf(r.path) >= 0); }
+      if (search) { checks.push(text.indexOf(search) >= 0); }
+
+      var allow = true;
+      if (checks.length > 0) {
+        allow = (mode === 'or') ? checks.some(function(v){ return v; }) : checks.every(function(v){ return v; });
+      }
+      if (allow && notTokens.length > 0) {
+        for (var n = 0; n < notTokens.length; n++) {
+          if (text.indexOf(notTokens[n]) >= 0) { allow = false; break; }
+        }
+      }
+      if (allow) { out.push(r); }
+    }
+    _codeCopyCats.filtered = out;
+    _renderCodeCopyCatsRows(out);
+  }
+
+  function resetCodeCopyCatsFilter() {
+    var ids = ['cccSearch','cccNotTokens'];
+    for (var i = 0; i < ids.length; i++) {
+      var e = document.getElementById(ids[i]);
+      if (e) { e.value = ''; }
+    }
+    var selIds = ['cccVerbFilter','cccPurposeFilter','cccObjectiveFilter','cccDependencyFilter','cccScriptFilter'];
+    for (var s = 0; s < selIds.length; s++) { _setSelectValues(selIds[s], []); }
+    var mode = document.getElementById('cccMatchMode');
+    if (mode) { mode.value = 'and'; }
+    _applyCodeCopyCatsFilter();
+  }
+  window.resetCodeCopyCatsFilter = resetCodeCopyCatsFilter;
+
+  function copyCodeCopyCatsSnippet(index) {
+    var rows = _codeCopyCats.filtered || [];
+    var row = rows[index];
+    if (!row) { return; }
+    var text = String(row.snippet || '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        setStatus('Snippet copied: ' + row.name, 'ok', 'right');
+      }).catch(function() {
+        setStatus('Copy failed for snippet', 'warn', 'right');
+      });
+    } else {
+      setStatus('Clipboard API unavailable in this runtime', 'warn', 'right');
+    }
+  }
+  window.copyCodeCopyCatsSnippet = copyCodeCopyCatsSnippet;
+
+  function copyCodeCopyCatsFilterUrl() {
+    var mode = document.getElementById('cccMatchMode');
+    var search = document.getElementById('cccSearch');
+    var notTokens = document.getElementById('cccNotTokens');
+    var qs = [];
+    qs.push('section=codecopycats');
+    qs.push('mode=' + encodeURIComponent(mode ? mode.value : 'and'));
+    qs.push('search=' + encodeURIComponent(search ? search.value : ''));
+    qs.push('not=' + encodeURIComponent(notTokens ? notTokens.value : ''));
+    qs.push('verbs=' + encodeURIComponent(_getSelectValues('cccVerbFilter').join(',')));
+    qs.push('purposes=' + encodeURIComponent(_getSelectValues('cccPurposeFilter').join(',')));
+    qs.push('objectives=' + encodeURIComponent(_getSelectValues('cccObjectiveFilter').join(',')));
+    qs.push('deps=' + encodeURIComponent(_getSelectValues('cccDependencyFilter').join(',')));
+    qs.push('scripts=' + encodeURIComponent(_getSelectValues('cccScriptFilter').join(',')));
+    var url = 'XHTML-WorkspaceHub.xhtml?' + qs.join('&');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() { setStatus('Code Copy-Cats filter URL copied', 'ok', 'right'); });
+    }
+  }
+  window.copyCodeCopyCatsFilterUrl = copyCodeCopyCatsFilterUrl;
+
+  function _applyCodeCopyCatsQuery() {
+    var p = new URLSearchParams(window.location.search || '');
+    var section = String(p.get('section') || '').toLowerCase();
+    if (section === 'codecopycats') { showSection('codecopycats'); }
+    var mode = p.get('mode');
+    if (mode) {
+      var modeEl = document.getElementById('cccMatchMode');
+      if (modeEl && (mode === 'and' || mode === 'or')) { modeEl.value = mode; }
+    }
+    var search = p.get('search');
+    var notText = p.get('not');
+    if (search !== null) { var se = document.getElementById('cccSearch'); if (se) { se.value = search; } }
+    if (notText !== null) { var ne = document.getElementById('cccNotTokens'); if (ne) { ne.value = notText; } }
+    _setSelectValues('cccVerbFilter', _splitCsv(p.get('verbs')));
+    _setSelectValues('cccPurposeFilter', _splitCsv(p.get('purposes')));
+    _setSelectValues('cccObjectiveFilter', _splitCsv(p.get('objectives')));
+    _setSelectValues('cccDependencyFilter', _splitCsv(p.get('deps')));
+    _setSelectValues('cccScriptFilter', _splitCsv(p.get('scripts')));
+    _applyCodeCopyCatsFilter();
+  }
+
+  function ensureCodeCopyCatsLoaded() {
+    if (_codeCopyCats.rows && _codeCopyCats.rows.length > 0) {
+      _applyCodeCopyCatsQuery();
+      return;
+    }
+    var status = document.getElementById('cccStatus');
+    if (status) { status.textContent = 'Loading manifest/help sources...'; }
+    Promise.all([
+      _loadJsonFile('config/agentic-manifest.json').catch(function(){ return null; }),
+      _loadJsonFile('config/help-menu-registry.json').catch(function(){ return null; }),
+      _loadTextFile('~README.md/LAUNCH-GUI-SWITCHES-REFERENCE.md').catch(function(){ return ''; }),
+      _loadTextFile('~README.md/LAUNCH-GUI-QUICK-REFERENCE.md').catch(function(){ return ''; })
+    ]).then(function(res) {
+      var manifest = res[0] || { scripts: [] };
+      var helpReg = res[1] || { scripts: {}, commonSwitches: {} };
+      var rows = _compileCodeCopyCatsRows(manifest, helpReg, res[2], res[3]);
+      _codeCopyCats.rows = rows;
+      _codeCopyCats.filtered = rows.slice();
+      _codeCopyCats.loadedAt = new Date().toLocaleString();
+      _codeCopyCats.sourceRefresh = [
+        'config/agentic-manifest.json',
+        'config/help-menu-registry.json',
+        '~README.md/LAUNCH-GUI-SWITCHES-REFERENCE.md',
+        '~README.md/LAUNCH-GUI-QUICK-REFERENCE.md'
+      ];
+      _buildCodeCopyCatsFilters(rows);
+      _applyCodeCopyCatsQuery();
+    }).catch(function(err) {
+      if (status) { status.textContent = 'Failed to load Code Copy-Cats data: ' + err.message; }
+      var wrap = document.getElementById('cccResults');
+      if (wrap) { wrap.innerHTML = '<div class="ccc-empty">No Code Copy-Cats data could be loaded.</div>'; }
+    });
+  }
+  window.ensureCodeCopyCatsLoaded = ensureCodeCopyCatsLoaded;
+
+  function bindCodeCopyCatsEvents() {
+    var applyBtn = document.getElementById('cccApplyBtn');
+    if (applyBtn) { applyBtn.addEventListener('click', _applyCodeCopyCatsFilter); }
+    var resetBtn = document.getElementById('cccResetBtn');
+    if (resetBtn) { resetBtn.addEventListener('click', resetCodeCopyCatsFilter); }
+    var copyUrlBtn = document.getElementById('cccCopyUrlBtn');
+    if (copyUrlBtn) { copyUrlBtn.addEventListener('click', copyCodeCopyCatsFilterUrl); }
   }
 
   /* ── Scan status → freshness badges ── */
@@ -2330,7 +2906,7 @@
     setStatus('Checking engine control path&#x2026;', 'ok', 'right');
     if (_isFileProtocol()) {
       setStatus('Offline page mode: launch via terminal or Launch-GUI.bat', 'warn', 'right');
-      _setSourceMessage('Start command: powershell -ExecutionPolicy Bypass -File .\\scripts\\Start-LocalWebEngineService.ps1', 'warn');
+      _setSourceMessage('Start command: powershell -ExecutionPolicy Bypass -File .\\scripts\\Start-LocalWebEngine.ps1 -Action Start -NoLaunchBrowser', 'warn');
       try { window.open('file:///C:/PowerShellGUI/Launch-GUI.bat', '_blank'); } catch(e) { }
       return;
     }
@@ -2340,7 +2916,7 @@
         else { setStatus('Engine endpoint reachable but reports stopped. Start service from terminal.', 'warn', 'right'); }
       })
       .catch(function(){
-        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngineService.ps1 from terminal', 'warn', 'right');
+        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngine.ps1 from terminal', 'warn', 'right');
       });
   }
   window.startEngine = startEngine;
@@ -2696,9 +3272,10 @@
         connectWs();
         startPoll();
         _populateGroupFilter();
-        renderToolCards(null);
+        refreshToolLinkAvailability().then(function(){ renderToolCards(null); }).catch(function(){ renderToolCards(null); });
         renderEvtPresets();
         renderDataSources();
+        bindCodeCopyCatsEvents();
         refreshDataSourceHealth();
         setStatus(_isFileProtocol() ? 'Initialised (offline page mode with live-source fallback)' : 'Initialising&#x2026;', _isFileProtocol() ? 'warn' : 'ok', 'right');
         pollEngineStatus();
@@ -2706,6 +3283,10 @@
         fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false)
           .then(function(res){ _updateStatsStrip(res.data); })
           .catch(function(){});
+        var params = new URLSearchParams(window.location.search || '');
+        if (String(params.get('section') || '').toLowerCase() === 'codecopycats') {
+          showSection('codecopycats');
+        }
         setTimeout(checkToolConfigs, 3000);
       })
       .catch(function() {
@@ -2717,5 +3298,11 @@
   })();
   //]]>
   </script>
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="./styles/eventlog-view.css"/>
+<script src="./scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="root" data-title="Workspace Aggregate Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+

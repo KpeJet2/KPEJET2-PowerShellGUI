@@ -90,7 +90,6 @@
 | Repair-ModulePaths.ps1 | Repairs PSModulePath to include modules directory |
 | Start-BWServe.ps1 | Launch Bitwarden CLI HTTP API service |
 | Start-LocalWebEngine.ps1 | Local HTTP/WebSocket API engine (port 8042) — 11 routes, CSRF protection |
-| Start-LocalWebEngineService.ps1 | Windows service wrapper for Start-LocalWebEngine.ps1 |
 | Test-ModuleDependencies.ps1 | Reports on installed, missing and errored modules |
 | Test-Prerequisites.ps1 | Validates system prerequisites for PowerShellGUI |
 | Invoke-ChecklistActions.ps1 | Automated checklist actions for Getting Started |

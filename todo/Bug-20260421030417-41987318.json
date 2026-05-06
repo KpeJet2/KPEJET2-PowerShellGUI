@@ -1,56 +1,46 @@
-﻿{
-    "id":  "Bug-20260421030417-41987318",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Parse error in H-Ai-Nikr-Agi.psm1 line 493: The string is missing the terminator: \u0027.",
-    "lastSeenAt":  "2026-04-20T19:04:17.0377697Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "The string is missing the terminator: \u0027.",
-    "parentId":  "",
-    "type":  "Bug",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-04-20T19:04:17.0377697Z",
-    "priority":  "HIGH",
-    "suggestedBy":  "CronAiAthon-BugTracker",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "SIN-20260412123535-3718faf1",
-    "bugReferrals":  [
-
-                     ],
-    "implementedAt":  null,
-    "notes":  "Matched existing sin: The string is missing the terminator: \u0027.",
-    "category":  "parsing",
-    "reopenedAt":  null,
-    "created":  "2026-04-20T19:04:17.0377697Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-04-20T19:04:17.0377697Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bug-20260421030417-41987318",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 493: The string is missing the terminator: '.",
+  "lastSeenAt": "2026-04-20T19:04:17.0377697Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "The string is missing the terminator: '.",
+  "parentId": "",
+  "type": "Bug",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-04-20T19:04:17.0377697Z",
+  "priority": "HIGH",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "plannedAt": null,
+  "linkedBugs": [],
+  "status": "DONE",
+  "sinId": "SIN-20260412123535-3718faf1",
+  "bugReferrals": [],
+  "implementedAt": null,
+  "notes": "Matched existing sin: The string is missing the terminator: '.\nAuto-reconciled: target file currently parses cleanly (or absent). Path=",
+  "category": "parsing",
+  "reopenedAt": null,
+  "created": "2026-04-20T19:04:17.0377697Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "",
+  "modified": "2026-04-20T19:04:17.0377697Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null,
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:43.7808802+08:00"
 }

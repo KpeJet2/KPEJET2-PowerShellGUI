@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -15,12 +15,18 @@
 BeforeAll {
     $modulePath = Join-Path $PSScriptRoot '..\modules\AssistedSASC.psm1'
     Import-Module $modulePath -Force -ErrorAction Stop
+    $script:WorkspaceRoot = Split-Path -Parent $PSScriptRoot
+    # Pre-initialise the module so $script:_ModuleRoot is populated for Assert-SafePath default roots.
+    if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
+        try { Initialize-SASCModule -ScriptDir $script:WorkspaceRoot | Out-Null } catch { }
+    }
 }
 
 Describe 'Assert-SafePath' {
     It 'Accepts a valid absolute path' {
         if (Get-Command Assert-SafePath -ErrorAction SilentlyContinue) {
-            $result = Assert-SafePath -Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'config')
+            $configPath = Join-Path $script:WorkspaceRoot 'config'
+            $result = Assert-SafePath -Path $configPath -AllowedRoots @($script:WorkspaceRoot)
             $result | Should -Not -BeNullOrEmpty
         } else {
             Set-ItResult -Skipped -Because 'Assert-SafePath not exported'
@@ -29,7 +35,7 @@ Describe 'Assert-SafePath' {
 
     It 'Rejects path traversal attempts' {
         if (Get-Command Assert-SafePath -ErrorAction SilentlyContinue) {
-            { Assert-SafePath -Path '..\..\Windows\System32' } | Should -Throw
+            { Assert-SafePath -Path '..\..\Windows\System32' -AllowedRoots @($script:WorkspaceRoot) } | Should -Throw
         } else {
             Set-ItResult -Skipped -Because 'Assert-SafePath not exported'
         }
@@ -39,7 +45,7 @@ Describe 'Assert-SafePath' {
 Describe 'Initialize-SASCModule' {
     It 'Initializes without error' {
         if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
-            { Initialize-SASCModule } | Should -Not -Throw
+            { Initialize-SASCModule -ScriptDir $script:WorkspaceRoot } | Should -Not -Throw
         } else {
             Set-ItResult -Skipped -Because 'Initialize-SASCModule not exported'
         }
@@ -79,6 +85,7 @@ Describe 'Find-BWCli' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

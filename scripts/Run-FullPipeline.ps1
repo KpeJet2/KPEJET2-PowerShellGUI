@@ -1,43 +1,79 @@
+# VersionTag: 2605.B2.V31.7
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+#Requires -Version 5.1
 <#
-    Run-FullPipeline.ps1
-    Orchestrates a full workspace pipeline: versioning, scans, tests, and smoke runs.
-
-    Usage: .\Run-FullPipeline.ps1 [-RepoRoot <path>] [-ExcludeRegex <regex>]
-
-    Notes:
-    - Excludes folders whose name starts with '~' or '.' by default.
-    - Runs available scripts if present, skips missing tools gracefully.
-
-    # VersionTag: 2604.B1.V1.0
-    # Encoding: UTF8 BOM recommended for PS 5.1
+.SYNOPSIS
+    Orchestrates full workspace pipeline with blocking full-suite tests.
+.DESCRIPTION
+    Runs versioning, maintenance diagnostics, optional scans, then executes
+    tests/Run-AllTests.ps1 as a blocking gate so full Pester coverage and module
+    accessibility validation are enforced in one place.
 #>
-
 param(
     [string]$RepoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path,
-    [string]$ExcludeRegex = '^(~|\.)'
+    [string]$ExcludeRegex = '^(~|\.)',
+    [switch]$SkipLaunchBatches,
+    [switch]$AutoInstallPester,
+    [switch]$NoModuleValidation
 )
 
-function Write-Log { param($Msg) Write-Output "[Run-FullPipeline] $Msg" }
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+function Write-Log {
+    param([string]$Msg)
+    Write-Output "[Run-FullPipeline] $Msg"
+}
 
 function Invoke-IfExists {
     param(
         [string]$Path,
-        [array]$Args
+        [array]$Args = @(),
+        [switch]$Required
     )
-    if (Test-Path $Path) {
-        try {
-            Write-Log "Executing: $Path"
-            & $Path @Args
-            Write-Log "Finished: $Path"
-            return $true
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        if ($Required) {
+            throw "Required script not found: $Path"
         }
-        catch {
-            Write-Log "ERROR running $Path : $($_.Exception.Message)"
-            return $false
-        }
-    }
-    else {
         Write-Log "Not found, skipping: $Path"
+        return $true
+    }
+
+    try {
+        Write-Log "Executing: $Path"
+        & $Path @Args
+        if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
+            throw "Non-zero exit code $LASTEXITCODE from $Path"
+        }
+        Write-Log "Finished: $Path"
+        return $true
+    } catch {
+        Write-Log "ERROR running $Path : $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Invoke-SetupModuleEnvironmentDiagnose {
+    param([string]$ScriptPath, [string]$Workspace)
+
+    if (-not (Test-Path -LiteralPath $ScriptPath)) {
+        throw "Required script not found: $ScriptPath"
+    }
+
+    try {
+        Write-Log "Executing: $ScriptPath -Action Diagnose -WorkspacePath $Workspace"
+        & $ScriptPath -Action 'Diagnose' -WorkspacePath $Workspace
+        if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
+            throw "Non-zero exit code $LASTEXITCODE from $ScriptPath"
+        }
+        Write-Log "Finished: $ScriptPath"
+        return $true
+    } catch {
+        Write-Log "ERROR running $ScriptPath : $($_.Exception.Message)"
         return $false
     }
 }
@@ -45,107 +81,67 @@ function Invoke-IfExists {
 Write-Log "Repository root: $RepoRoot"
 Write-Log "Exclusion regex: $ExcludeRegex"
 
-# 1) Version update
+# 1) Version update + check
 $fixUpdate = Join-Path $RepoRoot 'fix_update_version.ps1'
-Invoke-IfExists $fixUpdate @()
-
-# 2) Version check
 $fixCheck = Join-Path $RepoRoot 'fix_check_version.ps1'
-Invoke-IfExists $fixCheck @()
+if (-not (Invoke-IfExists -Path $fixUpdate)) { exit 1 }
+if (-not (Invoke-IfExists -Path $fixCheck)) { exit 1 }
 
-# 3) Start local web engine / scans
+# 2) Module environment diagnostics
+$validateImports = Join-Path $RepoRoot 'scripts\Validate-ModuleImports.ps1'
+$setupModuleEnv = Join-Path $RepoRoot 'scripts\Setup-ModuleEnvironment.ps1'
+if (-not (Invoke-IfExists -Path $validateImports -Args @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot)) { exit 1 }
+
+# 3) Manifest refresh
+$buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
+if (-not (Invoke-IfExists -Path $buildAgenticManifest -Args @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
+
+# 4) Optional local engine + SIN script helpers
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
-Invoke-IfExists $localWeb @()
+if (-not (Invoke-IfExists -Path $localWeb)) { exit 1 }
 
-# 3a) Log changelog viewer status
-$changelogPath = Join-Path $RepoRoot 'XHTML-ChangelogViewer.xhtml'
-$changelogLog = Join-Path $RepoRoot 'logs' 'changelog-viewer.log'
-if (Test-Path $changelogPath) {
-    $summary = "[ChangelogViewer] $(Get-Date -Format o) - File exists, size: $((Get-Item $changelogPath).Length) bytes."
-    try {
-        Add-Content -Path $changelogLog -Value $summary -Encoding UTF8
-        Write-Log "Changelog viewer status logged."
-    }
-    catch {
-        Write-Log "ERROR logging changelog viewer: $($_.Exception.Message)"
-    }
-}
-else {
-    Write-Log "Changelog viewer file not found, skipping log."
-}
-
-# 4) SIN / integrity scans (optional helper scripts under tools or scripts)
 $sinScript = Join-Path $RepoRoot 'tools\run-sin-scan.ps1'
-if (-not (Invoke-IfExists $sinScript @())) {
-    $sinAlt = Join-Path $RepoRoot 'scripts\Run-SIN-Scan.ps1'
-    Invoke-IfExists $sinAlt @()
+$sinAlt = Join-Path $RepoRoot 'scripts\Run-SIN-Scan.ps1'
+if (-not (Invoke-IfExists -Path $sinScript)) {
+    if (-not (Invoke-IfExists -Path $sinAlt)) { exit 1 }
 }
 
-# 5) Module / unit tests
-$testPath = Join-Path $RepoRoot 'sovereign-kernel\tests\Test-SovereignKernel.ps1'
-Invoke-IfExists $testPath @()
-
-# 6) Launch smoke/chaos/browser batch files found at repo root
-Write-Log "Searching for Launch-*.bat files to run (root and top-level)."
-$batFiles = Get-ChildItem -Path $RepoRoot -Filter 'Launch-*.bat' -File -Recurse | Where-Object {
-    # Exclude files in directories starting with ~ or .
-    $dirName = $_.Directory.Name
-    -not ($dirName -match $ExcludeRegex)
+# 5) Full test gate (Pester + SIN + smoke + module accessibility)
+$runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
+$testArgs = @('-RequirePester', $true)
+if ($AutoInstallPester) {
+    $testArgs += @('-AutoInstallPester')
 }
-foreach ($bat in $batFiles) {
-    try {
-        Write-Log "Starting batch: $($bat.FullName)"
-        Start-Process -FilePath $bat.FullName -NoNewWindow -Wait
-        Write-Log "Completed batch: $($bat.Name)"
+if ($NoModuleValidation) {
+    $testArgs += @('-IncludeModuleValidation', $false)
+} else {
+    $testArgs += @('-IncludeModuleValidation', $true)
+}
+if (-not (Invoke-IfExists -Path $runAllTests -Args $testArgs -Required)) { exit 1 }
+
+# 6) Optional launch batch runs
+if (-not $SkipLaunchBatches) {
+    Write-Log 'Searching for Launch-*.bat files to run (excluding hidden/system roots).'
+    $batFiles = Get-ChildItem -Path $RepoRoot -Filter 'Launch-*.bat' -File -Recurse | Where-Object {
+        $dirName = $_.Directory.Name
+        -not ($dirName -match $ExcludeRegex)
     }
-    catch {
-        Write-Log "ERROR running batch $($bat.FullName): $($_.Exception.Message)"
+    foreach ($bat in $batFiles) {
+        try {
+            Write-Log "Starting batch: $($bat.FullName)"
+            $proc = Start-Process -FilePath $bat.FullName -NoNewWindow -Wait -PassThru
+            if ($proc.ExitCode -ne 0) {
+                throw "Batch exited with code $($proc.ExitCode)"
+            }
+            Write-Log "Completed batch: $($bat.Name)"
+        } catch {
+            Write-Log "ERROR running batch $($bat.FullName): $($_.Exception.Message)"
+            exit 1
+        }
     }
 }
 
-# VersionTag: 2604.B1.V1.0
-
-<#
-.DESCRIPTION
-This script orchestrates the full pipeline process for the PowerShellGUI project.
-It includes build/versioning, scanning, and testing steps, while excluding folders
-that start with ~ or . (dot).
-
-#>
-
-# Import required modules
-Import-Module -Name CronAiAthon-Pipeline -ErrorAction Stop
-
-# Define exclusion patterns
-$ExclusionPatterns = @('~*', '.*')
-
-# Define pipeline steps
-function Run-BuildVersioning {
-    Write-Host "Running build/versioning steps..."
-    . ./fix_update_version.ps1
-    . ./fix_check_version.ps1
-}
-
-function Run-Scanning {
-    Write-Host "Running scanning steps..."
-    . ./scripts/Start-LocalWebEngine.ps1
-}
-
-function Run-Testing {
-    Write-Host "Running testing steps..."
-    . ./sovereign-kernel/tests/Test-SovereignKernel.ps1
-    . ./Launch-SandboxSmokeTest.bat
-    . ./Launch-ChaosTest.bat
-    . ./Launch-SandboxBrowserTest.bat
-}
-
-# Main pipeline execution
-Write-Host "Starting full pipeline process..."
-Run-BuildVersioning
-Run-Scanning
-Run-Testing
-Write-Host "Pipeline process completed."
-
-Write-Log "Pipeline run complete. Review console output and logs for details."
-
+Write-Log 'Pipeline run complete. All gates passed.'
 exit 0
+

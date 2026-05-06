@@ -1,0 +1,13 @@
+﻿{
+    "id":  "BUG-SCHED-0D26B6FF",
+    "category":  "SchedulerFailure",
+    "type":  "Bug",
+    "lastUpdated":  "2026-05-04T11:51:35.1749346Z",
+    "taskId":  "TASK-TabErrorFix",
+    "createdAt":  "2026-05-04T11:51:35.1749346Z",
+    "status":  "OPEN",
+    "title":  "Scheduler task failure: TASK-TabErrorFix",
+    "source":  "CronAiAthon-Scheduler",
+    "detail":  "TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the property exists.",
+    "priority":  "High"
+}

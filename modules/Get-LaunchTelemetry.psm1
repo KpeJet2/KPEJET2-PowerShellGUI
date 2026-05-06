@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -40,28 +40,28 @@ function Get-LaunchTelemetry {
     param(
         [Parameter(Mandatory = $true)]
         [string]$BatchName,
-        
+
         [Parameter(Mandatory = $true)]
         [string]$VersionTag,
-        
+
         [Parameter(Mandatory = $true)]
         [string]$BatchPath
     )
-    
+
     try {
         # Timestamp (yyyyMMdd-HHmmss)
         $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-        
+
         # Machine and user information
         $machineName = $env:COMPUTERNAME
         $username = $env:USERNAME
-        
+
         # IP Address (filter out APIPA 169.254.x.x and loopback)
         $ipAddress = "N/A"
         try {
-            $netAdapters = @(Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | 
-                Where-Object { 
-                    $_.IPAddress -notlike "169.254.*" -and 
+            $netAdapters = @(Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+                Where-Object {
+                    $_.IPAddress -notlike "169.254.*" -and
                     $_.IPAddress -ne "127.0.0.1" -and
                     $_.PrefixOrigin -ne "WellKnown"
                 })
@@ -82,7 +82,7 @@ function Get-LaunchTelemetry {
                 $ipAddress = "N/A"
             }
         }
-        
+
         # System volume and free space
         $systemVolume = $env:SystemDrive
         $systemVolFreeSpace = "N/A"
@@ -96,7 +96,7 @@ function Get-LaunchTelemetry {
         } catch {
             $systemVolFreeSpace = "N/A"
         }
-        
+
         # Memory utilization (Used GB / Total GB)
         $memoryUsedOfTotal = "N/A"
         try {
@@ -110,7 +110,7 @@ function Get-LaunchTelemetry {
         } catch {
             $memoryUsedOfTotal = "N/A"
         }
-        
+
         # CPU Load (single sample — no sleep to avoid blocking startup)
         $cpuLoad = "N/A"
         try {
@@ -121,7 +121,7 @@ function Get-LaunchTelemetry {
         } catch {
             $cpuLoad = "N/A"
         }
-        
+
         # GPU Load (optional, may not be available on all systems)
         $gpuLoad = "N/A"
         try {
@@ -136,10 +136,10 @@ function Get-LaunchTelemetry {
             # GPU counter not available - common on VMs and systems without dedicated GPU
             $gpuLoad = "N/A"
         }
-        
+
         # Total process count
         $totalProcesses = @(Get-Process -ErrorAction SilentlyContinue).Count
-        
+
         # Admin elevation check
         $isAdmin = "FALSE"
         try {
@@ -153,7 +153,7 @@ function Get-LaunchTelemetry {
         } catch {
             $isAdmin = "FALSE"
         }
-        
+
         # Build and return telemetry object
         $telemetry = [PSCustomObject]@{
             Timestamp = $timestamp
@@ -171,12 +171,12 @@ function Get-LaunchTelemetry {
             TotalProcesses = $totalProcesses
             IsAdmin = $isAdmin
         }
-        
+
         return $telemetry
-        
+
     } catch {
         Write-AppLog -Message "Error collecting launch telemetry: $_" -Level Warning
-        
+
         # Return minimal telemetry object on error
         return [PSCustomObject]@{
             Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -200,17 +200,23 @@ function Get-LaunchTelemetry {
 # Export module member
 
 <# Outline:
-    Stub: describe module/script purpose here.
+    Single-function telemetry collector invoked by Launch-GUI.bat and the engine bootstrap.
+    Get-LaunchTelemetry captures startup metrics (PS version, host, elapsed ms, module-load
+    counts) and writes a structured record to logs/launch-telemetry.jsonl for downstream
+    analysis by the CronAiAthon pipeline.
 #>
 
 <# Problems:
-    Stub: list known issues here.
+    None outstanding. Telemetry write is best-effort wrapped in try/catch; failures degrade
+    silently so they cannot block GUI startup.
 #>
 
 <# ToDo:
-    Stub: list pending work here.
+    None — current scope (single-shot startup telemetry) is complete. Continuous telemetry
+    streaming is intentionally out-of-scope and tracked under FEATURE-REQUEST entries.
 #>
 Export-ModuleMember -Function Get-LaunchTelemetry
+
 
 
 

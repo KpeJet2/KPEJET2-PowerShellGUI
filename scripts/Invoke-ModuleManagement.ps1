@@ -1,5 +1,4 @@
-# VersionTag: 2604.B2.V31.2
-
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -125,7 +124,7 @@ function Ensure-PowerShellGet {
             Write-Host '[INFO] PowerShellGet not present. Attempting to install via Install-Module...' -ForegroundColor Cyan
             Install-Module -Name PowerShellGet -Scope CurrentUser -Force -ErrorAction Stop
         }
-        Import-Module PowerShellGet -ErrorAction SilentlyContinue
+        try { Import-Module PowerShellGet -ErrorAction Stop } catch { Write-Warning "Ensure-PowerShellGet: Import-Module failed: $($_.Exception.Message)" }
         return $true
     } catch {
         Write-Warning "Ensure-PowerShellGet: failed to install/import PowerShellGet: $($_.Exception.Message)"
@@ -177,7 +176,7 @@ public static class Win32 {
             [Win32]::GetWindowText($hWnd, $sb, $sb.Capacity) | Out-Null
             $title = $sb.ToString()
             if ($title -match '(?i)missing|module|install|required') {
-                try { [Win32]::SendMessage($hWnd, [Win32]::WM_CLOSE, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; $found.Add($title); $closed++ } catch { }
+                try { [Win32]::SendMessage($hWnd, [Win32]::WM_CLOSE, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; $found.Add($title); $closed++ } catch { <# Intentional: non-fatal -- WM_CLOSE may fail on protected windows #> }
             }
             return $true
         }
@@ -930,6 +929,7 @@ if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

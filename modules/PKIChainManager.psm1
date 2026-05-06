@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -50,7 +50,7 @@ function New-RootCACertificate {
     .PARAMETER KeyLength       RSA key size (default 4096).
     .PARAMETER PfxPassword     SecureString password for the PFX export.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [string]$Subject = 'CN=PwShGUI Root CA, O=SovereignKernel, OU=PKI',
         [int]$ValidityYears = 10,
@@ -123,7 +123,7 @@ function New-SubordinateCACertificate {
     .PARAMETER KeyLength       RSA key size (default 4096).
     .PARAMETER PfxPassword     SecureString password for the PFX export.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [string]$Subject = 'CN=PwShGUI Subordinate CA, O=SovereignKernel, OU=PKI',
         [Parameter(Mandatory)]
@@ -196,7 +196,7 @@ function New-CodeSignCertificate {
     .PARAMETER KeyLength       RSA key size (default 2048).
     .PARAMETER PfxPassword     SecureString password for the PFX export.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [string]$Subject = 'CN=PwShGUI Code Signing, O=SovereignKernel, OU=Security',
         [Parameter(Mandatory)]
@@ -339,7 +339,7 @@ function New-FullPKIChain {
     .SYNOPSIS  Create the complete 3-tier PKI chain in one operation.
     .PARAMETER PfxPassword  SecureString password for all PFX exports.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [System.Security.SecureString]$PfxPassword
@@ -391,6 +391,7 @@ Export-ModuleMember -Function @(
     'Export-CertToVault'
     'New-FullPKIChain'
 )
+
 
 
 

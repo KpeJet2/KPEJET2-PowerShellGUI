@@ -1,0 +1,45 @@
+/* eventlog-view.css -- shared dark-theme XHTML EventLogView partial */
+/* VersionTag: 2604.B2.V31.0 */
+
+.evlv-root { display: flex; flex-direction: column; gap: 6px; font-family: 'Segoe UI', Tahoma, sans-serif; color: #c9d1d9; background: #0d1117; padding: 8px; border: 1px solid #30363d; border-radius: 8px; }
+.evlv-title { font-size: 13px; font-weight: 600; color: #2dd4bf; display: flex; align-items: center; gap: 8px; }
+.evlv-title .evlv-tier { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.evlv-tier.live    { background: #238636; color: #fff; }
+.evlv-tier.disk    { background: #1f6feb; color: #fff; }
+.evlv-tier.replay  { background: #d29922; color: #0d1117; }
+.evlv-tier.stale   { background: #da3633; color: #fff; }
+.evlv-tier.error   { background: #484f58; color: #c9d1d9; }
+
+.evlv-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid #21262d; }
+.evlv-toolbar input[type="search"], .evlv-toolbar select { font-family: inherit; font-size: 12px; background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; padding: 4px 6px; }
+.evlv-toolbar input[type="search"] { flex: 1; min-width: 140px; }
+.evlv-toolbar button { font-family: inherit; font-size: 11px; background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-weight: 600; }
+.evlv-toolbar button:hover { background: #30363d; }
+.evlv-toolbar button.evlv-primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+.evlv-toolbar label { font-size: 10px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+.evlv-toolbar .evlv-count { font-size: 11px; color: #8b949e; margin-left: 4px; font-family: Consolas, monospace; }
+
+.evlv-table-wrap { max-height: 420px; overflow-y: auto; border: 1px solid #21262d; border-radius: 4px; }
+.evlv-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.evlv-table th { background: #161b22; color: #8b949e; padding: 5px 8px; text-align: left; position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #30363d; font-weight: 600; }
+.evlv-table td { padding: 4px 8px; border-bottom: 1px solid #161b22; vertical-align: top; }
+.evlv-table tr:hover td { background: #161b22; }
+.evlv-table .evlv-ts { color: #8b949e; font-family: Consolas, monospace; white-space: nowrap; }
+.evlv-table .evlv-comp { color: #58a6ff; white-space: nowrap; }
+.evlv-table .evlv-msg { color: #c9d1d9; word-break: break-word; }
+.evlv-table .evlv-corr { color: #d29922; font-family: Consolas, monospace; cursor: pointer; }
+.evlv-table .evlv-corr:hover { text-decoration: underline; }
+
+.evlv-sev { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.3px; }
+.evlv-sev.DEBUG    { background: #484f58; color: #c9d1d9; }
+.evlv-sev.INFO     { background: #1f6feb; color: #fff; }
+.evlv-sev.WARN     { background: #d29922; color: #0d1117; }
+.evlv-sev.ERROR    { background: #da3633; color: #fff; }
+.evlv-sev.CRITICAL { background: #7c3aed; color: #fff; }
+.evlv-sev.AUDIT    { background: #2dd4bf; color: #0d1117; }
+
+.evlv-empty { text-align: center; color: #484f58; font-size: 12px; padding: 20px; }
+.evlv-presets { display: flex; gap: 4px; flex-wrap: wrap; padding: 2px 0; }
+.evlv-preset { background: #161b22; color: #8b949e; border: 1px solid #30363d; border-radius: 10px; font-size: 10px; padding: 1px 8px; cursor: pointer; }
+.evlv-preset:hover { background: #21262d; color: #c9d1d9; }
+.evlv-preset .evlv-preset-x { color: #da3633; margin-left: 4px; cursor: pointer; }

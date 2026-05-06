@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -282,6 +282,10 @@ function Export-AIFXhtmlReport {
     $html -join [Environment]::NewLine | Set-Content -Path $ReportPath -Encoding utf8
 }
 
+<#
+.SYNOPSIS
+  Invoke pw sh g u i auto issue finder.
+#>
 function Invoke-PwShGUIAutoIssueFinder {
     [CmdletBinding()]
     param(
@@ -504,6 +508,7 @@ function Invoke-PwShGUIAutoIssueFinder {
     Stub: list pending work here.
 #>
 Export-ModuleMember -Function Invoke-PwShGUIAutoIssueFinder
+
 
 
 

@@ -1,0 +1,5594 @@
+{
+  "RE-memorAiZ::Get-DirectoriesWithChanges": {
+    "Module": "RE-memorAiZ",
+    "Function": "Get-DirectoriesWithChanges",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "HoursBack",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Save-CronSchedule": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Save-CronSchedule",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Schedule",
+        "Type": "Object",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Enable-WindowsHello": {
+    "Module": "AssistedSASC",
+    "Function": "Enable-WindowsHello",
+    "Parameters": [
+      {
+        "Name": "MasterPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SinFixBranch::New-SinFixBranch": {
+    "Module": "PwShGUI-SinFixBranch",
+    "Function": "New-SinFixBranch",
+    "Parameters": [
+      {
+        "Name": "PatternId",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Files",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "RegistryPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "CheckpointsPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-BugToPipelineProcessor": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-BugToPipelineProcessor",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DetectedBugs",
+        "Type": "Array",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-ScreensaverSettings": {
+    "Module": "UserProfileManager",
+    "Function": "Get-ScreensaverSettings",
+    "Parameters": []
+  },
+  "UserProfileManager::New-AesKey": {
+    "Module": "UserProfileManager",
+    "Function": "New-AesKey",
+    "Parameters": [
+      {
+        "Name": "Password",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Salt",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Initialize-IntentStore": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Initialize-IntentStore",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Test-PSVersionMinimum": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Test-PSVersionMinimum",
+    "Parameters": []
+  },
+  "UserProfileManager::Get-PowerConfiguration": {
+    "Module": "UserProfileManager",
+    "Function": "Get-PowerConfiguration",
+    "Parameters": []
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFSnapshotPath": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFSnapshotPath",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "SnapshotRoot",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-QuickAccessLinks": {
+    "Module": "UserProfileManager",
+    "Function": "Get-QuickAccessLinks",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::Test-BugSinResolved": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Test-BugSinResolved",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "SinId",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Save-AVPNConfig": {
+    "Module": "AVPN-Tracker",
+    "Function": "Save-AVPNConfig",
+    "Parameters": [
+      {
+        "Name": "ConfigData",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "ConfigPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Get-DevelopmentIntent": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Get-DevelopmentIntent",
+    "Parameters": [
+      {
+        "Name": "Status",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "IntentId",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-NetworkTools::Test-NetworkConnectivity": {
+    "Module": "PwShGUI-NetworkTools",
+    "Function": "Test-NetworkConnectivity",
+    "Parameters": [
+      {
+        "Name": "Target",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Count",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "TimeoutMs",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-EventLogAdapter::Get-EventLogNormalizedDir": {
+    "Module": "PwShGUI-EventLogAdapter",
+    "Function": "Get-EventLogNormalizedDir",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Parse-VersionTag": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Parse-VersionTag",
+    "Parameters": [
+      {
+        "Name": "Tag",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ControlProperty": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ControlProperty",
+    "Parameters": [
+      {
+        "Name": "Control",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Property",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Value",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Start-KeyboardMonitor": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Start-KeyboardMonitor",
+    "Parameters": [
+      {
+        "Name": "IntervalMs",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Export-VaultBackup": {
+    "Module": "AssistedSASC",
+    "Function": "Export-VaultBackup",
+    "Parameters": [
+      {
+        "Name": "MasterPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Test-PipelineArtifactIntegrity": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Test-PipelineArtifactIntegrity",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "IncludeStaleCheck",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "OpenDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "PlannedDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "InProgressDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "BlockedDays",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Update-TodoBundle": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Update-TodoBundle",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Unlock-Vault": {
+    "Module": "AssistedSASC",
+    "Function": "Unlock-Vault",
+    "Parameters": [
+      {
+        "Name": "MasterPassword",
+        "Type": "SecureString",
+        "Mandatory": false
+      },
+      {
+        "Name": "UseWindowsHello",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Set-OutlinePhase": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Set-OutlinePhase",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Phase",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "FilterType",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilterStatus",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-ErrorLinker::New-ErrorBugs2FIXItem": {
+    "Module": "CronAiAthon-ErrorLinker",
+    "Function": "New-ErrorBugs2FIXItem",
+    "Parameters": [
+      {
+        "Name": "BugItem",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "SuggestedFix",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-DependencyMap::Get-DependencyMap": {
+    "Module": "PwShGUI-DependencyMap",
+    "Function": "Get-DependencyMap",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Include",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "Exclude",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Unprotect-AVPNCredential": {
+    "Module": "AVPN-Tracker",
+    "Function": "Unprotect-AVPNCredential",
+    "Parameters": [
+      {
+        "Name": "Stored",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Write-ErrorReport": {
+    "Module": "PwShGUICore",
+    "Function": "Write-ErrorReport",
+    "Parameters": [
+      {
+        "Name": "ErrorRecord",
+        "Type": "ErrorRecord",
+        "Mandatory": true
+      },
+      {
+        "Name": "Context",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Rethrow",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-NetworkTools::Test-PortOpen": {
+    "Module": "PwShGUI-NetworkTools",
+    "Function": "Test-PortOpen",
+    "Parameters": [
+      {
+        "Name": "ComputerName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Port",
+        "Type": "Int32",
+        "Mandatory": true
+      },
+      {
+        "Name": "TimeoutMs",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Get-PS5CompatibilityFlag": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Get-PS5CompatibilityFlag",
+    "Parameters": [
+      {
+        "Name": "ScriptName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ConfigDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-StyleComplianceCheck": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-StyleComplianceCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Start-AutoLockTimer": {
+    "Module": "AssistedSASC",
+    "Function": "Start-AutoLockTimer",
+    "Parameters": [
+      {
+        "Name": "Minutes",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Get-ThemeFont": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Get-ThemeFont",
+    "Parameters": [
+      {
+        "Name": "Size",
+        "Type": "Single",
+        "Mandatory": false
+      },
+      {
+        "Name": "Style",
+        "Type": "FontStyle",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Add-CronJobHistory": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Add-CronJobHistory",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "JobResult",
+        "Type": "Hashtable",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-ValidCategories": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-ValidCategories",
+    "Parameters": []
+  },
+  "PwShGUI-EventLogAdapter::Test-EventLogStandardCompliance": {
+    "Module": "PwShGUI-EventLogAdapter",
+    "Function": "Test-EventLogStandardCompliance",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-PrintDrivers": {
+    "Module": "UserProfileManager",
+    "Function": "Get-PrintDrivers",
+    "Parameters": []
+  },
+  "PwShGUI-ConvoVault::Get-ConvoEntries": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Get-ConvoEntries",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "KeyOverride",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PKIChainManager::New-FullPKIChain": {
+    "Module": "PKIChainManager",
+    "Function": "New-FullPKIChain",
+    "Parameters": [
+      {
+        "Name": "PfxPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Invoke-CronJob": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Invoke-CronJob",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "TaskId",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Export-CPSRReport": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Export-CPSRReport",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "MajorVersion",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "MinorVersion",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SASC-Adapters::Connect-ADDSWithVault": {
+    "Module": "SASC-Adapters",
+    "Function": "Connect-ADDSWithVault",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DomainController",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ModernButtonStyle": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernButtonStyle",
+    "Parameters": [
+      {
+        "Name": "Button",
+        "Type": "Button",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Find-BWCli": {
+    "Module": "AssistedSASC",
+    "Function": "Find-BWCli",
+    "Parameters": []
+  },
+  "AVPN-Tracker::Protect-AVPNCredential": {
+    "Module": "AVPN-Tracker",
+    "Function": "Protect-AVPNCredential",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-AgentScorecard::Get-AgentScorecard": {
+    "Module": "PwShGUI-AgentScorecard",
+    "Function": "Get-AgentScorecard",
+    "Parameters": [
+      {
+        "Name": "Root",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SINGovernance::Start-SINReview": {
+    "Module": "SINGovernance",
+    "Function": "Start-SINReview",
+    "Parameters": [
+      {
+        "Name": "IncludeResolved",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Set-PS5CompatibilityFlag": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Set-PS5CompatibilityFlag",
+    "Parameters": [
+      {
+        "Name": "ScriptName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Flag",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Notes",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ConfigDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "RE-memorAiZ::Build-ReadmeContent": {
+    "Module": "RE-memorAiZ",
+    "Function": "Build-ReadmeContent",
+    "Parameters": [
+      {
+        "Name": "DirectoryPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Get-TrayHostStatus": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Get-TrayHostStatus",
+    "Parameters": []
+  },
+  "PwShGUI-VersionManager::Format-VersionTag": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Format-VersionTag",
+    "Parameters": [
+      {
+        "Name": "Prefix",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Major",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Minor",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Export-AIFXhtmlReport": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Export-AIFXhtmlReport",
+    "Parameters": [
+      {
+        "Name": "Issues",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "ReportPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ScanPaths",
+        "Type": "String[]",
+        "Mandatory": true
+      },
+      {
+        "Name": "CheckpointPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ControlBackColor": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ControlBackColor",
+    "Parameters": [
+      {
+        "Name": "Control",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "ThemeKey",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Color",
+        "Type": "Color",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Update-PipelineIndex": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Update-PipelineIndex",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Initialize-PipelineRegistry": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Initialize-PipelineRegistry",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Get-CronJobSummary": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Get-CronJobSummary",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Write-CrashDump": {
+    "Module": "PwShGUICore",
+    "Function": "Write-CrashDump",
+    "Parameters": [
+      {
+        "Name": "Phase",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ErrorMessage",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "StackTrace",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "RetryCount",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "CrashDumpDir",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ExtraContext",
+        "Type": "Hashtable",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Test-PSVersionOptimal": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Test-PSVersionOptimal",
+    "Parameters": []
+  },
+  "PwShGUI-EventLogAdapter::Write-EventLogNormalized": {
+    "Module": "PwShGUI-EventLogAdapter",
+    "Function": "Write-EventLogNormalized",
+    "Parameters": [
+      {
+        "Name": "Scope",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Component",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "CorrId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Save-AIFBaseline": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Save-AIFBaseline",
+    "Parameters": [
+      {
+        "Name": "Paths",
+        "Type": "String[]",
+        "Mandatory": true
+      },
+      {
+        "Name": "IncludeSubfolders",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "BaselinePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SinFromScan::Get-SinHashId": {
+    "Module": "PwShGUI-SinFromScan",
+    "Function": "Get-SinHashId",
+    "Parameters": [
+      {
+        "Name": "Seed",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-PipelineInterruptions": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineInterruptions",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "OpenDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "PlannedDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "InProgressDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "BlockedDays",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-PipelineStatistics": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineStatistics",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Validate-ConfigPaths": {
+    "Module": "PwShGUICore",
+    "Function": "Validate-ConfigPaths",
+    "Parameters": []
+  },
+  "AVPN-Tracker::Invoke-AVPNLog": {
+    "Module": "AVPN-Tracker",
+    "Function": "Invoke-AVPNLog",
+    "Parameters": [
+      {
+        "Name": "LogCallback",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Get-BWStatus": {
+    "Module": "AssistedSASC",
+    "Function": "Get-BWStatus",
+    "Parameters": []
+  },
+  "UserProfileManager::Get-InstalledFonts": {
+    "Module": "UserProfileManager",
+    "Function": "Get-InstalledFonts",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::Get-PipelineItems": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineItems",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Type",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Status",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Priority",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Invoke-VersionConsistencyCheck": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Invoke-VersionConsistencyCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Write-PipelineItemFile": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Write-PipelineItemFile",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Item",
+        "Type": "Object",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Protect-ProfileData": {
+    "Module": "UserProfileManager",
+    "Function": "Protect-ProfileData",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Password",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "SASC-Adapters::Assert-AdapterReady": {
+    "Module": "SASC-Adapters",
+    "Function": "Assert-AdapterReady",
+    "Parameters": [
+      {
+        "Name": "AdapterName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Import-AVPNCsv": {
+    "Module": "AVPN-Tracker",
+    "Function": "Import-AVPNCsv",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "WorkspaceIntentReview::New-DevelopmentIntent": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "New-DevelopmentIntent",
+    "Parameters": [
+      {
+        "Name": "Title",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Author",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Priority",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Tags",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "AffectedModules",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "AffectedScripts",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-SchemaTranslator::Get-SchemaMap": {
+    "Module": "PwShGUI-SchemaTranslator",
+    "Function": "Get-SchemaMap",
+    "Parameters": []
+  },
+  "AssistedSASC::Invoke-BWCommand": {
+    "Module": "AssistedSASC",
+    "Function": "Invoke-BWCommand",
+    "Parameters": [
+      {
+        "Name": "Arguments",
+        "Type": "String[]",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Test-EventLogSourceReady": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Test-EventLogSourceReady",
+    "Parameters": [
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-EventLogReplay::Invoke-EventLogReplay": {
+    "Module": "PwShGUI-EventLogReplay",
+    "Function": "Invoke-EventLogReplay",
+    "Parameters": [
+      {
+        "Name": "EventsPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AdapterCommand",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwSh-HelpFilesUpdateSource-ReR::Invoke-SavePowerShellHelp": {
+    "Module": "PwSh-HelpFilesUpdateSource-ReR",
+    "Function": "Invoke-SavePowerShellHelp",
+    "Parameters": [
+      {
+        "Name": "DestinationPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "UICultures",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-SchemaTranslator::Get-SchemaTransformPlan": {
+    "Module": "PwShGUI-SchemaTranslator",
+    "Function": "Get-SchemaTransformPlan",
+    "Parameters": [
+      {
+        "Name": "FromSchema",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ToSchema",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Get-FileVersion": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Get-FileVersion",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Add-CPSRAction": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Add-CPSRAction",
+    "Parameters": [
+      {
+        "Name": "Action",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Agent",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ItemId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ItemType",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "VersionBefore",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "VersionAfter",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Detail",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ChatInput",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Invoke-BugStatusRollup": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Invoke-BugStatusRollup",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "BugItemId",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Register-EventLogSources": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Register-EventLogSources",
+    "Parameters": [
+      {
+        "Name": "Sources",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Save-ProfileSnapshot": {
+    "Module": "UserProfileManager",
+    "Function": "Save-ProfileSnapshot",
+    "Parameters": [
+      {
+        "Name": "Snapshot",
+        "Type": "Hashtable",
+        "Mandatory": true
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Encrypt",
+        "Type": "Boolean",
+        "Mandatory": false
+      },
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": false
+      },
+      {
+        "Name": "IsRollback",
+        "Type": "Boolean",
+        "Mandatory": false
+      }
+    ]
+  },
+  "Get-LaunchTelemetry::Get-LaunchTelemetry": {
+    "Module": "Get-LaunchTelemetry",
+    "Function": "Get-LaunchTelemetry",
+    "Parameters": [
+      {
+        "Name": "BatchName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "VersionTag",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "BatchPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase6AgentHandback": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase6AgentHandback",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Get-VaultItemList": {
+    "Module": "AssistedSASC",
+    "Function": "Get-VaultItemList",
+    "Parameters": [
+      {
+        "Name": "FolderId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Search",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ControlForeColor": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ControlForeColor",
+    "Parameters": [
+      {
+        "Name": "Control",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "ThemeKey",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Color",
+        "Type": "Color",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-BreakingChange::Invoke-BreakingChangeDetector": {
+    "Module": "PwShGUI-BreakingChange",
+    "Function": "Invoke-BreakingChangeDetector",
+    "Parameters": [
+      {
+        "Name": "BaselinePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "CurrentPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "OutputDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-ProfileSnapshot": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-ProfileSnapshot",
+    "Parameters": [
+      {
+        "Name": "ReferenceSnapshot",
+        "Type": "Hashtable",
+        "Mandatory": true
+      },
+      {
+        "Name": "CurrentSnapshot",
+        "Type": "Hashtable",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Initialize-CorePaths": {
+    "Module": "PwShGUICore",
+    "Function": "Initialize-CorePaths",
+    "Parameters": [
+      {
+        "Name": "ScriptDir",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "LogsDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-WingetApplications": {
+    "Module": "UserProfileManager",
+    "Function": "Get-WingetApplications",
+    "Parameters": []
+  },
+  "WorkspaceIntentReview::Save-ChangeLog": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Save-ChangeLog",
+    "Parameters": []
+  },
+  "CronAiAthon-EventLog::Write-SyslogFile": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Write-SyslogFile",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Get-RainbowColor": {
+    "Module": "PwShGUICore",
+    "Function": "Get-RainbowColor",
+    "Parameters": [
+      {
+        "Name": "Step",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Get-CronSchedulePath": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Get-CronSchedulePath",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Step-MinorVersion": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Step-MinorVersion",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Show-SchedulerHelp": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Show-SchedulerHelp",
+    "Parameters": [
+      {
+        "Name": "Action",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "EventLevel",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogToFile",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ShowRainbow",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-PSHelpRepositories": {
+    "Module": "UserProfileManager",
+    "Function": "Get-PSHelpRepositories",
+    "Parameters": []
+  },
+  "PwShGUI-TrayHost::Initialize-BackgroundPool": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Initialize-BackgroundPool",
+    "Parameters": [
+      {
+        "Name": "MinThreads",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "MaxThreads",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Get-AVPNDeviceTypesPath": {
+    "Module": "AVPN-Tracker",
+    "Function": "Get-AVPNDeviceTypesPath",
+    "Parameters": [
+      {
+        "Name": "ConfigPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-SecretScan::Invoke-SecretScan": {
+    "Module": "PwShGUI-SecretScan",
+    "Function": "Invoke-SecretScan",
+    "Parameters": [
+      {
+        "Name": "Root",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Include",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "ExcludeDir",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Stop-TrayHost": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Stop-TrayHost",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::Test-StatusTransition": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Test-StatusTransition",
+    "Parameters": [
+      {
+        "Name": "CurrentStatus",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "NewStatus",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Write-AIFLog": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Write-AIFLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFCheckpoint": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFCheckpoint",
+    "Parameters": [
+      {
+        "Name": "CheckpointPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-ConvoVault::Initialize-ConvoVaultKey": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Initialize-ConvoVaultKey",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Write-CronEventLog": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Write-CronEventLog",
+    "Parameters": [
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "EventId",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Category",
+        "Type": "Int16",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Assert-DirectoryExists": {
+    "Module": "PwShGUICore",
+    "Function": "Assert-DirectoryExists",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String[]",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-LegacyEncoding::Test-FileEncoding": {
+    "Module": "PwShGUI-LegacyEncoding",
+    "Function": "Test-FileEncoding",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::New-PipelineItem": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "New-PipelineItem",
+    "Parameters": [
+      {
+        "Name": "Type",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Title",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Priority",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Category",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AffectedFiles",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "SuggestedBy",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SinId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ParentId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "BugReferrals",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutlineTag",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutlinePhase",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutlineVersion",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Set-VaultFilePermissions": {
+    "Module": "AssistedSASC",
+    "Function": "Set-VaultFilePermissions",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-ParseCheck": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-ParseCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-ISEConfiguration": {
+    "Module": "UserProfileManager",
+    "Function": "Get-ISEConfiguration",
+    "Parameters": []
+  },
+  "PwShGUI-VersionManager::Set-FileVersion": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Set-FileVersion",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewTag",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-MappedDrives": {
+    "Module": "UserProfileManager",
+    "Function": "Get-MappedDrives",
+    "Parameters": []
+  },
+  "PwShGUI-NetworkTools::Get-NetworkSummary": {
+    "Module": "PwShGUI-NetworkTools",
+    "Function": "Get-NetworkSummary",
+    "Parameters": []
+  },
+  "CronAiAthon-Scheduler::Add-AutopilotSuggestion": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Add-AutopilotSuggestion",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Title",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Category",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-MenuItemColor": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-MenuItemColor",
+    "Parameters": [
+      {
+        "Name": "Item",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Register-Question": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Register-Question",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AnsweredBy",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-ProfileList": {
+    "Module": "UserProfileManager",
+    "Function": "Get-ProfileList",
+    "Parameters": [
+      {
+        "Name": "ProfileStorePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SchemaTranslator::Convert-ScanSchema": {
+    "Module": "PwShGUI-SchemaTranslator",
+    "Function": "Convert-ScanSchema",
+    "Parameters": [
+      {
+        "Name": "ScanData",
+        "Type": "PSObject",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ToSchema",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "PassThru",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Request-LocalPath": {
+    "Module": "PwShGUICore",
+    "Function": "Request-LocalPath",
+    "Parameters": [
+      {
+        "Name": "Label",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DefaultValue",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "TimeoutSeconds",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Update-PipelineItemStatus": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Update-PipelineItemStatus",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ItemId",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewStatus",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Notes",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Force",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-FlatMap": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-FlatMap",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PKIChainManager::Export-CertToVault": {
+    "Module": "PKIChainManager",
+    "Function": "Export-CertToVault",
+    "Parameters": [
+      {
+        "Name": "PfxPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "VaultItemName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Get-VaultLANStatus": {
+    "Module": "AssistedSASC",
+    "Function": "Get-VaultLANStatus",
+    "Parameters": []
+  },
+  "SASC-Adapters::Find-Executable": {
+    "Module": "SASC-Adapters",
+    "Function": "Find-Executable",
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AdditionalPaths",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Get-WindowsHelloPassword": {
+    "Module": "AssistedSASC",
+    "Function": "Get-WindowsHelloPassword",
+    "Parameters": []
+  },
+  "PwShGUI-TrayHost::Initialize-TrayAppContext": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Initialize-TrayAppContext",
+    "Parameters": [
+      {
+        "Name": "Form",
+        "Type": "Form",
+        "Mandatory": true
+      },
+      {
+        "Name": "RestoreAction",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFScanFileList": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFScanFileList",
+    "Parameters": [
+      {
+        "Name": "Paths",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "IncludeSubfolders",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-NetworkTools::Test-DnsResolution": {
+    "Module": "PwShGUI-NetworkTools",
+    "Function": "Test-DnsResolution",
+    "Parameters": [
+      {
+        "Name": "HostName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Stop-KeyboardMonitor": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Stop-KeyboardMonitor",
+    "Parameters": []
+  },
+  "PwShGUI-PSVersionStandards::Show-PSUpgradePrompt": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Show-PSUpgradePrompt",
+    "Parameters": [
+      {
+        "Name": "Silent",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::New-RainbowProgressBar": {
+    "Module": "PwShGUI-Theme",
+    "Function": "New-RainbowProgressBar",
+    "Parameters": [
+      {
+        "Name": "Width",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Height",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ModernFormTheme": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernFormTheme",
+    "Parameters": [
+      {
+        "Name": "Form",
+        "Type": "Form",
+        "Mandatory": true
+      },
+      {
+        "Name": "IncludeMenuStrip",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Get-PSVersionStandard": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Get-PSVersionStandard",
+    "Parameters": []
+  },
+  "SINGovernance::Export-SINReviewReport": {
+    "Module": "SINGovernance",
+    "Function": "Export-SINReviewReport",
+    "Parameters": [
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Write-PSBootstrapLog": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Write-PSBootstrapLog",
+    "Parameters": [
+      {
+        "Name": "LogFunction",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PKIChainManager::Initialize-PKIChainManager": {
+    "Module": "PKIChainManager",
+    "Function": "Initialize-PKIChainManager",
+    "Parameters": [
+      {
+        "Name": "BasePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ModernFormStyle": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernFormStyle",
+    "Parameters": [
+      {
+        "Name": "Form",
+        "Type": "Form",
+        "Mandatory": true
+      },
+      {
+        "Name": "Title",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "RE-memorAiZ::Test-ReadmeExists": {
+    "Module": "RE-memorAiZ",
+    "Function": "Test-ReadmeExists",
+    "Parameters": [
+      {
+        "Name": "DirectoryPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-PSVersionStandards::Get-PSVersionTier": {
+    "Module": "PwShGUI-PSVersionStandards",
+    "Function": "Get-PSVersionTier",
+    "Parameters": []
+  },
+  "AVPN-Tracker::Get-AVPNConnectorCount": {
+    "Module": "AVPN-Tracker",
+    "Function": "Get-AVPNConnectorCount",
+    "Parameters": [
+      {
+        "Name": "Device",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "ConnectorType",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Import-Certificates": {
+    "Module": "AssistedSASC",
+    "Function": "Import-Certificates",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Passphrase",
+        "Type": "SecureString",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-ManifestDiff::Compare-ModuleManifest": {
+    "Module": "PwShGUI-ManifestDiff",
+    "Function": "Compare-ModuleManifest",
+    "Parameters": [
+      {
+        "Name": "Old",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "New",
+        "Type": "Object",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Add-AgentEditLedgerEntry": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Add-AgentEditLedgerEntry",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AgentId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "TaskType",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilesModified",
+        "Type": "Array",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ModernMenuStyle": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernMenuStyle",
+    "Parameters": [
+      {
+        "Name": "MenuStrip",
+        "Type": "MenuStrip",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SinFromScan::New-SINFromScan": {
+    "Module": "PwShGUI-SinFromScan",
+    "Function": "New-SINFromScan",
+    "Parameters": [
+      {
+        "Name": "Findings",
+        "Type": "Object[]",
+        "Mandatory": true
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "RegistryPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AgentName",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PSScriptAnalyzerScan::Invoke-PSScriptAnalyzerScan": {
+    "Module": "PwShGUI-PSScriptAnalyzerScan",
+    "Function": "Invoke-PSScriptAnalyzerScan",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputDir",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ExcludeRule",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::New-SmileyTrayIcon": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "New-SmileyTrayIcon",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::Export-CentralMasterToDo": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Export-CentralMasterToDo",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Export-LogBuffer": {
+    "Module": "PwShGUICore",
+    "Function": "Export-LogBuffer",
+    "Parameters": []
+  },
+  "PwShGUI-ConvoVault::Protect-ConvoData": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Protect-ConvoData",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Key",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SINGovernance::Get-SINReviewQueue": {
+    "Module": "SINGovernance",
+    "Function": "Get-SINReviewQueue",
+    "Parameters": [
+      {
+        "Name": "IncludeResolved",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Invoke-BackgroundTask": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Invoke-BackgroundTask",
+    "Parameters": [
+      {
+        "Name": "ScriptBlock",
+        "Type": "ScriptBlock",
+        "Mandatory": true
+      },
+      {
+        "Name": "Parameters",
+        "Type": "Hashtable",
+        "Mandatory": false
+      },
+      {
+        "Name": "TaskName",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase7Summarize": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase7Summarize",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Initialize-AVPNDeviceTypesFile": {
+    "Module": "AVPN-Tracker",
+    "Function": "Initialize-AVPNDeviceTypesFile",
+    "Parameters": [
+      {
+        "Name": "DeviceTypesPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Templates",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-PesterParallel::Invoke-PesterParallel": {
+    "Module": "PwShGUI-PesterParallel",
+    "Function": "Invoke-PesterParallel",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ThrottleLimit",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFPriority": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFPriority",
+    "Parameters": [
+      {
+        "Name": "RuleName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-WiFiProfiles": {
+    "Module": "UserProfileManager",
+    "Function": "Get-WiFiProfiles",
+    "Parameters": []
+  },
+  "PKIChainManager::New-CodeSignCertificate": {
+    "Module": "PKIChainManager",
+    "Function": "New-CodeSignCertificate",
+    "Parameters": [
+      {
+        "Name": "Subject",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SignerThumbprint",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ValidityYears",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "KeyLength",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "PfxPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SinDriftScan::Get-ResolvedSinPatterns": {
+    "Module": "PwShGUI-SinDriftScan",
+    "Function": "Get-ResolvedSinPatterns",
+    "Parameters": [
+      {
+        "Name": "RegistryPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Start-TrayApplicationLoop": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Start-TrayApplicationLoop",
+    "Parameters": [
+      {
+        "Name": "StartMinimized",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-PipelineHealthMetrics": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineHealthMetrics",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Write-AppLog": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Write-AppLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Initialize-CronSchedule": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Initialize-CronSchedule",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase8MemoryWrite": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase8MemoryWrite",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Set-VaultItem": {
+    "Module": "AssistedSASC",
+    "Function": "Set-VaultItem",
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "UserName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": false
+      },
+      {
+        "Name": "Uri",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "Notes",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FolderId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ItemId",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Invoke-Progress": {
+    "Module": "UserProfileManager",
+    "Function": "Invoke-Progress",
+    "Parameters": [
+      {
+        "Name": "Pct",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Msg",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-SimpleLists": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-SimpleLists",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Key",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Save-VaultConfig": {
+    "Module": "AssistedSASC",
+    "Function": "Save-VaultConfig",
+    "Parameters": [
+      {
+        "Name": "Config",
+        "Type": "Hashtable",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Write-ProcessBanner": {
+    "Module": "PwShGUICore",
+    "Function": "Write-ProcessBanner",
+    "Parameters": [
+      {
+        "Name": "ProcessName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Stopwatch",
+        "Type": "Stopwatch",
+        "Mandatory": false
+      },
+      {
+        "Name": "StartTime",
+        "Type": "DateTime",
+        "Mandatory": false
+      },
+      {
+        "Name": "Success",
+        "Type": "Boolean",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Initialize-SASCModule": {
+    "Module": "AssistedSASC",
+    "Function": "Initialize-SASCModule",
+    "Parameters": [
+      {
+        "Name": "ScriptDir",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Get-SyslogEntries": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Get-SyslogEntries",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Last",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-EventLogAdapter::ConvertTo-CanonicalSeverity": {
+    "Module": "PwShGUI-EventLogAdapter",
+    "Function": "ConvertTo-CanonicalSeverity",
+    "Parameters": [
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-PipelineActiveTodoFiles": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineActiveTodoFiles",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PKIChainManager::Get-PKIChainStatus": {
+    "Module": "PKIChainManager",
+    "Function": "Get-PKIChainStatus",
+    "Parameters": []
+  },
+  "WorkspaceIntentReview::Save-IntentStore": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Save-IntentStore",
+    "Parameters": []
+  },
+  "AssistedSASC::Set-VaultLANSharing": {
+    "Module": "AssistedSASC",
+    "Function": "Set-VaultLANSharing",
+    "Parameters": [
+      {
+        "Name": "Enable",
+        "Type": "Boolean",
+        "Mandatory": true
+      },
+      {
+        "Name": "Port",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::ConvertTo-SyslogSeverity": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "ConvertTo-SyslogSeverity",
+    "Parameters": [
+      {
+        "Name": "AppLevel",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::New-IntegrityManifest": {
+    "Module": "AssistedSASC",
+    "Function": "New-IntegrityManifest",
+    "Parameters": []
+  },
+  "SASC-Adapters::Open-ISEWithCredential": {
+    "Module": "SASC-Adapters",
+    "Function": "Open-ISEWithCredential",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "VariableName",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Get-CronJobHistory": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Get-CronJobHistory",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Last",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SASC-Adapters::Connect-AzureWithVault": {
+    "Module": "SASC-Adapters",
+    "Function": "Connect-AzureWithVault",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "TenantId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "UseCertificate",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-ConfigFileLists": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-ConfigFileLists",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-TerminalConfiguration": {
+    "Module": "UserProfileManager",
+    "Function": "Get-TerminalConfiguration",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::ConvertTo-PipelineItemType": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "ConvertTo-PipelineItemType",
+    "Parameters": [
+      {
+        "Name": "Type",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Show-AVPNConnectionTracker": {
+    "Module": "AVPN-Tracker",
+    "Function": "Show-AVPNConnectionTracker",
+    "Parameters": [
+      {
+        "Name": "ConfigPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "LogCallback",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      },
+      {
+        "Name": "Owner",
+        "Type": "IWin32Window",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwSh-HelpFilesUpdateSource-ReR::Get-HelpFileInfo": {
+    "Module": "PwSh-HelpFilesUpdateSource-ReR",
+    "Function": "Get-HelpFileInfo",
+    "Parameters": [
+      {
+        "Name": "HelpPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "SASC-Adapters::Invoke-PuTTYSession": {
+    "Module": "SASC-Adapters",
+    "Function": "Invoke-PuTTYSession",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "TargetHost",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Port",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "UseKey",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "UsePuTTY",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-SinDriftScan::Invoke-SinDriftScan": {
+    "Module": "PwShGUI-SinDriftScan",
+    "Function": "Invoke-SinDriftScan",
+    "Parameters": [
+      {
+        "Name": "Root",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Include",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "ExcludeDir",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Write-RainbowProgress": {
+    "Module": "PwShGUICore",
+    "Function": "Write-RainbowProgress",
+    "Parameters": [
+      {
+        "Name": "Activity",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "PercentComplete",
+        "Type": "Int32",
+        "Mandatory": true
+      },
+      {
+        "Name": "Status",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Step",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Resolve-ItemCategory": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Resolve-ItemCategory",
+    "Parameters": [
+      {
+        "Name": "RawCategory",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Get-CronHistoryPath": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Get-CronHistoryPath",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Send-SyslogMessage": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Send-SyslogMessage",
+    "Parameters": [
+      {
+        "Name": "Server",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Port",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Facility",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Hostname",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AppName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "UseTcpFallback",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-MimeTypes": {
+    "Module": "UserProfileManager",
+    "Function": "Get-MimeTypes",
+    "Parameters": []
+  },
+  "UserProfileManager::Get-ExplorerFolderView": {
+    "Module": "UserProfileManager",
+    "Function": "Get-ExplorerFolderView",
+    "Parameters": []
+  },
+  "PwShGUI-ConvoVault::Export-ConvoBundle": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Export-ConvoBundle",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "KeyOverride",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-MRULocations": {
+    "Module": "UserProfileManager",
+    "Function": "Get-MRULocations",
+    "Parameters": []
+  },
+  "PwShGUI-LegacyEncoding::Convert-LegacyEncoding": {
+    "Module": "PwShGUI-LegacyEncoding",
+    "Function": "Convert-LegacyEncoding",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Get-ProjectPath": {
+    "Module": "PwShGUICore",
+    "Function": "Get-ProjectPath",
+    "Parameters": [
+      {
+        "Name": "Key",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Initialize-CronLogging": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Initialize-CronLogging",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Show-AssistedSASCDialog": {
+    "Module": "AssistedSASC",
+    "Function": "Show-AssistedSASCDialog",
+    "Parameters": []
+  },
+  "AssistedSASC::New-VaultKey": {
+    "Module": "AssistedSASC",
+    "Function": "New-VaultKey",
+    "Parameters": [
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": true
+      },
+      {
+        "Name": "Salt",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Register-SubagentCall": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Register-SubagentCall",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AgentName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Write-SessionLock": {
+    "Module": "PwShGUICore",
+    "Function": "Write-SessionLock",
+    "Parameters": []
+  },
+  "PwShGUI-VersionManager::Get-LatestEpoch": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Get-LatestEpoch",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Invoke-PipelineArtifactRefresh": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Invoke-PipelineArtifactRefresh",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Test-VaultStatus": {
+    "Module": "AssistedSASC",
+    "Function": "Test-VaultStatus",
+    "Parameters": []
+  },
+  "PwShGUI-SinHeatmap::Get-SinHeatmap": {
+    "Module": "PwShGUI-SinHeatmap",
+    "Function": "Get-SinHeatmap",
+    "Parameters": [
+      {
+        "Name": "FindingsPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "SvgPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Top",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-AutoRemediate::Test-IsRemediable": {
+    "Module": "PwShGUI-AutoRemediate",
+    "Function": "Test-IsRemediable",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-AutoRollbackPassword": {
+    "Module": "UserProfileManager",
+    "Function": "Get-AutoRollbackPassword",
+    "Parameters": [
+      {
+        "Name": "ProfileName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-IntegrityCore::Invoke-EmergencyUnlock": {
+    "Module": "PwShGUI-IntegrityCore",
+    "Function": "Invoke-EmergencyUnlock",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ProvidedKey",
+        "Type": "SecureString",
+        "Mandatory": false
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Invoke-IntentUnseal": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Invoke-IntentUnseal",
+    "Parameters": [
+      {
+        "Name": "IntentId",
+        "Type": "Int32",
+        "Mandatory": true
+      },
+      {
+        "Name": "Reason",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "By",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-PipelineRegistryPath": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-PipelineRegistryPath",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-XhtmlValidation": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-XhtmlValidation",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Write-ScriptLog": {
+    "Module": "PwShGUICore",
+    "Function": "Write-ScriptLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ScriptName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Unprotect-VaultData": {
+    "Module": "AssistedSASC",
+    "Function": "Unprotect-VaultData",
+    "Parameters": [
+      {
+        "Name": "CipherText",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Salt",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "IV",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "HMAC",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-REmemorAiZ": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-REmemorAiZ",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "HoursBack",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "DryRun",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "SkipManifest",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "SkipDependency",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "ResumeFrom",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "_TEMPLATE-Module::Invoke-[PREFIX]Action": {
+    "Module": "_TEMPLATE-Module",
+    "Function": "Invoke-[PREFIX]Action",
+    "Parameters": [
+      {
+        "Name": "InputData",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Invoke-PreRequisiteCheck": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Invoke-PreRequisiteCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Set-IntentStatus": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Set-IntentStatus",
+    "Parameters": [
+      {
+        "Name": "IntentId",
+        "Type": "Int32",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewStatus",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "By",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Reason",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Get-EventLogConfig": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Get-EventLogConfig",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Get-VaultConfig": {
+    "Module": "AssistedSASC",
+    "Function": "Get-VaultConfig",
+    "Parameters": []
+  },
+  "UserProfileManager::Import-ProfileSnapshot": {
+    "Module": "UserProfileManager",
+    "Function": "Import-ProfileSnapshot",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Get-CredentialForTarget": {
+    "Module": "AssistedSASC",
+    "Function": "Get-CredentialForTarget",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Add-ChangeLogEntry": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Add-ChangeLogEntry",
+    "Parameters": [
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ChangeType",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Agent",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AffectedFiles",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "GoverningIntentId",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "VersionBefore",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "VersionAfter",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-ErrorTrapAudit": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-ErrorTrapAudit",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-FullBugScan": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-FullBugScan",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwSh-HelpFilesUpdateSource-ReR::Update-HelpStatus": {
+    "Module": "PwSh-HelpFilesUpdateSource-ReR",
+    "Function": "Update-HelpStatus",
+    "Parameters": []
+  },
+  "PwShGUI-TrayHost::Get-CompletedBackgroundTasks": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Get-CompletedBackgroundTasks",
+    "Parameters": []
+  },
+  "PwShGUI-Theme::Set-ModernTabStyle": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernTabStyle",
+    "Parameters": [
+      {
+        "Name": "TabControl",
+        "Type": "TabControl",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Invoke-MajorBuildIncrement": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Invoke-MajorBuildIncrement",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewMajor",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-VersionTag::Get-VersionTag": {
+    "Module": "PwShGUI-VersionTag",
+    "Function": "Get-VersionTag",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Default",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Show-VaultUnlockDialog": {
+    "Module": "AssistedSASC",
+    "Function": "Show-VaultUnlockDialog",
+    "Parameters": []
+  },
+  "CronAiAthon-Scheduler::Write-CronLog": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Write-CronLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFBaseline": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFBaseline",
+    "Parameters": [
+      {
+        "Name": "BaselinePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Convert-PlainTextToSecureString": {
+    "Module": "AssistedSASC",
+    "Function": "Convert-PlainTextToSecureString",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-XhtmlReportTester::Test-XhtmlReports": {
+    "Module": "PwShGUI-XhtmlReportTester",
+    "Function": "Test-XhtmlReports",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-AutoRemediate::Invoke-AutoRemediate": {
+    "Module": "PwShGUI-AutoRemediate",
+    "Function": "Invoke-AutoRemediate",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Patterns",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "BackupOriginal",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Get-VaultItem": {
+    "Module": "AssistedSASC",
+    "Function": "Get-VaultItem",
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ItemId",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Compare-ByteArrayConstantTime": {
+    "Module": "AssistedSASC",
+    "Function": "Compare-ByteArrayConstantTime",
+    "Parameters": [
+      {
+        "Name": "Expected",
+        "Type": "Byte[]",
+        "Mandatory": true
+      },
+      {
+        "Name": "Actual",
+        "Type": "Byte[]",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Show-PipelineHelp": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Show-PipelineHelp",
+    "Parameters": [
+      {
+        "Name": "Action",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "EventLevel",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogToFile",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ShowRainbow",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Get-AIFDefaultPathList": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Get-AIFDefaultPathList",
+    "Parameters": [
+      {
+        "Name": "ModuleRoot",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Get-AllProjectPaths": {
+    "Module": "PwShGUICore",
+    "Function": "Get-AllProjectPaths",
+    "Parameters": []
+  },
+  "WorkspaceIntentReview::Invoke-IntentSeal": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Invoke-IntentSeal",
+    "Parameters": [
+      {
+        "Name": "IntentId",
+        "Type": "Int32",
+        "Mandatory": true
+      },
+      {
+        "Name": "By",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Reason",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-LaunchTimingProfile::Get-LaunchTimingProfile": {
+    "Module": "PwShGUI-LaunchTimingProfile",
+    "Function": "Get-LaunchTimingProfile",
+    "Parameters": [
+      {
+        "Name": "LogsPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase5DependencyCalc": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase5DependencyCalc",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DryRun",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PKIChainManager::New-RootCACertificate": {
+    "Module": "PKIChainManager",
+    "Function": "New-RootCACertificate",
+    "Parameters": [
+      {
+        "Name": "Subject",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ValidityYears",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "KeyLength",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "PfxPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase3VersionBump": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase3VersionBump",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DryRun",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-ErrorLinker::Add-ErrorToPipeline": {
+    "Module": "CronAiAthon-ErrorLinker",
+    "Function": "Add-ErrorToPipeline",
+    "Parameters": [
+      {
+        "Name": "Exception",
+        "Type": "ErrorRecord",
+        "Mandatory": true
+      },
+      {
+        "Name": "FunctionName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AffectedFiles",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "ErrorSource",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SASC-Adapters::Invoke-WindowsHelloAuth": {
+    "Module": "SASC-Adapters",
+    "Function": "Invoke-WindowsHelloAuth",
+    "Parameters": []
+  },
+  "PwShGUI-ConvoVault::Invoke-ConvoExchange": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Invoke-ConvoExchange",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Topic",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SessionTag",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "NoSave",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-CrashLogScan": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-CrashLogScan",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-UserAppConfigs": {
+    "Module": "UserProfileManager",
+    "Function": "Get-UserAppConfigs",
+    "Parameters": []
+  },
+  "PwShGUI-HistoryZip::Get-HistoryFileFromZip": {
+    "Module": "PwShGUI-HistoryZip",
+    "Function": "Get-HistoryFileFromZip",
+    "Parameters": [
+      {
+        "Name": "MajorVersion",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FileName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ArchiveDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-MimeLists": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-MimeLists",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Confirm-OutlineVersion": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Confirm-OutlineVersion",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-ConvoVault::Protect-ConvoEntry": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Protect-ConvoEntry",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Key",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Invoke-LogRotation": {
+    "Module": "PwShGUICore",
+    "Function": "Invoke-LogRotation",
+    "Parameters": [
+      {
+        "Name": "LogsDir",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "RetainDays",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "_TEMPLATE-Module::Initialize-[PREFIX]State": {
+    "Module": "_TEMPLATE-Module",
+    "Function": "Initialize-[PREFIX]State",
+    "Parameters": []
+  },
+  "PwShGUI-Theme::New-SpinnerLabel": {
+    "Module": "PwShGUI-Theme",
+    "Function": "New-SpinnerLabel",
+    "Parameters": [
+      {
+        "Name": "Interval",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SINGovernance::Approve-SIN": {
+    "Module": "SINGovernance",
+    "Function": "Approve-SIN",
+    "Parameters": [
+      {
+        "Name": "SinId",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ReviewNotes",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Set-LogMinLevel": {
+    "Module": "PwShGUICore",
+    "Function": "Set-LogMinLevel",
+    "Parameters": [
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-PSEnvironment": {
+    "Module": "UserProfileManager",
+    "Function": "Get-PSEnvironment",
+    "Parameters": []
+  },
+  "AVPN-Tracker::Show-AVPNDeviceTypeDialog": {
+    "Module": "AVPN-Tracker",
+    "Function": "Show-AVPNDeviceTypeDialog",
+    "Parameters": [
+      {
+        "Name": "Template",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "NextId",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PKIChainManager::New-SubordinateCACertificate": {
+    "Module": "PKIChainManager",
+    "Function": "New-SubordinateCACertificate",
+    "Parameters": [
+      {
+        "Name": "Subject",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SignerThumbprint",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ValidityYears",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "KeyLength",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "PfxPassword",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Export-AVPNCsv": {
+    "Module": "AVPN-Tracker",
+    "Function": "Export-AVPNCsv",
+    "Parameters": [
+      {
+        "Name": "Inventory",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "Connections",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Get-ChangeLogEntries": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Get-ChangeLogEntries",
+    "Parameters": [
+      {
+        "Name": "Last",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "ChangeType",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Agent",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SinceIndex",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "GoverningIntentId",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-DependencyMap::Invoke-DependencyGraph": {
+    "Module": "PwShGUI-DependencyMap",
+    "Function": "Invoke-DependencyGraph",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-DependencyCheck": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-DependencyCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Show-SecretsInvokerWebView2": {
+    "Module": "AssistedSASC",
+    "Function": "Show-SecretsInvokerWebView2",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::ConvertTo-Bugs2FIX": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "ConvertTo-Bugs2FIX",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "BugItem",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "BugReferrals",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-ErrorLinker::Add-PipelineStepErrorLink": {
+    "Module": "CronAiAthon-ErrorLinker",
+    "Function": "Add-PipelineStepErrorLink",
+    "Parameters": [
+      {
+        "Name": "AgentName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "StepName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ErrorMessage",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Metrics",
+        "Type": "Hashtable",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Test-AVPNConnectionValid": {
+    "Module": "AVPN-Tracker",
+    "Function": "Test-AVPNConnectionValid",
+    "Parameters": [
+      {
+        "Name": "SourceType",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DestType",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-SchemaTranslator::Test-ScanSchemaCompatibility": {
+    "Module": "PwShGUI-SchemaTranslator",
+    "Function": "Test-ScanSchemaCompatibility",
+    "Parameters": [
+      {
+        "Name": "ScanData",
+        "Type": "PSObject",
+        "Mandatory": true
+      },
+      {
+        "Name": "SchemaVersion",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Import-VaultSecrets": {
+    "Module": "AssistedSASC",
+    "Function": "Import-VaultSecrets",
+    "Parameters": [
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Format",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Get-AVPNDeviceTypeList": {
+    "Module": "AVPN-Tracker",
+    "Function": "Get-AVPNDeviceTypeList",
+    "Parameters": [
+      {
+        "Name": "DeviceTypesPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SINGovernance::Deny-SIN": {
+    "Module": "SINGovernance",
+    "Function": "Deny-SIN",
+    "Parameters": [
+      {
+        "Name": "SinId",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Reason",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AVPN-Tracker::Show-AVPNDeviceTypeEditor": {
+    "Module": "AVPN-Tracker",
+    "Function": "Show-AVPNDeviceTypeEditor",
+    "Parameters": [
+      {
+        "Name": "Templates",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "LogCallback",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-CheckpointPrune::Invoke-CheckpointPrune": {
+    "Module": "PwShGUI-CheckpointPrune",
+    "Function": "Invoke-CheckpointPrune",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "KeepLast",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "KeepDays",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Delete",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-EnvironmentVariables": {
+    "Module": "UserProfileManager",
+    "Function": "Get-EnvironmentVariables",
+    "Parameters": []
+  },
+  "RE-memorAiZ::Write-RELog": {
+    "Module": "RE-memorAiZ",
+    "Function": "Write-RELog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Initialize-AVPNConfigFile": {
+    "Module": "AVPN-Tracker",
+    "Function": "Initialize-AVPNConfigFile",
+    "Parameters": [
+      {
+        "Name": "ConfigPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Get-ThemeValue": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Get-ThemeValue",
+    "Parameters": [
+      {
+        "Name": "Key",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwSh-HelpFilesUpdateSource-ReR::Test-HelpFilesExist": {
+    "Module": "PwSh-HelpFilesUpdateSource-ReR",
+    "Function": "Test-HelpFilesExist",
+    "Parameters": [
+      {
+        "Name": "HelpPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Restore-ProfileSnapshot": {
+    "Module": "UserProfileManager",
+    "Function": "Restore-ProfileSnapshot",
+    "Parameters": [
+      {
+        "Name": "ReferenceSnapshot",
+        "Type": "Hashtable",
+        "Mandatory": true
+      },
+      {
+        "Name": "ProfileStorePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Options",
+        "Type": "Hashtable",
+        "Mandatory": false
+      },
+      {
+        "Name": "ProgressCallback",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase1Inventory": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase1Inventory",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "HoursBack",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Get-AllProjectFiles": {
+    "Module": "PwShGUICore",
+    "Function": "Get-AllProjectFiles",
+    "Parameters": [
+      {
+        "Name": "Root",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Pattern",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Get-AVPNConfig": {
+    "Module": "AVPN-Tracker",
+    "Function": "Get-AVPNConfig",
+    "Parameters": [
+      {
+        "Name": "ConfigPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Protect-VaultData": {
+    "Module": "AssistedSASC",
+    "Function": "Protect-VaultData",
+    "Parameters": [
+      {
+        "Name": "PlainText",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Password",
+        "Type": "SecureString",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase2ReadmeCheck": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase2ReadmeCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "InventoryResult",
+        "Type": "Hashtable",
+        "Mandatory": true
+      },
+      {
+        "Name": "DryRun",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-CoverageReport::Export-TestCoverage": {
+    "Module": "PwShGUI-CoverageReport",
+    "Function": "Export-TestCoverage",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "TestPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "CoverageTarget",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::ConvertTo-PipelineStatus": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "ConvertTo-PipelineStatus",
+    "Parameters": [
+      {
+        "Name": "Status",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Wait-KeyOrTimeout": {
+    "Module": "PwShGUICore",
+    "Function": "Wait-KeyOrTimeout",
+    "Parameters": [
+      {
+        "Name": "Seconds",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "WorkspaceIntentReview::Get-IntentHistory": {
+    "Module": "WorkspaceIntentReview",
+    "Function": "Get-IntentHistory",
+    "Parameters": [
+      {
+        "Name": "IntentId",
+        "Type": "Int32",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Invoke-CrashRecovery": {
+    "Module": "PwShGUICore",
+    "Function": "Invoke-CrashRecovery",
+    "Parameters": [
+      {
+        "Name": "TempDir",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Assert-SafePath": {
+    "Module": "AssistedSASC",
+    "Function": "Assert-SafePath",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "AllowedRoots",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Show-SecretsInvokerFallback": {
+    "Module": "AssistedSASC",
+    "Function": "Show-SecretsInvokerFallback",
+    "Parameters": []
+  },
+  "AssistedSASC::Show-VaultStatusDialog": {
+    "Module": "AssistedSASC",
+    "Function": "Show-VaultStatusDialog",
+    "Parameters": []
+  },
+  "CronAiAthon-Scheduler::Update-AutopilotSuggestionStatus": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Update-AutopilotSuggestionStatus",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "SuggestionId",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewStatus",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-TrayHost::Stop-BackgroundPool": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Stop-BackgroundPool",
+    "Parameters": []
+  },
+  "SINGovernance::Initialize-SINGovernance": {
+    "Module": "SINGovernance",
+    "Function": "Initialize-SINGovernance",
+    "Parameters": [
+      {
+        "Name": "RegistryPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ReviewerID",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Export-AIFDeltaXhtmlReport": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Export-AIFDeltaXhtmlReport",
+    "Parameters": [
+      {
+        "Name": "Delta",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "ReportPath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "BaselinePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "SASC-Adapters::Invoke-MRemoteNGSession": {
+    "Module": "SASC-Adapters",
+    "Function": "Invoke-MRemoteNGSession",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Protocol",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ConnectionFile",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Test-VaultSecurity": {
+    "Module": "AssistedSASC",
+    "Function": "Test-VaultSecurity",
+    "Parameters": []
+  },
+  "AVPN-Tracker::Save-AVPNDeviceTypeList": {
+    "Module": "AVPN-Tracker",
+    "Function": "Save-AVPNDeviceTypeList",
+    "Parameters": [
+      {
+        "Name": "Templates",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "DeviceTypesPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-DisplayLayout": {
+    "Module": "UserProfileManager",
+    "Function": "Get-DisplayLayout",
+    "Parameters": []
+  },
+  "CronAiAthon-Pipeline::Set-PipelineItemBatchStatus": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Set-PipelineItemBatchStatus",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "NewStatus",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "FilterType",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilterStatus",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilterCategory",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilterSinId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Notes",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Force",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-BreakingChange::Get-ModuleSurface": {
+    "Module": "PwShGUI-BreakingChange",
+    "Function": "Get-ModuleSurface",
+    "Parameters": [
+      {
+        "Name": "Path",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Install-BitwardenLite": {
+    "Module": "AssistedSASC",
+    "Function": "Install-BitwardenLite",
+    "Parameters": []
+  },
+  "PwShGUI-VersionManager::Get-WorkspaceVersionInventory": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Get-WorkspaceVersionInventory",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Invoke-AllCronJobs": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Invoke-AllCronJobs",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-LanguageAndSpeech": {
+    "Module": "UserProfileManager",
+    "Function": "Get-LanguageAndSpeech",
+    "Parameters": []
+  },
+  "PwShGUI-ConvoVault::Unprotect-ConvoData": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Unprotect-ConvoData",
+    "Parameters": [
+      {
+        "Name": "EncData",
+        "Type": "Byte[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "Key",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Scheduler::Set-CronFrequency": {
+    "Module": "CronAiAthon-Scheduler",
+    "Function": "Set-CronFrequency",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "FrequencyMinutes",
+        "Type": "Int32",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Initialize-ConfigFile": {
+    "Module": "PwShGUICore",
+    "Function": "Initialize-ConfigFile",
+    "Parameters": [
+      {
+        "Name": "ConfigFile",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "LogsDir",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ConfigDir",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ScriptsDir",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Invoke-SinRegistryFeedback": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Invoke-SinRegistryFeedback",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "BugItem",
+        "Type": "Hashtable",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwSh-HelpFilesUpdateSource-ReR::Show-HelpFilesGUI": {
+    "Module": "PwSh-HelpFilesUpdateSource-ReR",
+    "Function": "Show-HelpFilesGUI",
+    "Parameters": [
+      {
+        "Name": "InitialPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SASC-Adapters::Get-VaultCredentialForScript": {
+    "Module": "SASC-Adapters",
+    "Function": "Get-VaultCredentialForScript",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "PromptMessage",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-ManifestDiff::Get-ManifestSnapshot": {
+    "Module": "PwShGUI-ManifestDiff",
+    "Function": "Get-ManifestSnapshot",
+    "Parameters": [
+      {
+        "Name": "ModulesPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Save-AIFCheckpoint": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Save-AIFCheckpoint",
+    "Parameters": [
+      {
+        "Name": "Data",
+        "Type": "Object",
+        "Mandatory": true
+      },
+      {
+        "Name": "CheckpointPath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "RE-memorAiZ::Invoke-Phase4ManifestAlign": {
+    "Module": "RE-memorAiZ",
+    "Function": "Invoke-Phase4ManifestAlign",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DryRun",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-ConvoVault::Add-ConvoEntry": {
+    "Module": "PwShGUI-ConvoVault",
+    "Function": "Add-ConvoEntry",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Entry",
+        "Type": "Hashtable",
+        "Mandatory": true
+      },
+      {
+        "Name": "KeyOverride",
+        "Type": "Byte[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Remove-SessionLock": {
+    "Module": "PwShGUICore",
+    "Function": "Remove-SessionLock",
+    "Parameters": []
+  },
+  "PwShGUI-TrayHost::Set-VerboseLifecycle": {
+    "Module": "PwShGUI-TrayHost",
+    "Function": "Set-VerboseLifecycle",
+    "Parameters": [
+      {
+        "Name": "Enabled",
+        "Type": "Boolean",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI_AutoIssueFinder::Invoke-PwShGUIAutoIssueFinder": {
+    "Module": "PwShGUI_AutoIssueFinder",
+    "Function": "Invoke-PwShGUIAutoIssueFinder",
+    "Parameters": [
+      {
+        "Name": "Paths",
+        "Type": "String[]",
+        "Mandatory": false
+      },
+      {
+        "Name": "IncludeSubfolders",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "OutputRoot",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "CheckpointPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ReportPath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Resume",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "GenerateDeltaReport",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      },
+      {
+        "Name": "BaselinePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "DeltaReportPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "SASC-Adapters::Set-CredentialDialogFill": {
+    "Module": "SASC-Adapters",
+    "Function": "Set-CredentialDialogFill",
+    "Parameters": [
+      {
+        "Name": "TargetName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Caption",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Compare-PSModuleLists": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-PSModuleLists",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Get-CentralMasterToDo": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Get-CentralMasterToDo",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-RegionalSettings": {
+    "Module": "UserProfileManager",
+    "Function": "Get-RegionalSettings",
+    "Parameters": []
+  },
+  "UserProfileManager::Get-TaskbarLayout": {
+    "Module": "UserProfileManager",
+    "Function": "Get-TaskbarLayout",
+    "Parameters": []
+  },
+  "AssistedSASC::Show-SecretsInvokerForm": {
+    "Module": "AssistedSASC",
+    "Function": "Show-SecretsInvokerForm",
+    "Parameters": []
+  },
+  "PwShGUI-NetworkTools::Get-PublicIPAddress": {
+    "Module": "PwShGUI-NetworkTools",
+    "Function": "Get-PublicIPAddress",
+    "Parameters": []
+  },
+  "_TEMPLATE-Module::Get-[PREFIX]Status": {
+    "Module": "_TEMPLATE-Module",
+    "Function": "Get-[PREFIX]Status",
+    "Parameters": []
+  },
+  "UserProfileManager::Compare-WingetLists": {
+    "Module": "UserProfileManager",
+    "Function": "Compare-WingetLists",
+    "Parameters": [
+      {
+        "Name": "Ref",
+        "Type": "Object",
+        "Mandatory": false
+      },
+      {
+        "Name": "Cur",
+        "Type": "Object",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUICore::Write-AppLog": {
+    "Module": "PwShGUICore",
+    "Function": "Write-AppLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Level",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-ErrorLinker::New-ErrorBugItem": {
+    "Module": "CronAiAthon-ErrorLinker",
+    "Function": "New-ErrorBugItem",
+    "Parameters": [
+      {
+        "Name": "Exception",
+        "Type": "ErrorRecord",
+        "Mandatory": true
+      },
+      {
+        "Name": "FunctionName",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "AffectedFiles",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-SchemaTranslator::Get-ScanSchemaVersion": {
+    "Module": "PwShGUI-SchemaTranslator",
+    "Function": "Get-ScanSchemaVersion",
+    "Parameters": [
+      {
+        "Name": "ScanData",
+        "Type": "PSObject",
+        "Mandatory": false
+      },
+      {
+        "Name": "FilePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Get-ProfileSnapshot": {
+    "Module": "UserProfileManager",
+    "Function": "Get-ProfileSnapshot",
+    "Parameters": [
+      {
+        "Name": "ProfileName",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ProgressCallback",
+        "Type": "ScriptBlock",
+        "Mandatory": false
+      },
+      {
+        "Name": "IncludeLocalMachineCerts",
+        "Type": "Boolean",
+        "Mandatory": false
+      }
+    ]
+  },
+  "Import-WorkspaceModule::Import-WorkspaceModule": {
+    "Module": "Import-WorkspaceModule",
+    "Function": "Import-WorkspaceModule",
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-VersionManager::Save-PipelineEpoch": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Save-PipelineEpoch",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Phase",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-BugTracker::Invoke-DataValidationCheck": {
+    "Module": "CronAiAthon-BugTracker",
+    "Function": "Invoke-DataValidationCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "UserProfileManager::Get-CertificateStores": {
+    "Module": "UserProfileManager",
+    "Function": "Get-CertificateStores",
+    "Parameters": [
+      {
+        "Name": "IncludeLocalMachine",
+        "Type": "Boolean",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AVPN-Tracker::Get-AVPNDefaultTemplateList": {
+    "Module": "AVPN-Tracker",
+    "Function": "Get-AVPNDefaultTemplateList",
+    "Parameters": []
+  },
+  "PwShGUI-IntegrityCore::Invoke-StartupIntegrityCheck": {
+    "Module": "PwShGUI-IntegrityCore",
+    "Function": "Invoke-StartupIntegrityCheck",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ConfigFile",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "RequiredModules",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-EventLog::Show-EventLogHelp": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Show-EventLogHelp",
+    "Parameters": [
+      {
+        "Name": "Action",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "EventLevel",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "LogToFile",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ShowRainbow",
+        "Type": "SwitchParameter",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::ConvertTo-Items2ADD": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "ConvertTo-Items2ADD",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Title",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Description",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Priority",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Category",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "ParentId",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "BugReferrals",
+        "Type": "String[]",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-IntegrityCore::Test-IntegrityManifest": {
+    "Module": "PwShGUI-IntegrityCore",
+    "Function": "Test-IntegrityManifest",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "ManifestPath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-Theme::Set-ModernDgvStyle": {
+    "Module": "PwShGUI-Theme",
+    "Function": "Set-ModernDgvStyle",
+    "Parameters": [
+      {
+        "Name": "Dgv",
+        "Type": "DataGridView",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUICore::Get-LogMinLevel": {
+    "Module": "PwShGUICore",
+    "Function": "Get-LogMinLevel",
+    "Parameters": []
+  },
+  "UserProfileManager::Get-SearchProviders": {
+    "Module": "UserProfileManager",
+    "Function": "Get-SearchProviders",
+    "Parameters": []
+  },
+  "AssistedSASC::Lock-Vault": {
+    "Module": "AssistedSASC",
+    "Function": "Lock-Vault",
+    "Parameters": []
+  },
+  "CronAiAthon-EventLog::Write-CronLog": {
+    "Module": "CronAiAthon-EventLog",
+    "Function": "Write-CronLog",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Source",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SyslogServer",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "SyslogPort",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "EventId",
+        "Type": "Int32",
+        "Mandatory": false
+      }
+    ]
+  },
+  "PwShGUI-EventLogAdapter::Get-EventLogNormalized": {
+    "Module": "PwShGUI-EventLogAdapter",
+    "Function": "Get-EventLogNormalized",
+    "Parameters": [
+      {
+        "Name": "Scope",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Tail",
+        "Type": "Int32",
+        "Mandatory": false
+      },
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "CronAiAthon-Pipeline::Add-PipelineItem": {
+    "Module": "CronAiAthon-Pipeline",
+    "Function": "Add-PipelineItem",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Item",
+        "Type": "Hashtable",
+        "Mandatory": true
+      }
+    ]
+  },
+  "AssistedSASC::Test-SASCSignedManifest": {
+    "Module": "AssistedSASC",
+    "Function": "Test-SASCSignedManifest",
+    "Parameters": []
+  },
+  "PwShGUI-IntegrityCore::Write-IntegrityLog": {
+    "Module": "PwShGUI-IntegrityCore",
+    "Function": "Write-IntegrityLog",
+    "Parameters": [
+      {
+        "Name": "Message",
+        "Type": "String",
+        "Mandatory": false
+      },
+      {
+        "Name": "Severity",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "AssistedSASC::Assert-VaultUnlocked": {
+    "Module": "AssistedSASC",
+    "Function": "Assert-VaultUnlocked",
+    "Parameters": []
+  },
+  "PwShGUI-VersionManager::Export-CPSRAggregation": {
+    "Module": "PwShGUI-VersionManager",
+    "Function": "Export-CPSRAggregation",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "DateFolder",
+        "Type": "String",
+        "Mandatory": false
+      }
+    ]
+  },
+  "UserProfileManager::Unprotect-ProfileData": {
+    "Module": "UserProfileManager",
+    "Function": "Unprotect-ProfileData",
+    "Parameters": [
+      {
+        "Name": "CipherText",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Salt",
+        "Type": "String",
+        "Mandatory": true
+      },
+      {
+        "Name": "Password",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  },
+  "PwShGUI-IntegrityCore::Initialize-EmergencyUnlockKey": {
+    "Module": "PwShGUI-IntegrityCore",
+    "Function": "Initialize-EmergencyUnlockKey",
+    "Parameters": [
+      {
+        "Name": "WorkspacePath",
+        "Type": "String",
+        "Mandatory": true
+      }
+    ]
+  }
+}

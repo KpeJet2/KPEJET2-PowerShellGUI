@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B2.V31.7
 @echo off
 REM ============================================================
 REM  Launch-SandboxInteractive.bat -- Interactive iterative GUI
@@ -67,3 +67,4 @@ echo   Use Send-SandboxCommand.ps1 to iterate while sandbox runs.
 echo ============================================================
 echo.
 pause
+

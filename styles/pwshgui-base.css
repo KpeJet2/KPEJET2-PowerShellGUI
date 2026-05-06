@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B2.V31.7
 /* PwShGUI Base Theme - Dark Mode | v26 | 2026-03-26 */
 /* Matches PwShGUI-Theme.psm1 color palette exactly */
 :root {
@@ -64,4 +64,5 @@ pre{font-family:var(--font-mono);font-size:var(--fs-sm);background:var(--bg-alt)
 .text-subtle{color:var(--fg-subtle);font-size:var(--fs-sm)}
 .hidden{display:none!important}
 .iframe-history{width:100%;height:200px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-alt)}
+
 

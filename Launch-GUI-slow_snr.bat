@@ -17,6 +17,8 @@ setlocal enabledelayedexpansion
 
 set "scriptDir=%~dp0"
 set "TASKTRAY_ARG="
+set "SUPPRESS_FOOTER_MODE=ON"
+set "SUPPRESS_FOOTER_ARG=-SuppressFromFooterCheckpoint"
 
 REM ── Bootstrap: ensure PowerShellGUI modules are findable by all child PowerShell processes.
 REM    Prepending to PSModulePath here means pwsh/powershell will inherit it immediately,
@@ -26,6 +28,14 @@ set "PSModulePath=%scriptDir%modules;%PSModulePath%"
 REM --- Parse /TASKTRAY switch ---
 for %%A in (%*) do (
     if /I "%%~A"=="/TASKTRAY" set "TASKTRAY_ARG=-TaskTray"
+    if /I "%%~A"=="/SUPPRESSFOOTER" (
+        set "SUPPRESS_FOOTER_MODE=ON"
+        set "SUPPRESS_FOOTER_ARG=-SuppressFromFooterCheckpoint"
+    )
+    if /I "%%~A"=="/NOSUPPRESSFOOTER" (
+        set "SUPPRESS_FOOTER_MODE=OFF"
+        set "SUPPRESS_FOOTER_ARG="
+    )
 )
 
 if not exist "%scriptDir%Main-GUI.ps1" (
@@ -39,6 +49,7 @@ title PowerShellGUI - slow_snr
 echo ============================================================
 echo  Launch-GUI-slow_snr ^(Full Checks^)
 echo ============================================================
+echo [DIAG] Footer-onward suppression test mode is !SUPPRESS_FOOTER_MODE!.
 echo.
 
 if defined TASKTRAY_ARG (
@@ -61,7 +72,7 @@ if defined pwshVersion (
         echo ##SEE TASK TRAY ICON##
         echo.
     )
-    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%Main-GUI.ps1" -StartupMode slow_snr !TASKTRAY_ARG!
+    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%Main-GUI.ps1" -StartupMode slow_snr !TASKTRAY_ARG! !SUPPRESS_FOOTER_ARG!
     goto end
 )
 
@@ -77,7 +88,7 @@ if defined TASKTRAY_ARG (
     echo ##SEE TASK TRAY ICON##
     echo.
 )
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%Main-GUI.ps1" -StartupMode slow_snr !TASKTRAY_ARG!
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%Main-GUI.ps1" -StartupMode slow_snr !TASKTRAY_ARG! !SUPPRESS_FOOTER_ARG!
 
 :end
 echo.

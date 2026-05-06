@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -19,7 +19,10 @@
 param(
     [switch]$PesterOnly,
     [switch]$SmokeOnly,
-    [switch]$IncludeShellMatrix
+    [switch]$IncludeShellMatrix,
+    [switch]$AutoInstallPester,
+    [bool]$RequirePester = $true,
+    [bool]$IncludeModuleValidation = $true
 )
 
 Set-StrictMode -Version Latest
@@ -82,9 +85,26 @@ if (-not $SmokeOnly) {
 
     # Check if Pester is available
     $pesterModule = Get-Module -Name Pester -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
+    if (-not $pesterModule -and $AutoInstallPester) {
+        try {
+            Write-Host "[INFO] Installing Pester (CurrentUser scope)..." -ForegroundColor Cyan
+            Install-Module -Name Pester -MinimumVersion 5.0 -Scope CurrentUser -Force -SkipPublisherCheck -AllowClobber -ErrorAction Stop
+            $pesterModule = Get-Module -Name Pester -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
+        } catch {
+            Write-Host "[WARN] Auto-install of Pester failed: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+
     if (-not $pesterModule) {
-        Write-Host "[WARN] Pester module not installed. Install with: Install-Module Pester -Force -SkipPublisherCheck" -ForegroundColor Yellow
-        $results.pester = @{ status = 'SKIPPED'; reason = 'Pester not installed' }
+        $msg = 'Pester module not installed. Install with: Install-Module Pester -MinimumVersion 5.0 -Scope CurrentUser -Force -SkipPublisherCheck'
+        if ($RequirePester) {
+            Write-Host "[FAIL] $msg" -ForegroundColor Red
+            $results.pester = @{ status = 'FAILED'; reason = $msg }
+            $results.summary.failed += 1
+        } else {
+            Write-Host "[WARN] $msg" -ForegroundColor Yellow
+            $results.pester = @{ status = 'SKIPPED'; reason = 'Pester not installed' }
+        }
     } else {
         try { Import-Module Pester -MinimumVersion 5.0 -Force -ErrorAction Stop } catch { <# Intentional: fallback to any Pester version below #> }
         if (-not (Get-Module Pester | Where-Object { $_.Version -ge [version]'5.0' })) {
@@ -92,31 +112,84 @@ if (-not $SmokeOnly) {
         }
 
         $pesterFiles = Get-ChildItem -Path $testsDir -Filter '*.Tests.ps1' -File | Sort-Object Name
-        Write-Host "Found $($pesterFiles.Count) Pester test files:" -ForegroundColor Gray
-        $pesterFiles | ForEach-Object { Write-Host "  - $($_.Name)" -ForegroundColor Gray }
-
-        $pesterConfig = New-PesterConfiguration
-        $pesterConfig.Run.Path = $pesterFiles.FullName
-        $pesterConfig.Run.PassThru = $true
-        $pesterConfig.Output.Verbosity = 'Detailed'
-
-        try {
-            $pesterResult = Invoke-Pester -Configuration $pesterConfig
-            $results.pester = [ordered]@{
-                status    = if ($pesterResult.FailedCount -eq 0) { 'PASSED' } else { 'FAILED' }
-                total     = $pesterResult.TotalCount
-                passed    = $pesterResult.PassedCount
-                failed    = $pesterResult.FailedCount
-                skipped   = $pesterResult.SkippedCount
-                duration  = $pesterResult.Duration.ToString()
+        if (@($pesterFiles).Count -eq 0) {
+            if ($RequirePester) {
+                $results.pester = @{ status = 'FAILED'; reason = 'No Pester test files found (*.Tests.ps1)' }
+                $results.summary.failed += 1
+                Write-Host '[FAIL] No Pester test files found (*.Tests.ps1)' -ForegroundColor Red
+            } else {
+                $results.pester = @{ status = 'SKIPPED'; reason = 'No Pester test files found (*.Tests.ps1)' }
+                Write-Host '[WARN] No Pester test files found (*.Tests.ps1)' -ForegroundColor Yellow
             }
-            $results.summary.total   += $pesterResult.TotalCount
-            $results.summary.passed  += $pesterResult.PassedCount
-            $results.summary.failed  += $pesterResult.FailedCount
-            $results.summary.skipped += $pesterResult.SkippedCount
-        } catch {
-            $results.pester = @{ status = 'ERROR'; message = $_.ToString() }
+        } else {
+            Write-Host "Found $($pesterFiles.Count) Pester test files:" -ForegroundColor Gray
+            $pesterFiles | ForEach-Object { Write-Host "  - $($_.Name)" -ForegroundColor Gray }
+
+            try {
+                $pesterResult = $null
+                if (Get-Command -Name New-PesterConfiguration -ErrorAction SilentlyContinue) {
+                    $pesterConfig = New-PesterConfiguration
+                    $pesterConfig.Run.Path = $pesterFiles.FullName
+                    $pesterConfig.Run.PassThru = $true
+                    $pesterConfig.Output.Verbosity = 'Detailed'
+                    $pesterResult = Invoke-Pester -Configuration $pesterConfig
+                } else {
+                    # Pester v4 compatibility path.
+                    $pesterResult = Invoke-Pester -Script $pesterFiles.FullName -PassThru
+                }
+
+                $totalCount = if ($pesterResult.PSObject.Properties.Name -contains 'TotalCount') { [int]$pesterResult.TotalCount } elseif ($pesterResult.PSObject.Properties.Name -contains 'Total') { [int]$pesterResult.Total } else { 0 }
+                $passedCount = if ($pesterResult.PSObject.Properties.Name -contains 'PassedCount') { [int]$pesterResult.PassedCount } elseif ($pesterResult.PSObject.Properties.Name -contains 'Passed') { [int]$pesterResult.Passed } else { 0 }
+                $failedCount = if ($pesterResult.PSObject.Properties.Name -contains 'FailedCount') { [int]$pesterResult.FailedCount } elseif ($pesterResult.PSObject.Properties.Name -contains 'Failed') { [int]$pesterResult.Failed } else { 0 }
+                $skippedCount = if ($pesterResult.PSObject.Properties.Name -contains 'SkippedCount') { [int]$pesterResult.SkippedCount } elseif ($pesterResult.PSObject.Properties.Name -contains 'Skipped') { [int]$pesterResult.Skipped } else { 0 }
+                $durationText = if ($pesterResult.PSObject.Properties.Name -contains 'Duration') { $pesterResult.Duration.ToString() } elseif ($pesterResult.PSObject.Properties.Name -contains 'Time') { $pesterResult.Time.ToString() } else { '' }
+
+                $results.pester = [ordered]@{
+                    status    = if ($failedCount -eq 0) { 'PASSED' } else { 'FAILED' }
+                    total     = $totalCount
+                    passed    = $passedCount
+                    failed    = $failedCount
+                    skipped   = $skippedCount
+                    duration  = $durationText
+                }
+                $results.summary.total   += $totalCount
+                $results.summary.passed  += $passedCount
+                $results.summary.failed  += $failedCount
+                $results.summary.skipped += $skippedCount
+            } catch {
+                $results.pester = @{ status = 'ERROR'; message = $_.ToString() }
+            }
         }
+    }
+}
+
+# ── Module Accessibility Validation ─────────────────────────────────────────
+if ($IncludeModuleValidation) {
+    Write-Host "`n========== MODULE ACCESSIBILITY VALIDATION ==========" -ForegroundColor Cyan
+    $moduleValidator = Join-Path $testsDir 'Invoke-ModuleGalleryValidator.ps1'
+    if (Test-Path $moduleValidator) {
+        try {
+            $moduleJsonPath = Join-Path (Join-Path $scriptRoot 'temp') ("module-validation-{0}.json" -f $timestamp)
+            & $moduleValidator -WorkspacePath $scriptRoot -TestPS51 -TestPS7 -TestSystemContext -Quiet -OutputJson $moduleJsonPath | Out-Null
+            $moduleValidationResult = if (Test-Path -LiteralPath $moduleJsonPath) { Get-Content -LiteralPath $moduleJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }
+            if ($null -eq $moduleValidationResult) {
+                $results['moduleValidation'] = @{ status = 'ERROR'; message = 'Module validator did not produce readable JSON output' }
+            } else {
+                $failModules = if ($moduleValidationResult.PSObject.Properties.Name -contains 'verdictFAIL') { [int]$moduleValidationResult.verdictFAIL } else { 0 }
+                $warnModules = if ($moduleValidationResult.PSObject.Properties.Name -contains 'verdictWARN') { [int]$moduleValidationResult.verdictWARN } else { 0 }
+                $results['moduleValidation'] = [ordered]@{
+                    status       = if ($failModules -gt 0) { 'FAILED' } else { 'PASSED' }
+                    totalModules = if ($moduleValidationResult.PSObject.Properties.Name -contains 'totalModules') { [int]$moduleValidationResult.totalModules } else { 0 }
+                    failed       = $failModules
+                    warned       = $warnModules
+                    outputJson   = $moduleJsonPath
+                }
+            }
+        } catch {
+            $results['moduleValidation'] = @{ status = 'ERROR'; message = $_.ToString() }
+        }
+    } else {
+        $results['moduleValidation'] = @{ status = 'SKIPPED'; reason = 'Module validator not found' }
     }
 }
 
@@ -126,10 +199,12 @@ $sinScanner = Join-Path $testsDir 'Invoke-SINPatternScanner.ps1'
 if (Test-Path $sinScanner) {
     try {
         $sinResult = & $sinScanner -WorkspacePath $scriptRoot
+        $p027Count = if ($sinResult) { @($sinResult.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*27(?:\D|$)|NULL-ARRAY-INDEX|(?:^|-)P027(?:\D|$)' }).Count } else { 0 }
         $results['sinPatternScan'] = [ordered]@{
-            status   = if ($sinResult -and $sinResult.critical -gt 0) { 'FAILED' } else { 'PASSED' }
+            status   = if ($sinResult -and ($sinResult.critical -gt 0 -or $p027Count -gt 0)) { 'FAILED' } else { 'PASSED' }
             total    = if ($sinResult) { $sinResult.totalFindings } else { 0 }
             critical = if ($sinResult) { $sinResult.critical }      else { 0 }
+            p027     = $p027Count
             high     = if ($sinResult) { $sinResult.high }          else { 0 }
             medium   = if ($sinResult) { $sinResult.medium }        else { 0 }
         }
@@ -231,7 +306,7 @@ Write-Host "Passed:   $($results.summary.passed)" -ForegroundColor Green
 Write-Host "Failed:   $($results.summary.failed)" -ForegroundColor $(if ($results.summary.failed -gt 0) { 'Red' } else { 'Green' })
 Write-Host "Skipped:  $($results.summary.skipped)" -ForegroundColor Yellow
 if ($results.pester)         { Write-Host "Pester:   $($results.pester.status)" -ForegroundColor $(if ($results.pester.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
-if ($results.sinPatternScan) { Write-Host "SIN Scan: $($results.sinPatternScan.status) (C:$($results.sinPatternScan.critical) H:$($results.sinPatternScan.high) M:$($results.sinPatternScan.medium))" -ForegroundColor $(if ($results.sinPatternScan.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
+if ($results.sinPatternScan) { Write-Host "SIN Scan: $($results.sinPatternScan.status) (C:$($results.sinPatternScan.critical) P027:$($results.sinPatternScan.p027) H:$($results.sinPatternScan.high) M:$($results.sinPatternScan.medium))" -ForegroundColor $(if ($results.sinPatternScan.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
 if ($results.smoke)          { Write-Host "Smoke:    $($results.smoke.status)" -ForegroundColor $(if ($results.smoke.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
 if ($results.semiSinPenance) {
     $penColor = switch ($results.semiSinPenance.status) { 'COMPLETED' { if ($results.semiSinPenance.penanceWarnings -gt 0) { 'Yellow' } else { 'Green' } }; 'SKIPPED' { 'DarkGray' }; default { 'Red' } }
@@ -242,9 +317,18 @@ if ($results.fileTypeRoutines) {
     $routineColor = if ($results.fileTypeRoutines.status -eq 'PASSED') { 'Green' } else { 'Red' }
     Write-Host "FileType: $($results.fileTypeRoutines.status)" -ForegroundColor $routineColor
 }
+if ($results.moduleValidation) {
+    $mvColor = if ($results.moduleValidation.status -eq 'PASSED') { 'Green' } else { 'Red' }
+    $mvText = if ($results.moduleValidation.PSObject.Properties.Name -contains 'failed') {
+        "$($results.moduleValidation.status) (Fail:$($results.moduleValidation.failed) Warn:$($results.moduleValidation.warned))"
+    } else {
+        "$($results.moduleValidation.status)"
+    }
+    Write-Host "Modules:  $mvText" -ForegroundColor $mvColor
+}
 Write-Host "Results:  $historyPath" -ForegroundColor Gray
 
-if (($results.summary.failed -gt 0) -or ($results.fileTypeRoutines -and $results.fileTypeRoutines.failedRoutines -gt 0)) { exit 1 } else { exit 0 }
+if (($results.summary.failed -gt 0) -or ($results.fileTypeRoutines -and $results.fileTypeRoutines.failedRoutines -gt 0) -or ($results.sinPatternScan -and $results.sinPatternScan.status -eq 'FAILED') -or ($results.moduleValidation -and $results.moduleValidation.status -eq 'FAILED')) { exit 1 } else { exit 0 }
 
 
 <# Outline:
@@ -258,6 +342,7 @@ if (($results.summary.failed -gt 0) -or ($results.fileTypeRoutines -and $results
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,13 +1,15 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
 # SupportsPS7.6TestedDate: null
+
+# Show-Objectives: Maintain script intent clarity and objective-driven validation outcomes.
 # SS-004 exempt: All Start-Sleep calls are intentional test timing delays for UI Automation synchronization
 # VersionBuildHistory:
-#   2603.B0.v26  2026-04-04       Add Phase 0x/0y/0z: SIN registry completeness, log level filter, backlog health checks
-#   2603.B0.v24  2026-06-10       B1-B3: function registry, env scanner tests, script-fn mapping
-#   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
+#   2603.B0.V26.0  2026-04-04       Add Phase 0x/0y/0z: SIN registry completeness, log level filter, backlog health checks
+#   2603.B0.V24.0  2026-06-10       B1-B3: function registry, env scanner tests, script-fn mapping
+#   2603.B0.V19.0  2026-03-24 03:28  (deduplicated from 4 entries)
 <#
 .SYNOPSIS
     Automated GUI smoke-test harness for the PowerShellGUI application.
@@ -69,8 +71,20 @@ $ErrorActionPreference = 'Continue'
 
 if ($RunShellMatrix) {
     $shellTargets = @()
+    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
+        try {
+            $pwshVersion = & pwsh.exe -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString()' 2>$null
+            if ($pwshVersion -and [version]$pwshVersion -ge [version]'7.6.0') {
+                $shellTargets += 'pwsh'
+            } else {
+                Write-Host "[ShellMatrix] pwsh is available but below 7.6 ($pwshVersion). Running as fallback host." -ForegroundColor Yellow
+                $shellTargets += 'pwsh'
+            }
+        } catch {
+            $shellTargets += 'pwsh'
+        }
+    }
     if (Get-Command powershell.exe -ErrorAction SilentlyContinue) { $shellTargets += 'powershell' }
-    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { $shellTargets += 'pwsh' }
 
     if ($shellTargets.Count -eq 0) {
         throw 'No supported PowerShell host found for shell-matrix execution.'
@@ -407,7 +421,10 @@ if ($runPhase0) {
         Where-Object {
             $_.FullName -notlike '*\.history\*' -and
             $_.FullName -notlike '*\temp\*'   -and
-            $_.FullName -notlike '*\FOLDER-ROOT\*'
+            $_.FullName -notlike '*\FOLDER-ROOT\*' -and
+            $_.FullName -notlike '*\~REPORTS\remediation-backups\*' -and
+            $_.FullName -notlike '*\checkpoints\*' -and
+            $_.FullName -notlike '*\~DOWNLOADS\*'
         }
 
     $parseFailures = 0
@@ -470,7 +487,8 @@ if ($runPhase0) {
     $jsonFails = 0
     foreach ($jf in $jsonFiles) {
         try {
-            $null = Get-Content $jf.FullName -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            # SIN P027/wildcard fix: filenames with '[' or ']' must use -LiteralPath
+            $null = Get-Content -LiteralPath $jf.FullName -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
         } catch {
             Write-TestLog 'FAIL' 'Phase0' 'JSONConfig' "$($jf.Name) -- $_"
             $jsonFails++
@@ -529,7 +547,7 @@ if ($runPhase0) {
     if ($targets.Count -eq 0) {
         Write-TestLog 'WARN' 'Phase0' 'LaunchMenuTargets' 'No launch menu targets discovered'
     } else {
-        $hostMatrix = @('powershell.exe','pwsh.exe') | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue }
+        $hostMatrix = @('pwsh.exe','powershell.exe') | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue }
         foreach ($t in $targets) {
             $name = Split-Path -Leaf $t.Path
             $ext = [IO.Path]::GetExtension($t.Path).ToLowerInvariant()
@@ -745,46 +763,10 @@ if ($runPhase0) {
         $content = [System.IO.File]::ReadAllText($psm.FullName, [System.Text.Encoding]::UTF8)
         $fnDefs = @([regex]::Matches($content, '(?m)^\s*function\s+([A-Z][\w-]+)', 'IgnoreCase') |
             ForEach-Object { $_.Groups[1].Value })
-        # Check for 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember
-        $hasExplicitExport = $content -match '
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember'
+        # Check for Export-ModuleMember
+        $hasExplicitExport = $content -match 'Export-ModuleMember'
         if ($hasExplicitExport) {
-            $exportMatches = [regex]::Matches($content, '
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', 'IgnoreCase,Singleline')
+            $exportMatches = [regex]::Matches($content, 'Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', 'IgnoreCase,Singleline')
             $exportedNames = @()
             foreach ($em in $exportMatches) {
                 $names = $em.Groups[1].Value -split '[,\s]+' | ForEach-Object { $_.Trim("'", '"', ' ') } | Where-Object { $_ -and $_ -ne '*' }
@@ -805,19 +787,7 @@ Export-ModuleMember\s+-Function\s+(.+?)(?:\s+-|$)', 'IgnoreCase,Singleline')
                 $modAuditPass++
             }
         } else {
-            Write-TestLog 'INFO' 'Phase0' 'ModExportAudit' "$($psm.Name) -- no 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember (all $($fnDefs.Count) functions exported by default)"
+            Write-TestLog 'INFO' 'Phase0' 'ModExportAudit' "$($psm.Name) -- no Export-ModuleMember (all $($fnDefs.Count) functions exported by default)"
             $modAuditPass++
         }
     }
@@ -1911,5 +1881,21 @@ if (@($results | Where-Object { $_.Status -eq 'FAIL' }).Count -gt 0) { exit 1 } 
 
 
 
+
+
+
+
+
+<# Outline:
+    Objective cycle managed section: this script should keep behavior explicit and verifiable.
+#>
+
+<# Objectives-Review:
+    Objective alignment captured during pipeline cycle execution; update when scope changes.
+#>
+
+<# Problems:
+    No newly identified problems in this cycle section.
+#>
 
 

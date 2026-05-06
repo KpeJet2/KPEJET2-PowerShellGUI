@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.5
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -871,7 +871,7 @@ function Show-CronAiAthonTool {
                 } catch {
                     $errTime = Get-Date
                     $errFile = Join-Path $errorFolder ($t.id + '.2debug')
-                    $errMsg = "ERROR in $($t.id) at $errTime: $($_.Exception.Message)`r`nBUGS2FIX: $($_ | Out-String)"
+                    $errMsg = "ERROR in $($t.id) at ${errTime}: $($_.Exception.Message)`r`nBUGS2FIX: $($_ | Out-String)"
                     Add-Content -Path $errFile -Value $errMsg -Encoding UTF8
                     Add-Content -Path $masterLog -Value $errMsg -Encoding UTF8
                     $rtbManResult.AppendText("ERROR! See $errFile\n")
@@ -3042,6 +3042,7 @@ function Show-CronAiAthonTool {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

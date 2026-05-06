@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.10
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -174,12 +174,94 @@ function Extract-Timestamp {
 
 function Show-ScanDashboard {
     [CmdletBinding()]
-    param()
+    param(
+        [switch]$UseLegacyDashboard,
+        [bool]$AutoScanScanner = $true
+    )
 
     $projectRoot = Split-Path $PSScriptRoot -Parent
     $reportPath  = Join-Path $projectRoot '~REPORTS'
     $scriptsDir  = $PSScriptRoot
     if (-not (Test-Path $reportPath)) { New-Item -ItemType Directory -Path $reportPath -Force | Out-Null }
+
+    $useLegacyDashboardResolved = [bool]$UseLegacyDashboard
+    $legacyModeTrueTokens = @('1', 'TRUE', 'YES', 'ON', 'LEGACY')
+    $legacyModeFalseTokens = @('0', 'FALSE', 'NO', 'OFF', 'SCANNER')
+    $hasPersistedPreference = $false
+
+    if (-not $useLegacyDashboardResolved) {
+        $configFile = Join-Path (Join-Path $projectRoot 'config') 'system-variables.xml'
+        if (Test-Path $configFile -PathType Leaf) {
+            try {
+                [xml]$cfgXml = Get-Content -LiteralPath $configFile -ErrorAction Stop
+                $modeNode = $cfgXml.SelectSingleNode('/SystemVariables/UI/UseLegacyScanDashboard')
+                $modeRaw = if ($modeNode) { [string]$modeNode.InnerText } else { '' }
+
+                if (-not [string]::IsNullOrWhiteSpace($modeRaw)) {
+                    $modeText = $modeRaw.Trim().ToUpperInvariant()
+                    if ($modeText -in $legacyModeTrueTokens) {
+                        $useLegacyDashboardResolved = $true
+                        $hasPersistedPreference = $true
+                    } elseif ($modeText -in $legacyModeFalseTokens) {
+                        $useLegacyDashboardResolved = $false
+                        $hasPersistedPreference = $true
+                    } elseif (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                        Write-AppLog "Invalid UI/UseLegacyScanDashboard value '$modeRaw' in config; falling back to env/default." 'Warning'
+                    }
+                }
+            } catch {
+                if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                    Write-AppLog "Failed reading persisted Scan Dashboard mode: $($_.Exception.Message)" 'Warning'
+                }
+            }
+        }
+    }
+
+    if (-not $useLegacyDashboardResolved -and -not $hasPersistedPreference) {
+        $legacyModeRaw = [System.Environment]::GetEnvironmentVariable('PSGUI_USE_LEGACY_SCAN_DASHBOARD')
+        if (-not [string]::IsNullOrWhiteSpace($legacyModeRaw)) {
+            $legacyMode = $legacyModeRaw.Trim().ToUpperInvariant()
+            if ($legacyMode -in $legacyModeTrueTokens) {
+                $useLegacyDashboardResolved = $true
+            }
+        }
+    }
+
+    if (-not $useLegacyDashboardResolved) {
+        $scannerScript = Join-Path $scriptsDir 'Invoke-PSEnvironmentScanner.ps1'
+        if (-not (Test-Path $scannerScript -PathType Leaf)) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Environment scanner script not found:`n$scannerScript`n`nUse Tools > Use Legacy Scan Dashboard (or set PSGUI_USE_LEGACY_SCAN_DASHBOARD=1) to force legacy dashboard mode.",
+                'Missing Script',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+
+        try {
+            if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                Write-AppLog 'Scan Dashboard request redirected to PS Environment Scanner' 'Info'
+            }
+            if ($AutoScanScanner) {
+                & $scannerScript -WorkspacePath $projectRoot -AutoScan
+            } else {
+                & $scannerScript -WorkspacePath $projectRoot
+            }
+            return
+        } catch {
+            if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                Write-AppLog "Environment scanner launch from Scan Dashboard wrapper failed: $($_.Exception.Message)" 'Error'
+            }
+            [System.Windows.Forms.MessageBox]::Show(
+                "Failed to launch PS Environment Scanner:`n$($_.Exception.Message)",
+                'Scanner Launch Error',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+    }
 
     # ══════════════════════════════════════════════════════════════════════════
     #  FORM
@@ -869,6 +951,7 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.InvocationName -ne '
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

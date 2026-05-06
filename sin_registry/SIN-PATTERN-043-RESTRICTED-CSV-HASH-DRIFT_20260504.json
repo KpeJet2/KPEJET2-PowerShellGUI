@@ -1,0 +1,45 @@
+{
+  "sin_id": "SIN-PATTERN-043-RESTRICTED-CSV-HASH-DRIFT_20260504",
+  "title": "Restricted CSV stores integrity hashes (Md5/Sha256) that disagree with the protected payload",
+  "description": "Restricted-config CSVs (e.g. config/kill-switches.csv) carry per-row Md5 and Sha256 columns alongside the secret payload (Passphrase). If the payload is mutated and the hashes are not recomputed — or vice versa — the row is silently corrupt: any defender that relies on hash-equality for tamper detection sees nothing wrong, while the runtime sees a stale or attacker-substituted secret. This pattern requires every load of such a CSV to verify hash agreement and raise on drift.",
+  "severity": "HIGH",
+  "category": "integrity",
+  "vector": "config-drift",
+  "status": "pattern-defined",
+  "created_at": "2026-05-04T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "For each row in any CSV under config/ that exposes both a payload column AND Md5/Sha256 columns, recompute hashes of the UTF-8 bytes of the payload and compare to stored values (case-insensitive lowercase hex). Any mismatch is a finding. Also flag rows where Md5/Sha256 are missing/empty when the schema declares them.",
+  "is_security_related": true,
+  "is_version_related": false,
+  "is_untrapped_error": false,
+  "preventionRule": "Never mutate a hash-bound CSV payload column without recomputing the hash columns in the same write. Provide a single mutator API (e.g. Set-VersionKillSwitchPassphrase) that recomputes Md5/Sha256 transactionally and rejects manual edits. On every module load, call Test-KillSwitchIntegrity (or equivalent) and refuse to register handlers if drift is detected.",
+  "scan_regex": "(?i)\"(Md5|Sha256)\"\\s*,",
+  "scan_file_pattern": "*.csv",
+  "context_guard_regex": "(?i)Passphrase|SecretPhrase|Cipher",
+  "context_guard_lines": 5,
+  "context_guard_direction": "both",
+  "file_exclusion_regex": "reports\\\\|sandbox|UPM\\\\",
+  "remedy": "Add Test-KillSwitchIntegrity (or *-CsvIntegrity) function. On load: compute md5=lower(hex(MD5(utf8(Passphrase)))) and sha256=lower(hex(SHA256(utf8(Passphrase)))) and assert equal to stored values. On any write path that touches Passphrase, recompute Md5/Sha256 in the same Export-Csv call. Add a Pester test that mutates a temp CSV and asserts the verifier returns drift findings.",
+  "first_instance": {
+    "instance_id": "SIN-20260504-002",
+    "file": "config/kill-switches.csv",
+    "module": "modules/PwShGUI-KillSwitch.psm1",
+    "status": "RESOLVED",
+    "fix_file": "modules/PwShGUI-KillSwitch.psm1",
+    "fix_version": "2604.B4.V44.0",
+    "fix_summary": "Added Test-KillSwitchIntegrity exported function; computes MD5 and SHA256 of Passphrase column and compares to stored Md5/Sha256; returns array of {Version,Field,Expected,Actual} drift records (empty = OK). Pester smoke covers happy-path + tamper case."
+  },
+  "tags": [
+    "integrity",
+    "config-drift",
+    "secrets",
+    "tamper-detection",
+    "kill-switch"
+  ],
+  "examples_bad": [
+    "Passphrase column changed manually in CSV editor; Md5/Sha256 still hash the old value"
+  ],
+  "examples_good": [
+    "Use Set-VersionKillSwitchPassphrase that overwrites Passphrase + recomputes Md5/Sha256 in a single Export-Csv UTF8"
+  ]
+}

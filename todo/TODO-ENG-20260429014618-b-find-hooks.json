@@ -1,0 +1,31 @@
+{
+  "id": "TODO-ENG-20260429014618-b-find-hooks",
+  "todo_id": "TODO-ENG-20260429014618-b-find-hooks",
+  "type": "TodoItem",
+  "category": "engine-lifecycle",
+  "title": "Find service lifecycle logging hooks",
+  "description": "Locate Start/Stop/Restart/Crash hook points in Start-Engines.ps1 and CronAiAthon-Pipeline/Scheduler modules; document call sites where per-instance text logs should be emitted.",
+  "priority": "HIGH",
+  "status": "OPEN",
+  "source_id": "session-engine-5step",
+  "source_status": "RESUMED",
+  "parentId": "",
+  "created": "2026-04-29T01:46:18.6139138Z",
+  "createdAt": "2026-04-29T01:46:18.6139138Z",
+  "modified": "2026-04-29T01:46:18.6139138Z",
+  "suggested_by": "session-resume",
+  "file_refs": [
+    "scripts/Start-Engines.ps1",
+    "scripts/Invoke-EngineCrashCleanup.ps1",
+    "modules/CronAiAthon-Pipeline.psm1",
+    "modules/CronAiAthon-Scheduler.psm1"
+  ],
+  "notes": "Step 2 of 5 of original 5-step engine plan (resumed from chat-only todo, never persisted). Predecessor step 1 (Compare engine scripts capabilities) completed in-conversation only.",
+  "status_history": [
+    {
+      "status": "OPEN",
+      "by": "session-resume",
+      "timestamp": "2026-04-29T01:46:18.6139138Z"
+    }
+  ]
+}

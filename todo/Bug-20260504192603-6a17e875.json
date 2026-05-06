@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bug-20260504192603-6a17e875",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Script Start-LocalWebEngine.Tests.ps1 has 7 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T11:26:03.8892020Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "7 functions with no try/catch blocks",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T11:26:03.8892020Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon-BugTracker",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\tests\\Start-LocalWebEngine.Tests.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "SIN-20260328082049-dbcb8434",
+    "bugReferrals":  [
+
+                     ],
+    "implementedAt":  null,
+    "notes":  "Matched existing sin: 7 functions with no try/catch blocks",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T11:26:03.8892020Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T11:26:03.8892020Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

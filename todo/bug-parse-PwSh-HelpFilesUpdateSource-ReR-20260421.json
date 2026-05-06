@@ -7,10 +7,15 @@
   "file_refs": [
     "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
   ],
-  "notes": "Auto-detected by cron deep-test cycle",
+  "notes": "Auto-detected by cron deep-test cycle | Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-04-28T19:35:44.7113721Z\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
   "title": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1",
-  "status": "OPEN",
+  "status": "DONE",
   "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
   "suggested_by": "CronProcessor-DeepTest",
-  "type": "bug"
+  "type": "bug",
+  "modified": "2026-04-28T19:35:44.7113721Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-04-28T19:35:44.7113721Z",
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:37:03.4694151+08:00"
 }

@@ -1,0 +1,75 @@
+# VersionTag: 2604.B4.V44.1
+name: SIN Pattern Scan
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  sin-scan:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show PowerShell version
+        shell: pwsh
+        run: $PSVersionTable | Format-List
+
+      - name: Run SIN scanner (Permissive ratchet)
+        shell: pwsh
+        run: |
+          ./tests/Invoke-SINPatternScanner.ps1 `
+            -RatchetMode Permissive `
+            -BaselineJson config/sin-baseline.json `
+            -OutputJson reports/sin-scan-permissive.json `
+            -FailOnCritical
+        continue-on-error: false
+
+      - name: Convert scan to JUnit XML
+        if: always()
+        shell: pwsh
+        run: |
+          ./tests/Convert-SinScanToJUnit.ps1 `
+            -ScanJson     reports/sin-scan-permissive.json `
+            -BaselineJson config/sin-baseline.json `
+            -OutputXml    reports/sin-scan-junit.xml
+
+      - name: Upload SIN scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sin-scan-results
+          path: |
+            reports/sin-scan-permissive.json
+            reports/sin-scan-junit.xml
+          retention-days: 30
+
+      - name: Publish JUnit test results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: SIN Pattern Scan
+          path: reports/sin-scan-junit.xml
+          reporter: java-junit
+          fail-on-error: false
+
+  pester-tests:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Pester
+        shell: pwsh
+        env:
+          KILLSWITCH_NO_SELFTERMINATE: '1'
+        run: |
+          Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
+          $r = Invoke-Pester -Path tests/PwShGUI-KillSwitch.Tests.ps1 -PassThru -Output Detailed
+          if ($r.FailedCount -gt 0) { exit 1 }

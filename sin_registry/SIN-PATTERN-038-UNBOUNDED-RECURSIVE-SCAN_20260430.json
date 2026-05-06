@@ -1,0 +1,26 @@
+{
+  "pattern_id": "P038",
+  "title": "Unbounded recursive file scan can crash terminal under PS7",
+  "severity": "MEDIUM",
+  "category": "PERFORMANCE",
+  "status": "OPEN",
+  "registered": "2026-04-30",
+  "description": "A Get-ChildItem -Recurse with no excludes against a large workspace (.git, node_modules, .venv, logs, temp) followed by Get-Content -Raw on every match can silently consume gigabytes of memory and lose the terminal connection. Observed: Invoke-SecretScan against C:\\PowerShellGUI root forced a 'Restarting the terminal because the connection to the shell process was lost' event. PowerShell never raises an OOM in this path; the host process simply exits.",
+  "detection_regex": "Get-ChildItem[^\\n]*-Recurse(?![^\\n]*-Exclude)(?![^\\n]*ExcludeDir)",
+  "fix_strategy": [
+    "Always provide an ExcludeDir allowlist (.git, node_modules, .venv, logs, temp, checkpoints) before recursing.",
+    "Cap MaxFileSize (e.g. skip files > 5MB) before reading -Raw.",
+    "For workspace-wide tools, prefer streaming Select-String over Get-Content -Raw + regex."
+  ],
+  "examples_bad": [
+    "Get-ChildItem -Path $Root -Recurse -File | ForEach-Object { Get-Content -Raw $_.FullName }"
+  ],
+  "examples_good": [
+    "Get-ChildItem -Path $Root -Recurse -File -Include $Include | Where-Object { $_.Length -lt 5MB -and -not ($ExcludeDir | Where-Object { $_.FullName -like \"*\\$_\\*\" }) }"
+  ],
+  "first_seen": {
+    "session": "Plan4Me iteration 2",
+    "tool": "Invoke-SecretScan against repository root",
+    "outcome": "Terminal connection lost"
+  }
+}

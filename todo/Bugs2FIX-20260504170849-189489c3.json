@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bugs2FIX-20260504170849-189489c3",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Fix for bug Bug-20260504170747-7fccacca: Script PwShGUI-AutoRemediate.psm1 has 2 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T09:08:49.0622498Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "FIX: 2 functions with no try/catch blocks",
+    "parentId":  "Bug-20260504170747-7fccacca",
+    "type":  "Bugs2FIX",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T09:08:49.0622498Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "bugReferrals":  [
+                         "Bug-20260504170747-7fccacca"
+                     ],
+    "implementedAt":  null,
+    "notes":  "",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T09:08:49.0622498Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T09:08:49.0622498Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

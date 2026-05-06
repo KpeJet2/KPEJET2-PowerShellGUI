@@ -1,8 +1,8 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B2.V31.7
 # PowerShell GUI Script Launcher
 
 > **Documentation has moved.**
@@ -17,3 +17,4 @@
 > | [SETUP-GUIDE.md](~README.md/SETUP-GUIDE.md) | Installation & configuration |
 > | [VERSION-UPDATES.md](~README.md/VERSION-UPDATES.md) | Version history & changelogs |
 > | [PwShGUI-Help-Index.html](~README.md/PwShGUI-Help-Index.html) | Help browser (open in browser) |
+

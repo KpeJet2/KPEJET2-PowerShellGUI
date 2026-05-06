@@ -1,0 +1,122 @@
+<#
+# VersionTag: 2605.B2.V31.7
+# SupportPS5.1: YES(As of: 2026-04-30)
+# SupportsPS7.6: YES(As of: 2026-04-30)
+.SYNOPSIS
+    PwShGUI-AutoRemediate - Batch-apply low-risk SIN fixes.
+.DESCRIPTION
+    Reads a SIN inventory (BugTracker JSON or sin_registry/*.json) and
+    applies safe, idempotent transforms:
+      P002: empty 'catch {}' becomes 'catch { (intentional non-fatal) }'
+      P018: 3-arg Join-Path becomes nested 2-arg form
+      P017: Out-File missing -Encoding adds ' -Encoding UTF8'
+      P019: Add-Content missing -Encoding adds ' -Encoding UTF8'
+    Always run with -WhatIf first.
+.NOTES
+    Never edits files in temp/, .venv/, node_modules/, ~DOWNLOADS/.
+#>
+#Requires -Version 5.1
+
+$script:ModuleVersion = '2604.B3.V28.0'
+
+$script:RemediateExclude = @('\\temp\\','\\\.venv\\','\\node_modules\\','\\~DOWNLOADS\\','\\\.git\\')
+
+function Test-IsRemediable {
+    param([string]$Path)
+    foreach ($p in $script:RemediateExclude) {
+        if ($Path -match $p) { return $false }
+    }
+    return $true
+}
+
+function Invoke-AutoRemediate {
+    <#
+    .SYNOPSIS  Apply safe SIN remediations to PowerShell files.
+    .PARAMETER Path  File or directory (recursive).
+    .PARAMETER Patterns  Which P-codes to apply (default: P002,P017,P018,P019).
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [string[]]$Patterns = @('P002', 'P017', 'P018', 'P019'),
+        [switch]$BackupOriginal
+    )
+
+    if (-not (Test-Path $Path)) { throw "Path not found: $Path" }
+    $items = if ((Get-Item $Path).PSIsContainer) {
+        @(Get-ChildItem -Path $Path -Recurse -File -Include *.ps1, *.psm1, *.psd1 -ErrorAction SilentlyContinue)
+    } else {
+        @(Get-Item $Path)
+    }
+
+    $report = New-Object System.Collections.Generic.List[object]
+    foreach ($f in $items) {
+        if (-not (Test-IsRemediable $f.FullName)) { continue }
+
+        $original = Get-Content -Path $f.FullName -Raw -Encoding UTF8
+        $content  = $original
+        $changes  = @{}
+
+        if ($Patterns -contains 'P002') {
+            $rx = '(?m)catch\s*\{\s*\}'
+            $n = ([regex]::Matches($content, $rx)).Count
+            if ($n -gt 0) {
+                $content = [regex]::Replace($content, $rx, 'catch { <# Intentional: non-fatal (auto-remediated P002) #> }')
+                $changes['P002'] = $n
+            }
+        }
+        if ($Patterns -contains 'P018') {
+            # Match Join-Path with 3 simple positional args (no nested calls)
+            $rx = '(?m)Join-Path\s+(\$[A-Za-z_][\w.]*|''[^'']+''|"[^"]+")\s+(\$[A-Za-z_][\w.]*|''[^'']+''|"[^"]+")\s+(\$[A-Za-z_][\w.]*|''[^'']+''|"[^"]+")(?!\s*[\)\|\;,])'
+            $n = ([regex]::Matches($content, $rx)).Count
+            if ($n -gt 0) {
+                $content = [regex]::Replace($content, $rx, '(Join-Path (Join-Path $1 $2) $3)')
+                $changes['P018'] = $n
+            }
+        }
+        if ($Patterns -contains 'P017') {
+            $rx = '(?m)\bOut-File\b(?![^\r\n]*-Encoding)([^\r\n]*?)(?=\s*$|\s*\|)'
+            $n = ([regex]::Matches($content, $rx)).Count
+            if ($n -gt 0) {
+                $content = [regex]::Replace($content, $rx, 'Out-File$1 -Encoding UTF8')
+                $changes['P017'] = $n
+            }
+        }
+        if ($Patterns -contains 'P019') {
+            $rx = '(?m)\bAdd-Content\b(?![^\r\n]*-Encoding)([^\r\n]*?)(?=\s*$|\s*\|)'
+            $n = ([regex]::Matches($content, $rx)).Count
+            if ($n -gt 0) {
+                $content = [regex]::Replace($content, $rx, 'Add-Content$1 -Encoding UTF8')
+                $changes['P019'] = $n
+            }
+        }
+
+        if ($content -ne $original) {
+            if ($PSCmdlet.ShouldProcess($f.FullName, "Auto-remediate: $(@($changes.Keys) -join ',')")) {
+                if ($BackupOriginal) {
+                    Copy-Item -Path $f.FullName -Destination "$($f.FullName).remediate.bak" -Force
+                }
+                # Preserve BOM (P006)
+                $utf8Bom = New-Object System.Text.UTF8Encoding($true)
+                [System.IO.File]::WriteAllText($f.FullName, $content, $utf8Bom)
+            }
+            $report.Add([PSCustomObject]@{
+                File    = $f.FullName
+                Changes = $changes
+                Total   = ($changes.Values | Measure-Object -Sum).Sum
+            }) | Out-Null
+        }
+    }
+
+    [PSCustomObject]@{
+        Generated   = (Get-Date).ToUniversalTime().ToString('o')
+        FilesScanned = @($items).Count
+        FilesChanged = @($report).Count
+        TotalFixes   = (@($report) | ForEach-Object { $_.Total } | Measure-Object -Sum).Sum
+        Details      = @($report)
+    }
+}
+
+Export-ModuleMember -Function Invoke-AutoRemediate
+

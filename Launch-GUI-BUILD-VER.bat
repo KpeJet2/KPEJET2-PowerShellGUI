@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B2.V31.7
 # VersionBuildHistory:
 #   2604.B2.V31.0  2026-04-12  (version aligned)
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)
@@ -75,6 +75,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%Main-GUI.ps1
 echo.
 echo GUI process has ended.
 endlocal
+
 
 
 

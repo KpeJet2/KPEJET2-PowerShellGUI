@@ -1,28 +1,9 @@
-# VersionTag: 2602.a.11
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
-# VersionTag: 2602.a.10
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
-# VersionTag: 2602.a.9
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
-# VersionTag: 2602.a.8
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
-# VersionTag: 2602.a.7
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
+# VersionTag: 2605.B2.V31.7
+# SupportPS5.1: true
+# SupportsPS7.6: true
+# SupportPS5.1TestedDate: 2026-04-28
+# SupportsPS7.6TestedDate: 2026-04-28
+# FileRole: Validator
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -111,7 +92,6 @@ Write-Information "" -InformationAction Continue
 
 # ==================== VALIDATE EXECUTION ORDER ====================
 Write-Information "Validating execution order sequence..." -InformationAction Continue
-$executionOrder = $configTemplate.validation.executionOrder
 $executionOrder = if ($null -ne $configTemplate.validation.executionOrder) { @($configTemplate.validation.executionOrder) } else { @() }
 Write-Information "  Total steps: $($executionOrder.Count)" -InformationAction Continue  # SIN-EXEMPT: P027 - false positive: array is populated/guarded before indexing
 if ($executionOrder.Count -gt 0) {
@@ -158,15 +138,23 @@ Write-Information "Script-F execution finished." -InformationAction Continue
 
 
 <# Outline:
-    Stub: describe module/script purpose here.
+    Reference implementation of the workspace LOCAL/GLOBAL path-config pattern: loads
+    config/pwsh-app-config-BASE.json, walks the paths.local / paths.global / paths.globalFiles
+    and validation.executionOrder sections, and emits an [OK]/[WARN] line per entry. Used as a
+    template by other Script-F variants.
 #>
 
 <# Problems:
-    Stub: list known issues here.
+    Has 1 function and zero try/catch blocks (recorded in cron-aiathon-pipeline.json) -- this is
+    by design for a teaching template; failures are intended to surface via $ErrorActionPreference
+    = 'Stop'.
 #>
 
 <# ToDo:
-    Stub: list pending work here.
+    Optional: emit a single JSON summary at the end so downstream pipeline stages can consume the
+    validation result without parsing Write-Information output.
 #>
+
+
 
 

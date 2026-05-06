@@ -1,0 +1,386 @@
+[
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2486,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 110282,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 96027,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 18736,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\CronAiAthon-ErrorLinker.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 12431,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 17680,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 68577,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 70933,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\Get-LaunchTelemetry.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 8274,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 1134,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 14590,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 19769,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 20744,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-AgentScorecard.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2669,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 4873,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-BreakingChange.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 5039,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-CheckpointPrune.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2677,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 18664,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 5486,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-DependencyMap.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 4571,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 8167,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogReplay.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 1991,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-HistoryZip.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 1282,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 16782,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-LaunchTimingProfile.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2423,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-LegacyEncoding.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3151,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-ManifestDiff.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3288,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 4920,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-PesterParallel.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3068,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-PSScriptAnalyzerScan.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 2687,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 13896,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 15661,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SecretScan.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3278,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SinDriftScan.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3957,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFixBranch.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2755,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 4160,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-SinHeatmap.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 3036,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 20473,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 15577,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 21774,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionTag.psm1",
+    "HasBom": true,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 1854,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUI-XhtmlReportTester.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 2824,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 42951,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 33557,
+    "NeedsFix": false
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 23592,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\SINGovernance.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 13314,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "HasBom": false,
+    "HasNonAscii": true,
+    "DoubleEncoded": false,
+    "SizeBytes": 83640,
+    "NeedsFix": true
+  },
+  {
+    "Path": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+    "HasBom": false,
+    "HasNonAscii": false,
+    "DoubleEncoded": false,
+    "SizeBytes": 14515,
+    "NeedsFix": false
+  }
+]

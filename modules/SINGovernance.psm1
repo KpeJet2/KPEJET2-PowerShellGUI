@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -11,7 +11,7 @@
     SHA-512 sealed approval (SINeProofed), ledger integration, and
     XHTML report generation.
 # TODO: HelpMenu | Show-SINGovernanceHelp | Actions: Scan|Register|Audit|Report|Help | Spec: config/help-menu-registry.json
-    
+
     Workflow:
     1. Get-SINReviewQueue   - list pending SINs
     2. Start-SINReview      - interactive per-SIN review
@@ -180,7 +180,8 @@ function Start-SINReview {
         Presents each pending SIN one at a time with details.
         Chief can Approve (A), Deny (D), Skip (S), or Quit (Q).
     #>
-    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive UI banner / CLI progress output; intentional Write-Host for human-readable terminal display.')]
+    [CmdletBinding(SupportsShouldProcess)]
     param([switch]$IncludeResolved)
     if (-not $script:_SINRegistryPath) { throw '[SINGovernance] Not initialized.' }
 
@@ -244,6 +245,8 @@ function Export-SINReviewReport {
     .SYNOPSIS  Generate dark-themed XHTML report of SIN review status.
     .PARAMETER OutputPath  Path for the XHTML file.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive UI banner / CLI progress output; intentional Write-Host for human-readable terminal display.')]
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [string]$OutputPath = (Join-Path (Split-Path $script:_SINRegistryPath -Parent) '~REPORTS\SIN-Review-Report.xhtml')
@@ -332,6 +335,7 @@ Export-ModuleMember -Function @(
     'Start-SINReview'
     'Export-SINReviewReport'
 )
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -44,8 +44,11 @@ function New-SmileyTrayIcon {
     .SYNOPSIS  Create a 32x32 smiley face icon (yellow on crimson oval) for the system tray.
     .OUTPUTS   [System.Drawing.Icon]
     #>
-    [CmdletBinding()]
+    [OutputType([System.Drawing.Icon])]
+    [CmdletBinding(SupportsShouldProcess)]
     param()
+    if (-not $PSCmdlet.ShouldProcess('New-SmileyTrayIcon', 'Create')) { return }
+
 
     Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
     $bmp = New-Object System.Drawing.Bitmap(32, 32)
@@ -118,10 +121,12 @@ function Start-TrayApplicationLoop {
                Blocks until Stop-TrayHost is called.
     .PARAMETER StartMinimized  If true, minimize form to tray immediately.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [switch]$StartMinimized
     )
+    if (-not $PSCmdlet.ShouldProcess('Start-TrayApplicationLoop', 'Execute')) { return }
+
 
     if (-not $script:_AppContext) {
         throw "Initialize-TrayAppContext must be called before Start-TrayApplicationLoop"
@@ -150,8 +155,10 @@ function Stop-TrayHost {
     <#
     .SYNOPSIS  Signal the ApplicationContext to exit, ending the message loop.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param()
+    if (-not $PSCmdlet.ShouldProcess('Stop-TrayHost', 'Halt')) { return }
+
 
     $logAvail = Get-Command Write-AppLog -ErrorAction SilentlyContinue
 
@@ -168,7 +175,7 @@ function Stop-TrayHost {
 
     # Exit application loop
     if ($script:_AppContext) {
-        try { [System.Windows.Forms.Application]::ExitThread() } catch { <# Intentional: non-fatal #> }
+        try { [System.Windows.Forms.Application]::ExitThread() } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $script:_AppContext = $null
         if ($logAvail) { Write-AppLog "[TrayHost] ExitThread called -- message loop will end" "Debug" }
     }
@@ -181,7 +188,7 @@ function Stop-TrayHost {
 
     # Dispose tray bitmap
     if ($script:_TrayBitmapRef) {
-        try { $script:_TrayBitmapRef.Dispose() } catch { <# Intentional: non-fatal #> }
+        try { $script:_TrayBitmapRef.Dispose() } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $script:_TrayBitmapRef = $null
     }
 }
@@ -193,10 +200,12 @@ function Start-KeyboardMonitor {
                When detected, restores the form from tray.
     .PARAMETER IntervalMs  Poll interval in milliseconds (default 300).
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [int]$IntervalMs = 300
     )
+    if (-not $PSCmdlet.ShouldProcess('Start-KeyboardMonitor', 'Execute')) { return }
+
 
     if ($script:_KeyboardTimer) { return }  # already running
 
@@ -226,7 +235,9 @@ function Start-KeyboardMonitor {
                 }
             }
         } catch {
+            <# Intentional: non-fatal #>
             # Console not available (e.g. ISE) -- silently skip
+            Write-Verbose -Message ($_.Exception.Message) -Verbose:$false
         }
     })
     $script:_KeyboardTimer.Start()
@@ -240,8 +251,10 @@ function Stop-KeyboardMonitor {
     <#
     .SYNOPSIS  Stop the spacebar keyboard monitor.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param()
+    if (-not $PSCmdlet.ShouldProcess('Stop-KeyboardMonitor', 'Halt')) { return }
+
     if ($script:_KeyboardTimer) {
         $script:_KeyboardTimer.Stop()
         $script:_KeyboardTimer.Dispose()
@@ -280,6 +293,7 @@ function Invoke-BackgroundTask {
     .PARAMETER TaskName     Friendly name for logging.
     .OUTPUTS   [string] Task ID for tracking.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -326,6 +340,8 @@ function Get-CompletedBackgroundTasks {
     .SYNOPSIS  Collect results from completed background tasks.
     .OUTPUTS   Array of hashtables with Id, Name, Result, Errors, Duration.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param()
 
@@ -366,8 +382,10 @@ function Stop-BackgroundPool {
     <#
     .SYNOPSIS  Dispose all active background tasks and close the runspace pool.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param()
+    if (-not $PSCmdlet.ShouldProcess('Stop-BackgroundPool', 'Halt')) { return }
+
 
     foreach ($task in $script:_BackgroundTasks) {
         try {
@@ -375,13 +393,13 @@ function Stop-BackgroundPool {
                 $task.PowerShell.Stop()
             }
             $task.PowerShell.Dispose()
-        } catch { <# Intentional: non-fatal #> }
+        } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     $script:_BackgroundTasks.Clear()
 
     if ($script:_BackgroundPool) {
-        try { $script:_BackgroundPool.Close() } catch { <# Intentional: non-fatal #> }
-        try { $script:_BackgroundPool.Dispose() } catch { <# Intentional: non-fatal #> }
+        try { $script:_BackgroundPool.Close() } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
+        try { $script:_BackgroundPool.Dispose() } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $script:_BackgroundPool = $null
         if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
             Write-AppLog "[PShellCore] Background runspace pool closed" "Debug"
@@ -394,8 +412,10 @@ function Set-VerboseLifecycle {
     <#
     .SYNOPSIS  Enable or disable verbose lifecycle logging.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param([bool]$Enabled = $true)
+    if (-not $PSCmdlet.ShouldProcess('Set-VerboseLifecycle', 'Modify')) { return }
+
     $script:_VerboseLifecycle = $Enabled
 }
 
@@ -403,6 +423,7 @@ function Get-TrayHostStatus {
     <#
     .SYNOPSIS  Return current TrayHost state for diagnostics.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param()
     return @{
@@ -413,6 +434,39 @@ function Get-TrayHostStatus {
         FormVisible        = if ($script:_HostForm) { $script:_HostForm.Visible } else { $false }
         FormDisposed       = if ($script:_HostForm) { $script:_HostForm.IsDisposed } else { $true }
         VerboseLifecycle   = $script:_VerboseLifecycle
+    }
+}
+
+function Restore-TrayHostForm {
+    <#
+    .SYNOPSIS  Restore the TrayHost-managed form from the system tray.
+    .OUTPUTS   [bool] True when restore succeeded.
+    #>
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+    if (-not $PSCmdlet.ShouldProcess('Restore-TrayHostForm', 'Restore')) { return $false }
+
+    if ($null -eq $script:_HostForm -or $script:_HostForm.IsDisposed) {
+        if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+            Write-AppLog '[TrayHost] Restore-TrayHostForm failed: host form is null or disposed' 'Warning'
+        }
+        return $false
+    }
+
+    try {
+        $script:_HostForm.Show()
+        $script:_HostForm.ShowInTaskbar = $true
+        $script:_HostForm.WindowState = [System.Windows.Forms.FormWindowState]::Normal
+        $script:_HostForm.Activate()
+        if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+            Write-AppLog '[TrayHost] Restore-TrayHostForm succeeded' 'Debug'
+        }
+        return $true
+    } catch {
+        if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+            Write-AppLog "[TrayHost] Restore-TrayHostForm exception: $($_.Exception.Message)" 'Warning'
+        }
+        return $false
     }
 }
 
@@ -442,7 +496,9 @@ Export-ModuleMember -Function @(
     'Stop-BackgroundPool'
     'Set-VerboseLifecycle'
     'Get-TrayHostStatus'
+    'Restore-TrayHostForm'
 )
+
 
 
 

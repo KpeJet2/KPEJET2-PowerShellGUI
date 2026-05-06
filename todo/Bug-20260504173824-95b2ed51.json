@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bug-20260504173824-95b2ed51",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Script FileInspector.ps1 has 1 functions but zero try/catch blocks",
+    "lastSeenAt":  "2026-05-04T09:38:24.2657974Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "1 functions with no try/catch blocks",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T09:38:24.2657974Z",
+    "priority":  "MEDIUM",
+    "suggestedBy":  "CronAiAthon-BugTracker",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector0\\FileInspector.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "SIN-20260328082050-d343681b",
+    "bugReferrals":  [
+
+                     ],
+    "implementedAt":  null,
+    "notes":  "Matched existing sin: 1 functions with no try/catch blocks",
+    "category":  "error-handling",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T09:38:24.2657974Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T09:38:24.2657974Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

@@ -1,0 +1,43 @@
+{
+  "sin_id": "SIN-PATTERN-042-UNDECLARED-PARAMETER-PASSED_20260503",
+  "title": "Caller passes a named parameter that target function does not declare",
+  "description": "A function is invoked with a -Param value that the target function's param() block does not declare, raising the runtime error 'A parameter cannot be found that matches parameter name <Name>'. Common cause: the caller assumes a public/conventional knob (e.g. -Prefix, -Title, -Color) that was never wired into the producer, or the producer accepts the value only via an internal scriptblock setter (e.g. SetText) but not as a constructor parameter. This often surfaces only at GUI-construction time inside catch-handled try blocks, so it is invisible until the surrounding feature path runs.",
+  "severity": "HIGH",
+  "category": "api-contract",
+  "vector": "function-parameter-mismatch",
+  "status": "pattern-defined",
+  "created_at": "2026-05-03T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Static cross-reference of internal function call sites against their param() blocks. For each `Verb-Noun -ParamName` invocation of a function defined in this workspace, verify ParamName exists in the function's param() declaration (case-insensitive, allowing partial-prefix match per PowerShell binder rules).",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_untrapped_error": true,
+  "preventionRule": "When extending a caller to pass a new named parameter, first confirm the target function declares that parameter in its param() block. If the value is only settable via a returned scriptblock (e.g. SetText), either invoke that scriptblock after construction or add the parameter to the constructor with a default that preserves prior behavior. Never rely on the parameter binder to silently swallow unknown named arguments — it does not.",
+  "scan_regex": "New-SpinnerLabel\\s+-Prefix|New-RainbowProgressBar\\s+-(?!Width|Height|Interval)[A-Za-z]+",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "context_guard_regex": "param\\s*\\(",
+  "context_guard_lines": 0,
+  "context_guard_direction": "both",
+  "file_exclusion_regex": "\\.Tests\\.ps1$|sin_registry|reports\\\\",
+  "remedy": "Two equivalent fixes: (A) Add the missing parameter to the target function's param() block with a sensible default — preferred when the value is naturally a constructor knob. (B) Remove the unsupported argument from the call site and instead invoke the post-construction setter (e.g. & $obj.SetText 'Processing'). Bump the module VersionTag after either fix.",
+  "first_instance": {
+    "instance_id": "SIN-20260503-001",
+    "file": "Main-GUI.ps1",
+    "line": 8885,
+    "caller": "New-GUI",
+    "callee": "New-SpinnerLabel",
+    "missing_parameter": "Prefix",
+    "fix_applied": "A",
+    "fix_file": "modules/PwShGUI-Theme.psm1",
+    "fix_version": "2604.B2.V32.3",
+    "fix_summary": "Added [string]$Prefix='Processing' parameter to New-SpinnerLabel; threaded into $spinState.Prefix initialiser."
+  },
+  "tags": [
+    "api-contract",
+    "parameter-binding",
+    "winforms",
+    "gui-init",
+    "runtime-error",
+    "pipeline-scan"
+  ]
+}

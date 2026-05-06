@@ -1,0 +1,26 @@
+{
+  "sin_id": "SIN-PATTERN-035-NESTED-BLOCK-COMMENT",
+  "title": "Nested block-comment closer inside <# .SYNOPSIS #> help block",
+  "category": "parsing",
+  "severity": "HIGH",
+  "status": "OPEN",
+  "is_resolved": false,
+  "scanner_pattern": "(?s)<#[^#]*<#.*?#>",
+  "description": "PowerShell does not support nested block comments. Any '#>' token inside an outer '<# ... #>' help block (typical when documenting code samples that include '<# ... #>') prematurely closes the outer block. The remainder of the doc text is then parsed as code, producing 'Unexpected token' errors that often point to a line far below the real cause.",
+  "fix_pattern": "Replace inner '<# ... #>' with prose markers like '(intentional non-fatal)' or use line-comments (#) only inside synopsis blocks. If a nested block must be shown, escape with backtick: `<`#`...`#`> in the help text, or use a code fence in adjacent .md docs instead.",
+  "examples_bad": [
+    "<#\\n.SYNOPSIS Demo\\n.DESCRIPTION\\n  catch { <# Intentional #> }\\n#>"
+  ],
+  "examples_good": [
+    "<#\\n.SYNOPSIS Demo\\n.DESCRIPTION\\n  catch { (intentional non-fatal) }\\n#>"
+  ],
+  "first_seen": "2026-04-30",
+  "first_seen_in": "modules/PwShGUI-AutoRemediate.psm1 (initial draft)",
+  "occurrences_known": 2,
+  "agent": "GitHub-Copilot",
+  "created_at": "2026-04-30T00:00:00Z",
+  "citations": [
+    "about_Comment_Based_Help",
+    "PowerShell language spec: comment tokens are not nestable"
+  ]
+}

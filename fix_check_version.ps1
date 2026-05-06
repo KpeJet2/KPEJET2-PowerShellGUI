@@ -1,8 +1,9 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
 # SupportsPS7.6TestedDate: null
+# Show-Objectives: Patch Main-GUI version check logic predictably and produce clear mismatch reporting artifacts.
 <#
 .SYNOPSIS
     Patch: rewrites Check-VersionTags in Main-GUI.ps1
@@ -142,16 +143,18 @@ Write-Host 'Check-VersionTags rewritten'
 
 
 <# Outline:
-    Stub: describe module/script purpose here.
+    Rewrites the Check-VersionTags function in Main-GUI.ps1 with deterministic reporting behavior.
+#>
+
+<# Objectives-Review:
+    Objective is met for mismatch detection and report persistence.
+    Improvement recommendation: add optional strict mode that fails fast on read errors.
 #>
 
 <# Problems:
-    Stub: list known issues here.
+    Boundary discovery relies on exact function names in Main-GUI.ps1.
 #>
 
-<# ToDo:
-    Stub: list pending work here.
-#>
 
 
 

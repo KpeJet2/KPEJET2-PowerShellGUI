@@ -1,56 +1,48 @@
-﻿{
-    "id":  "Bugs2FIX-20260421023224-b3a10b4c",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Fix for bug Bug-20260421023122-799e86ae: Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token \u0027}\u0027 in expression or statement.",
-    "lastSeenAt":  "2026-04-20T18:32:24.9924259Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "FIX: Unexpected token \u0027}\u0027 in expression or statement.",
-    "parentId":  "Bug-20260421023122-799e86ae",
-    "type":  "Bugs2FIX",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-04-20T18:32:24.9924259Z",
-    "priority":  "HIGH",
-    "suggestedBy":  "CronAiAthon",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "",
-    "bugReferrals":  [
-                         "Bug-20260421023122-799e86ae"
-                     ],
-    "implementedAt":  null,
-    "notes":  "",
-    "category":  "parsing",
-    "reopenedAt":  null,
-    "created":  "2026-04-20T18:32:24.9924259Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-04-20T18:32:24.9924259Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bugs2FIX-20260421023224-b3a10b4c",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Fix for bug Bug-20260421023122-799e86ae: Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
+  "lastSeenAt": "2026-04-20T18:32:24.9924259Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "FIX: Unexpected token '}' in expression or statement.",
+  "parentId": "Bug-20260421023122-799e86ae",
+  "type": "Bugs2FIX",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-04-20T18:32:24.9924259Z",
+  "priority": "HIGH",
+  "suggestedBy": "CronAiAthon",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1"
+  ],
+  "plannedAt": null,
+  "linkedBugs": [],
+  "status": "DONE",
+  "sinId": "",
+  "bugReferrals": [
+    "Bug-20260421023122-799e86ae"
+  ],
+  "implementedAt": null,
+  "notes": "Auto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+  "category": "parsing",
+  "reopenedAt": null,
+  "created": "2026-04-20T18:32:24.9924259Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "",
+  "modified": "2026-04-20T18:32:24.9924259Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null,
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:55.0743807+08:00"
 }

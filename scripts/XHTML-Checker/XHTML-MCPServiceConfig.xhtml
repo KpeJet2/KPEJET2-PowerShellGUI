@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2604.B1.V32.2 -->
+<!-- VersionTag: 2605.B2.V31.7 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -130,7 +130,7 @@
     <div class="section-header">Tool Access</div>
     <div style="font-size:11px;line-height:1.6;padding:4px 14px;color:#aaa">
       Tools &#x2192; Script Services &#x2192; MCP Service Config<br/>
-      (or via <code>Start-LocalWebEngineService.ps1</code>)
+      (or via <code>Start-LocalWebEngine.ps1</code>)
     </div>
   </div>
 
@@ -404,7 +404,7 @@
           <p id="engStatusText" style="font-size:12px;color:#bbb;margin-bottom:8px">Checking engine status&#x2026;</p>
           <p style="font-size:11px;margin-bottom:8px">
             <strong>Script:</strong> <code>scripts/Start-LocalWebEngine.ps1</code><br/>
-            <strong>Launcher:</strong> <code>scripts/Start-LocalWebEngineService.ps1</code><br/>
+            <strong>Launcher:</strong> <code>scripts/Start-LocalWebEngine.ps1</code><br/>
             <strong>PID file:</strong> <code>logs/engine.pid</code>
             &#x2014; <a href="http://127.0.0.1:8042/api/engine/log?name=stdout" style="color:#9cdcfe" target="_blank">engine-stdout.log</a>
             &#x2014; <a href="http://127.0.0.1:8042/api/engine/log?name=stderr" style="color:#e06c75" target="_blank">engine-stderr.log</a>
@@ -444,7 +444,7 @@
             <tbody>
               <tr>
                 <td><strong>Local Web Engine</strong><br/><span style="font-size:11px;color:#888">HTTP API + WebSocket + Static file server</span></td>
-                <td><code>Start-LocalWebEngineService.ps1</code></td>
+                <td><code>Start-LocalWebEngine.ps1</code></td>
                 <td><button type="button" class="tab-btn" style="padding:2px 10px;border-radius:3px;border:1px solid #007acc;background:#007acc;color:#fff;font-size:11px" onclick="engAction('start')">Start</button></td>
               </tr>
               <tr>
@@ -600,6 +600,12 @@ document.addEventListener('DOMContentLoaded', function() {
 //]]>
 </script>
 
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="..\../styles/eventlog-view.css"/>
+<script src="..\../scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="mcp" data-title="MCP Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+
 

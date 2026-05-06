@@ -4,7 +4,7 @@
   "source": "BugTracker",
   "executedAt": null,
   "outlineTag": "OUTLINE-PROTO-v0",
-  "created": "2026-04-12T05:07:06.2808820Z",
+  "created": "2026-04-12T05:07:06.280882Z",
   "title": "Unexpected token 'switch' in expression or statement.",
   "category": "parsing",
   "tags": [],
@@ -20,14 +20,16 @@
   "acknowledged": null,
   "sinId": "SIN-20260412130706-335e4b1b",
   "result": null,
-  "status": "OPEN",
+  "status": "DONE",
   "suggestedBy": "CronAiAthon-BugTracker",
   "priority": "HIGH",
   "outlineVersion": "v0",
-  "notes": "New sin created: SIN-20260412130706-335e4b1b",
+  "notes": "New sin created: SIN-20260412130706-335e4b1b\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\Main-GUI.ps1",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\Main-GUI.ps1"
-  ]
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:35.9942575+08:00"
 }

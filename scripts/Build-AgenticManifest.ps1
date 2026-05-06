@@ -1,8 +1,8 @@
-# VersionTag: 2604.B2.V31.3
-# SupportPS5.1: null
-# SupportsPS7.6: null
-# SupportPS5.1TestedDate: null
-# SupportsPS7.6TestedDate: null
+# VersionTag: 2605.B2.V31.7
+# SupportPS5.1: true
+# SupportsPS7.6: true
+# SupportPS5.1TestedDate: 2026-04-28
+# SupportsPS7.6TestedDate: 2026-04-28
 # FileRole: Builder
 <#
 .SYNOPSIS
@@ -24,8 +24,9 @@
       - agenticAPI section: enriched routes, coverage map, call chains,
         agent tracking interface, topological boot order
 .NOTES
-    VersionTag: 2604.B2.V31.1
-    VersionBuildHistory: 2604.B2.V31.1  2026-04-14  Add recursive tests, root launchers/utils, module psd1, agent coreModules+configFiles, recursive config subdirs, XHTML-Checker ps1
+    VersionTag: 2604.B3.V33.0
+    VersionBuildHistory: 2604.B3.V33.0  2026-04-28  PS7.6/PS5.1 validation metadata and canonical VersionTag parsing updates
+                         2604.B2.V31.1  2026-04-14  Add recursive tests, root launchers/utils, module psd1, agent coreModules+configFiles, recursive config subdirs, XHTML-Checker ps1
                          2604.B2.V31.0  2026-04-05  V31 alignment
     FileRole: Generator
     Category: Infrastructure
@@ -44,7 +45,6 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# ── Paths ──
 $ProjectRoot = Split-Path $PSScriptRoot -Parent
 $ModulesDir  = Join-Path $ProjectRoot 'modules'
 $ScriptsDir  = Join-Path $ProjectRoot 'scripts'
@@ -77,16 +77,15 @@ if (-not $writeAppLogCommand) {
     }
 }
 
-# ── Helpers ──
 function Get-VersionTagFromFile {
     param([string]$FilePath)
     try {
         $head = Get-Content $FilePath -TotalCount 10 -ErrorAction Stop
         foreach ($line in $head) {
-            if ($line -match 'VersionTag:\s*([\d]+\.B\d+\.v[\d\.]+)') {
+            if ($line -match 'VersionTag:\s*([\d]+\.B\d+\.[Vv][\d\.]+)') {
                 return $Matches[1]
             }
-            if ($line -match '<!--\s*VersionTag:\s*([\d]+\.B\d+\.v[\d\.]+)') {
+            if ($line -match '<!--\s*VersionTag:\s*([\d]+\.B\d+\.[Vv][\d\.]+)') {
                 return $Matches[1]
             }
         }
@@ -111,6 +110,47 @@ function Get-FileRoleFromFile {
         Write-AppLog -Message "Failed to read $FilePath for FileRole: $_" -Level Debug
         return $null
     }
+}
+
+function Extract-ExportedFunctions {
+    <#
+    .SYNOPSIS
+        Returns function names referenced by Export-ModuleMember -Function in a .psm1 file.
+    #>
+    param([string]$FilePath)
+
+    try {
+        $content = Get-Content $FilePath -Raw -ErrorAction Stop
+    } catch {
+        Write-AppLog -Message "Failed to read $FilePath for export extraction: $_" -Level Debug
+        return @()
+    }
+
+    if (-not $content) {
+        return @()
+    }
+
+    $exports = [System.Collections.ArrayList]::new()
+    $blocks = [regex]::Matches(
+        $content,
+        'Export-ModuleMember\s+-Function\s+(.+?)(?=\r?\n\s*(?:Export-ModuleMember|#>|<#|function\s|$)|\z)',
+        [System.Text.RegularExpressions.RegexOptions]::Singleline
+    )
+
+    foreach ($blockMatch in $blocks) {
+        $block = $blockMatch.Groups[1].Value
+        $nameMatches = [regex]::Matches($block, '''([^'']+)''|"([^"]+)"|\b([A-Z][A-Za-z0-9]*-[A-Za-z0-9_-]+)\b')
+        foreach ($nameMatch in $nameMatches) {
+            $functionName = $nameMatch.Groups[1].Value
+            if (-not $functionName) { $functionName = $nameMatch.Groups[2].Value }
+            if (-not $functionName) { $functionName = $nameMatch.Groups[3].Value }
+            if ($functionName -and $functionName -notin $exports) {
+                $null = $exports.Add($functionName)
+            }
+        }
+    }
+
+    return $exports.ToArray()
 }
 
 function Extract-FunctionDefs {
@@ -180,111 +220,6 @@ function Extract-FunctionDefs {
         })
     }
     return $results.ToArray()
-}
-
- function Extract-ExportedFunctions {
-    <#
-    .SYNOPSIS Returns the function names from 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember calls in a .psm1.
-    #>
-    param([string]$FilePath)
-    try {
-        $content = Get-Content $FilePath -Raw -ErrorAction Stop
-    } catch {
-        Write-AppLog -Message "Failed to read $FilePath for export extraction: $_" -Level Debug
-        return @()
-    }
-    if (-not $content) { return @() }
-
-    $exports = [System.Collections.ArrayList]::new()
-
-    # Pattern A: 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember -Function @(\n 'Func1',\n 'Func2'\n)
-    # Pattern B: 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember -Function 'Func1','Func2'
-    # Pattern C: 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember -Function Func1, Func2
-    $matches_ = [regex]::Matches($content, "
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember\s+-Function\s+(.+?)(?:\r?\n\s*(?:
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember|#|$)|\z)", 'Singleline')
-    foreach ($m in $matches_) {
-        $block = $m.Groups[1].Value
-        # Extract all quoted or bare function names
-        $names = [regex]::Matches($block, "'([^']+)'|""([^""]+)""|(?<=[\s,@(])([A-Z]\w+-\w+)")
-        foreach ($n in $names) {
-            $fname = $n.Groups[1].Value
-            if (-not $fname) { $fname = $n.Groups[2].Value }
-            if (-not $fname) { $fname = $n.Groups[3].Value }
-            if ($fname) { $null = $exports.Add($fname) }
-        }
-    }
-    return $exports.ToArray()
 }
 
 function Extract-Dependencies {
@@ -451,6 +386,7 @@ $manifest = [ordered]@{
         counts        = [ordered]@{}
     }
     modules    = [System.Collections.ArrayList]::new()
+    moduleManifests = [System.Collections.ArrayList]::new()
     scripts    = [System.Collections.ArrayList]::new()
     mainGui    = [ordered]@{}
     guiForms   = [System.Collections.ArrayList]::new()
@@ -471,6 +407,8 @@ $manifest = [ordered]@{
     actionRoutes   = [System.Collections.ArrayList]::new()
     dependencyEdges = [System.Collections.ArrayList]::new()
 }
+
+$seenModuleManifestPaths = @{}
 
 # ── 1. Scan Modules ──
 Write-Host "  [1/14] Scanning modules..." -ForegroundColor DarkCyan
@@ -494,7 +432,7 @@ foreach ($mDir in $moduleDirs) {
 
     foreach ($psm in $psmFiles) {
         $modName = [System.IO.Path]::GetFileNameWithoutExtension($psm.Name)
-        $relPath = $psm.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+        $relPath = $psm.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
 
         $version   = Get-VersionTagFromFile $psm.FullName
         $fileRole  = Get-FileRoleFromFile $psm.FullName
@@ -502,19 +440,7 @@ foreach ($mDir in $moduleDirs) {
         $exported  = @(Extract-ExportedFunctions $psm.FullName)
         $deps      = @(Extract-Dependencies $psm.FullName)
 
-        # If no 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember found, treat all functions as exported
+        # If no explicit Export-ModuleMember found; treat all discovered functions as exported.
         if (@($exported).Count -eq 0 -and @($allFuncs).Count -gt 0) {
             $exported = $allFuncs | ForEach-Object { $_.Name }
         }
@@ -567,10 +493,28 @@ Export-ModuleMember found, treat all functions as exported
         }
 
         $psd1Path = Join-Path $mDir "$modName.psd1"
+        if (Test-Path $psd1Path) {
+            $manifestRelPath = $psd1Path.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
+            if (-not $seenModuleManifestPaths.ContainsKey($manifestRelPath)) {
+                $psd1Content = Get-Content $psd1Path -Raw -ErrorAction SilentlyContinue
+                $null = $manifest.moduleManifests.Add([ordered]@{
+                    name             = [System.IO.Path]::GetFileNameWithoutExtension($psd1Path)
+                    path             = $manifestRelPath
+                    rootModule       = if ($psd1Content -match 'RootModule\s*=\s*[''\"]([^''\"]+)[''\"]') { $Matches[1] } else { $null }
+                    moduleVersion    = if ($psd1Content -match 'ModuleVersion\s*=\s*[''\"]([^''\"]+)[''\"]') { $Matches[1] } else { $null }
+                    hasVersionTag    = [bool]($psd1Content -match '#\s*VersionTag:')
+                    hasFileRole      = [bool]($psd1Content -match '#\s*FileRole:')
+                    hasSchemaVersion = [bool]($psd1Content -match '#\s*SchemaVersion:')
+                    sizeKB           = [math]::Round((Get-Item $psd1Path).Length / 1KB, 1)
+                    pairedModule     = $psm.Name
+                })
+                $seenModuleManifestPaths[$manifestRelPath] = $true
+            }
+        }
         $modEntry = [ordered]@{
             name         = $modName
             path         = $relPath
-            manifestFile = if (Test-Path $psd1Path) { $psd1Path.Replace($ProjectRoot, '').TrimStart('\', '/') } else { $null }
+            manifestFile = if (Test-Path $psd1Path) { $psd1Path.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/')) } else { $null }
             version      = $version
             fileRole     = $fileRole
             tier         = $tier
@@ -583,6 +527,29 @@ Export-ModuleMember found, treat all functions as exported
         $null = $manifest.modules.Add($modEntry)
 
         Write-Verbose "  Module: $modName ($(@($allFuncs).Count) functions, $(@($exported).Count) exported)"
+    }
+
+    try {
+        $orphanPsd1Files = Get-ChildItem $mDir -Filter '*.psd1' -ErrorAction Stop
+    } catch {
+        $orphanPsd1Files = @()
+    }
+    foreach ($psd1 in $orphanPsd1Files) {
+        $manifestRelPath = $psd1.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
+        if ($seenModuleManifestPaths.ContainsKey($manifestRelPath)) { continue }
+        $psd1Content = Get-Content $psd1.FullName -Raw -ErrorAction SilentlyContinue
+        $null = $manifest.moduleManifests.Add([ordered]@{
+            name             = $psd1.BaseName
+            path             = $manifestRelPath
+            rootModule       = if ($psd1Content -match 'RootModule\s*=\s*[''\"]([^''\"]+)[''\"]') { $Matches[1] } else { $null }
+            moduleVersion    = if ($psd1Content -match 'ModuleVersion\s*=\s*[''\"]([^''\"]+)[''\"]') { $Matches[1] } else { $null }
+            hasVersionTag    = [bool]($psd1Content -match '#\s*VersionTag:')
+            hasFileRole      = [bool]($psd1Content -match '#\s*FileRole:')
+            hasSchemaVersion = [bool]($psd1Content -match '#\s*SchemaVersion:')
+            sizeKB           = [math]::Round($psd1.Length / 1KB, 1)
+            pairedModule     = $null
+        })
+        $seenModuleManifestPaths[$manifestRelPath] = $true
     }
 }
 
@@ -673,7 +640,7 @@ if ($scriptFiles) {
 }
 
 foreach ($sf in $scriptFiles) {
-    $relPath = $sf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+    $relPath = $sf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
     $funcs   = @(Extract-FunctionDefs $sf.FullName)
     $deps    = @(Extract-Dependencies $sf.FullName)
 
@@ -725,7 +692,7 @@ try {
 }
 if ($xhtmlFiles) {
     foreach ($xf in $xhtmlFiles) {
-        $relPath = $xf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+        $relPath = $xf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
         $version = Get-VersionTagFromFile $xf.FullName
         $null = $manifest.xhtmlTools.Add([ordered]@{
             name    = $xf.BaseName
@@ -776,7 +743,7 @@ try {
     $configFiles = @()
 }
 foreach ($cf in $configFiles) {
-    $relPath = $cf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+    $relPath = $cf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
     $schema = $null
     if ($cf.Extension -eq '.json') {
         try {
@@ -811,7 +778,7 @@ try {
 }
 if ($testFiles) {
     foreach ($tf in $testFiles) {
-        $relPath = $tf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+        $relPath = $tf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
         $isPester = $tf.Name -like '*.Tests.ps1'
         $null = $manifest.tests.Add([ordered]@{
             name    = $tf.BaseName
@@ -848,9 +815,11 @@ if ($agentDirs) {
         # Scan core/*.psm1 for agent modules
         $agentCoreDir = Join-Path $ad.FullName 'core'
         $agentCoreModules = @()
+        $agentCoreManifests = @()
         if (Test-Path $agentCoreDir) {
             try {
-                $agentCoreModules = @(Get-ChildItem $agentCoreDir -Filter '*.psm1' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart('\', '/') })
+                $agentCoreModules = @(Get-ChildItem $agentCoreDir -Filter '*.psm1' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/')) })
+                $agentCoreManifests = @(Get-ChildItem $agentCoreDir -Filter '*.psd1' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/')) })
             } catch {
                 Write-AppLog -Message "Failed to scan agent core dir for $($ad.Name): $_" -Level Debug
             }
@@ -860,16 +829,17 @@ if ($agentDirs) {
         $agentConfigDir = Join-Path $ad.FullName 'config'
         if (Test-Path $agentConfigDir) {
             try {
-                $agentConfigFiles = @(Get-ChildItem $agentConfigDir -Filter '*.json' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart('\', '/') })
+                $agentConfigFiles = @(Get-ChildItem $agentConfigDir -Filter '*.json' -ErrorAction Stop | ForEach-Object { $_.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/')) })
             } catch {
                 Write-AppLog -Message "Failed to scan agent config dir for $($ad.Name): $_" -Level Debug
             }
         }
         $null = $manifest.agents.Add([ordered]@{
             name         = $ad.Name
-            path         = $ad.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+            path         = $ad.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
             entryPoints  = @($entryPoints | ForEach-Object { $_.Name })
             coreModules  = $agentCoreModules
+            coreManifests = $agentCoreManifests
             configFiles  = $agentConfigFiles
             languages    = @(
                 $(if ($entryPoints -or $agentCoreModules) { 'PowerShell' })
@@ -895,7 +865,7 @@ if ($cssFiles) {
     foreach ($cf in $cssFiles) {
         $null = $manifest.styles.Add([ordered]@{
             name = $cf.BaseName
-            path = $cf.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+            path = $cf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\', '/'))
         })
     }
 }
@@ -1239,6 +1209,7 @@ $manifest['agenticAPI'] = [ordered]@{
 # ── Compute Counts ──
 $manifest.meta.counts = [ordered]@{
     modules         = $manifest.modules.Count
+    moduleManifests = $manifest.moduleManifests.Count
     mainGuiFunctions = $manifest.mainGui.functionCount
     totalExportedFunctions = ($manifest.modules | ForEach-Object { $_.exportedCount } | Measure-Object -Sum).Sum
     scripts         = $manifest.scripts.Count
@@ -1320,6 +1291,8 @@ Write-Host "[AgenticManifest] Complete.`n" -ForegroundColor Green
 
 # Return the manifest object for pipeline use
 $manifest
+
+
 
 
 

@@ -16,18 +16,20 @@
   "executionAgent": "",
   "outlinePhase": "assessment",
   "linkedFeatures": [],
-  "modified": "2026-04-12T05:25:57.5650450Z",
+  "modified": "2026-04-12T05:25:57.565045Z",
   "acknowledged": null,
   "sinId": "SIN-20260328082539-1ef56337",
   "result": null,
-  "status": "OPEN",
+  "status": "DONE",
   "suggestedBy": "CronAiAthon-BugTracker",
   "priority": "HIGH",
   "outlineVersion": "v0",
-  "notes": "Matched existing sin: Unexpected token '?' in expression or statement.",
+  "notes": "Matched existing sin: Unexpected token '?' in expression or statement.\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\Main-GUI.ps1",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\Main-GUI.ps1"
-  ]
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:39.5059916+08:00"
 }

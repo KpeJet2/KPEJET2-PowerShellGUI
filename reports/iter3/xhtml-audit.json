@@ -1,0 +1,18 @@
+[
+  {
+    "File": "C:\\PowerShellGUI\\~REPORTS\\125-Issue-Fix-Campaign-Report.xhtml",
+    "XmlOk": true,
+    "XmlError": null,
+    "P032Fail": false,
+    "P033Fail": false,
+    "DupVars": []
+  },
+  {
+    "File": "C:\\PowerShellGUI\\~REPORTS\\SIN-Scoreboard.xhtml",
+    "XmlOk": true,
+    "XmlError": null,
+    "P032Fail": false,
+    "P033Fail": false,
+    "DupVars": []
+  }
+]

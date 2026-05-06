@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -508,6 +508,7 @@ Export-ModuleMember -Function @(
     'Initialize-NikrAgiKey',
     'Invoke-NikrAgiSquabble'
 )
+
 
 
 

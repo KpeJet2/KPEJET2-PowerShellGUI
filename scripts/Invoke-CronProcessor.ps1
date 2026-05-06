@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -36,7 +36,8 @@
 [CmdletBinding()]
 param(
     [switch]$Force,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [ValidateRange(1,500)] [int]$BatchSize = 0
 )
 
 Set-StrictMode -Version Latest
@@ -62,6 +63,79 @@ function Write-CronProcessorLog {
     if ($Level -eq 'Error') { Write-Warning $line } else { Write-Verbose $line }
 }
 
+function Test-CronTodoProperty {
+    param(
+        [object]$Record,
+        [string]$Name
+    )
+
+    if ($null -eq $Record -or [string]::IsNullOrWhiteSpace($Name)) {
+        return $false
+    }
+
+    return ($Record.PSObject.Properties.Name -contains $Name)
+}
+
+function Get-CronTodoPropertyValue {
+    param(
+        [object]$Record,
+        [string[]]$Names,
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $Record -or @($Names).Count -eq 0) {
+        return $DefaultValue
+    }
+
+    foreach ($name in $Names) {
+        if (-not (Test-CronTodoProperty -Record $Record -Name $name)) {
+            continue
+        }
+
+        $prop = $Record.PSObject.Properties[$name]
+        if ($null -eq $prop) {
+            continue
+        }
+
+        $value = $prop.Value
+        if ($null -eq $value) {
+            continue
+        }
+
+        if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+            continue
+        }
+
+        return $value
+    }
+
+    return $DefaultValue
+}
+
+function Get-CronTodoFirstStringValue {
+    param(
+        [object]$Record,
+        [string[]]$Names,
+        [string]$DefaultValue = ''
+    )
+
+    $value = Get-CronTodoPropertyValue -Record $Record -Names $Names -DefaultValue $null
+    if ($null -eq $value) {
+        return $DefaultValue
+    }
+
+    if ($value -is [string]) {
+        return [string]$value
+    }
+
+    $items = @($value)
+    if (@($items).Count -gt 0 -and $null -ne $items[0]) {
+        return [string]$items[0]
+    }
+
+    return $DefaultValue
+}
+
 # ── Step 0: GUI check ──────────────────────────────────────
 function Test-MainGUIRunning {
     $procs = Get-Process -ErrorAction SilentlyContinue |
@@ -77,7 +151,7 @@ function Invoke-FeatureCheck {
     foreach ($f in $featureFiles) {
         try {
             $item = Get-Content -Path $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
-            $st = ($item.status -as [string]).ToUpper()
+            $st = ([string](Get-CronTodoPropertyValue -Record $item -Names @('status','source_status') -DefaultValue 'OPEN')).ToUpper()
             if ($st -eq 'IMPLEMENTED' -or $st -eq 'CLOSED') { $implemented++ } else { $open++ }
         } catch {
             Write-CronProcessorLog "  Could not parse $($f.Name): $_" 'Warning'
@@ -114,15 +188,27 @@ function Invoke-ManifestRevision {
 # ── Step 3: Deep parse test ────────────────────────────────
 function Invoke-DeepTest {
     Write-CronProcessorLog 'Step 3: Deep parse validation'
+    # Long-standing parse-error scripts with broken comment-help/param blocks.
+    # Tracked separately; suppress duplicate Bugs2FIX item creation each cron cycle.
+    # Remove a name from this list once the underlying parse error is fixed.
+    $knownBadParseFiles = @(
+        'Invoke-DataMigration.ps1',
+        'New-PwShGUIModule.ps1',
+        'Show-CronAiAthonTool.ps1'
+    )
     $scripts = Get-ChildItem -Path $script:Root -Include '*.ps1','*.psm1' -Recurse -ErrorAction SilentlyContinue |
         Where-Object { $_.FullName -notlike '*\.history*' -and $_.FullName -notlike '*node_modules*' -and $_.FullName -notlike '*remediation-backups*' -and $_.FullName -notlike '*~REPORTS*' }
-    $pass = 0; $fail = 0; $failFiles = @()
+    $pass = 0; $fail = 0; $failFiles = @(); $skipped = 0
     foreach ($s in $scripts) {
         $errors = $null
         $null = [System.Management.Automation.Language.Parser]::ParseFile($s.FullName, [ref]$null, [ref]$errors)
         if ($errors -and @($errors).Count -gt 0) {
             $fail++
             $failFiles += $s.Name
+            if ($knownBadParseFiles -contains $s.Name) {
+                $skipped++
+                continue
+            }
             # Auto-create a bug item for parse failures
             if (-not $DryRun) {
                 $bugId = "bug-parse-$($s.BaseName)-$(Get-Date -Format 'yyyyMMdd')"
@@ -149,6 +235,7 @@ function Invoke-DeepTest {
     }
     $msg = "Parse: $pass pass, $fail fail"
     if (@($failFiles).Count -gt 0) { $msg += " ($($failFiles -join ', '))" }
+    if ($skipped -gt 0) { $msg += " [bug-creation skipped for $skipped known-bad file(s)]" }
     Write-CronProcessorLog "  $msg"
     $script:Results.Steps['DeepTest'] = $msg
 }
@@ -170,11 +257,17 @@ function Invoke-SINPatternScan {
         $scanResult = & $scanner -WorkspacePath $script:Root -Quiet -FailOnCritical
         $total = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'totalFindings') { [int]$scanResult.totalFindings } else { 0 }
         $crit  = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'critical')      { [int]$scanResult.critical }      else { 0 }
-        $msg = "SIN scan: $total finding(s), $crit critical"
+        $p027 = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'findings') { @($scanResult.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*27(?:\D|$)|NULL-ARRAY-INDEX|(?:^|-)P027(?:\D|$)' }).Count } else { 0 }
+        $p041 = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'findings') { @($scanResult.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*41(?:\D|$)|JSON-SCHEMA-PROPERTY-DRIFT|(?:^|-)P041(?:\D|$)' }).Count } else { 0 }
+        $msg = "SIN scan: $total finding(s), $crit critical, $p027 P027, $p041 P041"
         Write-CronProcessorLog "  $msg"
-        if ($crit -gt 0) {
-            $script:Results.Steps['SINPatternScan'] = "BLOCKED: $crit CRITICAL SIN finding(s) -- $msg"
-            Write-CronProcessorLog "  [PIPELINE BLOCKED] $crit CRITICAL SIN finding(s) detected" 'Error'
+        if ($crit -gt 0 -or $p027 -gt 0 -or $p041 -gt 0) {
+            $blockReason = @()
+            if ($crit -gt 0) { $blockReason += "$crit CRITICAL" }
+            if ($p027 -gt 0) { $blockReason += "$p027 P027" }
+            if ($p041 -gt 0) { $blockReason += "$p041 P041" }
+            $script:Results.Steps['SINPatternScan'] = "BLOCKED: $($blockReason -join ', ') SIN finding(s) -- $msg"
+            Write-CronProcessorLog "  [PIPELINE BLOCKED] $($blockReason -join ', ') SIN finding(s) detected" 'Error'
         } else {
             $script:Results.Steps['SINPatternScan'] = $msg
         }
@@ -182,6 +275,69 @@ function Invoke-SINPatternScan {
         Write-CronProcessorLog "  SIN pattern scan error: $_" 'Error'
         $script:Results.Steps['SINPatternScan'] = "ERROR: $_"
     }
+}
+
+# ── Step 3.55: Full Pester Suite Gate ─────────────────────
+function Invoke-FullPesterSuiteGate {
+    Write-CronProcessorLog 'Step 3.55: Full Pester suite gate'
+    $runAllTests = Join-Path $script:Root 'tests\Run-AllTests.ps1'
+    if (-not (Test-Path $runAllTests)) {
+        Write-CronProcessorLog '  Run-AllTests.ps1 not found, blocking pipeline' 'Error'
+        $script:Results.Steps['PesterSuiteGate'] = 'FAILED - Run-AllTests.ps1 not found'
+        return
+    }
+    if ($DryRun) {
+        $script:Results.Steps['PesterSuiteGate'] = 'DRY-RUN skipped'
+        return
+    }
+
+    $hostTargets = @()
+    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
+        $hostTargets += [pscustomobject]@{ Name = 'pwsh'; Exe = 'pwsh.exe' }
+    }
+    if (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+        $hostTargets += [pscustomobject]@{ Name = 'powershell'; Exe = 'powershell.exe' }
+    }
+    if (@($hostTargets).Count -eq 0) {
+        Write-CronProcessorLog '  No PowerShell host found for Pester gate, blocking pipeline' 'Error'
+        $script:Results.Steps['PesterSuiteGate'] = 'FAILED - no host executable available'
+        return
+    }
+
+    $failed = 0
+    $hostResults = @()
+    foreach ($target in $hostTargets) {
+        try {
+            $argList = @(
+                '-NoProfile',
+                '-ExecutionPolicy', 'Bypass',
+                '-File', "`"$runAllTests`"",
+                '-PesterOnly',
+                '-RequirePester', 'true',
+                '-IncludeModuleValidation', 'true'
+            )
+            $proc = Start-Process -FilePath $target.Exe -ArgumentList $argList -Wait -PassThru -NoNewWindow
+            $hostResults += "$($target.Name)=$($proc.ExitCode)"
+            if ($proc.ExitCode -ne 0) {
+                $failed++
+            }
+        } catch {
+            $failed++
+            $hostResults += "$($target.Name)=EXCEPTION"
+            Write-CronProcessorLog "  Pester gate execution failed on $($target.Name): $_" 'Error'
+        }
+    }
+
+    if ($failed -gt 0) {
+        $msg = "FAILED - Pester gate host failures: $($hostResults -join ', ')"
+        $script:Results.Steps['PesterSuiteGate'] = $msg
+        Write-CronProcessorLog "  $msg" 'Error'
+        return
+    }
+
+    $msg = "PASSED - $($hostResults -join ', ')"
+    $script:Results.Steps['PesterSuiteGate'] = $msg
+    Write-CronProcessorLog "  $msg"
 }
 
 # ── Step 3.6: SIN Remedy Engine ────────────────────────────
@@ -256,9 +412,15 @@ function Invoke-ScheduledTaskDispatch {
             if (-not $isDue) { $skipped++; continue }
             Write-CronProcessorLog "  Dispatching task: $($task.id) [$($task.type)]"
             try {
-                $jobResult = Invoke-CronJob -WorkspacePath $script:Root -TaskId $task.id
-                $status = if ($jobResult.success) { 'OK' } else { 'FAIL' }
-                Write-CronProcessorLog "  Task $($task.id): $status — $($jobResult.detail)"
+                $cronJobParams = @{ WorkspacePath = $script:Root; TaskId = $task.id }
+                if ($BatchSize -gt 0) { $cronJobParams['BatchSize'] = $BatchSize }
+                $jobResult = Invoke-CronJob @cronJobParams
+                # P022: guard against output-leak arrays returning alongside the result dict
+                $realResult = if ($jobResult -is [array]) {
+                    @($jobResult | Where-Object { $_ -is [System.Collections.Specialized.OrderedDictionary] }) | Select-Object -Last 1
+                } else { $jobResult }
+                $status = if ($null -ne $realResult -and $realResult['success']) { 'OK' } else { 'FAIL' }
+                Write-CronProcessorLog "  Task $($task.id): $status — $($realResult.detail)"
                 $ran++
             } catch {
                 Write-CronProcessorLog "  Task $($task.id) ERROR: $_" 'Error'
@@ -339,13 +501,15 @@ function Invoke-XhtmlUpdate {
         try {
             $item = Get-Content -Path $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             $statusMap = @{ 'OPEN' = 'Proposed'; 'IN-PROGRESS' = 'ALPHA Testing'; 'IMPLEMENTED' = 'Released'; 'CLOSED' = 'Deferred' }
-            $mappedStatus = if ($statusMap.ContainsKey(($item.status -as [string]).ToUpper())) { $statusMap[($item.status -as [string]).ToUpper()] } else { 'Proposed' }
+            $rawStatus = ([string](Get-CronTodoPropertyValue -Record $item -Names @('status','source_status') -DefaultValue 'OPEN')).ToUpper()
+            $mappedStatus = if ($statusMap.ContainsKey($rawStatus)) { $statusMap[$rawStatus] } else { 'Proposed' }
+            $featureId = Get-CronTodoFirstStringValue -Record $item -Names @('source_id','id','todo_id') -DefaultValue $f.BaseName
             $features += @{
-                id          = $item.source_id
-                title       = $item.title
+                id          = $featureId
+                title       = (Get-CronTodoFirstStringValue -Record $item -Names @('title') -DefaultValue $featureId)
                 status      = $mappedStatus
-                description = $item.description
-                created     = $item.created_at
+                description = (Get-CronTodoFirstStringValue -Record $item -Names @('description','notes') -DefaultValue '')
+                created     = (Get-CronTodoFirstStringValue -Record $item -Names @('created_at','createdAt','created','firstSeenAt','lastSeenAt','modified') -DefaultValue '')
             }
         } catch { Write-Warning "[CronProcessor] Feature parse error in $($f.Name): $_" }
     }
@@ -362,14 +526,17 @@ function Invoke-XhtmlUpdate {
         try {
             $item = Get-Content -Path $bf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             $statusMap = @{ 'OPEN' = 'Open'; 'IMPLEMENTED' = 'Fixed'; 'CLOSED' = "Won't Fix" }
-            $mappedStatus = if ($statusMap.ContainsKey(($item.status -as [string]).ToUpper())) { $statusMap[($item.status -as [string]).ToUpper()] } else { 'Open' }
-            $script = if ($item.file_refs -and @($item.file_refs).Count -gt 0) { $item.file_refs[0] } else { '' }
+            $rawStatus = [string](Get-CronTodoPropertyValue -Record $item -Names @('status') -DefaultValue 'OPEN')
+            $mappedStatus = if ($statusMap.ContainsKey($rawStatus.ToUpper())) { $statusMap[$rawStatus.ToUpper()] } else { 'Open' }
+            $scriptRef = Get-CronTodoFirstStringValue -Record $item -Names @('file_refs','affectedFiles') -DefaultValue ''
+            $description = Get-CronTodoFirstStringValue -Record $item -Names @('description','notes') -DefaultValue ''
+            $createdAt = Get-CronTodoFirstStringValue -Record $item -Names @('created_at','createdAt','created','firstSeenAt','lastSeenAt','modified') -DefaultValue ''
             $bugs += @{
                 id          = $bid
-                script      = $script
+                script      = $scriptRef
                 status      = $mappedStatus
-                description = $item.description
-                created     = $item.created_at
+                description = $description
+                created     = $createdAt
             }
             $bid++
         } catch { Write-Warning "[CronProcessor] Bug parse error in $($bf.Name): $_" }
@@ -678,6 +845,7 @@ Invoke-FeatureCheck
 Invoke-ManifestRevision
 Invoke-DeepTest
 Invoke-SINPatternScan
+Invoke-FullPesterSuiteGate
 Invoke-SINRemedyAttempt
 Invoke-ScheduledTaskDispatch
 Invoke-ErrorHandlingComplianceScan
@@ -701,12 +869,20 @@ Write-CronProcessorLog "Cycle summary: $summary"
 Write-CronProcessorLog '=== Cron Processor Cycle END ==='
 $script:_CronCycleSw.Stop()
 $integrityStep = [string]($script:Results.Steps['IntegrityGate'])
+$sinStep = [string]($script:Results.Steps['SINPatternScan'])
+$pesterStep = [string]($script:Results.Steps['PesterSuiteGate'])
 if (Get-Command Write-ProcessBanner -ErrorAction SilentlyContinue) {
-    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*')
+    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*' -or $sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*' -or $pesterStep -like 'FAILED*')
     Write-ProcessBanner -ProcessName 'Cron Processor Cycle' -Stopwatch $script:_CronCycleSw -Success $cronSuccess
 }
 if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
     throw "Integrity gate FAILED: $integrityStep"
+}
+if ($sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*') {
+    throw "SIN pattern scan FAILED: $sinStep"
+}
+if ($pesterStep -like 'FAILED*') {
+    throw "Pester suite gate FAILED: $pesterStep"
 }
 
 <# Outline:
@@ -720,6 +896,7 @@ if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

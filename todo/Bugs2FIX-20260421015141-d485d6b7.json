@@ -14,14 +14,14 @@
   "executionMethod": "",
   "acknowledged": null,
   "fixesImplementedCount": 0,
-  "status": "OPEN",
+  "status": "DONE",
   "suggestedBy": "CronAiAthon",
   "filesFixedCount": 0,
   "reopenedAt": null,
   "modified": "2026-04-20T17:51:41.9033178Z",
   "outlineTag": "OUTLINE-PROTO-v0",
   "id": "Bugs2FIX-20260421015141-d485d6b7",
-  "notes": "",
+  "notes": "Auto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
   "tags": [],
   "sinId": "",
   "source": "BugTracker",
@@ -42,5 +42,7 @@
   "sessionModCount": 1,
   "result": null,
   "firstSeenAt": "2026-04-20T17:51:41.9033765Z",
-  "parentId": "Bug-20260421015016-378b74b1"
+  "parentId": "Bug-20260421015016-378b74b1",
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:54.7916364+08:00"
 }

@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -72,6 +72,70 @@ $bugStatusMap = @{
     'WONTFIX' = 'CLOSED'
 }
 
+function Test-DataMigrationRecordProperty {
+    param(
+        [object]$Record,
+        [string]$Name
+    )
+
+    if ($null -eq $Record -or [string]::IsNullOrWhiteSpace($Name)) {
+        return $false
+    }
+
+    return ($Record.PSObject.Properties.Name -contains $Name)
+}
+
+function Get-DataMigrationRecordValue {
+    param(
+        [object]$Record,
+        [string[]]$Names,
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $Record -or @($Names).Count -eq 0) {
+        return $DefaultValue
+    }
+
+    foreach ($name in $Names) {
+        if (-not (Test-DataMigrationRecordProperty -Record $Record -Name $name)) {
+            continue
+        }
+
+        $prop = $Record.PSObject.Properties[$name]
+        if ($null -eq $prop) {
+            continue
+        }
+
+        $value = $prop.Value
+        if ($null -eq $value) {
+            continue
+        }
+
+        if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+            continue
+        }
+
+        return $value
+    }
+
+    return $DefaultValue
+}
+
+function Get-DataMigrationRecordStringValue {
+    param(
+        [object]$Record,
+        [string[]]$Names,
+        [string]$DefaultValue = ''
+    )
+
+    $value = Get-DataMigrationRecordValue -Record $Record -Names $Names -DefaultValue $null
+    if ($null -eq $value) {
+        return $DefaultValue
+    }
+
+    return [string]$value
+}
+
 # ── Load existing todo IDs to avoid duplicates ──
 $existingSourceIds = @{}
 if (-not $Force) {
@@ -80,7 +144,8 @@ if (-not $Force) {
     ForEach-Object {
         try {
             $item = Get-Content $_.FullName -Raw | ConvertFrom-Json
-            if ($item.source_id) { $existingSourceIds[$item.source_id] = $_.Name }
+            $sourceId = Get-DataMigrationRecordStringValue -Record $item -Names @('source_id','sourceId') -DefaultValue ''
+            if (-not [string]::IsNullOrWhiteSpace($sourceId)) { $existingSourceIds[$sourceId] = $_.Name }
         } catch { Write-Warning "[DataMigration] Parse error in $($_.Name): $_" }
     }
 }
@@ -102,26 +167,32 @@ if (Test-Path $FeatureJsonPath) {
             [int]$Depth = 0
         )
         foreach ($node in $Nodes) {
-            $sourceId = "feature-$($node.id)"
+            $nodeId = Get-DataMigrationRecordStringValue -Record $node -Names @('id') -DefaultValue ''
+            $nodeTitle = Get-DataMigrationRecordStringValue -Record $node -Names @('title') -DefaultValue $nodeId
+            $nodeStatus = Get-DataMigrationRecordStringValue -Record $node -Names @('status') -DefaultValue 'Proposed'
+            $nodeDescription = Get-DataMigrationRecordStringValue -Record $node -Names @('description') -DefaultValue ''
+            $nodeCreated = Get-DataMigrationRecordStringValue -Record $node -Names @('created','created_at','createdAt') -DefaultValue ''
+            $nodeChildren = @(Get-DataMigrationRecordValue -Record $node -Names @('children') -DefaultValue @())
+            $sourceId = "feature-$nodeId"
             if (-not $Force -and $existingSourceIds.ContainsKey($sourceId)) {
-                Write-Host "  SKIP: $($node.id) - $($node.title) (already migrated as $($existingSourceIds[$sourceId]))" -ForegroundColor DarkGray
+                Write-Host "  SKIP: $nodeId - $nodeTitle (already migrated as $($existingSourceIds[$sourceId]))" -ForegroundColor DarkGray
                 $script:skipped++
                 # Still recurse children
-                if ($node.children) {
-                    Convert-FeatureNode -Nodes $node.children -ParentId $node.id -Depth ($Depth + 1)
+                if (@($nodeChildren).Count -gt 0) {
+                    Convert-FeatureNode -Nodes $nodeChildren -ParentId $nodeId -Depth ($Depth + 1)
                 }
                 continue
             }
 
             $mappedStatus = 'OPEN'
-            if ($node.status -and $featureStatusMap.ContainsKey($node.status)) {
-                $mappedStatus = $featureStatusMap[$node.status]
+            if (-not [string]::IsNullOrWhiteSpace($nodeStatus) -and $featureStatusMap.ContainsKey($nodeStatus)) {
+                $mappedStatus = $featureStatusMap[$nodeStatus]
             }
             if (Get-Command -Name ConvertTo-PipelineStatus -ErrorAction SilentlyContinue) {
                 $mappedStatus = ConvertTo-PipelineStatus -Status $mappedStatus
             }
 
-            $mappedPriority = switch ($node.status) {
+            $mappedPriority = switch ($nodeStatus) {
                 'ALPHA Testing' { 'HIGH' }
                 'ALPHA'         { 'HIGH' }
                 'BETA Testing'  { 'HIGH' }
@@ -131,7 +202,7 @@ if (Test-Path $FeatureJsonPath) {
             }
 
             $now = (Get-Date).ToUniversalTime().ToString('o')
-            $safeId = ($node.id -replace '[^A-Za-z0-9\.\-]', '').ToLower()
+            $safeId = ($nodeId -replace '[^A-Za-z0-9\.\-]', '').ToLower()
             $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmss')
             $fileName = "todo-${stamp}-feature-${safeId}.json"
 
@@ -139,16 +210,16 @@ if (Test-Path $FeatureJsonPath) {
                 todo_id        = "feature-$safeId"
                 type           = 'feature'
                 category       = 'feature'
-                title          = $node.title
-                description    = if ($node.description) { $node.description } else { '' }
+                title          = $nodeTitle
+                description    = $nodeDescription
                 suggested_by   = 'Invoke-DataMigration'
                 priority       = $mappedPriority
                 status         = $mappedStatus
-                created_at     = if ($node.created) { $node.created } else { $now }
+                created_at     = if (-not [string]::IsNullOrWhiteSpace($nodeCreated)) { $nodeCreated } else { $now }
                 acknowledged_at = $null
                 affects        = @()
                 file_refs      = @()
-                notes          = "Migrated from PsGUI-FeatureRequests.json (original status: $($node.status))"
+                notes          = "Migrated from PsGUI-FeatureRequests.json (original status: $nodeStatus)"
                 source_id      = $sourceId
                 parent_id      = if ($ParentId) { "feature-$($ParentId.ToLower() -replace '[^a-z0-9\.\-]','')" } else { $null }
                 status_history = @(
@@ -157,16 +228,16 @@ if (Test-Path $FeatureJsonPath) {
             }
 
             if ($WhatIf) {
-                Write-Host "  WOULD CREATE: $fileName - $($node.id): $($node.title) [$mappedStatus]" -ForegroundColor Yellow
+                Write-Host "  WOULD CREATE: $fileName - ${nodeId}: $nodeTitle [$mappedStatus]" -ForegroundColor Yellow
             } else {
                 $outPath = Join-Path $todoDir $fileName
                 $todo | ConvertTo-Json -Depth 4 | Set-Content -Path $outPath -Encoding UTF8
-                Write-Host "  + $fileName - $($node.id): $($node.title) [$mappedStatus]" -ForegroundColor Green
+                Write-Host "  + $fileName - ${nodeId}: $nodeTitle [$mappedStatus]" -ForegroundColor Green
             }
             $script:created++
 
-            if ($node.children) {
-                Convert-FeatureNode -Nodes $node.children -ParentId $node.id -Depth ($Depth + 1)
+            if (@($nodeChildren).Count -gt 0) {
+                Convert-FeatureNode -Nodes $nodeChildren -ParentId $nodeId -Depth ($Depth + 1)
             }
         }
     }
@@ -195,22 +266,28 @@ if (Test-Path $BugJsonPath) {
     $bugData = Get-Content -Path $BugJsonPath -Raw | ConvertFrom-Json
 
     foreach ($bug in $bugData.bugs) {
-        $sourceId = "bug-$($bug.id)"
+        $bugId = Get-DataMigrationRecordStringValue -Record $bug -Names @('id') -DefaultValue ''
+        $bugTitle = Get-DataMigrationRecordStringValue -Record $bug -Names @('title') -DefaultValue $bugId
+        $bugStatus = Get-DataMigrationRecordStringValue -Record $bug -Names @('status') -DefaultValue 'OPEN'
+        $bugSeverity = Get-DataMigrationRecordStringValue -Record $bug -Names @('severity','priority') -DefaultValue 'MEDIUM'
+        $bugDescription = Get-DataMigrationRecordStringValue -Record $bug -Names @('description') -DefaultValue ''
+        $bugReported = Get-DataMigrationRecordStringValue -Record $bug -Names @('reported','created_at','createdAt','created','firstSeenAt') -DefaultValue ''
+        $sourceId = "bug-$bugId"
         if (-not $Force -and $existingSourceIds.ContainsKey($sourceId)) {
-            Write-Host "  SKIP: $($bug.id) - $($bug.title) (already migrated)" -ForegroundColor DarkGray
+            Write-Host "  SKIP: $bugId - $bugTitle (already migrated)" -ForegroundColor DarkGray
             $skipped++
             continue
         }
 
         $mappedStatus = 'OPEN'
-        if ($bug.status -and $bugStatusMap.ContainsKey($bug.status.ToUpper())) {
-            $mappedStatus = $bugStatusMap[$bug.status.ToUpper()]
+        if (-not [string]::IsNullOrWhiteSpace($bugStatus) -and $bugStatusMap.ContainsKey($bugStatus.ToUpper())) {
+            $mappedStatus = $bugStatusMap[$bugStatus.ToUpper()]
         }
         if (Get-Command -Name ConvertTo-PipelineStatus -ErrorAction SilentlyContinue) {
             $mappedStatus = ConvertTo-PipelineStatus -Status $mappedStatus
         }
 
-        $mappedPriority = switch (($bug.severity -as [string]).ToUpper()) {
+        $mappedPriority = switch ($bugSeverity.ToUpper()) {
             'CRITICAL' { 'CRITICAL' }
             'HIGH'     { 'HIGH' }
             'MEDIUM'   { 'MEDIUM' }
@@ -219,10 +296,11 @@ if (Test-Path $BugJsonPath) {
         }
 
         $fileRefs = @()
-        if ($bug.file) { $fileRefs = @($bug.file) }
+        $bugFile = Get-DataMigrationRecordStringValue -Record $bug -Names @('file') -DefaultValue ''
+        if (-not [string]::IsNullOrWhiteSpace($bugFile)) { $fileRefs = @($bugFile) }
 
         $now = (Get-Date).ToUniversalTime().ToString('o')
-        $safeId = ($bug.id -replace '[^A-Za-z0-9\-]', '').ToLower()
+        $safeId = ($bugId -replace '[^A-Za-z0-9\-]', '').ToLower()
         $stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmss')
         $fileName = "todo-${stamp}-bug-${safeId}.json"
 
@@ -230,13 +308,13 @@ if (Test-Path $BugJsonPath) {
             todo_id        = "bug-$safeId"
             type           = 'bug'
             category       = 'bug'
-            title          = $bug.title
-            description    = if ($bug.description) { $bug.description } else { '' }
+            title          = $bugTitle
+            description    = $bugDescription
             suggested_by   = 'Invoke-DataMigration'
             priority       = $mappedPriority
             severity       = $mappedPriority
             status         = $mappedStatus
-            created_at     = if ($bug.reported) { $bug.reported } else { $now }
+            created_at     = if (-not [string]::IsNullOrWhiteSpace($bugReported)) { $bugReported } else { $now }
             acknowledged_at = $null
             affects        = @()
             file_refs      = $fileRefs
@@ -249,14 +327,18 @@ if (Test-Path $BugJsonPath) {
 
         # Enrich with root cause and fix info if available
         $notesParts = @()
-        if ($bug.rootCause) { $notesParts += "Root Cause: $($bug.rootCause)" }
-        if ($bug.fix)       { $notesParts += "Fix: $($bug.fix)" }
-        if ($bug.version)   { $notesParts += "Version: $($bug.version)" }
-        if ($bug.tags)      { $notesParts += "Tags: $(($bug.tags -join ', '))" }
+        $bugRootCause = Get-DataMigrationRecordStringValue -Record $bug -Names @('rootCause') -DefaultValue ''
+        $bugFix = Get-DataMigrationRecordStringValue -Record $bug -Names @('fix') -DefaultValue ''
+        $bugVersion = Get-DataMigrationRecordStringValue -Record $bug -Names @('version') -DefaultValue ''
+        $bugTags = @(Get-DataMigrationRecordValue -Record $bug -Names @('tags') -DefaultValue @())
+        if (-not [string]::IsNullOrWhiteSpace($bugRootCause)) { $notesParts += "Root Cause: $bugRootCause" }
+        if (-not [string]::IsNullOrWhiteSpace($bugFix))       { $notesParts += "Fix: $bugFix" }
+        if (-not [string]::IsNullOrWhiteSpace($bugVersion))   { $notesParts += "Version: $bugVersion" }
+        if (@($bugTags).Count -gt 0)      { $notesParts += "Tags: $(($bugTags -join ', '))" }
         if ($notesParts.Count -gt 0) { $todo['notes'] = $notesParts -join ' | ' }
 
         if ($WhatIf) {
-            Write-Host "  WOULD CREATE: $fileName - $($bug.id): $($bug.title) [$mappedStatus]" -ForegroundColor Yellow
+            Write-Host "  WOULD CREATE: $fileName - ${bugId}: $bugTitle [$mappedStatus]" -ForegroundColor Yellow
         } else {
             $outPath = Join-Path $todoDir $fileName
             $todo | ConvertTo-Json -Depth 4 | Set-Content -Path $outPath -Encoding UTF8
@@ -315,6 +397,7 @@ return [PSCustomObject]@{
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

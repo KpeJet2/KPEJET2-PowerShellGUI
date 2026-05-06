@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.3
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -46,6 +46,7 @@ function Invoke-ParseCheck {
     .SYNOPSIS  Parse-check all .ps1/.psm1 files on both PS 5.1 and PS 7.
     .OUTPUTS   Array of bug-detection results.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -63,7 +64,7 @@ function Invoke-ParseCheck {
         $tokens = $null; $errors = $null
         try {
             [void][System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$errors)
-        } catch { <# skip #> }
+        } catch { <# skip #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
         if ($errors -and @($errors).Count -gt 0) {
             foreach ($err in $errors) {
@@ -85,6 +86,8 @@ function Invoke-ParseCheck {
 function Invoke-XhtmlValidation {
     <#
     .SYNOPSIS  Validate all XHTML files for strict XML well-formedness.
+        .DESCRIPTION
+      Detailed behaviour: Invoke xhtml validation.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
@@ -114,7 +117,10 @@ function Invoke-XhtmlValidation {
 function Invoke-CrashLogScan {
     <#
     .SYNOPSIS  Scan logs/ for crash indicators, unhandled exceptions, and error patterns.
+        .DESCRIPTION
+      Detailed behaviour: Invoke crash log scan.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -149,7 +155,7 @@ function Invoke-CrashLogScan {
                     }
                 }
             }
-        } catch { <# skip #> }
+        } catch { <# skip #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     return $results
 }
@@ -157,6 +163,8 @@ function Invoke-CrashLogScan {
 function Invoke-ErrorTrapAudit {
     <#
     .SYNOPSIS  Audit PowerShell scripts for missing try/catch and ErrorAction patterns.
+        .DESCRIPTION
+      Detailed behaviour: Invoke error trap audit.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
@@ -185,7 +193,7 @@ function Invoke-ErrorTrapAudit {
                     description = "Script $($file.Name) has $($functionMatches.Count) functions but zero try/catch blocks"
                 }
             }
-        } catch { <# skip #> }
+        } catch { <# skip #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     return $results
 }
@@ -193,6 +201,8 @@ function Invoke-ErrorTrapAudit {
 function Invoke-DataValidationCheck {
     <#
     .SYNOPSIS  Validate JSON and XML config files for well-formedness.
+        .DESCRIPTION
+      Detailed behaviour: Invoke data validation check.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
@@ -241,7 +251,10 @@ function Invoke-DataValidationCheck {
 function Invoke-DependencyCheck {
     <#
     .SYNOPSIS  Check for missing module references and broken Import-Module paths.
+        .DESCRIPTION
+      Detailed behaviour: Invoke dependency check.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -280,7 +293,7 @@ function Invoke-DependencyCheck {
                     }
                 }
             }
-        } catch { <# skip #> }
+        } catch { <# skip #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     return $results
 }
@@ -292,6 +305,7 @@ function Invoke-StyleComplianceCheck {
         Reads config/style-remediation-inventory.json and compares current anti-pattern counts
         against the baseline. Returns any regressions (new instances exceeding baseline).
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -346,6 +360,7 @@ function Invoke-FullBugScan {
         Runs: ParseCheck, XhtmlValidation, CrashLogScan, ErrorTrapAudit,
         DataValidationCheck, DependencyCheck. Returns array of all detected bugs.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -365,6 +380,8 @@ function Invoke-BugToPipelineProcessor {
     <#
     .SYNOPSIS  Process detected bugs into the full pipeline:
                Bug -> SinRegistry check -> Bugs2FIX -> optionally Items2ADD.
+        .DESCRIPTION
+      Detailed behaviour: Invoke bug to pipeline processor.
     #>
     [CmdletBinding()]
     param(
@@ -468,6 +485,7 @@ Export-ModuleMember -Function @(
     'Invoke-FullBugScan',
     'Invoke-BugToPipelineProcessor'
 )
+
 
 
 

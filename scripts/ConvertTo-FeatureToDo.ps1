@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -74,29 +74,80 @@ No feature requests JSON found. Export one from the XHTML Feature Requests tab:
 Write-Host "Reading features from: $FeatureJsonPath" -ForegroundColor Cyan
 $featureData = Get-Content -Path $FeatureJsonPath -Raw | ConvertFrom-Json
 
+function Test-FeatureToDoNodeProperty {
+    param(
+        [object]$Record,
+        [string]$Name
+    )
+
+    if ($null -eq $Record -or [string]::IsNullOrWhiteSpace($Name)) {
+        return $false
+    }
+
+    return ($Record.PSObject.Properties.Name -contains $Name)
+}
+
+function Get-FeatureToDoNodeValue {
+    param(
+        [object]$Record,
+        [string[]]$Names,
+        $DefaultValue = $null
+    )
+
+    if ($null -eq $Record -or @($Names).Count -eq 0) {
+        return $DefaultValue
+    }
+
+    foreach ($name in $Names) {
+        if (-not (Test-FeatureToDoNodeProperty -Record $Record -Name $name)) {
+            continue
+        }
+
+        $prop = $Record.PSObject.Properties[$name]
+        if ($null -eq $prop) {
+            continue
+        }
+
+        $value = $prop.Value
+        if ($null -eq $value) {
+            continue
+        }
+
+        if ($value -is [string] -and [string]::IsNullOrWhiteSpace($value)) {
+            continue
+        }
+
+        return $value
+    }
+
+    return $DefaultValue
+}
+
 # ── Flatten hierarchical features ──
-function Flatten-Features {
+function Get-FlattenedFeatureNode {
     param([object[]]$Nodes, [int]$Depth = 0, [string]$ParentId = '')
     $results = @()
     foreach ($node in $Nodes) {
+        $nodeId = [string](Get-FeatureToDoNodeValue -Record $node -Names @('id') -DefaultValue '')
+        $nodeChildren = @(Get-FeatureToDoNodeValue -Record $node -Names @('children') -DefaultValue @())
         $results += [PSCustomObject]@{
-            Id          = $node.id
-            Title       = $node.title
-            Status      = $node.status
-            Description = $node.description
-            Created     = $node.created
-            ReviewedBy  = $node.reviewedBy
+            Id          = $nodeId
+            Title       = [string](Get-FeatureToDoNodeValue -Record $node -Names @('title') -DefaultValue $nodeId)
+            Status      = [string](Get-FeatureToDoNodeValue -Record $node -Names @('status') -DefaultValue 'Proposed')
+            Description = [string](Get-FeatureToDoNodeValue -Record $node -Names @('description') -DefaultValue '')
+            Created     = [string](Get-FeatureToDoNodeValue -Record $node -Names @('created','created_at','createdAt') -DefaultValue '')
+            ReviewedBy  = [string](Get-FeatureToDoNodeValue -Record $node -Names @('reviewedBy') -DefaultValue '')
             Depth       = $Depth
             ParentId    = $ParentId
         }
-        if ($node.children) {
-            $results += Flatten-Features -Nodes $node.children -Depth ($Depth + 1) -ParentId $node.id
+        if (@($nodeChildren).Count -gt 0) {
+            $results += Get-FlattenedFeatureNode -Nodes $nodeChildren -Depth ($Depth + 1) -ParentId $nodeId
         }
     }
     return $results
 }
 
-$allFeatures = @(Flatten-Features -Nodes $featureData.features)
+$allFeatures = @(Get-FlattenedFeatureNode -Nodes $featureData.features)
 Write-Host "Total features found: $($allFeatures.Count)" -ForegroundColor White
 
 $filtered = @($allFeatures | Where-Object { $StatusFilter -contains $_.Status })
@@ -126,7 +177,7 @@ if ($ListOnly) {
 if (-not (Test-Path $todoDir)) { New-Item -Path $todoDir -ItemType Directory -Force | Out-Null }
 $existingTodos = Get-ChildItem -Path $todoDir -Filter '*.json' -ErrorAction SilentlyContinue |
     ForEach-Object { Get-Content $_.FullName -Raw | ConvertFrom-Json } |
-    Where-Object { $_.source_feature_id }
+    Where-Object { ($null -ne $_) -and ($_.PSObject.Properties.Name -contains 'source_feature_id') -and -not [string]::IsNullOrWhiteSpace([string]$_.source_feature_id) }
 
 $existingFeatureIds = @($existingTodos | ForEach-Object { $_.source_feature_id })
 
@@ -144,7 +195,6 @@ foreach ($feat in $filtered) {
 
     $todoId = [guid]::NewGuid().ToString()
     $now = (Get-Date).ToUniversalTime().ToString('o')
-    $safeTitle = ($feat.Title -replace '[^\w\s\-]', '' -replace '\s+', '-').Substring(0, [Math]::Min(60, $feat.Title.Length))
     $fileName = "todo-{0}-{1}.json" -f (Get-Date -Format 'yyyyMMddTHHmmss'), $todoId.Substring(0, 8)
 
     $todo = @{
@@ -209,6 +259,7 @@ return [PSCustomObject]@{
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

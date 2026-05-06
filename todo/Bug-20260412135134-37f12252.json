@@ -4,7 +4,7 @@
   "source": "BugTracker",
   "executedAt": null,
   "outlineTag": "OUTLINE-PROTO-v0",
-  "created": "2026-04-12T05:51:34.8091390Z",
+  "created": "2026-04-12T05:51:34.809139Z",
   "title": "[FAIL] PwShGUI-IntegrityCore.psm1 -- 1 parse error(s)",
   "category": "crash-log",
   "tags": [],
@@ -20,14 +20,16 @@
   "acknowledged": null,
   "sinId": "SIN-20260412135134-1ecdaff6",
   "result": null,
-  "status": "OPEN",
+  "status": "DONE",
   "suggestedBy": "CronAiAthon-BugTracker",
   "priority": "HIGH",
   "outlineVersion": "v0",
-  "notes": "New sin created: SIN-20260412135134-1ecdaff6",
+  "notes": "New sin created: SIN-20260412135134-1ecdaff6\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\logs\\cycle-1.log"
-  ]
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:42.7891165+08:00"
 }

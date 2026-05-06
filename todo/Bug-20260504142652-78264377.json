@@ -1,0 +1,56 @@
+﻿{
+    "id":  "Bug-20260504142652-78264377",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Parse error in Invoke-DataMigration.ps1 line 342: Variable reference is not valid. \u0027:\u0027 was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+    "lastSeenAt":  "2026-05-04T06:26:52.4266921Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "Variable reference is not valid. \u0027:\u0027 was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-04T06:26:52.4266921Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "CronAiAthon-BugTracker",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "SIN-20260502001217-a4f9cb28",
+    "bugReferrals":  [
+
+                     ],
+    "implementedAt":  null,
+    "notes":  "Matched existing sin: Variable reference is not valid. \u0027:\u0027 was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+    "category":  "parsing",
+    "reopenedAt":  null,
+    "created":  "2026-05-04T06:26:52.4266921Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "executionAgent":  "",
+    "modified":  "2026-05-04T06:26:52.4266921Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

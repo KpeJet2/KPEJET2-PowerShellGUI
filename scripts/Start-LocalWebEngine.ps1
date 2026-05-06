@@ -1,5 +1,4 @@
-# VersionTag: 2604.B2.V32.7
-
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -111,8 +110,10 @@ $ConfigFile = Join-Path $ConfigFile 'dependency-scan-config.json'
 $script:EngineLogFile    = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
 $script:BootstrapLogFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
 $script:CrashLogFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
+$script:StopSignalFile   = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.stop'
 $script:_ExitClean       = $false   # set $true on graceful stop; $false = dirty exit
 $script:_BootstrapErrors = [System.Collections.ArrayList]@()
+$script:_ConsoleCancelHandler = $null
 
 function Write-EngineLog {
     param([string]$Msg, [string]$Level = 'DEBUG')
@@ -131,6 +132,93 @@ function Write-BootstrapLog {
     try { Add-Content -LiteralPath $script:BootstrapLogFile -Value $line -Encoding UTF8 } catch { <# Intentional: non-fatal — bootstrap log write cannot recurse into itself #> }
     if ($Level -eq 'ERROR' -or $Level -eq 'WARN') {
         $null = $script:_BootstrapErrors.Add([pscustomobject]@{ ts = $ts; level = $Level; msg = $Msg })
+    }
+}
+
+function Request-EngineStop {
+    [CmdletBinding()]
+    param(
+        [string]$Reason = 'Stop requested',
+        [switch]$MarkClean
+    )
+    if ($MarkClean) {
+        $script:_ExitClean = $true
+    }
+    try {
+        Set-Content -LiteralPath $script:StopSignalFile -Value '1' -Encoding UTF8 -Force
+    } catch {
+        Write-EngineLog "Failed to write stop signal: $_" -Level 'WARN'
+    }
+    Write-EngineLog $Reason -Level 'INFO'
+}
+
+# Native C# Ctrl+C handler — script-block delegates throw 'no Runspace available'
+# when the OS calls them on the signal thread (PSInvalidOperationException), which
+# tears the process down (exit 0xE0434352). A real .NET delegate has no such issue.
+if (-not ('PwShGUI.EngineCancelHandler' -as [type])) {
+    try {
+        Add-Type -TypeDefinition @'
+using System;
+using System.IO;
+namespace PwShGUI {
+    public static class EngineCancelHandler {
+        public static string StopFile;
+        private static ConsoleCancelEventHandler _handler;
+        public static void Register(string stopFile) {
+            StopFile = stopFile;
+            if (_handler != null) { return; }
+            _handler = new ConsoleCancelEventHandler(OnCancel);
+            Console.CancelKeyPress += _handler;
+        }
+        public static void Unregister() {
+            if (_handler != null) {
+                try { Console.CancelKeyPress -= _handler; } catch { }
+                _handler = null;
+            }
+        }
+        private static void OnCancel(object sender, ConsoleCancelEventArgs e) {
+            try { e.Cancel = true; } catch { }
+            try {
+                if (!string.IsNullOrEmpty(StopFile)) {
+                    File.WriteAllText(StopFile, "1");
+                }
+            } catch { }
+            try { Console.WriteLine("Console stop requested - shutting down engine..."); } catch { }
+        }
+    }
+}
+'@ -Language CSharp -ErrorAction Stop
+    } catch {
+        Write-BootstrapLog "EngineCancelHandler type compile failed: $_" 'WARN'
+    }
+}
+
+function Register-ConsoleShutdownHandler {
+    [CmdletBinding()]
+    param()
+    if ($Host.Name -ne 'ConsoleHost') {
+        return
+    }
+    try {
+        if ('PwShGUI.EngineCancelHandler' -as [type]) {
+            [PwShGUI.EngineCancelHandler]::Register($script:StopSignalFile)
+            $script:_ConsoleCancelHandler = $true
+        }
+    } catch {
+        Write-BootstrapLog "Console shutdown handler registration failed: $_" 'WARN'
+    }
+}
+
+function Unregister-ConsoleShutdownHandler {
+    [CmdletBinding()]
+    param()
+    if ($script:_ConsoleCancelHandler) {
+        try {
+            if ('PwShGUI.EngineCancelHandler' -as [type]) {
+                [PwShGUI.EngineCancelHandler]::Unregister()
+            }
+        } catch { <# Intentional: non-fatal — handler removal is best-effort during shutdown #> }
+        $script:_ConsoleCancelHandler = $null
     }
 }
 
@@ -291,15 +379,25 @@ function Send-Response {
     $resp.Headers.Set('Content-Security-Policy',
         "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:$Port ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
     $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
-    # CORS — allow file:// and localhost origins (engine is 127.0.0.1 only)
+    # CORS — engine is 127.0.0.1 only, so any same-machine page may call it.
+    # Browsers send Origin: null for file:// pages — that MUST be reflected verbatim,
+    # not normalised to http://127.0.0.1:$Port (which would cause the browser to
+    # silently drop the response and the page to render an "(offline)" cache fallback).
     $reqOrigin = $Context.Request.Headers['Origin']
-    if ($reqOrigin -and ($reqOrigin -match '^(https?://127\.0\.0\.1|file://)')) {
+    $allowCreds = $false
+    if ($reqOrigin -and ($reqOrigin -eq 'null' -or $reqOrigin -match '^(https?://(127\.0\.0\.1|localhost)(:\d+)?$)|^file://')) {
         $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+        $resp.Headers.Set('Vary', 'Origin')
+        # Browsers reject Allow-Credentials when origin is "null" or "*" — only set for real origins.
+        if ($reqOrigin -ne 'null') { $allowCreds = $true }
     } else {
         $resp.Headers.Set('Access-Control-Allow-Origin', 'http://127.0.0.1:' + $Port)
+        $allowCreds = $true
     }
-    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token')
-    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, OPTIONS')
+    if ($allowCreds) { $resp.Headers.Set('Access-Control-Allow-Credentials', 'true') }
+    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token, X-Requested-With')
+    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, HEAD, OPTIONS')
+    $resp.Headers.Set('Access-Control-Max-Age', '600')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
     $resp.ContentLength64 = $bytes.Length
@@ -848,6 +946,7 @@ $listener.Prefixes.Add("http://127.0.0.1:$Port/")
 Write-BootstrapLog "HttpListener initialising on http://127.0.0.1:$Port/" 'INFO'
 try {
     $listener.Start()
+    Register-ConsoleShutdownHandler
     Write-Host ""
     Write-Host "  PowerShellGUI Local Web Engine" -ForegroundColor Cyan
     Write-Host "  Listening on http://127.0.0.1:$Port/" -ForegroundColor Cyan
@@ -888,10 +987,8 @@ try {
             # Wait with timeout to allow graceful shutdown
             if (-not $pendingTask.Wait(500)) {
                 # Check for graceful stop signal written by /api/engine/stop
-                $stopSig = Join-Path $WorkspacePath 'logs'
-                $stopSig = Join-Path $stopSig 'engine.stop'
-                if (Test-Path -LiteralPath $stopSig) {
-                    Remove-Item -LiteralPath $stopSig -Force -ErrorAction SilentlyContinue
+                if (Test-Path -LiteralPath $script:StopSignalFile) {
+                    Remove-Item -LiteralPath $script:StopSignalFile -Force -ErrorAction SilentlyContinue
                     Write-EngineLog 'Stop signal file detected — shutting down' -Level 'INFO'
                     $script:_ExitClean = $true
                     break
@@ -921,6 +1018,21 @@ try {
         $method = $req.HttpMethod.ToUpper()
         $url    = $req.Url.AbsolutePath.TrimEnd('/')
         if ([string]::IsNullOrEmpty($url)) { $url = '/' }
+
+        # Legacy filename + permalink redirects for dependency visualisation page.
+        $legacyRedirects = @{
+            '/xhtml-dependencyvis.xhtml'                       = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/scripts/xhtml-checker/xhtml-dependencyvis.xhtml' = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/pages/xhtml-dependencyvis'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/permalink/dependency-venn'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/venn'                                              = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+        }
+        $urlKey = $url.ToLowerInvariant()
+        if ($legacyRedirects.ContainsKey($urlKey)) {
+            $target = $legacyRedirects[$urlKey]
+            Send-Response -Context $context -StatusCode 302 -ContentType 'text/plain; charset=utf-8' -Body "Redirecting to $target" -ExtraHeaders @{ Location = $target }
+            continue
+        }
 
         # ── WebSocket upgrade ────────────────────────────────────────────
         if ($req.IsWebSocketRequest -and $url -eq '/ws') {
@@ -994,28 +1106,28 @@ try {
                 break
             }
             '^/api/scan/full$' {
-                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Full' } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-Scan -Context $context -ScanMode 'Full' } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/incremental$' {
-                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Incremental' } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-Scan -Context $context -ScanMode 'Incremental' } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/static$' {
-                if ($method -eq 'POST') { Handle-TriggerStaticScan -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-StaticScan -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/agent/stats$' {
-                if ($method -eq 'GET') { Handle-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/workspace/files$' {
-                if ($method -eq 'GET') { Handle-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/config/menus$' {
-                if ($method -eq 'GET')      { Handle-GetMenus  -Context $context }
-                elseif ($method -eq 'POST') { Handle-SaveMenus -Context $context }
+                if ($method -eq 'GET')      { Get-Menus -Context $context }
+                elseif ($method -eq 'POST') { Save-Menus -Context $context }
                 else                        { Send-Error -Context $context -StatusCode 405 }
                 break
             }
@@ -1024,19 +1136,19 @@ try {
                 break
             }
             '^/api/engine/status$' {
-                if ($method -eq 'GET') { Handle-EngineStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/log$' {
-                if ($method -eq 'GET') { Handle-EngineLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/events$' {
-                if ($method -eq 'GET') { Handle-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/logs/list$' {
-                if ($method -eq 'GET') { Handle-EngineLogsList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineLogsList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/stop$' {
@@ -1046,42 +1158,37 @@ try {
                         Send-Error -Context $context -StatusCode 403 -Message 'CSRF token mismatch'
                     } else {
                         Send-Json -Context $context -Object @{ stopping = $true }
-                        # Write stop-signal file (ThreadPool workitems cannot reach $script: scope)
-                        $stopSig = Join-Path $WorkspacePath 'logs'
-                        $stopSig = Join-Path $stopSig 'engine.stop'
-                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { <# Intentional: non-fatal — stop signal file write failure does not prevent shutdown #> }
-                        Write-EngineLog 'Stop requested via /api/engine/stop' -Level 'INFO'
-                        $script:_ExitClean = $true
+                        Request-EngineStop -Reason 'Stop requested via /api/engine/stop' -MarkClean
                     }
                 } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             # ── Page routes ──────────────────────────────────────────────
             '^/$' {
-                Handle-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
+                Get-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
                 break
             }
             '^/pages/dependency-vis$' {
-                Handle-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
+                Get-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
                 break
             }
             '^/pages/menu-builder$' {
-                Handle-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
                 break
             }
             '^/pages/bw-vault$' {
-                Handle-StaticFile -Context $context -RelPath 'BW-Vault-Checklist.xhtml'
+                Get-StaticFile -Context $context -RelPath 'BW-Vault-Checklist.xhtml'
                 break
             }
             # ── Static assets ────────────────────────────────────────────
             '^/styles/(.+)$' {
                 $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
-                Handle-StaticFile -Context $context -RelPath "styles\$file"
+                Get-StaticFile -Context $context -RelPath "styles\$file"
                 break
             }
             '^/scripts/(.+)$' {
                 $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
-                Handle-StaticFile -Context $context -RelPath "scripts\$file"
+                Get-StaticFile -Context $context -RelPath "scripts\$file"
                 break
             }
             # ── Generic static file fallback (workspace-relative) ────────
@@ -1091,7 +1198,7 @@ try {
                 if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
                     Send-Error -Context $context -StatusCode 400 -Message 'Invalid path'
                 } else {
-                    Handle-StaticFile -Context $context -RelPath $relFile
+                    Get-StaticFile -Context $context -RelPath $relFile
                 }
                 break
             }
@@ -1101,6 +1208,7 @@ try {
         }
     }
 } finally {
+    Unregister-ConsoleShutdownHandler
     $listener.Stop()
     $listener.Close()
     $exitKind = if ($script:_ExitClean) { 'CLEAN_STOP' } else { 'DIRTY_EXIT' }
@@ -1142,6 +1250,7 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

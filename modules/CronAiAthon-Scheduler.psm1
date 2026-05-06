@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V32.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -35,11 +35,21 @@ $ErrorActionPreference = 'Continue'
 
 # ========================== SCHEDULE CONFIG ==========================
 
+<#
+.SYNOPSIS
+  Get cron schedule path.
+#>
 function Get-CronSchedulePath {
     param([string]$WorkspacePath)
     return (Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-schedule.json')
 }
 
+<#
+.SYNOPSIS
+  Get cron history path.
+.DESCRIPTION
+  Detailed behaviour: Initialize cron schedule.
+#>
 function Get-CronHistoryPath {
     param([string]$WorkspacePath)
     return (Join-Path (Join-Path $WorkspacePath 'logs') 'cron-aiathon-history.json')
@@ -85,6 +95,7 @@ function Initialize-CronSchedule {
                 enabled   = $true
                 type      = 'PipelineProcess'
                 frequency = 60
+                batchSize = 10
                 lastRun   = $null
                 lastResult = $null
             },
@@ -112,6 +123,15 @@ function Initialize-CronSchedule {
                 enabled   = $true
                 type      = 'PreReqCheck'
                 frequency = 480
+                lastRun   = $null
+                lastResult = $null
+            },
+            [ordered]@{
+                id        = 'TASK-VersionConsistency'
+                name      = 'Version Consistency Validation'
+                enabled   = $true
+                type      = 'VersionConsistency'
+                frequency = 60
                 lastRun   = $null
                 lastResult = $null
             }
@@ -149,6 +169,10 @@ function Initialize-CronSchedule {
     return ($schedule | ConvertTo-Json -Depth 10 | ConvertFrom-Json)
 }
 
+<#
+.SYNOPSIS
+  Save cron schedule.
+#>
 function Save-CronSchedule {
     [CmdletBinding()]
     param(
@@ -196,7 +220,10 @@ function Invoke-PreRequisiteCheck {
     <#
     .SYNOPSIS  Run pre-flight checks before any Cron-Ai-Athon job.
     .OUTPUTS   [ordered] hashtable with pass/fail details.
+        .DESCRIPTION
+      Detailed behaviour: Invoke pre requisite check.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -261,6 +288,73 @@ function Invoke-PreRequisiteCheck {
     }
 }
 
+function Invoke-VersionConsistencyCheck {
+    <#
+    .SYNOPSIS
+        Run version consistency validation using the alignment tool.
+    .DESCRIPTION
+        Compares current in-file VersionTags and manifest mapping in every scheduler
+        cycle to detect drift, mixed V/v casing, and manifest mismatches.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$WorkspacePath)
+
+    $verAlignScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-VersionAlignmentTool.ps1'
+    if (-not (Test-Path $verAlignScript)) {
+        return [ordered]@{
+            success = $false
+            driftDetected = $false
+            detail = 'Invoke-VersionAlignmentTool.ps1 not found'
+            findings = @('Version alignment tool script missing')
+        }
+    }
+
+    try {
+        $xvOutput = powershell -NoProfile -NonInteractive -File $verAlignScript `
+            -WorkspacePath $WorkspacePath -CrossValidate 2>&1
+        $xvOutput = @($xvOutput | ForEach-Object { $_.ToString() })
+
+        $findings = [System.Collections.ArrayList]::new()
+
+        $manifestMismatchLine = @($xvOutput | Where-Object { $_ -match 'Manifest mismatches:\s*[1-9][0-9]*' })
+        if (@($manifestMismatchLine).Count -gt 0) {
+            [void]$findings.Add($manifestMismatchLine[0].Trim())
+        }
+
+        $caseMismatchLine = @($xvOutput | Where-Object { $_ -match 'CASE INCONSISTENCIES:\s*[1-9][0-9]*' })
+        if (@($caseMismatchLine).Count -gt 0) {
+            [void]$findings.Add($caseMismatchLine[0].Trim())
+        }
+
+        $orphanLine = @($xvOutput | Where-Object { $_ -match 'Orphan manifest entries:\s*[1-9][0-9]*' })
+        if (@($orphanLine).Count -gt 0) {
+            [void]$findings.Add($orphanLine[0].Trim())
+        }
+
+        $driftDetected = (@($findings).Count -gt 0)
+        $detail = if ($driftDetected) {
+            "Version inconsistencies detected: $((@($findings) -join '; '))"
+        } else {
+            'Version consistency PASS (cross-validate reports no drift)'
+        }
+
+        return [ordered]@{
+            success = (-not $driftDetected)
+            driftDetected = $driftDetected
+            detail = $detail
+            findings = @($findings)
+        }
+    } catch {
+        return [ordered]@{
+            success = $false
+            driftDetected = $false
+            detail = "Version consistency check failed: $($_.Exception.Message)"
+            findings = @($_.Exception.Message)
+        }
+    }
+}
+
 # ========================== JOB EXECUTION ==========================
 
 function Invoke-CronJob {
@@ -268,14 +362,33 @@ function Invoke-CronJob {
     .SYNOPSIS  Execute a single Cron-Ai-Athon job task.
     .PARAMETER TaskId    The task ID from the schedule.
     .PARAMETER WorkspacePath  Root workspace path.
+        .DESCRIPTION
+      Detailed behaviour: Invoke cron job.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='SecMaint job: (1) freshly-generated random passwords from Membership.GeneratePassword for Set-LocalUser which requires SecureString; (2) PFX password retrieved from DPAPI-protected vault and passed to X509Certificate2.Import which also requires SecureString. Both are legitimate plaintext-to-SecureString boundaries.')]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [string]$TaskId
+        [Parameter(Mandatory)] [string]$TaskId,
+        [ValidateRange(1,500)] [int]$BatchSize = 0
     )
 
     $schedule = Initialize-CronSchedule -WorkspacePath $WorkspacePath
+    $existingTaskIds = @($schedule.tasks | ForEach-Object { $_.id })
+    if ($existingTaskIds -notcontains 'TASK-VersionConsistency') {
+        $schedule.tasks += [ordered]@{
+            id         = 'TASK-VersionConsistency'
+            name       = 'Version Consistency Validation'
+            enabled    = $true
+            type       = 'VersionConsistency'
+            frequency  = 60
+            lastRun    = $null
+            lastResult = $null
+        }
+        Save-CronSchedule -WorkspacePath $WorkspacePath -Schedule $schedule
+    }
+
     $task = @($schedule.tasks) | Where-Object { $_.id -eq $TaskId }
     if (-not $task) { return [ordered]@{ success = $false; error = "Task $TaskId not found" } }
 
@@ -315,8 +428,13 @@ function Invoke-CronJob {
             'PipelineProcess' {
                 $pipeMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'
                 if (Test-Path $pipeMod) { Import-Module $pipeMod -Force -ErrorAction Stop }
-                $items = Get-PipelineItems -WorkspacePath $WorkspacePath -Status 'OPEN'
-                $items = @($items)
+
+                # Resolve effective batch size: CLI -BatchSize > task.batchSize > default 10
+                $effectiveBatch = if ($BatchSize -gt 0) { $BatchSize }
+                                  elseif ($task.PSObject.Properties['batchSize'] -and [int]$task.batchSize -gt 0) { [int]$task.batchSize }
+                                  else { 10 }
+
+                $batchResult = Invoke-PipelineBatchCycle -WorkspacePath $WorkspacePath -BatchSize $effectiveBatch
                 $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
                 $health = $null
                 try {
@@ -324,18 +442,27 @@ function Invoke-CronJob {
                 } catch {
                     $result.errors += "Pipeline health metrics warning: $($_.Exception.Message)"
                 }
-                $result.itemsProcessed = $items.Count
-                $result.detail = "$($items.Count) open items in pipeline; artifacts refreshed (master/bundle/index) and health sampled"
+                $result.itemsProcessed = $batchResult.processed
+                $result.detail = "BatchCycle: processed=$($batchResult.processed) advanced=$($batchResult.advanced) stalled=$($batchResult.stalled) skipped=$($batchResult.skipped) [batch=$effectiveBatch]; artifacts refreshed"
+                if ($batchResult.errors.Count -gt 0) {
+                    $result.errors += $batchResult.errors
+                }
                 if ($null -ne $health -and $health.PSObject.Properties['openItems']) {
                     $result.detail += "; openItems=$($health.openItems)"
                 }
-                $result.success = $true
+                $result.success = ($batchResult.errors.Count -eq 0)
             }
             'MasterAggregate' {
                 $pipeMod = Join-Path (Join-Path $WorkspacePath 'modules') 'CronAiAthon-Pipeline.psm1'
                 if (Test-Path $pipeMod) { Import-Module $pipeMod -Force -ErrorAction Stop }
                 $outPath = Export-CentralMasterToDo -WorkspacePath $WorkspacePath
-                $result.detail = "Master ToDo exported to $outPath"
+                # Compact the live registry — archive Done/Closed items older than 30 days
+                try {
+                    $compactResult = Invoke-PipelineRegistryCompact -WorkspacePath $WorkspacePath -AgeDays 30
+                    $result.detail = "Master ToDo exported to $outPath; Compacted: $($compactResult.archived) archived, $($compactResult.kept) live"
+                } catch {
+                    $result.detail = "Master ToDo exported to $outPath (compact skipped: $($_.Exception.Message))"
+                }
                 $result.success = $true
             }
             'SinRegistryReview' {
@@ -358,6 +485,17 @@ function Invoke-CronJob {
                         $result.errors += "FAIL: $($fc.check) - $($fc.detail)"
                     }
                 }
+            }
+            'VersionConsistency' {
+                $check = Invoke-VersionConsistencyCheck -WorkspacePath $WorkspacePath
+                $result.detail = $check.detail
+                $result.success = $check.success
+                if (@($check.findings).Count -gt 0) {
+                    foreach ($finding in @($check.findings)) {
+                        $result.errors += "VersionConsistency: $finding"
+                    }
+                }
+                $result.itemsProcessed = if ($check.success) { 1 } else { @($check.findings).Count }
             }
             'ReportRetention' {
                 # Purge ~REPORTS/ subdirs older than 30 days, archive to ~REPORTS/archive/
@@ -417,7 +555,7 @@ function Invoke-CronJob {
                 $manifestScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Build-AgenticManifest.ps1'
                 if (Test-Path $manifestScript) {
                     try {
-                        & $manifestScript
+                        $null = & $manifestScript 2>&1
                         $rebuilt += 'agentic-manifest.json'
                         $rebuilt += 'MODULE-FUNCTION-INDEX.md'
                     } catch { $result.errors += "Manifest: $($_.Exception.Message)" }
@@ -439,7 +577,7 @@ function Invoke-CronJob {
                 $treeScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Build-DirectoryTree.ps1'
                 if (Test-Path $treeScript) {
                     try {
-                        & $treeScript
+                        $null = & $treeScript 2>&1
                         $rebuilt += 'DIRECTORY-TREE.md'
                     } catch { $result.errors += "DirTree: $($_.Exception.Message)" }
                 }
@@ -447,7 +585,7 @@ function Invoke-CronJob {
                 $bundleScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-TodoBundleRebuild.ps1'
                 if (Test-Path $bundleScript) {
                     try {
-                        & $bundleScript
+                        $null = & $bundleScript 2>&1
                         $rebuilt += '_bundle.js'
                     } catch { $result.errors += "Bundle: $($_.Exception.Message)" }
                 }
@@ -489,7 +627,7 @@ function Invoke-CronJob {
                 $processed = 0
                 if (Test-Path $depMapScript) {
                     try {
-                        & $depMapScript -WorkspacePath $WorkspacePath
+                        $null = & $depMapScript -WorkspacePath $WorkspacePath 2>&1
                         $processed++
                     } catch {
                         $result.errors += "DepMap(WorkspaceMap): $($_.Exception.Message)"
@@ -500,7 +638,7 @@ function Invoke-CronJob {
                 # IMPL-20260405-002: wire ScriptDependencyMatrix as periodic step
                 if (Test-Path $scriptMatrixScript) {
                     try {
-                        & $scriptMatrixScript -WorkspacePath $WorkspacePath
+                        $null = & $scriptMatrixScript -WorkspacePath $WorkspacePath 2>&1
                         $processed++
                     } catch {
                         $result.errors += "DepMap(ScriptMatrix): $($_.Exception.Message)"
@@ -541,7 +679,7 @@ function Invoke-CronJob {
                                 if ($status -ne 'OK') {
                                     Write-CronLog -Message "CertMonitor: $status cert - $($cert.Subject) ($daysLeft days)" -Severity Warning -Source 'CertMonitor'
                                 }
-                            } catch { <# skip unreadable cert files - non-fatal #> }
+                            } catch { <# skip unreadable cert files - non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
                         }
                         $report = [ordered]@{
                             timestamp = [datetime]::UtcNow.ToString('o')
@@ -584,7 +722,7 @@ function Invoke-CronJob {
                                 Write-CronLog -Message "TabErrorFix: resolved BUG item [$($item.id)] - $($item.title)" -Severity Informational -Source 'TabErrorFix'
                                 $resolved++
                             }
-                        } catch { <# Intentional: per-item failure is non-fatal; continue loop #> }
+                        } catch { <# Intentional: per-item failure is non-fatal; continue loop #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
                     }
                     $result.itemsProcessed = @($openItems).Count
                     $result.detail  = "Processed $(@($openItems).Count) TabScanError BUG items; resolved $resolved"
@@ -616,7 +754,7 @@ function Invoke-CronJob {
                         try {
                             Import-Module $pipeMod -Force -ErrorAction Stop
                             $openCount = @(Get-PipelineItems -WorkspacePath $WorkspacePath | Where-Object { $_.status -eq 'OPEN' }).Count
-                        } catch { <# Intentional: pipeline unavailable is non-fatal #> }
+                        } catch { <# Intentional: pipeline unavailable is non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
                     }
 
                     # Select one actionable suggestion from signals gathered
@@ -969,6 +1107,32 @@ function Invoke-CronJob {
     $schedule.lastRunTime = $endTime.ToUniversalTime().ToString('o')
     $schedule.nextRunTime = $endTime.AddMinutes($schedule.frequencyMinutes).ToUniversalTime().ToString('o')
 
+    # Auto-create Bugs2FIX item for any task that failed (IMPR-007)
+    if (-not $result.success) {
+        try {
+            $b2fDetail = if ($result.errors.Count -gt 0) { $result.errors -join '; ' } else { $result.detail }
+            $b2fItem = [ordered]@{
+                id          = "BUG-SCHED-$(([System.Guid]::NewGuid().ToString('N').Substring(0,8)).ToUpper())"
+                title       = "Scheduler task failure: $TaskId"
+                type        = 'Bug'
+                status      = 'Open'
+                category    = 'SchedulerFailure'
+                priority    = if ($b2fDetail -match 'DEAD-LETTER') { 'Critical' } else { 'High' }
+                source      = 'CronAiAthon-Scheduler'
+                taskId      = $TaskId
+                detail      = $b2fDetail
+                createdAt   = $endTime.ToUniversalTime().ToString('o')
+                lastUpdated = $endTime.ToUniversalTime().ToString('o')
+            }
+            if (Get-Command 'Add-PipelineItem' -ErrorAction SilentlyContinue) {
+                Add-PipelineItem -WorkspacePath $WorkspacePath -Item $b2fItem | Out-Null
+            }
+            Write-CronLog -Message "Bugs2FIX item created for task failure: $TaskId ($($b2fItem.id))" -Severity 'Warning' -Source 'SchedulerBugTracker'
+        } catch {
+            Write-CronLog -Message "Bugs2FIX auto-create failed for $TaskId : $($_.Exception.Message)" -Severity 'Warning' -Source 'SchedulerBugTracker'
+        }
+    }
+
     # Update task-specific last run + consecutive-failure counter (IMPR-006)
     foreach ($t in @($schedule.tasks)) {
         if ($t.id -eq $TaskId) {
@@ -1022,12 +1186,30 @@ function Invoke-CronJob {
 function Invoke-AllCronJobs {
     <#
     .SYNOPSIS  Run all enabled tasks in sequence (manual full cycle).
+        .DESCRIPTION
+      Detailed behaviour: Invoke all cron jobs.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
     $schedule = Initialize-CronSchedule -WorkspacePath $WorkspacePath
     $results = @()
+
+    # Backfill new default task for existing schedule files created before task introduction.
+    $existingTaskIds = @($schedule.tasks | ForEach-Object { $_.id })
+    if ($existingTaskIds -notcontains 'TASK-VersionConsistency') {
+        $schedule.tasks += [ordered]@{
+            id         = 'TASK-VersionConsistency'
+            name       = 'Version Consistency Validation'
+            enabled    = $true
+            type       = 'VersionConsistency'
+            frequency  = 60
+            lastRun    = $null
+            lastResult = $null
+        }
+        Save-CronSchedule -WorkspacePath $WorkspacePath -Schedule $schedule
+    }
 
     foreach ($task in @($schedule.tasks)) {
         if ($task.enabled) {
@@ -1040,6 +1222,10 @@ function Invoke-AllCronJobs {
 
 # ========================== JOB HISTORY ==========================
 
+<#
+.SYNOPSIS
+  Add cron job history.
+#>
 function Add-CronJobHistory {
     [CmdletBinding()]
     param(
@@ -1070,7 +1256,12 @@ function Add-CronJobHistory {
     $history | ConvertTo-Json -Depth 10 | Set-Content -Path $histPath -Encoding UTF8
 }
 
+<#
+.SYNOPSIS
+  Get cron job history.
+#>
 function Get-CronJobHistory {
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -1089,7 +1280,10 @@ function Get-CronJobHistory {
 function Get-CronJobSummary {
     <#
     .SYNOPSIS  Get a summary of job statistics for the GUI dashboard.
+        .DESCRIPTION
+      Detailed behaviour: Get cron job summary.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -1124,8 +1318,10 @@ function Get-CronJobSummary {
 function Set-CronFrequency {
     <#
     .SYNOPSIS  Change the job run frequency.
+        .DESCRIPTION
+      Detailed behaviour: Set cron frequency.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [int]$FrequencyMinutes
@@ -1140,7 +1336,10 @@ function Set-CronFrequency {
 function Add-AutopilotSuggestion {
     <#
     .SYNOPSIS  Record an autopilot self-suggestion.
+        .DESCRIPTION
+      Detailed behaviour: Add autopilot suggestion.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -1167,8 +1366,12 @@ function Add-AutopilotSuggestion {
     return $suggestion
 }
 
+<#
+.SYNOPSIS
+  Update autopilot suggestion status.
+#>
 function Update-AutopilotSuggestionStatus {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [string]$SuggestionId,
@@ -1197,6 +1400,8 @@ function Update-AutopilotSuggestionStatus {
 function Register-SubagentCall {
     <#
     .SYNOPSIS  Tally a subagent invocation.
+        .DESCRIPTION
+      Detailed behaviour: Register subagent call.
     #>
     [CmdletBinding()]
     param(
@@ -1219,6 +1424,8 @@ function Register-SubagentCall {
 function Register-Question {
     <#
     .SYNOPSIS  Track a question arising from Cron-Ai-Athon work.
+        .DESCRIPTION
+      Detailed behaviour: Register question.
     #>
     [CmdletBinding()]
     param(
@@ -1242,6 +1449,8 @@ function Register-Question {
 function Show-SchedulerHelp {
     <#
     .SYNOPSIS  Display quick usage help for CronAiAthon scheduler operations.
+        .DESCRIPTION
+      Detailed behaviour: Show scheduler help.
     #>
     [CmdletBinding()]
     param(
@@ -1322,6 +1531,7 @@ Export-ModuleMember -Function @(
     'Get-CronHistoryPath',
     'Show-SchedulerHelp'
 )
+
 
 
 

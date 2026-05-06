@@ -20,14 +20,16 @@
   "acknowledged": null,
   "sinId": "SIN-20260412123955-6ba21b9b",
   "result": null,
-  "status": "OPEN",
+  "status": "DONE",
   "suggestedBy": "CronAiAthon-BugTracker",
   "priority": "HIGH",
   "outlineVersion": "v0",
-  "notes": "New sin created: SIN-20260412123955-6ba21b9b",
+  "notes": "New sin created: SIN-20260412123955-6ba21b9b\nAuto-reconciled: target file currently parses cleanly (or absent). Path=",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
-  ]
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:34.9119467+08:00"
 }

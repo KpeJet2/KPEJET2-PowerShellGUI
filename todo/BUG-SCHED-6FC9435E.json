@@ -1,0 +1,13 @@
+﻿{
+    "id":  "BUG-SCHED-6FC9435E",
+    "category":  "SchedulerFailure",
+    "type":  "Bug",
+    "lastUpdated":  "2026-05-04T11:49:56.5302602Z",
+    "taskId":  "TASK-DocRebuild",
+    "createdAt":  "2026-05-04T11:49:56.5302602Z",
+    "status":  "OPEN",
+    "title":  "Scheduler task failure: TASK-DocRebuild",
+    "source":  "CronAiAthon-Scheduler",
+    "detail":  "Manifest: Exception calling \"GetFileName\" with \"1\" argument(s): \"Illegal characters in path.\"; IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605041949.json)",
+    "priority":  "High"
+}

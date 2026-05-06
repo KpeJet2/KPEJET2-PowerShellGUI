@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.V1.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -10,6 +10,10 @@
 Set-StrictMode -Version Latest
 # TODO: HelpMenu | Show-NetworkToolsHelp | Actions: Ping|Trace|Resolve|Scan|Help | Spec: config/help-menu-registry.json
 
+<#
+.SYNOPSIS
+  Test network connectivity.
+#>
 function Test-NetworkConnectivity {
     [CmdletBinding()]
     param(
@@ -24,7 +28,12 @@ function Test-NetworkConnectivity {
     )
 
     try {
-        $result = Test-Connection -ComputerName $Target -Count $Count -Quiet -ErrorAction SilentlyContinue
+        # PS7+ exposes -TimeoutSeconds on Test-Connection; PS5.1 ignores TimeoutMs (uses defaults)
+        $tcParams = @{ ComputerName = $Target; Count = $Count; Quiet = $true; ErrorAction = 'SilentlyContinue' }
+        if ($PSVersionTable.PSVersion.Major -ge 7 -and $TimeoutMs -gt 0) {
+            $tcParams['TimeoutSeconds'] = [Math]::Max(1, [int][Math]::Ceiling($TimeoutMs / 1000.0))
+        }
+        $result = Test-Connection @tcParams
         return [PSCustomObject]@{
             Target    = $Target
             Reachable = [bool]$result
@@ -41,6 +50,10 @@ function Test-NetworkConnectivity {
     }
 }
 
+<#
+.SYNOPSIS
+  Test port open.
+#>
 function Test-PortOpen {
     [CmdletBinding()]
     param(
@@ -80,6 +93,10 @@ function Test-PortOpen {
     }
 }
 
+<#
+.SYNOPSIS
+  Get public i p address.
+#>
 function Get-PublicIPAddress {
     [CmdletBinding()]
     param()
@@ -108,6 +125,10 @@ function Get-PublicIPAddress {
     return $null
 }
 
+<#
+.SYNOPSIS
+  Test dns resolution.
+#>
 function Test-DnsResolution {
     [CmdletBinding()]
     param(
@@ -135,6 +156,10 @@ function Test-DnsResolution {
     }
 }
 
+<#
+.SYNOPSIS
+  Get network summary.
+#>
 function Get-NetworkSummary {
     [CmdletBinding()]
     param()
@@ -169,6 +194,7 @@ Export-ModuleMember -Function @(
     'Test-DnsResolution',
     'Get-NetworkSummary'
 )
+
 
 
 

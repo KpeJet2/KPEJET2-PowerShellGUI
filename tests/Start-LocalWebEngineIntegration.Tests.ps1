@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -7,7 +7,7 @@
 <#
 .SYNOPSIS  Live integration tests for Start-LocalWebEngine.ps1 — starts the HTTP engine and exercises all API endpoints.
 .DESCRIPTION
-    Starts the Local Web Engine on port 8042 via Start-LocalWebEngineService.ps1,
+    Starts the Local Web Engine on port 8042 via Start-LocalWebEngine.ps1,
     then makes real HTTP calls to verify each route responds correctly.
     Verifies CSRF protection, JSON structure, and graceful stop.
     AfterAll: stops the engine regardless of test outcome.
@@ -19,7 +19,6 @@ Set-StrictMode -Version Latest
 
 BeforeAll {
     $script:WsPath      = Split-Path $PSScriptRoot -Parent
-    $script:SvcScript   = Join-Path $script:WsPath 'scripts\Start-LocalWebEngineService.ps1'
     $script:EngineScript = Join-Path $script:WsPath 'scripts\Start-LocalWebEngine.ps1'
     $script:BaseUrl     = 'http://127.0.0.1:8042'
     $script:EngineReady = $false
@@ -101,7 +100,7 @@ BeforeAll {
                     $script:EngineReady = $true
                     try {
                         $tokenObj = $check.Content | ConvertFrom-Json
-                        $script:CsrfToken = $tokenObj.token
+                        $script:CsrfToken = $tokenObj.csrfToken
                     } catch { <# Intentional: non-fatal #> }
                     break
                 }
@@ -169,10 +168,10 @@ Describe 'LWE — CSRF token endpoint' {
         $r = Invoke-EngineGet '/api/csrf-token'
         $r.Status | Should -Be 200
     }
-    It 'GET /api/csrf-token returns JSON with a non-empty token field' {
+    It 'GET /api/csrf-token returns JSON with a non-empty csrfToken field' {
         $r = Invoke-EngineGet '/api/csrf-token'
         $r.Json | Should -Not -BeNullOrEmpty
-        $r.Json.token | Should -Not -BeNullOrEmpty
+        $r.Json.csrfToken | Should -Not -BeNullOrEmpty
     }
 }
 
@@ -260,6 +259,7 @@ Describe 'LWE — Graceful stop via API' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

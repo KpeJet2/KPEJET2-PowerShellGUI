@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -47,11 +47,14 @@ $script:ZeroNullString  = 'Zero.Null'
 
 # ========================== VERSION PARSING ==========================
 
-function Parse-VersionTag {
+function ConvertFrom-VersionTag {
     <#
     .SYNOPSIS  Parse a VersionTag string into components.
     .OUTPUTS   Hashtable with prefix, major, minor, full.
+        .DESCRIPTION
+      Detailed behaviour: ConvertFrom version tag.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$Tag)
 
@@ -60,8 +63,8 @@ function Parse-VersionTag {
     if ($Tag -match '^(\d{4}\.B\d+)\.[Vv](\d+)(?:\.(\d+))?$') {
         $prefix = $Matches[1]
         $major  = [int]$Matches[2]
-        $minor  = if ($Matches[3] -ne $null -and $Matches[3] -ne '') { [int]$Matches[3] } else { 0 }
-        $hasMinor = ($Matches[3] -ne $null -and $Matches[3] -ne '')
+        $minor  = if ($null -ne $Matches[3] -and $Matches[3] -ne '') { [int]$Matches[3] } else { 0 }
+        $hasMinor = ($null -ne $Matches[3] -and $Matches[3] -ne '')
         return @{
             prefix      = $prefix
             major       = $major
@@ -77,7 +80,10 @@ function Parse-VersionTag {
 function Format-VersionTag {
     <#
     .SYNOPSIS  Build a VersionTag string from components.
+        .DESCRIPTION
+      Detailed behaviour: Format version tag.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [string]$Prefix = $script:VersionPrefix,
@@ -93,13 +99,15 @@ function Get-FileVersion {
     <#
     .SYNOPSIS  Read the VersionTag from a file.
     .OUTPUTS   Parsed version hashtable or $null.
+        .DESCRIPTION
+      Detailed behaviour: Get file version.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$FilePath)
     if (-not (Test-Path $FilePath)) { return $null }
     $match = Select-String -Path $FilePath -Pattern $script:VersionPattern | Select-Object -First 1
     if ($match -and $match.Matches[0].Groups[1].Value) {
-        return Parse-VersionTag -Tag $match.Matches[0].Groups[1].Value
+        return ConvertFrom-VersionTag -Tag $match.Matches[0].Groups[1].Value
     }
     return $null
 }
@@ -107,8 +115,11 @@ function Get-FileVersion {
 function Set-FileVersion {
     <#
     .SYNOPSIS  Update the VersionTag in a file. Returns before/after info.
+        .DESCRIPTION
+      Detailed behaviour: Set file version.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string]$FilePath,
         [Parameter(Mandatory)][string]$NewTag
@@ -125,6 +136,8 @@ function Step-MinorVersion {
     <#
     .SYNOPSIS  Increment the minor version of a specific file.
     .OUTPUTS   Version change record.
+        .DESCRIPTION
+      Detailed behaviour: Step minor version.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$FilePath)
@@ -147,6 +160,7 @@ function Invoke-MajorBuildIncrement {
         Increments major version by 1, sets minor to 0 on every file.
         Returns full change manifest.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$WorkspacePath,
@@ -193,6 +207,8 @@ function Invoke-MajorBuildIncrement {
 function Get-WorkspaceVersionInventory {
     <#
     .SYNOPSIS  Scan all workspace files and return version inventory.
+        .DESCRIPTION
+      Detailed behaviour: Get workspace version inventory.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$WorkspacePath)
@@ -223,7 +239,10 @@ $script:CPSRStartTime = Get-Date
 function Add-CPSRAction {
     <#
     .SYNOPSIS  Log an action to the current CPSR session.
+        .DESCRIPTION
+      Detailed behaviour: Add c p s r action.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Action,
@@ -255,6 +274,8 @@ function Export-CPSRReport {
     <#
     .SYNOPSIS  Generate CPSR HTML report and save to ~REPORTS/CPSR/CPSR_yyyymmdd/ subfolder.
     .OUTPUTS   Path to generated HTML file.
+        .DESCRIPTION
+      Detailed behaviour: Export c p s r report.
     #>
     [CmdletBinding()]
     param(
@@ -360,6 +381,8 @@ $actionRows
 function Export-CPSRAggregation {
     <#
     .SYNOPSIS  Generate aggregation overview HTML when >1 CPSR exists in a date subfolder.
+        .DESCRIPTION
+      Detailed behaviour: Export c p s r aggregation.
     #>
     [CmdletBinding()]
     param(
@@ -422,6 +445,7 @@ function Save-PipelineEpoch {
         Captures current state: version inventory, CPSR actions, pipeline stats.
         Saved to checkpoints/ and referenced in memory store.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$WorkspacePath,
@@ -476,6 +500,7 @@ function Add-AgentEditLedgerEntry {
         Creates the ledger file on first call for a given major version.
         Each entry records which files were modified and their version before/after.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$WorkspacePath,
@@ -492,7 +517,7 @@ function Add-AgentEditLedgerEntry {
 
     $ledger = $null
     if (Test-Path $ledgerPath) {
-        try { $ledger = Get-Content $ledgerPath -Raw | ConvertFrom-Json } catch { <# Intentional: file may have invalid JSON, will recreate #> }
+        try { $ledger = Get-Content $ledgerPath -Raw | ConvertFrom-Json } catch { <# Intentional: file may have invalid JSON, will recreate #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     if ($null -eq $ledger) {
         $ledger = [ordered]@{
@@ -526,6 +551,8 @@ function Add-AgentEditLedgerEntry {
 function Get-LatestEpoch {
     <#
     .SYNOPSIS  Load the most recent pipeline epoch checkpoint.
+        .DESCRIPTION
+      Detailed behaviour: Get latest epoch.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$WorkspacePath)
@@ -552,8 +579,11 @@ function Get-LatestEpoch {
 <# ToDo:
     Stub: list pending work here.
 #>
+# Back-compat alias (P030: Parse- is unapproved; canonical is ConvertFrom-VersionTag)
+Set-Alias -Name Parse-VersionTag -Value ConvertFrom-VersionTag -Scope Script -Force
+
 Export-ModuleMember -Function @(
-    'Parse-VersionTag',
+    'ConvertFrom-VersionTag',
     'Format-VersionTag',
     'Get-FileVersion',
     'Set-FileVersion',
@@ -566,7 +596,8 @@ Export-ModuleMember -Function @(
     'Save-PipelineEpoch',
     'Get-LatestEpoch',
     'Add-AgentEditLedgerEntry'
-)
+) -Alias 'Parse-VersionTag'
+
 
 
 

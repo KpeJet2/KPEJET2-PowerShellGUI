@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -33,32 +33,43 @@
 
 [CmdletBinding()]
 param(
-    [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent),
+    [string]$WorkspacePath,
     [switch]$ScanOnly,
     [switch]$SimulateMinor,
     [switch]$ApplyMinor,
     [switch]$SimulateMajor,
     [switch]$ApplyMajor,
     [switch]$CrossValidate,
-    [string]$TargetBuild = 'B2',
+    [switch]$Interactive,
+    # Optional overrides; when omitted the tool derives them from the highest
+    # VersionTag found on disk (single source of truth).
+    [string]$YearMonth,
+    [string]$TargetBuild,
     [int]$NewMajor = 0
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# ═══════════════════════════════════════════════════════════════════════════════
-#  CONSTANTS
-# ═══════════════════════════════════════════════════════════════════════════════
+# Resolve workspace root (param default cannot reference $PSScriptRoot reliably under -File invocation)
+if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
+    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    $WorkspacePath = Split-Path -Parent $scriptDir
+}
 
-$script:YearMonth       = '2604'
-$script:CanonicalPrefix = "$($script:YearMonth).$TargetBuild"
+# ===============================================================================
+#  CONSTANTS
+# ===============================================================================
+
+# Initial defaults; superseded by Get-HighestOnDiskTag once inventory is scanned.
+$script:YearMonth       = if ($PSBoundParameters.ContainsKey('YearMonth') -and $YearMonth) { $YearMonth } else { (Get-Date).ToString('yyMM') }
+$script:CanonicalPrefix = "$($script:YearMonth).$(if ($TargetBuild) { $TargetBuild } else { 'B0' })"
 $script:VersionRegex    = '(?m)^#\s*VersionTag:\s*(\S+)'
 $script:ExcludePattern  = '\\\.git\\|\\\.history\\|\\node_modules\\|\\__pycache__|\\checkpoints\\|\\~REPORTS\\|\\~DOWNLOADS\\|\\\.venv'
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  HELPER: Parse tag
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Parse-Tag {
     param([string]$Tag)
@@ -80,13 +91,111 @@ function Format-Tag {
     return "$YM.$Build.V$Major.$Minor"
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+function Get-HighestOnDiskTag {
+    <#
+    .SYNOPSIS
+        Returns the highest VersionTag in the inventory ordered by
+        (YearMonth, B, VMajor, VMinor). Single source of truth used to
+        seed proposals -- not the previously hardcoded '2604' constant.
+    #>
+    param([array]$Inventory)
+    $tagged = @($Inventory | Where-Object { $_.HasTag })
+    if ($tagged.Count -eq 0) { return $null }
+    $sorted = $tagged | Sort-Object `
+        @{Expression={[int]$_.Parsed.ym};Descending=$true}, `
+        @{Expression={[int]($_.Parsed.build -replace '[^0-9]','')};Descending=$true}, `
+        @{Expression={$_.Parsed.major};Descending=$true}, `
+        @{Expression={$_.Parsed.minor};Descending=$true}
+    return $sorted[0].Parsed
+}
+
+function Read-DefaultedInput {
+    param(
+        [Parameter(Mandatory=$true)][string]$Prompt,
+        [Parameter(Mandatory=$true)][string]$Default
+    )
+    $resp = Read-Host "$Prompt [$Default]"
+    if ([string]::IsNullOrWhiteSpace($resp)) { return $Default }
+    return $resp.Trim()
+}
+
+function Invoke-InteractivePrompt {
+    <#
+    .SYNOPSIS
+        Walks the user through YYMM / B# / V## / Minor with sensible defaults
+        derived from the highest tag found on disk. ENTER accepts the default
+        for each segment; any explicit value overrides.
+    #>
+    param([array]$Inventory)
+    $highest = Get-HighestOnDiskTag -Inventory $Inventory
+    $currentYM = (Get-Date).ToString('yyMM')
+
+    if ($highest) {
+        $defYM    = if ([int]$currentYM -gt [int]$highest.ym) { $currentYM } else { $highest.ym }
+        $defBuild = $highest.build
+        $defVMaj  = $highest.major + 1
+        $defVMin  = 0
+        Write-Host ""
+        Write-Host "  Highest on disk : $($highest.ym).$($highest.build).V$($highest.major).$($highest.minor)" -ForegroundColor Cyan
+    } else {
+        $defYM    = $currentYM
+        $defBuild = 'B0'
+        $defVMaj  = 1
+        $defVMin  = 0
+        Write-Host "  No existing tags found; using fresh defaults." -ForegroundColor Yellow
+    }
+    Write-Host "  Press ENTER to accept the proposed default for each segment." -ForegroundColor DarkGray
+    Write-Host ""
+
+    $ym = Read-DefaultedInput -Prompt '  YEAR-MONTH (YYMM)' -Default $defYM
+    while ($ym -notmatch '^\d{4}$') {
+        Write-Host "    Invalid -- must be 4 digits (e.g. $currentYM)" -ForegroundColor Red
+        $ym = Read-DefaultedInput -Prompt '  YEAR-MONTH (YYMM)' -Default $defYM
+    }
+
+    $build = Read-DefaultedInput -Prompt '  BUILD (B#)' -Default $defBuild
+    if ($build -match '^\d+$') { $build = "B$build" }
+    while ($build -notmatch '^[Bb]\d+$') {
+        Write-Host "    Invalid -- must be B followed by digits (e.g. B2)" -ForegroundColor Red
+        $build = Read-DefaultedInput -Prompt '  BUILD (B#)' -Default $defBuild
+        if ($build -match '^\d+$') { $build = "B$build" }
+    }
+    $build = 'B' + ($build -replace '[^0-9]','')
+
+    $vMajRaw = Read-DefaultedInput -Prompt '  MAJOR VERSION (V##)' -Default ([string]$defVMaj)
+    $vMaj = 0
+    while (-not [int]::TryParse(($vMajRaw -replace '[^0-9]',''), [ref]$vMaj)) {
+        Write-Host "    Invalid -- must be a number" -ForegroundColor Red
+        $vMajRaw = Read-DefaultedInput -Prompt '  MAJOR VERSION (V##)' -Default ([string]$defVMaj)
+    }
+
+    $vMinRaw = Read-DefaultedInput -Prompt '  MINOR VERSION (.#)' -Default ([string]$defVMin)
+    $vMin = 0
+    while (-not [int]::TryParse(($vMinRaw -replace '[^0-9]',''), [ref]$vMin)) {
+        Write-Host "    Invalid -- must be a number" -ForegroundColor Red
+        $vMinRaw = Read-DefaultedInput -Prompt '  MINOR VERSION (.#)' -Default ([string]$defVMin)
+    }
+
+    $proposed = "$ym.$build.V$vMaj.$vMin"
+    Write-Host ""
+    Write-Host "  Resulting target tag: $proposed" -ForegroundColor Green
+    return @{
+        YearMonth = $ym
+        Build     = $build
+        VMajor    = $vMaj
+        VMinor    = $vMin
+        Tag       = $proposed
+        Highest   = $highest
+    }
+}
+
+# ===============================================================================
 #  SCAN: Collect all VersionTags
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Get-AllVersionTags {
     param([string]$Root)
-    $files = Get-ChildItem -Path $Root -Recurse -File -Include '*.ps1','*.psm1' -ErrorAction SilentlyContinue |
+    $files = Get-ChildItem -Path $Root -Recurse -File -Include '*.ps1','*.psm1','*.psd1' -ErrorAction SilentlyContinue |
         Where-Object { $_.FullName -notmatch $script:ExcludePattern }
 
     $results = @()
@@ -108,9 +217,9 @@ function Get-AllVersionTags {
     return $results
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  MINOR CLEANUP: Normalise case, build prefix, preserve major.minor values
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Compute-MinorCleanup {
     param([array]$Inventory)
@@ -125,9 +234,9 @@ function Compute-MinorCleanup {
 
         $needsChange = ($item.CurrentTag -cne $canonical)
         $changeReasons = @()
-        if ($p.vCase -ne 'V')                                  { $changeReasons += 'case V→uppercase' }
-        if ($p.build -ne $TargetBuild)                          { $changeReasons += "build $($p.build)→$TargetBuild" }
-        if ("$($p.ym)" -ne $script:YearMonth)                  { $changeReasons += "yearmonth $($p.ym)→$($script:YearMonth)" }
+        if ($p.vCase -ne 'V')                                  { $changeReasons += 'case V->uppercase' }
+        if ($p.build -ne $TargetBuild)                          { $changeReasons += "build $($p.build)->$TargetBuild" }
+        if ("$($p.ym)" -ne $script:YearMonth)                  { $changeReasons += "yearmonth $($p.ym)->$($script:YearMonth)" }
         if ($item.CurrentTag -cne $canonical -and @($changeReasons).Count -eq 0) { $changeReasons += 'format normalise' }
 
         $plan += [PSCustomObject]@{
@@ -142,9 +251,9 @@ function Compute-MinorCleanup {
     return $plan
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  MAJOR ALIGNMENT: Increment major, reset minor to 0
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Compute-MajorAlignment {
     param([array]$Inventory, [int]$TargetMajor)
@@ -177,9 +286,9 @@ function Compute-MajorAlignment {
     return @{ plan = $plan; targetMajor = $TargetMajor; highestCurrent = $highestMajor }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  APPLY: Write tags to files
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Apply-TagChanges {
     param([array]$Plan, [string]$Mode)
@@ -224,9 +333,9 @@ function Apply-TagChanges {
     return @{ applied = $applied; failed = $failed; log = $log }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  CROSS-VALIDATE: Compare file tags vs manifest
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Cross-Validate {
     param([string]$Root, [array]$Inventory)
@@ -284,17 +393,17 @@ function Cross-Validate {
     return @{ mismatches = $mismatches; orphans = $orphans; fileCount = @($Inventory).Count }
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  DISPLAY HELPERS
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 function Show-SideBySide {
     param([array]$Plan, [string]$Title)
 
     Write-Host ""
-    Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "===========================================================" -ForegroundColor Cyan
     Write-Host "  $Title" -ForegroundColor Cyan
-    Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "===========================================================" -ForegroundColor Cyan
     Write-Host ""
 
     $changed = @($Plan | Where-Object { $_.CurrentTag -ne $_.ProposedTag })
@@ -319,24 +428,75 @@ function Show-SideBySide {
     Write-Host ""
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 #  MAIN EXECUTION
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 Write-Host ""
 Write-Host "  PwShGUI Version Alignment Tool" -ForegroundColor Cyan
 Write-Host "  Workspace: $WorkspacePath" -ForegroundColor DarkGray
-Write-Host "  Target Build: $($script:CanonicalPrefix)" -ForegroundColor DarkGray
-Write-Host ""
 
 # Always scan first
 $inventory = Get-AllVersionTags -Root $WorkspacePath
 Write-Host "  Scanned $(@($inventory).Count) files with VersionTags" -ForegroundColor Gray
 
+# Single source of truth: derive YearMonth + TargetBuild from the highest tag
+# actually present on disk (unless explicitly overridden via parameters).
+$onDiskHighest = Get-HighestOnDiskTag -Inventory $inventory
+if ($onDiskHighest) {
+    if (-not $PSBoundParameters.ContainsKey('YearMonth') -or [string]::IsNullOrWhiteSpace($YearMonth)) {
+        $script:YearMonth = $onDiskHighest.ym
+    }
+    if (-not $PSBoundParameters.ContainsKey('TargetBuild') -or [string]::IsNullOrWhiteSpace($TargetBuild)) {
+        $TargetBuild = $onDiskHighest.build
+    }
+}
+$script:CanonicalPrefix = "$($script:YearMonth).$TargetBuild"
+$proposedNextMajor = if ($onDiskHighest) { $onDiskHighest.major + 1 } else { 1 }
+$proposedNextTag   = if ($onDiskHighest) {
+    "$($onDiskHighest.ym).$($onDiskHighest.build).V$($onDiskHighest.major).$($onDiskHighest.minor + 1)"
+} else { "$($script:YearMonth).B0.V1.0" }
+
+Write-Host "  Target Build  : $($script:CanonicalPrefix)" -ForegroundColor DarkGray
+if ($onDiskHighest) {
+    Write-Host "  Highest on disk: $($onDiskHighest.ym).$($onDiskHighest.build).V$($onDiskHighest.major).$($onDiskHighest.minor)" -ForegroundColor Cyan
+    Write-Host "  Proposed next  : $proposedNextTag  (or major bump -> $($script:CanonicalPrefix).V$proposedNextMajor.0)" -ForegroundColor Cyan
+} else {
+    Write-Host "  Highest on disk: (none found)" -ForegroundColor Yellow
+}
+Write-Host ""
+
+# Interactive mode: prompt the user for each segment with on-disk-derived defaults,
+# then feed the resulting values into the major-alignment plan as the new canonical tag.
+if ($Interactive) {
+    $chosen = Invoke-InteractivePrompt -Inventory $inventory
+    $script:YearMonth       = $chosen.YearMonth
+    $TargetBuild            = $chosen.Build
+    $script:CanonicalPrefix = "$($script:YearMonth).$TargetBuild"
+    $NewMajor               = $chosen.VMajor
+    $confirm = Read-DefaultedInput -Prompt '  Apply this tag to ALL files? (Y/N)' -Default 'N'
+    if ($confirm -match '^[Yy]') {
+        $majorResult = Compute-MajorAlignment -Inventory $inventory -TargetMajor $NewMajor
+        # Override the minor portion to honour the user's chosen MINOR value
+        foreach ($p in $majorResult.plan) {
+            $p.ProposedTag = Format-Tag -YM $script:YearMonth -Build $TargetBuild -Major $NewMajor -Minor $chosen.VMinor
+            $p.NewMinor    = $chosen.VMinor
+        }
+        Show-SideBySide -Plan $majorResult.plan -Title "INTERACTIVE APPLY -> $($chosen.Tag)"
+        $result = Apply-TagChanges -Plan $majorResult.plan -Mode 'major'
+        Write-Host "  Applied: $($result.applied) | Failed: $($result.failed)" -ForegroundColor $(if ($result.failed -gt 0) { 'Red' } else { 'Green' })
+        Write-Host "  New canonical tag: $($chosen.Tag)" -ForegroundColor Cyan
+        Write-Host ""
+    } else {
+        Write-Host "  Aborted by user (no files modified)." -ForegroundColor Yellow
+    }
+    return
+}
+
 if ($ScanOnly -or (-not $SimulateMinor -and -not $ApplyMinor -and -not $SimulateMajor -and -not $ApplyMajor -and -not $CrossValidate)) {
     # Default: show current state
     $minorPlan = Compute-MinorCleanup -Inventory $inventory
-    Show-SideBySide -Plan $minorPlan -Title "MINOR VERSION CLEANUP — Side-by-Side Preview"
+    Show-SideBySide -Plan $minorPlan -Title "MINOR VERSION CLEANUP - Side-by-Side Preview"
 
     $stats = @{}
     foreach ($item in $inventory) {
@@ -373,7 +533,7 @@ if ($ScanOnly -or (-not $SimulateMinor -and -not $ApplyMinor -and -not $Simulate
 
 if ($SimulateMinor) {
     $minorPlan = Compute-MinorCleanup -Inventory $inventory
-    Show-SideBySide -Plan $minorPlan -Title "SIMULATE MINOR CLEANUP — Dry Run"
+    Show-SideBySide -Plan $minorPlan -Title "SIMULATE MINOR CLEANUP - Dry Run"
     Write-Host "  [DRY RUN] No files were modified." -ForegroundColor Yellow
     return
 }
@@ -393,7 +553,7 @@ if ($ApplyMinor) {
 
 if ($SimulateMajor) {
     $majorResult = Compute-MajorAlignment -Inventory $inventory -TargetMajor $NewMajor
-    Show-SideBySide -Plan $majorResult.plan -Title "SIMULATE MAJOR BUILD INCREMENT — V$($majorResult.targetMajor).0 (current highest: V$($majorResult.highestCurrent))"
+    Show-SideBySide -Plan $majorResult.plan -Title "SIMULATE MAJOR BUILD INCREMENT - V$($majorResult.targetMajor).0 (current highest: V$($majorResult.highestCurrent))"
     Write-Host "  [DRY RUN] No files were modified." -ForegroundColor Yellow
     Write-Host "  All $(@($majorResult.plan).Count) files would become: $($script:CanonicalPrefix).V$($majorResult.targetMajor).0" -ForegroundColor Cyan
     return
@@ -401,7 +561,7 @@ if ($SimulateMajor) {
 
 if ($ApplyMajor) {
     $majorResult = Compute-MajorAlignment -Inventory $inventory -TargetMajor $NewMajor
-    Show-SideBySide -Plan $majorResult.plan -Title "APPLYING MAJOR BUILD INCREMENT — V$($majorResult.targetMajor).0"
+    Show-SideBySide -Plan $majorResult.plan -Title "APPLYING MAJOR BUILD INCREMENT - V$($majorResult.targetMajor).0"
     $result = Apply-TagChanges -Plan $majorResult.plan -Mode 'major'
     Write-Host "  Applied: $($result.applied) | Failed: $($result.failed)" -ForegroundColor $(if ($result.failed -gt 0) { 'Red' } else { 'Green' })
     Write-Host "  New canonical tag: $($script:CanonicalPrefix).V$($majorResult.targetMajor).0" -ForegroundColor Cyan
@@ -426,7 +586,7 @@ if ($CrossValidate) {
 
     Write-Host ""
     Write-Host "  Cross-Validation Results:" -ForegroundColor Cyan
-    Write-Host "  ─────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  -------------------------" -ForegroundColor DarkGray
     Write-Host "  Total files scanned: $(@($inventory).Count)" -ForegroundColor White
 
     Write-Host "  Build prefix distribution:" -ForegroundColor White
@@ -474,6 +634,8 @@ if ($CrossValidate) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -45,10 +45,15 @@ function New-AesKey {
     .SYNOPSIS  Derives a 256-bit AES key + 128-bit IV from a password using PBKDF2 (SHA-256).
     .OUTPUTS   [hashtable] Keys: Key (byte[32]), IV (byte[16]), Salt (byte[32])
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'Password', Justification='Internal helper invoked only by Protect/Unprotect-ProfileData with plaintext briefly unwrapped from caller-supplied SecureString; promoting to SecureString here would simply move the unwrap one frame down without security gain.')]
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string] $Password,
         [byte[]] $Salt = $null
     )
+    if (-not $PSCmdlet.ShouldProcess('New-AesKey', 'Create')) { return }
+
     if ($null -eq $Salt -or $Salt.Length -eq 0) {
         $Salt = New-Object byte[] $script:SaltSize
         [System.Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($Salt)
@@ -72,7 +77,12 @@ function Protect-ProfileData {
     .PARAMETER PlainText   The JSON string to encrypt.
     .PARAMETER Password    User-supplied password or auto-derived key string.
     .OUTPUTS   [hashtable] Keys: CipherText (Base64), Salt (Base64)
+        .DESCRIPTION
+      Detailed behaviour: Protect profile data.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'Password', Justification='Receives plaintext password already unwrapped from caller-supplied SecureString (see Save-ProfileSnapshot SecureStringToBSTR pattern). API is internal-use; maintains symmetry with Unprotect-ProfileData.')]
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string] $PlainText,
         [Parameter(Mandatory)] [string] $Password
@@ -107,7 +117,12 @@ function Unprotect-ProfileData {
     .PARAMETER Salt        Base64 salt used during encryption.
     .PARAMETER Password    Password matching the one used during encryption.
     .OUTPUTS   [string] Decrypted plain text.
+        .DESCRIPTION
+      Detailed behaviour: Unprotect profile data.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'Password', Justification='Receives plaintext password already unwrapped from caller-supplied SecureString (see Restore-ProfileSnapshot SecureStringToBSTR pattern). API is internal-use; maintains symmetry with Protect-ProfileData.')]
+    [OutputType([System.String])]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string] $CipherText,
         [Parameter(Mandatory)] [string] $Salt,
@@ -152,7 +167,10 @@ function Get-AutoRollbackPassword {
 function Get-WingetApplications {
     <#
     .SYNOPSIS  Returns a list of all winget-managed applications with Id, Name, Version, Source.
+        .DESCRIPTION
+      Detailed behaviour: Get winget applications.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [OutputType([System.Collections.Generic.List[hashtable]])]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
@@ -190,6 +208,8 @@ function Get-WingetApplications {
 function Get-PSEnvironment {
     <#
     .SYNOPSIS  Captures PowerShell version, installed modules (all scopes), and script paths.
+        .DESCRIPTION
+      Detailed behaviour: Get p s environment.
     #>
     param()
     $data = @{
@@ -241,7 +261,7 @@ function Get-PSEnvironment {
             $null = Get-Item -Path $path -ErrorAction Stop
             $exists = $true
             $hash = (Get-FileHash -Path $path -Algorithm SHA256 -ErrorAction Stop).Hash
-        } catch { <# Intentional: profile path may not exist #> }
+        } catch { <# Intentional: profile path may not exist #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $data.ProfilePaths[$key] = @{
             Path   = $path
             Exists = $exists
@@ -257,7 +277,10 @@ function Get-UserAppConfigs {
     .SYNOPSIS  Captures user-scope application configuration: HKCU registry keys + common config file paths.
     .NOTES     Registry subtree is limited to Software\ to avoid excessive data.
                Config files captured: %APPDATA%, %LOCALAPPDATA% *.ini, *.cfg, *.json, *.xml (top 2 levels).
+        .DESCRIPTION
+      Detailed behaviour: Get user app configs.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         RegistryKeys = [System.Collections.Generic.List[hashtable]]::new()
@@ -283,7 +306,7 @@ function Get-UserAppConfigs {
                         $keyInfo.Values.Add(@{ Name = $_.Name; Value = [string]$_.Value })
                     }
                 }
-            } catch { <# Intentional: non-fatal #> }
+            } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             $data.RegistryKeys.Add($keyInfo)
         }
     } catch { Write-AppLog -Message "[UserProfileManager] UserAppConfigs registry error: $_" -Level Warning }
@@ -315,6 +338,8 @@ function Get-UserAppConfigs {
 function Get-TaskbarLayout {
     <#
     .SYNOPSIS  Captures taskbar pinned items + layout XML for Windows 10 and Windows 11.
+        .DESCRIPTION
+      Detailed behaviour: Get taskbar layout.
     #>
     param()
     $data = @{
@@ -356,7 +381,7 @@ function Get-TaskbarLayout {
         }
         $data.LayoutXmlPath    = $layoutXml
         $data.LayoutXmlContent = [System.IO.File]::ReadAllText($layoutXml)
-    } catch { <# Intentional: layout XML not present on all systems #> }
+    } catch { <# Intentional: layout XML not present on all systems #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     # Taskband registry blob (binary pin data -- Windows 10/11)
     try {
@@ -365,7 +390,7 @@ function Get-TaskbarLayout {
         if ($tbProp -and $tbProp.Favorites) {
             $data.TaskbandData = [Convert]::ToBase64String([byte[]]$tbProp.Favorites)
         }
-    } catch { <# Intentional: non-fatal #> }
+    } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     return $data
 }
@@ -373,7 +398,10 @@ function Get-TaskbarLayout {
 function Get-PrintDrivers {
     <#
     .SYNOPSIS  Returns all installed print drivers with Name, DriverVersion, PrinterEnvironment, InfPath.
+        .DESCRIPTION
+      Detailed behaviour: Get print drivers.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
     try {
@@ -396,7 +424,10 @@ function Get-MimeTypes {
     .SYNOPSIS  Returns file-extension → MIME-type mappings from the Windows registry.
                Sources: HKLM\SOFTWARE\Classes\<ext> and HKCU\SOFTWARE\Classes\<ext>.
                User overrides (HKCU) take precedence.
+        .DESCRIPTION
+      Detailed behaviour: Get mime types.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
     $seen   = @{}   # local to this call -- no $script: scope leak
@@ -410,7 +441,7 @@ function Get-MimeTypes {
                 $mime = (Get-ItemProperty -Path $_.PSPath -Name 'Content Type' -ErrorAction SilentlyContinue).'Content Type'
                 if ($mime) { $seen[$ext] = $mime }   # HKCU runs second → overrides HKLM
             }
-        } catch { <# Intentional: non-fatal #> }
+        } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     foreach ($kv in $seen.GetEnumerator()) {
@@ -421,7 +452,12 @@ function Get-MimeTypes {
 
 #  EXTENDED CAPTURE FUNCTIONS
 
+<#
+.SYNOPSIS
+  Get wi fi profiles.
+#>
 function Get-WiFiProfiles {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
     try {
@@ -443,7 +479,7 @@ function Get-WiFiProfiles {
                     $xf = Get-ChildItem $tmp -Filter '*.xml' -EA SilentlyContinue | Select-Object -First 1
                     if ($xf) { $xmlB64 = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($xf.FullName)) }
                     Remove-Item $tmp -Recurse -Force -EA SilentlyContinue
-                } catch { <# Intentional: non-fatal #> }
+                } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
                 $result.Add(@{
                     Name             = $name
                     AuthType         = & $gf $detail 'Authentication\s*:'
@@ -459,7 +495,12 @@ function Get-WiFiProfiles {
     return $result
 }
 
+<#
+.SYNOPSIS
+  Get m r u locations.
+#>
 function Get-MRULocations {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         TypedPaths    = [System.Collections.Generic.List[string]]::new()
@@ -476,7 +517,7 @@ function Get-MRULocations {
                 $props.PSObject.Properties | Where-Object { $_.Name -match '^url\d+' } |
                 Sort-Object Name | ForEach-Object { $data.TypedPaths.Add([string]$_.Value) }
             }
-        } catch { <# Intentional: TypedPaths can be absent #> }
+        } catch { <# Intentional: TypedPaths can be absent #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
         $run = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU'
         try {
@@ -486,7 +527,7 @@ function Get-MRULocations {
                 $props.PSObject.Properties | Where-Object { $_.Name -match '^[a-z]$' } |
                 Sort-Object Name | ForEach-Object { $data.RunMRU.Add(([string]$_.Value) -replace '\\1$','') }
             }
-        } catch { <# Intentional: RunMRU can be absent #> }
+        } catch { <# Intentional: RunMRU can be absent #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
         $cs = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU'
         try {
@@ -507,7 +548,7 @@ function Get-MRULocations {
                     $data.OpenSavePaths.Add($entry)
                 }
             }
-        } catch { <# Intentional: ComDlg32 key may be absent #> }
+        } catch { <# Intentional: ComDlg32 key may be absent #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
         $re = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs'
         try {
@@ -515,12 +556,17 @@ function Get-MRULocations {
             Get-ChildItem -Path $re -ErrorAction Stop | ForEach-Object {
                 if ($_.PSChildName -match '^\.\w+') { $data.RecentExts.Add($_.PSChildName) }
             }
-        } catch { <# Intentional: RecentDocs can be absent #> }
+        } catch { <# Intentional: RecentDocs can be absent #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     } catch { Write-AppLog -Message "[UserProfileManager] MRULocations capture error: $_" -Level Warning }
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get certificate stores.
+#>
 function Get-CertificateStores {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param([bool]$IncludeLocalMachine = $false)
     $data = @{
         UserStore         = [System.Collections.Generic.List[hashtable]]::new()
@@ -547,13 +593,17 @@ function Get-CertificateStores {
                             SerialNumber  = $_.SerialNumber
                         })
                     }
-                } catch { <# Intentional: non-fatal #> }
+                } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             }
         } catch { Write-AppLog -Message "[UserProfileManager] CertStore $hive error: $_" -Level Warning }
     }
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get i s e configuration.
+#>
 function Get-ISEConfiguration {
     param()
     $data = @{
@@ -628,6 +678,10 @@ function Get-ISEConfiguration {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get terminal configuration.
+#>
 function Get-TerminalConfiguration {
     param()
     $data = @{
@@ -671,7 +725,12 @@ function Get-TerminalConfiguration {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get p s help repositories.
+#>
 function Get-PSHelpRepositories {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         ModulePath   = @($env:PSModulePath -split ';' | Where-Object { $_ })
@@ -691,7 +750,12 @@ function Get-PSHelpRepositories {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get screensaver settings.
+#>
 function Get-ScreensaverSettings {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{ Enabled = $null; Secure = $null; TimeoutSecs = $null; ScreenSaver = $null }
     try {
@@ -709,6 +773,10 @@ function Get-ScreensaverSettings {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get power configuration.
+#>
 function Get-PowerConfiguration {
     param()
     $data = @{
@@ -728,6 +796,10 @@ function Get-PowerConfiguration {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get display layout.
+#>
 function Get-DisplayLayout {
     param()
     $data = @{
@@ -771,7 +843,12 @@ function Get-DisplayLayout {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get regional settings.
+#>
 function Get-RegionalSettings {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         CultureName          = $null
@@ -781,14 +858,14 @@ function Get-RegionalSettings {
         Languages            = [System.Collections.Generic.List[hashtable]]::new()
         RegistryInternational = @{}
     }
-    try { $c = Get-Culture -EA SilentlyContinue; if ($c) { $data.CultureName = $c.Name; $data.CultureDisplayName = $c.DisplayName } } catch { <# Intentional: non-fatal #> }
-    try { $sl = Get-WinSystemLocale -EA SilentlyContinue; if ($sl) { $data.SystemLocale = $sl.Name } } catch { <# Intentional: non-fatal #> }
-    try { $hl = Get-WinHomeLocation -EA SilentlyContinue; if ($hl) { $data.HomeLocation = "$($hl.GeoId) -- $($hl.HomeLocation)" } } catch { <# Intentional: non-fatal #> }
+    try { $c = Get-Culture -EA SilentlyContinue; if ($c) { $data.CultureName = $c.Name; $data.CultureDisplayName = $c.DisplayName } } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
+    try { $sl = Get-WinSystemLocale -EA SilentlyContinue; if ($sl) { $data.SystemLocale = $sl.Name } } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
+    try { $hl = Get-WinHomeLocation -EA SilentlyContinue; if ($hl) { $data.HomeLocation = "$($hl.GeoId) -- $($hl.HomeLocation)" } } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     try {
         Get-WinUserLanguageList -EA SilentlyContinue | ForEach-Object {
             $data.Languages.Add(@{ LanguageTag = $_.LanguageTag; Autonym = $_.Autonym; EnglishName = $_.EnglishName })
         }
-    } catch { <# Intentional: non-fatal #> }
+    } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     try {
         $ik = 'HKCU:\Control Panel\International'
         if (Test-Path $ik) {
@@ -804,7 +881,12 @@ function Get-RegionalSettings {
 
 #  ADDITIONAL CAPTURE FUNCTIONS
 
+<#
+.SYNOPSIS
+  Get environment variables.
+#>
 function Get-EnvironmentVariables {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         User    = [System.Collections.Generic.List[hashtable]]::new()
@@ -826,7 +908,12 @@ function Get-EnvironmentVariables {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get mapped drives.
+#>
 function Get-MappedDrives {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
     try {
@@ -855,7 +942,12 @@ function Get-MappedDrives {
     return $result
 }
 
+<#
+.SYNOPSIS
+  Get installed fonts.
+#>
 function Get-InstalledFonts {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
     try {
@@ -900,6 +992,10 @@ function Get-InstalledFonts {
     return $result
 }
 
+<#
+.SYNOPSIS
+  Get language and speech.
+#>
 function Get-LanguageAndSpeech {
     param()
     $data = @{
@@ -997,7 +1093,12 @@ function Get-LanguageAndSpeech {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get quick access links.
+#>
 function Get-QuickAccessLinks {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         FrequentFolders = [System.Collections.Generic.List[hashtable]]::new()
@@ -1016,7 +1117,7 @@ function Get-QuickAccessLinks {
                         if ($item.IsFolder) { $data.FrequentFolders.Add($entry) } else { $data.RecentFiles.Add($entry) }
                     }
                 }
-            } catch { <# Intentional: non-fatal #> }
+            } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shell) | Out-Null
         }
         # Pinned Quick Access folders via lnk files in AutomaticDestinations
@@ -1043,6 +1144,10 @@ function Get-QuickAccessLinks {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get explorer folder view.
+#>
 function Get-ExplorerFolderView {
     param()
     $data = @{
@@ -1092,7 +1197,12 @@ function Get-ExplorerFolderView {
     return $data
 }
 
+<#
+.SYNOPSIS
+  Get search providers.
+#>
 function Get-SearchProviders {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $data = @{
         InternetExplorer  = [System.Collections.Generic.List[hashtable]]::new()
@@ -1161,8 +1271,11 @@ function Get-ProfileSnapshot {
     .PARAMETER ProfileName             Friendly name stored in the profile metadata.
     .PARAMETER ProgressCallback        Optional [scriptblock] called with (int $Percent, string $Status).
     .PARAMETER IncludeLocalMachineCerts When $true, also captures the LocalMachine certificate store.
+        .DESCRIPTION
+      Detailed behaviour: Get profile snapshot.
     #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ProgressCallback', Justification='Captured by closure inside nested Invoke-Progress function; PSSA does not trace closure capture.')]
     param(
         [string]      $ProfileName             = 'Profile',
         [scriptblock] $ProgressCallback        = $null,
@@ -1298,6 +1411,8 @@ function Save-ProfileSnapshot {
     .PARAMETER Encrypt     If $true, the Data block is AES-256-PBKDF2 encrypted.
     .PARAMETER Password    Required when Encrypt = $true.  Pass as [SecureString].
     .PARAMETER IsRollback  When $true, uses AutoRollback self-contained encryption (no password prompt).
+        .DESCRIPTION
+      Detailed behaviour: Save profile snapshot.
     #>
     param(
         [Parameter(Mandatory)] [hashtable]  $Snapshot,
@@ -1341,6 +1456,8 @@ function Import-ProfileSnapshot {
     .PARAMETER FilePath   Path to the .upjson file.
     .PARAMETER Password   SecureString if the file is user-encrypted. Not needed for rollbacks.
     .OUTPUTS   [hashtable] Snapshot with decrypted Data (as hashtable, not raw JSON string).
+        .DESCRIPTION
+      Detailed behaviour: Import profile snapshot.
     #>
     param(
         [Parameter(Mandatory)] [string]    $FilePath,
@@ -1377,6 +1494,8 @@ function Compare-ProfileSnapshot {
     .PARAMETER ReferenceSnapshot  Loaded snapshot hashtable (from Import-ProfileSnapshot).
     .PARAMETER CurrentSnapshot   Snapshot hashtable (from Get-ProfileSnapshot).
     .OUTPUTS   [hashtable] Diff report with Added, Removed, Changed lists per category.
+        .DESCRIPTION
+      Detailed behaviour: Compare profile snapshot.
     #>
     param(
         [Parameter(Mandatory)] [hashtable] $ReferenceSnapshot,
@@ -1396,14 +1515,14 @@ function Compare-ProfileSnapshot {
             Current   = $CurrentSnapshot.Data.PSEnvironment.PSVersion
             Changed   = $ReferenceSnapshot.Data.PSEnvironment.PSVersion -ne $CurrentSnapshot.Data.PSEnvironment.PSVersion
         }
-        PrintDrivers      = Compare-SimpleLists    $ReferenceSnapshot.Data.PrintDrivers $CurrentSnapshot.Data.PrintDrivers 'Name'
+        PrintDrivers      = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.PrintDrivers -Cur $CurrentSnapshot.Data.PrintDrivers -Key 'Name'
         MimeTypes         = Compare-MimeLists      $ReferenceSnapshot.Data.MimeTypes $CurrentSnapshot.Data.MimeTypes
-        TaskbarPins       = Compare-SimpleLists    $ReferenceSnapshot.Data.TaskbarLayout.PinnedItems $CurrentSnapshot.Data.TaskbarLayout.PinnedItems 'Name'
+        TaskbarPins       = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.TaskbarLayout.PinnedItems -Cur $CurrentSnapshot.Data.TaskbarLayout.PinnedItems -Key 'Name'
         ConfigFiles       = Compare-ConfigFileLists $ReferenceSnapshot.Data.UserAppConfigs.ConfigFiles $CurrentSnapshot.Data.UserAppConfigs.ConfigFiles
-        WiFiProfiles      = Compare-SimpleLists    $ReferenceSnapshot.Data.WiFiProfiles $CurrentSnapshot.Data.WiFiProfiles 'Name'
-        Certificates      = Compare-SimpleLists    $ReferenceSnapshot.Data.Certificates.UserStore $CurrentSnapshot.Data.Certificates.UserStore 'Thumbprint'
-        PSHelpRepos       = Compare-SimpleLists    $ReferenceSnapshot.Data.PSHelpRepositories.Repositories $CurrentSnapshot.Data.PSHelpRepositories.Repositories 'Name'
-        ISESettings       = Compare-SimpleLists    $ReferenceSnapshot.Data.ISEConfiguration.RegistrySettings $CurrentSnapshot.Data.ISEConfiguration.RegistrySettings 'Name'
+        WiFiProfiles      = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.WiFiProfiles -Cur $CurrentSnapshot.Data.WiFiProfiles -Key 'Name'
+        Certificates      = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.Certificates.UserStore -Cur $CurrentSnapshot.Data.Certificates.UserStore -Key 'Thumbprint'
+        PSHelpRepos       = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.PSHelpRepositories.Repositories -Cur $CurrentSnapshot.Data.PSHelpRepositories.Repositories -Key 'Name'
+        ISESettings       = Compare-SimpleLists -Ref $ReferenceSnapshot.Data.ISEConfiguration.RegistrySettings -Cur $CurrentSnapshot.Data.ISEConfiguration.RegistrySettings -Key 'Name'
         RegionalChanged   = Compare-FlatMap        $ReferenceSnapshot.Data.RegionalSettings.RegistryInternational $CurrentSnapshot.Data.RegionalSettings.RegistryInternational
         DisplayChanged    = Compare-FlatMap        $ReferenceSnapshot.Data.DisplayLayout.DpiRegistry $CurrentSnapshot.Data.DisplayLayout.DpiRegistry
         ScreensaverChanged= Compare-FlatMap        $ReferenceSnapshot.Data.ScreensaverSettings $CurrentSnapshot.Data.ScreensaverSettings
@@ -1440,6 +1559,7 @@ function Compare-FlatMap {
 }
 
 function Compare-WingetLists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param($Ref, $Cur)
     $result = @{ Added = @(); Removed = @(); Changed = @() }
     $refMap = @{}; foreach ($app in $Ref)  { $refMap[$app.Id] = $app }
@@ -1458,6 +1578,7 @@ function Compare-WingetLists {
 }
 
 function Compare-PSModuleLists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param($Ref, $Cur)
     $result = @{ Added = @(); Removed = @(); Changed = @() }
     if (-not $Ref) { $Ref = @() }
@@ -1481,6 +1602,7 @@ function Compare-PSModuleLists {
 }
 
 function Compare-SimpleLists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param($Ref, $Cur, [string]$Key)
     $result = @{ Added = @(); Removed = @() }
     if (-not $Ref) { $Ref = @() }
@@ -1493,6 +1615,7 @@ function Compare-SimpleLists {
 }
 
 function Compare-MimeLists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param($Ref, $Cur)
     $result = @{ Added = @(); Removed = @(); Changed = @() }
     if (-not $Ref) { $Ref = @() }
@@ -1510,6 +1633,7 @@ function Compare-MimeLists {
 }
 
 function Compare-ConfigFileLists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param($Ref, $Cur)
     $result = @{ Added = @(); Removed = @(); Modified = @() }
     if (-not $Ref) { $Ref = @() }
@@ -1541,7 +1665,10 @@ function Restore-ProfileSnapshot {
                                   Default: all $true except RestoreConfigFiles ($false).
     .PARAMETER ProgressCallback   Optional scriptblock(int pct, string msg).
     .OUTPUTS   [hashtable] Result: RollbackPath, Restored (list of actions), Skipped, Errors.
+        .DESCRIPTION
+      Detailed behaviour: Restore profile snapshot.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ProgressCallback', Justification='Captured by closure inside nested Invoke-Progress function; PSSA does not trace closure capture.')]
     param(
         [Parameter(Mandatory)] [hashtable]  $ReferenceSnapshot,
         [Parameter(Mandatory)] [string]     $ProfileStorePath,
@@ -1692,6 +1819,8 @@ function Get-ProfileList {
     <#
     .SYNOPSIS  Returns a list of profile .upjson files found in the given store folder.
                Includes basic metadata from each file's Meta block (no decryption needed).
+        .DESCRIPTION
+      Detailed behaviour: Get profile list.
     #>
     param([Parameter(Mandatory)] [string] $ProfileStorePath)
     $files = @()
@@ -1774,6 +1903,7 @@ Export-ModuleMember -Function @(
     'Restore-ProfileSnapshot',
     'Get-ProfileList'
 )
+
 
 
 

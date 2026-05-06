@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B2.V31.7
 @echo off
 REM  Launch-SandboxBrowserTest.bat -- Run browser compatibility tests in Windows Sandbox
 REM  Tests all HTML/XHTML files and README.md content in Edge, Chrome, and Firefox.
@@ -119,3 +119,4 @@ echo [INFO] Archive will be in: C:\Users\WDAGUtilityAccount\Desktop\
 echo.
 pause
 exit /b 0
+

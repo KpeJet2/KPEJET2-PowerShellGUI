@@ -1,5 +1,5 @@
 <#
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -31,6 +31,8 @@ $script:ModuleRoot    = $PSScriptRoot
 function Initialize-[PREFIX]State {
     <#
     .SYNOPSIS  Initializes internal module state.
+        .DESCRIPTION
+      Detailed behaviour: Get [ p r e f i x] status.
     #>
     [CmdletBinding()]
     param()
@@ -44,6 +46,7 @@ function Get-[PREFIX]Status {
     .SYNOPSIS  Returns current module status.
     .OUTPUTS   [PSCustomObject]
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReservedCmdletChar', '', Justification='Template scaffold; [PREFIX] is a literal token replaced when generating real modules.')]
     [CmdletBinding()]
     param()
 
@@ -60,7 +63,10 @@ function Invoke-[PREFIX]Action {
     .PARAMETER InputData
         Data to process.
     .OUTPUTS   [PSCustomObject]
+        .DESCRIPTION
+      Detailed behaviour: Invoke [ p r e f i x] action.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReservedCmdletChar', '', Justification='Template scaffold; [PREFIX] is a literal token replaced when generating real modules.')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -100,6 +106,7 @@ Export-ModuleMember -Function @(
     'Get-[PREFIX]Status',
     'Invoke-[PREFIX]Action'
 )
+
 
 
 
