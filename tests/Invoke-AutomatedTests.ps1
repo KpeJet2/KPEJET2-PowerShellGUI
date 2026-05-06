@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B4.V37.1
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
 <#
@@ -27,7 +27,7 @@
 
 .NOTES
     Author   : The Establishment
-    Version  : 2604.B2.V31.0
+    Version  : 2602.a.11
     Created  : 23rd February 2026
 
 .EXAMPLE
@@ -419,9 +419,3 @@ return [pscustomobject]@{
     Error     = $errCount
     Results   = $results
 }
-
-
-
-
-
-
