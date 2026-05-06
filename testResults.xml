@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-05-06" time="15:59:41">
+  <environment cwd="C:\PowerShellGUI" os-version="10.0.26100" user="msaib" user-domain="XPS15-MS" machine-name="XPS15-MS" nunit-version="2.5.8.0" platform="Microsoft Windows 11 Pro for Workstations|C:\WINDOWS|\Device\Harddisk0\Partition3" clr-version="10.0.6" />
+  <culture-info current-culture="en-AU" current-uiculture="en-GB" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.2431" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\PowerShellGUI\tests\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1" executed="True" result="Success" success="True" time="0.2431" asserts="0" description="C:\PowerShellGUI\tests\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="SIN Pattern P041" executed="True" result="Success" success="True" time="0.1634" asserts="0" description="SIN Pattern P041">
+            <results>
+              <test-case description="flags unguarded drift-prone JSON property access" name="SIN Pattern P041.flags unguarded drift-prone JSON property access" time="0.0743" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="suppresses guarded drift-prone JSON property access" name="SIN Pattern P041.suppresses guarded drift-prone JSON property access" time="0.0849" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
