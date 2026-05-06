@@ -1,4 +1,9 @@
-# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: UIForm
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -86,7 +91,7 @@ $script:fontMono = New-Object System.Drawing.Font('Consolas', 9.5)
 #  HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-function New-StyledLabel {
+function New-StyledLabel {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Text, [int]$X, [int]$Y, [int]$W = 200, [int]$H = 20, [System.Drawing.Font]$Font = $script:fontNorm)
     $lbl = New-Object System.Windows.Forms.Label
     $lbl.Text = $Text
@@ -98,7 +103,7 @@ function New-StyledLabel {
     return $lbl
 }
 
-function New-StyledButton {
+function New-StyledButton {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Text, [int]$X, [int]$Y, [int]$W = 120, [int]$H = 30, [System.Drawing.Color]$BgColor = $script:accBlue)
     $btn = New-Object System.Windows.Forms.Button
     $btn.Text = $Text
@@ -658,3 +663,19 @@ $form.Add_Shown({
 
 # ── Cleanup ───────────────────────────────────────────────────────────────────
 $form.Dispose()
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

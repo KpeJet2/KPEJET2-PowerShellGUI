@@ -1,5 +1,10 @@
-﻿#Requires -Version 5.1
-# VersionTag: 2604.B2.V31.0
+#Requires -Version 5.1
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 <#
 .SYNOPSIS
     Converts Feature Requests from XHTML backup JSON into ToDo items in the todo/ folder.
@@ -51,7 +56,7 @@ if (-not $FeatureJsonPath) {
         $backups = Get-ChildItem -Path $xhtmlDir -Filter 'PsGUI-FeatureRequests_BACKUP_*.json' -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending
         if ($backups) {
-            $FeatureJsonPath = $backups[0].FullName
+            $FeatureJsonPath = $backups[0].FullName  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
         }
     }
 }
@@ -190,5 +195,21 @@ return [PSCustomObject]@{
     Total    = $allFeatures.Count
     Filtered = $filtered.Count
 }
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
 
 

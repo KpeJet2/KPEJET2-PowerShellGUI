@@ -1,0 +1,28 @@
+# VersionTag: YYMM.B0.V1.0
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Uniform compatibility provisioning for PS5.1 fallback paths.
+.DESCRIPTION
+    Use this helper shape to avoid ad-hoc engine checks and keep behavior
+    deterministic across both supported versions.
+#>
+
+function Invoke-EngineBranch {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [scriptblock]$OnPS76,
+        [Parameter(Mandatory)] [scriptblock]$OnPS51
+    )
+
+    if ($PSVersionTable.PSVersion -ge [version]'7.6') {
+        & $OnPS76
+        return
+    }
+
+    & $OnPS51
+}

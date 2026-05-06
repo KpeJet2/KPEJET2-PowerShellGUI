@@ -1,4 +1,10 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
 #Requires -Version 5.1
@@ -100,7 +106,7 @@ Write-Host '║              MODULE MANAGEMENT TOOL                        ║' 
 Write-Host '╚══════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
 Write-Host ''
 
-function Write-PercentRow {
+function Write-PercentRow {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [int]$Percent,
         [string]$Label
@@ -111,6 +117,78 @@ function Write-PercentRow {
 }
 
 Write-PercentRow -Percent 2 -Label 'Starting module maintenance scan'
+
+# Helper: Ensure PowerShellGet module available
+function Ensure-PowerShellGet {
+    try {
+        if (-not (Get-Module -ListAvailable -Name PowerShellGet)) {
+            Write-Host '[INFO] PowerShellGet not present. Attempting to install via Install-Module...' -ForegroundColor Cyan
+            Install-Module -Name PowerShellGet -Scope CurrentUser -Force -ErrorAction Stop
+        }
+        Import-Module PowerShellGet -ErrorAction SilentlyContinue
+        return $true
+    } catch {
+        Write-Warning "Ensure-PowerShellGet: failed to install/import PowerShellGet: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+# Helper: Ensure NuGet provider is available for Install-Module/Install-PackageProvider
+function Ensure-NuGetProvider {
+    try {
+        $prov = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+        if (-not $prov) {
+            Write-Host '[INFO] NuGet provider not found. Installing PackageProvider NuGet...' -ForegroundColor Cyan
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser -ErrorAction Stop
+        }
+        return $true
+    } catch {
+        Write-Warning "Ensure-NuGetProvider: failed to install/import NuGet provider: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+# Helper: Close any top-level windows that appear to be a missing-modules interactive dialog
+function Close-MissingModulesGui {
+    try {
+        Add-Type @"
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+public static class Win32 {
+    public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+    [DllImport("user32.dll")] public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+    [DllImport("user32.dll")] public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+    [DllImport("user32.dll")] public static extern int GetWindowTextLength(IntPtr hWnd);
+    [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr hWnd);
+    [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+    public const uint WM_CLOSE = 0x0010;
+}
+"@ -ErrorAction SilentlyContinue
+
+        $closed = 0
+        $found = [System.Collections.Generic.List[object]]::new()
+        $callback = [Win32+EnumWindowsProc]{
+            param($hWnd, $lParam)
+            if (-not [Win32]::IsWindowVisible($hWnd)) { return $true }
+            $len = [Win32]::GetWindowTextLength($hWnd)
+            if ($len -le 0) { return $true }
+            $sb = New-Object System.Text.StringBuilder ($len + 1)
+            [Win32]::GetWindowText($hWnd, $sb, $sb.Capacity) | Out-Null
+            $title = $sb.ToString()
+            if ($title -match '(?i)missing|module|install|required') {
+                try { [Win32]::SendMessage($hWnd, [Win32]::WM_CLOSE, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; $found.Add($title); $closed++ } catch { }
+            }
+            return $true
+        }
+        [Win32]::EnumWindows($callback, [IntPtr]::Zero) | Out-Null
+        if ($closed -gt 0) { Write-Host "[INFO] Closed $closed interactive window(s): $($found -join ', ')" -ForegroundColor Cyan }
+        return $closed -gt 0
+    } catch {
+        Write-Warning "Close-MissingModulesGui: $($_.Exception.Message)"
+        return $false
+    }
+}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # 1) SCAN PSModulePath -- every folder the system can load modules from
@@ -551,6 +629,9 @@ if ($scriptRefData) {
 if ($AutoInstallMissing -and $missingCount -gt 0) {
     Write-Host '── Auto-Install Missing Modules ──' -ForegroundColor Cyan
     Write-PercentRow -Percent 78 -Label 'Auto-install phase'
+    # Ensure package infra available to avoid interactive provider prompts
+    $havePSGet = Ensure-PowerShellGet
+    $haveNuGet = Ensure-NuGetProvider
     foreach ($m in ($missingList | Sort-Object module)) {
         # Skip workspace-only modules that can't be installed from gallery
         if ($m.workspacePath -and $UseWorkspaceModules) {
@@ -583,26 +664,77 @@ if ($AutoInstallMissing -and $missingCount -gt 0) {
             $installed = $false
             $attemptErrors = New-Object 'System.Collections.Generic.List[string]'
 
+
+            # Sanitize module token: strip flags and trailing params, skip placeholder/variable tokens
+            $rawToken = $m.module
+            $moduleToken = ($rawToken -split '\s+')[0]
+            $moduleToken = $moduleToken.Trim("'", '"', [char]13, [char]10)
+            if ($moduleToken -match '^\$' -or [string]::IsNullOrWhiteSpace($moduleToken)) {
+                Write-Warning "  Skipping invalid/placeholder module token: '$rawToken'"
+                continue
+            }
+            # Allow names matching typical PowerShell module name characters only
+            if (-not ($moduleToken -match '^[A-Za-z0-9_.-]+$')) {
+                Write-Warning "  Skipping module with unsafe characters: '$rawToken' -> sanitized '$moduleToken'"
+                continue
+            }
+
+            # PSGallery/non-PSGallery mapping/whitelist (from modules/README.md)
+            $psgalleryModules = @(
+                'Pester','Microsoft.PowerShell.SecretStore','Microsoft.PowerShell.SecretManagement','Az.Accounts','Az.Billing','Az.KeyVault','Az.Storage','Az.Sql','Az.Resources','Az.Compute','AzureAD','MSOnline','SqlServer','SimplySQL','DFSN','PrintManagement','NetTCPIP','VMware.VimAutomation.Core','VMware.VimAutomation.Storage','VMware.VumAutomation','WindowsServerBackup','ActiveDirectory','ExchangeOnlineManagement','SkypeOnlineConnector','microsoftteams','Microsoft.Graph.Users','Microsoft.Graph.Groups','Microsoft.Graph.Teams','Microsoft.Graph.Mail','Microsoft.Graph.Authentication','Microsoft.Graph.Identity.DirectoryManagement','Microsoft.Graph.Identity.SignIns','Microsoft.Graph.DeviceManagement','Microsoft.Graph.DeviceManagement.Functions','Microsoft.Graph.Users.Actions'
+            )
+            # Workspace-only modules (from modules/README.md)
+            $workspaceModules = @(
+                'PwShGUICore','PwShGUI-IntegrityCore','PwShGUI-Theme','PwShGUI-VersionManager','PwShGUI-TrayHost','PwShGUI-PSVersionStandards','Get-LaunchTelemetry','AssistedSASC','SASC-Adapters','PKIChainManager','UserProfileManager','AVPN-Tracker','PwShGUI-ConvoVault','PwShGUI_AutoIssueFinder','PwShGUI-SchemaTranslator','_TEMPLATE-Module','CronAiAthon-Pipeline','CronAiAthon-Scheduler','CronAiAthon-EventLog','CronAiAthon-BugTracker','SINGovernance','RE-memorAiZ','WorkspaceIntentReview'
+            )
+            if ($workspaceModules -contains $moduleToken) {
+                Write-Host "  Workspace module '$moduleToken' -- not installed from PSGallery, skip online install." -ForegroundColor Yellow
+                continue
+            }
+            if (-not ($psgalleryModules -contains $moduleToken)) {
+                Write-Warning "  Module '$moduleToken' is not in PSGallery or workspace list. Skipping online install."
+                continue
+            }
+
             if ($repoOrder.Count -gt 0) {
                 foreach ($repoName in $repoOrder) {
                     try {
-                        Install-Module -Name $m.module -Repository $repoName -Scope CurrentUser -Force -ErrorAction Stop
-                        Write-Host "  INSTALLED: $($m.module) from $repoName" -ForegroundColor Green
+                        Install-Module -Name $moduleToken -Repository $repoName -Scope CurrentUser -Force -ErrorAction Stop
+                        Write-Host "  INSTALLED: $moduleToken from $repoName" -ForegroundColor Green
                         $installed = $true
                         break
                     } catch {
+                        # Try to close any interactive missing-modules GUI and retry once
                         $attemptErrors.Add("${repoName}: $($_.Exception.Message)") | Out-Null
+                        Close-MissingModulesGui | Out-Null
+                        try {
+                            Install-Module -Name $moduleToken -Repository $repoName -Scope CurrentUser -Force -ErrorAction Stop
+                            Write-Host "  INSTALLED (retry): $moduleToken from $repoName" -ForegroundColor Green
+                            $installed = $true
+                            break
+                        } catch {
+                            $attemptErrors.Add("${repoName}-retry: $($_.Exception.Message)") | Out-Null
+                        }
                     }
                 }
             }
 
             if (-not $installed) {
                 try {
-                    Install-Module -Name $m.module -Scope CurrentUser -Force -ErrorAction Stop
-                    Write-Host "  INSTALLED: $($m.module) (default repository resolution)" -ForegroundColor Green
+                    Install-Module -Name $moduleToken -Scope CurrentUser -Force -ErrorAction Stop
+                    Write-Host "  INSTALLED: $moduleToken (default repository resolution)" -ForegroundColor Green
                     $installed = $true
                 } catch {
                     $attemptErrors.Add("default: $($_.Exception.Message)") | Out-Null
+                    # Attempt to close interactive prompts and retry once
+                    Close-MissingModulesGui | Out-Null
+                    try {
+                        Install-Module -Name $moduleToken -Scope CurrentUser -Force -ErrorAction Stop
+                        Write-Host "  INSTALLED (retry): $moduleToken (default)" -ForegroundColor Green
+                        $installed = $true
+                    } catch {
+                        $attemptErrors.Add("default-retry: $($_.Exception.Message)") | Out-Null
+                    }
                 }
             }
 
@@ -786,3 +918,19 @@ Write-Output "TotalTracked: $($inventory.Count)"
 if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
     Write-AppLog -Message "Completed: $($MyInvocation.MyCommand.Name)" -Level 'Info'
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

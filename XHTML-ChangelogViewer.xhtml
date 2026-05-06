@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2604.B2.V33.3 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog Viewer — PwShGUI Suite</title>
+  <link rel="stylesheet" href="styles/pwshgui-base.css" />
+  <link rel="stylesheet" href="styles/pwshgui-responsive.css" />
+  <link rel="stylesheet" href="styles/accent-changelog.css" />
+  <style type="text/css">
+    body { font-family: Segoe UI, Tahoma, sans-serif; margin: 0; padding: 0; background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; min-height: 100vh; }
+    .app-bar { background: #161b22; border-bottom: 1px solid #30363d; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+    .app-bar h1 { margin: 0; font-size: 18px; color: #2dd4bf; flex: 1; }
+    .app-bar .version-tag { font-size: 11px; color: #484f58; }
+    .tab-strip { display: flex; background: #161b22; border-bottom: 1px solid #30363d; overflow-x: auto; }
+    .tab-strip button { font-family: Segoe UI, sans-serif; font-size: 13px; background: transparent; color: #8b949e; border: none; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+    .tab-strip button:hover { color: #c9d1d9; }
+    .tab-strip button.active { color: #2dd4bf; border-bottom-color: #2dd4bf; }
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .tab-panel.active { display: flex; }
+    .filter-bar { display: flex; gap: 8px; padding: 10px 16px; background: #161b22; border-bottom: 1px solid #30363d; flex-wrap: wrap; align-items: center; }
+    .filter-bar label { font-size: 12px; color: #8b949e; font-weight: 600; }
+    .filter-bar input, .filter-bar select { font-family: Segoe UI, sans-serif; font-size: 13px; background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 5px 8px; }
+    .filter-bar input[type="search"] { flex: 1; min-width: 180px; }
+    .filter-bar input[type="date"] { width: 140px; }
+    .filter-bar select { min-width: 120px; }
+    .filter-bar button { font-family: Segoe UI, sans-serif; font-size: 12px; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: #238636; color: #fff; }
+    .btn-info { background: #1f6feb; color: #fff; }
+    .btn-alt { background: #30363d; color: #c9d1d9; border: 1px solid #484f58; }
+    .btn-warn { background: #d29922; color: #0d1117; }
+    .btn-danger { background: #da3633; color: #fff; }
+    .content-area { flex: 1; overflow-y: auto; padding: 16px; }
+    .version-block { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .version-block h2 { margin: 0 0 8px; font-size: 16px; color: #2dd4bf; display: flex; align-items: center; gap: 8px; }
+    .version-block h2 .date { font-size: 12px; color: #8b949e; font-weight: 400; }
+    .version-block h3 { margin: 10px 0 4px; font-size: 13px; color: #58a6ff; }
+    .version-block ul { margin: 0 0 6px 18px; padding: 0; font-size: 13px; line-height: 1.7; }
+    .version-block li { margin-bottom: 2px; }
+    .version-block table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+    .version-block table th { background: #21262d; color: #8b949e; padding: 5px 8px; text-align: left; font-weight: 600; }
+    .version-block table td { padding: 5px 8px; border-bottom: 1px solid #21262d; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .tag-added { background: #238636; color: #fff; }
+    .tag-changed { background: #1f6feb; color: #fff; }
+    .tag-fixed { background: #d29922; color: #0d1117; }
+    .tag-removed { background: #da3633; color: #fff; }
+    .tag-security { background: #7c3aed; color: #fff; }
+    .tag-deprecated { background: #484f58; color: #c9d1d9; }
+    .tag-pipeline { background: #2dd4bf; color: #0d1117; }
+    .stats-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; padding: 10px 16px; background: #161b22; border-bottom: 1px solid #30363d; }
+    .stat-box { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 8px; text-align: center; }
+    .stat-val { font-size: 20px; font-weight: bold; color: #2dd4bf; }
+    .stat-label { font-size: 10px; color: #8b949e; }
+    .diff-panel { display: flex; gap: 12px; flex: 1; overflow: hidden; }
+    .diff-side { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .diff-side .diff-header { background: #21262d; padding: 8px 12px; border-radius: 6px 6px 0 0; font-size: 13px; font-weight: 600; color: #8b949e; }
+    .diff-side .diff-body { flex: 1; overflow-y: auto; background: #0d1117; border: 1px solid #30363d; border-radius: 0 0 6px 6px; padding: 10px; font-family: Consolas, monospace; font-size: 12px; white-space: pre-wrap; line-height: 1.6; }
+    .diff-add { color: #7ee787; background: rgba(46,160,67,0.15); display: block; padding: 1px 4px; }
+    .diff-del { color: #f85149; background: rgba(248,81,73,0.10); display: block; padding: 1px 4px; text-decoration: line-through; }
+    .diff-ctx { color: #8b949e; display: block; padding: 1px 4px; }
+    .combined-panel { flex: 1; overflow-y: auto; padding: 16px; }
+    .combined-panel .version-block { border-left: 3px solid #2dd4bf; }
+    .mdv-banner { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #8b949e; }
+    .mdv-banner code { background: #0d1117; padding: 2px 6px; border-radius: 4px; color: #7ee787; font-family: Consolas, monospace; font-size: 11px; }
+    .log-select { display: flex; gap: 8px; align-items: center; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #484f58; font-size: 14px; }
+    .empty-state .icon { font-size: 40px; margin-bottom: 8px; }
+    .highlight { background: rgba(210,153,34,0.3); border-radius: 2px; padding: 0 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="app-bar">
+    <h1>Changelog Viewer</h1>
+    <span class="version-tag">PwShGUI Suite — 2604.B2.V33.3</span>
+  </div>
+
+  <div class="tab-strip" id="tabStrip">
+    <button class="active" onclick="showTab('browse')">Browse</button>
+    <button onclick="showTab('diff')">Differential</button>
+    <button onclick="showTab('combined')">Combined View</button>
+    <button onclick="showTab('mdv')">Virtual .mdv</button>
+  </div>
+
+  <div class="main">
+
+    <!-- ═══════════ TAB 1: BROWSE ═══════════ -->
+    <div class="tab-panel active" id="tabBrowse">
+      <div class="filter-bar">
+        <label>Log:</label>
+        <select id="logSelect" onchange="loadChangelog()">
+          <option value="CHANGELOG" selected="selected">CHANGELOG.md</option>
+          <option value="ENHANCEMENTS-LOG">ENHANCEMENTS-LOG.md</option>
+        </select>
+        <label>Search:</label>
+        <input type="search" id="searchInput" placeholder="Type to filter entries..." oninput="applyFilters()" />
+        <label>From:</label>
+        <input type="date" id="dateFrom" onchange="applyFilters()" />
+        <label>To:</label>
+        <input type="date" id="dateTo" onchange="applyFilters()" />
+        <label>Category:</label>
+        <select id="categoryFilter" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="Added">Added</option>
+          <option value="Changed">Changed</option>
+          <option value="Fixed">Fixed</option>
+          <option value="Removed">Removed</option>
+          <option value="Security">Security</option>
+          <option value="Deprecated">Deprecated</option>
+          <option value="Pipeline">Pipeline</option>
+        </select>
+        <label>Type:</label>
+        <select id="typeFilter" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="sin">SIN Fix (⸸)</option>
+          <option value="feature">Feature (⚙)</option>
+          <option value="file">New File (📄)</option>
+          <option value="manifest">Manifest (📋)</option>
+          <option value="pipeline">Pipeline (🔁)</option>
+          <option value="tracking">Tracking (📌)</option>
+        </select>
+        <button class="btn-alt" onclick="clearFilters()">Clear</button>
+      </div>
+
+      <div class="stats-strip" id="statsStrip">
+        <div class="stat-box"><div class="stat-val" id="statVersions">0</div><div class="stat-label">Versions</div></div>
+        <div class="stat-box"><div class="stat-val" id="statAdded">0</div><div class="stat-label">Added</div></div>
+        <div class="stat-box"><div class="stat-val" id="statChanged">0</div><div class="stat-label">Changed</div></div>
+        <div class="stat-box"><div class="stat-val" id="statFixed">0</div><div class="stat-label">Fixed</div></div>
+        <div class="stat-box"><div class="stat-val" id="statFiles">0</div><div class="stat-label">New Files</div></div>
+        <div class="stat-box"><div class="stat-val" id="statSins">0</div><div class="stat-label">SIN Fixes</div></div>
+      </div>
+
+      <div class="content-area" id="browseContent">
+        <div class="empty-state"><div class="icon">📋</div>Loading changelog...</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB 2: DIFFERENTIAL ═══════════ -->
+    <div class="tab-panel" id="tabDiff">
+      <div class="filter-bar">
+        <label>From Version:</label>
+        <select id="diffFrom"></select>
+        <label>To Version:</label>
+        <select id="diffTo"></select>
+        <button class="btn-info" onclick="computeDiff()">Compare</button>
+        <button class="btn-primary" onclick="exportMdv()">Export .mdv</button>
+      </div>
+      <div class="diff-panel" id="diffContent">
+        <div class="diff-side">
+          <div class="diff-header" id="diffLeftHeader">Select versions to compare</div>
+          <div class="diff-body" id="diffLeft"><div class="empty-state"><div class="icon">⇄</div>Pick two versions above</div></div>
+        </div>
+        <div class="diff-side">
+          <div class="diff-header" id="diffRightHeader">—</div>
+          <div class="diff-body" id="diffRight"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB 3: COMBINED VIEW ═══════════ -->
+    <div class="tab-panel" id="tabCombined">
+      <div class="filter-bar">
+        <label>From:</label>
+        <select id="combFrom"></select>
+        <label>To:</label>
+        <select id="combTo"></select>
+        <button class="btn-info" onclick="buildCombined()">Build Combined</button>
+        <button class="btn-primary" onclick="exportCombinedMdv()">Export .mdv</button>
+      </div>
+      <div class="mdv-banner" id="combBanner" style="display:none;">
+        Virtual combined changelog: <code id="combFilename">—</code>
+        <span>All changes between selected versions merged into a single view</span>
+      </div>
+      <div class="combined-panel" id="combContent">
+        <div class="empty-state"><div class="icon">📑</div>Select a range and click Build Combined</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB 4: VIRTUAL .mdv FILES ═══════════ -->
+    <div class="tab-panel" id="tabMdv">
+      <div class="filter-bar">
+        <label>Generated .mdv files (temp/):</label>
+        <select id="mdvSelect" onchange="loadMdv()">
+          <option value="">— Select —</option>
+        </select>
+        <button class="btn-alt" onclick="refreshMdvList()">Refresh</button>
+        <button class="btn-danger" onclick="clearMdvFiles()">Clear All</button>
+      </div>
+      <div class="content-area" id="mdvContent">
+        <div class="empty-state"><div class="icon">📄</div>.mdv files are generated on-demand via Differential or Combined tabs.<br/>They are stored in <code>temp/changelog-mdv/</code></div>
+      </div>
+    </div>
+
+  </div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+var _versions = [];     // parsed version entries [{tag, date, sections:{Added:[],Changed:[],...}, raw:''}]
+var _rawLines = [];     // raw markdown lines
+var _mdvStore = [];     // [{filename, content, created}] in-memory .mdv store (persisted to localStorage)
+
+// ═══════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+function showTab(id) {
+  var panels = document.querySelectorAll('.tab-panel');
+  var btns   = document.querySelectorAll('.tab-strip button');
+  for (var i = 0; i < panels.length; i++) { panels[i].className = 'tab-panel'; }
+  for (var i = 0; i < btns.length; i++)   { btns[i].className = ''; }
+  var map = { browse:'tabBrowse', diff:'tabDiff', combined:'tabCombined', mdv:'tabMdv' };
+  document.getElementById(map[id]).className = 'tab-panel active';
+  btns[['browse','diff','combined','mdv'].indexOf(id)].className = 'active';
+  if (id === 'mdv') { refreshMdvList(); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHANGELOG PARSING
+// ═══════════════════════════════════════════════════════════
+var CHANGELOG_CONTENT = '';
+var ENHANCEMENTS_CONTENT = '';
+
+function loadChangelog() {
+  var sel = document.getElementById('logSelect').value;
+  var content = (sel === 'CHANGELOG') ? CHANGELOG_CONTENT : ENHANCEMENTS_CONTENT;
+  if (!content) {
+    document.getElementById('browseContent').innerHTML = '<div class="empty-state"><div class="icon">⚠</div>Changelog not loaded. Place the file alongside this XHTML.</div>';
+    return;
+  }
+  _rawLines = content.split('\n');
+  _versions = parseChangelog(_rawLines);
+  populateVersionDropdowns();
+  applyFilters();
+}
+
+function parseChangelog(lines) {
+  var versions = [];
+  var cur = null;
+  var curSection = '';
+  for (var i = 0; i < lines.length; i++) {
+    var ln = lines[i];
+    // Version header: ## [tag] — date  OR  ## ⚙ date — Session ...
+    var m = ln.match(/^## \[([^\]]+)\]\s*[—–-]\s*(\d{4}-\d{2}-\d{2})/);
+    if (!m) { m = ln.match(/^## [⚙📌🔧✨🆕]\s*(\d{4}-\d{2}-\d{2})\s*[—–-]\s*(.*)/); }
+    if (m) {
+      if (cur) { versions.push(cur); }
+      cur = { tag: m[1], date: m[2] || m[1], sections: {}, raw: ln + '\n', lineStart: i };
+      curSection = '';
+      continue;
+    }
+    if (!cur) continue;
+    cur.raw += ln + '\n';
+    // Section header: ### Added, ### Changed, etc.
+    var sm = ln.match(/^### (Added|Changed|Fixed|Removed|Security|Deprecated|Pipeline Metrics)/);
+    if (sm) { curSection = sm[1]; if (!cur.sections[curSection]) { cur.sections[curSection] = []; } continue; }
+    // List items
+    if (curSection && ln.match(/^- /)) {
+      cur.sections[curSection].push(ln.substring(2));
+    }
+    // Table rows (pipeline metrics)
+    if (curSection === 'Pipeline Metrics' && ln.match(/^\|/) && !ln.match(/^\|[\s-|]+$/)) {
+      cur.sections[curSection].push(ln);
+    }
+  }
+  if (cur) { versions.push(cur); }
+  return versions;
+}
+
+function populateVersionDropdowns() {
+  var opts = '';
+  for (var i = 0; i < _versions.length; i++) {
+    var v = _versions[i];
+    opts += '<option value="' + i + '">' + escHtml(v.tag) + ' (' + v.date + ')</option>';
+  }
+  document.getElementById('diffFrom').innerHTML = opts;
+  document.getElementById('diffTo').innerHTML = opts;
+  document.getElementById('combFrom').innerHTML = opts;
+  document.getElementById('combTo').innerHTML = opts;
+  if (_versions.length > 1) {
+    document.getElementById('diffFrom').selectedIndex = 1;
+    document.getElementById('diffTo').selectedIndex = 0;
+    document.getElementById('combFrom').selectedIndex = _versions.length - 1;
+    document.getElementById('combTo').selectedIndex = 0;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTERING
+// ═══════════════════════════════════════════════════════════
+function applyFilters() {
+  var search   = (document.getElementById('searchInput').value || '').toLowerCase();
+  var dateFrom = document.getElementById('dateFrom').value;
+  var dateTo   = document.getElementById('dateTo').value;
+  var category = document.getElementById('categoryFilter').value;
+  var typeVal  = document.getElementById('typeFilter').value;
+
+  var typeMap = { sin: '\u2E38', feature: '\u2699', file: '\uD83D\uDCC4', manifest: '\uD83D\uDCCB', pipeline: '\uD83D\uDD01', tracking: '\uD83D\uDCCC' };
+
+  var filtered = [];
+  var totals = { Added: 0, Changed: 0, Fixed: 0, Files: 0, Sins: 0 };
+
+  for (var i = 0; i < _versions.length; i++) {
+    var v = _versions[i];
+    // Date filter
+    if (dateFrom && v.date < dateFrom) continue;
+    if (dateTo && v.date > dateTo) continue;
+
+    var vFiltered = { tag: v.tag, date: v.date, sections: {}, raw: v.raw };
+    var hasMatch = false;
+
+    for (var sec in v.sections) {
+      if (!v.sections.hasOwnProperty(sec)) continue;
+      if (category && sec !== category) continue;
+      var items = v.sections[sec];
+      var filteredItems = [];
+      for (var j = 0; j < items.length; j++) {
+        var item = items[j];
+        if (search && item.toLowerCase().indexOf(search) === -1) continue;
+        if (typeVal && item.indexOf(typeMap[typeVal] || '___') === -1) continue;
+        filteredItems.push(item);
+        // Count totals
+        if (sec === 'Added') totals.Added++;
+        if (sec === 'Changed') totals.Changed++;
+        if (sec === 'Fixed') totals.Fixed++;
+        if (item.indexOf('\uD83D\uDCC4') !== -1) totals.Files++;
+        if (item.indexOf('\u2E38') !== -1) totals.Sins++;
+      }
+      if (filteredItems.length > 0) {
+        vFiltered.sections[sec] = filteredItems;
+        hasMatch = true;
+      }
+    }
+    // If no category/type/search filter, show version even if empty sections
+    if (!category && !typeVal && !search) hasMatch = true;
+    if (hasMatch) filtered.push(vFiltered);
+  }
+
+  // Update stats
+  document.getElementById('statVersions').textContent = filtered.length;
+  document.getElementById('statAdded').textContent    = totals.Added;
+  document.getElementById('statChanged').textContent  = totals.Changed;
+  document.getElementById('statFixed').textContent    = totals.Fixed;
+  document.getElementById('statFiles').textContent    = totals.Files;
+  document.getElementById('statSins').textContent     = totals.Sins;
+
+  renderVersions(filtered, search);
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('dateFrom').value = '';
+  document.getElementById('dateTo').value = '';
+  document.getElementById('categoryFilter').selectedIndex = 0;
+  document.getElementById('typeFilter').selectedIndex = 0;
+  applyFilters();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════════════
+function renderVersions(versions, highlight) {
+  var html = '';
+  if (versions.length === 0) {
+    html = '<div class="empty-state"><div class="icon">🔍</div>No entries match the current filters</div>';
+  }
+  for (var i = 0; i < versions.length; i++) {
+    var v = versions[i];
+    html += '<div class="version-block">';
+    html += '<h2>' + escHtml(v.tag) + ' <span class="date">' + v.date + '</span></h2>';
+    for (var sec in v.sections) {
+      if (!v.sections.hasOwnProperty(sec)) continue;
+      var tagClass = 'tag-' + sec.toLowerCase().replace(/\s.*/,'');
+      html += '<h3><span class="tag ' + tagClass + '">' + escHtml(sec) + '</span></h3>';
+      if (sec === 'Pipeline Metrics') {
+        html += renderTable(v.sections[sec]);
+      } else {
+        html += '<ul>';
+        for (var j = 0; j < v.sections[sec].length; j++) {
+          var txt = escHtml(v.sections[sec][j]);
+          if (highlight) { txt = highlightText(txt, highlight); }
+          html += '<li>' + txt + '</li>';
+        }
+        html += '</ul>';
+      }
+    }
+    html += '</div>';
+  }
+  document.getElementById('browseContent').innerHTML = html;
+}
+
+function renderTable(rows) {
+  if (rows.length < 2) return '';
+  var html = '<table>';
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].split('|').filter(function(c) { return c.trim() !== ''; });
+    if (i === 0) {
+      html += '<thead><tr>';
+      for (var c = 0; c < cells.length; c++) html += '<th>' + escHtml(cells[c].trim()) + '</th>';
+      html += '</tr></thead><tbody>';
+    } else if (!rows[i].match(/^[\s|:-]+$/)) {
+      html += '<tr>';
+      for (var c = 0; c < cells.length; c++) html += '<td>' + escHtml(cells[c].trim()) + '</td>';
+      html += '</tr>';
+    }
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function highlightText(text, term) {
+  if (!term) return text;
+  var idx = text.toLowerCase().indexOf(term.toLowerCase());
+  if (idx === -1) return text;
+  return text.substring(0, idx) + '<span class="highlight">' + text.substring(idx, idx + term.length) + '</span>' + text.substring(idx + term.length);
+}
+
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(s));
+  return d.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════════════
+// DIFFERENTIAL COMPARISON
+// ═══════════════════════════════════════════════════════════
+function computeDiff() {
+  var fi = parseInt(document.getElementById('diffFrom').value, 10);
+  var ti = parseInt(document.getElementById('diffTo').value, 10);
+  if (isNaN(fi) || isNaN(ti) || fi === ti) { alert('Select two different versions'); return; }
+
+  var vFrom = _versions[fi];
+  var vTo   = _versions[ti];
+
+  document.getElementById('diffLeftHeader').textContent  = vFrom.tag + ' (' + vFrom.date + ')';
+  document.getElementById('diffRightHeader').textContent = vTo.tag + ' (' + vTo.date + ')';
+
+  // Build sets for comparison
+  var leftItems  = collectAllItems(vFrom);
+  var rightItems = collectAllItems(vTo);
+
+  var leftHtml = '', rightHtml = '';
+
+  // Items only in left (removed relative to right)
+  for (var i = 0; i < leftItems.length; i++) {
+    if (rightItems.indexOf(leftItems[i]) === -1) {
+      leftHtml += '<span class="diff-del">- ' + escHtml(leftItems[i]) + '</span>';
+    } else {
+      leftHtml += '<span class="diff-ctx">  ' + escHtml(leftItems[i]) + '</span>';
+    }
+  }
+
+  // Items only in right (added relative to left)
+  for (var i = 0; i < rightItems.length; i++) {
+    if (leftItems.indexOf(rightItems[i]) === -1) {
+      rightHtml += '<span class="diff-add">+ ' + escHtml(rightItems[i]) + '</span>';
+    } else {
+      rightHtml += '<span class="diff-ctx">  ' + escHtml(rightItems[i]) + '</span>';
+    }
+  }
+
+  document.getElementById('diffLeft').innerHTML  = leftHtml || '<span class="diff-ctx">(no entries)</span>';
+  document.getElementById('diffRight').innerHTML = rightHtml || '<span class="diff-ctx">(no entries)</span>';
+}
+
+function collectAllItems(version) {
+  var items = [];
+  for (var sec in version.sections) {
+    if (!version.sections.hasOwnProperty(sec)) continue;
+    for (var i = 0; i < version.sections[sec].length; i++) {
+      items.push('[' + sec + '] ' + version.sections[sec][i]);
+    }
+  }
+  return items;
+}
+
+// ═══════════════════════════════════════════════════════════
+// COMBINED VIEW
+// ═══════════════════════════════════════════════════════════
+function buildCombined() {
+  var fi = parseInt(document.getElementById('combFrom').value, 10);
+  var ti = parseInt(document.getElementById('combTo').value, 10);
+  if (isNaN(fi) || isNaN(ti)) { alert('Select version range'); return; }
+  var lo = Math.min(fi, ti);
+  var hi = Math.max(fi, ti);
+
+  var merged = { Added: [], Changed: [], Fixed: [], Removed: [], Security: [], Deprecated: [], 'Pipeline Metrics': [] };
+  for (var i = lo; i <= hi; i++) {
+    var v = _versions[i];
+    for (var sec in v.sections) {
+      if (!v.sections.hasOwnProperty(sec)) continue;
+      if (!merged[sec]) merged[sec] = [];
+      for (var j = 0; j < v.sections[sec].length; j++) {
+        merged[sec].push(v.sections[sec][j] + '  [' + v.tag + ']');
+      }
+    }
+  }
+
+  var fromTag = _versions[hi].tag;
+  var toTag   = _versions[lo].tag;
+  var fname   = 'combined-' + fromTag.replace(/\./g,'-') + '_to_' + toTag.replace(/\./g,'-') + '.mdv';
+
+  document.getElementById('combBanner').style.display = 'flex';
+  document.getElementById('combFilename').textContent = fname;
+
+  var html = '<div class="version-block">';
+  html += '<h2>Combined: ' + escHtml(fromTag) + ' → ' + escHtml(toTag) + '</h2>';
+  for (var sec in merged) {
+    if (!merged.hasOwnProperty(sec) || merged[sec].length === 0) continue;
+    var tagClass = 'tag-' + sec.toLowerCase().replace(/\s.*/,'');
+    html += '<h3><span class="tag ' + tagClass + '">' + escHtml(sec) + '</span> (' + merged[sec].length + ')</h3>';
+    html += '<ul>';
+    for (var k = 0; k < merged[sec].length; k++) {
+      html += '<li>' + escHtml(merged[sec][k]) + '</li>';
+    }
+    html += '</ul>';
+  }
+  html += '</div>';
+  document.getElementById('combContent').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// .MDV EXPORT / MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function exportMdv() {
+  var fi = parseInt(document.getElementById('diffFrom').value, 10);
+  var ti = parseInt(document.getElementById('diffTo').value, 10);
+  if (isNaN(fi) || isNaN(ti) || fi === ti) { alert('Run a comparison first'); return; }
+
+  var vFrom = _versions[fi];
+  var vTo   = _versions[ti];
+  var fname = 'diff-' + vFrom.tag.replace(/\./g,'-') + '_vs_' + vTo.tag.replace(/\./g,'-') + '.mdv';
+
+  var md = '<!-- Virtual Differential Markdown -->\n';
+  md += '<!-- Generated: ' + new Date().toISOString() + ' -->\n';
+  md += '<!-- Source: CHANGELOG.md -->\n\n';
+  md += '# Differential: ' + vFrom.tag + ' vs ' + vTo.tag + '\n\n';
+
+  md += '## Removed in ' + vTo.tag + ' (present in ' + vFrom.tag + ')\n\n';
+  var leftItems  = collectAllItems(vFrom);
+  var rightItems = collectAllItems(vTo);
+  for (var i = 0; i < leftItems.length; i++) {
+    if (rightItems.indexOf(leftItems[i]) === -1) { md += '- ~~' + leftItems[i] + '~~\n'; }
+  }
+
+  md += '\n## Added in ' + vTo.tag + ' (not in ' + vFrom.tag + ')\n\n';
+  for (var i = 0; i < rightItems.length; i++) {
+    if (leftItems.indexOf(rightItems[i]) === -1) { md += '- **' + rightItems[i] + '**\n'; }
+  }
+
+  saveMdv(fname, md);
+  alert('Exported: ' + fname);
+}
+
+function exportCombinedMdv() {
+  var fi = parseInt(document.getElementById('combFrom').value, 10);
+  var ti = parseInt(document.getElementById('combTo').value, 10);
+  if (isNaN(fi) || isNaN(ti)) { alert('Build a combined view first'); return; }
+  var lo = Math.min(fi, ti);
+  var hi = Math.max(fi, ti);
+
+  var fromTag = _versions[hi].tag;
+  var toTag   = _versions[lo].tag;
+  var fname = 'combined-' + fromTag.replace(/\./g,'-') + '_to_' + toTag.replace(/\./g,'-') + '.mdv';
+
+  var md = '<!-- Virtual Combined Markdown -->\n';
+  md += '<!-- Generated: ' + new Date().toISOString() + ' -->\n';
+  md += '<!-- Source: CHANGELOG.md -->\n';
+  md += '<!-- Range: ' + fromTag + ' to ' + toTag + ' -->\n\n';
+  md += '# Combined Changelog: ' + fromTag + ' → ' + toTag + '\n\n';
+
+  for (var i = lo; i <= hi; i++) {
+    md += _versions[i].raw + '\n';
+  }
+
+  saveMdv(fname, md);
+  alert('Exported: ' + fname);
+}
+
+function saveMdv(filename, content) {
+  // Check for existing
+  for (var i = 0; i < _mdvStore.length; i++) {
+    if (_mdvStore[i].filename === filename) {
+      _mdvStore[i].content = content;
+      _mdvStore[i].created = new Date().toISOString();
+      persistMdvStore();
+      return;
+    }
+  }
+  _mdvStore.push({ filename: filename, content: content, created: new Date().toISOString() });
+  persistMdvStore();
+}
+
+function persistMdvStore() {
+  try { localStorage.setItem('pwshgui_mdv_store', JSON.stringify(_mdvStore)); } catch(e) { /* quota */ }
+}
+
+function loadMdvStore() {
+  try {
+    var s = localStorage.getItem('pwshgui_mdv_store');
+    if (s) { _mdvStore = JSON.parse(s); }
+  } catch(e) { _mdvStore = []; }
+}
+
+function refreshMdvList() {
+  loadMdvStore();
+  var sel = document.getElementById('mdvSelect');
+  sel.innerHTML = '<option value="">— Select (' + _mdvStore.length + ' files) —</option>';
+  for (var i = 0; i < _mdvStore.length; i++) {
+    sel.innerHTML += '<option value="' + i + '">' + escHtml(_mdvStore[i].filename) + ' (' + _mdvStore[i].created.substring(0,10) + ')</option>';
+  }
+}
+
+function loadMdv() {
+  var idx = parseInt(document.getElementById('mdvSelect').value, 10);
+  if (isNaN(idx) || !_mdvStore[idx]) {
+    document.getElementById('mdvContent').innerHTML = '<div class="empty-state"><div class="icon">📄</div>Select an .mdv file</div>';
+    return;
+  }
+  var mdv = _mdvStore[idx];
+  var lines = mdv.content.split('\n');
+  var html = '<div class="mdv-banner"><code>' + escHtml(mdv.filename) + '</code> Generated: ' + mdv.created + '</div>';
+  html += '<div class="version-block" style="font-family: Consolas, monospace; font-size: 12px; white-space: pre-wrap; line-height: 1.7;">';
+  for (var i = 0; i < lines.length; i++) {
+    var ln = escHtml(lines[i]);
+    if (lines[i].indexOf('~~') !== -1)  { html += '<span class="diff-del">' + ln + '</span>'; }
+    else if (lines[i].indexOf('**') !== -1 && lines[i].indexOf('- **') !== -1) { html += '<span class="diff-add">' + ln + '</span>'; }
+    else if (lines[i].indexOf('#') === 0) { html += '<span style="color:#2dd4bf;font-weight:bold;">' + ln + '</span>\n'; }
+    else { html += ln + '\n'; }
+  }
+  html += '</div>';
+  document.getElementById('mdvContent').innerHTML = html;
+}
+
+function clearMdvFiles() {
+  if (!confirm('Clear all generated .mdv files from local storage?')) return;
+  _mdvStore = [];
+  persistMdvStore();
+  refreshMdvList();
+  document.getElementById('mdvContent').innerHTML = '<div class="empty-state"><div class="icon">🗑</div>All .mdv files cleared</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// EMBEDDED CHANGELOG DATA
+// ═══════════════════════════════════════════════════════════
+// The viewer works by embedding changelog content directly.
+// To update: paste CHANGELOG.md content into CHANGELOG_CONTENT below,
+// or use Invoke-ChangelogDiff.ps1 to auto-generate fresh data.
+
+CHANGELOG_CONTENT = [
+'## [2604.B2.V33.3] \u2014 2026-04-16',
+'',
+'### Added',
+'- \uD83D\uDCC4 `~README.md/CHANGELOG.md` \u2014 Standardised changelog, retrofitted from ENHANCEMENTS-LOG.md',
+'- \uD83D\uDCC4 `XHTML-ChangelogViewer.xhtml` \u2014 Interactive HTML changelog browser',
+'- \uD83D\uDCC4 `scripts/Invoke-ChangelogDiff.ps1` \u2014 .mdv differential generator',
+'- \uD83D\uDCC4 `styles/accent-changelog.css` \u2014 Accent CSS for changelog viewer',
+'',
+'### Changed',
+'- \uD83D\uDD01 Pipeline cycle 10/10 \u2014 baseline confirmed: 0 parse failures, 0 relics, 0 open todos',
+'',
+'### Fixed',
+'- \u2E38 No new SIN findings this cycle',
+'',
+'### Pipeline Metrics',
+'| Metric | Value |',
+'| ParseFail | 0 \u2705 |',
+'| Relics | 0 \u2705 |',
+'| OpenTodos | 0 \u2705 |',
+'| PlannedTodos | 69 |',
+'| Completion% | 25.1% |',
+'',
+'## [2604.B2.V33.1] \u2014 2026-04-12',
+'',
+'### Added',
+'- \uD83D\uDCC4 7\u00D7 .psd1 module manifests (Get-LaunchTelemetry, PwShGUI-ConvoVault, IntegrityCore, NetworkTools, SchemaTranslator, RE-memorAiZ, WorkspaceIntentReview)',
+'',
+'### Changed',
+'- \u2699 `Invoke-PipeGAP.ps1` \u2014 Relic detection scans manifest.scripts[].path + .name; manifestBuilderExclusions added',
+'- \u2699 `PwShGUI-Theme.psm1` \u2014 System.Drawing guard before theme init',
+'- \u2699 `RE-memorAiZ.psm1` \u2014 8 functions renamed: Phase1-Inventory \u2192 Phase1Inventory',
+'- \u2699 `PwShGUI-VersionManager.Tests.ps1` \u2014 -DisableNameChecking on Import-Module',
+'',
+'### Fixed',
+'- \u2E38 P008 \u2014 PwShGUI-Theme.psm1 conditional assembly load',
+'- \u2E38 P006 \u2014 Invoke-DeduplicationAssessment.ps1 BOM + em-dash fix',
+'- \u2E38 Parse \u2014 Invoke-ModuleGalleryValidator.ps1 unclosed string + dup block',
+'',
+'### Pipeline Metrics',
+'| Metric | Cycle 1 | Cycle 4 |',
+'| ParseFail | 2 | 0 \u2705 |',
+'| Relics | 83 | 0 \u2705 |',
+'| Unchecked | 372 | 372 |',
+'| Completion% | 21% | 21% |',
+'',
+'## [2604.B1.V32.3] \u2014 2026-04-08',
+'',
+'### Added',
+'- \uD83D\uDCC4 `Invoke-StaticWorkspaceScan.ps1` \u2014 6-phase static workspace scanner',
+'- \uD83D\uDCC4 `Invoke-EngineCrashCleanup.ps1` \u2014 Post-crash quarantine + cleanup',
+'- \uD83D\uDCC4 `DOC-ICON-STANDARD.md` \u2014 25-category icon map',
+'- \u2699 `XHTML-WorkspaceHub.xhtml` \u2014 Event Logs section, stats strip, tooltips',
+'',
+'### Changed',
+'- \u2699 `Start-LocalWebEngine.ps1` \u2014 Bootstrap logging, crash detection, new API routes',
+'',
+'### Fixed',
+'- \u2E38 P009 \u2014 Start-LocalWebEngine.ps1 path validation',
+'- \u2E38 P012 \u2014 -Encoding UTF8 on engine bootstrap writes',
+'',
+'## [2604.B2.V31.0] \u2014 2026-04-05',
+'',
+'### Changed',
+'- \u2699 Major version alignment \u2014 160 files to 2604.B2.V31.0',
+'- \u2699 Build prefix B1/B3 \u2192 B2; case v \u2192 V',
+'',
+'### Added',
+'- \uD83D\uDCC4 `Invoke-VersionAlignmentTool.ps1` \u2014 6-mode version governance',
+'- \uD83D\uDD01 5\u00D7 pipeline optimisation cycles',
+'',
+'## [2604.B1.V1.0] \u2014 2026-04-04',
+'',
+'### Added',
+'- \uD83D\uDCC4 `Launch-CFRMenu.bat` \u2014 First-run config + diagnostic menu',
+'- \uD83D\uDCC4 `Get-LaunchTelemetry.psm1` \u2014 14-field telemetry collector',
+'- \uD83D\uDCC4 `Test-Prerequisites.ps1` \u2014 10-check validation',
+'- \uD83D\uDCC4 `Repair-ModulePaths.ps1` \u2014 PSModulePath auto-repair',
+'- \uD83D\uDCC4 `Export-SystemReport.ps1` \u2014 HTML system diagnostic report',
+'',
+'### Changed',
+'- \u2699 `Launch-GUI.bat` \u2014 PS7 detection, exec policy menu, CSV logging, CFRMenu trigger',
+'',
+'## [2603.B0.V27.0] \u2014 2026-04-03',
+'',
+'### Added',
+'- \u2699 `Invoke-WorkspaceDependencyMap.ps1` v2.0 \u2014 URL/IP extraction, DNS, XHTML, ZIP',
+'- \u2699 CronAiAthon-Scheduler DepMap task type',
+'',
+'## [2603.B0.V27.0] \u2014 2026-03-28',
+'',
+'### Added',
+'- \uD83D\uDCC4 `CronAiAthon-Pipeline.psm1` \u2014 12-function pipeline registry',
+'- \uD83D\uDCC4 `CronAiAthon-BugTracker.psm1` \u2014 6-vector bug detection',
+'- \uD83D\uDCC4 `CronAiAthon-Scheduler.psm1` \u2014 15-function scheduler',
+'- \uD83D\uDCC4 `CronAiAthon-EventLog.psm1` \u2014 EventLog + SYSLOG',
+'- \uD83D\uDCC4 `Show-CronAiAthonTool.ps1` \u2014 12-tab WinForms dashboard',
+'- \uD83D\uDCC4 `Invoke-FileChangeTracker.ps1` \u2014 HMAC-SHA256 ledger',
+'- \uD83D\uDCC4 `Invoke-RenameProposal.ps1` \u2014 Naming convention scanner',
+'',
+'### Changed',
+'- \u2699 Main-GUI.ps1 \u2014 Cron-Ai-Athon Tool in Tools menu',
+'- \uD83D\uDCCB 20\u00D7 .md files standardised to HTML comment VersionTag',
+'',
+'## [2603.B0.V27.0] \u2014 2026-03-11',
+'',
+'### Added',
+'- \u2699 Workspace file cache (120s TTL)',
+'- \u2699 AVPN Tracker \u2014 connector shapes, context menu, Auto Plug All',
+'- \uD83D\uDCC4 `ConvertTo-FeatureToDo.ps1` \u2014 Feature-to-todo converter',
+'',
+'### Fixed',
+'- \u2699 AssistedSASC.psm1 null guard on _InvokerItems',
+'- \u2699 Replaced 5 uncached Get-ChildItem scans',
+'',
+'## [2603.B0.V27.0] \u2014 2026-03-10',
+'',
+'### Added',
+'- \uD83D\uDCC4 `XHTML-TestingRoutineBuilder.xhtml` \u2014 22-type test builder',
+'- \uD83D\uDCC4 `Invoke-TestRoutine.ps1` \u2014 PowerShell test backend',
+'',
+'## [2603.B0.V27.0] \u2014 2026-03-09',
+'',
+'### Added',
+'- \uD83D\uDCC4 `Show-AppTemplateManager.ps1` \u2014 3-pane app template GUI',
+'- \uD83D\uDCC4 `Show-ScanDashboard.ps1` \u2014 Multi-tab scan center',
+'',
+'### Fixed',
+'- \u2E38 3\u00D7 XHTML files \u2014 VersionTag format corrected',
+'',
+'## [1.0.1] \u2014 2026-01-25',
+'',
+'### Added',
+'- \u2699 Event + Debug log levels',
+'- \u2699 GUI event logging',
+'- \u2699 Safety scoring system (0-100)',
+'',
+'### Fixed',
+'- \u2699 GUI display \u2014 ShowDialog suppression fix',
+'',
+'## [1.0.0] \u2014 2026-01-24',
+'',
+'### Added',
+'- \uD83D\uDCC4 Initial release \u2014 PowerShellGUI WinForms application',
+''
+].join('\n');
+
+// ENHANCEMENTS-LOG stripped summary (loaded on demand)
+ENHANCEMENTS_CONTENT = CHANGELOG_CONTENT; // Use same parsed data; full ENHANCEMENTS-LOG is the source-of-truth file
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+(function init() {
+  loadMdvStore();
+  loadChangelog();
+})();
+
+//]]>
+</script>
+
+</body>
+</html>

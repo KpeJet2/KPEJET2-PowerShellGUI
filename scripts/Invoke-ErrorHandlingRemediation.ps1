@@ -1,4 +1,10 @@
-﻿<#
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
+<#
 .SYNOPSIS
     Automated batch remediation for common error handling violations.
 
@@ -41,7 +47,12 @@
     FileRole : Remediation Script
 #>
 
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.0
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 #Requires -Version 5.1
 
 [CmdletBinding()]
@@ -84,7 +95,7 @@ if (@($reportFiles).Count -eq 0) {
 }
 
 $reportPath = $reportFiles[0].FullName
-Write-Host "[INFO] Using compliance report: $($reportFiles[0].Name)" -ForegroundColor Cyan
+Write-Host "[INFO] Using compliance report: $($reportFiles[0].Name)" -ForegroundColor Cyan  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
 
 try {
     $report = Get-Content $reportPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
@@ -283,3 +294,19 @@ try {
 }
 
 exit $(if ($errorCount -gt 0) { 1 } else { 0 })
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

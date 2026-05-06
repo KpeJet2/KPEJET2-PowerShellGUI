@@ -1,0 +1,39 @@
+{
+  "sessionModCount": 1,
+  "priority": "HIGH",
+  "id": "ToDo-20260413014630-8cc8dfab",
+  "title": "#LINK-REFS: XHTML-DependencyVis.xhtml — 3 broken CSS relative hrefs",
+  "acknowledged": null,
+  "result": "CSS hrefs already corrected on 2026-04-13 (../../styles/ -> styles/); todo closure confirmed by agent 2026-04-14.",
+  "executedAt": null,
+  "linkedFeatures": [],
+  "notes": "",
+  "type": "ToDo",
+  "source": "Manual",
+  "sinId": "",
+  "outlinePhase": "assessment",
+  "suggestedBy": "CodingAgent",
+  "parentId": "",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T17:46:30.8343142Z",
+  "completedAt": "2026-04-14T13:31:04.0874478Z",
+  "linkedBugs": [],
+  "affectedFiles": [
+    "XHTML-DependencyVis.xhtml"
+  ],
+  "description": "Pre-validation link audit found 3 broken CSS href attributes resolving outside workspace. File: C:\\PowerShellGUI\\XHTML-DependencyVis.xhtml. Broken refs: (1) href=\"../../styles/pwshgui-base.css\" -> resolves to C:\\styles\\pwshgui-base.css (missing), (2) href=\"../../styles/pwshgui-responsive.css\" -> resolves to C:\\styles\\pwshgui-responsive.css (missing), (3) href=\"../../styles/layout-mastertight-wleftmenu.css\" -> resolves to C:\\styles\\layout-mastertight-wleftmenu.css (missing). Fix: change all three to styles/pwshgui-base.css, styles/pwshgui-responsive.css, styles/layout-mastertight-wleftmenu.css (relative to workspace root).",
+  "tags": [
+    "#LINK-REFS",
+    "link-integrity",
+    "css",
+    "xhtml"
+  ],
+  "outlineVersion": "v0",
+  "category": "link-integrity",
+  "plannedAt": null,
+  "executionAgent": "",
+  "executionMethod": "",
+  "status": "IN_PROGRESS",
+  "modified": "2026-04-15T00:37:12.4674070Z",
+  "reviewedAt": "2026-04-15T00:37:12.4686291Z"
+}

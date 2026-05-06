@@ -1,5 +1,10 @@
 #Requires -Version 5.1
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 <#
 .SYNOPSIS
 # --- Structured lifecycle logging ---
@@ -56,7 +61,7 @@ $approvedVerbs = @(
 
 $excludePaths = @('.history','node_modules','__pycache__','temp','.git','agents\focalpoint-null\focalpoint_null')
 
-function Test-ExcludedPath {
+function Test-ExcludedPath {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$FullPath)
     foreach ($ex in $excludePaths) {
         if ($FullPath -like "*\$ex\*" -or $FullPath -like "*\$ex") { return $true }
@@ -274,3 +279,19 @@ if ($Execute) {
 if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
     Write-AppLog -Message "Completed: $($MyInvocation.MyCommand.Name)" -Level 'Info'
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

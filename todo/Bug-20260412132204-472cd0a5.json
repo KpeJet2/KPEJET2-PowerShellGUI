@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:22:04.0208105Z",
+  "title": "Unexpected token 'if' in expression or statement.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412132204-472cd0a5",
+  "description": "Parse error in Main-GUI.ps1 line 5604: Unexpected token 'if' in expression or statement.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:22:04.0208422Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260328082537-d4c7c809",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "Matched existing sin: Unexpected token '??' in expression or statement.",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "sin_id": "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000",
+  "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
+  "description": "WinForms event handlers (Add_Click, Add_Tick, Add_FormClosing, Add_SelectedIndexChanged, etc.) that lack a try/catch wrapper will propagate any unhandled error as System.Management.Automation.PipelineStoppedException. PowerShell cannot display the inner error because the WinForms message loop swallows context. This causes silent crashes or cryptic 'The pipeline has been stopped' dialogs with no useful stack trace. Timer Tick handlers are especially dangerous because they fire repeatedly on the UI thread. Combined with .GetNewClosure() $script: scope issues (P024) and null-reference risks (P022), unguarded handlers are the #1 source of PipelineStoppedException in this project.",
+  "severity": "CRITICAL",
+  "category": "reliability",
+  "vector": "winforms-event-handler-exception-propagation",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 12,
+  "created_at": "2026-04-15T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Regex scan for .Add_<EventName>({ without try/catch as first statement in block",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": true,
+  "exception_message": "System.Management.Automation.PipelineStoppedException: The pipeline has been stopped.",
+  "exception_stack_highlight": "at lambda_method(Closure, Object, EventArgs)",
+  "preventionRule": "Every WinForms event handler script block MUST wrap its body in try/catch. At minimum: catch { Write-AppLog \"Handler error: $_\" -Level Error }. For timer Tick handlers, also call $this.Stop() in the catch to prevent repeated crashes.",
+  "remedy": "Wrap the handler body:\n  BEFORE: $btn.Add_Click({ $form.Close() })\n  AFTER:  $btn.Add_Click({ try { $form.Close() } catch { Write-AppLog \"Click error: $_\" -Level Error } })\n\nFor timer Tick handlers:\n  $timer.Add_Tick({ try { <body> } catch { $this.Stop(); Write-AppLog \"Tick error: $_\" -Level Error } })",
+  "scan_regex": "\\.Add_(Click|Tick|FormClosing|Shown|SelectedIndexChanged|TextChanged|CheckedChanged|CellClick|CellDoubleClick|ColumnClick|DrawItem|MouseClick|KeyDown|Resize|Load|Closing|Scroll|ValueChanged|CheckStateChanged)\\s*\\(\\s*\\{(?!\\s*try\\b)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$|Invoke-SINPatternScanner|sin_registry|templates",
+  "context_guard_regex": null,
+  "context_guard_lines": 0,
+  "context_guard_direction": "above",
+  "inline_guard_regex": null,
+  "known_instances": [
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 352,
+      "handler": "timer.Add_Tick (inside btnRun.Add_Click)",
+      "risk": "CRITICAL — fires every 500ms, accesses $shared.RunningJobs dictionary keys that may not exist, Receive-Job can fail",
+      "notes": "Also uses .GetNewClosure() with $shared hashtable — container pattern is correct but body needs try/catch"
+    },
+    {
+      "file": "scripts/Show-ScanDashboard.ps1",
+      "line": 715,
+      "handler": "timer.Add_Tick (inside btnRunAll.Add_Click)",
+      "risk": "CRITICAL — same pattern as line 352 for Run All button",
+      "notes": "Duplicate timer tick handler for batch scan execution"
+    },
+    {
+      "file": "modules/PwShGUICore.psm1",
+      "line": 460,
+      "handler": "timer.Add_Tick (countdown timer in Read-LockedPrompt)",
+      "risk": "HIGH — accesses $script:_rlpRemaining via .GetNewClosure(), ShowDialog() at line 470 without Set-StrictMode -Off guard",
+      "notes": "Compound risk: P024 (StrictMode bleed) + P029 (unprotected handler) + .GetNewClosure() $script: issue"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 415,
+      "handler": "$okBtn.Add_Click — one-liner: dialog.Close()",
+      "risk": "MEDIUM — Form.Close() or DialogResult assignment can throw during disposal",
+      "notes": "One-liner closure, no error boundary"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 421,
+      "handler": "$cancelBtn.Add_Click — one-liner: dialog.Close()",
+      "risk": "MEDIUM — same pattern as line 415",
+      "notes": "One-liner closure, no error boundary"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 549,
+      "handler": "$closeBtn.Add_Click — one-liner: form.Close()",
+      "risk": "MEDIUM — Form.Close() can throw if disposal race occurs",
+      "notes": "One-liner closure, no error boundary"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 525,
+      "handler": "$addBtn.Add_Click — calls Show-AVPNDeviceTypeDialog",
+      "risk": "HIGH — nested ShowDialog() call, array concatenation, logging — any failure propagates",
+      "notes": "No try/catch around Show-AVPNDeviceTypeDialog call"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 533,
+      "handler": "$editBtn.Add_Click — calls Show-AVPNDeviceTypeDialog",
+      "risk": "HIGH — .SelectedItems[0] access, nested ShowDialog(), array rewrite",
+      "notes": "Has .Count check but no error boundary for the dialog call"
+    },
+    {
+      "file": "modules/AVPN-Tracker.psm1",
+      "line": 541,
+      "handler": "$removeBtn.Add_Click — array rewrite",
+      "risk": "MEDIUM — .SelectedItems[0] access without handler-level try/catch",
+      "notes": "Has .Count check but no catch for downstream failures"
+    }
+  ],
+  "fix_template": "# Wrap event handler body in try/catch\n# For button handlers:\n$btn.Add_Click({\n    try {\n        # <original handler body>\n    } catch {\n        Write-AppLog \"Handler error: $_\" -Level Error\n    }\n})\n\n# For timer Tick handlers (stop timer on error to prevent repeat crashes):\n$timer.Add_Tick({\n    try {\n        # <original handler body>\n    } catch {\n        $this.Stop()\n        Write-AppLog \"Timer error: $_\" -Level Error\n    }\n})",
+  "related_sins": ["P002", "P022", "P024", "P027"]
+}

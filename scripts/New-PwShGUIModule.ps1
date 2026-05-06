@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Builder
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -9,7 +14,19 @@
     - Error handling templates (Template 3/5) pre-wired
     - Theme integration via Get-ThemeValue / Set-ControlProperty
     - Write-AppLog instead of Write-Warning/Write-Error
-    - Export-ModuleMember with explicit function list
+    - 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember with explicit function list
 .PARAMETER ModuleName
     Name of the new module (without .psm1 extension).
 .PARAMETER OutputDir
@@ -129,12 +146,36 @@ foreach ($funcName in $Functions) {
 [void]$sb.AppendLine('# ========================== EXPORTS ==========================')
 $funcList = ($Functions | ForEach-Object { "    '$_'" }) -join ",`n"
 if ($funcList) {
-    [void]$sb.AppendLine("Export-ModuleMember -Function @(")
+    [void]$sb.AppendLine("
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember -Function @(")
     [void]$sb.AppendLine($funcList)
     [void]$sb.AppendLine(")")
 }
 else {
-    [void]$sb.AppendLine('# Export-ModuleMember -Function @()')
+    [void]$sb.AppendLine('# 
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+Export-ModuleMember -Function @()')
 }
 
 # Write with UTF-8 BOM
@@ -150,3 +191,7 @@ Write-Host "  Type:      $Type" -ForegroundColor Gray
 Write-Host "  Functions: $(@($Functions).Count)" -ForegroundColor Gray
 Write-Host "  BOM:       Yes (UTF-8)" -ForegroundColor Gray
 Write-Host "  SIN-compliant: VersionTag, CmdletBinding, Write-AppLog, try/catch" -ForegroundColor Gray
+
+
+
+

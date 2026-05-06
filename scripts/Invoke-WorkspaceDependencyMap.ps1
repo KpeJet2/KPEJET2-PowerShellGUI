@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.1
+# VersionTag: 2604.B2.V31.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-03
 # FileRole: Scanner
@@ -77,7 +82,21 @@ Write-Output "Excluded  : $($script:ExcludeNames -join ', ')"
 # ─── Checkpoint + progress helpers ─────────────────────────────────────────
 $script:_CkptPath    = Join-Path (Join-Path $WorkspacePath 'checkpoints') 'dependency-scan-checkpoint.json'
 $script:_ProgressPath= Join-Path (Join-Path $WorkspacePath 'logs') 'scan-progress.json'
+$script:_PipelinePath= Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json'
 $script:_ScanStart   = [System.Diagnostics.Stopwatch]::StartNew()
+$script:_PhaseOrder  = @('folders','modules','scripts','configs','urls_ips','dns_resolution')
+$script:_SubFailures = [System.Collections.ArrayList]@()
+
+function Register-MapSubFailure {
+    [CmdletBinding()]
+    param([string]$Phase, [string]$Target, [string]$ErrorMessage)
+    $null = $script:_SubFailures.Add([pscustomobject]@{
+        phase   = $Phase
+        target  = $Target
+        error   = $ErrorMessage
+        at      = (Get-Date -Format 'o')
+    })
+}
 
 function Save-ScanPhaseCheckpoint {
     [CmdletBinding()]
@@ -133,12 +152,25 @@ function Save-ScanPhaseCheckpoint {
     # ── Write scan-progress.json for LocalWebEngine polling ──
     $progressDir = Split-Path $script:_ProgressPath -Parent
     if (-not (Test-Path $progressDir)) { New-Item -ItemType Directory -Path $progressDir -Force | Out-Null }
+    $completed = @($script:_PhaseOrder | Where-Object { $ckpt.phases.ContainsKey($_) -and $ckpt.phases[$_].status -eq 'done' }).Count
+    $errorCount = @($script:_PhaseOrder | Where-Object { $ckpt.phases.ContainsKey($_) -and $ckpt.phases[$_].status -eq 'error' }).Count
+    $overallStatus = if ($ProgressPct -ge 100) {
+        if ($errorCount -gt 0 -or @($script:_SubFailures).Count -gt 0) { 'partial' } else { 'done' }
+    } else { 'running' }
     $progress = @{
-        type           = 'scanProgress'
-        statusMessage  = "Phase $Phase complete ($Count items)"
-        progress       = $ProgressPct
-        phases         = $ckpt.phases
-        updatedAt      = $now
+        type            = 'scanProgress'
+        mode            = 'DependencyMap'
+        status          = $overallStatus
+        statusMessage   = "Phase $Phase complete ($Count items)"
+        progress        = $ProgressPct
+        totalPhases     = @($script:_PhaseOrder).Count
+        completedPhases = $completed
+        currentPhase    = if ($ProgressPct -ge 100) { $null } else { $Phase }
+        phases          = $ckpt.phases
+        updatedAt       = $now
+        error           = if ($overallStatus -eq 'partial') {
+            "$errorCount phase error(s), $(@($script:_SubFailures).Count) subroutine failure(s)"
+        } else { $null }
     }
     $progress | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $script:_ProgressPath -Encoding UTF8
 
@@ -146,7 +178,7 @@ function Save-ScanPhaseCheckpoint {
 }
 
 # ─── Helper: is this path under an excluded segment? ─────────────────────────
-function Test-ExcludedPath {
+function Test-ExcludedPath {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     [CmdletBinding()]
     param([string]$FullPath)
     $parts = $FullPath.ToLower().Split([System.IO.Path]::DirectorySeparatorChar)
@@ -221,7 +253,7 @@ foreach ($dir in $allDirsWithRoot) {
 }
 
 # ── Checkpoint: folders phase complete ──
-Save-ScanPhaseCheckpoint -Phase 'folders' -Status 'ok' -Count @($folderNodes).Count -ProgressPct 20
+Save-ScanPhaseCheckpoint -Phase 'folders' -Status 'done' -Count @($folderNodes).Count -ProgressPct 20
 
 # ─── Regex patterns used during code file parsing ────────────────────────────
 $fnRegex  = [regex]'(?m)^[ \t]*function\s+([A-Za-z][\w-]+)\s*[({]'
@@ -255,6 +287,7 @@ foreach ($f in $codeFiles) {
         $src = [System.IO.File]::ReadAllText($f.FullName, [System.Text.Encoding]::UTF8)
     } catch {
         Write-Output "  WARN: Cannot read $rel -- $($_.Exception.Message)"
+        Register-MapSubFailure -Phase 'scripts' -Target $rel -ErrorMessage $_.Exception.Message
         continue
     }
 
@@ -361,9 +394,9 @@ foreach ($f in $codeFiles) {
 }
 
 # ── Checkpoint: modules + scripts + urls_ips phases complete ──
-Save-ScanPhaseCheckpoint -Phase 'modules' -Status 'ok' -Count @($moduleNodes).Count -ProgressPct 45
-Save-ScanPhaseCheckpoint -Phase 'scripts' -Status 'ok' -Count @($scriptNodes).Count -ProgressPct 50
-Save-ScanPhaseCheckpoint -Phase 'urls_ips' -Status 'ok' -Count @($urlIpMap.Keys).Count -ProgressPct 55
+Save-ScanPhaseCheckpoint -Phase 'modules' -Status 'done' -Count @($moduleNodes).Count -ProgressPct 45
+Save-ScanPhaseCheckpoint -Phase 'scripts' -Status 'done' -Count @($scriptNodes).Count -ProgressPct 50
+Save-ScanPhaseCheckpoint -Phase 'urls_ips' -Status 'done' -Count @($urlIpMap.Keys).Count -ProgressPct 55
 
 # ─── Phase 4: Parse config files ─────────────────────────────────────────────
 Write-Output '[55%] Parsing config files and extracting URLs/IPs...'
@@ -383,7 +416,9 @@ foreach ($cf in $configFiles) {
         if (@($cfUrls).Count -gt 0 -or @($cfIPs).Count -gt 0) {
             $urlIpMap[$rel] = @{ urls = $cfUrls; ips = $cfIPs }
         }
-    } catch { <# Intentional: non-fatal URL scan on config #> }
+    } catch {
+        Register-MapSubFailure -Phase 'configs' -Target $rel -ErrorMessage $_.Exception.Message
+    }
 
     try {
         if ($cf.Extension -ieq '.json') {
@@ -400,7 +435,9 @@ foreach ($cf in $configFiles) {
                     Select-Object -Unique -First 30)
             }
         }
-    } catch { <# Intentional: non-fatal config parse failure #> }
+    } catch {
+        Register-MapSubFailure -Phase 'configs' -Target $rel -ErrorMessage $_.Exception.Message
+    }
 
     $cnid = New-NodeId
     $configNodes.Add([pscustomobject]@{
@@ -418,7 +455,7 @@ foreach ($cf in $configFiles) {
 }
 
 # ── Checkpoint: configs phase complete ──
-Save-ScanPhaseCheckpoint -Phase 'configs' -Status 'ok' -Count @($configNodes).Count -ProgressPct 62
+Save-ScanPhaseCheckpoint -Phase 'configs' -Status 'done' -Count @($configNodes).Count -ProgressPct 62
 
 # ─── Phase 4b: DNS resolution of URL hostnames ───────────────────────────────
 Write-Output '[62%] Resolving URL hostnames to IPs...'
@@ -461,16 +498,27 @@ if (-not $SkipDns) {
     Write-Output "  Resolving $($allHosts.Count) unique hostnames..."
     foreach ($hostName in $allHosts) {
         try {
-            $resolved = [System.Net.Dns]::GetHostAddresses($hostName) |
+            $dnsTask = [System.Net.Dns]::GetHostAddressesAsync($hostName)
+            if (-not $dnsTask.Wait(3000)) {
+                $dnsResolution[$hostName] = @{
+                    ips   = @()
+                    error = 'DNS timeout after 3000ms'
+                    hits  = if ($hostHitCount.ContainsKey($hostName)) { $hostHitCount[$hostName] } else { 0 }
+                }
+                Register-MapSubFailure -Phase 'dns_resolution' -Target $hostName -ErrorMessage 'DNS timeout after 3000ms'
+                continue
+            }
+            $resolved = @($dnsTask.Result |
                 Where-Object { $_.AddressFamily -eq 'InterNetwork' } |
                 ForEach-Object { $_.ToString() } |
-                Select-Object -Unique
+                Select-Object -Unique)
             $dnsResolution[$hostName] = @{
                 ips   = @($resolved)
                 error = ''
                 hits  = if ($hostHitCount.ContainsKey($hostName)) { $hostHitCount[$hostName] } else { 0 }
             }
         } catch {
+            Register-MapSubFailure -Phase 'dns_resolution' -Target $hostName -ErrorMessage $_.Exception.Message
             $dnsResolution[$hostName] = @{
                 ips   = @()
                 error = $_.Exception.Message
@@ -479,10 +527,10 @@ if (-not $SkipDns) {
         }
     }
     Write-Output "  DNS resolved $(@($dnsResolution.Keys).Count) hosts"
-    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'ok' -Count @($dnsResolution.Keys).Count -ProgressPct 70
+    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count @($dnsResolution.Keys).Count -ProgressPct 70
 } else {
     Write-Output '  DNS resolution skipped (-SkipDns)'
-    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'ok' -Count 0 -ProgressPct 70
+    Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count 0 -ProgressPct 70
 }
 
 # ─── Phase 5: Resolve import edges ───────────────────────────────────────────
@@ -825,7 +873,7 @@ document.getElementById('sum').innerHTML=
   '<b>URL files:</b> '+(s.urlFileCount||0)+'&#160;&#160;<b>Hosts:</b> '+(s.uniqueHosts||0)+'<br/>'+
   '<b>Unique IPs:</b> '+(s.uniqueIPs||0);
 
-// ─── Graph ────────────────────────────────────────────────────────────────────
+// ─── Graph (optimised for 2000+ nodes) ────────────────────────────────────────
 var TM={
   folder: {color:'#4a9eff',shape:'rect',   r:10,lbl:'Folders'},
   module: {color:'#ff8c42',shape:'circle', r:12,lbl:'Modules'},
@@ -834,7 +882,8 @@ var TM={
 };
 var EC={contains:'#1a3a5e',defines:'#3a2a5e',imports:'#1a4a2e',requires:'#1a4a4e'};
 var NS=document.createElementNS.bind(document,'http://www.w3.org/2000/svg');
-var showLbls=true,selId=null;
+var TOTAL=(D.nodes||[]).length,IS_LARGE=TOTAL>500;
+var showLbls=!IS_LARGE,selId=null;
 var active=Object.keys(TM).reduce(function(a,k){a[k]=true;return a;},{});
 
 // Filters
@@ -862,32 +911,50 @@ var ng=NS('g');vp.appendChild(ng);
 
 function mk(t,a){var e=NS(t);Object.keys(a||{}).forEach(function(k){e.setAttribute(k,a[k]);});return e;}
 
-// Initial positions
+// Initial positions — spread by type rings with jitter for large sets
 var byType={folder:[],module:[],script:[],config:[]};
 (D.nodes||[]).forEach(function(n){if(byType[n.type])byType[n.type].push(n);});
-var rings={folder:60,module:180,script:320,config:460};
+var rings={folder:80,module:220,script:420,config:560};
 Object.keys(byType).forEach(function(t){
   var nodes=byType[t],R=rings[t]||300;
+  if(IS_LARGE){R=R*Math.sqrt(TOTAL/500);}
   nodes.forEach(function(n,i){
     var a=2*Math.PI*i/Math.max(nodes.length,1);
-    n.x=W/2+R*Math.cos(a);n.y=H/2+R*Math.sin(a);n.vx=0;n.vy=0;
+    var jitter=IS_LARGE?(Math.random()-0.5)*R*0.3:0;
+    n.x=W/2+(R+jitter)*Math.cos(a);n.y=H/2+(R+jitter)*Math.sin(a);n.vx=0;n.vy=0;
   });
 });
 
 var nById={};(D.nodes||[]).forEach(function(n){nById[n.id]=n;});
 
-// Edges
-var lEls={};
+// ─── Progressive edge rendering ─────────────────────────────────────────────
+var edgeQueue=[];
 (D.edges||[]).forEach(function(e){
-  var s=nById[e.source],t=nById[e.target];if(!s||!t)return;
-  var l=mk('line',{class:'lnk',stroke:EC[e.rel]||'#1a3a5e','stroke-width':e.rel==='contains'?0.8:1.3});
-  l._s=s;l._t=t;l._rel=e.rel;
-  lg.appendChild(l);
-  lEls[e.source+':'+e.target]=l;
+  var src=nById[e.source],tgt=nById[e.target];
+  if(src&&tgt)edgeQueue.push(e);
 });
+var lEls={},EDGE_BATCH=IS_LARGE?150:9999,edgesRendered=0;
+function renderEdgeBatch(){
+  var end=Math.min(edgesRendered+EDGE_BATCH,edgeQueue.length);
+  var frag=document.createDocumentFragment();
+  for(var i=edgesRendered;i<end;i++){
+    var e=edgeQueue[i],src=nById[e.source],tgt=nById[e.target];
+    var l=mk('line',{class:'lnk',stroke:EC[e.rel]||'#1a3a5e','stroke-width':e.rel==='contains'?0.8:1.3,
+      x1:src.x,y1:src.y,x2:tgt.x,y2:tgt.y});
+    l._s=src;l._t=tgt;l._rel=e.rel;
+    frag.appendChild(l);
+    lEls[e.source+':'+e.target]=l;
+  }
+  lg.appendChild(frag);
+  edgesRendered=end;
+  if(edgesRendered<edgeQueue.length){
+    setTimeout(renderEdgeBatch,20);
+  }
+}
+renderEdgeBatch();
 
-// Nodes
-var nEls={};
+// ─── Progressive node rendering ──────────────────────────────────────────────
+var nEls={},nodeQueue=(D.nodes||[]).slice(),NODE_BATCH=IS_LARGE?200:9999,nodesRendered=0;
 function drawNode(n){
   var m=TM[n.type];if(!m)return;
   var g=mk('g',{class:'node',transform:'translate('+n.x+','+n.y+')'});
@@ -896,51 +963,109 @@ function drawNode(n){
   else if(m.shape==='diamond'){sh=mk('polygon',{points:'0,'+ -m.r+' '+m.r+',0 0,'+m.r+' '+ -m.r+',0',fill:m.color+'bb',stroke:m.color});}
   else{sh=mk('circle',{cx:0,cy:0,r:m.r,fill:m.color+'bb',stroke:m.color});}
   g.appendChild(sh);
-  var lx=m.shape==='rect'?0:m.r+3,ta=m.shape==='rect'?'middle':'start';
-  var lbl=mk('text',{class:'nlbl',x:lx,y:0,'text-anchor':ta});
-  lbl.textContent=n.label.length>24?n.label.slice(0,22)+'...':n.label;
-  g.appendChild(lbl);
+  if(showLbls){
+    var lx=m.shape==='rect'?0:m.r+3,ta=m.shape==='rect'?'middle':'start';
+    var lbl=mk('text',{class:'nlbl',x:lx,y:0,'text-anchor':ta});
+    lbl.textContent=n.label.length>24?n.label.slice(0,22)+'...':n.label;
+    g.appendChild(lbl);
+  }
   g.addEventListener('click',function(){selNode(n.id);});
-  ng.appendChild(g);
   nEls[n.id]={g:g,n:n};
+  return g;
 }
-(D.nodes||[]).forEach(drawNode);
+function renderNodeBatch(){
+  var end=Math.min(nodesRendered+NODE_BATCH,nodeQueue.length);
+  var frag=document.createDocumentFragment();
+  for(var i=nodesRendered;i<end;i++){
+    var g=drawNode(nodeQueue[i]);
+    if(g)frag.appendChild(g);
+  }
+  ng.appendChild(frag);
+  nodesRendered=end;
+  if(nodesRendered<nodeQueue.length){
+    setTimeout(renderNodeBatch,20);
+  }
+}
+renderNodeBatch();
 
-// Simulation
-var REPEL=900,ATTR=0.05,DAMP=0.88,LD=90,CG=0.003;
+// ─── Barnes-Hut Quadtree for O(n log n) repulsion ───────────────────────────
+var BH_THETA=0.9;
+function QNode(x,y,w,h){this.x=x;this.y=y;this.w=w;this.h=h;this.body=null;this.mass=0;this.cx=0;this.cy=0;this.children=null;}
+function qtInsert(qt,n){
+  if(qt.mass===0){qt.body=n;qt.mass=1;qt.cx=n.x;qt.cy=n.y;return;}
+  if(qt.body!==null){
+    if(qt.w<1)return;
+    var old=qt.body;qt.body=null;qt.children=qtSplit(qt);qtPut(qt,old);
+  }
+  qt.cx=(qt.cx*qt.mass+n.x)/(qt.mass+1);qt.cy=(qt.cy*qt.mass+n.y)/(qt.mass+1);qt.mass++;
+  if(!qt.children)qt.children=qtSplit(qt);
+  qtPut(qt,n);
+}
+function qtSplit(qt){var hw=qt.w/2,hh=qt.h/2;return[new QNode(qt.x,qt.y,hw,hh),new QNode(qt.x+hw,qt.y,hw,hh),new QNode(qt.x,qt.y+hh,hw,hh),new QNode(qt.x+hw,qt.y+hh,hw,hh)];}
+function qtPut(qt,n){var hw=qt.w/2,hh=qt.h/2,i=(n.x>qt.x+hw?1:0)+(n.y>qt.y+hh?2:0);qtInsert(qt.children[i],n);}
+function qtForce(qt,n,repel){
+  if(qt.mass===0)return;
+  var dx=qt.cx-n.x,dy=qt.cy-n.y,d2=dx*dx+dy*dy+1;
+  if(qt.mass===1&&qt.body===n)return;
+  if(qt.children===null||qt.w/Math.sqrt(d2)<BH_THETA){
+    var d=Math.sqrt(d2),f=repel*qt.mass/d2,fx=f*dx/d,fy=f*dy/d;
+    n.vx-=fx;n.vy-=fy;return;
+  }
+  for(var i=0;i<4;i++)qtForce(qt.children[i],n,repel);
+}
+
+// Simulation (adaptive)
+var REPEL=IS_LARGE?600:900,ATTR=IS_LARGE?0.03:0.05,DAMP=IS_LARGE?0.82:0.88,LD=IS_LARGE?60:90,CG=0.003;
+var TICKS_PER_FRAME=IS_LARGE?1:4;
 function tick(){
   var nodes=D.nodes||[];
-  for(var i=0;i<nodes.length;i++){
-    for(var j=i+1;j<nodes.length;j++){
-      var dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y;
-      var d2=dx*dx+dy*dy+1,d=Math.sqrt(d2),f=REPEL/d2,fx=f*dx/d,fy=f*dy/d;
-      nodes[i].vx-=fx;nodes[i].vy-=fy;nodes[j].vx+=fx;nodes[j].vy+=fy;
-    }
-  }
-  (D.edges||[]).forEach(function(e){
-    var s=nById[e.source],t=nById[e.target];if(!s||!t)return;
-    var dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+  // Build quadtree
+  var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(var i=0;i<nodes.length;i++){var n=nodes[i];if(n.x<minX)minX=n.x;if(n.y<minY)minY=n.y;if(n.x>maxX)maxX=n.x;if(n.y>maxY)maxY=n.y;}
+  var pad=50,sz=Math.max(maxX-minX+pad*2,maxY-minY+pad*2,100);
+  var qt=new QNode(minX-pad,minY-pad,sz,sz);
+  for(var i=0;i<nodes.length;i++)qtInsert(qt,nodes[i]);
+  // Repulsion via quadtree
+  for(var i=0;i<nodes.length;i++)qtForce(qt,nodes[i],REPEL);
+  // Attraction along edges
+  for(var i=0;i<edgeQueue.length;i++){
+    var e=edgeQueue[i],src=nById[e.source],tgt=nById[e.target];if(!src||!tgt)continue;
+    var dx=tgt.x-src.x,dy=tgt.y-src.y,d=Math.sqrt(dx*dx+dy*dy)||1;
     var f=(d-LD)*ATTR,fx=f*dx/d,fy=f*dy/d;
-    s.vx+=fx;s.vy+=fy;t.vx-=fx;t.vy-=fy;
-  });
-  nodes.forEach(function(n){
+    src.vx+=fx;src.vy+=fy;tgt.vx-=fx;tgt.vy-=fy;
+  }
+  // Gravity + damping
+  for(var i=0;i<nodes.length;i++){
+    var n=nodes[i];
     n.vx+=(W/2-n.x)*CG;n.vy+=(H/2-n.y)*CG;
     n.vx*=DAMP;n.vy*=DAMP;n.x+=n.vx;n.y+=n.vy;
-  });
+  }
 }
 function updPos(){
-  Object.keys(lEls).forEach(function(k){var l=lEls[k];l.setAttribute('x1',l._s.x);l.setAttribute('y1',l._s.y);l.setAttribute('x2',l._t.x);l.setAttribute('y2',l._t.y);});
-  Object.keys(nEls).forEach(function(id){var d=nEls[id];d.g.setAttribute('transform','translate('+d.n.x+','+d.n.y+')');});
+  var keys=Object.keys(lEls);
+  for(var i=0;i<keys.length;i++){var l=lEls[keys[i]];l.setAttribute('x1',l._s.x);l.setAttribute('y1',l._s.y);l.setAttribute('x2',l._t.x);l.setAttribute('y2',l._t.y);}
+  var ids=Object.keys(nEls);
+  for(var i=0;i<ids.length;i++){var d=nEls[ids[i]];d.g.setAttribute('transform','translate('+d.n.x+','+d.n.y+')');}
 }
-var ticks=0,running=true,maxT=400;
-function anim(){if(!running)return;for(var i=0;i<4;i++)tick();ticks+=4;updPos();if(ticks<maxT)requestAnimationFrame(anim);else document.getElementById('sinfo').textContent='';}
+var ticks=0,running=true,maxT=IS_LARGE?200:400;
+var si=document.getElementById('sinfo');
+function anim(){
+  if(!running)return;
+  for(var i=0;i<TICKS_PER_FRAME;i++)tick();
+  ticks+=TICKS_PER_FRAME;
+  updPos();
+  if(IS_LARGE&&ticks%10===0)si.textContent='Simulating: '+Math.round(ticks/maxT*100)+'%';
+  if(ticks<maxT)requestAnimationFrame(anim);else{si.textContent=TOTAL+' nodes rendered';running=false;}
+}
 anim();
-function gRelax(){ticks=0;maxT=200;running=true;requestAnimationFrame(anim);}
+function gRelax(){ticks=0;maxT=IS_LARGE?100:200;running=true;requestAnimationFrame(anim);}
 window.gRelax=gRelax;
 
 function updVis(){
-  Object.keys(nEls).forEach(function(id){var d=nEls[id];d.g.style.display=active[d.n.type]?'':'none';});
-  Object.keys(lEls).forEach(function(k){var l=lEls[k];var sv=active[(nById[l._s.id]||{type:''}).type];var tv=active[(nById[l._t.id]||{type:''}).type];l.style.display=(sv&&tv)?'':'none';});
+  var ids=Object.keys(nEls);
+  for(var i=0;i<ids.length;i++){var d=nEls[ids[i]];d.g.style.display=active[d.n.type]?'':'none';}
+  var keys=Object.keys(lEls);
+  for(var i=0;i<keys.length;i++){var l=lEls[keys[i]];var sv=active[(nById[l._s.id]||{type:''}).type];var tv=active[(nById[l._t.id]||{type:''}).type];l.style.display=(sv&&tv)?'':'none';}
 }
 
 function selNode(id){
@@ -957,7 +1082,20 @@ function selNode(id){
   document.getElementById('nodeInfo').textContent=lines.join('\n');
 }
 
-function gLbls(){showLbls=!showLbls;document.querySelectorAll('.nlbl').forEach(function(l){l.style.display=showLbls?'':'none';});}
+function gLbls(){
+  showLbls=!showLbls;
+  var ids=Object.keys(nEls);
+  for(var i=0;i<ids.length;i++){
+    var d=nEls[ids[i]],g=d.g,m=TM[d.n.type];if(!m)continue;
+    var t=g.querySelector('.nlbl');
+    if(showLbls&&!t){
+      var lx=m.shape==='rect'?0:m.r+3,ta=m.shape==='rect'?'middle':'start';
+      t=mk('text',{class:'nlbl',x:lx,y:0,'text-anchor':ta});
+      t.textContent=d.n.label.length>24?d.n.label.slice(0,22)+'...':d.n.label;
+      g.appendChild(t);
+    } else if(t){t.style.display=showLbls?'':'none';}
+  }
+}
 window.gLbls=gLbls;
 
 var px=0,py=0,sc=1,pan=false,ps={x:0,y:0};
@@ -1118,9 +1256,79 @@ buildIpTable();
     }
 }
 
+# ─── Subroutine failure Bug2FIX push (best-effort) ───────────────────────────
+if (@($script:_SubFailures).Count -gt 0 -and (Test-Path -LiteralPath $script:_PipelinePath)) {
+    try {
+        $sample = @($script:_SubFailures | Select-Object -First 6 | ForEach-Object { "$($_.phase):$($_.target)" })
+        $now = Get-Date
+        $seed = "map-subfail-$timestamp-$(@($script:_SubFailures).Count)"
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $sid = [System.BitConverter]::ToString($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))[0..3]).Replace('-','').ToLower()
+        $sha.Dispose()
+        $bug = [ordered]@{
+            id              = "Bug-$($now.ToString('yyyyMMddHHmmss'))-$sid"
+            type            = 'Bug'
+            status          = 'OPEN'
+            priority        = 'MEDIUM'
+            category        = 'scan-subroutine-failure'
+            title           = "[SCAN PARTIAL] Dependency map had subroutine failures"
+            description     = "Invoke-WorkspaceDependencyMap completed with $(@($script:_SubFailures).Count) subroutine failure(s). Sample targets: $($sample -join ', ')"
+            affectedFiles   = @()
+            source          = 'Invoke-WorkspaceDependencyMap'
+            created         = $now.ToString('o')
+            modified        = $now.ToString('o')
+            completedAt     = $null
+            linkedFeatures  = @()
+            linkedBugs      = @()
+            tags            = @('scan','bug2fix','subroutine')
+            notes           = "Auto-created from dependency map scan run at $timestamp."
+            sessionModCount = 0
+            parentId        = ''
+            executionAgent  = ''
+        }
+        $pipeRaw = Get-Content -LiteralPath $script:_PipelinePath -Raw -Encoding UTF8
+        if (-not [string]::IsNullOrEmpty($pipeRaw)) {
+            $pipe = $pipeRaw | ConvertFrom-Json
+            if ($null -ne $pipe -and $null -ne $pipe.bugs) {
+                $existing = @($pipe.bugs | Where-Object { $null -ne $_ -and $_.id -eq $bug.id }).Count -gt 0
+                if (-not $existing) {
+                    $newBugs = [System.Collections.ArrayList]@()
+                    foreach ($b in @($pipe.bugs)) { $null = $newBugs.Add($b) }
+                    $null = $newBugs.Add($bug)
+                    $pipe.bugs = @($newBugs)
+                    if ($null -ne $pipe.meta) { $pipe.meta.lastModified = (Get-Date -Format 'o') }
+                    Set-Content -LiteralPath $script:_PipelinePath -Value ($pipe | ConvertTo-Json -Depth 10) -Encoding UTF8 -Force
+                    Write-Output "  [bug2fix] Created $($bug.id) for subroutine failures"
+                }
+            }
+        }
+    } catch {
+        Write-Output "  WARN: Could not push subroutine Bug2FIX -- $($_.Exception.Message)"
+    }
+}
+
+# Mark progress done/partial for UI poller
+Save-ScanPhaseCheckpoint -Phase 'dns_resolution' -Status 'done' -Count @($dnsResolution.Keys).Count -ProgressPct 100
+
 # ─── Done ─────────────────────────────────────────────────────────────────────
 Write-Output '[100%] Workspace Dependency Map complete.'
 Write-Output "  Nodes: $(@($allNodes).Count)   Edges: $(@($resolvedEdges).Count)"
 Write-Output "  Folders: $($folderNodes.Count)  Modules: $($moduleNodes.Count)  Scripts: $($scriptNodes.Count)"
 Write-Output "  Functions: $($functionNodes.Count)  Variables: $($variableNodes.Count)  Configs: $($configNodes.Count)"
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

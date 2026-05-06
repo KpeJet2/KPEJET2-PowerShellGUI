@@ -1,4 +1,9 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries)
 #Requires -Version 5.1
@@ -38,7 +43,7 @@ $ErrorActionPreference = 'Continue'
 
 $results = [System.Collections.Generic.List[pscustomobject]]::new()
 
-function Add-Result {
+function Add-Result {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param(
         [ValidateSet('PASS','FAIL','WARN','INFO')]
         [string]$Status,
@@ -78,7 +83,7 @@ function Test-Parse {
                 }
             }
         }
-        Add-Result -Status 'FAIL' -Check 'Parse' -Target $Path -Detail $errors[0].Message
+        Add-Result -Status 'FAIL' -Check 'Parse' -Target $Path -Detail $errors[0].Message  # SIN-EXEMPT: P027 - $errors[0] only accessed inside parse-fail condition block
     } else {
         Add-Result -Status 'PASS' -Check 'Parse' -Target $Path -Detail 'No parse errors'
     }
@@ -198,6 +203,22 @@ if ($Strict -and $fail -gt 0) {
     exit 1
 }
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

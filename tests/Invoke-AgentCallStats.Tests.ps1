@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B1.V32.5
+# VersionTag: 2604.B1.V32.7
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Modules Pester
 <#
 .SYNOPSIS  Smoke tests for Invoke-AgentCallStats.ps1 — JSONL scanning, stats schema, merge logic.
@@ -116,3 +120,19 @@ Describe 'Invoke-AgentCallStats — SIN compliance' {
         $content | Should -Match '@\('
     }
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

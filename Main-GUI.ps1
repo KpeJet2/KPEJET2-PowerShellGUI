@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.5
+
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # VersionBuildHistory:
 #   2603.B0.v24  2026-06-10       Phase A-F implementation: dep visualiser, smoke test, checklist invoker
 #   2603.B0.v23  2026-03-28 09:15  TrayHost/PShellCore: ApplicationContext lifecycle, custom smiley tray icon, spacebar rehydration, verbose logging
@@ -62,10 +67,22 @@ trap {
 }
 
 # ==================== PERFORMANCE OPTIMIZATION: ASSEMBLY LOADING ====================
+# IMPL-20260405-007: Startup timing — Stopwatch probes for load phase analysis
+$script:_StartupSW = [System.Diagnostics.Stopwatch]::StartNew()
+$script:_StartupMilestones = [System.Collections.Generic.List[PSCustomObject]]::new()
+function _SwMark {
+    param([string]$Label)
+    $script:_StartupMilestones.Add([PSCustomObject]@{
+        label   = $Label
+        elapsed = $script:_StartupSW.Elapsed.TotalMilliseconds
+    })
+}
+_SwMark 'process-start'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Web
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+_SwMark 'assemblies-loaded'
 
 # ==================== PERFORMANCE OPTIMIZATION: CACHING ====================
 # XML Document Cache
@@ -137,49 +154,69 @@ function Clear-FileListCache {
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # ==================== IMPORT SHARED CORE MODULE ====================
-$coreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psm1'
-if (Test-Path $coreModulePath) {
-    Import-Module $coreModulePath -Force
+$coreManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUICore.psd1'
+if (Test-Path $coreManifestPath) {
+    Import-Module $coreManifestPath -Force
     if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
         throw "PwShGUICore imported but Write-AppLog not available -- module may be corrupt"
     }
     Initialize-CorePaths -ScriptDir $scriptDir
+
+    # ── Persist modules directory to User-level PSModulePath so all future sessions
+    #    (terminals, scripts, bat launchers) can Import-Module by name without full paths.
+    $modsDir = Join-Path $scriptDir 'modules'
+    $userPath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
+    if ([string]::IsNullOrEmpty($userPath)) { $userPath = '' }
+    if ($userPath.Split(';') -notcontains $modsDir) {
+        $newUserPath = ($modsDir + ';' + $userPath).TrimEnd(';')
+        [System.Environment]::SetEnvironmentVariable('PSModulePath', $newUserPath, 'User')
+        Write-AppLog "PSModulePath: added '$modsDir' to User scope (persists across sessions)" 'Info'
+    }
+    # Also register for the current process so this session benefits immediately
+    $procPath = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Process')
+    if ($procPath.Split(';') -notcontains $modsDir) {
+        [System.Environment]::SetEnvironmentVariable('PSModulePath', "$modsDir;$procPath", 'Process')
+    }
 } else {
-    Write-Warning "PwShGUICore module not found at $coreModulePath -- falling back to inline functions"
+    Write-Warning "PwShGUICore module not found at $coreManifestPath -- falling back to inline functions"
 }
+_SwMark 'module-core-loaded'
 
 # ==================== IMPORT THEME MODULE ====================
-$themeModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-Theme.psm1'
-if (Test-Path $themeModulePath) {
-    Import-Module $themeModulePath -Force
+ $themeManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-Theme.psd1'
+if (Test-Path $themeManifestPath) {
+    Import-Module $themeManifestPath -Force
     if (-not (Get-Command Set-ModernFormTheme -ErrorAction SilentlyContinue)) {
         Write-AppLog 'PwShGUI-Theme imported but Set-ModernFormTheme not available' 'Warning'
     }
 }
+_SwMark 'module-theme-loaded'
 
 # ==================== IMPORT TRAY HOST MODULE (PShellCore) ====================
-$trayHostModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psm1'
-if (Test-Path $trayHostModulePath) {
-    Import-Module $trayHostModulePath -Force
+$trayHostManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-TrayHost.psd1'
+if (Test-Path $trayHostManifestPath) {
+    Import-Module $trayHostManifestPath -Force
     if (-not (Get-Command Initialize-TrayAppContext -ErrorAction SilentlyContinue)) {
         Write-AppLog 'PwShGUI-TrayHost imported but Initialize-TrayAppContext not available' 'Warning'
     } else {
         Write-AppLog "[Init] PwShGUI-TrayHost module loaded (PShellCore background host)" "Debug"
     }
 }
+_SwMark 'module-trayhost-loaded'
 
 # ==================== IMPORT INTEGRITY CORE MODULE ====================
-$integrityCoreModulePath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-IntegrityCore.psm1'
-if (Test-Path $integrityCoreModulePath) {
+$integrityCoreManifestPath = Join-Path (Join-Path $scriptDir 'modules') 'PwShGUI-IntegrityCore.psd1'
+if (Test-Path $integrityCoreManifestPath) {
     try {
-        Import-Module $integrityCoreModulePath -Force -ErrorAction Stop
+        Import-Module $integrityCoreManifestPath -Force -ErrorAction Stop
         Write-AppLog "[Init] PwShGUI-IntegrityCore module loaded" "Debug"
     } catch {
         Write-AppLog "PwShGUI-IntegrityCore failed to load: $($_.Exception.Message)" "Warning"
     }
 } else {
-    Write-AppLog "PwShGUI-IntegrityCore.psm1 not found -- startup integrity check will run inline fallback" "Warning"
+    Write-AppLog "PwShGUI-IntegrityCore.psd1 not found -- startup integrity check will run inline fallback" "Warning"
 }
+_SwMark 'module-integritycore-loaded'
 
 # Request-LocalPath -- now provided by PwShGUICore module
 # (Inline definition removed -- see modules/PwShGUICore.psm1)
@@ -1344,19 +1381,21 @@ if (Test-Path $avpnModulePath) {
 }
 
 # Import SASC (Secrets Access & Security Checks) modules if available
-$sascModulePath = Get-ProjectPath SascModule
-$sascAdaptersPath = Get-ProjectPath SascAdapters
-if (Test-Path $sascModulePath) {
-    Import-Module $sascModulePath -Force
-    Write-AppLog "SASC module loaded from $sascModulePath" "Info"
+
+# Always import the module manifest (.psd1) for AssistedSASC and SASC-Adapters
+$sascModuleManifest = Join-Path $modulesDir 'AssistedSASC.psd1'
+$sascAdaptersManifest = Join-Path $modulesDir 'SASC-Adapters.psd1'
+if (Test-Path $sascModuleManifest) {
+    Import-Module $sascModuleManifest -Force
+    Write-AppLog "SASC module loaded from $sascModuleManifest" "Info"
 } else {
-    Write-AppLog "SASC module not found at $sascModulePath" "Warning"
+    Write-AppLog "SASC module not found at $sascModuleManifest" "Warning"
 }
-if (Test-Path $sascAdaptersPath) {
-    Import-Module $sascAdaptersPath -Force
-    Write-AppLog "SASC-Adapters module loaded from $sascAdaptersPath" "Info"
+if (Test-Path $sascAdaptersManifest) {
+    Import-Module $sascAdaptersManifest -Force
+    Write-AppLog "SASC-Adapters module loaded from $sascAdaptersManifest" "Info"
 } else {
-    Write-AppLog "SASC-Adapters module not found at $sascAdaptersPath" "Warning"
+    Write-AppLog "SASC-Adapters module not found at $sascAdaptersManifest" "Warning"
 }
 # Initialize SASC module state
 try {
@@ -2399,10 +2438,17 @@ function New-BuildManifest {
         $cachedEntry = $cacheIndex[$rel]
 
         if ($cachedEntry -and $cachedEntry.Signature -eq $signature) {
+            # Patch: Ensure 'Created' property is present, fallback to file property if missing/null/empty
+            $createdValue = $null
+            if ($cachedEntry.PSObject.Properties.Name -contains 'Created' -and $cachedEntry.Created) {
+                $createdValue = [string]$cachedEntry.Created
+            } else {
+                $createdValue = $f.CreationTime.ToString('s')
+            }
             $entry = [PSCustomObject]@{
                 RelPath = $rel
                 Signature = $signature
-                Created = [string]$cachedEntry.Created
+                Created = $createdValue
                 Modified = [string]$cachedEntry.Modified
                 Size = [string]$cachedEntry.Size
                 Owner = [string]$cachedEntry.Owner
@@ -3239,7 +3285,7 @@ function Test-PathReadWrite {
 
 function Get-ScriptFoldersConfig {
     $scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
-    
+    if ([string]::IsNullOrWhiteSpace($scriptFoldersConfigPath)) { return $null }
     if (Test-Path $scriptFoldersConfigPath) {
         try {
             $config = Get-Content -Path $scriptFoldersConfigPath -Raw | ConvertFrom-Json
@@ -3254,9 +3300,12 @@ function Get-ScriptFoldersConfig {
 
 function Save-ScriptFoldersConfig {
     param([object]$Config)
-    
+
     $scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
-    
+    if ([string]::IsNullOrWhiteSpace($scriptFoldersConfigPath)) {
+        Write-AppLog 'Save-ScriptFoldersConfig: path registry not initialized, cannot save' 'Warning'
+        return $false
+    }
     try {
         $Config | ConvertTo-Json -Depth 5 | Set-Content -Path $scriptFoldersConfigPath -Encoding UTF8 -Force
         Write-AppLog "Script folders config saved successfully" "Info"
@@ -4740,6 +4789,1427 @@ function Show-RemoteBuildConfigForm {
     $rbForm.Dispose()
 }
 
+# ==================== ABOUT / SYSTEM / APP ANALYTICS FUNCTIONS ====================
+
+function New-QrFingerprintBitmap {
+    [CmdletBinding()]
+    param(
+        [string]$Text,
+        [int]$Size = 200
+    )
+    # Build a deterministic visual fingerprint bitmap from the SHA256 of Text.
+    # Uses a 16x16 half-symmetric block grid (like identicons) rendered into a Bitmap.
+    try {
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $bytes = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($Text))
+        $sha.Dispose()
+
+        $bmp = New-Object System.Drawing.Bitmap($Size, $Size)
+        $g   = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.Clear([System.Drawing.Color]::FromArgb(20, 20, 30))
+
+        $cols = 8; $rows = 8  # SIN-EXEMPT: P021 — hardcoded non-zero constants
+        $cellW = [int]($Size / $cols); $cellH = [int]($Size / $rows)  # SIN-EXEMPT: P021 — $cols/$rows always=8
+
+        # Foreground colour derived from first 3 bytes
+        $fc = [System.Drawing.Color]::FromArgb(255, [int]$bytes[0], [math]::Max(80,[int]$bytes[1]), [math]::Max(80,[int]$bytes[2]))  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
+        $br = New-Object System.Drawing.SolidBrush($fc)
+        $bg = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(20, 20, 30))
+
+        for ($r = 0; $r -lt $rows; $r++) {
+            for ($c = 0; $c -lt ($cols / 2); $c++) {
+                $byteIdx = ($r * 4 + $c) % $bytes.Count
+                $filled  = ($bytes[$byteIdx] -band (1 -shl ($c % 8))) -ne 0
+                $brush   = if ($filled) { $br } else { $bg }
+                $x1 = $c * $cellW
+                $x2 = ($cols - 1 - $c) * $cellW
+                $y  = $r * $cellH
+                $g.FillRectangle($brush, $x1, $y, $cellW - 1, $cellH - 1)
+                $g.FillRectangle($brush, $x2, $y, $cellW - 1, $cellH - 1)
+            }
+        }
+        # Border
+        $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(0, 220, 180), 2)
+        $g.DrawRectangle($pen, 1, 1, $Size - 3, $Size - 3)
+        $pen.Dispose(); $br.Dispose(); $bg.Dispose(); $g.Dispose()
+        return $bmp
+    } catch {
+        Write-AppLog "New-QrFingerprintBitmap error: $_" "Warning"
+        return $null
+    }
+}
+
+function Get-ManifestMismatches {
+    <#.SYNOPSIS Returns files in workspace missing from manifest, and manifest entries with no matching file.#>
+    [CmdletBinding()]
+    param([string]$WorkspacePath = $PSScriptRoot)
+    $results = [System.Collections.Generic.List[PSCustomObject]]::new()
+    $manifestPath = Join-Path $WorkspacePath 'config\agentic-manifest.json'
+    if (-not (Test-Path $manifestPath)) {
+        $results.Add([PSCustomObject]@{ File='(manifest not found)'; Status='Error'; Note=$manifestPath })
+        return $results
+    }
+    try {
+        $m       = Get-Content $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $tracked = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+        # Collect all paths referenced in manifest
+        foreach ($sec in @('scripts','modules','tests','configs','xhtmlTools','styles')) {
+            $items = $m.$sec
+            if ($null -eq $items) { continue }
+            foreach ($item in $items) {
+                $p = $item.path
+                if ([string]::IsNullOrWhiteSpace($p)) { continue }
+                $abs = Join-Path $WorkspacePath ($p -replace '/','\\')
+                $null = $tracked.Add($abs)
+                if (-not (Test-Path $abs)) {
+                    $results.Add([PSCustomObject]@{ File=(Split-Path $abs -Leaf); Status='Relic'; Note="In manifest, not on disk: $p" })
+                }
+            }
+        }
+        # Scan actual workspace files
+        $excludeDirs = @('~DOWNLOADS','-REPORTS','temp','.git','.history','logs','~REPORTS','node_modules','vault-backups')
+        $allFiles = Get-ChildItem -Path $WorkspacePath -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $parts = $_.FullName -split '\\|/'
+                $skip  = $false
+                foreach ($ex in $excludeDirs) { if ($parts -contains $ex) { $skip = $true; break } }
+                -not $skip -and $_.Extension -in @('.ps1','.psm1','.psd1','.bat','.json','.xml','.xhtml','.html','.css','.js')
+            }
+        foreach ($f in $allFiles) {
+            if (-not $tracked.Contains($f.FullName)) {
+                $rel = $f.FullName.Replace($WorkspacePath, '').TrimStart('\/')
+                $results.Add([PSCustomObject]@{ File=$f.Name; Status='Untracked'; Note="Not in manifest: $rel" })
+            }
+        }
+    } catch {
+        $results.Add([PSCustomObject]@{ File='(error)'; Status='Error'; Note="$_" })
+    }
+    return $results
+}
+
+function Get-ChiefApprovals {
+    [CmdletBinding()]
+    param([string]$WorkspacePath = $PSScriptRoot)
+    $path = Join-Path $WorkspacePath 'config\chief-approvals.json'
+    if (-not (Test-Path $path)) {
+        return @{ approvals = @(); bypassExpiry = $null; version = '2604.B2.V31.0' }
+    }
+    try { return Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json }
+    catch { return @{ approvals = @(); bypassExpiry = $null; version = '2604.B2.V31.0' } }
+}
+
+function Save-ChiefApprovals {
+    [CmdletBinding()]
+    param([object]$Data, [string]$WorkspacePath = $PSScriptRoot)
+    $path = Join-Path $WorkspacePath 'config\chief-approvals.json'
+    try {
+        $Data | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $path -Encoding UTF8
+        Write-AppLog "Chief approvals saved to $path" "Audit"
+    } catch { Write-AppLog "Save-ChiefApprovals error: $_" "Error" }
+}
+
+function Show-ModernAboutScreen {
+    <#.SYNOPSIS Full-featured tabbed About screen with Public Keys, Audit and Approvals.#>
+    [CmdletBinding()]
+    param([switch]$AuditMode)
+
+    Write-AppLog "Showing Modern About Screen (AuditMode=$AuditMode)" "Audit"
+
+    # ── Load assemblies ─────────────────────────────────────────────
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
+    Add-Type -AssemblyName System.Drawing       -ErrorAction SilentlyContinue
+
+    $DARK_BG   = [System.Drawing.Color]::FromArgb(18, 18, 28)
+    $PANEL_BG  = [System.Drawing.Color]::FromArgb(28, 28, 45)
+    $ACCENT    = [System.Drawing.Color]::FromArgb(0, 220, 180)
+    $ACCENT2   = [System.Drawing.Color]::FromArgb(130, 80, 255)
+    $FG        = [System.Drawing.Color]::FromArgb(220, 220, 230)
+    $FG_DIM    = [System.Drawing.Color]::FromArgb(140, 140, 160)
+    $FG_DANGER = [System.Drawing.Color]::FromArgb(255, 80, 80)
+    $FG_OK     = [System.Drawing.Color]::FromArgb(80, 255, 130)
+    $FG_WARN   = [System.Drawing.Color]::FromArgb(255, 200, 50)
+
+    $aboutForm = New-Object System.Windows.Forms.Form
+    $aboutForm.Text          = "About  ·  PowerShellGUI"
+    $aboutForm.Size          = New-Object System.Drawing.Size(900, 700)
+    $aboutForm.StartPosition = "CenterScreen"
+    $aboutForm.BackColor     = $DARK_BG
+    $aboutForm.ForeColor     = $FG
+    $aboutForm.Font          = New-Object System.Drawing.Font("Segoe UI", 10)
+    $aboutForm.MinimumSize   = New-Object System.Drawing.Size(800, 560)
+
+    # ── Rainbow header strip ────────────────────────────────────────
+    $header = New-Object System.Windows.Forms.Panel
+    $header.Dock      = [System.Windows.Forms.DockStyle]::Top
+    $header.Height    = 80
+    $header.BackColor = $PANEL_BG
+    $aboutForm.Controls.Add($header)
+
+    $headerTitle = New-Object System.Windows.Forms.Label
+    $headerTitle.Text      = "⚡  PowerShellGUI  ·  Scriptz Launchr"
+    $headerTitle.Font      = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
+    $headerTitle.ForeColor = $ACCENT
+    $headerTitle.Location  = New-Object System.Drawing.Point(16, 10)
+    $headerTitle.Size      = New-Object System.Drawing.Size(680, 30)
+    $header.Controls.Add($headerTitle)
+
+    $vi = Get-VersionInfo
+    $vStr = "2604.B2.V31.0"
+    try { $vStr = "$($vi.Major).$($vi.Minor).V$($vi.Build)" } catch { <# Intentional: non-fatal, fallback version string already set above #> }
+    $headerSub = New-Object System.Windows.Forms.Label
+    $headerSub.Text      = "Version $vStr  ·  PS $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)  ·  $env:COMPUTERNAME  ·  $env:USERNAME"
+    $headerSub.Font      = New-Object System.Drawing.Font("Segoe UI", 9)
+    $headerSub.ForeColor = $FG_DIM
+    $headerSub.Location  = New-Object System.Drawing.Point(17, 44)
+    $headerSub.Size      = New-Object System.Drawing.Size(750, 20)
+    $header.Controls.Add($headerSub)
+
+    # Colour band at top of header
+    $band = New-Object System.Windows.Forms.Panel
+    $band.Dock      = [System.Windows.Forms.DockStyle]::Top
+    $band.Height    = 4
+    $band.BackColor = $ACCENT
+    $header.Controls.Add($band)
+
+    # ── Tab control ─────────────────────────────────────────────────
+    $tabs = New-Object System.Windows.Forms.TabControl
+    $tabs.Dock      = [System.Windows.Forms.DockStyle]::Fill
+    $tabs.BackColor = $DARK_BG
+    $tabs.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $aboutForm.Controls.Add($tabs)
+
+    function New-AboutTab {
+        param([string]$Title, [string]$Symbol)
+        $tp = New-Object System.Windows.Forms.TabPage
+        $tp.Text      = "$Symbol  $Title"
+        $tp.BackColor = $PANEL_BG
+        $tp.ForeColor = $FG
+        $tabs.TabPages.Add($tp) | Out-Null
+        return $tp
+    }
+
+    # ════════════════════════════════════════════════════════════════
+    # TAB 1 ─ App Info
+    # ════════════════════════════════════════════════════════════════
+    $tabInfo = New-AboutTab "App Info" "🔷"
+    $tabInfo.Padding = New-Object System.Windows.Forms.Padding(10)
+
+    $infoSplit = New-Object System.Windows.Forms.SplitContainer
+    $infoSplit.Dock             = [System.Windows.Forms.DockStyle]::Fill
+    $infoSplit.Orientation      = [System.Windows.Forms.Orientation]::Vertical
+    $infoSplit.SplitterDistance = 420
+    $tabInfo.Controls.Add($infoSplit)
+
+    # Left: info grid
+    $infoGrid = New-Object System.Windows.Forms.DataGridView
+    $infoGrid.Dock                          = [System.Windows.Forms.DockStyle]::Fill
+    $infoGrid.ReadOnly                      = $true
+    $infoGrid.AllowUserToAddRows            = $false
+    $infoGrid.RowHeadersVisible             = $false
+    $infoGrid.SelectionMode                 = [System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $infoGrid.BackgroundColor               = $PANEL_BG
+    $infoGrid.ForeColor                     = $FG
+    $infoGrid.GridColor                     = [System.Drawing.Color]::FromArgb(50, 50, 70)
+    $infoGrid.DefaultCellStyle.BackColor    = $PANEL_BG
+    $infoGrid.DefaultCellStyle.ForeColor    = $FG
+    $infoGrid.DefaultCellStyle.Font         = New-Object System.Drawing.Font("Consolas", 9)
+    $infoGrid.AlternatingRowsDefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(22, 22, 38)
+    $infoGrid.ColumnHeadersDefaultCellStyle.BackColor   = [System.Drawing.Color]::FromArgb(10, 10, 20)
+    $infoGrid.ColumnHeadersDefaultCellStyle.ForeColor   = $ACCENT
+    $infoGrid.EnableHeadersVisualStyles     = $false
+    $infoGrid.Font                          = New-Object System.Drawing.Font("Consolas", 9)
+    $infoGrid.Columns.Add("Field", "Field") | Out-Null
+    $infoGrid.Columns.Add("Value", "Value") | Out-Null
+    $infoGrid.Columns[0].Width = 180  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
+    $infoGrid.Columns[1].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+    $infoSplit.Panel1.Controls.Add($infoGrid)
+
+    # Populate info fields
+    $cfgVersion = "unknown"
+    $cfgAuthor  = "The Establishment"
+    $cfgDesc    = "PowerShell GUI Application with Admin Elevation Support"
+    $scriptTag  = "unknown"
+    $cfgCreated = ""; $cfgModified = ""
+    try {
+        $bcfg        = Get-Content (Join-Path $PSScriptRoot 'config\pwsh-app-config-BASE.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $cfgVersion  = $bcfg.metadata.versionTag
+        $cfgAuthor   = $bcfg.metadata.author
+        $cfgDesc     = $bcfg.metadata.description
+        $cfgCreated  = $bcfg.metadata.created
+        $cfgModified = $bcfg.metadata.modified
+    } catch { <# Intentional: non-fatal #> }
+    try {
+        $fl = Get-Content -LiteralPath $PSCommandPath -TotalCount 5 -ErrorAction Stop
+        $tl = $fl | Where-Object { $_ -match 'VersionTag:\s*([\S]+)' } | Select-Object -First 1
+        if ($tl -match 'VersionTag:\s*([\S]+)') { $scriptTag = $Matches[1] }
+    } catch { <# Intentional: non-fatal #> }
+
+    $loadedMods  = @(Get-Module | Where-Object { $_.Name -like 'PwSh*' -or $_.Name -like 'CronAi*' -or $_.Name -like 'AVPN*' -or $_.Name -like 'UserProfile*' -or $_.Name -like 'AssistedSASC*' }).Count
+    $uptime      = (Get-Date) - (Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).LastBootUpTime
+    $uptimeStr   = "$([int]$uptime.TotalDays)d $($uptime.Hours)h $($uptime.Minutes)m"
+    $ram         = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue).TotalPhysicalMemory / 1GB, 1)
+
+    $infoRows = @(
+        @('── Version Information ──',''),
+        @('Script VersionTag',     $scriptTag),
+        @('Config VersionTag',     $cfgVersion),
+        @('Config Version',        "$($vi.Major).$($vi.Minor).V$($vi.Build)"),
+        @('PowerShell Version',    "$($PSVersionTable.PSVersion)"),
+        @('PS Edition',            $PSVersionTable.PSEdition),
+        @('── Environment ──',''),
+        @('Computer',              $env:COMPUTERNAME),
+        @('User',                  "$env:USERDOMAIN\$env:USERNAME"),
+        @('OS',                    (Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).Caption),
+        @('System Uptime',         $uptimeStr),
+        @('RAM (Total)',           "${ram} GB"),
+        @('Workspace Root',        $PSScriptRoot),
+        @('── Application ──',''),
+        @('App Name',              'PowerShellGUI · Scriptz Launchr'),
+        @('Author',                $cfgAuthor),
+        @('Description',           ($cfgDesc -replace '.{60}','$0`n')),
+        @('Created',               $cfgCreated),
+        @('Last Modified',         $cfgModified),
+        @('Loaded Modules',        $loadedMods),
+        @('── Runtime ──',''),
+        @('Script Root',           $PSScriptRoot),
+        @('Current Path',          (Get-Location).Path),
+        @('Session ID',            $PID),
+        @('Culture',               [System.Threading.Thread]::CurrentThread.CurrentUICulture.Name)
+    )
+    foreach ($row in $infoRows) {
+        $r  = $infoGrid.Rows.Add($row[0], $row[1])  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
+        $ri = $infoGrid.Rows[$r]
+        if ($row[0] -match '^──') {  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
+            $ri.DefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+            $ri.DefaultCellStyle.ForeColor = $ACCENT2
+            $ri.DefaultCellStyle.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+        }
+    }
+
+    # Right: modules list
+    $modPanel = New-Object System.Windows.Forms.Panel
+    $modPanel.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $infoSplit.Panel2.Controls.Add($modPanel)
+
+    $modLabel = New-Object System.Windows.Forms.Label
+    $modLabel.Text      = "Loaded Modules"
+    $modLabel.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $modLabel.ForeColor = $ACCENT
+    $modLabel.Dock      = [System.Windows.Forms.DockStyle]::Top
+    $modLabel.Height    = 24
+    $modPanel.Controls.Add($modLabel)
+
+    $modList = New-Object System.Windows.Forms.ListBox
+    $modList.Dock            = [System.Windows.Forms.DockStyle]::Fill
+    $modList.BackColor       = $PANEL_BG
+    $modList.ForeColor       = $FG
+    $modList.Font            = New-Object System.Drawing.Font("Consolas", 8)
+    $modList.BorderStyle     = [System.Windows.Forms.BorderStyle]::FixedSingle
+    $modPanel.Controls.Add($modList)
+    Get-Module | Sort-Object Name | ForEach-Object { $null = $modList.Items.Add("$($_.Name) v$($_.Version)") }
+
+    # ════════════════════════════════════════════════════════════════
+    # TAB 2 ─ Public Keys / Integrity
+    # ════════════════════════════════════════════════════════════════
+    $tabKeys = New-AboutTab "Public Keys" "🔑"
+
+    $keySplit = New-Object System.Windows.Forms.SplitContainer
+    $keySplit.Dock             = [System.Windows.Forms.DockStyle]::Fill
+    $keySplit.Orientation      = [System.Windows.Forms.Orientation]::Vertical
+    $keySplit.SplitterDistance = 240
+    $tabKeys.Controls.Add($keySplit)
+
+    # Left pane: key selector + visual fingerprint
+    $keyLeft = New-Object System.Windows.Forms.Panel
+    $keyLeft.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $keySplit.Panel1.Controls.Add($keyLeft)
+
+    $keyDropLabel = New-Object System.Windows.Forms.Label
+    $keyDropLabel.Text      = "Select PKI Key:"
+    $keyDropLabel.ForeColor = $ACCENT
+    $keyDropLabel.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $keyDropLabel.Location  = New-Object System.Drawing.Point(6, 8)
+    $keyDropLabel.Size      = New-Object System.Drawing.Size(200, 20)
+    $keyLeft.Controls.Add($keyDropLabel)
+
+    $keyDrop = New-Object System.Windows.Forms.ComboBox
+    $keyDrop.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+    $keyDrop.BackColor     = $PANEL_BG
+    $keyDrop.ForeColor     = $FG
+    $keyDrop.Font          = New-Object System.Drawing.Font("Consolas", 9)
+    $keyDrop.Location      = New-Object System.Drawing.Point(6, 30)
+    $keyDrop.Size          = New-Object System.Drawing.Size(220, 24)
+    $keyLeft.Controls.Add($keyDrop)
+
+    # Load public keys
+    $pkiDir  = Join-Path $PSScriptRoot 'pki'
+    $pubKeys = @(Get-ChildItem $pkiDir -Filter '*.pub' -File -ErrorAction SilentlyContinue | Sort-Object Name)
+    foreach ($pk in $pubKeys) { $null = $keyDrop.Items.Add($pk.BaseName) }
+    if (@($keyDrop.Items).Count -gt 0) { $keyDrop.SelectedIndex = 0 }
+
+    $fingerLabel = New-Object System.Windows.Forms.Label
+    $fingerLabel.Text      = "Visual Fingerprint:"
+    $fingerLabel.ForeColor = $FG_DIM
+    $fingerLabel.Font      = New-Object System.Drawing.Font("Segoe UI", 8)
+    $fingerLabel.Location  = New-Object System.Drawing.Point(6, 64)
+    $fingerLabel.Size      = New-Object System.Drawing.Size(200, 18)
+    $keyLeft.Controls.Add($fingerLabel)
+
+    $picBox = New-Object System.Windows.Forms.PictureBox
+    $picBox.Location  = New-Object System.Drawing.Point(6, 84)
+    $picBox.Size      = New-Object System.Drawing.Size(200, 200)
+    $picBox.BackColor = $DARK_BG
+    $picBox.SizeMode  = [System.Windows.Forms.PictureBoxSizeMode]::StretchImage
+    $keyLeft.Controls.Add($picBox)
+
+    $qrNote = New-Object System.Windows.Forms.Label
+    $qrNote.Text      = "Identicon fingerprint (install QRCoder for scannable QR)"
+    $qrNote.ForeColor = $FG_DIM
+    $qrNote.Font      = New-Object System.Drawing.Font("Segoe UI", 7)
+    $qrNote.Location  = New-Object System.Drawing.Point(6, 290)
+    $qrNote.Size      = New-Object System.Drawing.Size(228, 28)
+    $keyLeft.Controls.Add($qrNote)
+
+    # Right pane: fingerprint text + version table
+    $keyRight = New-Object System.Windows.Forms.Panel
+    $keyRight.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $keySplit.Panel2.Controls.Add($keyRight)
+
+    $fpLabel = New-Object System.Windows.Forms.Label
+    $fpLabel.Text      = "SHA-256 Fingerprint:"
+    $fpLabel.ForeColor = $ACCENT
+    $fpLabel.Font      = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $fpLabel.Location  = New-Object System.Drawing.Point(6, 8)
+    $fpLabel.Size      = New-Object System.Drawing.Size(580, 20)
+    $keyRight.Controls.Add($fpLabel)
+
+    $fpText = New-Object System.Windows.Forms.TextBox
+    $fpText.ReadOnly   = $true
+    $fpText.Multiline  = $true
+    $fpText.BackColor  = [System.Drawing.Color]::FromArgb(10,10,20)
+    $fpText.ForeColor  = $FG_OK
+    $fpText.Font       = New-Object System.Drawing.Font("Consolas", 9)
+    $fpText.Location   = New-Object System.Drawing.Point(6, 32)
+    $fpText.Size       = New-Object System.Drawing.Size(580, 55)
+    $keyRight.Controls.Add($fpText)
+
+    $copyBtn = New-Object System.Windows.Forms.Button
+    $copyBtn.Text      = "Copy Fingerprint"
+    $copyBtn.Location  = New-Object System.Drawing.Point(6, 96)
+    $copyBtn.Size      = New-Object System.Drawing.Size(150, 28)
+    $copyBtn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $copyBtn.BackColor = $PANEL_BG
+    $copyBtn.ForeColor = $ACCENT
+    $copyBtn.Font      = New-Object System.Drawing.Font("Segoe UI", 8, [System.Drawing.FontStyle]::Bold)
+    $keyRight.Controls.Add($copyBtn)
+
+    $pkiGrid = New-Object System.Windows.Forms.DataGridView
+    $pkiGrid.Location                         = New-Object System.Drawing.Point(6, 136)
+    $pkiGrid.Size                             = New-Object System.Drawing.Size(580, 350)
+    $pkiGrid.ReadOnly                         = $true
+    $pkiGrid.AllowUserToAddRows               = $false
+    $pkiGrid.RowHeadersVisible                = $false
+    $pkiGrid.BackgroundColor                  = $PANEL_BG
+    $pkiGrid.ForeColor                        = $FG
+    $pkiGrid.GridColor                        = [System.Drawing.Color]::FromArgb(50,50,70)
+    $pkiGrid.DefaultCellStyle.BackColor       = $PANEL_BG
+    $pkiGrid.DefaultCellStyle.ForeColor       = $FG
+    $pkiGrid.DefaultCellStyle.Font            = New-Object System.Drawing.Font("Consolas", 8)
+    $pkiGrid.ColumnHeadersDefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+    $pkiGrid.ColumnHeadersDefaultCellStyle.ForeColor = $ACCENT
+    $pkiGrid.EnableHeadersVisualStyles        = $false
+    $pkiGrid.SelectionMode                    = [System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $pkiGrid.Columns.Add("KeyName",  "Key Name")  | Out-Null
+    $pkiGrid.Columns.Add("Version",  "Version")   | Out-Null
+    $pkiGrid.Columns.Add("SHA256",   "SHA256 Fingerprint")  | Out-Null
+    $pkiGrid.Columns.Add("Size",     "Bytes")     | Out-Null
+    $pkiGrid.Columns[0].Width = 160  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
+    $pkiGrid.Columns[1].Width = 80
+    $pkiGrid.Columns[2].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+    $pkiGrid.Columns[3].Width = 60
+    $keyRight.Controls.Add($pkiGrid)
+
+    # Anchor pkiGrid on resize
+    $pkiGrid.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right -bor [System.Windows.Forms.AnchorStyles]::Bottom
+    $fpText.Anchor  = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+
+    # Populate all PKI files
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    foreach ($pk in $pubKeys) {
+        try {
+            $raw  = [System.IO.File]::ReadAllBytes($pk.FullName)
+            $hash = ($sha256.ComputeHash($raw) | ForEach-Object { $_.ToString('x2') }) -join ''
+            $ver  = if ($pk.BaseName -match '-(\d+)$') { $Matches[1] } else { '00' }
+            $null = $pkiGrid.Rows.Add($pk.BaseName, "v$ver", $hash, $raw.Count)
+        } catch { $null = $pkiGrid.Rows.Add($pk.BaseName, '?', '(error)', 0) }
+    }
+    $sha256.Dispose()
+
+    # Key selection change handler
+    $keyDropRef  = $keyDrop
+    $picBoxRef   = $picBox
+    $fpTextRef   = $fpText
+    $pubKeysRef  = $pubKeys
+    $pkiDirRef   = $pkiDir
+    $keyDrop.Add_SelectedIndexChanged({
+        $idx = $keyDropRef.SelectedIndex
+        if ($idx -lt 0 -or $idx -ge @($pubKeysRef).Count) { return }
+        $pk  = $pubKeysRef[$idx]
+        try {
+            $raw  = [System.IO.File]::ReadAllBytes($pk.FullName)
+            $sha2 = [System.Security.Cryptography.SHA256]::Create()
+            $hash = ($sha2.ComputeHash($raw) | ForEach-Object { $_.ToString('x2') }) -join ''
+            $sha2.Dispose()
+            $fpTextRef.Text = "$($pk.BaseName)`r`n$hash"
+            $bmp = New-QrFingerprintBitmap -Text "$($pk.BaseName):$hash" -Size 200
+            if ($null -ne $bmp) { $picBoxRef.Image = $bmp }
+        } catch { $fpTextRef.Text = "(error reading key)" }
+    }.GetNewClosure())
+
+    $copyBtn.Add_Click({
+        if (-not [string]::IsNullOrWhiteSpace($fpTextRef.Text)) {
+            [System.Windows.Forms.Clipboard]::SetText($fpTextRef.Text)
+        }
+    }.GetNewClosure())
+
+    # Trigger initial display
+    if (@($keyDrop.Items).Count -gt 0) { $keyDrop.SelectedIndex = -1; $keyDrop.SelectedIndex = 0 }
+
+    # ════════════════════════════════════════════════════════════════
+    # TAB 3 ─ Audit  (Manifest Mismatch)
+    # ════════════════════════════════════════════════════════════════
+    $tabAudit = New-AboutTab "Audit" "🛡"
+    $tabAudit.Padding = New-Object System.Windows.Forms.Padding(8)
+
+    $auditToolStrip = New-Object System.Windows.Forms.ToolStrip
+    $auditToolStrip.BackColor = [System.Drawing.Color]::FromArgb(12,12,24)
+    $auditToolStrip.GripStyle = [System.Windows.Forms.ToolStripGripStyle]::Hidden
+    $tabAudit.Controls.Add($auditToolStrip)
+
+    $btnRefreshAudit = New-Object System.Windows.Forms.ToolStripButton
+    $btnRefreshAudit.Text  = "⟳  Refresh"
+    $btnRefreshAudit.Font  = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $auditToolStrip.Items.Add($btnRefreshAudit) | Out-Null
+
+    $btnExportAudit = New-Object System.Windows.Forms.ToolStripButton
+    $btnExportAudit.Text = "💾  Export CSV"
+    $auditToolStrip.Items.Add($btnExportAudit) | Out-Null
+
+    $auditToolStrip.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $auditStatus = New-Object System.Windows.Forms.ToolStripLabel
+    $auditStatus.Text = "Click Refresh to scan"
+    $auditStatus.ForeColor = $FG_DIM
+    $auditToolStrip.Items.Add($auditStatus) | Out-Null
+
+    $auditGrid = New-Object System.Windows.Forms.DataGridView
+    $auditGrid.Dock                          = [System.Windows.Forms.DockStyle]::Fill
+    $auditGrid.ReadOnly                      = $true
+    $auditGrid.AllowUserToAddRows            = $false
+    $auditGrid.RowHeadersVisible             = $false
+    $auditGrid.BackgroundColor               = $PANEL_BG
+    $auditGrid.ForeColor                     = $FG
+    $auditGrid.GridColor                     = [System.Drawing.Color]::FromArgb(50,50,70)
+    $auditGrid.DefaultCellStyle.BackColor    = $PANEL_BG
+    $auditGrid.DefaultCellStyle.ForeColor    = $FG
+    $auditGrid.DefaultCellStyle.Font         = New-Object System.Drawing.Font("Consolas", 9)
+    $auditGrid.ColumnHeadersDefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+    $auditGrid.ColumnHeadersDefaultCellStyle.ForeColor = $ACCENT
+    $auditGrid.EnableHeadersVisualStyles     = $false
+    $auditGrid.SelectionMode                 = [System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $auditGrid.Columns.Add("File",   "File")   | Out-Null
+    $auditGrid.Columns.Add("Status", "Status") | Out-Null
+    $auditGrid.Columns.Add("Note",   "Note")   | Out-Null
+    $auditGrid.Columns[0].Width = 180  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
+    $auditGrid.Columns[1].Width = 90
+    $auditGrid.Columns[2].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+    $tabAudit.Controls.Add($auditGrid)
+
+    # Row colouring by status
+    $auditGrid.Add_CellFormatting({
+        $rowStatus = $this.Rows[$_.RowIndex].Cells['Status'].Value
+        switch ($rowStatus) {
+            'Relic'     { $_.CellStyle.ForeColor = $FG_DANGER }
+            'Untracked' { $_.CellStyle.ForeColor = $FG_WARN }
+            'Error'     { $_.CellStyle.ForeColor = [System.Drawing.Color]::Magenta }
+        }
+    })
+
+    $auditGridRef = $auditGrid
+    $auditStatusRef = $auditStatus
+    $btnRefreshAudit.Add_Click({
+        $auditStatusRef.Text = "Scanning..."
+        $auditGridRef.Rows.Clear()
+        $mismatches = Get-ManifestMismatches -WorkspacePath $PSScriptRoot
+        foreach ($mm in $mismatches) { $null = $auditGridRef.Rows.Add($mm.File, $mm.Status, $mm.Note) }
+        $relics    = @($mismatches | Where-Object { $_.Status -eq 'Relic' }).Count
+        $untracked = @($mismatches | Where-Object { $_.Status -eq 'Untracked' }).Count
+        $auditStatusRef.Text = "Relics: $relics  |  Untracked: $untracked  |  Total issues: $(@($mismatches).Count)"
+        Write-AppLog "Audit scan: $relics relics, $untracked untracked" "Audit"
+    }.GetNewClosure())
+
+    $btnExportAudit.Add_Click({
+        $sfd = New-Object System.Windows.Forms.SaveFileDialog
+        $sfd.Filter   = "CSV files (*.csv)|*.csv"
+        $sfd.FileName = "audit-manifest-$(Get-Date -Format 'yyyyMMdd-HHmm').csv"
+        if ($sfd.ShowDialog() -eq 'OK') {
+            $rows = @()
+            foreach ($row in $auditGridRef.Rows) {
+                $rows += [PSCustomObject]@{ File=$row.Cells['File'].Value; Status=$row.Cells['Status'].Value; Note=$row.Cells['Note'].Value }
+            }
+            $rows | Export-Csv -LiteralPath $sfd.FileName -Encoding UTF8 -NoTypeInformation
+        }
+    }.GetNewClosure())
+
+    # Auto-scan in audit mode
+    if ($AuditMode) { $btnRefreshAudit.PerformClick() }
+
+    # ════════════════════════════════════════════════════════════════
+    # TAB 4 ─ Chief Approvals
+    # ════════════════════════════════════════════════════════════════
+    $tabApprovals = New-AboutTab "Approvals" "✅"
+    $tabApprovals.Padding = New-Object System.Windows.Forms.Padding(8)
+
+    # Toolbar
+    $appToolStrip = New-Object System.Windows.Forms.ToolStrip
+    $appToolStrip.BackColor = [System.Drawing.Color]::FromArgb(12,12,24)
+    $appToolStrip.GripStyle = [System.Windows.Forms.ToolStripGripStyle]::Hidden
+    $tabApprovals.Controls.Add($appToolStrip)
+
+    $btnNewApproval = New-Object System.Windows.Forms.ToolStripButton
+    $btnNewApproval.Text = "➕  Submit Item"
+    $appToolStrip.Items.Add($btnNewApproval) | Out-Null
+
+    $btnApprove = New-Object System.Windows.Forms.ToolStripButton
+    $btnApprove.Text = "✔  Approve Selected"
+    $appToolStrip.Items.Add($btnApprove) | Out-Null
+
+    $btnReject = New-Object System.Windows.Forms.ToolStripButton
+    $btnReject.Text = "✖  Reject Selected"
+    $appToolStrip.Items.Add($btnReject) | Out-Null
+
+    $appToolStrip.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+
+    $btnBypass = New-Object System.Windows.Forms.ToolStripButton
+    $btnBypass.Text = "⏱  Grant 28-Day Bypass"
+    $btnBypass.ForeColor = $FG_WARN
+    $appToolStrip.Items.Add($btnBypass) | Out-Null
+
+    $bypassLabel = New-Object System.Windows.Forms.ToolStripLabel
+    $bypassLabel.Text      = "Bypass: None"
+    $bypassLabel.ForeColor = $FG_DIM
+    $appToolStrip.Items.Add($bypassLabel) | Out-Null
+
+    $appGrid = New-Object System.Windows.Forms.DataGridView
+    $appGrid.Dock                          = [System.Windows.Forms.DockStyle]::Fill
+    $appGrid.ReadOnly                      = $true
+    $appGrid.AllowUserToAddRows            = $false
+    $appGrid.RowHeadersVisible             = $false
+    $appGrid.MultiSelect                   = $true
+    $appGrid.BackgroundColor               = $PANEL_BG
+    $appGrid.ForeColor                     = $FG
+    $appGrid.GridColor                     = [System.Drawing.Color]::FromArgb(50,50,70)
+    $appGrid.DefaultCellStyle.BackColor    = $PANEL_BG
+    $appGrid.DefaultCellStyle.ForeColor    = $FG
+    $appGrid.DefaultCellStyle.Font         = New-Object System.Drawing.Font("Consolas", 9)
+    $appGrid.ColumnHeadersDefaultCellStyle.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+    $appGrid.ColumnHeadersDefaultCellStyle.ForeColor = $ACCENT
+    $appGrid.EnableHeadersVisualStyles     = $false
+    $appGrid.SelectionMode                 = [System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $cols4 = @('ID','File','Status','Submitter','Submitted','Decision','RelatedFiles')
+    $widths4 = @(60,200,90,100,100,80,200)
+    for ($i = 0; $i -lt $cols4.Count; $i++) {
+        $null = $appGrid.Columns.Add($cols4[$i], $cols4[$i])
+        if ($i -lt $widths4.Count) { $appGrid.Columns[$i].Width = $widths4[$i] }
+    }
+    $appGrid.Columns[$cols4.Count-1].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+    $tabApprovals.Controls.Add($appGrid)
+
+    $appGrid.Add_CellFormatting({
+        $v = $this.Rows[$_.RowIndex].Cells['Status'].Value
+        switch ($v) {
+            'Approved'  { $_.CellStyle.ForeColor = $FG_OK }
+            'Rejected'  { $_.CellStyle.ForeColor = $FG_DANGER }
+            'Pending'   { $_.CellStyle.ForeColor = $FG_WARN }
+            'Bypassed'  { $_.CellStyle.ForeColor = [System.Drawing.Color]::Cyan }
+        }
+    })
+
+    # Load and display approvals
+    $appData    = Get-ChiefApprovals -WorkspacePath $PSScriptRoot
+    $appGridRef = $appGrid
+    $bypassLblR = $bypassLabel
+
+    function Refresh-ApprovalsGrid {
+        $appGridRef.Rows.Clear()
+        $appr = $appData.approvals
+        if ($null -eq $appr) { return }
+        foreach ($a in $appr) {
+            $null = $appGridRef.Rows.Add(
+                $a.id, $a.file, $a.status, $a.submitter,
+                $a.submitted, $a.decision,
+                ($a.relatedFiles -join ', ')
+            )
+        }
+        # Bypass status
+        if (-not [string]::IsNullOrWhiteSpace($appData.bypassExpiry)) {
+            $exp = [datetime]::Parse($appData.bypassExpiry)
+            if ($exp -gt (Get-Date)) {
+                $bypassLblR.Text = "Bypass active until $($exp.ToString('yyyy-MM-dd'))"
+                $bypassLblR.ForeColor = $FG_OK
+            } else {
+                $bypassLblR.Text = "Bypass EXPIRED ($($exp.ToString('yyyy-MM-dd')))"
+                $bypassLblR.ForeColor = $FG_DANGER
+            }
+        } else {
+            $bypassLblR.Text = "Bypass: None"
+            $bypassLblR.ForeColor = $FG_DIM
+        }
+    }
+    Refresh-ApprovalsGrid
+
+    $btnNewApproval.Add_Click({
+        $dlg = New-Object System.Windows.Forms.Form
+        $dlg.Text = "Submit Item for Chief Approval"
+        $dlg.Size = New-Object System.Drawing.Size(480, 320)
+        $dlg.BackColor = $DARK_BG; $dlg.ForeColor = $FG
+        $dlg.StartPosition = "CenterParent"
+        $dlg.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+        function Lbl { param([string]$t,[int]$x,[int]$y)
+            $l = New-Object System.Windows.Forms.Label; $l.Text=$t; $l.ForeColor=$FG_DIM
+            $l.Location = New-Object System.Drawing.Point($x,$y); $l.Size = New-Object System.Drawing.Size(420,18); $dlg.Controls.Add($l); return $l }
+        function Txt { param([int]$x,[int]$y,[int]$w=420)
+            $t = New-Object System.Windows.Forms.TextBox; $t.BackColor=$PANEL_BG; $t.ForeColor=$FG
+            $t.Location = New-Object System.Drawing.Point($x,$y); $t.Size = New-Object System.Drawing.Size($w,22); $dlg.Controls.Add($t); return $t }
+
+        $null = Lbl "File / Item:" 12 12;         $txtFile    = Txt 12 30
+        $null = Lbl "Submitter:" 12 60;            $txtSubm    = Txt 12 78
+        $null = Lbl "Related files (comma-sep):" 12 108;  $txtRel = Txt 12 126
+        $null = Lbl "Notes:" 12 156;               $txtNotes   = Txt 12 174
+
+        $okBtn = New-Object System.Windows.Forms.Button; $okBtn.Text="Submit"
+        $okBtn.Location = New-Object System.Drawing.Point(12,220); $okBtn.Size = New-Object System.Drawing.Size(100,28)
+        $okBtn.BackColor = $ACCENT; $okBtn.ForeColor = $DARK_BG; $okBtn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+        $okBtn.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dlg.Controls.Add($okBtn)
+
+        if ($dlg.ShowDialog($aboutForm) -eq 'OK') {
+            $newId = "$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
+            $newItem = [PSCustomObject]@{
+                id           = $newId
+                file         = $txtFile.Text
+                status       = 'Pending'
+                submitter    = $txtSubm.Text
+                submitted    = (Get-Date -Format 'yyyy-MM-dd')
+                decision     = ''
+                notes        = $txtNotes.Text
+                relatedFiles = ($txtRel.Text -split '\s*,\s*' | Where-Object { $_ })
+            }
+            if ($null -eq $appData.approvals) {
+                $appData | Add-Member -MemberType NoteProperty -Name 'approvals' -Value @($newItem) -Force
+            } else {
+                $appData.approvals = @($appData.approvals) + $newItem
+            }
+            Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
+            Refresh-ApprovalsGrid
+        }
+    }.GetNewClosure())
+
+    $btnApprove.Add_Click({
+        $rows = @($appGridRef.SelectedRows)
+        if (@($rows).Count -eq 0) { return }
+        foreach ($row in $rows) {
+            $id = $row.Cells['ID'].Value
+            foreach ($a in $appData.approvals) {
+                if ($a.id -eq $id) { $a.status = 'Approved'; $a.decision = (Get-Date -Format 'yyyy-MM-dd') }
+            }
+        }
+        Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
+        Refresh-ApprovalsGrid
+        Write-AppLog "Chief approved $(@($rows).Count) item(s)" "Audit"
+    }.GetNewClosure())
+
+    $btnReject.Add_Click({
+        $rows = @($appGridRef.SelectedRows)
+        if (@($rows).Count -eq 0) { return }
+        foreach ($row in $rows) {
+            $id = $row.Cells['ID'].Value
+            foreach ($a in $appData.approvals) {
+                if ($a.id -eq $id) { $a.status = 'Rejected'; $a.decision = (Get-Date -Format 'yyyy-MM-dd') }
+            }
+        }
+        Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
+        Refresh-ApprovalsGrid
+    }.GetNewClosure())
+
+    $btnBypass.Add_Click({
+        $exp = (Get-Date).AddDays(28).ToString('yyyy-MM-dd')
+        if ($null -eq ($appData.PSObject.Properties['bypassExpiry'])) {
+            $appData | Add-Member -MemberType NoteProperty -Name 'bypassExpiry' -Value $exp -Force
+        } else { $appData.bypassExpiry = $exp }
+        Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
+        Refresh-ApprovalsGrid
+        Write-AppLog "Chief granted 28-day review bypass until $exp" "Audit"
+    }.GetNewClosure())
+
+    # ── Status bar ──────────────────────────────────────────────────
+    $statusBar = New-Object System.Windows.Forms.StatusStrip
+    $statusBar.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+    $statusLbl = New-Object System.Windows.Forms.ToolStripStatusLabel
+    $statusLbl.Text      = "PowerShellGUI  ·  $env:COMPUTERNAME  ·  Session PID $PID"
+    $statusLbl.ForeColor = $FG_DIM
+    $statusBar.Items.Add($statusLbl) | Out-Null
+    $aboutForm.Controls.Add($statusBar)
+
+    $aboutForm.ShowDialog() | Out-Null
+    $aboutForm.Dispose()
+}
+
+function Show-AboutSystemDialog {
+    <#.SYNOPSIS Full system metrics dashboard.#>
+    [CmdletBinding()]
+    param()
+
+    Write-AppLog "Showing About-System dialog" "Audit"
+
+    $DARK_BG  = [System.Drawing.Color]::FromArgb(14, 14, 24)
+    $PANEL_BG = [System.Drawing.Color]::FromArgb(24, 24, 40)
+    $ACCENT   = [System.Drawing.Color]::FromArgb(0, 200, 255)
+    $FG       = [System.Drawing.Color]::FromArgb(220, 220, 235)
+    $FG_DIM   = [System.Drawing.Color]::FromArgb(130, 130, 155)
+    $FG_OK    = [System.Drawing.Color]::FromArgb(80, 255, 130)
+    $FG_WARN  = [System.Drawing.Color]::FromArgb(255, 200, 50)
+
+    $sForm = New-Object System.Windows.Forms.Form
+    $sForm.Text = "About  ─  System Metrics"
+    $sForm.Size = New-Object System.Drawing.Size(920, 680)
+    $sForm.StartPosition = "CenterScreen"
+    $sForm.BackColor = $DARK_BG; $sForm.ForeColor = $FG
+    $sForm.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+    $tabs = New-Object System.Windows.Forms.TabControl
+    $tabs.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $tabs.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $sForm.Controls.Add($tabs)
+
+    # ── Helper: add tab ──
+    function New-SysTab { param([string]$t)
+        $tp = New-Object System.Windows.Forms.TabPage; $tp.Text=$t; $tp.BackColor=$PANEL_BG; $tp.ForeColor=$FG
+        $tabs.TabPages.Add($tp) | Out-Null; return $tp }
+
+    # ── Helper: metric grid ──
+    function New-MetricGrid { param([System.Windows.Forms.Control]$Parent)
+        $dg = New-Object System.Windows.Forms.DataGridView
+        $dg.Dock = [System.Windows.Forms.DockStyle]::Fill
+        $dg.ReadOnly=$true; $dg.AllowUserToAddRows=$false; $dg.RowHeadersVisible=$false
+        $dg.BackgroundColor=$PANEL_BG; $dg.ForeColor=$FG
+        $dg.GridColor=[System.Drawing.Color]::FromArgb(45,45,65)
+        $dg.DefaultCellStyle.BackColor=$PANEL_BG; $dg.DefaultCellStyle.ForeColor=$FG
+        $dg.DefaultCellStyle.Font=New-Object System.Drawing.Font("Consolas",9)
+        $dg.AlternatingRowsDefaultCellStyle.BackColor=[System.Drawing.Color]::FromArgb(18,18,32)
+        $dg.ColumnHeadersDefaultCellStyle.BackColor=[System.Drawing.Color]::FromArgb(8,8,18)
+        $dg.ColumnHeadersDefaultCellStyle.ForeColor=$ACCENT
+        $dg.EnableHeadersVisualStyles=$false
+        $dg.SelectionMode=[System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+        $dg.Columns.Add("Metric","Metric") | Out-Null
+        $dg.Columns.Add("Value","Value")   | Out-Null
+        $dg.Columns[0].Width = 240  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
+        $dg.Columns[1].AutoSizeMode=[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+        $Parent.Controls.Add($dg)
+        return $dg }
+
+    # ─── TAB: CPU ────────────────────────────────────────────────────
+    $tCpu = New-SysTab "🖥 CPU"
+    $gCpu = New-MetricGrid $tCpu
+    try {
+        $cpus = @(Get-CimInstance Win32_Processor -ErrorAction Stop)
+        foreach ($cpu in $cpus) {
+            $null = $gCpu.Rows.Add("Name",         $cpu.Name.Trim())
+            $null = $gCpu.Rows.Add("Manufacturer", $cpu.Manufacturer)
+            $null = $gCpu.Rows.Add("Cores",        $cpu.NumberOfCores)
+            $null = $gCpu.Rows.Add("Logical CPUs", $cpu.NumberOfLogicalProcessors)
+            $null = $gCpu.Rows.Add("Max Clock MHz",$cpu.MaxClockSpeed)
+            $null = $gCpu.Rows.Add("L2 Cache KB",  $cpu.L2CacheSize)
+            $null = $gCpu.Rows.Add("L3 Cache KB",  $cpu.L3CacheSize)
+            $null = $gCpu.Rows.Add("Description",  $cpu.Caption)
+            $cpuArch = switch ($cpu.Architecture) { 0 { 'x86' } 9 { 'x64' } 12 { 'Arm64' } default { "$($cpu.Architecture)" } }
+            $null = $gCpu.Rows.Add("Architecture", $cpuArch)
+            $cpuVirt = if ($cpu.VirtualizationFirmwareEnabled) { 'Enabled' } else { 'Disabled/Unknown' }
+            $null = $gCpu.Rows.Add("Virtualization", $cpuVirt)
+            $null = $gCpu.Rows.Add("Processor ID", $cpu.ProcessorId)
+        }
+        $load = (Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
+        $null = $gCpu.Rows.Add("Current Load %", $load)
+    } catch { $null = $gCpu.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: Memory ─────────────────────────────────────────────────
+    $tMem = New-SysTab "💾 Memory"
+    $gMem = New-MetricGrid $tMem
+    try {
+        $cs  = Get-CimInstance Win32_ComputerSystem  -ErrorAction Stop
+        $os  = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+        $totalGB  = [math]::Round($cs.TotalPhysicalMemory / 1GB, 2)
+        $freeGB   = [math]::Round($os.FreePhysicalMemory  / 1MB, 2)
+        $usedGB   = [math]::Round($totalGB - $freeGB, 2)
+        $pageGB   = [math]::Round($os.TotalVirtualMemorySize / 1MB, 2)
+        $pageFree = [math]::Round($os.FreeVirtualMemory / 1MB, 2)
+        $null = $gMem.Rows.Add("Total RAM (GB)",       $totalGB)
+        $null = $gMem.Rows.Add("Used RAM (GB)",        $usedGB)
+        $null = $gMem.Rows.Add("Free RAM (GB)",        $freeGB)
+        $null = $gMem.Rows.Add("Usage %",              "$([math]::Round($usedGB/$totalGB*100,1))%")
+        $null = $gMem.Rows.Add("── Virtual Memory ──", "")
+        $null = $gMem.Rows.Add("Total VM (GB)",        $pageGB)
+        $null = $gMem.Rows.Add("Free VM (GB)",         $pageFree)
+        # DIMM slots
+        $dimms = @(Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue)
+        $null = $gMem.Rows.Add("── Physical DIMMs ──", "$(@($dimms).Count) module(s)")
+        foreach ($d in $dimms) {
+            $gb = [math]::Round($d.Capacity / 1GB, 1)
+            $null = $gMem.Rows.Add("  $($d.DeviceLocator)", "${gb}GB  $($d.Speed)MHz  $($d.Manufacturer)")
+        }
+    } catch { $null = $gMem.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: Disk ───────────────────────────────────────────────────
+    $tDisk = New-SysTab "💿 Disk"
+    $gDisk = New-MetricGrid $tDisk
+    try {
+        $disks = @(Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop)
+        foreach ($d in $disks) {
+            $totalGB = [math]::Round($d.Size / 1GB, 2)
+            $freeGB  = [math]::Round($d.FreeSpace / 1GB, 2)
+            $usedPct = if ($d.Size -gt 0) { [math]::Round(($d.Size - $d.FreeSpace) / $d.Size * 100, 1) } else { 0 }
+            $null = $gDisk.Rows.Add("── Drive $($d.DeviceID) $($d.VolumeName) ──", "")
+            $null = $gDisk.Rows.Add("  Total (GB)",   $totalGB)
+            $null = $gDisk.Rows.Add("  Free (GB)",    $freeGB)
+            $null = $gDisk.Rows.Add("  Used %",       "$usedPct%")
+            $null = $gDisk.Rows.Add("  FS",           $d.FileSystem)
+        }
+        $physDisks = @(Get-CimInstance Win32_DiskDrive -ErrorAction SilentlyContinue)
+        $null = $gDisk.Rows.Add("── Physical Drives ──", "$(@($physDisks).Count)")
+        foreach ($pd in $physDisks) {
+            $gb = [math]::Round($pd.Size / 1GB, 2)
+            $null = $gDisk.Rows.Add("  $($pd.Caption)", "${gb}GB  $($pd.MediaType)  $($pd.InterfaceType)")
+        }
+    } catch { $null = $gDisk.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: GPU / Display ─────────────────────────────────────────
+    $tGPU = New-SysTab "🎮 GPU"
+    $gGPU = New-MetricGrid $tGPU
+    try {
+        $gpus = @(Get-CimInstance Win32_VideoController -ErrorAction Stop)
+        foreach ($gpu in $gpus) {
+            $vramMB = [math]::Round($gpu.AdapterRAM / 1MB, 0)
+            $null = $gGPU.Rows.Add("── $($gpu.Caption) ──", "")
+            $null = $gGPU.Rows.Add("  Driver",   $gpu.DriverVersion)
+            $null = $gGPU.Rows.Add("  VRAM (MB)",$vramMB)
+            $null = $gGPU.Rows.Add("  Res",      "$($gpu.CurrentHorizontalResolution) x $($gpu.CurrentVerticalResolution) @ $($gpu.CurrentRefreshRate)Hz")
+            $null = $gGPU.Rows.Add("  Status",   $gpu.Status)
+        }
+        $monitors = @(Get-CimInstance Win32_DesktopMonitor -ErrorAction SilentlyContinue)
+        $null = $gGPU.Rows.Add("── Monitors ──", "$(@($monitors).Count) detected")
+        foreach ($m in $monitors) { $null = $gGPU.Rows.Add("  $($m.Name)", $m.ScreenHeight) }
+    } catch { $null = $gGPU.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: Network ────────────────────────────────────────────────
+    $tNet = New-SysTab "🌐 Network"
+    $gNet = New-MetricGrid $tNet
+    try {
+        $adapters = @(Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -ne 'Disconnected' })
+        foreach ($a in $adapters) {
+            $ip = (Get-NetIPAddress -InterfaceIndex $a.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1).IPAddress
+            $null = $gNet.Rows.Add("── $($a.Name) ──", $a.Status)
+            $null = $gNet.Rows.Add("  Description",    $a.InterfaceDescription)
+            $null = $gNet.Rows.Add("  MAC",            $a.MacAddress)
+            $null = $gNet.Rows.Add("  IPv4",           $ip)
+            $null = $gNet.Rows.Add("  Speed (Mbps)",   [math]::Round($a.LinkSpeed / 1MB, 0))
+        }
+        $dns = @(Get-DnsClientServerAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ServerAddresses)
+        $null = $gNet.Rows.Add("── DNS Servers ──", ($dns | Select-Object -Unique) -join ', ')
+        $gw = (Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object RouteMetric | Select-Object -First 1).NextHop
+        $null = $gNet.Rows.Add("Default Gateway", $gw)
+    } catch { $null = $gNet.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: OS / Platform ──────────────────────────────────────────
+    $tOS = New-SysTab "🪟 OS"
+    $gOS = New-MetricGrid $tOS
+    try {
+        $os  = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+        $cs  = Get-CimInstance Win32_ComputerSystem  -ErrorAction Stop
+        $bios= Get-CimInstance Win32_BIOS            -ErrorAction SilentlyContinue
+        $up  = [datetime]::Now - $os.LastBootUpTime
+        $null = $gOS.Rows.Add("OS Caption",         $os.Caption)
+        $null = $gOS.Rows.Add("Build",              $os.BuildNumber)
+        $null = $gOS.Rows.Add("Version",            $os.Version)
+        $null = $gOS.Rows.Add("Architecture",       $os.OSArchitecture)
+        $null = $gOS.Rows.Add("Install Date",       $os.InstallDate)
+        $null = $gOS.Rows.Add("Last Boot",          $os.LastBootUpTime)
+        $null = $gOS.Rows.Add("Uptime",             "$([int]$up.TotalDays)d $($up.Hours)h $($up.Minutes)m $($up.Seconds)s")
+        $null = $gOS.Rows.Add("System Root",        $os.SystemDirectory)
+        $null = $gOS.Rows.Add("── Computer ──",     "")
+        $null = $gOS.Rows.Add("Name",               $cs.Name)
+        $null = $gOS.Rows.Add("Domain/Workgroup",   $(if ($cs.PartOfDomain) { $cs.Domain } else { "(Workgroup) $($cs.Workgroup)" }))
+        $null = $gOS.Rows.Add("Manufacturer",       $cs.Manufacturer)
+        $null = $gOS.Rows.Add("Model",              $cs.Model)
+        $null = $gOS.Rows.Add("── BIOS ──",         "")
+        $null = $gOS.Rows.Add("BIOS Version",       $bios.SMBIOSBIOSVersion)
+        $null = $gOS.Rows.Add("BIOS Manufacturer",  $bios.Manufacturer)
+        $null = $gOS.Rows.Add("── PowerShell ──",   "")
+        $null = $gOS.Rows.Add("PS Version",         "$($PSVersionTable.PSVersion)")
+        $null = $gOS.Rows.Add("PS Edition",         $PSVersionTable.PSEdition)
+        $null = $gOS.Rows.Add("CLR Version",        "$($PSVersionTable.CLRVersion)")
+        $null = $gOS.Rows.Add("Culture",            [System.Threading.Thread]::CurrentThread.CurrentUICulture.Name)
+        $null = $gOS.Rows.Add("Execution Policy",   (Get-ExecutionPolicy))
+        $null = $gOS.Rows.Add("TimeZone",           (Get-TimeZone).DisplayName)
+        $null = $gOS.Rows.Add("Current User",       "$env:USERDOMAIN\$env:USERNAME")
+        $null = $gOS.Rows.Add("Session PID",        $PID)
+    } catch { $null = $gOS.Rows.Add("(error)", "$_") }
+
+    # ─── TAB: Processes ──────────────────────────────────────────────
+    $tProc = New-SysTab "⚙ Processes"
+    $gProc = New-Object System.Windows.Forms.DataGridView
+    $gProc.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $gProc.ReadOnly=$true; $gProc.AllowUserToAddRows=$false; $gProc.RowHeadersVisible=$false
+    $gProc.BackgroundColor=$PANEL_BG; $gProc.ForeColor=$FG
+    $gProc.GridColor=[System.Drawing.Color]::FromArgb(45,45,65)
+    $gProc.DefaultCellStyle.BackColor=$PANEL_BG; $gProc.DefaultCellStyle.ForeColor=$FG
+    $gProc.DefaultCellStyle.Font=New-Object System.Drawing.Font("Consolas",8)
+    $gProc.ColumnHeadersDefaultCellStyle.BackColor=[System.Drawing.Color]::FromArgb(8,8,18)
+    $gProc.ColumnHeadersDefaultCellStyle.ForeColor=$ACCENT
+    $gProc.EnableHeadersVisualStyles=$false
+    $gProc.SelectionMode=[System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $tProc.Controls.Add($gProc)
+    $procCols = @('Name','PID','CPU(s)','WS(MB)','Handles','Threads')
+    foreach ($pc in $procCols) { $null = $gProc.Columns.Add($pc,$pc) }
+    $gProc.Columns[0].Width=200; $gProc.Columns[1].Width=60
+    $gProc.Columns[2].Width=70;  $gProc.Columns[3].Width=80
+    try {
+        Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 60 | ForEach-Object {
+            $null = $gProc.Rows.Add(
+                $_.ProcessName, $_.Id,
+                [math]::Round($_.TotalProcessorTime.TotalSeconds,1),
+                [math]::Round($_.WorkingSet64/1MB,1),
+                $_.HandleCount, $_.Threads.Count
+            )
+        }
+    } catch { <# Intentional: non-fatal #> }
+
+    # ─── TAB: Environment Variables ──────────────────────────────────
+    $tEnv = New-SysTab "📋 Env Vars"
+    $gEnv = New-MetricGrid $tEnv
+    $gEnv.Columns[0].Width = 200
+    try {
+        [System.Environment]::GetEnvironmentVariables() | ForEach-Object { $_.GetEnumerator() } |
+            Sort-Object Name | ForEach-Object { $null = $gEnv.Rows.Add($_.Name, $_.Value) }
+    } catch { <# Intentional: non-fatal #> }
+
+    # ─── Status bar ──────────────────────────────────────────────────
+    $sb = New-Object System.Windows.Forms.StatusStrip
+    $sb.BackColor = [System.Drawing.Color]::FromArgb(8,8,18)
+    $slbl = New-Object System.Windows.Forms.ToolStripStatusLabel
+    $slbl.Text = "System Metrics  ·  $env:COMPUTERNAME  ·  Refreshed $(Get-Date -Format 'HH:mm:ss')"; $slbl.ForeColor = $FG_DIM
+    $sb.Items.Add($slbl) | Out-Null; $sForm.Controls.Add($sb)
+
+    $sForm.ShowDialog() | Out-Null
+    $sForm.Dispose()
+}
+
+function Show-AboutAppDialog {
+    <#.SYNOPSIS Analytics dashboard linking to all built-in app analytics.#>
+    [CmdletBinding()]
+    param()
+
+    Write-AppLog "Showing About-App analytics dialog" "Audit"
+
+    $DARK_BG  = [System.Drawing.Color]::FromArgb(14, 14, 24)
+    $PANEL_BG = [System.Drawing.Color]::FromArgb(24, 24, 40)
+    $ACCENT   = [System.Drawing.Color]::FromArgb(130, 80, 255)
+    $ACCENT2  = [System.Drawing.Color]::FromArgb(0, 220, 180)
+    $FG       = [System.Drawing.Color]::FromArgb(220, 220, 235)
+    $FG_DIM   = [System.Drawing.Color]::FromArgb(130, 130, 155)
+    $FG_OK    = [System.Drawing.Color]::FromArgb(80, 255, 130)
+    $FG_WARN  = [System.Drawing.Color]::FromArgb(255, 200, 50)
+
+    $appForm = New-Object System.Windows.Forms.Form
+    $appForm.Text = "About  ─  App Analytics"
+    $appForm.Size = New-Object System.Drawing.Size(880, 660)
+    $appForm.StartPosition = "CenterScreen"
+    $appForm.BackColor = $DARK_BG; $appForm.ForeColor = $FG
+    $appForm.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+    $tabs = New-Object System.Windows.Forms.TabControl
+    $tabs.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $appForm.Controls.Add($tabs)
+
+    function New-AppTab { param([string]$t)
+        $tp = New-Object System.Windows.Forms.TabPage; $tp.Text=$t; $tp.BackColor=$PANEL_BG; $tp.ForeColor=$FG
+        $tabs.TabPages.Add($tp) | Out-Null; return $tp }
+
+    # ─── TAB: Launch Telemetry ───────────────────────────────────────
+    $tTele = New-AppTab "📊 Launch Telemetry"
+    $tTele.Padding = New-Object System.Windows.Forms.Padding(8)
+    $gTele = New-Object System.Windows.Forms.DataGridView
+    $gTele.Dock=$([System.Windows.Forms.DockStyle]::Fill); $gTele.ReadOnly=$true; $gTele.AllowUserToAddRows=$false; $gTele.RowHeadersVisible=$false
+    $gTele.BackgroundColor=$PANEL_BG; $gTele.ForeColor=$FG; $gTele.GridColor=[System.Drawing.Color]::FromArgb(45,45,65)
+    $gTele.DefaultCellStyle.BackColor=$PANEL_BG; $gTele.DefaultCellStyle.ForeColor=$FG
+    $gTele.DefaultCellStyle.Font=New-Object System.Drawing.Font("Consolas",9)
+    $gTele.ColumnHeadersDefaultCellStyle.BackColor=[System.Drawing.Color]::FromArgb(8,8,18)
+    $gTele.ColumnHeadersDefaultCellStyle.ForeColor=$ACCENT2
+    $gTele.EnableHeadersVisualStyles=$false; $gTele.SelectionMode=[System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $tTele.Controls.Add($gTele)
+    try {
+        if (Get-Command Get-LaunchTelemetry -ErrorAction SilentlyContinue) {
+            $tele = Get-LaunchTelemetry
+            if ($null -ne $tele) {
+                $tele.PSObject.Properties | Sort-Object Name | ForEach-Object {
+                    if ($null -eq $gTele.Columns['Metric']) { $gTele.Columns.Add('Metric','Metric') | Out-Null; $gTele.Columns.Add('Value','Value') | Out-Null; $gTele.Columns[0].Width=220; $gTele.Columns[1].AutoSizeMode=[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill }
+                    $null = $gTele.Rows.Add($_.Name, $_.Value)
+                }
+            }
+        }
+        if ($gTele.Columns.Count -eq 0) {
+            $gTele.Columns.Add('Metric','Metric') | Out-Null; $gTele.Columns.Add('Value','Value') | Out-Null
+            $gTele.Columns[0].Width=220; $gTele.Columns[1].AutoSizeMode=[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+            $logPath = Join-Path $PSScriptRoot 'logs'
+            $logFiles = @(Get-ChildItem $logPath -Filter '*.log' -File -ErrorAction SilentlyContinue)
+            $null = $gTele.Rows.Add("Log files",     "@($logFiles).Count)")
+            $null = $gTele.Rows.Add("Total log size", "$([math]::Round(($logFiles | Measure-Object Length -Sum).Sum / 1KB, 1)) KB")
+            $null = $gTele.Rows.Add("Workspace Root", $PSScriptRoot)
+            $null = $gTele.Rows.Add("Session PID",    $PID)
+            $null = $gTele.Rows.Add("Startup mode",   "Get-LaunchTelemetry not loaded")
+        }
+    } catch { <# Intentional: non-fatal #> }
+
+    # ─── TAB: CronAiAthon Pipeline ──────────────────────────────────
+    $tCron = New-AppTab "⏱ CronAiAthon"
+    $tCron.Padding = New-Object System.Windows.Forms.Padding(8)
+    $cronText = New-Object System.Windows.Forms.TextBox
+    $cronText.Dock=$([System.Windows.Forms.DockStyle]::Fill); $cronText.Multiline=$true; $cronText.ReadOnly=$true; $cronText.ScrollBars='Both'; $cronText.WordWrap=$false
+    $cronText.BackColor=[System.Drawing.Color]::FromArgb(8,8,18); $cronText.ForeColor=$FG_OK
+    $cronText.Font=New-Object System.Drawing.Font("Consolas",9)
+    $tCron.Controls.Add($cronText)
+    try {
+        $cPath = Join-Path $PSScriptRoot 'config\cron-aiathon-pipeline.json'
+        if (Test-Path $cPath) {
+            $cData = Get-Content $cPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $sb = [System.Text.StringBuilder]::new()
+            $null = $sb.AppendLine("=== CronAiAthon Pipeline ===")
+            $null = $sb.AppendLine("Version : $($cData.meta.version)")
+            $null = $sb.AppendLine("Updated : $($cData.meta.lastUpdated)")
+            $null = $sb.AppendLine("")
+            if ($null -ne $cData.items) {
+                $open = @($cData.items | Where-Object { $_.status -ne 'DONE' }).Count
+                $done = @($cData.items | Where-Object { $_.status -eq 'DONE' }).Count
+                $null = $sb.AppendLine("Total Items : $(@($cData.items).Count)")
+                $null = $sb.AppendLine("Open        : $open")
+                $null = $sb.AppendLine("Done        : $done")
+                $null = $sb.AppendLine(""); $null = $sb.AppendLine("── Open Items (top 20) ──")
+                @($cData.items | Where-Object { $_.status -ne 'DONE' } | Select-Object -First 20) | ForEach-Object {
+                    $null = $sb.AppendLine("[$($_.status)] [$($_.priority)] $($_.title)")
+                }
+            }
+            $cronText.Text = $sb.ToString()
+        } else { $cronText.Text = "cron-aiathon-pipeline.json not found at:`n$cPath" }
+    } catch { $cronText.Text = "Error loading CronAiAthon: $_" }
+
+    # ─── TAB: SIN Pattern Summary ────────────────────────────────────
+    $tSin = New-AppTab "🛡 SIN Summary"
+    $tSin.Padding = New-Object System.Windows.Forms.Padding(8)
+    $gSin = New-Object System.Windows.Forms.DataGridView
+    $gSin.Dock=$([System.Windows.Forms.DockStyle]::Fill); $gSin.ReadOnly=$true; $gSin.AllowUserToAddRows=$false; $gSin.RowHeadersVisible=$false
+    $gSin.BackgroundColor=$PANEL_BG; $gSin.ForeColor=$FG; $gSin.GridColor=[System.Drawing.Color]::FromArgb(45,45,65)
+    $gSin.DefaultCellStyle.BackColor=$PANEL_BG; $gSin.DefaultCellStyle.ForeColor=$FG
+    $gSin.DefaultCellStyle.Font=New-Object System.Drawing.Font("Consolas",8)
+    $gSin.ColumnHeadersDefaultCellStyle.BackColor=[System.Drawing.Color]::FromArgb(8,8,18)
+    $gSin.ColumnHeadersDefaultCellStyle.ForeColor=$ACCENT
+    $gSin.EnableHeadersVisualStyles=$false; $gSin.SelectionMode=[System.Windows.Forms.DataGridViewSelectionMode]::FullRowSelect
+    $sinCols = @('SIN ID','Class','Severity','Status','Title')
+    $sinWids  = @(220,70,80,90,300)
+    for ($i=0;$i -lt $sinCols.Count;$i++) { $null=$gSin.Columns.Add($sinCols[$i],$sinCols[$i]); if($i -lt $sinWids.Count){$gSin.Columns[$i].Width=$sinWids[$i]} }
+    $gSin.Columns[$sinCols.Count-1].AutoSizeMode=[System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+    $tSin.Controls.Add($gSin)
+    try {
+        $sinPath = Join-Path $PSScriptRoot 'sin_registry'
+        @(Get-ChildItem $sinPath -Filter '*.json' -File -ErrorAction SilentlyContinue | Sort-Object Name) | ForEach-Object {
+            try {
+                $s = Get-Content $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+                $id  = if ($s.PSObject.Properties.Name -contains 'sin_id')   { $s.sin_id }   else { $_.BaseName }
+                $cls = if ($id -match 'PATTERN') { 'Pattern' } elseif ($id -match 'SEMI') { 'SemiSin' } else { 'Instance' }
+                $sev = if ($s.PSObject.Properties.Name -contains 'severity') { $s.severity } else { '?' }
+                $sta = if ($s.PSObject.Properties.Name -contains 'is_resolved' -and $s.is_resolved) { 'Resolved' } else { 'Open' }
+                $ttl = if ($s.PSObject.Properties.Name -contains 'title') { $s.title } else { '' }
+                $null = $gSin.Rows.Add($id, $cls, $sev, $sta, $ttl)
+            } catch { <# Intentional: non-fatal #> }
+        }
+    } catch { <# Intentional: non-fatal #> }
+
+    # ─── TAB: Config Coverage ────────────────────────────────────────
+    $tCfg = New-AppTab "⚙ Config Coverage"
+    $tCfg.Padding = New-Object System.Windows.Forms.Padding(8)
+    $cfgText = New-Object System.Windows.Forms.TextBox
+    $cfgText.Dock=$([System.Windows.Forms.DockStyle]::Fill); $cfgText.Multiline=$true; $cfgText.ReadOnly=$true; $cfgText.ScrollBars='Both'
+    $cfgText.BackColor=[System.Drawing.Color]::FromArgb(8,8,18); $cfgText.ForeColor=$ACCENT2
+    $cfgText.Font=New-Object System.Drawing.Font("Consolas",9)
+    $tCfg.Controls.Add($cfgText)
+    try {
+        $cfgDir  = Join-Path $PSScriptRoot 'config'
+        $cfgFiles = @(Get-ChildItem $cfgDir -File -Recurse -ErrorAction SilentlyContinue)
+        $sb2 = [System.Text.StringBuilder]::new()
+        $null = $sb2.AppendLine("=== Config Coverage Report ===")
+        $null = $sb2.AppendLine("Config dir   : $cfgDir")
+        $null = $sb2.AppendLine("Total files  : $(@($cfgFiles).Count)")
+        $null = $sb2.AppendLine("Total size   : $([math]::Round(($cfgFiles|Measure-Object Length -Sum).Sum/1KB,1)) KB")
+        $null = $sb2.AppendLine("")
+        foreach ($cf in $cfgFiles | Sort-Object Name) {
+            $null = $sb2.AppendLine("  $($cf.Name.PadRight(40)) $([math]::Round($cf.Length/1KB,1)) KB")
+        }
+        $cfgText.Text = $sb2.ToString()
+    } catch { $cfgText.Text = "Error: $_" }
+
+    # ─── TAB: Launch Tools ───────────────────────────────────────────
+    $tTools = New-AppTab "🛠 Launch Analytics"
+    $tTools.Padding = New-Object System.Windows.Forms.Padding(8)
+    $toolsPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+    $toolsPanel.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $toolsPanel.FlowDirection = [System.Windows.Forms.FlowDirection]::TopDown
+    $toolsPanel.WrapContents = $false
+    $toolsPanel.AutoScroll = $true
+    $tTools.Controls.Add($toolsPanel)
+
+    $appFormRef = $appForm
+    $btnDefs = @(
+        @{ T="📈  Scan Dashboard";      S='scripts\Show-ScanDashboard.ps1' },
+        @{ T="📊  Config Coverage Audit";S='scripts\Invoke-ConfigCoverageAudit.ps1' },
+        @{ T="🔎  Workspace Dependency Map";S='scripts\Invoke-WorkspaceDependencyMap.ps1' },
+        @{ T="📋  CronAiAthon Tool";    S='scripts\Show-CronAiAthonTool.ps1' },
+        @{ T="🛡  SIN Pattern Scanner"; S='tests\Invoke-SINPatternScanner.ps1' },
+        @{ T="🔑  Certificate Manager"; S='scripts\Show-CertificateManager.ps1' },
+        @{ T="⚙  Script Dependency Matrix"; S='scripts\Invoke-ScriptDependencyMatrix.ps1' }
+    )
+    foreach ($bd in $btnDefs) {
+        $b = New-Object System.Windows.Forms.Button
+        $b.Text = $bd.T; $b.Width = 360; $b.Height = 38; $b.Margin = New-Object System.Windows.Forms.Padding(4)
+        $b.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+        $b.BackColor = [System.Drawing.Color]::FromArgb(30,30,50); $b.ForeColor = $FG
+        $b.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+        $scriptPath = Join-Path $PSScriptRoot $bd.S
+        $b.Add_Click({ Invoke-LocalScriptWithProgress -ScriptPath $scriptPath -Owner $appFormRef }.GetNewClosure())
+        $toolsPanel.Controls.Add($b)
+    }
+
+    # ─── Status bar ──────────────────────────────────────────────────
+    $sb = New-Object System.Windows.Forms.StatusStrip
+    $sb.BackColor=[System.Drawing.Color]::FromArgb(8,8,18)
+    $slbl = New-Object System.Windows.Forms.ToolStripStatusLabel
+    $slbl.Text="App Analytics  ·  $env:COMPUTERNAME  ·  $(Get-Date -Format 'HH:mm:ss')"; $slbl.ForeColor=$FG_DIM
+    $sb.Items.Add($slbl) | Out-Null; $appForm.Controls.Add($sb)
+
+    $appForm.ShowDialog() | Out-Null
+    $appForm.Dispose()
+}
+
+function Invoke-LaunchModuleCheck {
+    <#.SYNOPSIS Check workspace modules are importable; offer Y/A/N scripted install for any missing.#>
+    [CmdletBinding()]
+    param(
+        [string]$WorkspacePath = $PSScriptRoot,
+        [switch]$NonInteractive
+    )
+
+    $modulesDir = Join-Path $WorkspacePath 'modules'
+    if (-not (Test-Path $modulesDir)) {
+        Write-AppLog "Invoke-LaunchModuleCheck: modules dir not found at $modulesDir" "Warning"
+        return
+    }
+
+    $psdFiles = @(Get-ChildItem $modulesDir -Filter '*.psd1' -File -ErrorAction SilentlyContinue)
+    if (@($psdFiles).Count -eq 0) {
+        Write-AppLog "Invoke-LaunchModuleCheck: no .psd1 manifests found in $modulesDir" "Info"
+        return
+    }
+
+    $missing = [System.Collections.Generic.List[PSCustomObject]]::new()
+    foreach ($psd in $psdFiles) {
+        $modName = $psd.BaseName
+        $loaded  = Get-Module -Name $modName -ListAvailable -ErrorAction SilentlyContinue
+        if ($null -eq $loaded) {
+            $missing.Add([PSCustomObject]@{ Name = $modName; PSD = $psd.FullName })
+        }
+    }
+
+    if (@($missing).Count -eq 0) {
+        Write-AppLog "Invoke-LaunchModuleCheck: all $(@($psdFiles).Count) workspace modules are accessible" "Info"
+        return
+    }
+
+    Write-AppLog "Invoke-LaunchModuleCheck: $(@($missing).Count) module(s) not accessible: $($missing.Name -join ', ')" "Warning"
+
+    if ($NonInteractive) { return }
+
+    # Build a WinForms dialog for Y/A/N selection
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
+    Add-Type -AssemblyName System.Drawing       -ErrorAction SilentlyContinue
+
+    $dlg = New-Object System.Windows.Forms.Form
+    $dlg.Text = "Module Install Wizard"
+    $dlg.Size = New-Object System.Drawing.Size(680, 520)
+    $dlg.StartPosition = "CenterScreen"
+    $dlg.BackColor = [System.Drawing.Color]::FromArgb(14,14,24)
+    $dlg.ForeColor = [System.Drawing.Color]::FromArgb(220,220,235)
+    $dlg.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+    $hdr = New-Object System.Windows.Forms.Label
+    $hdr.Text = "⚠  $(@($missing).Count) workspace module(s) not accessible to import"
+    $hdr.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+    $hdr.ForeColor = [System.Drawing.Color]::FromArgb(255,200,50)
+    $hdr.Dock = [System.Windows.Forms.DockStyle]::Top; $hdr.Height = 40; $hdr.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft; $hdr.Padding = New-Object System.Windows.Forms.Padding(8,0,0,0)
+    $dlg.Controls.Add($hdr)
+
+    $sub = New-Object System.Windows.Forms.Label
+    $sub.Text = "For each module below select: (Y) Register module path, (N) Skip, or use (A) Register All."
+    $sub.ForeColor = [System.Drawing.Color]::FromArgb(160,160,180); $sub.Dock = [System.Windows.Forms.DockStyle]::Top; $sub.Height = 28
+    $sub.Padding = New-Object System.Windows.Forms.Padding(8,0,0,0)
+    $dlg.Controls.Add($sub)
+
+    $lv = New-Object System.Windows.Forms.ListView
+    $lv.View = [System.Windows.Forms.View]::Details; $lv.FullRowSelect = $true; $lv.GridLines = $true
+    $lv.CheckBoxes = $true; $lv.BackColor = [System.Drawing.Color]::FromArgb(22,22,36); $lv.ForeColor = [System.Drawing.Color]::FromArgb(200,200,220)
+    $lv.Font = New-Object System.Drawing.Font("Consolas",9); $lv.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $lv.Columns.Add("Module",    200) | Out-Null
+    $lv.Columns.Add("PSD Path",  380) | Out-Null
+    $lv.Columns.Add("Action",    70)  | Out-Null
+    $dlg.Controls.Add($lv)
+    foreach ($m in $missing) {
+        $li = New-Object System.Windows.Forms.ListViewItem($m.Name)
+        $null = $li.SubItems.Add($m.PSD)
+        $null = $li.SubItems.Add("(Y) Register")
+        $li.Checked = $true
+        $lv.Items.Add($li) | Out-Null
+    }
+
+    $btnPanel = New-Object System.Windows.Forms.Panel
+    $btnPanel.Dock = [System.Windows.Forms.DockStyle]::Bottom; $btnPanel.Height = 50
+    $btnPanel.BackColor = [System.Drawing.Color]::FromArgb(10,10,20)
+    $dlg.Controls.Add($btnPanel)
+
+    $btnAll = New-Object System.Windows.Forms.Button; $btnAll.Text = "A  ·  Register All"
+    $btnAll.Location = New-Object System.Drawing.Point(8,8); $btnAll.Size = New-Object System.Drawing.Size(150,34)
+    $btnAll.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $btnAll.BackColor = [System.Drawing.Color]::FromArgb(0,180,130); $btnAll.ForeColor = [System.Drawing.Color]::Black
+    $btnAll.Font = New-Object System.Drawing.Font("Segoe UI",9,[System.Drawing.FontStyle]::Bold)
+    $btnPanel.Controls.Add($btnAll)
+
+    $btnSel = New-Object System.Windows.Forms.Button; $btnSel.Text = "Y  ·  Register Checked"
+    $btnSel.Location = New-Object System.Drawing.Point(168,8); $btnSel.Size = New-Object System.Drawing.Size(150,34)
+    $btnSel.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $btnSel.BackColor = [System.Drawing.Color]::FromArgb(0,120,220); $btnSel.ForeColor = [System.Drawing.Color]::White
+    $btnPanel.Controls.Add($btnSel)
+
+    $btnNo = New-Object System.Windows.Forms.Button; $btnNo.Text = "N  ·  Skip All"
+    $btnNo.Location = New-Object System.Drawing.Point(328,8); $btnNo.Size = New-Object System.Drawing.Size(120,34)
+    $btnNo.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $btnNo.BackColor = [System.Drawing.Color]::FromArgb(60,30,30); $btnNo.ForeColor = [System.Drawing.Color]::FromArgb(220,80,80)
+    $btnPanel.Controls.Add($btnNo)
+
+    $resultText = New-Object System.Windows.Forms.Label
+    $resultText.Location = New-Object System.Drawing.Point(460,14); $resultText.Size = New-Object System.Drawing.Size(200,28)
+    $resultText.ForeColor = [System.Drawing.Color]::FromArgb(80,255,130); $resultText.Font = New-Object System.Drawing.Font("Consolas",8)
+    $btnPanel.Controls.Add($resultText)
+
+    $lvRef = $lv; $modsDirRef = $modulesDir; $resRef = $resultText
+    $registerModPath = {
+        param([string]$psdPath, [string]$modsDir)
+        # Add the modules directory to PSModulePath for this process and persistently for User scope
+        $procCurrent = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Process')
+        if ($procCurrent.Split(';') -notcontains $modsDir) {
+            [System.Environment]::SetEnvironmentVariable('PSModulePath', "$modsDir;$procCurrent", 'Process')
+        }
+        $userCurrent = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
+        if ([string]::IsNullOrEmpty($userCurrent)) { $userCurrent = '' }
+        if ($userCurrent.Split(';') -notcontains $modsDir) {
+            [System.Environment]::SetEnvironmentVariable('PSModulePath', ($modsDir + ';' + $userCurrent).TrimEnd(';'), 'User')
+        }
+        try {
+            Import-Module $psdPath -Force -ErrorAction Stop
+            return "OK"
+        } catch { return "ERR: $_" }
+    }
+
+    $btnAll.Add_Click({
+        $count = 0
+        foreach ($m in $missing) {
+            $r = & $registerModPath $m.PSD $modsDirRef
+            Write-AppLog "Module install wizard: register $($m.Name) -> $r" "Audit"
+            $count++
+        }
+        $resRef.Text = "Registered $count module(s)"
+        Write-AppLog "Module path registered: $modsDirRef" "Info"
+    }.GetNewClosure())
+
+    $btnSel.Add_Click({
+        $count = 0
+        foreach ($li in $lvRef.CheckedItems) {
+            $psd = $li.SubItems[1].Text
+            $r   = & $registerModPath $psd $modsDirRef
+            Write-AppLog "Module install wizard: register $($li.Text) -> $r" "Audit"
+            $count++
+        }
+        $resRef.Text = "Registered $count module(s)"
+    }.GetNewClosure())
+
+    $btnNo.Add_Click({ $dlg.Close() })
+
+    $dlg.ShowDialog() | Out-Null
+    $dlg.Dispose()
+}
+
+function Invoke-RepositorySourceCheck {
+    <#.SYNOPSIS Check PSGallery and NuGet are registered; offer to add them if missing.#>
+    [CmdletBinding()]
+    param([switch]$Silent)
+
+    $repos  = @(Get-PSRepository -ErrorAction SilentlyContinue)
+    $hasPSG = ($repos | Where-Object { $_.Name -eq 'PSGallery' } | Measure-Object).Count -gt 0
+    $pkgSources = @(Get-PackageSource -ErrorAction SilentlyContinue)
+    $hasNuG = ($pkgSources | Where-Object { $_.Name -like '*NuGet*' -or $_.Location -like '*nuget.org*' } | Measure-Object).Count -gt 0
+
+    if ($hasPSG -and $hasNuG) {
+        Write-AppLog "RepositorySourceCheck: PSGallery and NuGet already registered" "Info"
+        return
+    }
+
+    if ($Silent) { return }
+
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
+    $missing = @()
+    if (-not $hasPSG) { $missing += "PSGallery (PowerShell module repository)" }
+    if (-not $hasNuG) { $missing += "NuGet (package source for Install-Package)" }
+
+    $msg = "The following package repositories are not registered on this system:`n`n"
+    $msg += ($missing | ForEach-Object { "  • $_" }) -join "`n"
+    $msg += "`n`nWould you like to register them now?`n(This enables Install-Module and Install-Package to work correctly)"
+
+    $result = [System.Windows.Forms.MessageBox]::Show(
+        $msg, "Package Repository Setup",
+        [System.Windows.Forms.MessageBoxButtons]::YesNo,
+        [System.Windows.Forms.MessageBoxIcon]::Question
+    )
+    if ($result -ne 'Yes') { return }
+
+    if (-not $hasPSG) {
+        try {
+            Register-PSRepository -Default -ErrorAction Stop
+            Write-AppLog "Registered PSGallery repository" "Info"
+        } catch {
+            try { Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted -ErrorAction Stop; Write-AppLog "PSGallery trust set" "Info" } catch { Write-AppLog "PSGallery setup failed: $_" "Warning" }
+        }
+    }
+    if (-not $hasNuG) {
+        try {
+            Register-PackageSource -Name 'NuGet' -Location 'https://www.nuget.org/api/v2' -ProviderName 'NuGet' -Trusted -ErrorAction Stop
+            Write-AppLog "Registered NuGet package source" "Info"
+        } catch { Write-AppLog "NuGet setup failed: $_" "Warning" }
+    }
+    Write-AppLog "RepositorySourceCheck complete" "Audit"
+}
+
 # ==================== GUI FUNCTIONS ====================
 function New-GUI {
     [CmdletBinding(SupportsShouldProcess = $true)]
@@ -5114,7 +6584,7 @@ function New-GUI {
             $ui.Tag  = if ($ue.Args) { "$exePath|$($ue.Args)" } else { "$exePath|" }
             $ui.Add_Click({
                 $parts = $this.Tag -split '\|', 2
-                if ($parts[1]) { Start-Process $parts[0] $parts[1] } else { Start-Process $parts[0] }
+                if ($parts[1]) { Start-Process $parts[0] $parts[1] } else { Start-Process $parts[0] }  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
             })
             $utilsMenu.DropDownItems.Add($ui) | Out-Null
         }
@@ -6294,12 +7764,12 @@ function New-GUI {
         $cfg = $null
 
         $moduleStatus = [ordered]@{
-            AssistedSASC = if (Test-Path $assistedSascModulePath) {
+            AssistedSASC = if (-not [string]::IsNullOrWhiteSpace($assistedSascModulePath) -and (Test-Path $assistedSascModulePath)) {
                 if (Get-Command Show-AssistedSASCDialog -ErrorAction SilentlyContinue) { 'loaded' } else { 'file present (not loaded)' }
-            } else { 'missing' }
-            'SASC-Adapters' = if (Test-Path $sascAdaptersModulePath) {
+            } else { if ([string]::IsNullOrWhiteSpace($assistedSascModulePath)) { 'path unavailable' } else { 'missing' } }
+            'SASC-Adapters' = if (-not [string]::IsNullOrWhiteSpace($sascAdaptersModulePath) -and (Test-Path $sascAdaptersModulePath)) {
                 if (Get-Module SASC-Adapters -ErrorAction SilentlyContinue) { 'loaded' } else { 'file present (not loaded)' }
-            } else { 'missing' }
+            } else { if ([string]::IsNullOrWhiteSpace($sascAdaptersModulePath)) { 'path unavailable' } else { 'missing' } }
         }
 
         foreach ($entry in $moduleStatus.GetEnumerator()) {
@@ -6317,7 +7787,7 @@ function New-GUI {
             }) | Out-Null
         }
 
-        if (Test-Path $configPath) {
+        if (-not [string]::IsNullOrWhiteSpace($configPath) -and (Test-Path $configPath)) {
             try {
                 $cfg = Get-Content -Path $configPath -Raw -ErrorAction Stop | ConvertFrom-Json
             } catch {
@@ -6747,11 +8217,11 @@ function New-GUI {
             $y = 12
             foreach ($pair in @(@('Name:','txtName'),@('Username:','txtUser'),@('Password:','txtPass'),@('URI:','txtUri'))) {
                 $lbl = New-Object System.Windows.Forms.Label
-                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true
+                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                 $dlg.Controls.Add($lbl)
                 $tb = New-Object System.Windows.Forms.TextBox
-                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)
-                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }
+                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
+                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                 $dlg.Controls.Add($tb)
                 $y += 32
             }
@@ -6874,11 +8344,11 @@ function New-GUI {
             $y = 12
             foreach ($pair in @(@('Name:','txtName'),@('Username:','txtUser'),@('Password:','txtPass'),@('URI:','txtUri'))) {
                 $lbl = New-Object System.Windows.Forms.Label
-                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true
+                $lbl.Text = $pair[0]; $lbl.Location = New-Object System.Drawing.Point(12, $y); $lbl.AutoSize = $true  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                 $dlg.Controls.Add($lbl)
                 $tb = New-Object System.Windows.Forms.TextBox
-                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)
-                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }
+                $tb.Name = $pair[1]; $tb.Location = New-Object System.Drawing.Point(100, ($y - 2)); $tb.Size = New-Object System.Drawing.Size(290, 22)  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
+                if ($pair[1] -eq 'txtPass') { $tb.UseSystemPasswordChar = $true }  # SIN-EXEMPT: P027 - iteration variable: always has elements inside foreach loop
                 $dlg.Controls.Add($tb)
                 $y += 32
             }
@@ -7356,28 +8826,31 @@ function New-GUI {
     $helpMenu.DropDownItems.Add($mrsItem) | Out-Null
 
     $helpMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-    
+
     $aboutItem = New-Object System.Windows.Forms.ToolStripMenuItem
-    $aboutItem.Text = "&About"
+    $aboutItem.Text = "🔷  &About"
+    $aboutItem.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
     $aboutItem.Add_Click({
         Write-AppLog "User selected Help > About" "Audit"
-        $vi = Get-VersionInfo
-        $configVersion = "$($vi.Major).$($vi.Minor).v$($vi.Build)"
-        # Read the VersionTag comment stamped directly on this script file
-        $scriptTag = "unknown"
-        try {
-            $firstLines = Get-Content -Path $PSCommandPath -TotalCount 5 -ErrorAction Stop
-            $tagLine = $firstLines | Where-Object { $_ -match 'VersionTag:\s*([\d\.a-z]+)' } | Select-Object -First 1
-            if ($tagLine -match 'VersionTag:\s*([\d\.a-z]+)') { $scriptTag = $Matches[1] }
-        } catch { <# Intentional: non-fatal #> }
-        [System.Windows.Forms.MessageBox]::Show(
-            "Scriptz n Portz N PowerShellD`n`nConfig Version : $configVersion`nScript Tag     : $scriptTag`n`nA powerful GUI application for launching scripts with admin elevation support.`n`nComputer        : $env:COMPUTERNAME`nUser            : $env:USERNAME`nPowerShell      : $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor)",
-            "About",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        )
+        Show-ModernAboutScreen
     })
     $helpMenu.DropDownItems.Add($aboutItem) | Out-Null
+
+    $aboutSysItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $aboutSysItem.Text = "🖥  About - System"
+    $aboutSysItem.Add_Click({
+        Write-AppLog "User selected Help > About - System" "Audit"
+        Show-AboutSystemDialog
+    })
+    $helpMenu.DropDownItems.Add($aboutSysItem) | Out-Null
+
+    $aboutAppItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $aboutAppItem.Text = "📊  About - App"
+    $aboutAppItem.Add_Click({
+        Write-AppLog "User selected Help > About - App" "Audit"
+        Show-AboutAppDialog
+    })
+    $helpMenu.DropDownItems.Add($aboutAppItem) | Out-Null
     
     $menuStrip.Items.Add($helpMenu) | Out-Null
 
@@ -8297,6 +9770,7 @@ function New-GUI {
 
         # Show form via ApplicationContext (non-modal, message loop stays alive when hidden)
         Write-AppLog "Displaying GUI form window via ApplicationContext" "Audit"
+        _SwMark 'first-paint-trayhost'
         Start-TrayApplicationLoop -StartMinimized:$StartMinimized
 
         # Message loop has ended (Stop-TrayHost or ExitThread was called)
@@ -8313,6 +9787,7 @@ function New-GUI {
             Write-AppLog "TaskTray mode: starting minimized to system tray" "Audit"
         }
         Write-AppLog "Displaying GUI form window (ShowDialog fallback)" "Audit"
+        _SwMark 'first-paint-showdialog'
         $form.ShowDialog() | Out-Null
         $form.Dispose()
         Write-AppLog "GUI form disposed -- application exiting" "Audit"
@@ -8325,6 +9800,13 @@ Write-AppLog "PowerShell GUI Application starting..." "Info"
 Write-AppLog "Computer: $env:COMPUTERNAME | User: $env:USERNAME | PowerShell: $($PSVersionTable.PSVersion)" "Info"
 Write-AppLog "=====================================================================" "Audit"
 
+# IMPL-20260405-007: Emit startup timing milestones collected so far
+_SwMark 'main-execution-start'
+if ($script:_StartupMilestones.Count -gt 0) {
+    $timingParts = $script:_StartupMilestones | ForEach-Object { "$($_.label)=$([math]::Round($_.elapsed,1))ms" }
+    Write-AppLog "Startup timing: $($timingParts -join ' | ')" "Info"
+}
+
 # ==================== CRASH RECOVERY & SESSION LOCK ====================
 $crashDetected = Invoke-CrashRecovery -TempDir (Join-Path $scriptDir 'temp')
 $script:LastCrashDetected = [bool]$crashDetected
@@ -8336,6 +9818,18 @@ if ($crashDetected) {
 Invoke-LogRotation -LogsDir $logsDir
 Write-SessionLock
 Write-AppLog "Session lock written, log rotation checked" "Info"
+
+# ==================== LAUNCH CHECK: Module Accessibility & Package Repos ====================
+Write-AppLog "Launch Check: Verifying workspace modules and package repositories..." "Audit"
+try {
+    # Check package repositories (PSGallery / NuGet) — silently first, prompt once
+    Invoke-RepositorySourceCheck -Silent
+} catch { Write-AppLog "Launch Check repo check error: $_" "Warning" }
+try {
+    # Check workspace modules — shows Y/A/N dialog only if modules are missing
+    Invoke-LaunchModuleCheck -WorkspacePath $PSScriptRoot
+} catch { Write-AppLog "Launch Check module check error: $_" "Warning" }
+Write-AppLog "Launch Check complete" "Info"
 
 # Phase 0: Validate and configure paths
 Write-AppLog "Phase 0: Validating application paths..." "Audit"
@@ -8363,7 +9857,7 @@ if ($pathsNeedValidation -or [string]::IsNullOrWhiteSpace($ConfigPath)) {
 
 # Initialize script folders config if it doesn't exist
 $scriptFoldersConfigPath = Get-ProjectPath ScriptFolders
-if (-not (Test-Path $scriptFoldersConfigPath)) {
+if (-not [string]::IsNullOrWhiteSpace($scriptFoldersConfigPath) -and -not (Test-Path $scriptFoldersConfigPath)) {
     $defaultConfig = @{
         metadata = @{
             version = "1.0.0"
@@ -8589,6 +10083,22 @@ Export-LogBuffer
 
 
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

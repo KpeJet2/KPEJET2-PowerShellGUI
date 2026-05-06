@@ -1,5 +1,6 @@
-REM VersionTag: 2604.B2.V31.0
+REM VersionTag: 2604.B2.V31.1
 REM VersionBuildHistory:
+REM   2604.B2.V31.1  2026-04-12  Inject PSModulePath; option 2 now auto-persists
 REM   2604.B2.V31.0  2026-04-04  Initial creation - First Run Configuration Menu
 REM ============================================================
 REM  Launch-CFRMenu.bat  |  First Run Configuration Menu
@@ -20,6 +21,9 @@ set "scriptDir=%~dp0"
 set "modulesDir=%scriptDir%modules"
 set "scriptsDir=%scriptDir%scripts"
 set "testsDir=%scriptDir%tests"
+
+REM ── Bootstrap: ensure modules are findable by all child PowerShell processes.
+set "PSModulePath=%scriptDir%modules;%PSModulePath%"
 
 REM ============================================================
 REM  Main Menu Loop
@@ -115,7 +119,7 @@ echo ╔════════════════════════
 echo ║  Repairing Module Import Paths...                                    ║
 echo ╚═══════════════════════════════════════════════════════════════════════╝
 echo.
-powershell -ExecutionPolicy Bypass -NoProfile -File "%scriptsDir%\Repair-ModulePaths.ps1"
+powershell -ExecutionPolicy Bypass -NoProfile -File "%scriptsDir%\Repair-ModulePaths.ps1" -Persist
 echo.
 pause
 goto menu

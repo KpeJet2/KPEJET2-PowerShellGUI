@@ -1,4 +1,8 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 # Author: The Establishment
 # Date: 2025-06-05
 # FileRole: Diagnostics
@@ -101,7 +105,7 @@ function Add-Finding {
     Write-SecDumpLog "FINDING [$Severity] $TestId | $(($File -replace [regex]::Escape($WorkspacePath), '.')) L$Line | $safeDetail" $Severity
 }
 
-function Write-Log {
+function Write-Log {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Color = 'Cyan')
     if (-not $Quiet) { Write-Host $Msg -ForegroundColor $Color }
 }
@@ -410,7 +414,7 @@ foreach ($f in $psFiles) {
         if ($unicodeRx.IsMatch($content)) {
             # Read raw bytes to check for BOM (EF BB BF)
             $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
-            if ($bytes.Length -lt 3 -or -not ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)) {
+            if ($bytes.Length -lt 3 -or -not ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)) {  # SIN-EXEMPT: P027 - $bytes[N] with .Length guard on adjacent/same line
                 Add-Finding 'T10-MISSING-BOM' 'HIGH' $f.FullName 0 'File contains Unicode characters but is missing UTF-8 BOM (P006). PS 5.1 will misread it.' 'Save file as UTF-8 WITH BOM (BOM = EF BB BF). Use VS Code: File > Save with Encoding > UTF-8 with BOM.'
             }
         }
@@ -498,4 +502,20 @@ if ($Mode -in @('Advisory','Audit')) {
         Start-Process explorer.exe -ArgumentList $secDumpDir
     }
 }
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 

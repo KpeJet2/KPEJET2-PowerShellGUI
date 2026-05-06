@@ -6,10 +6,10 @@
   "description": "config/cyclic-tasks.json appears to be a secondary task registry but its relationship to config/cron-aiathon-schedule.json (the primary CronAiAthon scheduler config) is not documented anywhere. Questions: (1) Is cyclic-tasks.json read by CronAiAthon-Scheduler? (2) Is it a legacy predecessor to cron-aiathon-schedule.json? (3) Should TASK-FullSystemsScan and TASK-ConvoVaultExchange appear in both? (4) Or is cyclic-tasks.json used by a different scheduler (e.g. sovereign-kernel)? Add a clarifying comment to both files and a section to REFERENCE-CONSISTENCY-STANDARD.md.",
   "suggested_by": "coverage gap analysis 2026-04-03",
   "priority": "MEDIUM",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:12Z",
   "createdAt": "2026-04-03T00:00:12Z",
-  "acknowledged_at": null,
+  "acknowledged_at": "2026-04-10T00:00:00Z",
   "affects": [
     "config/cyclic-tasks.json",
     "config/cron-aiathon-schedule.json",

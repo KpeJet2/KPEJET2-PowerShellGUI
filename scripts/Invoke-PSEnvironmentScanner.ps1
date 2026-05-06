@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V32.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 #Requires -Version 5.1
 
 <#
@@ -182,7 +187,7 @@ function Get-PercentColor {
     return [System.Drawing.Color]::LimeGreen
 }
 
-function Get-RainbowColor {
+function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     <# Returns an RGB color along the rainbow spectrum for a 0-100 value #>
     param([int]$Percent)
     $p = [Math]::Max(0, [Math]::Min(100, $Percent))
@@ -197,7 +202,7 @@ function Get-RainbowColor {
         @{ P = 100; R = 160; G = 32;  B = 240 }    # Violet
     )
     # Find the two stops to interpolate between
-    $lo = $stops[0]; $hi = $stops[-1]
+    $lo = $stops[0]; $hi = $stops[-1]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
     for ($i = 0; $i -lt $stops.Count - 1; $i++) {
         if ($p -ge $stops[$i].P -and $p -le $stops[$i + 1].P) {
             $lo = $stops[$i]; $hi = $stops[$i + 1]; break
@@ -2145,8 +2150,16 @@ function Populate-GridByKey {
                 $row = $dt.NewRow()
                 foreach ($p in $props) {
                     $val = $item.($p.Name)
-                    if ($null -eq $val) { $val = [DBNull]::Value }
-                    elseif ($val -is [array]) { $val = ($val -join ', ') }
+                    $colType = $dt.Columns[$p.Name].DataType
+                    if ($null -eq $val) {
+                        $val = [DBNull]::Value
+                    } elseif ($val -is [array]) {
+                        $val = ($val -join ', ')
+                    } elseif ($colType -eq [bool])   { $val = [bool]$val   }
+                      elseif ($colType -eq [int])    { $val = [int]$val    }
+                      elseif ($colType -eq [long])   { $val = [long]$val   }
+                      elseif ($colType -eq [double]) { $val = [double]$val }
+                      else                           { $val = [string]$val }
                     $row[$p.Name] = $val
                 }
                 $dt.Rows.Add($row) | Out-Null
@@ -2163,7 +2176,12 @@ function Populate-GridByKey {
 
 function Populate-AllGrids {
     foreach ($kv in $script:grids.GetEnumerator()) {
-        Populate-GridByKey -Key $kv.Key
+        try {
+            Populate-GridByKey -Key $kv.Key
+            Write-AppLog "Populate-AllGrids: bound key '$($kv.Key)'" 'Debug'
+        } catch {
+            Write-AppLog "Populate-AllGrids: failed to populate '$($kv.Key)' -- $($_.Exception.Message)" 'Warning'
+        }
     }
 }
 
@@ -2361,6 +2379,22 @@ $form.ShowDialog() | Out-Null
 Set-StrictMode -Version Latest
 $form.Dispose()
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

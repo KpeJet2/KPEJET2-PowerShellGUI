@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:06:08.8324505Z",
+  "title": "FIX: Missing expression after ','.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412130510-94717bd8",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412130608-49082a0f",
+  "description": "Fix for bug Bug-20260412130510-94717bd8: Parse error in Main-GUI.ps1 line 5603: Missing expression after ','.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:06:08.8324896Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ]
+}

@@ -6,10 +6,10 @@
   "description": "PipelineSteering's Invoke-PipelineSteer DryRun output should include agent health status for koe-RumA and H-Ai-Nikr-Agi (e.g., 'koe-RumA: milestone event overdue', 'H-Ai-Nikr-Agi: squabble log unrotated'). Currently these agents are not registered in any AgentRegistry entry and are invisible to PipelineSteer recommendations. Register both agents in sovereign-kernel/core/AgentRegistry.psm1 and add health-check hooks to PipelineSteering that query their status.",
   "suggested_by": "agent integration gap analysis 2026-04-03",
   "priority": "MEDIUM",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:13Z",
   "createdAt": "2026-04-03T00:00:13Z",
-  "acknowledged_at": null,
+  "acknowledged_at": "2026-04-10T09:27:11.0444918+08:00",
   "affects": [
     "sovereign-kernel/core/AgentRegistry.psm1",
     "agents/PipelineSteering/core/PipelineSteering.psm1",
@@ -20,5 +20,5 @@
   "notes": "AgentRegistry is the module binding authority (sovereign-kernel architecture). Register with: id, displayName, modulePath, healthCheckFunction, lastHealthCheck fields.",
   "plannedAt": null,
   "type": "ToDo",
-  "modified": "2026-04-03T07:12:40.8738432Z"
+  "modified": "2026-04-10T09:27:11.0446097+08:00"
 }

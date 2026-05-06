@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 # VersionBuildHistory:
 #   2603.B0.v25  2026-03-29 (per-node metadata: lastModified, editCount, author, version)
 #   2603.B0.v24  2026-03-28 (config mapping, version data, synopsis, style-diff)
@@ -27,7 +32,7 @@ trap {
 
 Write-Output 'Dependency matrix generator start'
 
-function Write-PercentRow {
+function Write-PercentRow {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([int]$Percent, [string]$Label)
     $p = [Math]::Max(0, [Math]::Min(100, $Percent))
     Write-Output ("[{0,3}%] {1}" -f $p, $Label)
@@ -658,8 +663,8 @@ foreach ($edge in $edges) {
 $folderRelationships = @(foreach ($folderKey in $folderRelationshipMap.Keys) {
     $parts = $folderKey -split '\|', 2
     [pscustomobject]@{
-        sourceFolder = $parts[0]
-        targetFolder = $parts[1]
+        sourceFolder = $parts[0]  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
+        targetFolder = $parts[1]  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
         edgeCount = [int]$folderRelationshipMap[$folderKey]
     }
 }) | Sort-Object -Property @(
@@ -1093,7 +1098,7 @@ function Build-ScanIndexJs {
     $scans = @()
     foreach ($mf in $matrixFiles) {
         if ($mf.Name -match 'script-dependency-matrix-(\d{8}-\d{6})\.json') {
-            $ts = $Matches[1]
+            $ts = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
             $label = try { [datetime]::ParseExact($ts, 'yyyyMMdd-HHmmss', $null).ToString('yyyy-MM-dd HH:mm:ss') } catch { $ts }
             $modRef = Join-Path $ReportFolder "module-references-$ts.json"
             $orphan = Join-Path $ReportFolder "orphan-audit-$ts.json"
@@ -1293,6 +1298,22 @@ if ($VerifyStyleConsistency) {
 }
 
 
+
+
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 
 

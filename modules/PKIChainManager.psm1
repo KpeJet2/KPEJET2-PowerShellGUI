@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
+# FileRole: Module
 <#
 .SYNOPSIS  PKIChainManager - PKI certificate chain management.
 .DESCRIPTION
@@ -6,6 +11,7 @@
     Uses .NET X509 certificate APIs with PowerShell 5.1 compatibility.
     Private keys can be stored in Bitwarden vault via AssistedSASC.
     All operations are logged to the sovereign kernel ledger.
+# TODO: HelpMenu | Show-PKIHelp | Actions: Validate|Import|Export|Audit|Help | Spec: config/help-menu-registry.json
 
     Chain hierarchy:
     - Root CA:       Self-signed, 4096-bit RSA, 10yr, CA:TRUE
@@ -364,6 +370,18 @@ function New-FullPKIChain {
 }
 
 # ── Exports ──────────────────────────────────────────────────
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-PKIChainManager'
     'New-RootCACertificate'
@@ -373,4 +391,9 @@ Export-ModuleMember -Function @(
     'Export-CertToVault'
     'New-FullPKIChain'
 )
+
+
+
+
+
 

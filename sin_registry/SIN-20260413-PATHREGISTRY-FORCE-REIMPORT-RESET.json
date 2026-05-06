@@ -1,0 +1,43 @@
+{
+  "sin_id": "SIN-20260413-PATHREGISTRY-FORCE-REIMPORT-RESET",
+  "title": "PwShGUICore.psm1 — $script:_PathRegistry silently reset to @{} when module is re-imported with -Force mid-session",
+  "description": "PwShGUICore.psm1 uses $script:_PathRegistry (populated by Initialize-CorePaths at startup) as a lookup table for all workspace paths. Any subsequent Import-Module PwShGUICore.psm1 -Force call (e.g. from PwSh-HelpFilesUpdateSource-ReR.psm1 line 79, or from external tools launched from Main-GUI.ps1) resets the module-scope variable to @{} because PS 5.1 re-executes the module body on every -Force import. After this reset, Get-ProjectPath returns $null for every key without recovering, causing downstream Test-Path $null crashes in at least six locations: Main-GUI.ps1 lines 7732, 7735, 7755 (Get-SecurityChecklistRows), 9822, ~3257 (Get-ScriptFoldersConfig), ~3274 (Save-ScriptFoldersConfig). The warning message emitted by the old Get-ProjectPath was also misleading ('call Initialize-CoreModule' instead of 'Initialize-CorePaths') and the -Message '' empty string passed to Write-AppLog from an earlier version caused a FATAL PS trap.",
+  "category": "runtime-state",
+  "severity": "HIGH",
+  "file_path": "modules/PwShGUICore.psm1",
+  "line_number": "148 (Get-ProjectPath guard), 56 (Initialize-CorePaths signature)",
+  "function_name": "Get-ProjectPath",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User (Warning 'Path registry not initialized' followed by Test-Path null crashes in Security Checklist and Script Folders Config)",
+  "is_resolved": true,
+  "resolution": "Get-ProjectPath now auto-reinitiates when $script:_PathRegistry.Count -eq 0: it derives the workspace root via Split-Path $PSScriptRoot (modules/ -> root), calls Initialize-CorePaths -ScriptDir $autoScriptDir, logs a Warning, then continues. If auto-reinit also fails (no config/ folder found) it returns $null with a clear error. Also fixed the misleading 'Initialize-CoreModule' text to 'Initialize-CorePaths'. VersionTag bumped to 2604.B2.V31.1.",
+  "occurrence_count": 1,
+  "created_at": "2026-04-13T00:00:00Z",
+  "last_seen_at": "2026-04-13T00:00:00Z",
+  "detection_method": "User-reported 'Path registry not initialized' warning followed by Test-Path crash. Analysis: Initialize-CorePaths is called once at Main-GUI.ps1:158. PwSh-HelpFilesUpdateSource-ReR.psm1:79 calls Import-Module PwShGUICore.psm1 -Force, resetting $script: scope. Equivalent -Force calls exist in tests and other modules.",
+  "root_cause": "PS 5.1 re-executes the entire .psm1 body on every -Force import, reinitialising all $script: variables to their declaration defaults. No guard existed to recover or reinitialise the registry from context.",
+  "is_security_related": false,
+  "is_version_related": true,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "related_sins": [
+    "SIN-PATTERN-022-NULL-METHOD-CALL",
+    "SIN-20260413-TESTPATH-NULL-MAIN-GUI"
+  ],
+  "contributing_force_importers": [
+    "modules/PwSh-HelpFilesUpdateSource-ReR.psm1:79",
+    "tests/Test-TrayHostLifecycle.ps1:34",
+    "tests/Invoke-WidgetSmokeTests.Tests.ps1:63",
+    "scripts/* (various — Import-Module PwShGUICore.psm1 -Force -DisableNameChecking)"
+  ],
+  "code_before": "if ($script:_PathRegistry.Count -eq 0) {\n    Write-AppLog -Message '' -Level Warning\n    return $null\n}",
+  "code_after": "if ($script:_PathRegistry.Count -eq 0) {\n    $autoScriptDir = Split-Path $PSScriptRoot\n    if (-not [string]::IsNullOrWhiteSpace($autoScriptDir) -and (Test-Path $autoScriptDir)) {\n        try {\n            Initialize-CorePaths -ScriptDir $autoScriptDir\n            Write-AppLog -Message \"PwShGUICore: Path registry auto-reinitialized from $autoScriptDir\" -Level Warning\n        } catch {\n            Write-AppLog -Message \"PwShGUICore: Auto-reinit failed: $($_.Exception.Message)\" -Level Warning\n        }\n    }\n    if ($script:_PathRegistry.Count -eq 0) {\n        Write-AppLog -Message 'PwShGUICore: Path registry not initialized - call Initialize-CorePaths first' -Level Warning\n        return $null\n    }\n}",
+  "tags": ["module-scope", "force-reimport", "path-registry", "PwShGUICore", "auto-reinit", "ps5.1"],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "notes": "Fixed in session 2026-04-13. Defence-in-depth: auto-reinit in Get-ProjectPath + null guards at call sites."
+  }
+}

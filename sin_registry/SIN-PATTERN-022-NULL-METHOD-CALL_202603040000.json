@@ -52,8 +52,8 @@
     "status": "PENDING",
     "auto_retry": true
   },
-  "context_guard_regex": "\\.Count\\s*-gt\\s*0|\\$null\\s*-ne|-ne\\s*\\$null|\\.Count\\s*-ge\\s*1|\\.Length\\s*-gt\\s*0|\\.SelectedItems\\.Count|\\.SelectedRows\\.Count|@\\(\\$|ForEach-Object|Where-Object|\\$match\\s+-and|Sort-Object|\\.Split\\(|\\.Matches\\.Count|if\\s*\\(\\$\\w+\\)|\\.Groups\\[|\\$errors\\[0\\]|\\$parseErrors\\[0\\]|\\.Rows\\[\\$|\\.Nodes\\[|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=",
+  "context_guard_regex": "\\.Count\\s*-gt\\s*0|\\$null\\s*-ne|-ne\\s*\\$null|\\.Count\\s*-ge\\s*1|\\.Length\\s*-gt\\s*0|\\.SelectedItems\\.Count|\\.SelectedRows\\.Count|@\\(\\$|ForEach-Object|Where-Object|\\$match\\s+-and|Sort-Object|\\.Split\\(|\\.Matches\\.Count|if\\s*\\(\\$\\w+\\)|\\.Groups\\[|\\$errors\\[0\\]|\\$parseErrors\\[0\\]|\\.Rows\\[\\$|\\.Nodes\\[|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=|-split\\s|\\.Split\\(|\\$parts\\s*=|\\$reportFiles\\s*=|\\$reports\\s*=|\\$completed\\s*=|try\\s*\\{|catch\\s*\\{|ErrorAction|SilentlyContinue|\\$null\\s*=|\\$\\w+\\s+-or\\s+\\$null|if\\s*\\(\\$\\w+\\s+-and|null\\s*guard|null.*check|check.*null|\\[array\\]|\\[string\\]|-is\\s+\\[|GetType\\(\\)",
   "context_guard_lines": 8,
-  "context_guard_direction": "above",
+  "context_guard_direction": "both",
   "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$"
 }

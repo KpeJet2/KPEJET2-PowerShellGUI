@@ -5,6 +5,8 @@
   "severity": "HIGH",
   "category": "scope-safety",
   "vector": "strictmode-scope-bleed",
+  "ps_version_scope": "PS51",
+  "ps_version_scope_note": "WinForms ShowDialog StrictMode scope bleed is a PS5.1 Desktop edition concern. In PS7 Core the WinForms message pump behaves the same but code should be audited per deployment target.",
   "status": "pattern-defined",
   "is_resolved": false,
   "occurrence_count": 2,

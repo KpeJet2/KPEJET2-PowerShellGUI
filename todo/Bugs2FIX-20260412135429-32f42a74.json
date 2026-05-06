@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:54:29.8780599Z",
+  "title": "FIX: [FAIL] CronAiAthon-Pipeline.psm1 -- 4 parse error(s)",
+  "category": "crash-log",
+  "tags": [],
+  "parentId": "Bug-20260412135331-fa50eb57",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412135429-32f42a74",
+  "description": "Fix for bug Bug-20260412135331-fa50eb57: Error pattern in log cycle-1.log:10",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:54:29.8780972Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ]
+}

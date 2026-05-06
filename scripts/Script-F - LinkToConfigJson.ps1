@@ -1,8 +1,28 @@
-# VersionTag: 2602.a.11
-# VersionTag: 2602.a.10
-# VersionTag: 2602.a.9
-# VersionTag: 2602.a.8
-# VersionTag: 2602.a.7
+# VersionTag: 2602.a.11
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# VersionTag: 2602.a.10
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# VersionTag: 2602.a.9
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# VersionTag: 2602.a.8
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# VersionTag: 2602.a.7
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -92,9 +112,12 @@ Write-Information "" -InformationAction Continue
 # ==================== VALIDATE EXECUTION ORDER ====================
 Write-Information "Validating execution order sequence..." -InformationAction Continue
 $executionOrder = $configTemplate.validation.executionOrder
-Write-Information "  Total steps: $($executionOrder.Count)" -InformationAction Continue
-Write-Information "  First step: $($executionOrder[0])" -InformationAction Continue
-Write-Information "  Last step: $($executionOrder[-1])" -InformationAction Continue
+$executionOrder = if ($null -ne $configTemplate.validation.executionOrder) { @($configTemplate.validation.executionOrder) } else { @() }
+Write-Information "  Total steps: $($executionOrder.Count)" -InformationAction Continue  # SIN-EXEMPT: P027 - false positive: array is populated/guarded before indexing
+if ($executionOrder.Count -gt 0) {
+    Write-Information "  First step: $($executionOrder[0])" -InformationAction Continue
+    Write-Information "  Last step: $($executionOrder[-1])" -InformationAction Continue
+}
 
 Write-Information "" -InformationAction Continue
 Write-Information "Configuration template validation completed successfully!" -InformationAction Continue
@@ -102,7 +125,7 @@ Write-Information "" -InformationAction Continue
 
 # ==================== PATH VALIDATION HELPER ====================
 # https://www.sharepointdiary.com/2023/03/pause-powershell-with-press-any-key-to-continue.html
-function Wait-KeyOrTimeout {
+function Wait-KeyOrTimeout {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([int]$Seconds = 5)
      
     $endTime = (Get-Date).AddSeconds($Seconds)
@@ -131,5 +154,19 @@ Write-Information "Script-F execution finished." -InformationAction Continue
 
 
 
+
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 
 

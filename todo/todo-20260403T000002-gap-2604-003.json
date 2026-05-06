@@ -6,7 +6,7 @@
   "description": "SIN-PATTERN-011 (duplicate function names) is violated: Test-IntegrityManifest and New-IntegrityManifest exist in both modules/AssistedSASC.psm1 and modules/PwShGUI-IntegrityCore.psm1. This causes module load order conflicts and unpredictable behavior. Resolution: remove the duplicate from AssistedSASC.psm1 and ensure it re-exports from IntegrityCore, or wrap with a proxy that delegates. Run Invoke-SINPatternScanner to confirm instance count.",
   "suggested_by": "redundancy audit 2026-04-03",
   "priority": "HIGH",
-  "status": "OPEN",
+  "status": "DONE",
   "created_at": "2026-04-03T00:00:02Z",
   "createdAt": "2026-04-03T00:00:02Z",
   "acknowledged_at": null,

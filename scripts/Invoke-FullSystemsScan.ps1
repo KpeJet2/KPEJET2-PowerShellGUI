@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -42,7 +47,7 @@ if (Test-Path $pipeModPath) {
     try { Import-Module $pipeModPath -Force -ErrorAction Stop } catch { <# Intentional: non-fatal #> }
 }
 
-function Write-ScanLog {
+function Write-ScanLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Severity = 'Informational', [string]$Source = 'FullSystemsScan')
     if (Get-Command Write-CronLog -ErrorAction SilentlyContinue) {
         Write-CronLog -Message $Msg -Severity $Severity -Source $Source
@@ -288,3 +293,19 @@ if ($CreatePipeItems -and (Get-Command Add-PipelineItem -ErrorAction SilentlyCon
 #endregion
 
 return [PSCustomObject]$summary
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

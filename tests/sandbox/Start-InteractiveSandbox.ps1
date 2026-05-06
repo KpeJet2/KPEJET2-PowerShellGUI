@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 <#
 .SYNOPSIS
     Launches a persistent Windows Sandbox for interactive, iterative GUI testing.
@@ -191,11 +195,46 @@ Write-Host "[Launch] Sandbox PID: $($sandboxProc.Id)" -ForegroundColor Green
 if (-not $NoWait) {
     Write-Host ""
     Write-Host "[Wait] Waiting for sandbox to become READY..." -ForegroundColor DarkGray
-    $statusFile = Join-Path $outputDir 'sandbox-status.json'
-    $maxWaitSec = 300
-    $elapsed = 0
-    $interval = 3
-    $ready = $false
+
+    # Load waiting jokes for long-wait entertainment
+    $waitJokes = @()
+    $jokesPath = Join-Path $WorkspacePath 'config\waiting-jokes.json'
+    if (Test-Path $jokesPath) {
+        try {
+            $jokeData = Get-Content $jokesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $waitJokes = @($jokeData.jokes)
+        } catch { <# Intentional: jokes are optional #> }
+    }
+    $jokeIdx = 0
+    function Show-SandboxWaitJoke {
+        param([array]$Jokes, [ref]$Idx)
+        if (@($Jokes).Count -eq 0) { return }
+        $j = @($Jokes)[$Idx.Value % @($Jokes).Count]
+        $Idx.Value++
+        Write-Host ''
+        Write-Host ('  +' + ('─' * 64) + '+') -ForegroundColor DarkCyan
+        Write-Host ('  |  Sandbox Patience Theatre  ').PadRight(66) + '|' -ForegroundColor DarkCyan
+        Write-Host ('  +' + ('─' * 64) + '+') -ForegroundColor DarkCyan
+        $words = $j -split ' '; $line = ''; $lineLen = 0
+        foreach ($w in $words) {
+            if (($lineLen + $w.Length + 1) -gt 62) {
+                Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan
+                $line = $w + ' '; $lineLen = $w.Length + 1
+            } else { $line += $w + ' '; $lineLen += $w.Length + 1 }
+        }
+        if ($line.Trim()) { Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan }
+        Write-Host ('  +' + ('─' * 64) + '+') -ForegroundColor DarkCyan
+        Write-Host ''
+    }
+
+    $statusFile  = Join-Path $outputDir 'sandbox-status.json'
+    $maxWaitSec  = 300
+    $elapsed     = 0
+    $interval    = 3
+    $jokeStart   = 90    # start jokes at 1 min 30 sec
+    $jokeEvery   = 30    # one joke every 30 seconds after that
+    $lastJokeSec = 0
+    $ready       = $false
 
     while ($elapsed -lt $maxWaitSec) {
         Start-Sleep -Seconds $interval
@@ -215,7 +254,7 @@ if (-not $NoWait) {
                 # Status file being written, retry
             }
         }
-        # Check if sandbox VM is actually running (WindowsSandbox.exe may exit while VM continues as vmwp.exe)
+        # Check if sandbox VM is actually running
         $sandboxAlive = ($null -ne (Get-Process WindowsSandbox -ErrorAction SilentlyContinue)) -or
                         ($null -ne (Get-Process vmwp -ErrorAction SilentlyContinue))
         if (-not $sandboxAlive -and -not $sandboxProc.HasExited) { $sandboxAlive = $true }
@@ -225,6 +264,11 @@ if (-not $NoWait) {
         }
         if (($elapsed % 15) -eq 0) {
             Write-Host "  ... waiting (${elapsed}s / ${maxWaitSec}s)" -ForegroundColor DarkGray
+        }
+        # Joke mode: 90s onwards, every $jokeEvery seconds
+        if ($elapsed -ge $jokeStart -and ($elapsed - $lastJokeSec) -ge $jokeEvery) {
+            $lastJokeSec = $elapsed
+            Show-SandboxWaitJoke -Jokes $waitJokes -Idx ([ref]$jokeIdx)
         }
     }
 
@@ -291,3 +335,19 @@ Write-Host ""
     WsbPath     = $wsbPath
     SandboxPID  = $sandboxProc.Id
 }
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

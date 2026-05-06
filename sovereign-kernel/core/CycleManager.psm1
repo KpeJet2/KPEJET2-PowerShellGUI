@@ -1,4 +1,8 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -163,7 +167,7 @@ function Invoke-CycleAdvance {
     # Determine new cycle
     $currentNum = 0
     if ($script:_CurrentCycle -match 'cycle(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
 
     if (-not $NewCycleName) {
@@ -243,7 +247,7 @@ function Test-BranchDivergence {
     param()
     $currentNum = 0
     if ($script:_CurrentCycle -match 'cycle(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
 
     # Check against known lineage
@@ -274,7 +278,7 @@ function Invoke-VersionBump {
     param()
     $currentNum = 0
     if ($script:_CurrentVersion -match 'v(\d+)') {
-        $currentNum = [int]$Matches[1]
+        $currentNum = [int]$Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
     $newVersion = 'v' + ($currentNum + 1)
     $script:_Lineage += $newVersion
@@ -387,6 +391,18 @@ function Save-CycleHistory {
 }
 
 # ========================== EXPORTS ==========================
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function @(
     'Initialize-CycleManager'
     'Test-CycleAdvanceReady'
@@ -399,4 +415,8 @@ Export-ModuleMember -Function @(
     'Get-CycleState'
     'Get-CycleHistory'
 )
+
+
+
+
 

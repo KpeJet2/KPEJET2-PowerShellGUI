@@ -14,6 +14,7 @@
 | Invoke-ErrorHandlingRemediation.ps1 | Automated batch remediation for error handling violations |
 | Invoke-PipelineIntegrityCheck.ps1 | Validate pipeline artifact coherence and stale checks |
 | Invoke-SelfReviewCycle.ps1 | Evaluates workspace health across 8 dimensions |
+| Invoke-PipeGAP.ps1 | Pipeline alignment diagnostics (workplans, todo gaps, relics, parse, stale checks) |
 | Invoke-SINRegistryReindex.ps1 | Reindex SIN registry with timestamped filenames |
 | Invoke-SINRemedyEngine.ps1 | Iterative remedy-scan-retry engine for SIN violations |
 | Normalize-TodoStatusVocabulary.ps1 | Normalise todo status/type values to canonical vocabulary |
@@ -132,4 +133,4 @@
 | PS-CheatSheet-EXAMPLES-V2.ps1 | PowerShell Cheat Sheet V2 -- Expanded Reference |
 
 ---
-*85 scripts total. Generated for CronProcessor pipeline step 7b.*
+*86 scripts total. Generated for CronProcessor pipeline step 7b.*

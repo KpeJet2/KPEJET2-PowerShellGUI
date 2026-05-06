@@ -15,6 +15,7 @@
   "is_security_related": false,
   "preventionRule": "Each function name must be unique across the loaded module set. If override is intentional, add a # SIN-EXEMPT: Function override intentional comment.",
   "scan_regex": "^\\s*function\\s+([\\w-]+)",
+  "file_exclusion_regex": "Windguit_Qik-TERMInet0r",
   "scan_logic": "Extract all function names via regex, group by name, flag groups with count > 1",
   "scan_file_pattern": "*.ps1;*.psm1",
   "remedy": "Rename the duplicate or consolidate into a single implementation. If both are needed, namespace with module prefix (e.g. ModuleName-FunctionName).",
@@ -28,7 +29,7 @@
   "reindex_metadata": {
     "previous_sin_id": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF",
     "previous_file": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF.json",
-    "reindexed_at": "2026-04-04T14:57:30.6730060Z",
+    "reindexed_at": "2026-04-04T14:57:30.673006Z",
     "reindex_format": "v2-timestamped"
   },
   "remedy_tracking": {

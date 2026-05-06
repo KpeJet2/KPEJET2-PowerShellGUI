@@ -1,10 +1,15 @@
-﻿# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: YES(As of: 2026-04-21)
+# SupportsPS7.6: YES(As of: 2026-04-21)
+# SupportPS5.1TestedDate: 2026-04-21
+# SupportsPS7.6TestedDate: 2026-04-21
 # Author: The Establishment
 # Date: 2026-04-04
 # FileRole: Module
 # Purpose: Collect comprehensive system telemetry for Launch-GUI.bat logging
 # Description: Gathers 14 fields of system metrics including CPU, memory, disk,
 #              network, and administrative status for launch tracking and diagnostics.
+# TODO: HelpMenu | Show-TelemetryHelp | Actions: Collect|Report|Export|Help | Spec: config/help-menu-registry.json
 
 <#
 .SYNOPSIS
@@ -193,5 +198,22 @@ function Get-LaunchTelemetry {
 }
 
 # Export module member
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
 Export-ModuleMember -Function Get-LaunchTelemetry
+
+
+
+
+
 

@@ -1,0 +1,1121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2604.B2.V31.1 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+<title>Data Relational Visualizer</title>
+<style type="text/css">
+/* <![CDATA[ */
+:root{
+  --bg:#09090f;--surface:#12121a;--surface2:#1a1a2e;--border:#2a2a3e;
+  --accent:#e94560;--accent2:#0f3460;--text:#e0e0e0;--text2:#888;
+  --font:"Segoe UI",Consolas,monospace;--radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:10px;min-height:42px;flex-shrink:0}
+header h1{font-size:15px;color:var(--accent);white-space:nowrap}
+.tab-bar{display:flex;gap:2px;margin-left:8px}
+.tab-bar button{background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-bottom:none;padding:5px 13px;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;font-size:12px;font-family:var(--font)}
+.tab-bar button.active{background:var(--bg);color:var(--accent);border-color:var(--accent)}
+.controls-row{background:var(--surface);border-bottom:1px solid var(--border);padding:5px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+.controls-row label{color:var(--text2);font-size:11px;display:flex;align-items:center;gap:4px}
+.controls-row select,.controls-row input[type="text"],.controls-row input[type="number"]{background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:3px 7px;border-radius:var(--radius);font-size:12px;font-family:var(--font)}
+.controls-row input[type="range"]{accent-color:var(--accent);width:70px;cursor:pointer}
+.ctl-btn{cursor:pointer;background:var(--accent2);color:#aad4ff;border:1px solid #0a4080;padding:3px 10px;border-radius:var(--radius);font-weight:bold;font-size:12px;font-family:var(--font)}
+.ctl-btn.accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ctl-sep{width:1px;height:20px;background:var(--border);margin:0 2px}
+/* Probe bar */
+.probe-bar{background:#0a0a15;border-bottom:1px solid #1a1a30;padding:4px 12px;display:flex;gap:14px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.probe-bar label{color:#6688aa;font-size:11px;display:flex;align-items:center;gap:5px}
+.probe-bar input[type="range"]{accent-color:#00ffff;width:80px;cursor:pointer}
+.probe-bar input[type="number"]{background:#0d1020;color:#aaccff;border:1px solid #1a2840;padding:2px 6px;border-radius:4px;font-size:11px;width:50px;font-family:var(--font)}
+.probe-bar select{background:#0d1020;color:#aaccff;border:1px solid #1a2840;padding:2px 6px;border-radius:4px;font-size:11px;font-family:var(--font)}
+.probe-lbl{color:#3355aa;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.probe-val{color:#00ffff;font-size:11px;min-width:26px;display:inline-block;text-align:right}
+/* Main layout */
+.main-area{flex:1;display:flex;overflow:hidden;position:relative}
+/* Left sidebar */
+.sidebar-left{width:240px;min-width:180px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.sidebar-left h3{color:var(--accent);font-size:14px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.sb-section-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;margin-top:6px}
+.sb-label{font-size:14px;color:#c8d8f0;display:block;margin-bottom:3px}
+.sb-select{width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:5px 8px;border-radius:var(--radius);font-size:13px;font-family:var(--font);cursor:pointer}
+/* Quick select buttons */
+.sb-quick-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.qsel-btn{background:#1a1a2e;color:#99bbdd;border:1px solid #2a3050;border-radius:3px;padding:2px 7px;font-size:11px;cursor:pointer}
+.qsel-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Selected objects list */
+.sel-obj-list{max-height:150px;overflow-y:auto;margin-top:3px}
+.sel-obj-item{display:flex;align-items:center;gap:5px;padding:3px 5px;border-radius:3px;cursor:pointer;font-size:13px;color:#c8e0ff;background:#12121e;border:1px solid #1a2030;margin-bottom:2px}
+.sel-obj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sel-obj-remove{margin-left:auto;color:#ff3355;font-size:10px;font-weight:bold;padding:0 3px;cursor:pointer}
+/* Root display */
+.root-badge{display:inline-block;background:#1a3a1a;color:#22cc44;border:1px solid #2a5a2a;padding:1px 5px;border-radius:3px;font-size:10px;margin-bottom:3px}
+.root-file-disp{background:#0a1020;border:1px solid #1a3050;border-radius:4px;padding:5px 8px;font-size:12px;color:#5599cc;word-break:break-all;min-height:28px}
+/* Link legend */
+.link-legend{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.ll-item{display:flex;align-items:center;gap:3px;font-size:11px;color:#aabbcc}
+.ll-dot{width:10px;height:4px;border-radius:2px;display:inline-block}
+/* Canvas */
+.canvas-wrap{flex:1;position:relative;overflow:hidden}
+canvas#vizCanvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair}
+/* Right sidebar */
+.sidebar-right{width:220px;min-width:160px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.sidebar-right h3{color:var(--accent);font-size:14px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.nd-name{color:#fff;font-size:14px;font-weight:bold;margin-bottom:4px}
+.nd-row{display:flex;gap:6px;margin-bottom:2px}
+.nd-key{color:#6688aa;font-size:11px;min-width:46px}
+.nd-val{color:#c8d8f0;font-size:11px}
+.nd-link-item{font-size:11px;padding:3px 5px;border-bottom:1px solid #1a1a2e;color:#8899cc;cursor:pointer;border-left:3px solid transparent}
+.nd-link-item:hover{color:#fff}
+/* Panels */
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+.panel.active{display:flex}
+.panel-content{flex:1;overflow-y:auto;padding:12px}
+/* Wizard */
+.wizard-panel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:7px}
+.wizard-panel label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--text2)}
+.wizard-panel input,.wizard-panel select,.wizard-panel textarea{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:4px 8px;border-radius:var(--radius);font-family:var(--font);font-size:12px}
+.wizard-panel button.run{background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:var(--radius);cursor:pointer;font-weight:bold;font-size:13px}
+/* Misc */
+table.data{width:100%;border-collapse:collapse;font-size:12px}
+table.data th{background:var(--surface2);color:var(--accent);text-align:left;padding:4px 8px;border:1px solid var(--border)}
+table.data td{padding:4px 8px;border:1px solid var(--border)}
+.log-area{background:var(--bg);color:var(--text2);font-family:Consolas,monospace;font-size:11px;padding:8px;overflow-y:auto;flex:1;white-space:pre-wrap;border:1px solid var(--border);border-radius:var(--radius)}
+.foresight-chart{width:100%;min-height:300px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
+.sbar{background:var(--surface);border-top:1px solid var(--border);padding:4px 12px;font-size:10px;color:var(--text2);display:flex;gap:16px;flex-shrink:0}
+.hidden{display:none !important}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
+/* ]]> */
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F578; Data Relational Visualizer</h1>
+  <div class="tab-bar" id="tabBar">
+    <button class="active" data-tab="graph">Graph</button>
+    <button data-tab="timeline">Timeline</button>
+    <button data-tab="foresight">Foresight</button>
+    <button data-tab="pattern">Pattern Match</button>
+    <button data-tab="sources">Sources</button>
+    <button data-tab="log">Log</button>
+  </div>
+</header>
+
+<div class="controls-row">
+  <label>Dataset:
+    <select id="datasetSelect" class="sb-select" style="width:auto">
+      <option value="custom">-- Custom --</option>
+      <option value="virus-computer">Computer Viruses (2000-2025)</option>
+      <option value="virus-human">Human Virus Outbreaks (1900-2100)</option>
+      <option value="ai-displacement">AI &amp; Automation Displacement (2015-2035)</option>
+    </select>
+  </label>
+  <label>Layout:
+    <select id="layoutSelect" class="sb-select" style="width:auto">
+      <option value="force">Force-Directed</option>
+      <option value="radial">Radial</option>
+      <option value="hierarchical">Hierarchical</option>
+      <option value="timeline-xy">Timeline XY</option>
+      <option value="grid">Grid Lattice</option>
+      <option value="cluster">Cluster Packing</option>
+      <option value="bipartite">Bipartite</option>
+      <option value="ego">Ego Network</option>
+      <option value="sankey">Sankey Layered</option>
+      <option value="chord">Chord Circular</option>
+    </select>
+  </label>
+  <div class="ctl-sep"></div>
+  <button class="ctl-btn accent" id="btnWizard">&#x1F9D9; Wizard</button>
+  <button class="ctl-btn" id="btnRefresh">&#x21BB; Refresh</button>
+  <button class="ctl-btn" id="btnClearSel">&#x2715; Clear Sel</button>
+  <button class="ctl-btn" id="btnSetRoot">&#x2693; Set Root</button>
+  <button class="ctl-btn" id="btnFocusParents">Focus from Sel</button>
+  <span id="nodeCount" style="margin-left:auto;color:var(--text2);font-size:11px">Nodes: 0 | Links: 0 | Sel: 0</span>
+</div>
+
+<div class="probe-bar">
+  <span class="probe-lbl">Sim:</span>
+  <label>Speed <input type="range" id="ctlSpeed" min="1" max="20" value="8"/> <span class="probe-val" id="valSpeed">8</span></label>
+  <label>Freq <input type="range" id="ctlFreq" min="1" max="30" value="10"/> <span class="probe-val" id="valFreq">10</span></label>
+  <div class="ctl-sep"></div>
+  <span class="probe-lbl">Pulse:</span>
+  <label>Hops <input type="number" id="ctlPulseDepth" min="1" max="10" value="3"/></label>
+  <label>Trail <input type="range" id="ctlTrailLife" min="20" max="200" value="80"/> <span class="probe-val" id="valTrail">80</span>f</label>
+  <div class="ctl-sep"></div>
+  <span class="probe-lbl">Solid:</span>
+  <label>Depth <input type="number" id="ctlSolidDepth" min="0" max="10" value="2"/></label>
+  <label>Show <select id="ctlLinkDisplay"><option value="all">All</option><option value="selected">Selected</option><option value="root">Root paths</option><option value="none">None</option></select></label>
+  <label>Focus <select id="ctlFocusMode"><option value="off">Off</option><option value="separate">Separate</option><option value="merged">Merged</option></select></label>
+  <label>Boundary <input type="range" id="ctlBoundary" min="6" max="60" value="20"/> <span class="probe-val" id="valBoundary">20</span></label>
+  <label>Collision <input type="range" id="ctlCollision" min="0" max="24" value="8"/> <span class="probe-val" id="valCollision">8</span></label>
+  <div class="ctl-sep"></div>
+  <span class="probe-lbl">Root:</span>
+  <input type="text" id="ctlRootFile" placeholder="config/system.xml" style="background:#0d1020;color:#aaccff;border:1px solid #1a2840;padding:2px 6px;border-radius:4px;font-size:11px;font-family:var(--font);width:170px"/>
+  <button class="ctl-btn" id="btnApplyRoot" style="font-size:11px;padding:2px 8px">Apply</button>
+</div>
+
+<div class="main-area">
+  <div class="sidebar-left" id="leftSidebar">
+    <div id="wizardSidebar" class="hidden">
+      <h3>&#x1F9D9; AI Wizard</h3>
+      <div class="wizard-panel">
+        <label>Seed Topic <input type="text" id="wizSeedTopic" placeholder="e.g. Computer Viruses"/></label>
+        <label>Seed Year <input type="number" id="wizSeedYear" value="2000" min="1800" max="2100"/></label>
+        <label>Period (years) <input type="number" id="wizPeriod" value="25" min="1" max="500"/></label>
+        <label>Direction
+          <select id="wizDirection">
+            <option value="after">Forward</option>
+            <option value="before">Backward</option>
+            <option value="both" selected="selected">Both</option>
+          </select>
+        </label>
+        <label>Link Depth: <span id="wizDepthVal">20</span>
+          <input type="range" id="wizDepth" min="3" max="42" value="20"/>
+        </label>
+        <label>Deviation Term <input type="text" id="wizDeviation" placeholder="e.g. Nation State"/></label>
+        <label>Sources
+          <select id="wizSources" multiple="multiple" style="height:58px">
+            <option value="wikipedia" selected="selected">Wikipedia API</option>
+            <option value="openalex" selected="selected">OpenAlex</option>
+            <option value="gdelt">GDELT</option>
+            <option value="arxiv">arXiv</option>
+            <option value="crossref">CrossRef</option>
+            <option value="pubmed">PubMed</option>
+            <option value="wikidata">Wikidata</option>
+          </select>
+        </label>
+        <button class="run" id="btnRunWizard">&#x25B6; Run Wizard</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sb-section-title">Dataset</div>
+      <span class="sb-label">Select Dataset</span>
+      <select id="sbDataset" class="sb-select">
+        <option value="custom">-- Custom --</option>
+        <option value="virus-computer">Computer Viruses</option>
+        <option value="virus-human">Human Virus Outbreaks</option>
+        <option value="ai-displacement">AI Displacement</option>
+      </select>
+
+      <div class="sb-section-title">Filter by Type</div>
+      <div class="sb-quick-row" id="typeQuickSel"></div>
+    </div>
+
+    <div>
+      <div class="sb-section-title">Layout</div>
+      <span class="sb-label">View Mode</span>
+      <select id="sbLayout" class="sb-select">
+        <option value="force">Force-Directed</option>
+        <option value="radial">Radial</option>
+        <option value="hierarchical">Hierarchical</option>
+        <option value="timeline-xy">Timeline XY</option>
+        <option value="grid">Grid Lattice</option>
+        <option value="cluster">Cluster Packing</option>
+        <option value="bipartite">Bipartite</option>
+        <option value="ego">Ego Network</option>
+        <option value="sankey">Sankey Layered</option>
+        <option value="chord">Chord Circular</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="sb-section-title">Root / Master File</div>
+      <div class="root-badge">&#x2693; ROOT</div>
+      <div class="root-file-disp" id="rootFileDisp">No root file set</div>
+      <div class="sb-section-title">Summary</div>
+      <div id="summaryQuickSel" class="sb-quick-row"></div>
+    </div>
+
+    <div>
+      <div class="sb-section-title">Selected (<span id="selCountLbl">0</span>)</div>
+      <div class="sel-obj-list" id="selObjList">
+        <div style="font-size:12px;color:var(--text2)">Click nodes to select.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sb-section-title">Link Legend</div>
+      <div class="link-legend" id="linkLegend"></div>
+    </div>
+  </div>
+
+  <div class="panel active" id="panelGraph" style="flex:1;overflow:hidden">
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="vizCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="panel" id="panelTimeline">
+    <div class="panel-content">
+      <svg id="svgTimeline" style="width:100%;height:600px"></svg>
+    </div>
+  </div>
+
+  <div class="panel" id="panelForesight">
+    <div class="panel-content">
+      <div class="controls-row" style="background:transparent;border:none;padding:0 0 8px 0">
+        <label>Horizon (yr) <input type="number" id="fsHorizon" value="10" min="1" max="100" style="width:55px"/></label>
+        <label>Monte Carlo <input type="number" id="fsMonteCarlo" value="1000" min="100" max="50000" step="100" style="width:70px"/></label>
+        <label>Confidence
+          <select id="fsConfidence">
+            <option value="1">1s (68%)</option>
+            <option value="2" selected="selected">2s (95%)</option>
+            <option value="3">3s (99.7%)</option>
+          </select>
+        </label>
+        <label>Deviance%  <input type="number" id="fsDeviance" value="15" min="1" max="100" step="1" style="width:50px"/></label>
+        <button class="ctl-btn accent" id="btnRunForesight">&#x1F52E; Run Foresight</button>
+      </div>
+      <div class="foresight-chart"><svg id="svgForesight" style="width:100%;height:100%"></svg></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panelPattern">
+    <div class="panel-content">
+      <div class="controls-row" style="background:transparent;border:none;padding:0 0 8px 0">
+        <label>Pattern Regex <input type="text" id="patternRegex" placeholder="e.g. worm|trojan" style="width:200px"/></label>
+        <label>Min Corr <input type="number" id="patternMinCorr" value="0.5" min="0" max="1" step="0.05" style="width:60px"/></label>
+        <button class="ctl-btn accent" id="btnRunPattern">&#x1F50D; Find Patterns</button>
+      </div>
+      <table class="data" id="patternTable">
+        <thead><tr><th>Node A</th><th>Node B</th><th>Corr</th><th>Types</th><th>Pattern</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" id="panelSources">
+    <div class="panel-content">
+      <table class="data" id="sourcesTable">
+        <thead><tr><th>Source</th><th>URL</th><th>Status</th><th>Records</th><th>Last Fetched</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" id="panelLog">
+    <div class="log-area" id="logArea"></div>
+  </div>
+
+  <div class="sidebar-right" id="rightSidebar">
+    <h3>Node Details</h3>
+    <div id="nodeDetails"><div style="color:var(--text2);font-size:12px">Click a node to inspect.</div></div>
+  </div>
+</div>
+
+<div class="sbar">
+  <span id="statusMsg">Ready</span>
+  <span id="statusDataset">Dataset: none</span>
+  <span id="statusLayout">Layout: force</span>
+  <span style="margin-left:auto" id="statusTime"></span>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+(function(){"use strict";
+/* ---- LOG ---- */
+function log(msg,level){
+  var el=document.getElementById("logArea");
+  var ts=new Date().toISOString().substr(11,12);
+  if(el){el.textContent+="["+ts+"] "+(level||"INFO")+": "+msg+"\n";el.scrollTop=el.scrollHeight;}
+}
+/* ---- NEON LINK COLOURS ---- */
+var LINK_COLOR={
+  causal:"#ff00ff", temporal:"#00ffff", correlation:"#39ff14",
+  influence:"#ff6600", dependency:"#ff00aa", evolution:"#00aaff",
+  conflict:"#ff3300", tech:"#ccff00", default:"#8888ff"
+};
+function linkColor(t){return LINK_COLOR[t]||LINK_COLOR.default;}
+/* ---- NODE COLOURS ---- */
+var NODE_COLORS=["#e94560","#0fa3b1","#16c79a","#ffc107","#ff6b6b","#9b5de5","#00bcd4","#ff9800","#e040fb","#f72585","#4cc9f0","#7bed9f","#ff4a57","#a8dadc","#70d6ff"];
+/* ---- LINK TYPE INFERENCE ---- */
+function inferType(a,b){
+  var s=(a.id+" "+b.id).toLowerCase();
+  if(/worm|virus|malware|exploit|apt|botnet|ransomware|wiper/.test(s))return "causal";
+  if(/vuln|cve|heartbleed|log4|moveit/.test(s))return "dependency";
+  if(/flu|pandemic|epidemic|covid|sars|mers|ebola/.test(s))return "temporal";
+  if(/nation state|state|regulation|policy|ubi/.test(s))return "influence";
+  if(/gpt|model|llm|ai|ml|copilot|coding/.test(s))return "evolution";
+  if(/conflict|war|impact/.test(s))return "conflict";
+  if(/vaccine|tech|platform|sequenc/.test(s))return "tech";
+  return "default";
+}
+/* ---- STATE ---- */
+var state={nodes:[],links:[],dataset:"custom",layout:"force",selectedIds:[],rootNodeId:null,rootLabel:"",hiddenTypes:{},pulseP:[],trailP:[],focusMode:"off",focusedParentIds:[],layoutSeed:1};
+var probe={speed:8,freq:10,pulseDepth:3,trailLife:80,solidDepth:2,linkDisplay:"all",boundaryMargin:20,collisionPad:8};
+/* ---- CANVAS SETUP ---- */
+var canvas=document.getElementById("vizCanvas");
+var ctx=canvas.getContext("2d");
+var simNodes=[],simLinks=[];
+var raf=null;
+var haloPhase=0;
+var lastPulseTime=0;
+function resizeCanvas(){
+  var w2=canvas.parentElement;
+  canvas.width=w2.offsetWidth;canvas.height=w2.offsetHeight;
+}
+window.addEventListener("resize",function(){resizeCanvas();if(!raf)drawFrame();});
+resizeCanvas();
+/* ---- NODE/LINK HELPERS ---- */
+function nodeById(id){for(var i=0;i<simNodes.length;i++){if(simNodes[i].id===id)return simNodes[i];}return null;}
+function getRootIdx(){if(!state.rootNodeId)return -1;for(var i=0;i<simNodes.length;i++){if(simNodes[i].id===state.rootNodeId)return i;}return -1;}
+function getFocusParents(){
+  var src=state.focusedParentIds.length?state.focusedParentIds:state.selectedIds;
+  var valid=[];
+  src.forEach(function(id){if(nodeById(id)&&valid.indexOf(id)<0)valid.push(id);});
+  if(state.rootNodeId&&valid.indexOf(state.rootNodeId)<0)valid.unshift(state.rootNodeId);
+  return valid;
+}
+function buildAdjacency(){
+  var adj={};
+  simNodes.forEach(function(nd){adj[nd.id]=[];});
+  simLinks.forEach(function(l){adj[l.source.id].push(l.target.id);adj[l.target.id].push(l.source.id);});
+  return adj;
+}
+function computeMultiSourceDepth(parents){
+  var adj=buildAdjacency(),depth={},owner={},q=[];
+  parents.forEach(function(pid){depth[pid]=0;owner[pid]=pid;q.push(pid);});
+  while(q.length){
+    var cur=q.shift(),cd=depth[cur],co=owner[cur],ns=adj[cur]||[];
+    ns.forEach(function(nid){
+      if(typeof depth[nid]==="undefined"){
+        depth[nid]=cd+1;owner[nid]=co;q.push(nid);
+      }
+    });
+  }
+  simNodes.forEach(function(nd){
+    if(typeof depth[nd.id]==="undefined"){
+      depth[nd.id]=99;
+      owner[nd.id]=parents.length?parents[(Math.abs(hashString(nd.id))%parents.length)]:null;
+    }
+  });
+  return { depth:depth, owner:owner };
+}
+function hashString(s){
+  var h=0;
+  for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
+  return h;
+}
+function edgeTouchesFocus(link){
+  if(state.rootNodeId&&(link.source.id===state.rootNodeId||link.target.id===state.rootNodeId))return true;
+  if(state.focusMode==="off")return false;
+  var parents=getFocusParents();
+  return parents.indexOf(link.source.id)>=0||parents.indexOf(link.target.id)>=0;
+}
+function applyFocusHierarchy(){
+  if(state.focusMode==="off")return;
+  var parents=getFocusParents();
+  if(!parents.length)return;
+  var w=canvas.width,h=canvas.height;
+  var info=computeMultiSourceDepth(parents);
+  if(state.focusMode==="separate"){
+    var laneW=Math.max(120,(w-40)/Math.max(1,parents.length));
+    var anchors={};
+    parents.forEach(function(pid,i){anchors[pid]={x:20+laneW*(i+0.5),y:52};});
+    simNodes.forEach(function(nd){
+      var owner=info.owner[nd.id],d=info.depth[nd.id],a=anchors[owner]||{x:w/2,y:h/2};
+      if(parents.indexOf(nd.id)>=0){nd.targetX=a.x;nd.targetY=a.y;nd.pinned=true;return;}
+      var ring=Math.min(6,Math.max(1,d));
+      var ang=(Math.abs(hashString(nd.id))*0.013)% (Math.PI*2);
+      var rad=36+ring*48;
+      nd.targetX=a.x+Math.cos(ang)*rad;
+      nd.targetY=Math.min(h-28,a.y+Math.sin(ang)*rad+ring*10);
+    });
+  } else if(state.focusMode==="merged"){
+    var cx=w/2,cy=56;
+    parents.forEach(function(pid,i){
+      var nd=nodeById(pid);if(!nd)return;
+      var a=(i/Math.max(1,parents.length))*Math.PI*2;
+      nd.targetX=cx+Math.cos(a)*42;
+      nd.targetY=cy+Math.sin(a)*22;
+      nd.pinned=true;
+    });
+    simNodes.forEach(function(nd){
+      if(parents.indexOf(nd.id)>=0)return;
+      var d=Math.max(1,Math.min(10,info.depth[nd.id]));
+      var ang=(Math.abs(hashString(nd.id))*0.017)%(Math.PI*2);
+      var rad=70+d*42;
+      nd.targetX=cx+Math.cos(ang)*rad;
+      nd.targetY=cy+Math.sin(ang)*(rad*0.5)+d*20;
+    });
+  }
+}
+/* ---- LAYOUT ---- */
+function applyLayout(layout){
+  var w=canvas.width,h=canvas.height,n=simNodes.length;
+  if(!n)return;
+  var ri=getRootIdx();
+  if(layout==="radial"){
+    var cx=w/2,cy=h/2,r=Math.min(w,h)*0.35,step=2*Math.PI/(n>1?n-1:1);
+    var fi=0;
+    simNodes.forEach(function(nd,i){
+      if(i===ri){nd.targetX=cx;nd.targetY=cy;nd.pinned=true;return;}
+      nd.targetX=cx+r*Math.cos(fi*step-Math.PI/2);nd.targetY=cy+r*Math.sin(fi*step-Math.PI/2);nd.pinned=false;fi++;
+    });
+  } else if(layout==="hierarchical"){
+    var vis={},q=[],levels={};
+    var sid=ri>=0?simNodes[ri].id:simNodes[0].id;
+    q.push({id:sid,lv:0});vis[sid]=true;
+    while(q.length){
+      var cur=q.shift();
+      if(!levels[cur.lv])levels[cur.lv]=[];
+      levels[cur.lv].push(cur.id);
+      simLinks.forEach(function(l){
+        var nid=null;
+        if(l.source.id===cur.id&&!vis[l.target.id])nid=l.target.id;
+        else if(l.target.id===cur.id&&!vis[l.source.id])nid=l.source.id;
+        if(nid){vis[nid]=true;q.push({id:nid,lv:cur.lv+1});}
+      });
+    }
+    simNodes.forEach(function(nd){if(!vis[nd.id]){if(!levels[99])levels[99]=[];levels[99].push(nd.id);}});
+    var lvks=Object.keys(levels).map(Number).sort(function(a,b){return a-b;});
+    var lh=h/(lvks.length+1);
+    lvks.forEach(function(lv,li){
+      var ids=levels[lv];var sw=w/(ids.length+1);
+      ids.forEach(function(id,ii){var nd=nodeById(id);if(nd){nd.targetX=sw*(ii+1);nd.targetY=lh*(li+1);nd.pinned=false;}});
+    });
+    if(ri>=0)simNodes[ri].pinned=true;
+  } else if(layout==="timeline-xy"){
+    var yrs=simNodes.map(function(nd){return nd.year||0;});
+    var miny=Math.min.apply(null,yrs),maxy=Math.max.apply(null,yrs),rng=maxy-miny||1;
+    simNodes.forEach(function(nd){
+      nd.targetX=60+(((nd.year||miny)-miny)/rng)*(w-120);
+      nd.targetY=40+Math.random()*(h-80);nd.pinned=false;
+    });
+  } else if(layout==="grid"){
+    var cols=Math.max(2,Math.ceil(Math.sqrt(n)));
+    var rows=Math.max(1,Math.ceil(n/cols));
+    var sx=(w-60)/cols,sy=(h-80)/rows;
+    simNodes.forEach(function(nd,i){
+      var c=i%cols,r=Math.floor(i/cols);
+      nd.targetX=30+sx*(c+0.5);
+      nd.targetY=50+sy*(r+0.5);
+      nd.pinned=true;
+    });
+  } else if(layout==="cluster"){
+    var byType={},types=[];
+    simNodes.forEach(function(nd){if(!byType[nd.type]){byType[nd.type]=[];types.push(nd.type);}byType[nd.type].push(nd);});
+    var ring=Math.min(w,h)*0.28,cx2=w/2,cy2=h/2;
+    types.forEach(function(t,ti){
+      var cang=(ti/Math.max(1,types.length))*Math.PI*2;
+      var ccx=cx2+Math.cos(cang)*ring,ccy=cy2+Math.sin(cang)*ring;
+      var arr=byType[t];
+      arr.forEach(function(nd,ni){
+        var ang=(ni/Math.max(1,arr.length))*Math.PI*2;
+        nd.targetX=ccx+Math.cos(ang)*Math.max(24,arr.length*2.2);
+        nd.targetY=ccy+Math.sin(ang)*Math.max(24,arr.length*2.2);
+        nd.pinned=true;
+      });
+    });
+  } else if(layout==="bipartite"){
+    var mid=simNodes.length?Math.ceil(simNodes.length/2):1;
+    simNodes.forEach(function(nd,i){
+      var left=i<mid;
+      var slot=left?i:i-mid;
+      var total=left?mid:(simNodes.length-mid);
+      var y=40+((slot+1)/(Math.max(1,total)+1))*(h-80);
+      nd.targetX=left?w*0.28:w*0.72;
+      nd.targetY=y;
+      nd.pinned=true;
+    });
+  } else if(layout==="ego"){
+    var root=ri>=0?simNodes[ri]:simNodes[0],adj=buildAdjacency();
+    var n1=(adj[root.id]||[]),n1Set={};n1.forEach(function(id){n1Set[id]=true;});
+    root.targetX=w/2;root.targetY=h/2;root.pinned=true;
+    var r1=Math.min(w,h)*0.22,r2=Math.min(w,h)*0.38;
+    simNodes.forEach(function(nd,i){
+      if(nd.id===root.id)return;
+      var h1=!!n1Set[nd.id];
+      var a=(Math.abs(hashString(nd.id))*0.02)%(Math.PI*2);
+      nd.targetX=w/2+Math.cos(a)*(h1?r1:r2);
+      nd.targetY=h/2+Math.sin(a)*(h1?r1:r2);
+      nd.pinned=true;
+    });
+  } else if(layout==="sankey"){
+    var info2=computeMultiSourceDepth(getFocusParents().length?getFocusParents():[ri>=0?simNodes[ri].id:simNodes[0].id]);
+    var maxD=1;Object.keys(info2.depth).forEach(function(k){if(info2.depth[k]<99&&info2.depth[k]>maxD)maxD=info2.depth[k];});
+    var buckets={};
+    simNodes.forEach(function(nd){
+      var d=info2.depth[nd.id];if(d>maxD)d=maxD;
+      if(!buckets[d])buckets[d]=[];
+      buckets[d].push(nd);
+    });
+    Object.keys(buckets).forEach(function(k){
+      var d=parseInt(k,10),arr=buckets[k],x=40+(d/(Math.max(1,maxD)))*(w-80);
+      arr.forEach(function(nd,i){
+        nd.targetX=x;
+        nd.targetY=40+((i+1)/(arr.length+1))*(h-80);
+        nd.pinned=true;
+      });
+    });
+  } else if(layout==="chord"){
+    var cxx=w/2,cyy=h/2,rr=Math.min(w,h)*0.38;
+    simNodes.forEach(function(nd,i){
+      var a=(i/Math.max(1,n))*Math.PI*2-Math.PI/2;
+      nd.targetX=cxx+Math.cos(a)*rr;
+      nd.targetY=cyy+Math.sin(a)*rr;
+      nd.pinned=true;
+    });
+  } else {
+    simNodes.forEach(function(nd){nd.targetX=null;nd.targetY=null;nd.pinned=false;});
+    if(ri>=0){simNodes[ri].targetX=w/2;simNodes[ri].targetY=h-60;simNodes[ri].pinned=true;}
+    positionSelectedAtTop();
+  }
+  applyFocusHierarchy();
+  document.getElementById("statusLayout").textContent="Layout: "+layout;
+  log("Layout: "+layout);
+}
+function positionSelectedAtTop(){
+  var w=canvas.width,sel=state.selectedIds;
+  if(!sel.length)return;
+  var cols=Math.ceil(Math.sqrt(sel.length)+0.5);
+  var sw=Math.min(160,(w-40)/Math.max(1,Math.min(cols,sel.length)));
+  var row=0,col=0;
+  sel.forEach(function(id){
+    var nd=nodeById(id);if(!nd)return;
+    nd.targetX=30+sw*(col+0.5);nd.targetY=40+row*70;nd.pinned=true;
+    col++;if(col>=cols){col=0;row++;}
+  });
+}
+/* ---- PHYSICS TICK ---- */
+function simTick(){
+  var w=canvas.width,h=canvas.height,sp=probe.speed*0.015;
+  for(var i=0;i<simNodes.length;i++){
+    if(simNodes[i].pinned)continue;
+    for(var j=i+1;j<simNodes.length;j++){
+      var dx=simNodes[j].x-simNodes[i].x,dy=simNodes[j].y-simNodes[i].y;
+      var d2=dx*dx+dy*dy;if(d2<1)d2=1;
+      var f=200/d2;
+      simNodes[i].vx-=dx*f*sp;simNodes[i].vy-=dy*f*sp;
+      if(!simNodes[j].pinned){simNodes[j].vx+=dx*f*sp;simNodes[j].vy+=dy*f*sp;}
+    }
+  }
+  for(var k=0;k<simLinks.length;k++){
+    var l=simLinks[k];
+    var dx2=l.target.x-l.source.x,dy2=l.target.y-l.source.y;
+    var d=Math.sqrt(dx2*dx2+dy2*dy2)||1;
+    var f2=(d-80)*0.004*(l.value||1)*sp;
+    if(!l.source.pinned){l.source.vx+=dx2/d*f2;l.source.vy+=dy2/d*f2;}
+    if(!l.target.pinned){l.target.vx-=dx2/d*f2;l.target.vy-=dy2/d*f2;}
+  }
+  for(var m=0;m<simNodes.length;m++){
+    var nd=simNodes[m];
+    if(nd.pinned&&nd.targetX!==null){
+      nd.x+=(nd.targetX-nd.x)*0.12;nd.y+=(nd.targetY-nd.y)*0.12;nd.vx=0;nd.vy=0;
+    } else {
+      nd.vx+=(w/2-nd.x)*0.0005*sp;nd.vy+=(h/2-nd.y)*0.0005*sp;
+      var bm=probe.boundaryMargin;
+      if(nd.x<bm)nd.vx+=(bm-nd.x)*0.012*sp;
+      if(nd.x>w-bm)nd.vx-=(nd.x-(w-bm))*0.012*sp;
+      if(nd.y<bm)nd.vy+=(bm-nd.y)*0.012*sp;
+      if(nd.y>h-bm)nd.vy-=(nd.y-(h-bm))*0.012*sp;
+      nd.vx*=0.88;nd.vy*=0.88;nd.x+=nd.vx;nd.y+=nd.vy;
+      nd.x=Math.max(nd.radius+bm,Math.min(w-nd.radius-bm,nd.x));
+      nd.y=Math.max(nd.radius+bm,Math.min(h-nd.radius-bm,nd.y));
+    }
+  }
+  if(probe.collisionPad>0){
+    for(var c1=0;c1<simNodes.length;c1++){
+      for(var c2=c1+1;c2<simNodes.length;c2++){
+        var a=simNodes[c1],b=simNodes[c2];
+        var dx3=b.x-a.x,dy3=b.y-a.y;
+        var dist=Math.sqrt(dx3*dx3+dy3*dy3)||0.0001;
+        var minD=(a.radius+b.radius+probe.collisionPad);
+        if(dist<minD){
+          var push=(minD-dist)*0.5;
+          var nx=dx3/dist,ny=dy3/dist;
+          if(!a.pinned){a.x-=nx*push;a.y-=ny*push;}
+          if(!b.pinned){b.x+=nx*push;b.y+=ny*push;}
+        }
+      }
+    }
+  }
+}
+/* ---- PULSE PARTICLES ---- */
+function maybeSpawnPulse(){
+  var now=performance.now(),interval=1000/Math.max(1,probe.freq);
+  if(now-lastPulseTime<interval||!simLinks.length)return;
+  lastPulseTime=now;
+  var cands=simLinks;
+  if(state.rootNodeId){var rc=simLinks.filter(function(l){return l.source.id===state.rootNodeId||l.target.id===state.rootNodeId;});if(rc.length)cands=rc;}
+  if(!cands.length)return;
+  var l2=cands[Math.floor(Math.random()*cands.length)];
+  spawnChain(l2.source,l2.target,0,[l2.source.id]);
+}
+function spawnChain(from,to,depth,vis){
+  if(depth>=probe.pulseDepth)return;
+  var lt=simLinks.filter(function(l){return(l.source===from&&l.target===to)||(l.source===to&&l.target===from);})[0];
+  var ltype=lt?lt.type:"default";
+  state.pulseP.push({from:from,to:to,t:0,speed:0.008+Math.random()*0.006,color:linkColor(ltype),depth:depth});
+  var next=simLinks.filter(function(l){
+    if(vis.indexOf(l.source.id)>=0&&vis.indexOf(l.target.id)>=0)return false;
+    return l.source===to||l.target===to;
+  });
+  if(next.length&&depth+1<probe.pulseDepth){
+    var nx=next[Math.floor(Math.random()*next.length)];
+    var nt=nx.source===to?nx.target:nx.source;
+    var nv=vis.concat([to.id]);
+    setTimeout(function(){spawnChain(to,nt,depth+1,nv);},120+Math.random()*80);
+  }
+}
+/* ---- HALO COLOUR ---- */
+function lerpColor(a,b,t2){
+  function hx(s){return parseInt(s.substr(1),16);}
+  var ai=hx(a),bi=hx(b);
+  var ar=(ai>>16)&255,ag=(ai>>8)&255,ab2=ai&255;
+  var br=(bi>>16)&255,bg=(bi>>8)&255,bb2=bi&255;
+  return "#"+Math.round(ar+(br-ar)*t2).toString(16).padStart(2,"0")+Math.round(ag+(bg-ag)*t2).toString(16).padStart(2,"0")+Math.round(ab2+(bb2-ab2)*t2).toString(16).padStart(2,"0");
+}
+function haloColor(nd,ph){
+  var types=[];
+  simLinks.forEach(function(l){if(l.source===nd||l.target===nd){if(types.indexOf(l.type)<0)types.push(l.type);}});
+  if(!types.length)types=["default"];
+  var idx=Math.floor(ph*types.length)%types.length;
+  var next=(idx+1)%types.length;
+  return lerpColor(linkColor(types[idx]),linkColor(types[next]),(ph*types.length)%1);
+}
+/* ---- DRAW FRAME ---- */
+function drawFrame(){
+  var w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  if(!simNodes.length)return;
+  haloPhase=(haloPhase+0.004)%1;
+  /* solid links */
+  var ld=probe.linkDisplay;
+  simLinks.forEach(function(l){
+    if(ld==="none")return;
+    if(ld==="selected"&&state.selectedIds.indexOf(l.source.id)<0&&state.selectedIds.indexOf(l.target.id)<0)return;
+    if(ld==="root"&&!edgeTouchesFocus(l))return;
+    var col=linkColor(l.type);
+    ctx.save();ctx.globalAlpha=0.35;ctx.strokeStyle=col;ctx.lineWidth=0.8+(l.value||1)*0.3;ctx.shadowColor=col;ctx.shadowBlur=4;
+    ctx.beginPath();ctx.moveTo(l.source.x,l.source.y);ctx.lineTo(l.target.x,l.target.y);ctx.stroke();ctx.restore();
+  });
+  /* trails */
+  state.trailP=state.trailP.filter(function(p){return p.life>0;});
+  state.trailP.forEach(function(p){
+    var a=p.life/probe.trailLife;
+    ctx.save();ctx.globalAlpha=a*0.6;ctx.fillStyle=p.color;ctx.shadowColor=p.color;ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r*(0.5+a*0.5),0,2*Math.PI);ctx.fill();ctx.restore();
+    p.life--;
+  });
+  /* pulse particles */
+  state.pulseP=state.pulseP.filter(function(p){return p.t<1;});
+  state.pulseP.forEach(function(p){
+    p.t+=p.speed;var t2=Math.min(p.t,1);
+    var x=p.from.x+(p.to.x-p.from.x)*t2,y=p.from.y+(p.to.y-p.from.y)*t2;
+    state.trailP.push({x:x,y:y,r:3-p.depth*0.4,color:p.color,life:probe.trailLife});
+    ctx.save();ctx.globalAlpha=0.95;ctx.fillStyle=p.color;ctx.shadowColor=p.color;ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(x,y,4-p.depth*0.5,0,2*Math.PI);ctx.fill();ctx.restore();
+  });
+  /* nodes */
+  simNodes.forEach(function(nd){
+    if(state.hiddenTypes[nd.type])return;
+    var col=NODE_COLORS[nd.group%NODE_COLORS.length];
+    var isSel=state.selectedIds.indexOf(nd.id)>=0;
+    var isRoot=nd.id===state.rootNodeId;
+    var isFocusParent=state.focusMode!=="off"&&getFocusParents().indexOf(nd.id)>=0;
+    var hasRootLink=state.rootNodeId&&simLinks.some(function(l){return(l.source===nd&&l.target.id===state.rootNodeId)||(l.target===nd&&l.source.id===state.rootNodeId);});
+    /* red spikes: selected + no root link */
+    if(isSel&&state.rootNodeId&&!hasRootLink&&!isRoot){
+      var sp=8,sph=(Date.now()*0.003)%1,sr=nd.radius*2.2+Math.sin(sph*2*Math.PI)*5;
+      ctx.save();ctx.globalAlpha=0.7+Math.sin(sph*2*Math.PI)*0.3;ctx.strokeStyle="#ff1744";ctx.shadowColor="#ff1744";ctx.shadowBlur=16;ctx.lineWidth=1.5;
+      for(var s2=0;s2<sp;s2++){var ang=s2*2*Math.PI/sp+sph*Math.PI,ir=nd.radius+4;ctx.beginPath();ctx.moveTo(nd.x+ir*Math.cos(ang),nd.y+ir*Math.sin(ang));ctx.lineTo(nd.x+sr*Math.cos(ang+0.1),nd.y+sr*Math.sin(ang+0.1));ctx.lineTo(nd.x+sr*Math.cos(ang-0.1),nd.y+sr*Math.sin(ang-0.1));ctx.closePath();ctx.stroke();}
+      ctx.restore();
+    }
+    /* halo for selected nodes */
+    if(isSel){
+      var hc=haloColor(nd,haloPhase+(state.selectedIds.indexOf(nd.id)*0.33));
+      ctx.save();ctx.globalAlpha=0.8;ctx.strokeStyle="rgba(255,255,255,0.9)";ctx.shadowColor=hc;ctx.shadowBlur=18;ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.arc(nd.x,nd.y,nd.radius+8,0,2*Math.PI);ctx.stroke();
+      ctx.globalAlpha=0.5;ctx.strokeStyle=hc;ctx.shadowBlur=10;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(nd.x,nd.y,nd.radius+12,0,2*Math.PI);ctx.stroke();
+      ctx.restore();
+    }
+    /* root ring */
+    if(isRoot){
+      ctx.save();ctx.strokeStyle="#22cc44";ctx.shadowColor="#00ff44";ctx.shadowBlur=20;ctx.lineWidth=2;ctx.globalAlpha=0.9;
+      ctx.beginPath();ctx.arc(nd.x,nd.y,nd.radius+10,0,2*Math.PI);ctx.stroke();ctx.restore();
+    }
+    if(isFocusParent&&!isRoot){
+      ctx.save();ctx.strokeStyle="#66b3ff";ctx.shadowColor="#66b3ff";ctx.shadowBlur=14;ctx.lineWidth=1.6;ctx.globalAlpha=0.85;
+      ctx.beginPath();ctx.arc(nd.x,nd.y,nd.radius+7,0,2*Math.PI);ctx.stroke();ctx.restore();
+    }
+    /* node circle */
+    ctx.save();ctx.globalAlpha=0.9;ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=isSel?16:8;
+    ctx.beginPath();ctx.arc(nd.x,nd.y,nd.radius,0,2*Math.PI);ctx.fill();ctx.restore();
+    /* label */
+    ctx.save();ctx.font="10px Segoe UI,sans-serif";ctx.fillStyle="#e0e0e0";ctx.shadowColor="#000";ctx.shadowBlur=3;
+    ctx.fillText(nd.id,nd.x+nd.radius+3,nd.y+4);ctx.restore();
+  });
+  /* root label overlay */
+  if(state.rootLabel){
+    ctx.save();ctx.font="11px Segoe UI,sans-serif";ctx.fillStyle="#22cc44";ctx.globalAlpha=0.7;
+    ctx.fillText("ROOT: "+state.rootLabel,10,canvas.height-8);ctx.restore();
+  }
+  if(simNodes.length)maybeSpawnPulse();
+}
+/* ---- SIM LOOP ---- */
+function startSim(){
+  if(raf)cancelAnimationFrame(raf);
+  function loop(){simTick();drawFrame();raf=requestAnimationFrame(loop);}
+  loop();
+}
+/* ---- BUILD SIM ---- */
+function buildSim(){
+  var w=canvas.width,h=canvas.height,nm={};
+  simNodes=state.nodes.map(function(n,i){
+    var nd={id:n.id,x:w/2+(Math.random()-0.5)*w*0.5,y:h/2+(Math.random()-0.5)*h*0.5,vx:0,vy:0,group:n.group||0,type:n.type||"node",year:n.year,desc:n.desc||"",radius:7+Math.min((n.group||1)*1.5,10),targetX:null,targetY:null,pinned:false};
+    nm[n.id]=nd;return nd;
+  });
+  simLinks=[];
+  state.links.forEach(function(l){
+    var s=nm[l.source],t=nm[l.target];
+    if(s&&t)simLinks.push({source:s,target:t,value:l.value||1,type:l.type||inferType(s,t)});
+  });
+  applyLayout(state.layout);buildLinkLegend();buildTypeQS();buildSummaryQS();updateSelUI();startSim();
+  document.getElementById("nodeCount").textContent="Nodes: "+simNodes.length+" | Links: "+simLinks.length+" | Sel: "+state.selectedIds.length;
+  document.getElementById("statusMsg").textContent="Simulation running";
+}
+/* ---- LINK LEGEND ---- */
+function buildLinkLegend(){
+  var types={};simLinks.forEach(function(l){types[l.type]=(types[l.type]||0)+1;});
+  var html="";Object.keys(types).forEach(function(t){html+="<div class=\"ll-item\"><span class=\"ll-dot\" style=\"background:"+linkColor(t)+"\"></span>"+t+"</div>";});
+  document.getElementById("linkLegend").innerHTML=html||"<div style=\"color:var(--text2)\">No links</div>";
+}
+/* ---- TYPE QUICK SELECT ---- */
+function buildTypeQS(){
+  var types={};simNodes.forEach(function(nd){types[nd.type]=(types[nd.type]||0)+1;});
+  var html="",i=0;
+  Object.keys(types).forEach(function(t){var c=NODE_COLORS[(i++)%NODE_COLORS.length];html+="<button class=\"qsel-btn"+(state.hiddenTypes[t]?"":" active")+"\" data-type=\""+t+"\" style=\"border-color:"+c+";color:"+c+"\">"+t+"</button>";});
+  var el=document.getElementById("typeQuickSel");el.innerHTML=html;
+  el.querySelectorAll("[data-type]").forEach(function(btn){btn.addEventListener("click",function(){var t=btn.getAttribute("data-type");if(state.hiddenTypes[t]){delete state.hiddenTypes[t];btn.classList.add("active");}else{state.hiddenTypes[t]=true;btn.classList.remove("active");}});});
+}
+/* ---- SUMMARY QUICK SELECT ---- */
+function buildSummaryQS(){
+  var types={};simNodes.forEach(function(nd){types[nd.type]=(types[nd.type]||0)+1;});
+  var html="";Object.keys(types).forEach(function(t){html+="<button class=\"qsel-btn active\" data-st=\""+t+"\">"+t+" x"+types[t]+"</button>";});
+  var el=document.getElementById("summaryQuickSel");el.innerHTML=html;
+  el.querySelectorAll("[data-st]").forEach(function(btn){btn.addEventListener("click",function(){var t=btn.getAttribute("data-st");state.selectedIds=[];simNodes.forEach(function(nd){if(nd.type===t)state.selectedIds.push(nd.id);});positionSelectedAtTop();updateSelUI();log("Selected type: "+t);});});
+}
+/* ---- SELECTION UI ---- */
+function updateSelUI(){
+  var list=document.getElementById("selObjList");
+  document.getElementById("selCountLbl").textContent=state.selectedIds.length;
+  document.getElementById("nodeCount").textContent="Nodes: "+simNodes.length+" | Links: "+simLinks.length+" | Sel: "+state.selectedIds.length;
+  if(!state.selectedIds.length){list.innerHTML="<div style=\"font-size:12px;color:var(--text2)\">Click nodes to select.</div>";return;}
+  var html="";
+  state.selectedIds.forEach(function(id){var nd=nodeById(id);if(!nd)return;var c=NODE_COLORS[nd.group%NODE_COLORS.length];html+="<div class=\"sel-obj-item\" data-sid=\""+id+"\"><span class=\"sel-obj-dot\" style=\"background:"+c+"\"></span>"+id+"<span class=\"sel-obj-remove\">x</span></div>";});
+  list.innerHTML=html;
+  list.querySelectorAll(".sel-obj-remove").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();var id=btn.closest(".sel-obj-item").getAttribute("data-sid");state.selectedIds=state.selectedIds.filter(function(s){return s!==id;});var nd=nodeById(id);if(nd){nd.pinned=false;nd.targetX=null;nd.targetY=null;}updateSelUI();});});
+  list.querySelectorAll(".sel-obj-item").forEach(function(item){item.addEventListener("click",function(){showDetail(item.getAttribute("data-sid"));});});
+}
+/* ---- NODE DETAIL ---- */
+function showDetail(id){
+  var nd=nodeById(id);if(!nd)return;
+  var links=simLinks.filter(function(l){return l.source===nd||l.target===nd;});
+  var html="<div class=\"nd-name\">"+nd.id+"</div>";
+  html+="<div class=\"nd-row\"><span class=\"nd-key\">Year</span><span class=\"nd-val\">"+(nd.year||"?")+"</span></div>";
+  html+="<div class=\"nd-row\"><span class=\"nd-key\">Type</span><span class=\"nd-val\">"+(nd.type||"?")+"</span></div>";
+  html+="<div class=\"nd-row\"><span class=\"nd-key\">Group</span><span class=\"nd-val\">"+nd.group+"</span></div>";
+  if(nd.desc)html+="<div style=\"margin-top:5px;font-size:11px;color:#aabbcc\">"+nd.desc+"</div>";
+  if(links.length){
+    html+="<div style=\"color:#6688aa;font-size:10px;margin:7px 0 3px\">Connections ("+links.length+")</div>";
+    links.forEach(function(l){var oth=l.source===nd?l.target:l.source;html+="<div class=\"nd-link-item\" data-nlid=\""+oth.id+"\" style=\"border-left-color:"+linkColor(l.type)+"\">"+(l.source===nd?" &rarr; ":" &larr; ")+"<b>"+oth.id+"</b> <span style=\"color:"+linkColor(l.type)+";font-size:10px\">"+l.type+"</span></div>";});
+  }
+  document.getElementById("nodeDetails").innerHTML=html;
+  document.querySelectorAll("[data-nlid]").forEach(function(item){item.addEventListener("click",function(){showDetail(item.getAttribute("data-nlid"));});});
+}
+/* ---- CANVAS MOUSE ---- */
+var dragging=null,dox=0,doy=0;
+canvas.addEventListener("mousedown",function(e){
+  var r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  for(var i=simNodes.length-1;i>=0;i--){var nd=simNodes[i];var dx=mx-nd.x,dy=my-nd.y;if(dx*dx+dy*dy<=(nd.radius+6)*(nd.radius+6)){dragging=nd;dox=dx;doy=dy;nd.pinned=true;return;}}
+});
+canvas.addEventListener("mousemove",function(e){
+  if(!dragging)return;
+  var r=canvas.getBoundingClientRect();dragging.x=e.clientX-r.left-dox;dragging.y=e.clientY-r.top-doy;dragging.targetX=dragging.x;dragging.targetY=dragging.y;
+});
+canvas.addEventListener("mouseup",function(e){
+  if(dragging){
+    var r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    var dx=mx-dragging.x-dox,dy=my-dragging.y-doy,moved=dx*dx+dy*dy>9;
+    if(!moved){
+      var id=dragging.id;
+      if(id!==state.rootNodeId){
+        var idx=state.selectedIds.indexOf(id);
+        if(idx>=0){state.selectedIds.splice(idx,1);dragging.pinned=false;dragging.targetX=null;dragging.targetY=null;}
+        else{state.selectedIds.push(id);positionSelectedAtTop();}
+        updateSelUI();showDetail(id);
+      }
+    } else dragging.pinned=false;
+    dragging=null;
+  }
+});
+canvas.addEventListener("mouseleave",function(){if(dragging){dragging.pinned=false;dragging=null;}});
+/* ---- DATASETS ---- */
+var DATASETS={
+"virus-computer":{seedTopic:"Computer Viruses",seedYear:2000,period:25,depth:20,deviation:"Nation State",
+nodes:[
+  {id:"ILOVEYOU",year:2000,type:"worm",group:1,desc:"Mass-mailer worm, $10B damage"},
+  {id:"Code Red",year:2001,type:"worm",group:1,desc:"IIS buffer overflow worm"},
+  {id:"Nimda",year:2001,type:"worm",group:1,desc:"Multi-vector network worm"},
+  {id:"SQL Slammer",year:2003,type:"worm",group:1,desc:"UDP worm, 75K hosts in 10min"},
+  {id:"Mydoom",year:2004,type:"worm",group:1,desc:"Fastest email worm spread"},
+  {id:"Conficker",year:2008,type:"worm",group:2,desc:"Windows RPC exploit, 9-15M hosts"},
+  {id:"Stuxnet",year:2010,type:"apt",group:3,desc:"Nation-state SCADA sabotage"},
+  {id:"Flame",year:2012,type:"apt",group:3,desc:"Cyber espionage toolkit"},
+  {id:"CryptoLocker",year:2013,type:"ransomware",group:4,desc:"RSA-2048 file encryption"},
+  {id:"Heartbleed",year:2014,type:"vuln",group:5,desc:"OpenSSL memory disclosure"},
+  {id:"WannaCry",year:2017,type:"ransomware",group:4,desc:"EternalBlue ransomware, 200K+ hosts"},
+  {id:"NotPetya",year:2017,type:"wiper",group:3,desc:"Supply-chain wiper, $10B damage"},
+  {id:"EternalBlue",year:2017,type:"exploit",group:3,desc:"NSA SMB exploit"},
+  {id:"Emotet",year:2018,type:"botnet",group:2,desc:"Banking trojan turned malware loader"},
+  {id:"SolarWinds",year:2020,type:"apt",group:3,desc:"Supply-chain via Orion update"},
+  {id:"Log4Shell",year:2021,type:"vuln",group:5,desc:"Log4j RCE, CVSS 10.0"},
+  {id:"MOVEit",year:2023,type:"vuln",group:5,desc:"Cl0p mass exploitation"},
+  {id:"Nation State",year:2010,type:"deviation",group:6,desc:"State-sponsored cyber operations"}
+],
+links:[
+  {source:"ILOVEYOU",target:"Code Red",value:2,type:"temporal"},
+  {source:"Code Red",target:"Nimda",value:3,type:"causal"},
+  {source:"Nimda",target:"SQL Slammer",value:2,type:"temporal"},
+  {source:"SQL Slammer",target:"Mydoom",value:2,type:"temporal"},
+  {source:"Mydoom",target:"Conficker",value:2,type:"evolution"},
+  {source:"Conficker",target:"Stuxnet",value:3,type:"evolution"},
+  {source:"Stuxnet",target:"Nation State",value:5,type:"influence"},
+  {source:"Stuxnet",target:"Flame",value:4,type:"correlation"},
+  {source:"Nation State",target:"NotPetya",value:5,type:"influence"},
+  {source:"Nation State",target:"SolarWinds",value:5,type:"influence"},
+  {source:"Nation State",target:"EternalBlue",value:5,type:"conflict"},
+  {source:"EternalBlue",target:"WannaCry",value:5,type:"causal"},
+  {source:"CryptoLocker",target:"WannaCry",value:3,type:"evolution"},
+  {source:"Heartbleed",target:"Log4Shell",value:2,type:"correlation"},
+  {source:"Emotet",target:"SolarWinds",value:2,type:"dependency"},
+  {source:"WannaCry",target:"NotPetya",value:4,type:"causal"},
+  {source:"Log4Shell",target:"MOVEit",value:2,type:"temporal"},
+  {source:"Flame",target:"EternalBlue",value:3,type:"correlation"}
+]},
+"virus-human":{seedTopic:"Human Virus Outbreaks",seedYear:1900,period:200,depth:30,deviation:"meteor",
+nodes:[
+  {id:"Spanish Flu",year:1918,type:"pandemic",group:1,desc:"H1N1, 50-100M deaths"},
+  {id:"Asian Flu",year:1957,type:"pandemic",group:1,desc:"H2N2, 1-2M deaths"},
+  {id:"Hong Kong Flu",year:1968,type:"pandemic",group:1,desc:"H3N2, 1M deaths"},
+  {id:"HIV/AIDS",year:1981,type:"pandemic",group:2,desc:"Retrovirus, 40M+ deaths"},
+  {id:"SARS",year:2003,type:"epidemic",group:3,desc:"SARS-CoV, 774 deaths"},
+  {id:"H1N1 Swine",year:2009,type:"pandemic",group:1,desc:"H1N1pdm09, 150-575K deaths"},
+  {id:"MERS",year:2012,type:"epidemic",group:3,desc:"MERS-CoV, 35% fatality rate"},
+  {id:"Ebola West Africa",year:2014,type:"epidemic",group:4,desc:"11,325 deaths"},
+  {id:"Zika",year:2015,type:"epidemic",group:5,desc:"Mosquito-borne, microcephaly link"},
+  {id:"COVID-19",year:2020,type:"pandemic",group:3,desc:"SARS-CoV-2, 7M+ deaths"},
+  {id:"Mpox",year:2022,type:"epidemic",group:6,desc:"Global mpox outbreak"},
+  {id:"mRNA Vaccines",year:2020,type:"tech",group:7,desc:"BioNTech/Moderna platform"},
+  {id:"Genomic Sequencing",year:2010,type:"tech",group:7,desc:"NGS for pathogen tracking"},
+  {id:"Meteor Impact",year:1908,type:"deviation",group:8,desc:"Tunguska event"},
+  {id:"Chicxulub Analogy",year:1980,type:"deviation",group:8,desc:"Mass extinction pattern study"}
+],
+links:[
+  {source:"Spanish Flu",target:"Asian Flu",value:3,type:"temporal"},
+  {source:"Asian Flu",target:"Hong Kong Flu",value:3,type:"temporal"},
+  {source:"Hong Kong Flu",target:"H1N1 Swine",value:3,type:"evolution"},
+  {source:"H1N1 Swine",target:"COVID-19",value:4,type:"evolution"},
+  {source:"SARS",target:"MERS",value:4,type:"causal"},
+  {source:"MERS",target:"COVID-19",value:5,type:"causal"},
+  {source:"HIV/AIDS",target:"Ebola West Africa",value:2,type:"correlation"},
+  {source:"Ebola West Africa",target:"Zika",value:1,type:"temporal"},
+  {source:"COVID-19",target:"mRNA Vaccines",value:5,type:"causal"},
+  {source:"COVID-19",target:"Mpox",value:2,type:"temporal"},
+  {source:"Genomic Sequencing",target:"COVID-19",value:4,type:"tech"},
+  {source:"Genomic Sequencing",target:"mRNA Vaccines",value:3,type:"tech"},
+  {source:"Meteor Impact",target:"Chicxulub Analogy",value:3,type:"correlation"},
+  {source:"Chicxulub Analogy",target:"Spanish Flu",value:1,type:"influence"},
+  {source:"SARS",target:"COVID-19",value:5,type:"evolution"}
+]},
+"ai-displacement":{seedTopic:"AI & Automation Displacement",seedYear:2015,period:20,depth:15,deviation:"Universal Basic Income",
+nodes:[
+  {id:"Deep Learning Boom",year:2015,type:"tech",group:1,desc:"ResNet, attention mechanisms"},
+  {id:"AlphaGo",year:2016,type:"milestone",group:1,desc:"DeepMind beats Go champion"},
+  {id:"GPT-2",year:2019,type:"model",group:2,desc:"1.5B param language model"},
+  {id:"GPT-3",year:2020,type:"model",group:2,desc:"175B param, few-shot learning"},
+  {id:"DALL-E",year:2021,type:"model",group:3,desc:"Text-to-image generation"},
+  {id:"GitHub Copilot",year:2021,type:"tool",group:4,desc:"AI pair programming"},
+  {id:"ChatGPT",year:2022,type:"product",group:2,desc:"Conversational AI, 100M users"},
+  {id:"GPT-4",year:2023,type:"model",group:2,desc:"Multimodal reasoning"},
+  {id:"Coding Agents",year:2024,type:"tool",group:4,desc:"Autonomous code generation"},
+  {id:"Job Displacement",year:2023,type:"impact",group:5,desc:"Clerical, creative roles affected"},
+  {id:"Upskilling Wave",year:2024,type:"response",group:6,desc:"AI literacy training programs"},
+  {id:"UBI Debate",year:2020,type:"deviation",group:7,desc:"Universal Basic Income policy"},
+  {id:"AI Regulation",year:2024,type:"policy",group:8,desc:"EU AI Act, executive orders"},
+  {id:"Autonomous Vehicles",year:2018,type:"tech",group:9,desc:"Self-driving displacement"}
+],
+links:[
+  {source:"Deep Learning Boom",target:"AlphaGo",value:4,type:"causal"},
+  {source:"AlphaGo",target:"GPT-2",value:3,type:"temporal"},
+  {source:"GPT-2",target:"GPT-3",value:5,type:"evolution"},
+  {source:"GPT-3",target:"ChatGPT",value:5,type:"causal"},
+  {source:"GPT-3",target:"DALL-E",value:3,type:"causal"},
+  {source:"GPT-3",target:"GitHub Copilot",value:4,type:"dependency"},
+  {source:"ChatGPT",target:"GPT-4",value:5,type:"evolution"},
+  {source:"GPT-4",target:"Coding Agents",value:4,type:"causal"},
+  {source:"GitHub Copilot",target:"Coding Agents",value:4,type:"evolution"},
+  {source:"Coding Agents",target:"Job Displacement",value:4,type:"influence"},
+  {source:"DALL-E",target:"Job Displacement",value:3,type:"influence"},
+  {source:"Job Displacement",target:"Upskilling Wave",value:3,type:"causal"},
+  {source:"Job Displacement",target:"UBI Debate",value:4,type:"influence"},
+  {source:"UBI Debate",target:"AI Regulation",value:3,type:"influence"},
+  {source:"Deep Learning Boom",target:"Autonomous Vehicles",value:3,type:"tech"},
+  {source:"Autonomous Vehicles",target:"Job Displacement",value:3,type:"influence"}
+]}};
+/* ---- LOAD DATASET ---- */
+function loadDataset(key){
+  var ds=DATASETS[key];if(!ds){log("Unknown dataset: "+key,"WARN");return;}
+  state.dataset=key;state.nodes=ds.nodes;state.links=ds.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+  document.getElementById("statusDataset").textContent="Dataset: "+key;
+  log("Loaded: "+ds.seedTopic+" ("+ds.nodes.length+"n, "+ds.links.length+"l)");
+  var ef=function(id2){return document.getElementById(id2);};
+  if(ef("wizSeedTopic"))ef("wizSeedTopic").value=ds.seedTopic;
+  if(ef("wizSeedYear"))ef("wizSeedYear").value=ds.seedYear;
+  if(ef("wizPeriod"))ef("wizPeriod").value=ds.period;
+  if(ef("wizDepth")){ef("wizDepth").value=ds.depth;ef("wizDepthVal").textContent=ds.depth;}
+  if(ef("wizDeviation"))ef("wizDeviation").value=ds.deviation;
+  buildSim();populateSourcesTable(ds);populateTimeline(ds);
+}
+/* ---- TAB SWITCHING ---- */
+var panelIds={graph:"panelGraph",timeline:"panelTimeline",foresight:"panelForesight",pattern:"panelPattern",sources:"panelSources",log:"panelLog"};
+document.getElementById("tabBar").addEventListener("click",function(e){
+  if(e.target.tagName.toUpperCase()!=="BUTTON")return;
+  var tab=e.target.getAttribute("data-tab");
+  document.getElementById("tabBar").querySelectorAll("button").forEach(function(b){b.className=b.getAttribute("data-tab")===tab?"active":"";});
+  Object.keys(panelIds).forEach(function(k){var p=document.getElementById(panelIds[k]);if(p)p.className=k===tab?"panel active":"panel";});
+  document.getElementById("rightSidebar").style.display=tab==="graph"?"":"none";
+  log("Tab: "+tab);
+});
+/* ---- WIZARD TOGGLE ---- */
+document.getElementById("btnWizard").addEventListener("click",function(){var ws=document.getElementById("wizardSidebar");ws.className=ws.className.indexOf("hidden")>=0?"":"hidden";});
+/* ---- DATASET SYNC ---- */
+function syncDS(val){["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(el&&el.value!==val)el.value=val;});}
+["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(!el)return;el.addEventListener("change",function(){syncDS(el.value);if(el.value!=="custom")loadDataset(el.value);});});
+/* ---- LAYOUT SYNC ---- */
+function syncLayout(val){["layoutSelect","sbLayout"].forEach(function(id2){var el=document.getElementById(id2);if(el&&el.value!==val)el.value=val;});state.layout=val;applyLayout(val);}
+["layoutSelect","sbLayout"].forEach(function(id2){var el=document.getElementById(id2);if(!el)return;el.addEventListener("change",function(){syncLayout(el.value);});});
+/* ---- PROBE CONTROLS ---- */
+function bindR(id2,vid,key){var sl=document.getElementById(id2),vl=document.getElementById(vid);if(!sl)return;sl.addEventListener("input",function(){probe[key]=parseFloat(sl.value);if(vl)vl.textContent=sl.value;});}
+bindR("ctlSpeed","valSpeed","speed");bindR("ctlFreq","valFreq","freq");bindR("ctlTrailLife","valTrail","trailLife");
+bindR("ctlBoundary","valBoundary","boundaryMargin");
+bindR("ctlCollision","valCollision","collisionPad");
+var pde=document.getElementById("ctlPulseDepth");if(pde)pde.addEventListener("change",function(){probe.pulseDepth=parseInt(this.value)||3;});
+var sde=document.getElementById("ctlSolidDepth");if(sde)sde.addEventListener("change",function(){probe.solidDepth=parseInt(this.value)||2;});
+var lde=document.getElementById("ctlLinkDisplay");if(lde)lde.addEventListener("change",function(){probe.linkDisplay=this.value;});
+var fmd=document.getElementById("ctlFocusMode");if(fmd)fmd.addEventListener("change",function(){state.focusMode=this.value;applyLayout(state.layout);log("Focus mode: "+this.value);});
+/* ---- ROOT CONTROLS ---- */
+document.getElementById("btnApplyRoot").addEventListener("click",function(){
+  var val=document.getElementById("ctlRootFile").value.trim(),fname=val.replace(/.*[/\\]/,"");
+  state.rootLabel=fname||val;
+  var match=simNodes.filter(function(nd){return nd.id.toLowerCase()===fname.toLowerCase();})[0];
+  if(match){state.rootNodeId=match.id;match.pinned=true;match.targetX=canvas.width/2;match.targetY=canvas.height-60;log("Root: "+match.id);}
+  else{state.rootNodeId=null;log("Root label set: "+state.rootLabel);}
+  document.getElementById("rootFileDisp").textContent=fname||val;
+  if(state.layout==="force")positionSelectedAtTop();
+});
+document.getElementById("btnSetRoot").addEventListener("click",function(){
+  if(!state.selectedIds.length){log("Select a node first","WARN");return;}
+  var id2=state.selectedIds[0];state.rootNodeId=id2;state.rootLabel=id2;
+  var nd=nodeById(id2);if(nd){nd.pinned=true;nd.targetX=canvas.width/2;nd.targetY=canvas.height-60;}
+  document.getElementById("rootFileDisp").textContent=id2;document.getElementById("ctlRootFile").value=id2;
+  state.selectedIds=state.selectedIds.filter(function(s){return s!==id2;});updateSelUI();log("Root set: "+id2);
+  applyLayout(state.layout);
+});
+document.getElementById("btnFocusParents").addEventListener("click",function(){
+  if(!state.selectedIds.length){state.focusedParentIds=[];log("Focus parents cleared");applyLayout(state.layout);return;}
+  state.focusedParentIds=state.selectedIds.slice(0,8);
+  log("Focus parents: "+state.focusedParentIds.join(", "));
+  applyLayout(state.layout);
+});
+document.getElementById("btnClearSel").addEventListener("click",function(){state.selectedIds.forEach(function(id2){var nd=nodeById(id2);if(nd){nd.pinned=false;nd.targetX=null;nd.targetY=null;}});state.selectedIds=[];state.focusedParentIds=[];updateSelUI();applyLayout(state.layout);});
+document.getElementById("btnRefresh").addEventListener("click",function(){if(state.dataset!=="custom")loadDataset(state.dataset);else buildSim();});
+/* ---- WIZARD DEPTH SLIDER ---- */
+var wdsl=document.getElementById("wizDepth");if(wdsl)wdsl.addEventListener("input",function(){var dv=document.getElementById("wizDepthVal");if(dv)dv.textContent=wdsl.value;});
+/* ---- WIZARD RUN ---- */
+document.getElementById("btnRunWizard").addEventListener("click",function(){
+  var topic=document.getElementById("wizSeedTopic").value.trim(),year=parseInt(document.getElementById("wizSeedYear").value),period=parseInt(document.getElementById("wizPeriod").value),depth=parseInt(document.getElementById("wizDepth").value),dev=document.getElementById("wizDeviation").value.trim();
+  if(!topic){log("Seed topic required","WARN");return;}
+  var matched=null;Object.keys(DATASETS).forEach(function(k){if(DATASETS[k].seedTopic.toLowerCase()===topic.toLowerCase())matched=k;});
+  if(matched){syncDS(matched);loadDataset(matched);log("Wizard matched: "+matched);return;}
+  var nodes=[{id:topic,year:year,type:"seed",group:1,desc:"Seed topic"}],links2=[];
+  for(var i=0;i<Math.min(depth,30);i++){var yr=year-Math.floor(period/2)+Math.floor(Math.random()*period);var nid="Event-"+i;nodes.push({id:nid,year:yr,type:"event",group:2,desc:"Synthetic event"});if(i>0)links2.push({source:nodes[Math.floor(Math.random()*i)].id,target:nid,value:1+Math.floor(Math.random()*4)});}
+  if(dev)nodes.push({id:dev,year:year,type:"deviation",group:9,desc:"Deviation pivot"});
+  state.nodes=nodes;state.links=links2;state.dataset="custom";state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};buildSim();log("Synthetic dataset: "+nodes.length+"n, "+links2.length+"l");
+});
+/* ---- SOURCES TABLE ---- */
+function populateSourcesTable(ds){
+  var tb=document.getElementById("sourcesTable").querySelector("tbody");
+  var srcs=[{name:"Wikipedia API",url:"https://en.wikipedia.org/w/api.php",r:ds.nodes.length},{name:"OpenAlex",url:"https://api.openalex.org/",r:0},{name:"GDELT",url:"https://api.gdeltproject.org/",r:0},{name:"Wikidata",url:"https://www.wikidata.org/w/api.php",r:0}];
+  var html="";srcs.forEach(function(s){html+="<tr><td>"+s.name+"</td><td style=\"font-size:10px\">"+s.url+"</td><td style=\"color:#00c853\">Available</td><td>"+s.r+"</td><td>"+new Date().toISOString().substr(0,10)+"</td></tr>";});tb.innerHTML=html;
+}
+/* ---- TIMELINE ---- */
+function populateTimeline(ds){
+  var svg=document.getElementById("svgTimeline"),sorted=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
+  var h=Math.max(sorted.length*28+40,300);svg.setAttribute("height",h);
+  var html="<line x1=\"60\" y1=\"20\" x2=\"60\" y2=\""+(h-10)+"\" stroke=\"#2a2a3e\" stroke-width=\"2\"/>";
+  sorted.forEach(function(n,i){var y=30+i*28,c=NODE_COLORS[n.group%NODE_COLORS.length];html+="<circle cx=\"60\" cy=\""+y+"\" r=\"5\" fill=\""+c+"\"/><text x=\"75\" y=\""+(y+4)+"\" fill=\"#e0e0e0\" font-size=\"12\">"+n.year+" - "+n.id+"</text><text x=\"300\" y=\""+(y+4)+"\" fill=\"#888\" font-size=\"10\">"+(n.desc||"")+"</text>";});
+  svg.innerHTML=html;
+}
+/* ---- PATTERN MATCH ---- */
+document.getElementById("btnRunPattern").addEventListener("click",function(){
+  if(!simLinks.length){log("No data loaded","WARN");return;}
+  var regex;try{regex=new RegExp(document.getElementById("patternRegex").value,"i");}catch(e){log("Invalid regex","ERROR");return;}
+  var minC=parseFloat(document.getElementById("patternMinCorr").value)||0,matches=[];
+  simLinks.forEach(function(l){if(regex.test(l.source.id)||regex.test(l.target.id)){var c=Math.min(l.value/5,1);if(c>=minC)matches.push({a:l.source.id,b:l.target.id,c:c.toFixed(2),t:l.source.type+"/"+l.target.type,p:regex.source});}});
+  var tb=document.getElementById("patternTable").querySelector("tbody"),html="";
+  matches.forEach(function(m){html+="<tr><td>"+m.a+"</td><td>"+m.b+"</td><td>"+m.c+"</td><td>"+m.t+"</td><td>"+m.p+"</td></tr>";});
+  tb.innerHTML=html||"<tr><td colspan=\"5\" style=\"color:var(--text2)\">No matches.</td></tr>";
+  log("Pattern: "+matches.length+" matches");
+});
+/* ---- FORESIGHT ---- */
+document.getElementById("btnRunForesight").addEventListener("click",function(){
+  if(!state.nodes.length){log("Load dataset first","WARN");return;}
+  var horizon=parseInt(document.getElementById("fsHorizon").value)||10,iters=parseInt(document.getElementById("fsMonteCarlo").value)||1000,sigma=parseInt(document.getElementById("fsConfidence").value)||2,devT=parseInt(document.getElementById("fsDeviance").value)||15;
+  var yc={};state.nodes.forEach(function(nd){if(nd.year)yc[nd.year]=(yc[nd.year]||0)+1;});
+  var years=Object.keys(yc).map(Number).sort(function(a,b){return a-b;});if(years.length<2){log("Need 2+ data points","WARN");return;}
+  var lastY=years[years.length-1],vals=years.map(function(y){return yc[y];}),mean=0;vals.forEach(function(v){mean+=v;});mean=mean/vals.length;
+  var variance=0;vals.forEach(function(v){variance+=(v-mean)*(v-mean);});var sd=Math.sqrt(variance/vals.length)||1;
+  var pYears=[];for(var py=1;py<=horizon;py++)pYears.push(lastY+py);
+  var mcR=[];for(var mc=0;mc<iters;mc++){var run=[];pYears.forEach(function(){var u1=Math.random()||0.001,u2=Math.random(),z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);run.push(Math.max(0,mean+z*sd));});mcR.push(run);}
+  var meds=[],lo=[],hi=[],dev=[];
+  pYears.forEach(function(_,t){var col=mcR.map(function(r){return r[t];}).sort(function(a,b){return a-b;});meds.push(col[Math.floor(col.length*0.5)]);lo.push(col[Math.floor(col.length*Math.max(0,0.5-0.341*sigma))]);hi.push(col[Math.floor(col.length*Math.min(0.5+0.341*sigma,0.999))]);dev.push(col[Math.floor(col.length*0.5)]*(1+devT/100));});
+  var svg=document.getElementById("svgForesight"),cw=svg.parentElement.offsetWidth||700,ch=280;svg.setAttribute("width",cw);svg.setAttribute("height",ch);
+  var allY=years.concat(pYears),allV=vals.concat(meds),minY=allY[0],maxY=allY[allY.length-1],maxV=0;
+  allV.concat(hi).concat(dev).forEach(function(v){if(v>maxV)maxV=v;});maxV=(maxV*1.2)||1;
+  var pad={l:50,r:20,t:20,b:30};
+  function sx(yr){return pad.l+(yr-minY)/(maxY-minY||1)*(cw-pad.l-pad.r);}
+  function sy(v){return ch-pad.b-(v/maxV)*(ch-pad.t-pad.b);}
+  var html="";
+  var bp="M";pYears.forEach(function(y,i){bp+=(i?"L":"")+sx(y).toFixed(1)+","+sy(hi[i]).toFixed(1);});for(var b2=pYears.length-1;b2>=0;b2--)bp+="L"+sx(pYears[b2]).toFixed(1)+","+sy(lo[b2]).toFixed(1);
+  html+="<path d=\""+bp+"Z\" fill=\"rgba(233,69,96,.1)\"/>";
+  var hp="M";years.forEach(function(y,i){hp+=(i?"L":"")+sx(y).toFixed(1)+","+sy(vals[i]).toFixed(1);});
+  html+="<path d=\""+hp+"\" fill=\"none\" stroke=\"#e94560\" stroke-width=\"2\"/>";
+  var pp="M"+sx(lastY).toFixed(1)+","+sy(vals[vals.length-1]).toFixed(1);pYears.forEach(function(y,i){pp+="L"+sx(y).toFixed(1)+","+sy(meds[i]).toFixed(1);});
+  html+="<path d=\""+pp+"\" fill=\"none\" stroke=\"#16c79a\" stroke-width=\"2\" stroke-dasharray=\"6 3\"/>";
+  var dp="M";pYears.forEach(function(y,i){dp+=(i?"L":"")+sx(y).toFixed(1)+","+sy(dev[i]).toFixed(1);});
+  html+="<path d=\""+dp+"\" fill=\"none\" stroke=\"#ffc107\" stroke-dasharray=\"4 2\" stroke-width=\"1.5\"/>";
+  html+="<line x1=\""+pad.l+"\" y1=\""+(ch-pad.b)+"\" x2=\""+(cw-pad.r)+"\" y2=\""+(ch-pad.b)+"\" stroke=\"#2a2a3e\"/><line x1=\""+pad.l+"\" y1=\""+pad.t+"\" x2=\""+pad.l+"\" y2=\""+(ch-pad.b)+"\" stroke=\"#2a2a3e\"/>";
+  allY.filter(function(_,i){return i%Math.max(1,Math.floor(allY.length/10))===0;}).forEach(function(y){html+="<text x=\""+sx(y).toFixed(1)+"\" y=\""+(ch-8)+"\" fill=\"#888\" font-size=\"9\" text-anchor=\"middle\">"+y+"</text>";});
+  svg.innerHTML=html;log("Foresight done");document.getElementById("statusMsg").textContent="Foresight complete";
+});
+/* ---- STATUS TIME ---- */
+setInterval(function(){var el=document.getElementById("statusTime");if(el)el.textContent=new Date().toLocaleTimeString();},1000);
+/* ---- INIT ---- */
+resizeCanvas();
+loadDataset("virus-computer");
+})();
+//]]>
+</script>
+</body>
+</html>

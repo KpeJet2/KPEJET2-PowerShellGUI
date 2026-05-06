@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:00:21.4683573Z",
+  "title": "FIX: [FAIL] 8 file(s) with parse errors --",
+  "category": "crash-log",
+  "tags": [],
+  "parentId": "Bug-20260412135922-858f5246",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412140021-b0103dbb",
+  "description": "Fix for bug Bug-20260412135922-858f5246: Error pattern in log cycle-1.log:13",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T06:00:21.4684041Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ]
+}

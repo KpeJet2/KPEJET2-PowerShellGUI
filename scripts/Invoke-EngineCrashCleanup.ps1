@@ -1,4 +1,9 @@
-﻿# VersionTag: 2604.B1.V32.0
+# VersionTag: 2604.B1.V32.3
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 # Author: The Establishment
 # Date: 2026-04-08
 # FileRole: CrashHandler
@@ -56,13 +61,66 @@ $Timestamp      = Get-Date -Format 'yyyyMMdd-HHmmss'
 $CrashId        = "crash-$Timestamp"
 $QuarantineDir  = Join-Path (Join-Path $LogsDir 'crash-quarantine') $CrashId
 $ReportFile     = Join-Path $ReportsDir "crash-report-$Timestamp.json"
+$PipelinePath   = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json'
 
-function Write-CleanupLog {
+function Write-CleanupLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Level = 'INFO')
     if (-not $Silent) {
         $ts = Get-Date -Format 'HH:mm:ss'
         $clr = switch ($Level) { 'ERROR' {'Red'} 'WARN' {'Yellow'} 'OK' {'Green'} default {'Cyan'} }
         Write-Host "[$ts][CrashCleanup][$Level] $Msg" -ForegroundColor $clr
+    }
+}
+
+function Push-DirtyShutdownBug2Fix {
+    param(
+        [string]$Title,
+        [string]$Description,
+        [string]$PipelineFile
+    )
+    if (-not (Test-Path -LiteralPath $PipelineFile)) { return $false }
+    try {
+        $now = Get-Date
+        $seed = "$Title|$Description|$($now.ToString('yyyyMMddHHmmss'))"
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $idHash = [System.BitConverter]::ToString($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))[0..3]).Replace('-','').ToLower()
+        $sha.Dispose()
+        $bug = [ordered]@{
+            id              = "Bug-$($now.ToString('yyyyMMddHHmmss'))-$idHash"
+            type            = 'Bug'
+            status          = 'OPEN'
+            priority        = 'HIGH'
+            category        = 'dirty-shutdown-fault'
+            title           = $Title
+            description     = $Description
+            affectedFiles   = @()
+            source          = 'Invoke-EngineCrashCleanup'
+            created         = $now.ToString('o')
+            modified        = $now.ToString('o')
+            completedAt     = $null
+            linkedFeatures  = @()
+            linkedBugs      = @()
+            tags            = @('engine','dirty-shutdown','bug2fix')
+            notes           = "CrashId=$CrashId; Report=$ReportFile"
+            sessionModCount = 0
+            parentId        = ''
+            executionAgent  = ''
+        }
+        $raw = Get-Content -LiteralPath $PipelineFile -Raw -Encoding UTF8
+        if ([string]::IsNullOrEmpty($raw)) { return $false }
+        $pipe = $raw | ConvertFrom-Json
+        if ($null -eq $pipe -or $null -eq $pipe.bugs) { return $false }
+        $newBugs = [System.Collections.ArrayList]@()
+        foreach ($b in @($pipe.bugs)) { $null = $newBugs.Add($b) }
+        $null = $newBugs.Add($bug)
+        $pipe.bugs = @($newBugs)
+        if ($null -ne $pipe.meta) { $pipe.meta.lastModified = (Get-Date -Format 'o') }
+        Set-Content -LiteralPath $PipelineFile -Value ($pipe | ConvertTo-Json -Depth 10) -Encoding UTF8 -Force
+        Write-CleanupLog "Bug2FIX created: $($bug.id)" 'WARN'
+        return $true
+    } catch {
+        Write-CleanupLog "Failed to create Bug2FIX: $($_.Exception.Message)" 'WARN'
+        return $false
     }
 }
 
@@ -79,7 +137,11 @@ if (Test-Path -LiteralPath $CrashLogFile) {
         if (-not [string]::IsNullOrEmpty($lastJson)) {
             $crashEvent = $lastJson | ConvertFrom-Json
             if ($null -ne $crashEvent -and $null -ne $crashEvent.timestamp) {
-                try { $crashTime = [datetime]::Parse($crashEvent.timestamp) } catch { }
+                try {
+                    $crashTime = [datetime]::Parse($crashEvent.timestamp)
+                } catch {
+                    Write-CleanupLog "Could not parse crash timestamp '$($crashEvent.timestamp)': $($_.Exception.Message)" 'WARN'
+                }
             }
         }
     } catch {
@@ -195,7 +257,7 @@ Files held : $(@($quarantineList | Where-Object { $_.quarantined }).Count)
 Review each file and restore or purge manually.
 Full report: $ReportFile
 "@
-    try { Set-Content -LiteralPath (Join-Path $QuarantineDir 'README.txt') -Value $readme -Encoding UTF8 } catch { }
+    try { Set-Content -LiteralPath (Join-Path $QuarantineDir 'README.txt') -Value $readme -Encoding UTF8 } catch { <# Intentional: non-fatal — quarantine README write is best-effort #> }
 }
 
 # ─── Write crash report ───────────────────────────────────────────────────────
@@ -223,4 +285,27 @@ try {
     Write-CleanupLog "Failed to write crash report: $_" 'ERROR'
 }
 
+if (@($suspiciousFiles).Count -gt 0) {
+    $reasons = @($suspiciousFiles | Select-Object -First 6 | ForEach-Object { "$($_.relPath): $($_.reason)" })
+    $lastLog = if ($null -ne $crashEvent -and $null -ne $crashEvent.lastLogLine) { $crashEvent.lastLogLine } else { 'n/a' }
+    $bugText = "Dirty shutdown detected suspicious artifacts ($(@($suspiciousFiles).Count)). Sample: $($reasons -join ' | '). Last log line: $lastLog"
+    $null = Push-DirtyShutdownBug2Fix -Title '[DIRTY SHUTDOWN] Suspicious post-crash artifacts detected' -Description $bugText -PipelineFile $PipelinePath
+}
+
 Write-CleanupLog "Cleanup complete. Quarantined: $(@($quarantineList | Where-Object { $_.quarantined }).Count) files."
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

@@ -1,0 +1,68 @@
+{
+  "sin_id": "SIN-PATTERN-028-INLINE-SWITCH-EXPRESSION_202604120000",
+  "title": "switch used inline as a method argument — PS 5.1 ParserError: Missing expression after ','",
+  "description": "In PowerShell 5.1, `switch` is a statement, not an expression. Passing switch(...){...} directly as an argument inside a method call (e.g. `$obj.Method('label', switch($x){1{'a'}})`) causes a parser error: 'Missing expression after ,'. This is a guaranteed parse failure — the script will not load at all on affected lines. The fix is to pre-evaluate the switch into a variable before the method call. The same restriction applies to `if/else` blocks used inline as method arguments (they are also statements). Both are detected by this pattern.",
+  "severity": "CRITICAL",
+  "category": "compatibility",
+  "vector": "ps51-statement-as-expression",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "created_at": "2026-04-12T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "User + GitHub-Copilot",
+  "detection_method": "Regex scan for .MethodName(... switch( or .MethodName(... if( on non-comment lines",
+  "is_security_related": false,
+  "is_version_related": true,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "exception_message": "ParserError: Missing expression after ','",
+  "exception_stack_highlight": "Parser.ParseArgumentExpression",
+  "preventionRule": "switch and if are PS statements, not expressions. Evaluate them into a $variable first, then pass the variable as the method argument.",
+  "remedy": "Extract the switch or if block into a local variable immediately before the method call. Example:\n  BEFORE: $obj.Rows.Add('Key', switch($x){0{'a'}1{'b'}default{$x}})\n  AFTER:  $val = switch ($x) { 0 { 'a' } 1 { 'b' } default { \"$x\" } }\n          $obj.Rows.Add('Key', $val)",
+  "scan_regex": "(?<!#.*)\\.(\\w+)\\s*\\([^)]*,\\s*switch\\s*\\(",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$|Invoke-SINPatternScanner|sin_registry|templates",
+  "context_guard_regex": null,
+  "context_guard_lines": 0,
+  "context_guard_direction": "above",
+  "inline_guard_regex": null,
+  "known_instances": [
+    "Main-GUI.ps1:5603 -- $gCpu.Rows.Add(\"Architecture\", switch($cpu.Architecture){0{'x86'}9{'x64'}12{'Arm64'}default{$cpu.Architecture}})"
+  ],
+  "known_fix_scenarios": {
+    "FIX-A-PRECOMPUTE-VARIABLE": {
+      "label": "Pre-evaluate into a $variable",
+      "description": "Evaluate the switch or if statement into a named variable on the preceding line, then pass the variable as the method argument.",
+      "example_before": "$grid.Rows.Add('Architecture', switch($cpu.Architecture){0{'x86'}9{'x64'}default{$cpu.Architecture}})",
+      "example_after": "$cpuArch = switch ($cpu.Architecture) { 0 { 'x86' } 9 { 'x64' } default { \"$($cpu.Architecture)\" } }\n$grid.Rows.Add('Architecture', $cpuArch)",
+      "applies_to": ["DataGridView.Rows.Add", "method-calls", "DataTable.Rows.Add", "any-.Method(arg, switch(...))"],
+      "regression_risk": "NONE — semantically equivalent, purely structural refactor"
+    }
+  },
+  "tags": [
+    "ps51",
+    "compatibility",
+    "parser-error",
+    "switch",
+    "statement-as-expression",
+    "pipeline-scan",
+    "critical"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  },
+  "trusted_fix_count": 0,
+  "trusted_fix_status": "new",
+  "trusted_fix_notes": "",
+  "reindex_metadata": {
+    "format": "v2-timestamped",
+    "created_at": "2026-04-12T00:00:00Z"
+  }
+}

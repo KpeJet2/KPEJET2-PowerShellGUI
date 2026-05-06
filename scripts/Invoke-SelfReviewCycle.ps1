@@ -1,4 +1,10 @@
-﻿#Requires -Version 5.1
+# VersionTag: 2604.B1.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
+#Requires -Version 5.1
 <#
 .SYNOPSIS
     Self-Review Cycle Engine -- evaluates workspace health across 8 dimensions.
@@ -299,7 +305,7 @@ function Get-DocFreshnessScore {
 
         $staleRatio = if ($total -gt 0) { $stale / $total } else { 0.0 }
         $score      = [math]::Max(0.0, [math]::Round(1.0 - ($staleRatio * 1.5), 3))
-        $detail     = "$stale/$total docs stale (report: $($reports[0].Name))"
+        $detail     = "$stale/$total docs stale (report: $($reports[0].Name))"  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
         $refinement = if ($stale -gt 0) { "$stale documentation files need refresh -- run DocRebuild cron task to regenerate auto-docs." } else { '' }
 
         return @{ score = $score; detail = $detail; refinement = $refinement }
@@ -876,3 +882,19 @@ Write-SRLog "=== Self-Review Cycle END | Score: $compositeScore | Time: ${elapse
 if ($DryRun) { Write-Host "[DRY-RUN] Self-Review: composite=$compositeScore drops=$(@($trend.drops).Count)" }
 
 return $runRecord
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
+

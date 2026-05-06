@@ -1,0 +1,17 @@
+﻿{
+    "sin_id":  "SIN-20260421024650-0d6036c7",
+    "title":  "Unexpected token \u0027€â”€ LAN Sharing â”€â”€`n\"\u0027 in expression or statement.",
+    "description":  "Parse error in AssistedSASC.psm1 line 2277: Unexpected token \u0027€â”€ LAN Sharing â”€â”€`n\"\u0027 in expression or statement.",
+    "category":  "parsing",
+    "severity":  "HIGH",
+    "file_path":  "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+    "agent_id":  "CronAiAthon",
+    "reported_by":  "CronAiAthon-BugTracker",
+    "is_resolved":  false,
+    "occurrence_count":  1,
+    "regression_count":  0,
+    "created_at":  "2026-04-20T18:46:50.3300730Z",
+    "last_seen_at":  "2026-04-20T18:46:50.3300730Z",
+    "detection_method":  "CronAiAthon-BugTracker",
+    "sessionModCount":  1
+}

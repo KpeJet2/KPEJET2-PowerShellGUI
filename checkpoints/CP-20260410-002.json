@@ -1,0 +1,70 @@
+{
+  "checkpoint_id": "CP-20260410-002",
+  "created": "2026-04-10T00:00:00.000Z",
+  "session_title": "TODO audit, pipeline integrity, SIN scanner, P011 dedupe, pre-commit gate, task dispatch wiring",
+  "previous_checkpoint": "CP-20260410-001",
+  "changes": [
+    {
+      "file": "tests/Invoke-SecurityCodeScan.ps1",
+      "change": "Added 'checkpoints' and 'UPM' to excludeDirs array; previously missing, causing .history archive copies to be scanned (2330 files vs ~200 live files).",
+      "todos_closed": []
+    },
+    {
+      "file": "scripts/Invoke-CronProcessor.ps1",
+      "change": "Fixed Invoke-IntegrityGate: moved Test-PipelineArtifactIntegrity BEFORE Invoke-PipelineArtifactRefresh. Previously the refresh ran first, making isHealthy always true and the FAILED branch dead code. cronSuccess is now meaningful.",
+      "todos_closed": ["IMPL-20260405-010"]
+    },
+    {
+      "file": "scripts/Invoke-CronProcessor.ps1",
+      "change": "Added Invoke-ScheduledTaskDispatch (Step 3.7): reads cron-aiathon-schedule.json and calls Invoke-CronJob for every enabled task whose frequency window has elapsed or lastRun is null. Wires all 12 never-run scheduled tasks into the 10-minute cron cycle.",
+      "todos_closed": ["IMPL-20260405-008"]
+    },
+    {
+      "file": "tests/Invoke-SINPatternScanner.ps1",
+      "change": "Replaced simplistic $hashPos = $lines[$i].IndexOf('#') inline comment check with a string-aware character-walk parser that correctly skips # characters inside single/double quoted string literals. Eliminates false negatives from patterns like $x = 'foo#bar' ?? 'baz'.",
+      "todos_closed": ["IMPL-20260405-006"]
+    },
+    {
+      "file": "modules/AssistedSASC.psm1",
+      "change": "Renamed Test-IntegrityManifest → Test-SASCSignedManifest (HMAC-signed SASC-specific version). Updated all 4 internal callers and the Export-ModuleMember list. Eliminates P011 SIN collision with the generic PwShGUI-IntegrityCore.psm1 Test-IntegrityManifest.",
+      "todos_closed": ["gap-2604-003"]
+    },
+    {
+      "file": "tests/Invoke-PreCommitValidation.ps1",
+      "change": "Created new CI gate script (4 gates): G1 PowerShell parse errors, G2 critical SIN patterns P001/P009/P010, G3 UTF-8 BOM encoding, G4 VersionTag alignment. Exit 0=pass, 1=fail. Supports -StagedFiles, -Quiet, -FailOnWarning, -OutputJson.",
+      "todos_closed": ["IMPL-20260405-009"]
+    },
+    {
+      "file": "modules/PwShGUI-ConvoVault.psm1",
+      "change": "Normalized block comment tag: '<# ToDo:' → '<# TODO:' (consistent with project standard).",
+      "todos_closed": []
+    },
+    {
+      "file": "scripts/Invoke-TodoArchiver.ps1",
+      "change": "Normalized comment tag: '# Note:' → '# NOTE:' (consistent with project standard).",
+      "todos_closed": []
+    }
+  ],
+  "todos_closed_this_session": [
+    "IMPL-20260405-010",
+    "IMPL-20260405-008",
+    "IMPL-20260405-006",
+    "gap-2604-003",
+    "IMPL-20260405-009"
+  ],
+  "audit_findings": {
+    "todo_tag_consistency": {
+      "live_files_scanned": 2287,
+      "hits": 10,
+      "canonical_form": "# TODO:",
+      "deviations_found": ["<# ToDo: (PwShGUI-ConvoVault.psm1)", "# todo #> (Get-PesterReport.ps1 - inside block comment, left as-is)", "# Note: (Invoke-TodoArchiver.ps1)"],
+      "deviations_fixed": 2
+    }
+  },
+  "parse_validation": {
+    "Invoke-CronProcessor.ps1": "OK",
+    "Invoke-SINPatternScanner.ps1": "OK",
+    "AssistedSASC.psm1": "OK",
+    "Invoke-PreCommitValidation.ps1": "OK"
+  }
+}

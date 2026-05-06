@@ -1,0 +1,33 @@
+{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:39:33.1280637Z",
+  "title": "Unexpected token '}' in expression or statement.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412133933-ca2d2df6",
+  "description": "Parse error in Main-GUI.ps1 line 5731: Unexpected token '}' in expression or statement.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:39:33.1280954Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260328082539-1ef56337",
+  "result": null,
+  "status": "OPEN",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "Matched existing sin: Unexpected token '?' in expression or statement.",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ]
+}

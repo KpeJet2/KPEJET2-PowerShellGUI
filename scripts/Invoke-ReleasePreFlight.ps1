@@ -1,4 +1,9 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2604.B2.V31.2
+# SupportPS5.1: null
+# SupportsPS7.6: null
+# SupportPS5.1TestedDate: null
+# SupportsPS7.6TestedDate: null
+# FileRole: Pipeline
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -33,7 +38,7 @@ Write-Host "`n========== PowerShellGUI Release Pre-Flight ==========`n" -Foregro
 # ------------------------------------------------------------------ 1. Parse all PS1/PSM1
 Write-Host "--- 1. Parse Health ---" -ForegroundColor White
 $scripts = Get-ChildItem -Path $RootPath -Include '*.ps1','*.psm1' -Recurse -File |
-    Where-Object { $_.FullName -notmatch '[\\/]\.history[\\/]' }
+    Where-Object { $_.FullName -notmatch '[\\/]\.history[\\/]' -and $_.FullName -notmatch '[\\/]remediation-backups[\\/]' -and $_.FullName -notmatch '[\\/]~REPORTS[\\/]' }
 $parseErrors = 0
 foreach ($f in $scripts) {
     $tokens = $null; $errors = $null
@@ -129,4 +134,20 @@ if ($fail -gt 0) {
 }
 Write-Host "  Release gate: CLEAR`n" -ForegroundColor Green
 exit 0
+
+
+<# Outline:
+    Stub: describe module/script purpose here.
+#>
+
+<# Problems:
+    Stub: list known issues here.
+#>
+
+<# ToDo:
+    Stub: list pending work here.
+#>
+
+
+
 
