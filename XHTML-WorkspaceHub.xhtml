@@ -2379,12 +2379,21 @@
     wrap.innerHTML = 'Loading history operations...';
     Promise.all([
       fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false),
-      fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; })
+      fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; }),
+      fetchSectionData('pipelineApprovals', '/api/pipeline/approvals', { method: 'GET' }, false).catch(function(){ return { data: { pending: [] }, fromCache: true }; }),
+      fetchSectionData('scanCrashes', '/api/scan/crashes', { method: 'GET' }, false).catch(function(){ return { data: { crashes: [] }, fromCache: true }; }),
+      fetchSectionData('engineEvents', '/api/engine/events?tail=200', { method: 'GET' }, false).catch(function(){ return { data: { events: [] }, fromCache: true }; })
     ]).then(function(allRes) {
       var statusRes = allRes[0] || { data: {} };
       var historyRes = allRes[1] || { data: { history: [] } };
+      var approvalsRes = allRes[2] || { data: { pending: [] } };
+      var crashesRes = allRes[3] || { data: { crashes: [] } };
+      var eventsRes = allRes[4] || { data: { events: [] } };
       var data = statusRes.data || {};
       var histPayload = historyRes.data || { history: [] };
+      var approvals = approvalsRes.data || { pending: [] };
+      var crashes = crashesRes.data || { crashes: [] };
+      var events = eventsRes.data || { events: [] };
       var prevPhase = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : {});
       var rows = [];
 
@@ -2418,6 +2427,48 @@
           cycles: (hr.cycles !== undefined ? String(hr.cycles) : '1') + ' / ' + (hr.duration || hr.elapsed || hr.result || '—'),
           fileLocation: hr.path || hr.file || hr.target || hr.source || '—',
           sizeDisk: (hr.sizeOnDisk || hr.size || hr.bytes || '—')
+        });
+      }
+
+      var pending = Array.isArray(approvals.pending) ? approvals.pending : [];
+      if (pending.length > 0) {
+        rows.push({
+          process: 'pipeline approvals',
+          firstRun: pending[0] && pending[0].created ? pending[0].created : '',
+          nextRun: 'on next pipeline cycle',
+          cycles: String(pending.length) + ' pending / queue refresh',
+          fileLocation: 'todo/Items2Approve',
+          sizeDisk: '—'
+        });
+      }
+
+      var crashList = Array.isArray(crashes.crashes) ? crashes.crashes : (Array.isArray(crashes.dumps) ? crashes.dumps : (Array.isArray(crashes) ? crashes : []));
+      if (crashList.length > 0) {
+        var lastCrash = crashList[0] || {};
+        rows.push({
+          process: 'crashdumps',
+          firstRun: lastCrash.timestamp || '',
+          nextRun: 'on next crash or scan',
+          cycles: String(crashList.length) + ' items / crash monitor',
+          fileLocation: 'logs/crashdumps',
+          sizeDisk: '—'
+        });
+      }
+
+      var evtRows = Array.isArray(events.events) ? events.events : (Array.isArray(events) ? events : []);
+      if (evtRows.length > 0) {
+        var errCount = 0;
+        for (var e = 0; e < evtRows.length; e++) {
+          var lvl = String((evtRows[e] || {}).level || '').toUpperCase();
+          if (lvl === 'ERROR' || lvl === 'CRASH') { errCount++; }
+        }
+        rows.push({
+          process: 'event logs',
+          firstRun: (evtRows[0] && evtRows[0].ts) ? evtRows[0].ts : '',
+          nextRun: 'continuous stream',
+          cycles: String(evtRows.length) + ' events / ' + String(errCount) + ' errors',
+          fileLocation: 'logs/events + adapter feeds',
+          sizeDisk: '—'
         });
       }
 
