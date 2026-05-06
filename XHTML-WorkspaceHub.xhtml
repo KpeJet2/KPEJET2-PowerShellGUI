@@ -212,6 +212,8 @@
     .eng-stat-value.ok{color:var(--pass)}
     .eng-stat-value.err{color:var(--fail)}
     .eng-log-pre{background:#0d0d10;border:1px solid var(--border);border-radius:var(--radius);padding:10px;font-family:'Cascadia Code',Consolas,monospace;font-size:11px;color:var(--fg);max-height:200px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+    .runtime-note{margin-top:8px;padding:8px 10px;border:1px dashed #344d6b;border-radius:8px;background:rgba(20,30,44,.55);color:#9fb6d1;font-size:10px;line-height:1.4}
+    .runtime-note.warn{border-color:#7a5a2b;background:rgba(52,40,20,.45);color:#d9c08f}
     /* ── Sidebar links ── */
     .hub-sidebar-links{border-top:1px solid var(--border);padding:8px 10px;margin-top:auto;flex-shrink:0}
     .hub-sidebar-link{display:block;font-size:11px;color:var(--info);text-decoration:none;padding:4px 6px;border-radius:var(--radius);margin-bottom:2px}
@@ -470,14 +472,14 @@
 
       <!-- ── Timeline section ── -->
       <div id="secTimeline" style="display:none">
-        <div class="hub-section-title">Scan History</div>
-        <ul class="hub-timeline" id="hubTimeline">
-          <li><div class="tl-dot"></div><span class="tl-label">Loading scan history&#x2026;</span></li>
-        </ul>
+        <div class="hub-section-title">History</div>
+        <div class="runtime-note" id="runtimeNoteHistory">Loading runtime guidance...</div>
+        <div id="historyTableWrap" class="eng-log-pre" style="max-height:420px">Loading history operations...</div>
       </div>
 
       <div id="secApprovals" style="display:none">
         <div class="hub-section-title">Pipeline Approval Queue</div>
+        <div class="runtime-note" id="runtimeNoteApprovals">Loading runtime guidance...</div>
         <div class="evt-filter-bar">
           <button class="scan-btn" onclick="runPipelineProcess()" data-tip="Process outstanding Bugs2FIX, Items2Do/Items2ADD and Feature Requests into pending-approval todos">&#x1F680; Run Pipeline Process</button>
           <button class="scan-btn" onclick="loadPipelineApprovals()" data-tip="Refresh the pending approval list">&#x21BB; Refresh Queue</button>
@@ -507,6 +509,7 @@
       <!-- ── Crash dumps section ── -->
       <div id="secCrashes" style="display:none">
         <div class="hub-section-title">Crash Dumps</div>
+        <div class="runtime-note" id="runtimeNoteCrashes">Loading runtime guidance...</div>
         <div id="crashTable">
           <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
         </div>
@@ -541,6 +544,8 @@
             </select>
           </label>
           <button class="scan-btn" onclick="loadEventLogs()" data-tip="Refresh event logs from engine or local files">&#x21BB; Refresh</button>
+          <button class="scan-btn" onclick="setEventLogsView('canonical')" data-tip="Use canonical adapter Event Logs view">&#x21C4; Adapter View</button>
+          <button class="scan-btn" onclick="setEventLogsView('hub')" data-tip="Use WorkspaceHub Event Logs table view">&#x1F4CA; Hub View</button>
           <button class="scan-btn" onclick="saveEvtPreset()" data-tip="Save current filter as a reusable preset">+ Save Preset</button>
           <span id="evtCount" style="font-size:10px;color:var(--fg-sub);margin-left:4px"></span>
         </div>
@@ -565,11 +570,15 @@
             </tbody>
           </table>
         </div>
+        <div id="evtCanonicalWrap" style="display:none;margin-top:10px">
+          <div class="evlv-mount" id="hubEvlvMount" data-scope="root" data-title="Workspace Event Logs" data-tail="500"></div>
+        </div>
       </div>
 
       <!-- ── WebEngine Monitor section ── -->
       <div id="secMonitor" style="display:none">
         <div class="hub-section-title">WebEngine Monitor</div>
+        <div class="runtime-note" id="runtimeNoteMonitor">Loading runtime guidance...</div>
         <div class="eng-monitor-grid">
           <div class="eng-stat-card"><div class="eng-stat-label">Status</div><div class="eng-stat-value" id="monStatus">&#x2014;</div></div>
           <div class="eng-stat-card"><div class="eng-stat-label">Uptime</div><div class="eng-stat-value" id="monUptime">&#x2014;</div></div>
@@ -579,9 +588,17 @@
           <div class="eng-stat-card"><div class="eng-stat-label">Config Detection</div><div class="eng-stat-value" id="monCfg">&#x2014;</div></div>
         </div>
         <div style="margin-top:12px">
+          <label style="font-size:10px;color:var(--fg-sub);margin-right:6px">Data Mode:
+            <select id="monDataMode" onchange="setMonitorDataMode(this.value)">
+              <option value="auto">Auto</option>
+              <option value="live">Force Online</option>
+              <option value="offline">Force Offline (Cache)</option>
+            </select>
+          </label>
           <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh engine monitor stats">&#x21BB; Refresh Monitor</button>
           <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
         </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--fg-sub)" id="monModeNote">Mode: auto</div>
         <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
       </div>
 
@@ -723,8 +740,10 @@
   };
   var DATASRC_KEY = 'pwshgui_hub_data_sources_v1';
   var CACHE_KEY = 'pwshgui_hub_offline_cache_v1';
+  var DATAMODE_KEY = 'pwshgui_hub_data_mode_v1';
   var _dataSources = [];
   var _offlineCache = { schemaVersion: LOCAL_SCHEMA_VERSION, updatedAt: null, sections: {} };
+  var _dataMode = 'auto';
   var _approvalItems = [];
   var _approvalSelected = {};
   var _approvalSort = 'priority-desc';
@@ -1145,6 +1164,33 @@
     el.textContent = msg || '';
   }
 
+  function _renderRuntimeNote(featureName) {
+    if (_isFileProtocol()) {
+      return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Running from file:// static mode. Live API actions require Local Web Engine. Cached data remains available when previously synced.';
+    }
+    if (_effectiveDataMode() === 'offline') {
+      return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Force Offline mode is active. Reads are served from cache. Switch Data Mode to Auto or Force Online for live endpoints.';
+    }
+    return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Live endpoint mode active. If engine is unavailable, the hub falls back to cached data automatically.';
+  }
+
+  function _setRuntimeNotes() {
+    var map = {
+      runtimeNoteMonitor: 'Engine Monitor',
+      runtimeNoteApprovals: 'Pipeline Approvals',
+      runtimeNoteCrashes: 'Crash Dumps',
+      runtimeNoteHistory: 'History'
+    };
+    var ids = Object.keys(map);
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      var el = document.getElementById(id);
+      if (!el) { continue; }
+      el.innerHTML = _renderRuntimeNote(map[id]);
+      el.className = 'runtime-note' + ((_isFileProtocol() || _effectiveDataMode() === 'offline') ? ' warn' : '');
+    }
+  }
+
   function validateSourceConnection(src) {
     var source = _clone(src);
     source.baseUrl = _normalizeBaseUrl(source.baseUrl);
@@ -1206,6 +1252,15 @@
   }
 
   function fetchSectionData(section, relPath, options, liveOnly) {
+    var mode = _effectiveDataMode();
+    var forceOffline = (mode === 'offline');
+    if (forceOffline && !liveOnly) {
+      var cachedOnly = _readCachedSection(section);
+      if (cachedOnly !== null && cachedOnly !== undefined) {
+        return Promise.resolve({ data: _clone(cachedOnly), fromCache: true, source: null });
+      }
+      return Promise.reject(new Error('offline mode active and cache missing'));
+    }
     var sources = _getOrderedLiveSources();
     var idx = 0;
     function tryNext() {
@@ -1238,6 +1293,45 @@
     }
     return tryNext();
   }
+
+  function _effectiveDataMode() {
+    if (_dataMode === 'offline') { return 'offline'; }
+    if (_dataMode === 'live') { return 'live'; }
+    return _isFileProtocol() ? 'offline' : 'live';
+  }
+
+  function _persistDataModePreference() {
+    try { localStorage.setItem(DATAMODE_KEY, _dataMode); } catch(e) { }
+  }
+
+  function _loadDataModePreference() {
+    var v = '';
+    try { v = String(localStorage.getItem(DATAMODE_KEY) || '').toLowerCase(); } catch(e) { v = ''; }
+    if (v === 'offline' || v === 'live' || v === 'auto') { _dataMode = v; }
+  }
+
+  function _updateModeLabel() {
+    var sel = document.getElementById('monDataMode');
+    if (sel) { sel.value = _dataMode; }
+    var note = document.getElementById('monModeNote');
+    if (note) {
+      var eff = _effectiveDataMode();
+      note.textContent = 'Mode: ' + _dataMode + ' (effective: ' + eff + ')';
+    }
+  }
+
+  function setMonitorDataMode(mode) {
+    var m = String(mode || '').toLowerCase();
+    if (m !== 'offline' && m !== 'live' && m !== 'auto') { m = 'auto'; }
+    _dataMode = m;
+    _persistDataModePreference();
+    _updateModeLabel();
+    _setRuntimeNotes();
+    _updateHubFooter();
+    setStatus('Data mode set to ' + m, m === 'offline' ? 'warn' : 'ok', 'right');
+    refreshMonitor();
+  }
+  window.setMonitorDataMode = setMonitorDataMode;
 
   function renderDataSources() {
     var wrap = document.getElementById('srcTableWrap');
@@ -2280,53 +2374,77 @@
 
   /* ── Timeline ── */
   function loadTimeline() {
-    var el = document.getElementById('hubTimeline');
-    if (!el) { return; }
-    el.innerHTML = '<li><div class="tl-dot"></div><span class="tl-label">Loading&#x2026;</span></li>';
+    var wrap = document.getElementById('historyTableWrap');
+    if (!wrap) { return; }
+    wrap.innerHTML = 'Loading history operations...';
     Promise.all([
       fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false),
       fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; })
-    ]).then(function(allRes){
-      var data = allRes[0] ? allRes[0].data : {};
-      var histPayload = allRes[1] ? allRes[1].data : { history: [] };
-      var pIds = PHASE_IDS;
-      var rows = '';
+    ]).then(function(allRes) {
+      var statusRes = allRes[0] || { data: {} };
+      var historyRes = allRes[1] || { data: { history: [] } };
+      var data = statusRes.data || {};
+      var histPayload = historyRes.data || { history: [] };
       var prevPhase = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : {});
-      for (var p = 0; p < pIds.length; p++) {
-        var pid = pIds[p];
+      var rows = [];
+
+      for (var p = 0; p < PHASE_IDS.length; p++) {
+        var pid = PHASE_IDS[p];
         var ph = prevPhase[pid];
         if (!ph) { continue; }
-        var dotCls = (ph.status === 'ok' || ph.status === 'done') ? 'background:#22c55e' :
-                     ph.status === 'error' ? 'background:#dc2626' : 'background:#ca8a04';
-        var tsRaw = ph.completedAt || ph.timestamp || null;
-        var ts = tsRaw ? new Date(tsRaw).toLocaleString() : '—';
-        var dur = (ph.durationMs && ph.durationMs > 0) ? (ph.durationMs / 1000).toFixed(1) + 's' : '';
-        rows += '<li>' +
-          '<div class="tl-dot" style="' + dotCls + '"></div>' +
-          '<span class="tl-label">' + escHtml(pid.replace(/_/g,' ')) + '</span>' +
-          '<span class="tl-meta">' + escHtml(ts) + '</span>' +
-          '<span class="tl-size">' + escHtml(dur) + '</span>' +
-          '</li>';
+        var firstRun = ph.startedAt || ph.timestamp || ph.completedAt || '';
+        var doneAt = ph.completedAt || ph.timestamp || '';
+        var durSec = (ph.durationMs && ph.durationMs > 0) ? ((ph.durationMs / 1000).toFixed(1) + 's') : '—';
+        var phaseStatus = String(ph.status || '').toUpperCase();
+        var processName = pid.replace(/_/g, ' ');
+        var result = (phaseStatus ? (phaseStatus + ' ') : '') + durSec;
+        rows.push({
+          process: processName,
+          firstRun: firstRun,
+          nextRun: (phaseStatus === 'RUNNING' || phaseStatus === 'IN_PROGRESS') ? 'in progress' : 'on next cycle',
+          cycles: result,
+          fileLocation: ph.outputPath || ph.path || (ph.source || '—'),
+          sizeDisk: (typeof ph.sizeBytes === 'number') ? (Math.round(ph.sizeBytes / 1024) + ' KB') : '—'
+        });
       }
 
       var histRows = Array.isArray(histPayload.history) ? histPayload.history : [];
-      for (var h = 0; h < Math.min(histRows.length, 15); h++) {
+      for (var h = 0; h < Math.min(histRows.length, 30); h++) {
         var hr = histRows[h] || {};
-        var hTs = hr.timestamp ? new Date(hr.timestamp).toLocaleString() : '—';
-        var hLbl = (hr.eventType || hr.type || 'history') + ' | ' + (hr.target || hr.source || '');
-        var hRes = hr.result || '';
-        var hDot = (String(hRes).indexOf('DIRTY') !== -1 || String(hRes).toLowerCase().indexOf('fail') !== -1) ? 'background:#dc2626' : 'background:#4a6080';
-        rows += '<li>' +
-          '<div class="tl-dot" style="' + hDot + '"></div>' +
-          '<span class="tl-label">' + escHtml(hLbl) + '</span>' +
-          '<span class="tl-meta">' + escHtml(hTs) + '</span>' +
-          '<span class="tl-size">' + escHtml(hRes) + '</span>' +
-          '</li>';
+        rows.push({
+          process: hr.eventType || hr.type || 'history',
+          firstRun: hr.firstRunSinceReboot || hr.timestamp || '',
+          nextRun: hr.nextRun || 'n/a',
+          cycles: (hr.cycles !== undefined ? String(hr.cycles) : '1') + ' / ' + (hr.duration || hr.elapsed || hr.result || '—'),
+          fileLocation: hr.path || hr.file || hr.target || hr.source || '—',
+          sizeDisk: (hr.sizeOnDisk || hr.size || hr.bytes || '—')
+        });
       }
 
-      el.innerHTML = rows || '<li><div class="tl-dot"></div><span class="tl-label">No phase/history data yet</span></li>';
-    }).catch(function(){
-      el.innerHTML = '<li><div class="tl-dot" style="background:#dc2626"></div><span class="tl-label" style="color:#f44747">No live or cached history data</span></li>';
+      if (rows.length === 0) {
+        wrap.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No history data available in live source or cache</div>';
+        return;
+      }
+
+      var html = '<table class="evt-table"><thead><tr>' +
+        '<th>Processes</th><th>First run since reboot</th><th>Next run</th><th>Cycles/Time taken</th><th>Files Location</th><th>Size on disk</th>' +
+        '</tr></thead><tbody>';
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var fr = r.firstRun ? new Date(r.firstRun).toLocaleString() : '—';
+        html += '<tr>' +
+          '<td>' + escHtml(r.process || '—') + '</td>' +
+          '<td style="white-space:nowrap">' + escHtml(fr) + '</td>' +
+          '<td>' + escHtml(r.nextRun || '—') + '</td>' +
+          '<td>' + escHtml(r.cycles || '—') + '</td>' +
+          '<td title="' + escAttr(r.fileLocation || '') + '">' + escHtml(r.fileLocation || '—') + '</td>' +
+          '<td>' + escHtml(String(r.sizeDisk || '—')) + '</td>' +
+          '</tr>';
+      }
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }).catch(function() {
+      wrap.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No live or cached history data</div>';
     });
   }
 
@@ -2750,8 +2868,29 @@
   /* ── Event Logs ── */
   var _evtAllRows = [];
   var EVT_PRESET_KEY = 'hub_evt_presets';
+  var _eventLogsView = 'hub';
+
+  function setEventLogsView(mode) {
+    var m = String(mode || '').toLowerCase() === 'canonical' ? 'canonical' : 'hub';
+    _eventLogsView = m;
+    var tableWrap = document.querySelector('#secEventLogs .evt-table-wrap');
+    var filterBar = document.querySelector('#secEventLogs .evt-filter-bar');
+    var canonicalWrap = document.getElementById('evtCanonicalWrap');
+    if (tableWrap) { tableWrap.style.display = m === 'hub' ? '' : 'none'; }
+    if (filterBar) { filterBar.style.display = m === 'hub' ? '' : 'none'; }
+    if (canonicalWrap) { canonicalWrap.style.display = m === 'canonical' ? '' : 'none'; }
+    if (window.EvLV && m === 'canonical') { try { EvLV.mountAll(); } catch(e) { } }
+    var cntEl = document.getElementById('evtCount');
+    if (cntEl && m === 'canonical') { cntEl.textContent = 'Showing canonical adapter view'; }
+    if (m === 'hub') { applyEvtFilter(); }
+  }
+  window.setEventLogsView = setEventLogsView;
 
   function loadEventLogs() {
+    if (_eventLogsView === 'canonical') {
+      setEventLogsView('canonical');
+      return;
+    }
     var tbody = document.getElementById('evtTableBody');
     var cntEl = document.getElementById('evtCount');
     if (tbody) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:12px">Loading&#x2026;</td></tr>'; }
@@ -2761,12 +2900,11 @@
       applyEvtFilter();
       if (cntEl) { cntEl.textContent = _evtAllRows.length + (res.fromCache ? ' events (offline cache)' : ' events (live)'); }
     }).catch(function(){
-      /* Engine offline — read log file counts from checkpoint fallback */
       _evtAllRows = [];
-      if (cntEl) { cntEl.textContent = 'Engine offline — showing no events'; }
+      if (cntEl) { cntEl.textContent = (_effectiveDataMode() === 'offline' ? 'Offline mode active — cached event stream unavailable' : 'Engine offline — showing no events'); }
       if (tbody) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">' +
-          '&#x1F534; Engine offline — start LocalWebEngine to stream event logs, or run static scan to generate logs.' +
+          '&#x1F534; Event Logs require live engine feed for streaming. Use Adapter View for canonical file-backed event display when available.' +
           '</td></tr>';
       }
     });
@@ -3139,7 +3277,7 @@
     var cacheUpdated = (_offlineCache && _offlineCache.updatedAt) ? _offlineCache.updatedAt : 'never';
     var cacheSections = (_offlineCache && _offlineCache.sections) ? Object.keys(_offlineCache.sections).length : 0;
     _setFooterPill('ftCacheSummary', 'cache: ' + cacheSections + ' sections, updated ' + cacheUpdated, cacheSections > 0 ? 'ft-state-ok' : 'ft-state-missing');
-    _setFooterPill('ftModeSummary', 'mode: ' + (_isFileProtocol() ? 'offline-file' : 'live-http') + ' | Start/Stop adapts automatically', _isFileProtocol() ? 'ft-state-active' : 'ft-state-ok');
+    _setFooterPill('ftModeSummary', 'mode: ' + _dataMode + ' (effective ' + _effectiveDataMode() + ') | Start/Stop adapts automatically', (_effectiveDataMode() === 'offline') ? 'ft-state-active' : 'ft-state-ok');
   }
 
   /* ── WebEngine Monitor ── */
@@ -3150,9 +3288,10 @@
     var poEl = document.getElementById('monPort');
     var tEl = document.getElementById('monTime');
     var cfgEl = document.getElementById('monCfg');
+    _updateModeLabel();
     fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
       var d = res.data;
-      if (sEl) { sEl.textContent = d.running ? '\u2705 Running' : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
+      if (sEl) { sEl.textContent = d.running ? '\u2705 Running' + (res.fromCache ? ' (cache)' : '') : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
       if (uEl) {
         var up = d.uptime || 0;
         uEl.textContent = up < 60 ? up + 's' : up < 3600 ? Math.floor(up/60) + 'm ' + (up%60) + 's' : Math.floor(up/3600) + 'h ' + Math.floor((up%3600)/60) + 'm';
@@ -3161,15 +3300,14 @@
       if (pEl) { pEl.textContent = d.pid || '\u2014'; pEl.className = 'eng-stat-value'; }
       if (poEl) { poEl.textContent = d.port || '\u2014'; poEl.className = 'eng-stat-value'; }
       if (tEl) { tEl.textContent = d.serverTime ? new Date(d.serverTime).toLocaleString() : '\u2014'; }
-      /* Check config detection */
       verifyConfigDetection(cfgEl);
     }).catch(function(){
-      if (sEl) { sEl.textContent = '\u274C Offline'; sEl.className = 'eng-stat-value err'; }
+      if (sEl) { sEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Offline mode' : '\u274C Offline'; sEl.className = 'eng-stat-value err'; }
       if (uEl) { uEl.textContent = '\u2014'; uEl.className = 'eng-stat-value err'; }
       if (pEl) { pEl.textContent = '\u2014'; }
       if (poEl) { poEl.textContent = '\u2014'; }
       if (tEl) { tEl.textContent = '\u2014'; }
-      if (cfgEl) { cfgEl.textContent = '\u274C Engine offline'; cfgEl.className = 'eng-stat-value err'; }
+      if (cfgEl) { cfgEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Offline cache mode' : '\u274C Engine offline'; cfgEl.className = 'eng-stat-value err'; }
     });
   }
   window.refreshMonitor = refreshMonitor;
@@ -3181,25 +3319,31 @@
     fetchSectionData('engineLog', '/api/engine/log?tail=40', { method: 'GET' }, false).then(function(res){
       var d = res.data;
       var lines = Array.isArray(d.lines) ? d.lines : (d.log ? d.log.split('\n') : []);
-      logEl.textContent = lines.length > 0 ? lines.join('\n') : '(no log data)';
+      if (lines.length > 0) {
+        logEl.textContent = lines.join('\n');
+      } else {
+        logEl.textContent = res.fromCache ? '(no cached monitor logs available)' : '(no log data)';
+      }
     }).catch(function(err){
-      logEl.textContent = 'Failed to load log: ' + err.message;
+      logEl.textContent = (_effectiveDataMode() === 'offline') ? 'Offline mode active and no cached recent logs available.' : ('Failed to load log: ' + err.message);
     });
   }
   window.loadMonitorLog = loadMonitorLog;
 
   /* ── Config detection verification ── */
   function verifyConfigDetection(cfgEl) {
-    /* Check if /api/config/menus returns valid JSON — if not, flag error */
     fetchSectionData('configMenus', '/api/config/menus', { method: 'GET' }, false).then(function(res){
       var d = res.data;
       var ok = !!(d && (d.menus || Array.isArray(d)));
       if (cfgEl) {
-        cfgEl.textContent = ok ? '\u2705 Config loaded' + (res.fromCache ? ' (offline)' : '') : '\u26A0 Config empty';
+        cfgEl.textContent = ok ? ('\u2705 Config loaded' + (res.fromCache ? ' (cached)' : '')) : '\u26A0 Config empty';
         cfgEl.className = 'eng-stat-value ' + (ok ? 'ok' : '');
       }
     }).catch(function(){
-      if (cfgEl) { cfgEl.textContent = '\u274C Config not detected'; cfgEl.className = 'eng-stat-value err'; }
+      if (cfgEl) {
+        cfgEl.textContent = (_effectiveDataMode() === 'offline') ? '\u26A0 Config unavailable in cache' : '\u274C Config not detected';
+        cfgEl.className = 'eng-stat-value err';
+      }
     });
   }
 
@@ -3266,6 +3410,7 @@
 
   /* ── Init ── */
   document.addEventListener('DOMContentLoaded', function() {
+    _loadDataModePreference();
     _loadOfflineCacheBootstrap()
       .then(function(){ return _loadDataSourceBootstrap(); })
       .then(function(){
@@ -3276,6 +3421,8 @@
         renderEvtPresets();
         renderDataSources();
         bindCodeCopyCatsEvents();
+        _updateModeLabel();
+        _setRuntimeNotes();
         refreshDataSourceHealth();
         setStatus(_isFileProtocol() ? 'Initialised (offline page mode with live-source fallback)' : 'Initialising&#x2026;', _isFileProtocol() ? 'warn' : 'ok', 'right');
         pollEngineStatus();
