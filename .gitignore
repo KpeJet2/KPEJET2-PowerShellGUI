@@ -12,6 +12,12 @@ temp/
 ~README.md
 ~REPORTS/
 .venv/
+.venv-pygame312/
+__pycache__/
+.snapshots/
+testResults.xml
+scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
+scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master.zip
 # ignore PowerShell generated files
 *.ps1xml
 *.psd1
