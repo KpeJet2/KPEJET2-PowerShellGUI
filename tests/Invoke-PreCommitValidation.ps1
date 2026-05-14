@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+﻿# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -48,6 +48,7 @@ param(
     [string]  $OutputJson     = '',
     [switch]  $Quiet,
     [switch]  $FailOnWarning,
+    [switch]  $SkipPipelineControlGate,
     # Gate 3 (P027) performance guards. P027 scanner is O(n) per file but its AST walk
     # is heavy on very large files; skip oversize files and cap the total count to keep
     # pre-commit under ~30s.
@@ -142,17 +143,19 @@ function Invoke-CriticalSINGate {
         if (-not $lines) { continue }
         $inBlockComment = $false
         for ($i = 0; $i -lt $lines.Count; $i++) {
-            $trimmed = $lines[$i].TrimStart()
+            $lineText = if ($i -lt @($lines).Count) { [string]$lines[$i] } else { '' }
+            $trimmed = $lineText.TrimStart()
             if (-not $inBlockComment -and $trimmed -match '<#') { $inBlockComment = $true }
             if ($inBlockComment -and $trimmed -match '#>') { $inBlockComment = $false; continue }
             if ($inBlockComment) { continue }
             if ($trimmed.StartsWith('#')) { continue }
-            if ($lines[$i] -match '#\s*SIN-EXEMPT:\s*\*') { continue }
+            if ($lineText -match '#\s*SIN-EXEMPT:\s*\*') { continue }
 
             $commentPos = -1
             $inStrChar = $null
-            for ($ci = 0; $ci -lt $lines[$i].Length; $ci++) {
-                $ch = $lines[$i][$ci]
+            $lineLength = $lineText.Length
+            for ($ci = 0; $ci -lt $lineLength; $ci++) {
+                $ch = $lineText.Substring($ci, 1)
                 if ($null -eq $inStrChar) {
                     if ($ch -eq '"' -or $ch -eq "'") { $inStrChar = $ch }
                     elseif ($ch -eq '#') { $commentPos = $ci; break }
@@ -162,8 +165,8 @@ function Invoke-CriticalSINGate {
             }
 
             foreach ($pat in $patterns) {
-                if ($lines[$i] -match "#\s*SIN-EXEMPT:\s*[^,\r\n]*$($pat.Id)") { continue }
-                $match = $pat.Regex.Match($lines[$i])
+                if ($lineText -match "#\s*SIN-EXEMPT:\s*[^,\r\n]*$($pat.Id)") { continue }
+                $match = $pat.Regex.Match($lineText)
                 if (-not $match.Success) { continue }
                 if ($commentPos -ge 0 -and $match.Index -ge $commentPos) { continue }
                 [void]$findings.Add([PSCustomObject]@{
@@ -284,6 +287,94 @@ function Invoke-VersionTagGate {
     return @($findings)
 }
 
+function Invoke-PipelineControlGate {
+    param([string]$Root)
+
+    $findings = [System.Collections.ArrayList]::new()
+    $scriptPath = Join-Path $Root 'scripts\Invoke-PipelineIntegrityCheck.ps1'
+    if (-not (Test-Path -LiteralPath $scriptPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineControls'
+            Severity = 'ERROR'
+            File     = $scriptPath
+            Line     = 0
+            Message  = 'Pipeline integrity script not found'
+        })
+        return @($findings)
+    }
+
+    $reportPath = Join-Path (Join-Path $Root 'temp') ('precommit-pipeline-controls-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
+    try {
+        & $scriptPath -WorkspacePath $Root -WriteReport -ReportPath $reportPath -FailOnControlViolation
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineControls'
+            Severity = 'ERROR'
+            File     = $scriptPath
+            Line     = 0
+            Message  = "Pipeline control invocation failed: $($_.Exception.Message)"
+        })
+    }
+
+    if (-not (Test-Path -LiteralPath $reportPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineControls'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = 'Pipeline control report missing'
+        })
+        return @($findings)
+    }
+
+    try {
+        $report = Get-Content -LiteralPath $reportPath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+        if (-not $report.controls.isHealthy) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'PipelineControls'
+                Severity = 'ERROR'
+                File     = $reportPath
+                Line     = 0
+                Message  = 'Pipeline integrity report indicates unhealthy control layer'
+            })
+        }
+
+        if (-not $report.overallHealthy -and -not $Quiet) {
+            Write-Gate '  [INFO] Pipeline baseline is unhealthy (artifact drift/stale backlog), but control layer check is isolated in Gate 6.' 'Warn'
+        }
+
+        if (-not $report.controls.cryptographicEvidence.invocationHash) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'PipelineControls'
+                Severity = 'ERROR'
+                File     = $reportPath
+                Line     = 0
+                Message  = 'Cryptographic invocation hash missing from controls report'
+            })
+        }
+
+        foreach ($controlIssue in @($report.controls.payloadIssues)) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'PipelineControls'
+                Severity = 'ERROR'
+                File     = [string]$controlIssue.path
+                Line     = 0
+                Message  = "Payload issue ($($controlIssue.kind)): $($controlIssue.detail)"
+            })
+        }
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineControls'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = "Could not parse pipeline control report: $($_.Exception.Message)"
+        })
+    }
+
+    return @($findings)
+}
+
 $timestamp = (Get-Date).ToUniversalTime().ToString('o')
 if (-not $OutputJson) {
     $OutputJson = Join-Path $WorkspacePath ("temp\precommit-{0}.json" -f (Get-Date -Format 'yyMMddHHmmss'))
@@ -334,6 +425,14 @@ $vtHits = @(Invoke-VersionTagGate -Files $files)
 $vtHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($vtHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
 else { $vtHits | ForEach-Object { Write-Gate "  WARN $($_.File) - $($_.Message)" 'Warn' } }
+
+if (-not $SkipPipelineControlGate) {
+    Write-Gate '[Gate 6] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
+    $pipelineControlHits = @(Invoke-PipelineControlGate -Root $WorkspacePath)
+    $pipelineControlHits | ForEach-Object { [void]$allFindings.Add($_) }
+    if (@($pipelineControlHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+    else { $pipelineControlHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+}
 
 $errorCount = @($allFindings | Where-Object { $_.Severity -eq 'ERROR' }).Count
 $warnCount = @($allFindings | Where-Object { $_.Severity -eq 'WARN' }).Count
