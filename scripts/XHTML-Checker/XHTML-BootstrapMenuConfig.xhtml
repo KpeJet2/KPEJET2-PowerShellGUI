@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootstrap Menu Config</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #111827;
+      --surface-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22d3ee;
+      --accent-2: #34d399;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --ok: #22c55e;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top right, #1e293b, #0f172a 55%);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .title {
+      margin: 0 0 8px;
+      font-size: 26px;
+      letter-spacing: 0.4px;
+    }
+    .subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 300px 1fr;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.85));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row.spread { justify-content: space-between; }
+    .toolbar { margin-bottom: 12px; }
+    .field-block { margin-top: 10px; }
+    .raw-block { margin-top: 14px; }
+    button {
+      border: 1px solid #475569;
+      background: #1f2937;
+      color: var(--text);
+      border-radius: 9px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    button:hover { border-color: var(--accent); }
+    .btn-accent { background: #0f766e; border-color: #0d9488; }
+    .btn-danger { background: #7f1d1d; border-color: #b91c1c; }
+    .btn-ok { background: #14532d; border-color: #15803d; }
+    input, select, textarea {
+      width: 100%;
+      background: #0b1220;
+      color: var(--text);
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+    textarea {
+      min-height: 200px;
+      font-family: Consolas, "Courier New", monospace;
+      resize: vertical;
+    }
+    .heading-list {
+      display: grid;
+      gap: 6px;
+      max-height: 540px;
+      overflow: auto;
+      margin-top: 10px;
+      padding-right: 4px;
+    }
+    .heading-item {
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      background: #111827;
+      font-size: 12px;
+    }
+    .heading-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.25);
+      background: #14263d;
+    }
+    .items {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+    }
+    .item {
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px;
+      background: #0f172a;
+    }
+    .item-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1.2fr 0.8fr 1.8fr;
+    }
+    .status {
+      margin-top: 10px;
+      min-height: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.err { color: var(--danger); }
+    .hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .item-grow {
+      flex: 1;
+      min-width: 220px;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .item-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="title">Bootstrap Menu Config Tool</h1>
+    <p class="subtitle">Configure tray headings and quick-launch entries for the Local Web Engine service wrapper.</p>
+
+    <div class="row toolbar">
+      <button id="btnLoad">Reload</button>
+      <button id="btnSave" class="btn-ok">Save Config</button>
+      <button id="btnPretty">Pretty JSON</button>
+      <button id="btnDownload">Download JSON</button>
+      <button id="btnOpenTrayPage" class="btn-accent">Open Home Page</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="row spread">
+          <strong>Headings</strong>
+          <button id="btnAddHeading">Add Heading</button>
+        </div>
+        <div class="heading-list" id="headingList"></div>
+      </section>
+
+      <section class="card">
+        <div class="row spread">
+          <strong id="editorTitle">Heading Editor</strong>
+          <div class="row">
+            <button id="btnAddItem">Add Item</button>
+            <button id="btnDeleteHeading" class="btn-danger">Delete Heading</button>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label for="headingName">Heading Name</label>
+          <input id="headingName" type="text" placeholder="Heading name" />
+        </div>
+
+        <div class="items" id="itemsHost"></div>
+
+        <div class="raw-block">
+          <label for="rawJson"><strong>Raw JSON</strong></label>
+          <textarea id="rawJson" spellcheck="false"></textarea>
+        </div>
+        <div id="status" class="status"></div>
+
+        <p class="hint">
+          Supported entry types: <code>url</code>, <code>file</code>, <code>folder</code>, <code>script</code>,
+          <code>engineAction</code>, <code>engineKill</code>, <code>command</code>, <code>webpageScripts</code>.<br />
+          For <code>webpageScripts</code>, set <code>sourcePages</code> as comma-separated workspace-relative paths.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ENGINE_BASE = window.location.origin || 'http://127.0.0.1:8042';
+      var state = {
+        data: { schema: 'BootstrapMenuConfig/1.0', headings: [] },
+        selectedHeading: -1,
+        csrfToken: ''
+      };
+
+      var headingList = document.getElementById('headingList');
+      var headingName = document.getElementById('headingName');
+      var itemsHost = document.getElementById('itemsHost');
+      var rawJson = document.getElementById('rawJson');
+      var statusEl = document.getElementById('status');
+      var editorTitle = document.getElementById('editorTitle');
+
+      function setStatus(msg, kind) {
+        statusEl.textContent = msg || '';
+        statusEl.className = 'status ' + (kind || '');
+      }
+
+      function escapeHtml(v) {
+        return String(v || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function fetchCsrfToken() {
+        return fetch(ENGINE_BASE + '/api/csrf-token')
+          .then(function (res) { return res.json(); })
+          .then(function (d) {
+            state.csrfToken = d.csrfToken || d.token || '';
+          });
+      }
+
+      function loadConfig() {
+        return fetch(ENGINE_BASE + '/api/config/bootstrap-menu')
+          .then(function (res) {
+            if (!res.ok) {
+              throw new Error('Config load failed: ' + res.status);
+            }
+            return res.json();
+          })
+          .then(function (cfg) {
+            if (!cfg || !Array.isArray(cfg.headings)) {
+              cfg = { schema: 'BootstrapMenuConfig/1.0', headings: [] };
+            }
+            state.data = cfg;
+            if (state.selectedHeading >= state.data.headings.length) {
+              state.selectedHeading = state.data.headings.length - 1;
+            }
+            if (state.selectedHeading < 0 && state.data.headings.length > 0) {
+              state.selectedHeading = 0;
+            }
+            syncRawJson();
+            render();
+            setStatus('Config loaded.', 'ok');
+          })
+          .catch(function (err) {
+            setStatus(err.message, 'err');
+          });
+      }
+
+      function syncRawJson() {
+        rawJson.value = JSON.stringify(state.data, null, 2);
+      }
+
+      function applyRawJson() {
+        try {
+          var parsed = JSON.parse(rawJson.value || '{}');
+          if (!Array.isArray(parsed.headings)) {
+            throw new Error('headings[] is required.');
+          }
+          state.data = parsed;
+          if (state.selectedHeading >= state.data.headings.length) {
+            state.selectedHeading = state.data.headings.length - 1;
+          }
+          render();
+          setStatus('Raw JSON applied.', 'ok');
+          return true;
+        } catch (err) {
+          setStatus('Invalid JSON: ' + err.message, 'err');
+          return false;
+        }
+      }
+
+      function renderHeadingList() {
+        headingList.innerHTML = '';
+        state.data.headings.forEach(function (h, idx) {
+          var btn = document.createElement('button');
+          btn.className = 'heading-item' + (idx === state.selectedHeading ? ' active' : '');
+          btn.textContent = (h.name || '(unnamed)') + '  [' + ((h.items || []).length || 0) + ']';
+          btn.addEventListener('click', function () {
+            state.selectedHeading = idx;
+            render();
+          });
+          headingList.appendChild(btn);
+        });
+
+        if (state.data.headings.length === 0) {
+          var empty = document.createElement('div');
+          empty.className = 'heading-item';
+          empty.textContent = '(no headings yet)';
+          headingList.appendChild(empty);
+        }
+      }
+
+      function getCurrentHeading() {
+        if (state.selectedHeading < 0 || state.selectedHeading >= state.data.headings.length) {
+          return null;
+        }
+        return state.data.headings[state.selectedHeading];
+      }
+
+      function renderItems() {
+        itemsHost.innerHTML = '';
+        var heading = getCurrentHeading();
+        if (!heading) {
+          editorTitle.textContent = 'Heading Editor';
+          headingName.value = '';
+          return;
+        }
+
+        editorTitle.textContent = 'Heading Editor: ' + (heading.name || '(unnamed)');
+        headingName.value = heading.name || '';
+
+        if (!Array.isArray(heading.items)) {
+          heading.items = [];
+        }
+
+        heading.items.forEach(function (item, idx) {
+          var box = document.createElement('div');
+          box.className = 'item';
+          box.innerHTML =
+            '<div class="item-grid">' +
+              '<div><label>Label</label><input data-k="label" data-i="' + idx + '" value="' + escapeHtml(item.label || '') + '" /></div>' +
+              '<div><label>Type</label>' +
+                '<select data-k="type" data-i="' + idx + '">' +
+                  ['url','file','folder','script','engineAction','engineKill','command','webpageScripts'].map(function (t) {
+                    return '<option value="' + t + '"' + (item.type === t ? ' selected="selected"' : '') + '>' + t + '</option>';
+                  }).join('') +
+                '</select>' +
+              '</div>' +
+              '<div><label>Target / Value</label><input data-k="target" data-i="' + idx + '" value="' + escapeHtml(item.target || '') + '" /></div>' +
+            '</div>' +
+            '<div class="row" style="margin-top:8px;">' +
+              '<div class="item-grow"><label>sourcePages (comma list for webpageScripts)</label><input data-k="sourcePages" data-i="' + idx + '" value="' + escapeHtml((item.sourcePages || []).join(', ')) + '" /></div>' +
+              '<div class="item-grow"><label>args (comma list)</label><input data-k="args" data-i="' + idx + '" value="' + escapeHtml((item.args || []).join(', ')) + '" /></div>' +
+              '<button data-act="del-item" data-i="' + idx + '" class="btn-danger">Delete Item</button>' +
+            '</div>';
+
+          itemsHost.appendChild(box);
+        });
+      }
+
+      function render() {
+        renderHeadingList();
+        renderItems();
+        syncRawJson();
+      }
+
+      headingName.addEventListener('input', function () {
+        var h = getCurrentHeading();
+        if (!h) { return; }
+        h.name = headingName.value;
+        renderHeadingList();
+        syncRawJson();
+      });
+
+      itemsHost.addEventListener('input', function (ev) {
+        var t = ev.target;
+        if (!t || !t.dataset) { return; }
+        var h = getCurrentHeading();
+        if (!h || !Array.isArray(h.items)) { return; }
+        var idx = Number(t.dataset.i);
+        if (!Number.isFinite(idx) || idx < 0 || idx >= h.items.length) { return; }
+        var k = t.dataset.k;
+        if (!k) { return; }
+
+        if (k === 'sourcePages' || k === 'args') {
+          h.items[idx][k] = String(t.value || '')
+            .split(',')
+            .map(function (x) { return x.trim(); })
+            .filter(Boolean);
+        } else {
+          h.items[idx][k] = t.value;
+        }
+        syncRawJson();
+      });
+
+      itemsHost.addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (!t || !t.dataset || t.dataset.act !== 'del-item') { return; }
+        var h = getCurrentHeading();
+        if (!h || !Array.isArray(h.items)) { return; }
+        var idx = Number(t.dataset.i);
+        if (!Number.isFinite(idx) || idx < 0 || idx >= h.items.length) { return; }
+        h.items.splice(idx, 1);
+        render();
+      });
+
+      document.getElementById('btnAddHeading').addEventListener('click', function () {
+        state.data.headings.push({ name: 'New Heading', items: [] });
+        state.selectedHeading = state.data.headings.length - 1;
+        render();
+      });
+
+      document.getElementById('btnDeleteHeading').addEventListener('click', function () {
+        if (state.selectedHeading < 0) { return; }
+        state.data.headings.splice(state.selectedHeading, 1);
+        if (state.selectedHeading >= state.data.headings.length) {
+          state.selectedHeading = state.data.headings.length - 1;
+        }
+        render();
+      });
+
+      document.getElementById('btnAddItem').addEventListener('click', function () {
+        var h = getCurrentHeading();
+        if (!h) {
+          setStatus('Select or add a heading first.', 'warn');
+          return;
+        }
+        if (!Array.isArray(h.items)) {
+          h.items = [];
+        }
+        h.items.push({ label: 'New Item', type: 'url', target: 'http://127.0.0.1:{port}/', args: [], sourcePages: [] });
+        render();
+      });
+
+      document.getElementById('btnLoad').addEventListener('click', function () {
+        loadConfig();
+      });
+
+      document.getElementById('btnPretty').addEventListener('click', function () {
+        applyRawJson();
+        syncRawJson();
+      });
+
+      document.getElementById('btnOpenTrayPage').addEventListener('click', function () {
+        window.open(ENGINE_BASE + '/', '_blank', 'noopener');
+      });
+
+      document.getElementById('btnSave').addEventListener('click', function () {
+        if (!applyRawJson()) {
+          return;
+        }
+
+        fetch(ENGINE_BASE + '/api/config/bootstrap-menu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': state.csrfToken
+          },
+          body: JSON.stringify(state.data)
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              return res.text().then(function (txt) {
+                throw new Error('Save failed: ' + res.status + ' ' + txt);
+              });
+            }
+            return res.json();
+          })
+          .then(function () {
+            setStatus('Config saved. Restart tray to reload menu.', 'ok');
+          })
+          .catch(function (err) {
+            setStatus(err.message, 'err');
+          });
+      });
+
+      document.getElementById('btnDownload').addEventListener('click', function () {
+        if (!applyRawJson()) {
+          return;
+        }
+        var data = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(data);
+        a.download = 'bootstrap-menu.config.json';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(a.href);
+          a.remove();
+        }, 200);
+      });
+
+      fetchCsrfToken().then(loadConfig).catch(function (err) {
+        setStatus('Init failed: ' + err.message, 'err');
+      });
+    }());
+  </script>
+</body>
+</html>

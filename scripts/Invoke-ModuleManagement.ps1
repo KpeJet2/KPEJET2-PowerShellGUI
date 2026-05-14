@@ -115,6 +115,32 @@ function Write-PercentRow {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     Write-Host ("[{0,3}%] {1}" -f $p, $Label) -ForegroundColor $color
 }
 
+function Get-RepositoryHint {
+    param(
+        [string]$ModuleRoot
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ModuleRoot)) { return $null }
+    $root = $ModuleRoot.ToLowerInvariant()
+
+    if (
+        $root -like '*\system32\windowspowershell\v1.0\modules*' -or
+        $root -like '*\program files\windowspowershell\modules*' -or
+        $root -like '*\program files\powershell\*\modules*'
+    ) {
+        return 'built-in/system'
+    }
+
+    if (
+        $root -like '*\documents\windowspowershell\modules*' -or
+        $root -like '*\documents\powershell\modules*'
+    ) {
+        return 'manual/user-scope'
+    }
+
+    return 'manual/local'
+}
+
 Write-PercentRow -Percent 2 -Label 'Starting module maintenance scan'
 
 # Helper: Ensure PowerShellGet module available
@@ -267,6 +293,10 @@ foreach ($modRoot in $psModPaths) {
             } catch { <# Intentional: non-fatal #> }
         }
 
+        if (-not $repository) {
+            $repository = Get-RepositoryHint -ModuleRoot $modRoot
+        }
+
         if (-not $allInstalledModules.ContainsKey($modKey)) {
             $allInstalledModules[$modKey] = [pscustomobject]@{
                 module      = $modName
@@ -303,7 +333,8 @@ Write-PercentRow -Percent 30 -Label 'Scanning workspace modules'
 $workspaceModules = @{}  # lowercase-name → [pscustomobject]
 $wsScanPaths = @(
     (Join-Path $WorkspacePath 'modules'),
-    (Join-Path $WorkspacePath 'scripts')
+    (Join-Path $WorkspacePath 'scripts'),
+    (Join-Path $WorkspacePath 'agents')
 )
 
 # Exclusion patterns (same as Script Dependency Matrix)
@@ -440,6 +471,7 @@ Write-Host '── Building module inventory ──' -ForegroundColor Yellow
 Write-PercentRow -Percent 64 -Label 'Building consolidated module inventory'
 $inventory = New-Object 'System.Collections.Generic.List[object]'
 $missingList = New-Object 'System.Collections.Generic.List[object]'
+$workspaceAvailableList = New-Object 'System.Collections.Generic.List[object]'
 $errorList  = New-Object 'System.Collections.Generic.List[object]'
 
 # First: add all installed modules
@@ -486,7 +518,7 @@ if ($scriptRefData -and $scriptRefData.modules) {
         }
 
         $modStatus = 'missing'
-        if ($wsMatch) { $modStatus = 'missing;workspace-available' }
+        if ($wsMatch) { $modStatus = 'workspace-available' }
 
         $entry = [pscustomobject]@{
             module          = $refMod.module
@@ -502,7 +534,11 @@ if ($scriptRefData -and $scriptRefData.modules) {
         }
 
         $inventory.Add($entry) | Out-Null
-        $missingList.Add($entry) | Out-Null
+        if ($modStatus -eq 'missing') {
+            $missingList.Add($entry) | Out-Null
+        } else {
+            $workspaceAvailableList.Add($entry) | Out-Null
+        }
     }
 }
 
@@ -536,7 +572,8 @@ foreach ($mod in $inventory) {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 $installedCount = @($inventory | Where-Object { $_.status -eq 'installed' }).Count
-$missingCount   = @($inventory | Where-Object { $_.status -like 'missing*' }).Count
+$missingCount   = @($inventory | Where-Object { $_.status -eq 'missing' }).Count
+$wsAvailCount   = @($inventory | Where-Object { $_.status -eq 'workspace-available' }).Count
 $wsOnlyCount    = @($inventory | Where-Object { $_.status -eq 'workspace-only' }).Count
 $errorCount     = $errorList.Count
 
@@ -548,6 +585,7 @@ Write-Host ''
 Write-Host "  Total modules tracked:   $($inventory.Count)" -ForegroundColor White
 Write-Host "  Installed:               $installedCount" -ForegroundColor Green
 Write-Host "  Missing:                 $missingCount" -ForegroundColor $(if ($missingCount -gt 0) { 'Red' } else { 'Green' })
+Write-Host "  Workspace-available:     $wsAvailCount" -ForegroundColor Yellow
 Write-Host "  Workspace-only:          $wsOnlyCount" -ForegroundColor Yellow
 Write-Host "  Load errors:             $errorCount" -ForegroundColor $(if ($errorCount -gt 0) { 'Red' } else { 'Green' })
 Write-Host ''
@@ -575,6 +613,16 @@ if ($missingCount -gt 0) {
         $wsFlag = if ($m.workspacePath) { ' (workspace-available)' } else { '' }
         $refStr = if ($m.scriptRefCount -gt 0) { " [referenced by $($m.scriptRefCount) script(s)]" } else { '' }
         Write-Host "  MISSING: $($m.module)$wsFlag$refStr" -ForegroundColor Red
+    }
+    Write-Host ''
+}
+
+# ── Workspace-available modules ──
+if ($wsAvailCount -gt 0) {
+    Write-Host '── Workspace-Available Modules (Not Installed) ──' -ForegroundColor Yellow
+    foreach ($m in ($workspaceAvailableList | Sort-Object module)) {
+        $refStr = if ($m.scriptRefCount -gt 0) { " [referenced by $($m.scriptRefCount) script(s)]" } else { '' }
+        Write-Host "  WORKSPACE: $($m.module)$refStr" -ForegroundColor Yellow
     }
     Write-Host ''
 }
@@ -625,13 +673,14 @@ if ($scriptRefData) {
 # 6) AUTO-INSTALL MISSING MODULES
 # ═══════════════════════════════════════════════════════════════════════════════
 
-if ($AutoInstallMissing -and $missingCount -gt 0) {
+if ($AutoInstallMissing -and ($missingCount -gt 0 -or $wsAvailCount -gt 0)) {
     Write-Host '── Auto-Install Missing Modules ──' -ForegroundColor Cyan
     Write-PercentRow -Percent 78 -Label 'Auto-install phase'
     # Ensure package infra available to avoid interactive provider prompts
     $havePSGet = Ensure-PowerShellGet
     $haveNuGet = Ensure-NuGetProvider
-    foreach ($m in ($missingList | Sort-Object module)) {
+    $installCandidates = @($missingList) + @($workspaceAvailableList)
+    foreach ($m in ($installCandidates | Sort-Object module)) {
         # Skip workspace-only modules that can't be installed from gallery
         if ($m.workspacePath -and $UseWorkspaceModules) {
             $wsRoot = Split-Path -Parent (Split-Path -Parent $m.workspacePath)

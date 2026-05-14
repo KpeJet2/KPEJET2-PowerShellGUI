@@ -897,14 +897,90 @@ function Save-Menus {
         return
     }
     try {
-        $bodyBytes = New-Object byte[] 65536
-        $read = $Context.Request.InputStream.Read($bodyBytes, 0, 65536)
-        $bodyStr = [System.Text.Encoding]::UTF8.GetString($bodyBytes, 0, $read)
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
         $parsed = $bodyStr | ConvertFrom-Json
         $menuFile = Join-Path $WorkspacePath 'config'
         $menuFile = Join-Path $menuFile 'menu-layout.json'
         Set-Content -LiteralPath $menuFile -Value ($parsed | ConvertTo-Json -Depth 8) -Encoding UTF8 -Force
         Send-Json -Context $Context -Object @{ saved = $true }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
+    }
+}
+
+# ─── Route: GET /api/config/bootstrap-menu ───────────────────────────────────
+<#
+.SYNOPSIS
+Get bootstrap tray menu configuration.
+.DESCRIPTION
+Returns the bootstrap tray menu configuration JSON used by Start-LocalWebEngineService.ps1.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+    $obj = $null
+    if (Test-Path -LiteralPath $cfgFile) {
+        try {
+            $obj = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+        } catch {
+            Send-Error -Context $Context -StatusCode 500 -Message "Config parse failed: $_"
+            return
+        }
+    }
+    if ($null -eq $obj) {
+        $obj = [ordered]@{
+            schema = 'BootstrapMenuConfig/1.0'
+            headings = @()
+        }
+    }
+    Send-Json -Context $Context -Object $obj
+}
+
+# ─── Route: POST /api/config/bootstrap-menu ──────────────────────────────────
+<#
+.SYNOPSIS
+Save bootstrap tray menu configuration.
+.DESCRIPTION
+Validates and writes bootstrap tray menu configuration JSON used by Start-LocalWebEngineService.ps1.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Save-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        $parsed = $bodyStr | ConvertFrom-Json
+        if ($null -eq $parsed -or -not ($parsed.PSObject.Properties.Name -contains 'headings')) {
+            Send-Error -Context $Context -StatusCode 400 -Message 'Invalid payload: headings[] is required'
+            return
+        }
+
+        $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+        Set-Content -LiteralPath $cfgFile -Value ($parsed | ConvertTo-Json -Depth 12) -Encoding UTF8 -Force
+        Send-Json -Context $Context -Object @{ saved = $true; file = 'config/bootstrap-menu.config.json' }
     } catch {
         Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
     }
@@ -1234,6 +1310,12 @@ try {
                 else                        { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/config/bootstrap-menu$' {
+                if ($method -eq 'GET')      { Get-BootstrapMenuConfig -Context $context }
+                elseif ($method -eq 'POST') { Save-BootstrapMenuConfig -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/csrf-token$' {
                 Send-Json -Context $context -Object @{ csrfToken = $SessionToken }
                 break
@@ -1277,6 +1359,10 @@ try {
             }
             '^/pages/menu-builder$' {
                 Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
+                break
+            }
+            '^/pages/bootstrap-menu-config$' {
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-BootstrapMenuConfig.xhtml'
                 break
             }
             '^/pages/bw-vault$' {

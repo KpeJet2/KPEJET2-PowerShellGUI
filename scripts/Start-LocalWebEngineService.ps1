@@ -431,6 +431,496 @@ function Get-PageEntries {
     return @($items | Sort-Object -Property RelativePath -Unique)
 }
 
+function ConvertTo-StringArray {
+    [CmdletBinding()]
+    param([AllowNull()] [object]$Value)
+
+    if ($null -eq $Value) { return @() }
+    if ($Value -is [string]) {
+        if ([string]::IsNullOrWhiteSpace($Value)) { return @() }
+        return @([string]$Value)
+    }
+    return @($Value | ForEach-Object { [string]$_ })
+}
+
+function Resolve-WorkspaceChildPath {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$PathValue)
+
+    if ([string]::IsNullOrWhiteSpace($PathValue)) { return $null }
+
+    $candidate = $PathValue -replace '/', '\\'
+    $isRooted = [System.IO.Path]::IsPathRooted($candidate)
+    $combined = if ($isRooted) { $candidate } else { Join-Path $WorkspacePath $candidate }
+
+    $resolved = $null
+    try { $resolved = [System.IO.Path]::GetFullPath($combined) } catch { return $null }
+    $wsRoot = [System.IO.Path]::GetFullPath($WorkspacePath).TrimEnd('\\')
+    $resolvedNorm = $resolved.TrimEnd('\\')
+    $wsPrefix = $wsRoot + '\\'
+
+    if ($resolvedNorm -ne $wsRoot -and -not $resolvedNorm.StartsWith($wsPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $null
+    }
+    return $resolved
+}
+
+function Resolve-BootstrapTokens {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Text)
+
+    $wsPath = [System.IO.Path]::GetFullPath($WorkspacePath)
+    $wsUriPath = $wsPath -replace '\\', '/'
+    return $Text.Replace('{port}', [string]$Port).Replace('{workspace}', $wsPath).Replace('{workspaceUri}', $wsUriPath)
+}
+
+function Get-BootstrapMenuConfigPath {
+    [CmdletBinding()]
+    param()
+
+    return Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+}
+
+function Get-DefaultBootstrapMenuConfig {
+    [CmdletBinding()]
+    param()
+
+    return [ordered]@{
+        schema = 'BootstrapMenuConfig/1.0'
+        headings = @(
+            [ordered]@{ name = 'Services'; items = @(
+                [ordered]@{ label = 'Engine Status JSON'; type = 'url'; target = 'http://127.0.0.1:{port}/api/engine/status' },
+                [ordered]@{ label = 'Start Local WebEngine'; type = 'engineAction'; target = 'Start' },
+                [ordered]@{ label = 'Stop Local WebEngine'; type = 'engineAction'; target = 'Stop' },
+                [ordered]@{ label = 'Restart Local WebEngine'; type = 'engineAction'; target = 'Restart' },
+                [ordered]@{ label = 'Kill Local WebEngine (Force)'; type = 'engineKill'; target = 'force' }
+            ) },
+            [ordered]@{ name = 'SCRIPT-Tests'; items = @(
+                [ordered]@{ label = 'LWE Integration Tests'; type = 'script'; target = 'tests/Start-LocalWebEngineIntegration.Tests.ps1' },
+                [ordered]@{ label = 'LWE Unit Tests'; type = 'script'; target = 'tests/Start-LocalWebEngine.Tests.ps1' },
+                [ordered]@{ label = 'WebEngine Sustained Test'; type = 'script'; target = 'tests/Test-WebEngineSustained.ps1' }
+            ) },
+            [ordered]@{ name = 'Reports'; items = @(
+                [ordered]@{ label = 'Open ~REPORTS Folder'; type = 'folder'; target = '~REPORTS' },
+                [ordered]@{ label = 'Open reports Folder'; type = 'folder'; target = 'reports' },
+                [ordered]@{ label = 'Engine Events API'; type = 'url'; target = 'http://127.0.0.1:{port}/api/engine/events' }
+            ) },
+            [ordered]@{ name = 'WebPages-127.0.0.1'; items = @(
+                [ordered]@{ label = 'Workspace Hub'; type = 'url'; target = 'http://127.0.0.1:{port}/' },
+                [ordered]@{ label = 'Service Cluster Controller'; type = 'url'; target = 'http://127.0.0.1:{port}/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml' },
+                [ordered]@{ label = 'Menu Builder'; type = 'url'; target = 'http://127.0.0.1:{port}/pages/menu-builder' }
+            ) },
+            [ordered]@{ name = 'WebPages-LocalFolder'; items = @(
+                [ordered]@{ label = 'XHTML-WorkspaceHub.xhtml'; type = 'file'; target = 'XHTML-WorkspaceHub.xhtml' },
+                [ordered]@{ label = 'XHTML-ServiceClusterController.xhtml'; type = 'file'; target = 'scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml' },
+                [ordered]@{ label = 'XHTML-MenuBuilder.xhtml'; type = 'file'; target = 'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml' }
+            ) },
+            [ordered]@{ name = 'system tools'; items = @(
+                [ordered]@{ label = 'Services Console'; type = 'command'; target = 'services.msc' },
+                [ordered]@{ label = 'Task Manager'; type = 'command'; target = 'taskmgr.exe' },
+                [ordered]@{ label = 'Event Viewer'; type = 'command'; target = 'eventvwr.msc' }
+            ) },
+            [ordered]@{ name = 'URLs'; items = @(
+                [ordered]@{ label = 'Local MCP (3000)'; type = 'url'; target = 'http://127.0.0.1:3000/mcp' },
+                [ordered]@{ label = 'GitHub Repo'; type = 'url'; target = 'https://github.com/KpeJet2/KPEJET2-PowerShellGUI' },
+                [ordered]@{ label = 'Bootstrap Menu Config UI'; type = 'url'; target = 'http://127.0.0.1:{port}/pages/bootstrap-menu-config' }
+            ) },
+            [ordered]@{ name = 'WebPage-SCRIPTs'; items = @(
+                [ordered]@{ label = 'Detect scripts referenced by pages'; type = 'webpageScripts'; sourcePages = @(
+                    'XHTML-WorkspaceHub.xhtml',
+                    'scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml',
+                    'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml'
+                ) }
+            ) }
+        )
+    }
+}
+
+function Get-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param()
+
+    $cfgPath = Get-BootstrapMenuConfigPath
+    if (-not (Test-Path -LiteralPath $cfgPath)) {
+        return (Get-DefaultBootstrapMenuConfig)
+    }
+
+    try {
+        $raw = Get-Content -LiteralPath $cfgPath -Raw -Encoding UTF8
+        if ([string]::IsNullOrWhiteSpace($raw)) {
+            return (Get-DefaultBootstrapMenuConfig)
+        }
+        $obj = $raw | ConvertFrom-Json
+        if ($null -eq $obj -or -not ($obj.PSObject.Properties.Name -contains 'headings')) {
+            return (Get-DefaultBootstrapMenuConfig)
+        }
+        return $obj
+    } catch {
+        Write-ServiceLog -Level 'WARN' -Message "Bootstrap menu config parse failed: $($_.Exception.Message)"
+        return (Get-DefaultBootstrapMenuConfig)
+    }
+}
+
+function Invoke-ConfiguredScript {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$ScriptRelative,
+        [AllowNull()] [object]$ScriptArgs
+    )
+
+    $resolved = Resolve-WorkspaceChildPath -PathValue (Resolve-BootstrapTokens -Text $ScriptRelative)
+    if ($null -eq $resolved -or -not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+        Write-ServiceLog -Level 'WARN' -Message "Script target not found or denied: $ScriptRelative"
+        return
+    }
+
+    $argList = ConvertTo-StringArray -Value $ScriptArgs
+    $ext = [System.IO.Path]::GetExtension($resolved).ToLowerInvariant()
+    if ($ext -eq '.ps1') {
+        $hostExe = Resolve-PowerShellHost
+        if ($null -eq $hostExe) {
+            Write-ServiceLog -Level 'WARN' -Message 'No PowerShell host found to launch script target.'
+            return
+        }
+        $psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$resolved) + $argList
+        Start-Process -FilePath $hostExe -ArgumentList $psArgs | Out-Null
+        return
+    }
+
+    if ($ext -in @('.bat', '.cmd')) {
+        $cmdArgs = @('/c', '"' + $resolved + '"') + $argList
+        Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs | Out-Null
+        return
+    }
+
+    Write-ServiceLog -Level 'WARN' -Message "Unsupported script extension for bootstrap action: $resolved"
+}
+
+function Get-WebpageScriptMap {
+    [CmdletBinding()]
+    param([AllowNull()] [object]$SourcePages)
+
+    $pages = ConvertTo-StringArray -Value $SourcePages
+    $map = [ordered]@{}
+
+    foreach ($pageRel in $pages) {
+        $pageResolved = Resolve-WorkspaceChildPath -PathValue (Resolve-BootstrapTokens -Text $pageRel)
+        if ($null -eq $pageResolved -or -not (Test-Path -LiteralPath $pageResolved -PathType Leaf)) { continue }
+
+        $raw = ''
+        try {
+            $raw = Get-Content -LiteralPath $pageResolved -Raw -Encoding UTF8
+        } catch {
+            continue
+        }
+
+        $scriptHits = [System.Collections.ArrayList]@()
+        $scriptMatches = [regex]::Matches($raw, '(?i)(?:^|["''(=\s])(/?scripts/[A-Za-z0-9_\-./]+\.(?:ps1|bat|cmd|psm1))')
+        foreach ($m in $scriptMatches) {
+            if ($m.Groups.Count -lt 2) { continue }
+            $val = [string]$m.Groups[1].Value
+            if ([string]::IsNullOrWhiteSpace($val)) { continue }
+            $normRel = $val.TrimStart('/') -replace '/', '\\'
+            $resolvedScript = Resolve-WorkspaceChildPath -PathValue $normRel
+            if ($null -eq $resolvedScript -or -not (Test-Path -LiteralPath $resolvedScript -PathType Leaf)) { continue }
+            [void]$scriptHits.Add($normRel)
+        }
+
+        $uniqueScripts = @($scriptHits | Sort-Object -Unique)
+        if (@($uniqueScripts).Count -gt 0) {
+            $pageKey = $pageRel -replace '\\', '/'
+            $map[$pageKey] = $uniqueScripts
+        }
+    }
+
+    return $map
+}
+
+function Test-EngineProcessIdentity {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [int]$ProcessId)
+
+    if ($ProcessId -le 0) {
+        return $false
+    }
+
+    $procMeta = $null
+    try {
+        $procMeta = Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $ProcessId" -ErrorAction Stop
+    } catch {
+        Write-ServiceLog -Level 'WARN' -Message "Unable to query process metadata for PID ${ProcessId}: $($_.Exception.Message)"
+        return $false
+    }
+
+    if ($null -eq $procMeta) {
+        Write-ServiceLog -Level 'WARN' -Message "No process metadata returned for PID $ProcessId"
+        return $false
+    }
+
+    $cmdLine = if ($procMeta.PSObject.Properties.Name -contains 'CommandLine') { [string]$procMeta.CommandLine } else { '' }
+    $exePath = if ($procMeta.PSObject.Properties.Name -contains 'ExecutablePath') { [string]$procMeta.ExecutablePath } else { '' }
+
+    if ([string]::IsNullOrWhiteSpace($cmdLine)) {
+        Write-ServiceLog -Level 'WARN' -Message "Cannot validate PID $ProcessId identity: command line unavailable"
+        return $false
+    }
+
+    $cmdLower = $cmdLine.ToLowerInvariant()
+    $exeLower = if ([string]::IsNullOrWhiteSpace($exePath)) { '' } else { $exePath.ToLowerInvariant() }
+
+    $isPwshHost = ($cmdLower -match 'pwsh(\\.exe)?' -or $cmdLower -match 'powershell(\\.exe)?' -or $exeLower -match '\\pwsh\\.exe$' -or $exeLower -match '\\powershell\\.exe$')
+    if (-not $isPwshHost) {
+        Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId is not a PowerShell host"
+        return $false
+    }
+
+    $engineScriptPath = [System.IO.Path]::GetFullPath((Join-Path (Join-Path $WorkspacePath 'scripts') 'Start-LocalWebEngine.ps1')).ToLowerInvariant()
+    if ($cmdLower -notmatch [regex]::Escape($engineScriptPath) -and $cmdLower -notmatch [regex]::Escape('start-localwebengine.ps1')) {
+        Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId command line does not match LocalWebEngine script"
+        return $false
+    }
+
+    $workspaceMarker = [System.IO.Path]::GetFullPath($WorkspacePath).ToLowerInvariant()
+    if ($cmdLower -notmatch [regex]::Escape($workspaceMarker)) {
+        Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId command line does not include workspace marker"
+        return $false
+    }
+
+    return $true
+}
+
+function Invoke-BootstrapMenuAction {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [object]$Entry)
+
+    $type = if ($Entry.PSObject.Properties.Name -contains 'type') { [string]$Entry.type } else { 'url' }
+    $target = if ($Entry.PSObject.Properties.Name -contains 'target') { [string]$Entry.target } else { '' }
+    $entryArgs = if ($Entry.PSObject.Properties.Name -contains 'args') { $Entry.args } else { @() }
+
+    switch ($type.ToLowerInvariant()) {
+        'url' {
+            if ([string]::IsNullOrWhiteSpace($target)) { return }
+            $url = Resolve-BootstrapTokens -Text $target
+            Start-Process $url | Out-Null
+            break
+        }
+        'file' {
+            $path = Resolve-WorkspaceChildPath -PathValue (Resolve-BootstrapTokens -Text $target)
+            if ($null -eq $path -or -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+                Write-ServiceLog -Level 'WARN' -Message "File target not found or denied: $target"
+                break
+            }
+            Start-Process $path | Out-Null
+            break
+        }
+        'folder' {
+            $path = Resolve-WorkspaceChildPath -PathValue (Resolve-BootstrapTokens -Text $target)
+            if ($null -eq $path -or -not (Test-Path -LiteralPath $path -PathType Container)) {
+                Write-ServiceLog -Level 'WARN' -Message "Folder target not found or denied: $target"
+                break
+            }
+            Start-Process $path | Out-Null
+            break
+        }
+        'script' {
+            Invoke-ConfiguredScript -ScriptRelative $target -ScriptArgs $entryArgs
+            break
+        }
+        'engineaction' {
+            if ($target -in @('Start', 'Stop', 'Restart', 'Status', 'LaunchWebpage')) {
+                Invoke-EngineAction -EngineAction $target | Out-Null
+            } else {
+                Write-ServiceLog -Level 'WARN' -Message "Invalid engineAction target: $target"
+            }
+            break
+        }
+        'enginekill' {
+            $pidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+            if (-not (Test-Path -LiteralPath $pidFile)) {
+                Write-ServiceLog -Level 'WARN' -Message 'Engine PID file not found for kill action.'
+                break
+            }
+            try {
+                $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+                if ($pidText -match '^\d+$') {
+                    $initialPid = [int]$pidText
+
+                    $gracefulResult = $null
+                    try {
+                        $gracefulResult = Invoke-EngineAction -EngineAction 'Stop'
+                    } catch {
+                        Write-ServiceLog -Level 'WARN' -Message "Graceful stop attempt failed for PID ${initialPid}: $($_.Exception.Message)"
+                    }
+
+                    $gracefulRequested = ($null -ne $gracefulResult -and $gracefulResult.PSObject.Properties.Name -contains 'Success' -and [bool]$gracefulResult.Success)
+                    if ($gracefulRequested) {
+                        try {
+                            Wait-Process -Id $initialPid -Timeout 2 -ErrorAction SilentlyContinue
+                        } catch {
+                            <# Intentional: non-fatal wait timeout or process race #>
+                        }
+
+                        $aliveAfterGraceful = $false
+                        try {
+                            $aliveProc = Get-Process -Id $initialPid -ErrorAction Stop
+                            $aliveAfterGraceful = ($null -ne $aliveProc)
+                        } catch {
+                            $aliveAfterGraceful = $false
+                        }
+
+                        if (-not $aliveAfterGraceful) {
+                            Write-ServiceLog -Level 'ACTION' -Message "Engine stopped gracefully (PID $initialPid)"
+                            break
+                        }
+                    }
+
+                    $enginePid = $initialPid
+                    if (Test-Path -LiteralPath $pidFile) {
+                        $refreshedPidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+                        if ($refreshedPidText -match '^\d+$') {
+                            $enginePid = [int]$refreshedPidText
+                        }
+                    }
+
+                    $runningProc = $null
+                    try {
+                        $runningProc = Get-Process -Id $enginePid -ErrorAction Stop
+                    } catch {
+                        $runningProc = $null
+                    }
+                    if ($null -eq $runningProc) {
+                        Write-ServiceLog -Level 'INFO' -Message "Engine PID $enginePid is no longer running; no force-kill required."
+                        break
+                    }
+
+                    if (-not (Test-EngineProcessIdentity -ProcessId $enginePid)) {
+                        Write-ServiceLog -Level 'WARN' -Message "Engine kill skipped: identity validation failed for PID $enginePid"
+                        break
+                    }
+                    Stop-Process -Id $enginePid -Force -ErrorAction Stop
+                    Write-ServiceLog -Level 'ACTION' -Message "Force-killed engine PID $enginePid after graceful stop attempt"
+                } else {
+                    Write-ServiceLog -Level 'WARN' -Message "Engine PID file content is invalid for kill action: $pidText"
+                }
+            } catch {
+                Write-ServiceLog -Level 'WARN' -Message "Engine kill failed: $($_.Exception.Message)"
+            }
+            break
+        }
+        'command' {
+            if ([string]::IsNullOrWhiteSpace($target)) {
+                Write-ServiceLog -Level 'WARN' -Message 'Command target not allowed by policy: (empty target)'
+                break
+            }
+            $allowed = @('services.msc', 'eventvwr.msc', 'taskmgr.exe', 'compmgmt.msc', 'perfmon.exe')
+            $targetLower = $target.ToLowerInvariant()
+            if ($allowed -notcontains $targetLower) {
+                Write-ServiceLog -Level 'WARN' -Message "Command target not allowed by policy: $target"
+                break
+            }
+            $cmdArgs = ConvertTo-StringArray -Value $entryArgs
+            Start-Process -FilePath $target -ArgumentList $cmdArgs | Out-Null
+            break
+        }
+        default {
+            Write-ServiceLog -Level 'WARN' -Message "Unsupported bootstrap menu entry type: $type"
+        }
+    }
+}
+
+function Add-BootstrapQuickAccessMenu {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [System.Windows.Forms.ToolStripMenuItem]$RootMenu,
+        [Parameter(Mandatory)] [object]$BootstrapConfig
+    )
+
+    foreach ($heading in @($BootstrapConfig.headings)) {
+        $headingName = if ($heading.PSObject.Properties.Name -contains 'name') { [string]$heading.name } else { 'Untitled' }
+        $headingMenu = New-Object System.Windows.Forms.ToolStripMenuItem($headingName)
+        $items = if ($heading.PSObject.Properties.Name -contains 'items') { @($heading.items) } else { @() }
+
+        if (@($items).Count -eq 0) {
+            $empty = New-Object System.Windows.Forms.ToolStripMenuItem('(no entries)')
+            $empty.Enabled = $false
+            [void]$headingMenu.DropDownItems.Add($empty)
+        } else {
+            foreach ($entry in $items) {
+                $entryType = if ($entry.PSObject.Properties.Name -contains 'type') { [string]$entry.type } else { 'url' }
+                if ($entryType -eq 'separator') {
+                    [void]$headingMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+                    continue
+                }
+
+                if ($entryType -eq 'webpageScripts') {
+                    $map = Get-WebpageScriptMap -SourcePages $entry.sourcePages
+                    if (@($map.Keys).Count -eq 0) {
+                        $noneItem = New-Object System.Windows.Forms.ToolStripMenuItem('(no scripts discovered)')
+                        $noneItem.Enabled = $false
+                        [void]$headingMenu.DropDownItems.Add($noneItem)
+                        continue
+                    }
+
+                    foreach ($pageKey in @($map.Keys | Sort-Object)) {
+                        $pageMenu = New-Object System.Windows.Forms.ToolStripMenuItem($pageKey)
+
+                        $scriptsByFolder = [ordered]@{}
+                        foreach ($scriptRel in @($map[$pageKey] | Sort-Object)) {
+                            $folderKey = Split-Path $scriptRel -Parent
+                            if ([string]::IsNullOrWhiteSpace($folderKey)) { $folderKey = '(root)' }
+                            if (-not $scriptsByFolder.Contains($folderKey)) {
+                                $scriptsByFolder[$folderKey] = New-Object System.Collections.ArrayList
+                            }
+                            [void]$scriptsByFolder[$folderKey].Add($scriptRel)
+                        }
+
+                        foreach ($folderKey in @($scriptsByFolder.Keys | Sort-Object)) {
+                            $folderMenu = New-Object System.Windows.Forms.ToolStripMenuItem($folderKey)
+                            foreach ($scriptRel in @($scriptsByFolder[$folderKey] | Sort-Object)) {
+                                $scriptLeaf = Split-Path $scriptRel -Leaf
+                                $scriptItem = New-Object System.Windows.Forms.ToolStripMenuItem($scriptLeaf)
+                                $scriptItem.Tag = [ordered]@{ type = 'script'; target = $scriptRel; args = @() }
+                                $scriptItem.ToolTipText = $scriptRel
+                                $scriptItem.Add_Click({
+                                    param($menuItemArg)
+                                    try {
+                                        Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
+                                    } catch {
+                                        Write-ServiceLog -Level 'WARN' -Message "Bootstrap script launch failed: $($_.Exception.Message)"
+                                    }
+                                })
+                                [void]$folderMenu.DropDownItems.Add($scriptItem)
+                            }
+                            [void]$pageMenu.DropDownItems.Add($folderMenu)
+                        }
+
+                        [void]$headingMenu.DropDownItems.Add($pageMenu)
+                    }
+                    continue
+                }
+
+                $label = if ($entry.PSObject.Properties.Name -contains 'label') { [string]$entry.label } else { '(unnamed)' }
+                $item = New-Object System.Windows.Forms.ToolStripMenuItem($label)
+                $item.Tag = $entry
+                if ($entry.PSObject.Properties.Name -contains 'target') {
+                    $item.ToolTipText = [string]$entry.target
+                }
+                $item.Add_Click({
+                    param($menuItemArg)
+                    try {
+                        Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
+                    } catch {
+                        Write-ServiceLog -Level 'WARN' -Message "Bootstrap action failed: $($_.Exception.Message)"
+                    }
+                })
+                [void]$headingMenu.DropDownItems.Add($item)
+            }
+        }
+
+        [void]$RootMenu.DropDownItems.Add($headingMenu)
+    }
+}
+
 function Start-ServiceTray {
     [CmdletBinding()]
     param()
@@ -480,8 +970,8 @@ function Start-ServiceTray {
                 $serviceItem.Tag = $entry.RelativePath
 
                 $staticItem.Add_Click({
-                    param($sender)
-                    $pathValue = [string]$sender.Tag
+                    param($menuItemArg)
+                    $pathValue = [string]$menuItemArg.Tag
                     try {
                         Start-Process $pathValue | Out-Null
                     } catch {
@@ -490,8 +980,8 @@ function Start-ServiceTray {
                 })
 
                 $serviceItem.Add_Click({
-                    param($sender)
-                    $relativeValue = [string]$sender.Tag
+                    param($menuItemArg)
+                    $relativeValue = [string]$menuItemArg.Tag
                     $url = "http://127.0.0.1:$Port/$relativeValue"
                     try {
                         Start-Process $url | Out-Null
@@ -512,6 +1002,20 @@ function Start-ServiceTray {
     [void]$context.Items.Add($staticRoot)
     [void]$context.Items.Add($serviceRoot)
 
+    $bootstrapRoot = New-Object System.Windows.Forms.ToolStripMenuItem('Bootstrap Quick Access')
+    $reloadBootstrapMenu = {
+        try {
+            $bootstrapRoot.DropDownItems.Clear()
+            $bootstrapConfig = Get-BootstrapMenuConfig
+            Add-BootstrapQuickAccessMenu -RootMenu $bootstrapRoot -BootstrapConfig $bootstrapConfig
+            Write-ServiceLog -Level 'INFO' -Message 'Bootstrap quick access menu reloaded from config.'
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message "Bootstrap menu reload failed: $($_.Exception.Message)"
+        }
+    }
+    & $reloadBootstrapMenu
+    [void]$context.Items.Add($bootstrapRoot)
+
     $launchA = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Auto Five (A)')
     $launchA.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets })
     [void]$context.Items.Add($launchA)
@@ -519,6 +1023,25 @@ function Start-ServiceTray {
     $launchB = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Bigger 10 (B)')
     $launchB.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'B' -SetTable $launcherSets })
     [void]$context.Items.Add($launchB)
+
+    [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+
+    $bootstrapConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem('Configure Bootstrap Menu...')
+    $bootstrapConfigItem.Add_Click({
+        $url = "http://127.0.0.1:$Port/pages/bootstrap-menu-config"
+        try {
+            Start-Process $url | Out-Null
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Failed to launch bootstrap config page {0}: {1}" -f $url, $_.Exception.Message)
+        }
+    })
+    [void]$context.Items.Add($bootstrapConfigItem)
+
+    $reloadBootstrapItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload Bootstrap Menu')
+    $reloadBootstrapItem.Add_Click({
+        & $reloadBootstrapMenu
+    })
+    [void]$context.Items.Add($reloadBootstrapItem)
 
     [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
 

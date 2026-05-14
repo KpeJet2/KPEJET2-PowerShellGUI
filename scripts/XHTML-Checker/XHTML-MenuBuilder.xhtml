@@ -448,7 +448,7 @@
     fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){
       return r.json();
     }).then(function(d){
-      csrfToken = d.token || '';
+      csrfToken = d.csrfToken || d.token || '';
       cb(csrfToken);
     }).catch(function(){
       cb('');
@@ -489,7 +489,7 @@
       }
       var payload = JSON.stringify({ items: items });
       fetch(ENGINE_BASE + '/api/config/menus', {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': tok
