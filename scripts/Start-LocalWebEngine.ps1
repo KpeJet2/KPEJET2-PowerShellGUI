@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+﻿# VersionTag: 2605.B2.V31.7
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -945,6 +945,310 @@ function Get-BootstrapMenuConfig {
     Send-Json -Context $Context -Object $obj
 }
 
+function Test-BootstrapMenuConfigObject {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Config,
+        [ref]$ValidationError
+    )
+
+    $ValidationError.Value = ''
+
+    if ($null -eq $Config) {
+        $ValidationError.Value = 'payload is null'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'headings')) {
+        $ValidationError.Value = 'headings[] is required'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'schema') -or [string]::IsNullOrWhiteSpace([string]$Config.schema)) {
+        $Config | Add-Member -NotePropertyName schema -NotePropertyValue 'BootstrapMenuConfig/1.0' -Force
+    }
+
+    $headings = @($Config.headings)
+    $allowedTypes = @('url','file','folder','script','engineaction','enginekill','command','webpagescripts','separator')
+
+    for ($h = 0; $h -lt @($headings).Count; $h++) {
+        $heading = $headings[$h]
+        $headingName = if ($null -ne $heading -and $heading.PSObject.Properties.Name -contains 'name') { [string]$heading.name } else { '' }
+        if ([string]::IsNullOrWhiteSpace($headingName)) {
+            $ValidationError.Value = "headings[$h].name is required"
+            return $false
+        }
+
+        if ($null -eq $heading -or -not ($heading.PSObject.Properties.Name -contains 'items')) {
+            $ValidationError.Value = "headings[$h].items is required"
+            return $false
+        }
+
+        $items = @($heading.items)
+        for ($i = 0; $i -lt @($items).Count; $i++) {
+            $item = $items[$i]
+            if ($null -eq $item) {
+                $ValidationError.Value = "headings[$h].items[$i] is null"
+                return $false
+            }
+
+            $itemType = if ($item.PSObject.Properties.Name -contains 'type') { [string]$item.type } else { '' }
+            if ([string]::IsNullOrWhiteSpace($itemType)) {
+                $ValidationError.Value = "headings[$h].items[$i].type is required"
+                return $false
+            }
+
+            $itemTypeLower = $itemType.ToLowerInvariant()
+            if ($allowedTypes -notcontains $itemTypeLower) {
+                $ValidationError.Value = "headings[$h].items[$i].type '$itemType' is not supported"
+                return $false
+            }
+
+            if ($itemTypeLower -eq 'separator') {
+                continue
+            }
+
+            if ($itemTypeLower -eq 'webpagescripts') {
+                if (-not ($item.PSObject.Properties.Name -contains 'sourcePages') -or @($item.sourcePages).Count -eq 0) {
+                    $ValidationError.Value = "headings[$h].items[$i].sourcePages[] is required for webpageScripts"
+                    return $false
+                }
+                continue
+            }
+
+            $target = if ($item.PSObject.Properties.Name -contains 'target') { [string]$item.target } else { '' }
+            if ([string]::IsNullOrWhiteSpace($target)) {
+                $ValidationError.Value = "headings[$h].items[$i].target is required"
+                return $false
+            }
+        }
+    }
+
+    return $true
+}
+
+function New-BootstrapMenuSnapshot {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$ConfigFile)
+
+    if (-not (Test-Path -LiteralPath $ConfigFile)) {
+        return $null
+    }
+
+    try {
+        $configRoot = Join-Path $WorkspacePath 'config'
+        $historyDir = Join-Path $configRoot 'bootstrap-menu.history'
+        if (-not (Test-Path -LiteralPath $historyDir)) {
+            New-Item -Path $historyDir -ItemType Directory -Force | Out-Null
+        }
+
+        $stamp = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
+        $snapshotName = "bootstrap-menu.config.$stamp.json"
+        $snapshotPath = Join-Path $historyDir $snapshotName
+
+        Copy-Item -LiteralPath $ConfigFile -Destination $snapshotPath -Force -ErrorAction Stop
+        return ($snapshotPath.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+    } catch {
+        Write-BootstrapLog "Bootstrap snapshot creation failed: $_" 'WARN'
+        return $null
+    }
+}
+
+function Get-BootstrapMenuSnapshots {
+    [CmdletBinding()]
+    param()
+
+    $historyDir = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.history'
+    if (-not (Test-Path -LiteralPath $historyDir)) {
+        return @()
+    }
+
+    return @(
+        Get-ChildItem -LiteralPath $historyDir -File -Filter 'bootstrap-menu.config.*.json' -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTimeUtc -Descending
+    )
+}
+
+function Invoke-BootstrapMenuSnapshotRetention {
+    [CmdletBinding()]
+    param([int]$Keep = 50)
+
+    if ($Keep -lt 1) {
+        $Keep = 1
+    }
+
+    $snapshots = @(Get-BootstrapMenuSnapshots)
+    if (@($snapshots).Count -le $Keep) {
+        return 0
+    }
+
+    $removedCount = 0
+    $toRemove = @($snapshots | Select-Object -Skip $Keep)
+    foreach ($snapshot in $toRemove) {
+        try {
+            Remove-Item -LiteralPath $snapshot.FullName -Force -ErrorAction Stop
+            $removedCount++
+        } catch {
+            Write-BootstrapLog "Bootstrap snapshot retention removal failed for $($snapshot.FullName): $_" 'WARN'
+        }
+    }
+
+    return $removedCount
+}
+
+function Resolve-BootstrapRollbackSnapshot {
+    [CmdletBinding()]
+    param(
+        [AllowEmptyString()] [string]$RequestedSnapshot,
+        [AllowEmptyString()] [string]$ExcludeSnapshotLeaf
+    )
+
+    $snapshots = @(Get-BootstrapMenuSnapshots)
+    if (@($snapshots).Count -eq 0) {
+        return $null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($RequestedSnapshot)) {
+        foreach ($snap in $snapshots) {
+            if ([string]::IsNullOrWhiteSpace($ExcludeSnapshotLeaf) -or $snap.Name -ne $ExcludeSnapshotLeaf) {
+                return $snap
+            }
+        }
+        return $null
+    }
+
+    $requestedLeaf = Split-Path -Path ($RequestedSnapshot -replace '/', '\\') -Leaf
+    if ([string]::IsNullOrWhiteSpace($requestedLeaf)) {
+        return $null
+    }
+
+    if ($requestedLeaf -notmatch '^bootstrap-menu\.config\.\d{8}-\d{6}-\d{3}\.json$') {
+        return $null
+    }
+
+    foreach ($snap in $snapshots) {
+        if ($snap.Name -eq $requestedLeaf) {
+            if (-not [string]::IsNullOrWhiteSpace($ExcludeSnapshotLeaf) -and $snap.Name -eq $ExcludeSnapshotLeaf) {
+                return $null
+            }
+            return $snap
+        }
+    }
+
+    return $null
+}
+
+function Get-BootstrapMenuSnapshotHistory {
+    [CmdletBinding()]
+    param($Context)
+
+    try {
+        $items = @()
+        $snapshots = @(Get-BootstrapMenuSnapshots)
+        foreach ($snapshot in $snapshots) {
+            $items += [ordered]@{
+                name = [string]$snapshot.Name
+                path = ($snapshot.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+                modifiedUtc = $snapshot.LastWriteTimeUtc.ToString('o')
+                size = [int64]$snapshot.Length
+            }
+        }
+
+        Send-Json -Context $Context -Object @{
+            snapshots = $items
+            count = @($items).Count
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "History query failed: $_"
+    }
+}
+
+function Rollback-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $requestedSnapshot = ''
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($bodyStr)) {
+            $rollbackReq = $null
+            try {
+                $rollbackReq = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+            } catch {
+                Send-Error -Context $Context -StatusCode 400 -Message 'Invalid rollback payload: malformed JSON'
+                return
+            }
+
+            if ($null -ne $rollbackReq -and $rollbackReq.PSObject.Properties.Name -contains 'snapshot') {
+                $requestedSnapshot = [string]$rollbackReq.snapshot
+            }
+        }
+
+        $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+        if (-not (Test-Path -LiteralPath $cfgFile)) {
+            Send-Error -Context $Context -StatusCode 404 -Message 'Bootstrap config file not found'
+            return
+        }
+
+        $backupBeforeRollback = New-BootstrapMenuSnapshot -ConfigFile $cfgFile
+        $backupLeaf = ''
+        if (-not [string]::IsNullOrWhiteSpace($backupBeforeRollback)) {
+            $backupLeaf = Split-Path -Path $backupBeforeRollback -Leaf
+        }
+
+        $sourceSnapshot = Resolve-BootstrapRollbackSnapshot -RequestedSnapshot $requestedSnapshot -ExcludeSnapshotLeaf $backupLeaf
+
+        if ($null -eq $sourceSnapshot -and [string]::IsNullOrWhiteSpace($requestedSnapshot)) {
+            Send-Error -Context $Context -StatusCode 404 -Message 'No bootstrap snapshots available for rollback'
+            return
+        }
+
+        if ($null -eq $sourceSnapshot) {
+            Send-Error -Context $Context -StatusCode 404 -Message "Requested snapshot not found or not eligible: $requestedSnapshot"
+            return
+        }
+
+        Copy-Item -LiteralPath $sourceSnapshot.FullName -Destination $cfgFile -Force -ErrorAction Stop
+
+        $restoredHeadingsCount = 0
+        try {
+            $restoredObj = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+            if ($null -ne $restoredObj -and $restoredObj.PSObject.Properties.Name -contains 'headings') {
+                $restoredHeadingsCount = @($restoredObj.headings).Count
+            }
+        } catch {
+            $restoredHeadingsCount = 0
+        }
+
+        $retainedRemoved = Invoke-BootstrapMenuSnapshotRetention -Keep 50
+        $restoredFromRel = ($sourceSnapshot.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+
+        Send-Json -Context $Context -Object @{
+            rolledBack = $true
+            file = 'config/bootstrap-menu.config.json'
+            restoredFrom = $restoredFromRel
+            requestedSnapshot = $requestedSnapshot
+            backupCreated = $backupBeforeRollback
+            headings = $restoredHeadingsCount
+            removedSnapshots = $retainedRemoved
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Rollback failed: $_"
+    }
+}
+
 # ─── Route: POST /api/config/bootstrap-menu ──────────────────────────────────
 <#
 .SYNOPSIS
@@ -973,14 +1277,37 @@ function Save-BootstrapMenuConfig {
         }
 
         $parsed = $bodyStr | ConvertFrom-Json
-        if ($null -eq $parsed -or -not ($parsed.PSObject.Properties.Name -contains 'headings')) {
-            Send-Error -Context $Context -StatusCode 400 -Message 'Invalid payload: headings[] is required'
+        if ($null -eq $parsed) {
+            Send-Error -Context $Context -StatusCode 400 -Message 'Invalid payload: body is empty or malformed JSON'
+            return
+        }
+
+        if ($parsed.PSObject.Properties.Name -contains 'schema' -and -not [string]::IsNullOrWhiteSpace([string]$parsed.schema)) {
+            if ([string]$parsed.schema -ne 'BootstrapMenuConfig/1.0') {
+                Send-Error -Context $Context -StatusCode 400 -Message "Unsupported schema: $($parsed.schema)"
+                return
+            }
+        } else {
+            $parsed | Add-Member -NotePropertyName schema -NotePropertyValue 'BootstrapMenuConfig/1.0' -Force
+        }
+
+        $validationError = ''
+        if (-not (Test-BootstrapMenuConfigObject -Config $parsed -ValidationError ([ref]$validationError))) {
+            Send-Error -Context $Context -StatusCode 400 -Message "Invalid payload: $validationError"
             return
         }
 
         $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+        $snapshotRel = New-BootstrapMenuSnapshot -ConfigFile $cfgFile
         Set-Content -LiteralPath $cfgFile -Value ($parsed | ConvertTo-Json -Depth 12) -Encoding UTF8 -Force
-        Send-Json -Context $Context -Object @{ saved = $true; file = 'config/bootstrap-menu.config.json' }
+        $retainedRemoved = Invoke-BootstrapMenuSnapshotRetention -Keep 50
+        Send-Json -Context $Context -Object @{
+            saved = $true
+            file = 'config/bootstrap-menu.config.json'
+            schema = [string]$parsed.schema
+            snapshot = $snapshotRel
+            removedSnapshots = $retainedRemoved
+        }
     } catch {
         Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
     }
@@ -1316,6 +1643,16 @@ try {
                 else                        { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/config/bootstrap-menu/history$' {
+                if ($method -eq 'GET') { Get-BootstrapMenuSnapshotHistory -Context $context }
+                else                   { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/bootstrap-menu/rollback$' {
+                if ($method -eq 'POST') { Rollback-BootstrapMenuConfig -Context $context }
+                else                    { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/csrf-token$' {
                 Send-Json -Context $context -Object @{ csrfToken = $SessionToken }
                 break
@@ -1414,15 +1751,18 @@ try {
     Write-EngineLog $exitMsg -Level 'INFO'
     # Write structured crash event on dirty exit
     if (-not $script:_ExitClean) {
+        $lastLogLine = 'unavailable'
+        try {
+            $lastLogLine = @(Get-Content -LiteralPath $script:EngineLogFile -Encoding UTF8 -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
+        } catch { <# Intentional: non-fatal, fallback already set to unavailable #> }
+
         $crashEvent = [pscustomobject]@{
             exitKind     = $exitKind
             timestamp    = (Get-Date -Format 'o')
             pid          = $PID
             port         = $Port
             workspacePath= $WorkspacePath
-            lastLogLine  = try {
-                @(Get-Content -LiteralPath $script:EngineLogFile -Encoding UTF8 -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
-            } catch { 'unavailable' }
+            lastLogLine  = $lastLogLine
         }
         try {
             $crashJson = $crashEvent | ConvertTo-Json -Depth 4
@@ -1447,6 +1787,7 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

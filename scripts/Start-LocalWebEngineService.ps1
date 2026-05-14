@@ -638,7 +638,10 @@ function Get-WebpageScriptMap {
 
 function Test-EngineProcessIdentity {
     [CmdletBinding()]
-    param([Parameter(Mandatory)] [int]$ProcessId)
+    param(
+        [Parameter(Mandatory)] [int]$ProcessId,
+        [datetime]$PidFileWriteTimeUtc = ([datetime]::MinValue)
+    )
 
     if ($ProcessId -le 0) {
         return $false
@@ -665,8 +668,35 @@ function Test-EngineProcessIdentity {
         return $false
     }
 
+    $creationUtc = $null
+    if ($procMeta.PSObject.Properties.Name -contains 'CreationDate' -and -not [string]::IsNullOrWhiteSpace([string]$procMeta.CreationDate)) {
+        $creationRaw = [string]$procMeta.CreationDate
+        try {
+            $creationLocal = [System.Management.ManagementDateTimeConverter]::ToDateTime($creationRaw)
+            $creationUtc = $creationLocal.ToUniversalTime()
+        } catch {
+            try {
+                $creationUtc = ([datetime]::Parse($creationRaw)).ToUniversalTime()
+            } catch {
+                $creationUtc = $null
+            }
+        }
+    }
+    if ($null -eq $creationUtc) {
+        Write-ServiceLog -Level 'WARN' -Message "Cannot validate PID $ProcessId identity: process creation time unavailable"
+        return $false
+    }
+
     $cmdLower = $cmdLine.ToLowerInvariant()
     $exeLower = if ([string]::IsNullOrWhiteSpace($exePath)) { '' } else { $exePath.ToLowerInvariant() }
+
+    if ($PidFileWriteTimeUtc -ne [datetime]::MinValue) {
+        $pidFileTsUtc = $PidFileWriteTimeUtc.ToUniversalTime()
+        if ($creationUtc -gt $pidFileTsUtc.AddMinutes(5)) {
+            Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId start time does not match PID file timestamp"
+            return $false
+        }
+    }
 
     $isPwshHost = ($cmdLower -match 'pwsh(\\.exe)?' -or $cmdLower -match 'powershell(\\.exe)?' -or $exeLower -match '\\pwsh\\.exe$' -or $exeLower -match '\\powershell\\.exe$')
     if (-not $isPwshHost) {
@@ -683,6 +713,12 @@ function Test-EngineProcessIdentity {
     $workspaceMarker = [System.IO.Path]::GetFullPath($WorkspacePath).ToLowerInvariant()
     if ($cmdLower -notmatch [regex]::Escape($workspaceMarker)) {
         Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId command line does not include workspace marker"
+        return $false
+    }
+
+    $portPattern = '(?i)(?:^|\s)-port(?:\s+|:)' + [regex]::Escape([string]$Port) + '(?:\s|$)'
+    if ($cmdLine -notmatch $portPattern) {
+        Write-ServiceLog -Level 'WARN' -Message "Engine kill denied: PID $ProcessId command line does not include expected port $Port"
         return $false
     }
 
@@ -741,6 +777,13 @@ function Invoke-BootstrapMenuAction {
                 break
             }
             try {
+                $pidFileWriteUtc = ([datetime]::MinValue)
+                try {
+                    $pidFileWriteUtc = (Get-Item -LiteralPath $pidFile -ErrorAction Stop).LastWriteTimeUtc
+                } catch {
+                    Write-ServiceLog -Level 'WARN' -Message "Unable to read PID file timestamp: $($_.Exception.Message)"
+                }
+
                 $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
                 if ($pidText -match '^\d+$') {
                     $initialPid = [int]$pidText
@@ -779,6 +822,11 @@ function Invoke-BootstrapMenuAction {
                         $refreshedPidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
                         if ($refreshedPidText -match '^\d+$') {
                             $enginePid = [int]$refreshedPidText
+                            try {
+                                $pidFileWriteUtc = (Get-Item -LiteralPath $pidFile -ErrorAction Stop).LastWriteTimeUtc
+                            } catch {
+                                Write-ServiceLog -Level 'WARN' -Message "Unable to refresh PID file timestamp: $($_.Exception.Message)"
+                            }
                         }
                     }
 
@@ -793,7 +841,7 @@ function Invoke-BootstrapMenuAction {
                         break
                     }
 
-                    if (-not (Test-EngineProcessIdentity -ProcessId $enginePid)) {
+                    if (-not (Test-EngineProcessIdentity -ProcessId $enginePid -PidFileWriteTimeUtc $pidFileWriteUtc)) {
                         Write-ServiceLog -Level 'WARN' -Message "Engine kill skipped: identity validation failed for PID $enginePid"
                         break
                     }
@@ -828,42 +876,46 @@ function Invoke-BootstrapMenuAction {
     }
 }
 
-function Add-BootstrapQuickAccessMenu {
+function Get-BootstrapMenuRenderState {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)] [System.Windows.Forms.ToolStripMenuItem]$RootMenu,
         [Parameter(Mandatory)] [object]$BootstrapConfig
     )
 
+    $headingStates = [System.Collections.ArrayList]@()
+
     foreach ($heading in @($BootstrapConfig.headings)) {
         $headingName = if ($heading.PSObject.Properties.Name -contains 'name') { [string]$heading.name } else { 'Untitled' }
-        $headingMenu = New-Object System.Windows.Forms.ToolStripMenuItem($headingName)
+        $renderItems = [System.Collections.ArrayList]@()
         $items = if ($heading.PSObject.Properties.Name -contains 'items') { @($heading.items) } else { @() }
 
         if (@($items).Count -eq 0) {
-            $empty = New-Object System.Windows.Forms.ToolStripMenuItem('(no entries)')
-            $empty.Enabled = $false
-            [void]$headingMenu.DropDownItems.Add($empty)
+            [void]$renderItems.Add([pscustomobject]@{
+                kind = 'empty'
+                label = '(no entries)'
+            })
         } else {
             foreach ($entry in $items) {
                 $entryType = if ($entry.PSObject.Properties.Name -contains 'type') { [string]$entry.type } else { 'url' }
-                if ($entryType -eq 'separator') {
-                    [void]$headingMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+                $entryTypeLower = $entryType.ToLowerInvariant()
+
+                if ($entryTypeLower -eq 'separator') {
+                    [void]$renderItems.Add([pscustomobject]@{ kind = 'separator' })
                     continue
                 }
 
-                if ($entryType -eq 'webpageScripts') {
+                if ($entryTypeLower -eq 'webpagescripts') {
                     $map = Get-WebpageScriptMap -SourcePages $entry.sourcePages
                     if (@($map.Keys).Count -eq 0) {
-                        $noneItem = New-Object System.Windows.Forms.ToolStripMenuItem('(no scripts discovered)')
-                        $noneItem.Enabled = $false
-                        [void]$headingMenu.DropDownItems.Add($noneItem)
+                        [void]$renderItems.Add([pscustomobject]@{
+                            kind = 'empty'
+                            label = '(no scripts discovered)'
+                        })
                         continue
                     }
 
+                    $pageStates = [System.Collections.ArrayList]@()
                     foreach ($pageKey in @($map.Keys | Sort-Object)) {
-                        $pageMenu = New-Object System.Windows.Forms.ToolStripMenuItem($pageKey)
-
                         $scriptsByFolder = [ordered]@{}
                         foreach ($scriptRel in @($map[$pageKey] | Sort-Object)) {
                             $folderKey = Split-Path $scriptRel -Parent
@@ -874,13 +926,95 @@ function Add-BootstrapQuickAccessMenu {
                             [void]$scriptsByFolder[$folderKey].Add($scriptRel)
                         }
 
+                        $folderStates = [System.Collections.ArrayList]@()
                         foreach ($folderKey in @($scriptsByFolder.Keys | Sort-Object)) {
-                            $folderMenu = New-Object System.Windows.Forms.ToolStripMenuItem($folderKey)
+                            $scriptStates = [System.Collections.ArrayList]@()
                             foreach ($scriptRel in @($scriptsByFolder[$folderKey] | Sort-Object)) {
                                 $scriptLeaf = Split-Path $scriptRel -Leaf
-                                $scriptItem = New-Object System.Windows.Forms.ToolStripMenuItem($scriptLeaf)
-                                $scriptItem.Tag = [ordered]@{ type = 'script'; target = $scriptRel; args = @() }
-                                $scriptItem.ToolTipText = $scriptRel
+                                [void]$scriptStates.Add([pscustomobject]@{
+                                    label = $scriptLeaf
+                                    scriptRelative = $scriptRel
+                                })
+                            }
+                            [void]$folderStates.Add([pscustomobject]@{
+                                name = $folderKey
+                                scripts = @($scriptStates)
+                            })
+                        }
+
+                        [void]$pageStates.Add([pscustomobject]@{
+                            name = $pageKey
+                            folders = @($folderStates)
+                        })
+                    }
+
+                    [void]$renderItems.Add([pscustomobject]@{
+                        kind = 'webpagescripts'
+                        pages = @($pageStates)
+                    })
+                    continue
+                }
+
+                $label = if ($entry.PSObject.Properties.Name -contains 'label') { [string]$entry.label } else { '(unnamed)' }
+                $tooltip = ''
+                if ($entry.PSObject.Properties.Name -contains 'target') {
+                    $tooltip = [string]$entry.target
+                }
+
+                [void]$renderItems.Add([pscustomobject]@{
+                    kind = 'entry'
+                    label = $label
+                    entry = $entry
+                    tooltip = $tooltip
+                })
+            }
+        }
+
+        [void]$headingStates.Add([pscustomobject]@{
+            name = $headingName
+            items = @($renderItems)
+        })
+    }
+
+    return [pscustomobject]@{ headings = @($headingStates) }
+}
+
+function Add-BootstrapQuickAccessMenu {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [System.Windows.Forms.ToolStripMenuItem]$RootMenu,
+        [Parameter(Mandatory)] [object]$BootstrapConfig
+    )
+
+    $renderState = Get-BootstrapMenuRenderState -BootstrapConfig $BootstrapConfig
+    foreach ($headingState in @($renderState.headings)) {
+        $headingName = if ($headingState.PSObject.Properties.Name -contains 'name') { [string]$headingState.name } else { 'Untitled' }
+        $headingMenu = New-Object System.Windows.Forms.ToolStripMenuItem($headingName)
+
+        foreach ($node in @($headingState.items)) {
+            $nodeKind = if ($node.PSObject.Properties.Name -contains 'kind') { [string]$node.kind } else { 'entry' }
+
+            switch ($nodeKind.ToLowerInvariant()) {
+                'separator' {
+                    [void]$headingMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+                    continue
+                }
+                'empty' {
+                    $emptyLabel = if ($node.PSObject.Properties.Name -contains 'label') { [string]$node.label } else { '(no entries)' }
+                    $emptyItem = New-Object System.Windows.Forms.ToolStripMenuItem($emptyLabel)
+                    $emptyItem.Enabled = $false
+                    [void]$headingMenu.DropDownItems.Add($emptyItem)
+                    continue
+                }
+                'webpagescripts' {
+                    foreach ($pageNode in @($node.pages)) {
+                        $pageMenu = New-Object System.Windows.Forms.ToolStripMenuItem([string]$pageNode.name)
+                        foreach ($folderNode in @($pageNode.folders)) {
+                            $folderMenu = New-Object System.Windows.Forms.ToolStripMenuItem([string]$folderNode.name)
+                            foreach ($scriptNode in @($folderNode.scripts)) {
+                                $scriptItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$scriptNode.label)
+                                $scriptItem.Tag = [ordered]@{ type = 'script'; target = [string]$scriptNode.scriptRelative; args = @() }
+                                $scriptItem.ToolTipText = [string]$scriptNode.scriptRelative
                                 $scriptItem.Add_Click({
                                     param($menuItemArg)
                                     try {
@@ -893,28 +1027,34 @@ function Add-BootstrapQuickAccessMenu {
                             }
                             [void]$pageMenu.DropDownItems.Add($folderMenu)
                         }
-
                         [void]$headingMenu.DropDownItems.Add($pageMenu)
                     }
                     continue
                 }
-
-                $label = if ($entry.PSObject.Properties.Name -contains 'label') { [string]$entry.label } else { '(unnamed)' }
-                $item = New-Object System.Windows.Forms.ToolStripMenuItem($label)
-                $item.Tag = $entry
-                if ($entry.PSObject.Properties.Name -contains 'target') {
-                    $item.ToolTipText = [string]$entry.target
-                }
-                $item.Add_Click({
-                    param($menuItemArg)
-                    try {
-                        Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
-                    } catch {
-                        Write-ServiceLog -Level 'WARN' -Message "Bootstrap action failed: $($_.Exception.Message)"
+                default {
+                    $entryLabel = if ($node.PSObject.Properties.Name -contains 'label') { [string]$node.label } else { '(unnamed)' }
+                    $item = New-Object System.Windows.Forms.ToolStripMenuItem($entryLabel)
+                    $item.Tag = if ($node.PSObject.Properties.Name -contains 'entry') { $node.entry } else { $null }
+                    if ($node.PSObject.Properties.Name -contains 'tooltip' -and -not [string]::IsNullOrWhiteSpace([string]$node.tooltip)) {
+                        $item.ToolTipText = [string]$node.tooltip
                     }
-                })
-                [void]$headingMenu.DropDownItems.Add($item)
+                    $item.Add_Click({
+                        param($menuItemArg)
+                        try {
+                            Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
+                        } catch {
+                            Write-ServiceLog -Level 'WARN' -Message "Bootstrap action failed: $($_.Exception.Message)"
+                        }
+                    })
+                    [void]$headingMenu.DropDownItems.Add($item)
+                }
             }
+        }
+
+        if (@($headingMenu.DropDownItems).Count -eq 0) {
+            $fallbackItem = New-Object System.Windows.Forms.ToolStripMenuItem('(no entries)')
+            $fallbackItem.Enabled = $false
+            [void]$headingMenu.DropDownItems.Add($fallbackItem)
         }
 
         [void]$RootMenu.DropDownItems.Add($headingMenu)

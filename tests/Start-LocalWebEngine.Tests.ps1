@@ -63,6 +63,12 @@ Describe 'Start-LocalWebEngine — API Route declarations' {
     It 'Has /api/csrf-token route' {
         $script:Content | Should -Match '/api/csrf-token'
     }
+    It 'Has /api/config/bootstrap-menu/rollback route' {
+        $script:Content | Should -Match '/api/config/bootstrap-menu/rollback'
+    }
+    It 'Has /api/config/bootstrap-menu/history route' {
+        $script:Content | Should -Match '/api/config/bootstrap-menu/history'
+    }
 }
 
 Describe 'Start-LocalWebEngine — Handler functions present' {
@@ -77,6 +83,61 @@ Describe 'Start-LocalWebEngine — Handler functions present' {
     }
     It 'Has Get-EngineEvents function' {
         $script:Content | Should -Match 'function Get-EngineEvents'
+    }
+
+    It 'Has bootstrap config validator function' {
+        $script:Content | Should -Match 'function Test-BootstrapMenuConfigObject'
+    }
+
+    It 'Has bootstrap snapshot helper function' {
+        $script:Content | Should -Match 'function New-BootstrapMenuSnapshot'
+    }
+
+    It 'Has bootstrap rollback handler function' {
+        $script:Content | Should -Match 'function Rollback-BootstrapMenuConfig'
+    }
+
+    It 'Has bootstrap snapshot retention helper function' {
+        $script:Content | Should -Match 'function Invoke-BootstrapMenuSnapshotRetention'
+    }
+
+    It 'Has bootstrap rollback snapshot resolver function' {
+        $script:Content | Should -Match 'function Resolve-BootstrapRollbackSnapshot'
+    }
+
+    It 'Has bootstrap history handler function' {
+        $script:Content | Should -Match 'function Get-BootstrapMenuSnapshotHistory'
+    }
+}
+
+Describe 'Start-LocalWebEngine — Bootstrap menu governance checks' {
+    It 'Save-BootstrapMenuConfig validates payload via Test-BootstrapMenuConfigObject' {
+        $script:Content | Should -Match 'Test-BootstrapMenuConfigObject\s+-Config\s+\$parsed'
+    }
+
+    It 'Save-BootstrapMenuConfig creates snapshot before write' {
+        $script:Content | Should -Match 'New-BootstrapMenuSnapshot\s+-ConfigFile\s+\$cfgFile'
+    }
+
+    It 'Save-BootstrapMenuConfig enforces schema version' {
+        $script:Content | Should -Match 'Unsupported schema: \$\(\$parsed\.schema\)'
+    }
+
+    It 'Save-BootstrapMenuConfig applies snapshot retention policy' {
+        $script:Content | Should -Match 'Invoke-BootstrapMenuSnapshotRetention\s+-Keep\s+50'
+    }
+
+    It 'Rollback-BootstrapMenuConfig is wired in route switch' {
+        $script:Content | Should -Match 'Rollback-BootstrapMenuConfig\s+-Context\s+\$context'
+    }
+
+    It 'Rollback-BootstrapMenuConfig supports targeted snapshot requests' {
+        $script:Content | Should -Match 'Resolve-BootstrapRollbackSnapshot\s+-RequestedSnapshot\s+\$requestedSnapshot'
+    }
+
+    It 'Get-BootstrapMenuSnapshotHistory returns snapshot count payload' {
+        $script:Content | Should -Match 'snapshots\s*=\s*\$items'
+        $script:Content | Should -Match 'count\s*=\s*@\(\$items\)\.Count'
     }
 }
 

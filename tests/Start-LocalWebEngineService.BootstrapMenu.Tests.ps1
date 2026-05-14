@@ -64,6 +64,9 @@ BeforeAll {
         'Get-BootstrapMenuConfigPath',
         'Get-DefaultBootstrapMenuConfig',
         'Get-BootstrapMenuConfig',
+        'Get-WebpageScriptMap',
+        'Get-BootstrapMenuRenderState',
+        'Add-BootstrapQuickAccessMenu',
         'Test-EngineProcessIdentity',
         'Invoke-BootstrapMenuAction'
     )
@@ -122,6 +125,151 @@ Describe 'Start-LocalWebEngineService bootstrap config loading' {
         $result = Get-BootstrapMenuConfig
         @($result.headings).Count | Should -Be 1
         @($result.headings)[0].name | Should -Be 'UnitHeading'
+    }
+}
+
+Describe 'Start-LocalWebEngineService bootstrap runtime state' {
+    BeforeEach {
+        $script:WorkspacePath = $TestDrive
+        $script:Port = 8042
+    }
+
+    It 'returns an empty placeholder node when heading has no entries' {
+        $cfg = [pscustomobject]@{
+            headings = @(
+                [pscustomobject]@{
+                    name = 'EmptyHeading'
+                    items = @()
+                }
+            )
+        }
+
+        $state = Get-BootstrapMenuRenderState -BootstrapConfig $cfg
+
+        @($state.headings).Count | Should -Be 1
+        @($state.headings)[0].name | Should -Be 'EmptyHeading'
+        @(@($state.headings)[0].items).Count | Should -Be 1
+        @($state.headings)[0].items[0].kind | Should -Be 'empty'
+    }
+
+    It 'builds webpageScripts nodes from discovered page scripts map' {
+        Mock -CommandName Get-WebpageScriptMap -MockWith {
+            [ordered]@{
+                'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml' = @(
+                    'scripts/Start-LocalWebEngine.ps1',
+                    'scripts/tools/Invoke-Something.ps1'
+                )
+            }
+        }
+
+        $cfg = [pscustomobject]@{
+            headings = @(
+                [pscustomobject]@{
+                    name = 'WebPage-SCRIPTs'
+                    items = @(
+                        [pscustomobject]@{
+                            type = 'webpageScripts'
+                            sourcePages = @('scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml')
+                        }
+                    )
+                }
+            )
+        }
+
+        $state = Get-BootstrapMenuRenderState -BootstrapConfig $cfg
+
+        @($state.headings).Count | Should -Be 1
+        @($state.headings)[0].items[0].kind | Should -Be 'webpagescripts'
+        @(@($state.headings)[0].items[0].pages).Count | Should -Be 1
+    }
+
+    It 'renders headings from extracted runtime state' {
+        Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+
+        $root = New-Object System.Windows.Forms.ToolStripMenuItem('Bootstrap Quick Access')
+        $cfg = [pscustomobject]@{ headings = @() }
+
+        Mock -CommandName Get-BootstrapMenuRenderState -MockWith {
+            [pscustomobject]@{
+                headings = @(
+                    [pscustomobject]@{
+                        name = 'RuntimeHeading'
+                        items = @(
+                            [pscustomobject]@{
+                                kind = 'entry'
+                                label = 'Unit URL'
+                                entry = [pscustomobject]@{ type = 'url'; target = 'http://127.0.0.1:{port}/' }
+                                tooltip = 'http://127.0.0.1:{port}/'
+                            }
+                        )
+                    }
+                )
+            }
+        }
+
+        Add-BootstrapQuickAccessMenu -RootMenu $root -BootstrapConfig $cfg
+
+        Assert-MockCalled -CommandName Get-BootstrapMenuRenderState -Exactly -Times 1
+        @($root.DropDownItems).Count | Should -Be 1
+        @($root.DropDownItems)[0].Text | Should -Be 'RuntimeHeading'
+    }
+}
+
+Describe 'Start-LocalWebEngineService process identity validation' {
+    BeforeEach {
+        $script:WorkspacePath = $TestDrive
+        $script:Port = 8042
+    }
+
+    It 'returns true when command line, workspace, port, and timestamp correlation are valid' {
+        $pidWriteUtc = (Get-Date).ToUniversalTime()
+        $creationText = $pidWriteUtc.AddMinutes(-1).ToString('o')
+        $enginePath = Join-Path (Join-Path $script:WorkspacePath 'scripts') 'Start-LocalWebEngine.ps1'
+        $cmd = 'pwsh.exe -NoProfile -File "{0}" -Action RunAsService -Port 8042 -WorkspacePath "{1}"' -f $enginePath, $script:WorkspacePath
+
+        Mock -CommandName Get-CimInstance -MockWith {
+            [pscustomobject]@{
+                CommandLine = $cmd
+                ExecutablePath = 'C:\\Program Files\\PowerShell\\7\\pwsh.exe'
+                CreationDate = $creationText
+            }
+        }
+
+        (Test-EngineProcessIdentity -ProcessId 1111 -PidFileWriteTimeUtc $pidWriteUtc) | Should -BeTrue
+    }
+
+    It 'returns false when process start time is much newer than PID file timestamp' {
+        $pidWriteUtc = (Get-Date).ToUniversalTime()
+        $creationText = $pidWriteUtc.AddMinutes(10).ToString('o')
+        $enginePath = Join-Path (Join-Path $script:WorkspacePath 'scripts') 'Start-LocalWebEngine.ps1'
+        $cmd = 'pwsh.exe -NoProfile -File "{0}" -Action RunAsService -Port 8042 -WorkspacePath "{1}"' -f $enginePath, $script:WorkspacePath
+
+        Mock -CommandName Get-CimInstance -MockWith {
+            [pscustomobject]@{
+                CommandLine = $cmd
+                ExecutablePath = 'C:\\Program Files\\PowerShell\\7\\pwsh.exe'
+                CreationDate = $creationText
+            }
+        }
+
+        (Test-EngineProcessIdentity -ProcessId 2222 -PidFileWriteTimeUtc $pidWriteUtc) | Should -BeFalse
+    }
+
+    It 'returns false when command line does not include expected port marker' {
+        $pidWriteUtc = (Get-Date).ToUniversalTime()
+        $creationText = $pidWriteUtc.AddMinutes(-1).ToString('o')
+        $enginePath = Join-Path (Join-Path $script:WorkspacePath 'scripts') 'Start-LocalWebEngine.ps1'
+        $cmd = 'pwsh.exe -NoProfile -File "{0}" -Action RunAsService -WorkspacePath "{1}"' -f $enginePath, $script:WorkspacePath
+
+        Mock -CommandName Get-CimInstance -MockWith {
+            [pscustomobject]@{
+                CommandLine = $cmd
+                ExecutablePath = 'C:\\Program Files\\PowerShell\\7\\pwsh.exe'
+                CreationDate = $creationText
+            }
+        }
+
+        (Test-EngineProcessIdentity -ProcessId 3333 -PidFileWriteTimeUtc $pidWriteUtc) | Should -BeFalse
     }
 }
 
