@@ -12,7 +12,7 @@
 | Register-CyclicRenameTask.ps1 | Registers the cyclic rename check as a scheduled task |
 | Invoke-ErrorHandlingContinuousLoop.ps1 | Iterative error-handling scan/remediation loops |
 | Invoke-ErrorHandlingRemediation.ps1 | Automated batch remediation for error handling violations |
-| Invoke-PipelineIntegrityCheck.ps1 | Validate pipeline artifact coherence and stale checks |
+| Invoke-PipelineIntegrityCheck.ps1 | Validate pipeline artifacts plus recursive discoverability, MIME/filter controls, payload sanitization, and SHA-256 evidence |
 | Invoke-SelfReviewCycle.ps1 | Evaluates workspace health across 8 dimensions |
 | Invoke-PipeGAP.ps1 | Pipeline alignment diagnostics (workplans, todo gaps, relics, parse, stale checks) |
 | Invoke-SINRegistryReindex.ps1 | Reindex SIN registry with timestamped filenames |
