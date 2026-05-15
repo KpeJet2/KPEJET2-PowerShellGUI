@@ -90,7 +90,7 @@ Set-StrictMode -Version Latest
 function Get-Something { ... }
 
 AFTER:
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-27)
 # SupportsPS7.6: YES(As of: 2026-04-27)
 # FileRole: Module
@@ -141,7 +141,7 @@ function Add-StandardsHeader {
     }
     
     $header = @(
-        "# VersionTag: 2604.B0.V1.0"
+        "# VersionTag: 2605.B5.V46.0"
         "# SupportPS5.1: null"
         "# SupportsPS7.6: null"
         "# SupportPS5.1TestedDate: 2026-04-27"
@@ -267,7 +267,7 @@ foreach ($file in $xhtmlFiles) {
     
     if ($content -notmatch '<!-- VersionTag:') {
         $newHeader = "<?xml version=`"1.0`" encoding=`"UTF-8`"?>`n" +
-                     "<!-- VersionTag: 2604.B0.V1.0 -->`n" +
+                     "<!-- VersionTag: 2605.B5.V46.0 -->`n" +
                      "<!-- FileRole: XhtmlTool -->`n"
         $content = $newHeader + $content
         $content | Set-Content $file.FullName -Encoding UTF8

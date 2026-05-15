@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 "Version","KillSwitch","Passphrase","Md5","Sha256","Cipher"
 "V=x","ctrl+shift+q","purplezero","b46cc331089e7d120b19e3f839c54234","87c91e5ac2c1c8653dd3360b16daf54b563f46a4656fcf6924cad655a93c487c","AES256"
 "2604.B3.V44.1","ctrl+shift+q","purplezero","b46cc331089e7d120b19e3f839c54234","87c91e5ac2c1c8653dd3360b16daf54b563f46a4656fcf6924cad655a93c487c","AES256"

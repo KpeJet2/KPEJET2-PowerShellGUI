@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -216,9 +216,15 @@ while ($elapsed -lt $Timeout) {
         Remove-Item $doneFlag -Force -EA SilentlyContinue
         break
     }
-    if ($sandboxProc.HasExited) {
-        Write-Host "[Done] Sandbox exited. (${elapsed}s)" -ForegroundColor Yellow
-        break
+    # NOTE: WindowsSandbox.exe is a thin launcher that exits ~5s after spawning the VM.
+    # Do NOT treat $sandboxProc.HasExited as completion. Instead, only break early once
+    # the sandbox VM client itself is gone AND we're past a grace period.
+    if ($elapsed -ge 30) {
+        $vmProc = @(Get-Process -Name 'WindowsSandboxClient','WindowsSandboxRemoteSession','vmmemWindowsSandbox' -ErrorAction SilentlyContinue)
+        if ($vmProc.Count -eq 0) {
+            Write-Host "[Done] Sandbox VM no longer running. (${elapsed}s)" -ForegroundColor Yellow
+            break
+        }
     }
     # Regular progress tick
     if (($elapsed % 30) -eq 0) {

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # =============================================================================
 # FileInspector.ps1
 # Reads query parameters from .dat files (comma- or newline-separated values)

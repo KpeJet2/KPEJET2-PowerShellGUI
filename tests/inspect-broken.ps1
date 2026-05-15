@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $f = Get-ChildItem 'C:\PowerShellGUI\scripts\Build-Agentic*' | Select-Object -First 1
 "FullName: $($f.FullName)"
 "Length: $($f.Name.Length) chars"

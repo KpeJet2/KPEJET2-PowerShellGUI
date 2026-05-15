@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-02
@@ -87,7 +87,7 @@ Describe 'PwShGUI-VersionTag module' {
     It 'parses a canonical VersionTag header from a file' {
         $tmp = New-TemporaryFile
         try {
-            "# VersionTag: 2605.B1.V42.7`r`n# Other" | Set-Content -LiteralPath $tmp.FullName -Encoding UTF8
+            "# VersionTag: 2605.B5.V46.0`r`n# Other" | Set-Content -LiteralPath $tmp.FullName -Encoding UTF8
             Get-VersionTag -Path $tmp.FullName | Should -Be '2605.B1.V42.7'
         } finally { Remove-Item -LiteralPath $tmp.FullName -Force }
     }

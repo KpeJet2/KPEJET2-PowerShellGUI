@@ -4,11 +4,15 @@
   "title": "Scheduler task failure: TASK-BugScan",
   "taskId": "TASK-BugScan",
   "id": "BUG-SCHED-02676ED5",
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "source": "CronAiAthon-Scheduler",
   "createdAt": "2026-05-06T17:37:05.6083232Z",
   "priority": "High",
   "detail": "The term 'Write-AppLog' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again.",
   "lastUpdated": "2026-05-06T17:37:05.6083232Z",
-  "description": "The term 'Write-AppLog' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+  "description": "The term 'Write-AppLog' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+  "modified": "2026-05-14T20:42:29.8231546Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-05-14T20:42:29.8231546Z",
+  "notes": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-14T20:42:29.8231546Z"
 }

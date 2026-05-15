@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Summary helper for the bat/xhtml SIN scan output.
 param(
     [string]$JsonPath = 'C:\PowerShellGUI\reports\sin-scan-bat-xhtml.json'

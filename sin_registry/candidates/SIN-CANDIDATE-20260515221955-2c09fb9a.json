@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260515221955-2c09fb9a",
+  "title": "Resurfacing bug pattern: Unexpected token 'if' in expression or statement.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260412132204-472cd0a5",
+    "Bug-20260412133147-6ec7d216"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

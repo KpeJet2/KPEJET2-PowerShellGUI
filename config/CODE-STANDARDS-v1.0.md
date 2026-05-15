@@ -11,7 +11,7 @@
 
 ### 1.1 Header Format (ALL PowerShell Modules & Scripts)
 ```powershell
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES|NO|null (As of: YYYY-MM-DD)
 # SupportsPS7.6: YES|NO|null (As of: YYYY-MM-DD)
 # SupportPS5.1TestedDate: YYYY-MM-DD
@@ -130,7 +130,7 @@ $item2do = New-PipelineItem -Type 'Items2ADD' `
 ### 4.1 File Header
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 <!-- FileRole: XhtmlTool -->
 <!-- SchemaVersion: PipelineUI/1.0 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -228,7 +228,7 @@ function showTab(id) {
 // CHANGELOG PARSING
 // ═══════════════════════════════════════════════════════════
 var CHANGELOG_CONTENT = [
-'# VersionTag: 2604.B2.V33.4',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B2.V33.4  2026-04-29  Restored, normalized, emoji-first formatting; 17 entries; gap-free contiguous timeline -->',
 '<!-- FileRole: Changelog -->',
 '',
@@ -542,7 +542,7 @@ var CHANGELOG_CONTENT = [
 '-->'
 ].join('\\n');
 var ENHANCEMENTS_CONTENT = [
-'# VersionTag: 2604.B1.V32.3',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B1.v1.0  2026-04-04  Launch enhancements: PS7 detection, exec policy menu, telemetry logging, CFRMenu  |  2603.B1.v28.0  2026-04-03  Dep-map v2.0 URL/IP/DNS/XHTML/ZIP  |  2603.B0.v27.0  2026-03-28 00:00  |  2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 10 entries) -->',
 '<!-- FileRole: Changelog -->',
 '',
@@ -2554,7 +2554,7 @@ function clearMdvFiles() {
 // Data is synced from ~README.md/CHANGELOG.md and ~README.md/ENHANCEMENTS-LOG.md
 
 CHANGELOG_CONTENT = [
-'# VersionTag: 2604.B2.V33.3',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B2.V33.3  2026-04-16  Changelog standard established, retrofitted from ENHANCEMENTS-LOG.md -->',
 '<!-- FileRole: Changelog -->',
 '',
@@ -2815,7 +2815,7 @@ CHANGELOG_CONTENT = [
 ] .join('\\n');
 
 ENHANCEMENTS_CONTENT = [
-'# VersionTag: 2604.B1.V32.3',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B1.v1.0  2026-04-04  Launch enhancements: PS7 detection, exec policy menu, telemetry logging, CFRMenu  |  2603.B1.v28.0  2026-04-03  Dep-map v2.0 URL/IP/DNS/XHTML/ZIP  |  2603.B0.v27.0  2026-03-28 00:00  |  2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 10 entries) -->',
 '<!-- FileRole: Changelog -->',
 '',

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Module: PwShGUI-SinHeatmap
 # Purpose: Build a per-file SIN density heatmap (returns data + optional inline SVG).
 

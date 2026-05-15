@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'
 Import-Module (Join-Path $root 'modules\PwShGUI-SecretScan.psm1') -Force -DisableNameChecking

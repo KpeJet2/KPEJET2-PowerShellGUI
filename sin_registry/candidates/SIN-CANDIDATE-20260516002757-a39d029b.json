@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260516002757-a39d029b",
+  "title": "Resurfacing bug pattern: 11 functions with no try/catch blocks",
+  "occurrences": 5,
+  "sample_bug_ids": [
+    "Bug-20260412141311-007bf0d1",
+    "Bug-20260412141912-0b61344e",
+    "Bug-20260504172719-7325d27d",
+    "Bug-20260504173400-6c9a346a",
+    "Bug-20260507013522-cebb7aa3"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\WebSvcConnector.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-16",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

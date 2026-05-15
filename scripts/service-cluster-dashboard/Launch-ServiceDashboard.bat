@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 @echo off
 setlocal
 
@@ -25,8 +25,15 @@ if "%PWSHGUI_CLUSTER_TOKEN%"=="" (
   echo [WARN] PWSHGUI_CLUSTER_TOKEN not set. server.py will use/create cluster.token.
 )
 
-echo [INFO] Launching Service Cluster Dashboard...
-"%PYTHON%" -m uvicorn server:app --host 127.0.0.1 --port 8099 --app-dir "%ROOT%"
+rem Strip trailing backslash from ROOT so the quoted path doesn't escape the closing quote
+set "APPDIR=%ROOT%"
+if "%APPDIR:~-1%"=="\" set "APPDIR=%APPDIR:~0,-1%"
 
-endlocal
+echo [INFO] Launching Service Cluster Dashboard...
+pushd "%APPDIR%"
+"%PYTHON%" -m uvicorn server:app --host 127.0.0.1 --port 8099 --app-dir "%APPDIR%"
+set "EXITCODE=%ERRORLEVEL%"
+popd
+
+endlocal & exit /b %EXITCODE%
 

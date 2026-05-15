@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B2.V31.7 -->
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -34,6 +34,9 @@
     .mt12 { margin-top: 12px; }
     .hidden { display: none; }
   </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
 <body>
   <h1>Shop-ListedItemsBot Data Entry</h1>
@@ -240,7 +243,8 @@
         rows.push("<tr><td><input type='checkbox' class='histChk' data-index='" + esc(String(i)) + "' /></td><td>" + esc(String(i + 1)) + "</td><td>" + esc(s.item.rowId) + "</td><td>" + esc(s.item.title) + "</td><td>" + esc(s.country) + "</td></tr>");
       }
 
-      var html = "<!DOCTYPE html><html><head><meta charset='utf-8' /><style>body{font-family:Segoe UI,Tahoma,sans-serif;margin:8px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #c8d3e1;padding:6px;text-align:left;}th{background:#eef4ff;}</style></head><body><table><thead><tr><th><input type='checkbox' id='selAll' /></th><th>#</th><th>Row ID</th><th>Title</th><th>Country</th></tr></thead><tbody>" + rows.join("") + "</tbody></table></body></html>";
+      var html = "<!DOCTYPE html><html><head><meta charset='utf-8' /><style>body{font-family:Segoe UI,Tahoma,sans-serif;margin:8px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #c8d3e1;padding:6px;text-align:left;}th{background:#eef4ff;}</style></head><body><table><thead><tr><th><input type='checkbox' id='selAll' /></th><th>#</th><th>Row ID</th><th>Title</th><th>Country</th></tr></thead><tbody>" + rows.join("") + "</tbody></table>  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
+</body></html>";
       writeFrame("historyFrame", html);
       var frame = document.getElementById("historyFrame");
       var doc = frame && frame.contentWindow ? frame.contentWindow.document : null;

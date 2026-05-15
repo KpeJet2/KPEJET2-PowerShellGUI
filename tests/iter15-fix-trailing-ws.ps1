@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Iter15: trailing whitespace mass-fix in modules/, preserves UTF-8 BOM if present
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI\modules'

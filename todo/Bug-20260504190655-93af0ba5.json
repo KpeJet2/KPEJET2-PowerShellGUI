@@ -1,56 +1,44 @@
-﻿{
-    "id":  "Bug-20260504190655-93af0ba5",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Script iter40-add-description.ps1 has 2 functions but zero try/catch blocks",
-    "lastSeenAt":  "2026-05-04T11:06:55.7168897Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "2 functions with no try/catch blocks",
-    "parentId":  "",
-    "type":  "Bug",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-05-04T11:06:55.7168897Z",
-    "priority":  "MEDIUM",
-    "suggestedBy":  "CronAiAthon-BugTracker",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\tests\\iter40-add-description.ps1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "SIN-20260331045607-8c5928ca",
-    "bugReferrals":  [
-
-                     ],
-    "implementedAt":  null,
-    "notes":  "Matched existing sin: 12 functions with no try/catch blocks",
-    "category":  "error-handling",
-    "reopenedAt":  null,
-    "created":  "2026-05-04T11:06:55.7168897Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-05-04T11:06:55.7168897Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bug-20260504190655-93af0ba5",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Script iter40-add-description.ps1 has 2 functions but zero try/catch blocks",
+  "lastSeenAt": "2026-05-04T11:06:55.7168897Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "2 functions with no try/catch blocks",
+  "parentId": "",
+  "type": "Bug",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-05-04T11:06:55.7168897Z",
+  "priority": "MEDIUM",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\tests\\iter40-add-description.ps1"
+  ],
+  "plannedAt": "2026-05-15T14:19:51.4897724Z",
+  "linkedBugs": [],
+  "status": "IN-PROGRESS",
+  "sinId": "SIN-20260331045607-8c5928ca",
+  "bugReferrals": [],
+  "implementedAt": null,
+  "notes": "Matched existing sin: 12 functions with no try/catch blocks | Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-15T14:19:51.4897724Z",
+  "category": "error-handling",
+  "reopenedAt": null,
+  "created": "2026-05-04T11:06:55.7168897Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "CronAiAthon-Pipeline",
+  "modified": "2026-05-15T14:19:51.4897724Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null
 }

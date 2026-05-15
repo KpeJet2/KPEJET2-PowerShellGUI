@@ -39,7 +39,7 @@ function Scan-ForSinPattern028 {
     Write-SteerLog "Scan-ForSinPattern028: found $(@($results).Count) SIN-PATTERN-028 violation(s)" 'Warning'
     return @($results)
 }
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -240,7 +240,7 @@ function New-CompatibilityStandardsTemplates {
         [PSCustomObject]@{
             Path    = Join-Path $dir 'PS76-Preferred-Template.ps1.txt'
             Content = @'
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21

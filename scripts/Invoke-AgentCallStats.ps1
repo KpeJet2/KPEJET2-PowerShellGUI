@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -14,13 +14,13 @@
 # Called by: Start-LocalWebEngine.ps1 via /api/agent/stats  |  manually
 #
 # SIN Compliance: P001,P002,P004,P005,P006,P007,P009,P012,P014,P015,P017,P018
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-
 param(
-    [string]$WorkspacePath = $PSScriptRoot -replace '[\\/]scripts$','',
+    [string]$WorkspacePath = [regex]::Replace($PSScriptRoot, '[\\/]scripts$', ''),
     [switch]$PassThru
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
@@ -122,7 +122,7 @@ if ($null -ne $existing -and $null -ne $existing.PSObject.Properties['stats']) {
 # Overlay computed counts
 foreach ($aid in $counts.Keys) {
     $src = if ($counts.ContainsKey($aid)) { 'agents/focalpoint-null/logs/' } else { '' }
-    if (-not $statsObj.ContainsKey($aid)) {
+    if (-not $statsObj.Contains($aid)) {
         $statsObj[$aid] = [ordered]@{
             calls24h   = 0
             calls7d    = 0

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter40: PSProvideCommentHelp default config requires BOTH .SYNOPSIS and .DESCRIPTION.
 # Most flagged funcs have .SYNOPSIS but not .DESCRIPTION — inject the missing block.
 # For funcs with no help comment at all, prepend a full skeleton.

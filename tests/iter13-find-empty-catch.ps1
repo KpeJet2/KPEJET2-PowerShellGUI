@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter13: find empty/whitespace/comment-only catch blocks in source
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'

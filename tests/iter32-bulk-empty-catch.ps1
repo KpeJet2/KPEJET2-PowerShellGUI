@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter32: bulk-fix PSAvoidUsingEmptyCatchBlock
 # PSSA AST does not honor comment-only catch bodies. Fix: insert
 # `Write-Verbose -Message "..." -Verbose:$false` AFTER the marker comment.

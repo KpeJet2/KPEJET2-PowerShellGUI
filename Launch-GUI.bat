@@ -1,5 +1,5 @@
 @echo off
-REM VersionTag: 2604.B2.V31.1
+REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so all child PowerShell processes find modules
 REM   2604.B2.V31.0  2026-04-04  Added switch parameters (/usepsv:5|7, /scriptsec:1-6, /skipps7, /skippolicy), cleaned echo output

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter35: Insert $PSCmdlet.ShouldProcess() guard at start of body for all
 # functions PSSA flags with PSShouldProcess (i.e. SupportsShouldProcess
 # declared but ShouldProcess never called). Insertion goes immediately

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # =============================================================================
 # FileInspector.ps1  –  Expanded Edition
 # Reads query parameters from .dat files and inspects every Path × Filter combo.

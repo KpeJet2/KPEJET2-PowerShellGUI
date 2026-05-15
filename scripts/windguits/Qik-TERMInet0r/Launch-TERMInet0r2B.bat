@@ -1,5 +1,5 @@
 @echo off
-REM VersionTag: 2604.B1.V1.0
+REM VersionTag: 2605.B5.V46.0
 REM Launch-TERMInet0r2B.bat — Launches Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1
 REM Requires: PowerShell 5.1, Windows Terminal, .NET WPF
 setlocal

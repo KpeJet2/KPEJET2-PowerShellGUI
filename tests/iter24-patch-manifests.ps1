@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter24: enumerate actual function names per module, replace '*' with explicit list
 $targets = @(
     @{ Name='PwShGUI-NetworkTools';   Psm1='C:\PowerShellGUI\modules\PwShGUI-NetworkTools.psm1';   Psd1='C:\PowerShellGUI\modules\PwShGUI-NetworkTools.psd1' }

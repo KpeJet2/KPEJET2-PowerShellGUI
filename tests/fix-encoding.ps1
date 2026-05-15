@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $mods = 'PwShGUI-DependencyMap','PwShGUI-CoverageReport','PwShGUI-AutoRemediate','PwShGUI-SinFromScan','PwShGUI-BreakingChange','PwShGUI-PSScriptAnalyzerScan'
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 foreach ($m in $mods) {

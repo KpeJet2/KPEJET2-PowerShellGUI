@@ -1,9 +1,28 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # PowerShellGUI Automated Changelog
 
 This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
+
+- **2605.B5.V46.0** — Canonical version unification + governance tooling pass.
+  1. **🔁 Bulk re-tag** — every known-tagged source file (3,294 entries in pre-pass inventory) re-tagged from `2605.B2.V31.8` → `2605.B5.V46.0` via encoding-safe rewriter (`temp/Apply-CanonicalVersion.ps1`, promoted to `scripts/`). First-match-only replacement; per-file BOM (utf8-bom / utf8-nobom / utf16-le / utf16-be) preserved. 0 failures.
+  2. **📋 Inventory governance** — workspace version scanner (`scripts/Scan-WorkspaceVersions.ps1`) now permanently excludes `.history/` (VS Code Local History auto-snapshot folder), removing ~4,065 phantom entries. True source-file count: **2,469** (previously 6,534 with snapshot noise).
+  3. **📋 Taggability classifier** — new `scripts/Report-Taggable.ps1` buckets untagged files into `excluded-folder / excluded-artefact / non-source-ext / CANDIDATE`. Generates `temp/taggable-candidates.csv`.
+  4. **🔁 Header injection** — 13 high-confidence candidates tagged via `temp/Add-VersionTag.ps1`: `agents/PipelineSteering/core/PipelineSteering.psm1` (already), `code-analysis.xhtml`, `~README.md/Dependency-Visualisation.html`, six `.github/{agents,instructions,prompts}/*.md` customisation files, five PowerShellGUI-owned agent JSON configs (`agent_registry.json`, checkpoints `_index.json`, `ADMIN-TODO.json`, `steering-config.json`, `agent-call-stats.json`). JSON files use `_versionTag` first-property convention; markdown handles YAML front-matter; XHTML/HTML inserts after `<?xml?>`/`<!DOCTYPE>` lead.
+  5. **📋 Repo hygiene** — `.gitignore` VersionTag header bumped (was missed by retag because file has no extension); `.history/` already excluded.
+  6. **📄 New scripts** (promoted from `temp/` to `scripts/`): `Apply-CanonicalVersion.ps1`, `Report-Taggable.ps1`, `Add-VersionTag.ps1`, `Scan-WorkspaceVersions.ps1`. All re-runnable governance tools; `Apply-CanonicalVersion.ps1` supports `-DryRun`.
+  - ⸸ AI action logged: `ai-20260515210944-canonical-bump-V46` (Code-INspectre, success).
+
+- **2605.B2.V31.8** — Workspace Hub UX wave: live version sync, real-time uptime, crash auto-refresh, reports filter/group, data-source deep test, Code Copy-Cats result tabs.
+  1. **⚙ Server** — `scripts/Start-LocalWebEngine.ps1`: new `Get-HubVersion` function + `/api/hub/version` route reads canonical VersionTag from `CHANGELOG.md` line 1.
+  2. **⚙ Server** — `Get-EngineStatus` now exposes top-level `uptime`/`uptimeSec`/`startupTime`/`serverTime` plus enriched `heartbeat` block so any client path resolves the live uptime.
+  3. **⚙ Hub (Phase 1)** — `XHTML-WorkspaceHub.xhtml`: header version literal replaced by runtime DOM injection from `/api/hub/version`; `notifyToolExit` payload now uses `_workspaceVersionTag` global.
+  4. **⚙ Hub (Phase 2)** — `_normalizeEngineTelemetry` now reads `heartbeat.{uptime,startedAt,serverTime}` paths; new 1-second uptime ticker + 7-second monitor auto-refresh activated only while Monitor section visible.
+  5. **⚙ Hub (Phase 3)** — Crash dump section now auto-refreshes every 7 seconds while active; modal step tree shared with Deep Test.
+  6. **⚙ Hub (Phase 5)** — Reports section gains a filter/group toolbar (search, type, group-by, sort) with `localStorage` persistence; default `Group by Type` accordion view.
+  7. **⚙ Hub (Phase 6)** — Data Sources gain per-row `Deep Test` button driving an 8-step state-tree (`csrf, status, schema, version, scan, crashes, menus, cors`) with status set `Waiting/Queued/Starting/Running/Warning/FAILED/Done-ReQued/Stopped`, 7-second polling, Cancel/Re-Queue/Re-Queue Failed/Export JSON controls.
+  8. **⚙ Hub (Phase 4)** — Code Copy-Cats results now open in independent tabs (close, switch, CSV export); tabs persist across reload via `pwshgui.hub.ccc.tabs.v1` and snapshot on `beforeunload` + `visibilitychange=hidden`.
 
 - **2605.B2.V31.7** — AI-Actions Logging infrastructure: new observability layer mandating start/finish event records for all agent file-change operations.
   1. **📄 New module** — `modules/PwShGUI-AiActionLog.psm1`: canonical AI-action log module. Exports `Write-AiActionStart`, `Write-AiActionFinish`, `Write-AiActionLoggingError`, `Get-AiActionLogEntries`, `Get-AiActionLogSummary`, `Invoke-AiActionLogArchive`, `Get-AiActionLogPaths`, `New-AiActionId`. JSONL format, live/test buckets in `logs/ai-actions/`.

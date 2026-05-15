@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 {"ts":"2026-05-01T21:19:14.2399991Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":58960,"source":""}
 {"ts":"2026-05-01T21:20:36.1948767Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":21948,"source":""}
 {"ts":"2026-05-01T21:20:55.0352499Z","severity":"INFO","scope":"sec","component":"Pester","msg":"root-agg-sec","corrId":"","host":"XPS15-MS","pid":21124,"source":""}

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $c = Get-Content C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml -Raw -Encoding UTF8
 $rx = '(?is)<script[^>]*>(.*?)</script>'
 $ms = [regex]::Matches($c, $rx)

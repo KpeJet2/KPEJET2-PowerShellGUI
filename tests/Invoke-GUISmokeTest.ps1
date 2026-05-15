@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -848,7 +848,7 @@ if ($runPhase0) {
         @{ Fn='Import-VaultSecrets';        Module='AssistedSASC' }
         @{ Fn='Import-Certificates';        Module='AssistedSASC' }
         @{ Fn='Test-VaultSecurity';         Module='AssistedSASC' }
-        @{ Fn='Test-IntegrityManifest';     Module='AssistedSASC' }
+        @{ Fn='Test-IntegrityManifest';     Module='PwShGUI-IntegrityCore' }  # P011: Renamed from AssistedSASC variant -> Test-SASCSignedManifest; canonical lives in IntegrityCore
         @{ Fn='Export-VaultBackup';         Module='AssistedSASC' }
         @{ Fn='Enable-WindowsHello';        Module='AssistedSASC' }
         @{ Fn='Set-VaultLANSharing';        Module='AssistedSASC' }

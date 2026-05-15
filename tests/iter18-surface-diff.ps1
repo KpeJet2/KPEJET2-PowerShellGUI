@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter18: surface-diff vs baseline (re-run after cycle 1)
 $baseline = Get-Content 'C:\PowerShellGUI\reports\iter5\modules-surface-baseline.json' -Raw | ConvertFrom-Json
 $current = @()

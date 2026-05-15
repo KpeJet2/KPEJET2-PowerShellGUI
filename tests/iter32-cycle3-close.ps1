@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # cycle 3 close: smoke import all modules + PSSA tally
 $ws = 'C:\PowerShellGUI'
 $modules = Get-ChildItem -Path "$ws\modules" -Filter '*.psm1' | Where-Object {

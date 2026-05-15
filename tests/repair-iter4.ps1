@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 Import-Module C:\PowerShellGUI\modules\PwShGUI-LegacyEncoding.psm1 -Force -DisableNameChecking
 $tgts = @('C:\PowerShellGUI\scripts','C:\PowerShellGUI\sovereign-kernel','C:\PowerShellGUI\agents','C:\PowerShellGUI\UPM')
 $start = Get-Date

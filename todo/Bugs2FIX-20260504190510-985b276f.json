@@ -1,56 +1,46 @@
-﻿{
-    "id":  "Bugs2FIX-20260504190510-985b276f",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Fix for bug Bug-20260504190345-27d551a8: Script iter39-add-commenthelp.ps1 has 5 functions but zero try/catch blocks",
-    "lastSeenAt":  "2026-05-04T11:05:10.8472823Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "FIX: 5 functions with no try/catch blocks",
-    "parentId":  "Bug-20260504190345-27d551a8",
-    "type":  "Bugs2FIX",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-05-04T11:05:10.8472823Z",
-    "priority":  "MEDIUM",
-    "suggestedBy":  "CronAiAthon",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\tests\\iter39-add-commenthelp.ps1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "",
-    "bugReferrals":  [
-                         "Bug-20260504190345-27d551a8"
-                     ],
-    "implementedAt":  null,
-    "notes":  "",
-    "category":  "error-handling",
-    "reopenedAt":  null,
-    "created":  "2026-05-04T11:05:10.8472823Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-05-04T11:05:10.8472823Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bugs2FIX-20260504190510-985b276f",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Fix for bug Bug-20260504190345-27d551a8: Script iter39-add-commenthelp.ps1 has 5 functions but zero try/catch blocks",
+  "lastSeenAt": "2026-05-04T11:05:10.8472823Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "FIX: 5 functions with no try/catch blocks",
+  "parentId": "Bug-20260504190345-27d551a8",
+  "type": "Bugs2FIX",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-05-04T11:05:10.8472823Z",
+  "priority": "MEDIUM",
+  "suggestedBy": "CronAiAthon",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\tests\\iter39-add-commenthelp.ps1"
+  ],
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
+  "linkedBugs": [],
+  "status": "IN-PROGRESS",
+  "sinId": "",
+  "bugReferrals": [
+    "Bug-20260504190345-27d551a8"
+  ],
+  "implementedAt": null,
+  "category": "error-handling",
+  "reopenedAt": null,
+  "created": "2026-05-04T11:05:10.8472823Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "CronAiAthon-Pipeline",
+  "modified": "2026-05-15T14:36:41.1388049Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null,
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

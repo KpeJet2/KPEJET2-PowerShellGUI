@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B2.V31.7 -->
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -116,6 +116,9 @@
       .ai-actions-layout { grid-template-columns: 1fr; }
     }
   </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
 <body>
 
@@ -498,7 +501,7 @@ function loadAiActionSummary(forceRefresh) {
 // CHANGELOG PARSING
 // ═══════════════════════════════════════════════════════════
 var CHANGELOG_CONTENT = [
-'# VersionTag: 2604.B3.V37.0',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B3.V37.0  2026-04-30  Iter8: 4 P034 instance records auto-generated from PSSA findings. Iter9: P040 (param-case-collision) registered + Get-SinHeatmap patched ($top local clobbered [int]$Top param); heatmap rendered SVG over 203 PSSA findings (top file: _TEMPLATE-Module.psd1 @ 58.82 hits/1k LoC) -->',
 '<!-- VersionBuildHistory: 2604.B3.V36.0  2026-04-30  Iter3-7: P006 mass repair (2181 files), P039 BOM-roundtrip registered, dependency baseline (2247 nodes), surface baseline (365 fns), PSSA scan (203 findings) -->',
 '<!-- VersionBuildHistory: 2604.B3.V35.0  2026-04-30  Iter2: 12 backlog tools built (SinDriftScan, XhtmlReportTester, SecretScan, LegacyEncoding, ManifestDiff, CheckpointPrune, SinHeatmap, AgentScorecard, PesterParallel, EventLogReplay, LaunchTimingProfile, SinFixBranch); P038 registered; scoreboard v29.0 -->',
@@ -1018,7 +1021,7 @@ var CHANGELOG_CONTENT = [
 '-->'
 ].join('\n');
 var ENHANCEMENTS_CONTENT = [
-'# VersionTag: 2604.B1.V32.3',
+'# VersionTag: 2605.B5.V46.0',
 '<!-- VersionBuildHistory: 2604.B1.v1.0  2026-04-04  Launch enhancements: PS7 detection, exec policy menu, telemetry logging, CFRMenu  |  2603.B1.v28.0  2026-04-03  Dep-map v2.0 URL/IP/DNS/XHTML/ZIP  |  2603.B0.v27.0  2026-03-28 00:00  |  2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 10 entries) -->',
 '<!-- FileRole: Changelog -->',
 '',
@@ -3247,6 +3250,7 @@ function viewSchedulerDiff(name) {
 <script src="scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
 <script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 
+  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
 </body>
 </html>
 

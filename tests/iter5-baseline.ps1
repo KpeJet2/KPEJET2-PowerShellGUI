@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-DependencyMap.psm1 -Force -DisableNameChecking
 Import-Module C:\PowerShellGUI\modules\PwShGUI-BreakingChange.psm1 -Force -DisableNameChecking

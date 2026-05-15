@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -672,12 +672,12 @@ Describe 'P027 Scanner Gate Enforcement' {
         $script:violationFile = Join-Path $script:tmpDir 'P027-Violation.ps1'
         $script:guardedFile = Join-Path $script:tmpDir 'P027-Guarded.ps1'
         @(
-            '# VersionTag: 2605.B0.V1.0',
+            '# VersionTag: 2605.B5.V46.0',
             '$items = $null',
             '$first = $items[0]'
         ) | Set-Content -LiteralPath $script:violationFile -Encoding UTF8
         @(
-            '# VersionTag: 2605.B0.V1.0',
+            '# VersionTag: 2605.B5.V46.0',
             '$items = @(''a'')',
             'if (@($items).Count -gt 0) { $first = $items[0] }'
         ) | Set-Content -LiteralPath $script:guardedFile -Encoding UTF8

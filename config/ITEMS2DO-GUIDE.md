@@ -112,7 +112,7 @@ $break = @{
 Store in `scripts/Invoke-SchemaMigration-PipelineItem-1-0-to-1-1.ps1`
 
 ```powershell
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # FileRole: MigrationScript
 # SchemaVersion: PipelineItemMigration/1.0
 #Requires -Version 5.1

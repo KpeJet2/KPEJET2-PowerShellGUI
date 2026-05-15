@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B2.V31.7 -->
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -127,6 +127,10 @@
     }
     .stat-item{display:flex;align-items:center;gap:5px;font-size:10px;cursor:default}
     .stat-val{color:#569cd6;font-weight:700}
+    .stat-trend{font-size:10px;min-width:12px;text-align:center;color:#666}
+    .stat-trend.up{color:#4ec9b0}
+    .stat-trend.down{color:#f44747}
+    .stat-trend.flat{color:#888}
     .stat-lbl{color:var(--fg-sub)}
     /* ── Event Log section ── */
     .evt-filter-bar{
@@ -202,7 +206,7 @@
       box-shadow:0 0 0 1px rgba(0,0,0,.35);
       pointer-events:none;
     }
-    /* ── WebEngine Monitor section ── */
+    /* ── Local Web Engine section ── */
     .eng-monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
     .eng-stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
     .eng-stat-label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.5px}
@@ -280,6 +284,14 @@
     .hub-cards.view-list .hub-card-chk{position:static;margin-right:4px}
     .hub-cards.view-detail .hub-card-chk{position:static;margin-top:3px;margin-right:4px}
     .hub-card{position:relative} /* ensure abs checkbox anchors */
+    .hub-card-star{
+      position:absolute;top:6px;right:6px;z-index:4;
+      width:18px;height:18px;line-height:16px;text-align:center;
+      border:1px solid #3a3a42;border-radius:999px;background:#1a1a1f;
+      color:#6f6f7a;font-size:12px;cursor:pointer;user-select:none;
+    }
+    .hub-card-star:hover{border-color:#b59f3b;color:#e5d27a}
+    .hub-card-star.pinned{border-color:#b59f3b;color:#e5d27a;background:#2a250f}
     /* ── Group pills on cards ── */
     .hub-card-groups{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
     .group-pill{font-size:8px;padding:1px 6px;border-radius:8px;
@@ -337,12 +349,15 @@
     .ccc-link:hover{text-decoration:underline}
     .ccc-empty{padding:20px;text-align:center;color:var(--fg-sub);background:#111;border:1px dashed #333;border-radius:6px}
   </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
 <body>
   <!-- ── Header ── -->
   <div class="hdr">
     &#x1F3E0; Workspace Hub
-    <span class="hdr-ver">2605.B2.V31.7</span>
+    <span class="hdr-ver pwshgui-version" id="hdrVer" data-pwshgui-version="2605.B5.V46.0">v2605.B5.V46.0</span>
     <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
     <a id="engStatusLink" class="eng-status-lbl" href="#" target="_blank" rel="noopener" data-tip="LocalWebEngine runtime status. When engine is up this becomes a live link to Service Hub with PID and PORT details.">&#x2014;</a>
     <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Live mode: verify/start via API route. File mode: shows local launch guidance and opens launcher when possible.">&#x25B6; Start Engine</button>
@@ -352,9 +367,9 @@
   <!-- ── Scan action toolbar ── -->
   <div class="scan-bar">
     <span class="scan-bar-title" data-tip="Workspace scan controls. Engine-based scans require the LocalWebEngine running.">Scan Engine</span>
-    <button class="scan-btn inc" onclick="doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
-    <button class="scan-btn full" onclick="doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
-    <button class="scan-btn static" onclick="doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
+    <button type="button" class="scan-btn inc" onclick="return doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
+    <button type="button" class="scan-btn full" onclick="return doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
+    <button type="button" class="scan-btn static" onclick="return doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
     <button class="scan-btn" onclick="createTestCrashDump()" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
     <button class="scan-btn" onclick="createTestEventLog()" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
     <button class="scan-btn" onclick="createTestHistory()" data-tip="Write a synthetic runtime history entry and refresh History">&#x1F551; Test History</button>
@@ -375,16 +390,20 @@
 
   <!-- ── Workspace Stats strip ── -->
   <div class="stats-strip" id="statsStrip" data-tip="Live workspace inventory from last completed scan">
-    <div class="stat-item" data-tip="Total non-excluded folders"><span class="stat-val" id="statFolders">81</span><span class="stat-lbl">Folders</span></div>
-    <div class="stat-item" data-tip="Module files (.psm1)"><span class="stat-val" id="statModules">45</span><span class="stat-lbl">Modules</span></div>
-    <div class="stat-item" data-tip="Script files (.ps1)"><span class="stat-val" id="statScripts">113</span><span class="stat-lbl">Scripts</span></div>
-    <div class="stat-item" data-tip="JSON config files"><span class="stat-val" id="statConfigs">28</span><span class="stat-lbl">Configs</span></div>
-    <div class="stat-item" data-tip="Exported functions across all modules and scripts"><span class="stat-val" id="statFunctions">775</span><span class="stat-lbl">Functions</span></div>
-    <div class="stat-item" data-tip="Variable declarations found"><span class="stat-val" id="statVars">306</span><span class="stat-lbl">Vars</span></div>
-    <div class="stat-item" data-tip="Direct dependency edges in graph"><span class="stat-val" id="statEdges">1267</span><span class="stat-lbl">Edges</span></div>
-    <div class="stat-item" data-tip="Cross-module reference links"><span class="stat-val" id="statXlinks">117</span><span class="stat-lbl">X-Links</span></div>
-    <div class="stat-item" data-tip="Files containing URLs"><span class="stat-val" id="statUrlFiles">37</span><span class="stat-lbl">URL Files</span></div>
-    <div class="stat-item" data-tip="Unique IP addresses found"><span class="stat-val" id="statIPs">19</span><span class="stat-lbl">Unique IPs</span></div>
+    <div class="stat-item" data-tip="Total non-excluded folders"><span class="stat-val" id="statFolders">81</span><span class="stat-trend" id="trend_statFolders">&#x2194;</span><span class="stat-lbl">Folders</span></div>
+    <div class="stat-item" data-tip="Module files (.psm1)"><span class="stat-val" id="statModules">45</span><span class="stat-trend" id="trend_statModules">&#x2194;</span><span class="stat-lbl">Modules</span></div>
+    <div class="stat-item" data-tip="Script files (.ps1)"><span class="stat-val" id="statScripts">113</span><span class="stat-trend" id="trend_statScripts">&#x2194;</span><span class="stat-lbl">Scripts</span></div>
+    <div class="stat-item" data-tip="JSON config files"><span class="stat-val" id="statConfigs">28</span><span class="stat-trend" id="trend_statConfigs">&#x2194;</span><span class="stat-lbl">Configs</span></div>
+    <div class="stat-item" data-tip="Exported functions across all modules and scripts"><span class="stat-val" id="statFunctions">775</span><span class="stat-trend" id="trend_statFunctions">&#x2194;</span><span class="stat-lbl">Functions</span></div>
+    <div class="stat-item" data-tip="Variable declarations found"><span class="stat-val" id="statVars">306</span><span class="stat-trend" id="trend_statVars">&#x2194;</span><span class="stat-lbl">Vars</span></div>
+    <div class="stat-item" data-tip="Direct dependency edges in graph"><span class="stat-val" id="statEdges">1267</span><span class="stat-trend" id="trend_statEdges">&#x2194;</span><span class="stat-lbl">Edges</span></div>
+    <div class="stat-item" data-tip="Cross-module reference links"><span class="stat-val" id="statXlinks">117</span><span class="stat-trend" id="trend_statXlinks">&#x2194;</span><span class="stat-lbl">X-Links</span></div>
+    <div class="stat-item" data-tip="Files containing URLs"><span class="stat-val" id="statUrlFiles">37</span><span class="stat-trend" id="trend_statUrlFiles">&#x2194;</span><span class="stat-lbl">URL Files</span></div>
+    <div class="stat-item" data-tip="Unique IP addresses found"><span class="stat-val" id="statIPs">19</span><span class="stat-trend" id="trend_statIPs">&#x2194;</span><span class="stat-lbl">Unique IPs</span></div>
+    <div class="stat-item" data-tip="Unique URLs discovered"><span class="stat-val" id="statUrls">0</span><span class="stat-trend" id="trend_statUrls">&#x2194;</span><span class="stat-lbl">URLs</span></div>
+    <div class="stat-item" data-tip="Unique hosts discovered from URL scan"><span class="stat-val" id="statHosts">0</span><span class="stat-trend" id="trend_statHosts">&#x2194;</span><span class="stat-lbl">Hosts</span></div>
+    <div class="stat-item" data-tip="DNS resolved host count"><span class="stat-val" id="statDnsOk">0</span><span class="stat-trend" id="trend_statDnsOk">&#x2194;</span><span class="stat-lbl">DNS OK</span></div>
+    <div class="stat-item" data-tip="DNS unresolved or failed host count"><span class="stat-val" id="statDnsFail">0</span><span class="stat-trend" id="trend_statDnsFail">&#x2194;</span><span class="stat-lbl">DNS Fail</span></div>
   </div>
 
   <!-- ── Hub body: sidebar + main ── -->
@@ -398,7 +417,7 @@
       <button class="hub-section-btn hub-nav-item"        id="navApprovals" onclick="showSection('approvals')" data-tip="Pending approval queue for feature, bug-fix and work-item todos"><span class="hub-nav-icon">&#x2705;</span>Pipeline Approvals</button>
       <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
-      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="WebEngine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Engine Monitor</button>
+      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="Local Web Engine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Local Web Engine</button>
       <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
       <button class="hub-section-btn hub-nav-item"        id="navCodeCopyCats" onclick="showSection('codecopycats')" data-tip="Copy-ready snippets with switch/help details and compound filters"><span class="hub-nav-icon">&#x1F98B;</span>Code Copy-Cats</button>
       <div class="hub-sidebar-links">
@@ -472,7 +491,7 @@
       <div id="secTimeline" style="display:none">
         <div class="hub-section-title">History</div>
         <div class="runtime-note" id="runtimeNoteHistory">Loading runtime guidance...</div>
-        <div id="historyTableWrap" class="eng-log-pre" style="max-height:420px">Loading history operations...</div>
+        <div id="historyTableWrap" class="eng-log-pre" style="max-height:75vh;overflow:auto">Loading history operations...</div>
       </div>
 
       <div id="secApprovals" style="display:none">
@@ -573,9 +592,9 @@
         </div>
       </div>
 
-      <!-- ── WebEngine Monitor section ── -->
+      <!-- ── Local Web Engine section ── -->
       <div id="secMonitor" style="display:none">
-        <div class="hub-section-title">WebEngine Monitor</div>
+        <div class="hub-section-title">Local Web Engine</div>
         <div class="runtime-note" id="runtimeNoteMonitor">Loading runtime guidance...</div>
 
         <div class="evt-filter-bar" style="margin-top:10px">
@@ -595,7 +614,7 @@
               <option value="offline">Force Offline (Cache)</option>
             </select>
           </label>
-          <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh engine monitor stats">&#x21BB; Refresh Monitor</button>
+          <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh local web engine stats">&#x21BB; Refresh Monitor</button>
           <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
         </div>
         <div style="margin-top:6px;font-size:10px;color:var(--fg-sub)" id="monModeNote">Mode: auto</div>
@@ -721,17 +740,22 @@
   (function(){
   'use strict';
 
-  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var LOCAL_ENGINE_BASE = 'http://127.0.0.1:8042';
+  var ENGINE_BASE = LOCAL_ENGINE_BASE;
   var _wsConn     = null;
   var _wsRetries  = 0;
   var WS_MAX_RETRY = 6;
   var _csrfToken  = '';
+  var _csrfBase   = '';
   var POLL_MS     = 8000;   /* fallback poll interval when WS unavailable */
   var _scanPollId = null;   /* interval ID for scan progress polling */
   var _viewMode   = 'tile'; /* tile | list | detail */
   var _sortMode   = 'default';
   var _groupFilter = 'all'; /* 'all' or a specific group tag */
   var _selectedTools = {};  /* id -> true for checked tool cards */
+  var FAVORITES_KEY = 'pwshgui_hub_favorite_tools_v1';
+  var _favoriteTools = {};
+  var _lastStatsSnapshot = {};
   var _toolHrefAvailability = {}; /* normalized href -> ok|missing|unknown */
   var LOCAL_SCHEMA_VERSION = 'WorkspaceHubData/1.0';
   var SCHEMA_TRANSFORMS = {
@@ -749,6 +773,8 @@
   var _approvalItems = [];
   var _approvalSelected = {};
   var _approvalSort = 'priority-desc';
+  var _fetchInFlight = {};  // In-flight fetch dedup: key -> promise
+  var _mutationQueue = { running: false, pending: [] };  // Mutation concurrency queue
   var _codeCopyCats = { rows: [], filtered: [], loadedAt: null, sourceRefresh: [] };
   var SERVICE_HUB_PATH = '/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml';
   var ENGINE_STATUS_STALE_MS = 45000;
@@ -880,7 +906,7 @@
     { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools', groups:['DevOps'] },
     { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
     { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
-    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools', groups:['Checklists'] },
+    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'~README.md/PwShGUI-Checklists.xhtml',                  section:'tools', groups:['Checklists'] },
     { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
     { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
     { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools', groups:['Security','Checklists'] },
@@ -1117,6 +1143,7 @@
     }
     if (section === 'historyList') {
       if (payload && Array.isArray(payload.history)) { return payload; }
+      if (payload && Array.isArray(payload.items))   { return { history: payload.items, count: payload.count || payload.items.length, sources: payload.sources || [] }; }
       if (Array.isArray(payload)) { return { history: payload, count: payload.length }; }
       return { history: [], count: 0 };
     }
@@ -1202,7 +1229,7 @@
 
   function _setRuntimeNotes() {
     var map = {
-      runtimeNoteMonitor: 'Engine Monitor',
+      runtimeNoteMonitor: 'Local Web Engine',
       runtimeNoteApprovals: 'Pipeline Approvals',
       runtimeNoteCrashes: 'Crash Dumps',
       runtimeNoteHistory: 'History'
@@ -1278,6 +1305,10 @@
   }
 
   function fetchSectionData(section, relPath, options, liveOnly) {
+    // In-flight dedup: return existing promise if same section+relPath is already fetching
+    var inflightKey = section + '||' + relPath;
+    if (_fetchInFlight[inflightKey]) { return _fetchInFlight[inflightKey]; }
+
     var mode = _effectiveDataMode();
     var forceOffline = (mode === 'offline');
     if (forceOffline && !liveOnly) {
@@ -1317,7 +1348,35 @@
         return tryNext();
       });
     }
-    return tryNext();
+    var promise = tryNext();
+    _fetchInFlight[inflightKey] = promise;
+    promise.then(function(v) { delete _fetchInFlight[inflightKey]; return v; })
+           .catch(function(e) { delete _fetchInFlight[inflightKey]; throw e; });
+    return promise;
+  }
+
+  // Mutation queue: ensures mutating actions run one at a time
+  function _runMutation(label, fn) {
+    return new Promise(function(resolve, reject) {
+      _mutationQueue.pending.push({ label: label, fn: fn, resolve: resolve, reject: reject });
+      _drainMutationQueue();
+    });
+  }
+  function _drainMutationQueue() {
+    if (_mutationQueue.running || _mutationQueue.pending.length === 0) { return; }
+    _mutationQueue.running = true;
+    var next = _mutationQueue.pending.shift();
+    var result;
+    try { result = next.fn(); } catch(e) { _mutationQueue.running = false; next.reject(e); _drainMutationQueue(); return; }
+    Promise.resolve(result).then(function(v) {
+      _mutationQueue.running = false;
+      next.resolve(v);
+      _drainMutationQueue();
+    }).catch(function(e) {
+      _mutationQueue.running = false;
+      next.reject(e);
+      _drainMutationQueue();
+    });
   }
 
   function _effectiveDataMode() {
@@ -1377,7 +1436,7 @@
       if (s.healthy === false && s.lastChecked) { health = '&#x274C; Offline'; }
       var schemaCompat = s.schemaCompatible ? 'compatible' : 'mapped';
       var schema = (s.remoteSchemaVersion || '-') + ' / ' + LOCAL_SCHEMA_VERSION + ' [' + schemaCompat + '] (' + (s.transformId || 'compat-v1') + ')';
-      html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+      html += '<tr data-src-id="' + escAttr(s.id) + '" style="border-bottom:1px solid #1a2a3a">' +
         '<td style="padding:5px 8px">' + (s.isDefault ? '&#x2605; ' : '') + escHtml(s.name) + '</td>' +
         '<td style="padding:5px 8px;color:#7a9acc">' + escHtml(s.baseUrl) + '</td>' +
         '<td style="padding:5px 8px">' + health + '</td>' +
@@ -1588,9 +1647,45 @@
 
   function _normalizeWorkspacePath(path) {
     var p = String(path || '').replace(/\\/g, '/').replace(/^\.?\//, '');
+    p = p.split('?')[0].split('#')[0];
     while (p.indexOf('//') !== -1) { p = p.replace(/\/\//g, '/'); }
     return p.toLowerCase();
   }
+
+  function _loadFavorites() {
+    try {
+      var raw = localStorage.getItem(FAVORITES_KEY);
+      var parsed = raw ? JSON.parse(raw) : {};
+      _favoriteTools = (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch(e) {
+      _favoriteTools = {};
+    }
+  }
+
+  function _saveFavorites() {
+    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(_favoriteTools)); } catch(e) { }
+  }
+
+  function _toolFavoriteKey(tool) {
+    return _normalizeWorkspacePath((tool && tool.href) ? tool.href : '');
+  }
+
+  function _isToolPinned(tool) {
+    var k = _toolFavoriteKey(tool);
+    return !!(k && _favoriteTools[k]);
+  }
+
+  function toggleToolPin(idx) {
+    var t = TOOLS[idx];
+    if (!t) { return; }
+    var key = _toolFavoriteKey(t);
+    if (!key) { return; }
+    if (_favoriteTools[key]) { delete _favoriteTools[key]; }
+    else { _favoriteTools[key] = true; }
+    _saveFavorites();
+    renderToolCards(null);
+  }
+  window.toggleToolPin = toggleToolPin;
 
   function _isExternalHref(href) {
     var h = String(href || '').toLowerCase();
@@ -1654,6 +1749,13 @@
         return db - da;
       });
     }
+    /* keep pinned tools at the top regardless of sort mode */
+    allTools.sort(function(a, b) {
+      var ap = _isToolPinned(a) ? 1 : 0;
+      var bp = _isToolPinned(b) ? 1 : 0;
+      if (ap !== bp) { return bp - ap; }
+      return 0;
+    });
     /* apply view mode class */
     cards.className = 'hub-cards' + (_viewMode !== 'tile' ? ' view-' + _viewMode : '');
     var html = '';
@@ -1667,7 +1769,11 @@
       var cardClass = 'hub-card' + (linkMissing ? ' link-missing' : '');
       var cardHref = linkMissing ? '#' : t.href;
       var cardTitle = t.title + (linkMissing ? ' (missing target)' : '');
+      var pinned = _isToolPinned(t);
+      var starCls = 'hub-card-star' + (pinned ? ' pinned' : '');
+      var starGlyph = pinned ? '&#9733;' : '&#9734;';
       html += '<a class="' + cardClass + '" href="' + escAttr(cardHref) + '" title="' + escAttr(cardTitle) + '" data-idx="' + t._idx + '" data-link-state="' + linkState + '" onclick="return onCardClick(event,' + t._idx + ')">' +
+        '<button type="button" class="' + starCls + '" onclick="event.preventDefault();event.stopPropagation();toggleToolPin(' + t._idx + ');" title="' + (pinned ? 'Unpin from top' : 'Pin to top') + '">' + starGlyph + '</button>' +
         '<input type="checkbox" class="hub-card-chk" id="' + chkId + '"' + checked + ' onclick="onCardCheck(event,' + t._idx + ')" title="Select ' + escAttr(t.title) + '" />' +
         '<div class="hub-card-icon">' + t.icon + '</div>' +
         '<div class="hub-card-title">' + escHtml(t.title) + '</div>' +
@@ -2408,16 +2514,29 @@
         });
       }
 
-      var histRows = Array.isArray(histPayload.history) ? histPayload.history : [];
-      for (var h = 0; h < Math.min(histRows.length, 30); h++) {
+      var histRows = Array.isArray(histPayload.history)
+        ? histPayload.history
+        : (Array.isArray(histPayload.items) ? histPayload.items : []);
+      var HIST_CAP = 500;
+      for (var h = 0; h < Math.min(histRows.length, HIST_CAP); h++) {
         var hr = histRows[h] || {};
+        var lbl = hr.eventType || hr.type || hr.title || (hr.source ? (hr.source + ' event') : 'history');
+        var statusTxt = hr.status || (hr.success === true ? 'SUCCESS' : (hr.success === false ? 'FAIL' : ''));
+        var cyclesTxt = (hr.cycles !== undefined ? String(hr.cycles) : '1') +
+          ' / ' + (hr.duration || hr.elapsed || hr.result || statusTxt || '—');
         rows.push({
-          process: hr.eventType || hr.type || 'history',
+          process: lbl + (hr.source ? ' [' + hr.source + ']' : ''),
           firstRun: hr.firstRunSinceReboot || hr.timestamp || '',
           nextRun: hr.nextRun || 'n/a',
-          cycles: (hr.cycles !== undefined ? String(hr.cycles) : '1') + ' / ' + (hr.duration || hr.elapsed || hr.result || '—'),
-          fileLocation: hr.path || hr.file || hr.target || hr.source || '—',
-          sizeDisk: (hr.sizeOnDisk || hr.size || hr.bytes || '—')
+          cycles: cyclesTxt,
+          fileLocation: hr.path || hr.file || hr.target || hr.id || hr.source || '—',
+          sizeDisk: (hr.sizeOnDisk || hr.size || hr.bytes || hr.version || '—')
+        });
+      }
+      if (histRows.length > HIST_CAP) {
+        rows.push({
+          process: '… ' + (histRows.length - HIST_CAP) + ' older history rows truncated',
+          firstRun: '', nextRun: '', cycles: '', fileLocation: 'logs/cron-aiathon-history.json + logs/engine-runtime-history.jsonl + todo/action-log.json', sizeDisk: ''
         });
       }
 
@@ -2613,20 +2732,25 @@
         if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
         return;
       }
-      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Running pipeline process...'; }
-      fetch(ENGINE_BASE + '/api/pipeline/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r) {
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(data) {
-        if (msg) { msg.style.color = '#4ec9b0'; msg.textContent = 'Created ' + String(data.createdTodos || 0) + ' pending todos'; }
-        loadPipelineApprovals();
-        syncLiveDataToOfflineCache();
+      _runMutation('runPipelineProcess', function() {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Running pipeline process...'; }
+        return fetch(ENGINE_BASE + '/api/pipeline/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+          body: '{}'
+        }).then(function(r) {
+          if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          return r.json();
+        }).then(function(data) {
+          if (msg) { msg.style.color = '#4ec9b0'; msg.textContent = 'Created ' + String(data.createdTodos || 0) + ' pending todos'; }
+          loadPipelineApprovals();
+          syncLiveDataToOfflineCache();
+        }).catch(function(err) {
+          if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline process failed: ' + err.message; }
+          throw err;
+        });
       }).catch(function(err) {
-        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline process failed: ' + err.message; }
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline error: ' + err.message; }
       });
     });
   }
@@ -2644,47 +2768,59 @@
         if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
         return;
       }
-      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Applying action...'; }
-      fetch(ENGINE_BASE + '/api/pipeline/approvals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: JSON.stringify({ action: actionKey, ids: ids })
-      }).then(function(r) {
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(data) {
-        _approvalSelected = {};
-        if (msg) {
-          msg.style.color = (data.failed && data.failed.length > 0) ? '#dcdcaa' : '#4ec9b0';
-          msg.textContent = 'Updated ' + String(data.updated || 0) + ' item(s)' + ((data.failed && data.failed.length > 0) ? (', failed: ' + data.failed.length) : '');
-        }
-        loadPipelineApprovals();
-        syncLiveDataToOfflineCache();
+      _runMutation('applyApprovalAction-' + actionKey, function() {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Applying action...'; }
+        return fetch(ENGINE_BASE + '/api/pipeline/approvals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+          body: JSON.stringify({ action: actionKey, ids: ids })
+        }).then(function(r) {
+          if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          return r.json();
+        }).then(function(data) {
+          _approvalSelected = {};
+          if (msg) {
+            msg.style.color = (data.failed && data.failed.length > 0) ? '#dcdcaa' : '#4ec9b0';
+            msg.textContent = 'Updated ' + String(data.updated || 0) + ' item(s)' + ((data.failed && data.failed.length > 0) ? (', failed: ' + data.failed.length) : '');
+          }
+          loadPipelineApprovals();
+          syncLiveDataToOfflineCache();
+        }).catch(function(err) {
+          if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval action failed: ' + err.message; }
+          throw err;
+        });
       }).catch(function(err) {
-        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval action failed: ' + err.message; }
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval error: ' + err.message; }
       });
     });
   }
   window.applyApprovalAction = applyApprovalAction;
 
   function _postTestEndpoint(path, successMsg, onDone) {
-    fetchCsrf(function(tok) {
-      if (!tok) {
-        setStatus('Engine offline or token unavailable', 'warn', 'right');
-        return;
-      }
-      fetch(ENGINE_BASE + path, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r){
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(){
-        setStatus(successMsg, 'ok', 'right');
-        if (typeof onDone === 'function') { onDone(); }
-      }).catch(function(err){
-        setStatus('Test action failed: ' + err.message, 'warn', 'right');
+    _runMutation('postTestEndpoint-' + path, function() {
+      return new Promise(function(resolveOuter, rejectOuter) {
+        fetchCsrf(function(tok) {
+          if (!tok) {
+            setStatus('Engine offline or token unavailable', 'warn', 'right');
+            rejectOuter(new Error('No CSRF token'));
+            return;
+          }
+          fetch(ENGINE_BASE + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+            body: '{}'
+          }).then(function(r){
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+          }).then(function(){
+            setStatus(successMsg, 'ok', 'right');
+            if (typeof onDone === 'function') { onDone(); }
+            resolveOuter();
+          }).catch(function(err){
+            setStatus('Test action failed: ' + err.message, 'warn', 'right');
+            rejectOuter(err);
+          });
+        });
       });
     });
   }
@@ -2751,35 +2887,25 @@
   }
 
   /* ── Scan trigger ── */
-  function doScan(mode) {
+  function doScan(mode, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
     if (_isFileProtocol()) {
       if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Offline page mode: run scan via terminal or open live hub endpoint.'; }
       setStatus('Offline page mode: scans need live control endpoint or static scan script', 'warn', 'right');
-      return;
+      return false;
     }
     if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(mode) + ' scan&#x2026;'; }
-    fetchCsrf(function(tok) {
-      if (!tok) {
-        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Engine offline'; }
-        return;
-      }
-      fetch(ENGINE_BASE + '/api/scan/' + mode, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r){
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(){
+    postJsonWithCsrf('/api/scan/' + mode, {}).then(function(){
         if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.innerHTML = '<span class="scan-spinner"></span>Scan in progress&#x2026;'; }
         if (pgEl)  { pgEl.style.width = '10%'; }
         _startScanPolling(msgEl, pgEl);
       }).catch(function(err){
         if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + err.message; }
       });
-    });
+    return false;
   }
   window.doScan = doScan;
 
@@ -2852,12 +2978,14 @@
   }
 
   /* ── Static (no-engine) scan ── */
-  function doStaticScan() {
+  function doStaticScan(evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
     if (_isFileProtocol()) {
       _showStaticScanOfflineInstructions(msgEl);
-      return;
+      return false;
     }
     /* Try engine first (it proxies to static scan worker) */
     fetchCsrf(function(tok) {
@@ -2899,12 +3027,64 @@
     if (!data) { return; }
     var phases = (data.phases) ? data.phases : (data.checkpoint && data.checkpoint.phases ? data.checkpoint.phases : null);
     if (!phases) { return; }
-    var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) { el.textContent = v; } };
-    if (phases.folders)      { setVal('statFolders',   phases.folders.count); }
-    if (phases.modules)      { setVal('statModules',   phases.modules.count); setVal('statFunctions', phases.modules.functionCount); }
-    if (phases.scripts)      { setVal('statScripts',   phases.scripts.count); setVal('statVars', phases.scripts.variableCount); }
-    if (phases.configs)      { setVal('statConfigs',   phases.configs.count); }
-    if (phases.urls_ips)     { setVal('statUrlFiles',  phases.urls_ips.urlFileCount); setVal('statIPs', phases.urls_ips.uniqueIPs); }
+    var _numOrNull = function(v) {
+      if (v === null || v === undefined || v === '') { return null; }
+      var n = Number(v);
+      return isNaN(n) ? null : n;
+    };
+    var _metric = function(obj, keys) {
+      var i;
+      for (i = 0; i < keys.length; i++) {
+        var val = _numOrNull(_readMetric(obj, [keys[i]], null));
+        if (val !== null) { return val; }
+      }
+      return null;
+    };
+    var _setTrend = function(id, currVal) {
+      var trendEl = document.getElementById('trend_' + id);
+      if (!trendEl || currVal === null) { return; }
+      var prev = _lastStatsSnapshot[id];
+      var cls = 'stat-trend flat';
+      var txt = '&#x2194;';
+      if (prev !== undefined && prev !== null) {
+        if (currVal > prev) { cls = 'stat-trend up'; txt = '&#x2191;'; }
+        else if (currVal < prev) { cls = 'stat-trend down'; txt = '&#x2193;'; }
+      }
+      trendEl.className = cls;
+      trendEl.innerHTML = txt;
+      _lastStatsSnapshot[id] = currVal;
+    };
+    var _setVal = function(id, v) {
+      var el = document.getElementById(id);
+      if (!el) { return; }
+      var n = _numOrNull(v);
+      if (n === null) { return; }
+      el.textContent = String(n);
+      _setTrend(id, n);
+    };
+
+    if (phases.folders)  { _setVal('statFolders', phases.folders.count); }
+    if (phases.modules)  {
+      _setVal('statModules', phases.modules.count);
+      _setVal('statFunctions', _metric(phases.modules, ['functionCount','functionsTotal','exportsCount']));
+    }
+    if (phases.scripts)  {
+      _setVal('statScripts', phases.scripts.count);
+      _setVal('statVars', _metric(phases.scripts, ['variableCount','variablesTotal']));
+    }
+    if (phases.configs)  { _setVal('statConfigs', phases.configs.count); }
+    if (phases.urls_ips) {
+      _setVal('statUrlFiles', _metric(phases.urls_ips, ['urlFileCount','filesWithUrls']));
+      _setVal('statIPs', _metric(phases.urls_ips, ['uniqueIPs','ipCount']));
+      _setVal('statUrls', _metric(phases.urls_ips, ['uniqueUrls','urlCount']));
+      _setVal('statHosts', _metric(phases.urls_ips, ['uniqueHosts','hostCount','dnsCandidates']));
+    }
+    if (phases.dns_resolution) {
+      _setVal('statDnsOk', _metric(phases.dns_resolution, ['resolvedCount','successCount','dnsResolved']));
+      _setVal('statDnsFail', _metric(phases.dns_resolution, ['failedCount','unresolvedCount','dnsFailed']));
+    }
+    _setVal('statEdges', _metric(data, ['dependencyEdges','graphEdges','edges']) || _metric(phases.modules || {}, ['dependencyEdges']) || _metric(phases.scripts || {}, ['dependencyEdges']));
+    _setVal('statXlinks', _metric(data, ['crossLinks','crossModuleLinks','xlinks']) || _metric(phases.modules || {}, ['crossLinks','crossModuleLinks']));
   }
 
   /* ── Event Logs ── */
@@ -3048,11 +3228,102 @@
   window.deleteEvtPreset = deleteEvtPreset;
 
   /* ── CSRF ── */
-  function fetchCsrf(cb) {
-    if (_csrfToken) { cb(_csrfToken); return; }
-    _safeFetchJson(ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 3000)
-      .then(function(d){ _csrfToken = d.csrfToken || d.token || ''; cb(_csrfToken); })
-      .catch(function(){ cb(''); });
+  function fetchCsrf(cb, forceRefresh) {
+    if (_csrfToken && !forceRefresh) { cb(_csrfToken); return; }
+
+    var tried = {};
+    var bases = [];
+    function pushBase(base) {
+      var n = _normalizeBaseUrl(base || '');
+      if (!n || tried[n]) { return; }
+      tried[n] = true;
+      bases.push(n);
+    }
+
+    pushBase(LOCAL_ENGINE_BASE);
+    pushBase(ENGINE_BASE);
+    var sources = _getOrderedLiveSources();
+    for (var i = 0; i < sources.length; i++) {
+      if (sources[i] && sources[i].enabled !== false) { pushBase(sources[i].baseUrl); }
+    }
+    pushBase(LOCAL_ENGINE_BASE);
+
+    var idx = 0;
+    function tryNext() {
+      if (idx >= bases.length) { cb(''); return; }
+      var base = bases[idx++];
+      _safeFetchJson(base + '/api/csrf-token', { method: 'GET' }, 3000)
+        .then(function(d){
+          _csrfToken = d.csrfToken || d.token || '';
+          if (_csrfToken) {
+            _csrfBase = base;
+            if (ENGINE_BASE !== base) {
+              ENGINE_BASE = base;
+              _updateHubFooter();
+            }
+            cb(_csrfToken);
+          } else {
+            tryNext();
+          }
+        })
+        .catch(function(){ tryNext(); });
+    }
+
+    tryNext();
+  }
+
+  function fetchCsrfLocalFirst(cb, forceRefresh) {
+    if (_csrfToken && !forceRefresh) { cb(_csrfToken); return; }
+    _safeFetchJson(LOCAL_ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 2500)
+      .then(function(d) {
+        _csrfToken = d.csrfToken || d.token || '';
+        if (_csrfToken) {
+          _csrfBase = LOCAL_ENGINE_BASE;
+          ENGINE_BASE = LOCAL_ENGINE_BASE;
+          _updateHubFooter();
+          cb(_csrfToken);
+          return;
+        }
+        fetchCsrf(cb, forceRefresh);
+      })
+      .catch(function() {
+        fetchCsrf(cb, forceRefresh);
+      });
+  }
+
+  function postJsonWithCsrf(path, payloadObj) {
+    return new Promise(function(resolve, reject) {
+      function send(forceRefresh, hasRetried) {
+        fetchCsrfLocalFirst(function(tok) {
+          if (!tok) { reject(new Error('Engine offline (token unavailable from configured sources)')); return; }
+          var targetBase = _normalizeBaseUrl(_csrfBase || ENGINE_BASE || LOCAL_ENGINE_BASE);
+          fetch(targetBase + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+            body: JSON.stringify(payloadObj || {})
+          }).then(function(r) {
+            if (r.status === 403 && !hasRetried) {
+              _csrfToken = '';
+              _csrfBase = '';
+              send(true, true);
+              return;
+            }
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+          }).then(function(data) {
+            if (data !== undefined) { resolve(data); }
+          }).catch(function(err) {
+            if (!hasRetried && targetBase !== LOCAL_ENGINE_BASE) {
+              _csrfToken = '';
+              send(true, true);
+              return;
+            }
+            reject(err);
+          });
+        }, forceRefresh === true);
+      }
+      send(false, false);
+    });
   }
 
   /* ── Engine status indicator ── */
@@ -3121,10 +3392,10 @@
     var d = data || {};
     var running = !!_readMetric(d, ['running','isRunning','state.running'], false);
     var responding = !!_readMetric(d, ['responding','isResponding','health.responding'], running);
-    var uptime = parseInt(_readMetric(d, ['uptime','uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
+    var uptime = parseInt(_readMetric(d, ['uptime','uptimeSec','heartbeat.uptime','heartbeat.uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
     var pid = _readMetric(d, ['pid','processId','enginePid','runtime.pid'], null);
     var port = _readMetric(d, ['port','listenPort','httpPort','runtime.port'], null);
-    var serverTime = _readMetric(d, ['serverTime','timestamp','now','runtime.serverTime'], null);
+    var serverTime = _readMetric(d, ['serverTime','timestamp','now','heartbeat.serverTime','runtime.serverTime'], null);
     var heartbeat = _readMetric(d, ['heartbeat.ok','heartbeat.status','isHeartbeatAlive','health.heartbeat'], null);
     if (typeof heartbeat === 'string') { heartbeat = heartbeat.toLowerCase(); }
     var clients = parseInt(_readMetric(d, ['localWebClientsConnected','connectedClients','webClients.connected','clients.connected','stats.clientsConnected'], 0), 10) || 0;
@@ -3132,7 +3403,7 @@
     var requestsTotal = parseInt(_readMetric(d, ['requests.total','totalRequests','requestTotal','stats.requestsTotal'], 0), 10) || 0;
     var requestsServed = parseInt(_readMetric(d, ['requests.served','requests.success','servedRequests','stats.requestsServed'], 0), 10) || 0;
     var requestsFailed = parseInt(_readMetric(d, ['requests.failed','failedRequests','stats.requestsFailed'], 0), 10) || 0;
-    var startupTime = _toIsoStringOrNull(_readMetric(d, ['startupTime','startTime','startedAt','processStartTime','runtime.startedAt','stats.startedAt'], null));
+    var startupTime = _toIsoStringOrNull(_readMetric(d, ['startupTime','startTime','startedAt','heartbeat.startedAt','heartbeat.startTime','processStartTime','runtime.startedAt','stats.startedAt'], null));
     var hbAgeSec = parseInt(_readMetric(d, ['heartbeat.ageSec','heartbeatAgeSec','heartbeatAge','health.heartbeatAgeSec','health.heartbeatAge'], -1), 10);
     if (isNaN(hbAgeSec) || hbAgeSec < 0) {
       var hbAt = _toIsoStringOrNull(_readMetric(d, ['heartbeat.at','heartbeat.timestamp','lastHeartbeat','lastHeartbeatAt','health.lastHeartbeatAt'], null));
@@ -3489,7 +3760,7 @@
     _setFooterPill('ftModeSummary', 'mode: ' + _dataMode + ' (effective ' + _effectiveDataMode() + ') | Start/Stop adapts automatically', (_effectiveDataMode() === 'offline') ? 'ft-state-active' : 'ft-state-ok');
   }
 
-  /* ── WebEngine Monitor ── */
+  /* ── Local Web Engine ── */
   function initMonitorFieldPicker() {
     var wrap = document.getElementById('monFieldChecks');
     if (!wrap) { return; }
@@ -3688,7 +3959,7 @@
     if (_isFileProtocol()) { return; }
     if (!_csrfToken) { return; }
     try {
-      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: '2605.B2.V31.7' });
+      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: (window._workspaceVersionTag || '2605.B5.V46.0') });
       if (navigator.sendBeacon) {
         var blob = new Blob([payload], { type: 'application/json' });
         navigator.sendBeacon(ENGINE_BASE + '/api/runtime/tool-exit', blob);
@@ -3711,6 +3982,7 @@
       .then(function(){
         connectWs();
         startPoll();
+        _loadFavorites();
         _populateGroupFilter();
         refreshToolLinkAvailability().then(function(){ renderToolCards(null); }).catch(function(){ renderToolCards(null); });
         renderEvtPresets();
@@ -3738,6 +4010,626 @@
       });
   });
   window.addEventListener('beforeunload', notifyToolExit);
+
+  /* ════════════════════════════════════════════════════════════════════════
+     Phase 1-6 Enhancements (V31.8): version sync, uptime tick, crash auto-
+     refresh, reports filter/group, data-source deep test, CCC tabs/persist
+     ════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Phase 1: Workspace version sync from manifest ─────────────────── */
+  window._workspaceVersionTag = null;
+  function loadWorkspaceVersion() {
+    if (_isFileProtocol()) { return; }
+    fetchSectionData('hubVersion', '/api/hub/version', { method: 'GET' }, false).then(function(res) {
+      var d = res && res.data ? res.data : {};
+      var v = d.versionTag || null;
+      if (v && /^\d{4}\.B\d+\.V\d+\.\d+$/.test(v)) {
+        window._workspaceVersionTag = v;
+        var el = document.getElementById('hdrVer');
+        if (el) {
+          el.innerHTML = '';
+          var a = document.createElement('a');
+          a.className = 'pwshgui-ver-link';
+          a.href = '~REPORTS/xhtml-version-feed.json';
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.style.cssText = 'color:#58a6ff;text-decoration:none;border-bottom:1px dotted #58a6ff;font-family:Consolas,monospace;';
+          a.textContent = 'v' + v;
+          el.appendChild(a);
+          el.title = 'Source: ' + (d.source || 'unknown') + ' @ ' + (d.generatedAt || '');
+        }
+      }
+    }).catch(function() { /* keep fallback literal */ });
+  }
+  window.loadWorkspaceVersion = loadWorkspaceVersion;
+
+  /* ── Phase 2: Live uptime ticker for Monitor tab ────────────────────── */
+  var _uptimeTickerId = null;
+  var _monitorAutoRefreshId = null;
+  function _renderUptimeTick() {
+    var t = _lastMonitorTelemetry;
+    if (!t || !t.startupTime) { return; }
+    var startMs = new Date(t.startupTime).getTime();
+    if (isNaN(startMs)) { return; }
+    var liveSec = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+    /* Update dom in place to avoid full grid re-render */
+    var grid = document.getElementById('monGrid');
+    if (!grid) { return; }
+    var labels = grid.querySelectorAll('.eng-stat-label');
+    for (var i = 0; i < labels.length; i++) {
+      if ((labels[i].textContent || '').toLowerCase() === 'uptime') {
+        var v = labels[i].nextElementSibling;
+        if (v) { v.textContent = _formatUptime(liveSec); }
+        break;
+      }
+    }
+    /* Header link too */
+    var link = document.getElementById('engStatusLink');
+    if (link && link.textContent && link.textContent.indexOf('Engine up ') === 0) {
+      link.textContent = link.textContent.replace(/Engine up [^|]+/, 'Engine up ' + _formatUptime(liveSec) + ' ');
+    }
+  }
+  function startMonitorTickers() {
+    stopMonitorTickers();
+    _uptimeTickerId = setInterval(_renderUptimeTick, 1000);
+    _monitorAutoRefreshId = setInterval(function() {
+      if (typeof refreshMonitor === 'function') { refreshMonitor(); }
+    }, 7000);
+  }
+  function stopMonitorTickers() {
+    if (_uptimeTickerId) { clearInterval(_uptimeTickerId); _uptimeTickerId = null; }
+    if (_monitorAutoRefreshId) { clearInterval(_monitorAutoRefreshId); _monitorAutoRefreshId = null; }
+  }
+
+  /* ── Phase 3: Crash dump auto-refresh on tab + better empty-state ──── */
+  var _crashAutoRefreshId = null;
+  function startCrashAutoRefresh() {
+    stopCrashAutoRefresh();
+    _crashAutoRefreshId = setInterval(function() {
+      if (typeof loadCrashes === 'function') { loadCrashes(); }
+    }, 7000);
+  }
+  function stopCrashAutoRefresh() {
+    if (_crashAutoRefreshId) { clearInterval(_crashAutoRefreshId); _crashAutoRefreshId = null; }
+  }
+
+  /* ── Section navigation hook: start/stop pollers per active section ── */
+  var _origShowSection = window.showSection;
+  window.showSection = function(name) {
+    stopMonitorTickers();
+    stopCrashAutoRefresh();
+    if (typeof _stopDeepTestPolling === 'function') { _stopDeepTestPolling(); }
+    if (_origShowSection) { _origShowSection(name); }
+    if (name === 'monitor')  { startMonitorTickers(); }
+    if (name === 'crashes')  { startCrashAutoRefresh(); }
+    if (name === 'reports')  { _renderReportsToolbarOnce(); }
+    if (name === 'codecopycats') { _restoreCccTabs(); }
+  };
+
+  /* ── Phase 5: Reports filter + grouping (default = Group by Type) ──── */
+  var REPORTS_FILTER_KEY  = 'pwshgui.hub.reports.filters.v1';
+  var _reportsAllFiles = [];
+  function _reportTypeOf(path) {
+    var p = String(path || '').toLowerCase();
+    if (/bug/i.test(p))                          { return 'Bugs'; }
+    if (/sin/i.test(p))                          { return 'SIN'; }
+    if (/pipeline/i.test(p))                     { return 'Pipeline'; }
+    if (/static-?scan|scan-/i.test(p))           { return 'Scan'; }
+    if (/changelog|enhancement|guide|index/i.test(p)) { return 'Docs'; }
+    if (p.indexOf('~reports/') !== -1)           { return 'Reports'; }
+    return 'Other';
+  }
+  function _loadReportsFilters() {
+    try {
+      var s = localStorage.getItem(REPORTS_FILTER_KEY);
+      if (s) { return JSON.parse(s); }
+    } catch(e) { /* ignore */ }
+    return { search: '', type: 'all', groupBy: 'type', sortBy: 'name' };
+  }
+  function _saveReportsFilters(f) {
+    try { localStorage.setItem(REPORTS_FILTER_KEY, JSON.stringify(f)); } catch(e) { /* quota */ }
+  }
+  function _renderReportsToolbarOnce() {
+    var sec = document.getElementById('secReports');
+    if (!sec || sec.querySelector('#reportsToolbar')) { return; }
+    var f = _loadReportsFilters();
+    var bar = document.createElement('div');
+    bar.id = 'reportsToolbar';
+    bar.className = 'evt-filter-bar';
+    bar.style.marginBottom = '8px';
+    bar.innerHTML =
+      '<input type="text" id="rptSearch" placeholder="Search reports..." style="width:200px" value="' + escAttr(f.search) + '" />' +
+      '<select id="rptType"><option value="all">All types</option>' +
+        '<option value="Bugs">Bugs</option><option value="SIN">SIN</option>' +
+        '<option value="Pipeline">Pipeline</option><option value="Scan">Scan</option>' +
+        '<option value="Docs">Docs</option><option value="Reports">Reports</option>' +
+        '<option value="Other">Other</option></select>' +
+      '<select id="rptGroup">' +
+        '<option value="type">Group by Type</option>' +
+        '<option value="none">No grouping</option>' +
+        '<option value="folder">Group by Folder</option>' +
+      '</select>' +
+      '<select id="rptSort">' +
+        '<option value="name">Sort: Name</option>' +
+        '<option value="path">Sort: Path</option>' +
+        '<option value="type">Sort: Type</option>' +
+      '</select>' +
+      '<span id="rptCount" style="font-size:10px;color:var(--fg-sub)"></span>';
+    var card = sec.querySelector('#reportCards');
+    if (card) { sec.insertBefore(bar, card); }
+    /* hydrate selects */
+    bar.querySelector('#rptType').value  = f.type;
+    bar.querySelector('#rptGroup').value = f.groupBy;
+    bar.querySelector('#rptSort').value  = f.sortBy;
+    function onChange() {
+      var nf = {
+        search:  bar.querySelector('#rptSearch').value || '',
+        type:    bar.querySelector('#rptType').value || 'all',
+        groupBy: bar.querySelector('#rptGroup').value || 'type',
+        sortBy:  bar.querySelector('#rptSort').value || 'name'
+      };
+      _saveReportsFilters(nf);
+      _renderReportsList();
+    }
+    bar.querySelector('#rptSearch').addEventListener('input', onChange);
+    bar.querySelector('#rptType').addEventListener('change', onChange);
+    bar.querySelector('#rptGroup').addEventListener('change', onChange);
+    bar.querySelector('#rptSort').addEventListener('change', onChange);
+  }
+  function _renderReportsList() {
+    var el = document.getElementById('reportCards');
+    if (!el) { return; }
+    var f = _loadReportsFilters();
+    var files = _reportsAllFiles.slice();
+    /* Filter */
+    var q = String(f.search || '').toLowerCase();
+    if (q) {
+      files = files.filter(function(rf) {
+        return String(rf.path || '').toLowerCase().indexOf(q) !== -1
+            || String(rf.name || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    if (f.type && f.type !== 'all') {
+      files = files.filter(function(rf) { return _reportTypeOf(rf.path) === f.type; });
+    }
+    /* Sort */
+    files.sort(function(a, b) {
+      var av = '', bv = '';
+      if (f.sortBy === 'name') { av = (a.name || a.path || '').toLowerCase(); bv = (b.name || b.path || '').toLowerCase(); }
+      else if (f.sortBy === 'path') { av = (a.path || '').toLowerCase(); bv = (b.path || '').toLowerCase(); }
+      else if (f.sortBy === 'type') { av = _reportTypeOf(a.path); bv = _reportTypeOf(b.path); }
+      return av < bv ? -1 : av > bv ? 1 : 0;
+    });
+    var cnt = document.getElementById('rptCount');
+    if (cnt) { cnt.textContent = files.length + ' of ' + _reportsAllFiles.length + ' files'; }
+    if (files.length === 0) {
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No reports match the current filter</div>';
+      return;
+    }
+    function cardHtml(rf) {
+      var href = String(rf.path || '').replace(/\\/g, '/');
+      var typ = _reportTypeOf(href);
+      return '<a class="hub-card" href="' + escAttr(href) + '" target="_blank" rel="noopener">' +
+        '<div class="hub-card-icon">&#x1F4C4;</div>' +
+        '<div class="hub-card-title">' + escHtml(rf.name || href) + '</div>' +
+        '<div class="hub-card-desc">' + escHtml(href) + '</div>' +
+        '<span class="hub-card-badge badge-grey">' + escHtml(typ) + '</span>' +
+        '</a>';
+    }
+    /* Grouping */
+    if (f.groupBy === 'none') {
+      var html = '';
+      for (var i = 0; i < files.length; i++) { html += cardHtml(files[i]); }
+      el.innerHTML = html;
+      return;
+    }
+    var groups = {};
+    var order  = [];
+    for (var j = 0; j < files.length; j++) {
+      var key;
+      if (f.groupBy === 'folder') {
+        var p = String(files[j].path || '').replace(/\\/g, '/');
+        var slash = p.lastIndexOf('/');
+        key = (slash > 0) ? p.slice(0, slash) : '(root)';
+      } else {
+        key = _reportTypeOf(files[j].path);
+      }
+      if (!groups[key]) { groups[key] = []; order.push(key); }
+      groups[key].push(files[j]);
+    }
+    order.sort();
+    var out = '';
+    for (var k = 0; k < order.length; k++) {
+      var g = order[k];
+      out += '<details open style="margin-bottom:10px">' +
+        '<summary style="cursor:pointer;padding:6px 8px;background:#1a1a1a;font-size:12px">' +
+        escHtml(g) + ' <span style="color:var(--fg-sub)">(' + groups[g].length + ')</span></summary>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 0">';
+      for (var m = 0; m < groups[g].length; m++) { out += cardHtml(groups[g][m]); }
+      out += '</div></details>';
+    }
+    el.innerHTML = out;
+  }
+  /* Wrap the original loadReports to populate _reportsAllFiles + new render */
+  var _origLoadReports = window.loadReports;
+  window.loadReports = function() {
+    _renderReportsToolbarOnce();
+    var el = document.getElementById('reportCards');
+    if (!el) { return; }
+    el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>';
+    fetchSectionData('reportsList', '/api/workspace/files?ext=*.json,*.xhtml,*.html,*.md', { method: 'GET' }, false).then(function(res) {
+      var payload = res.data || {};
+      var files = Array.isArray(payload.files) ? payload.files : [];
+      var filtered = [];
+      for (var i = 0; i < files.length; i++) {
+        var p = String(files[i].path || '').toLowerCase();
+        if (p.indexOf('~reports/') !== -1 || p.indexOf('~readme.md/') !== -1 || p.indexOf('reports/') !== -1) {
+          filtered.push(files[i]);
+        }
+      }
+      _reportsAllFiles = filtered;
+      _renderReportsList();
+    }).catch(function() {
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">Unable to load reports from live or cache</div>';
+    });
+  };
+
+  /* ── Phase 6: Data Sources Deep Test (step tree, 7s polling) ──────── */
+  var DEEP_TEST_STEPS = [
+    { id:'csrf',     label:'CSRF token',          path:'/api/csrf-token',          method:'GET',  required:['csrfToken'] },
+    { id:'status',   label:'Engine status',       path:'/api/engine/status',       method:'GET',  required:['running','uptime'] },
+    { id:'schema',   label:'Hub schema',          path:'/api/hub/schema',          method:'GET',  required:['schemaVersion'] },
+    { id:'version',  label:'Hub version',         path:'/api/hub/version',         method:'GET',  required:['versionTag'] },
+    { id:'scan',     label:'Scan status',         path:'/api/scan/status',         method:'GET',  required:[] },
+    { id:'crashes',  label:'Crash dumps',         path:'/api/scan/crashes',        method:'GET',  required:['crashes'] },
+    { id:'menus',    label:'Config menus',        path:'/api/config/menus',        method:'GET',  required:[] },
+    { id:'cors',     label:'CORS preflight echo', path:'/api/csrf-token',          method:'OPTIONS', required:[] }
+  ];
+  var _deepTestState = { running:false, baseUrl:null, srcId:null, steps:{}, pollId:null, cancelled:false };
+  function _stopDeepTestPolling() {
+    if (_deepTestState.pollId) { clearInterval(_deepTestState.pollId); _deepTestState.pollId = null; }
+  }
+  function runDataSourceDeepTest(srcId) {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === srcId) { src = _dataSources[i]; break; } }
+    if (!src) { _setSourceMessage('Source not found', 'err'); return; }
+    _stopDeepTestPolling();
+    _deepTestState = { running:true, baseUrl:src.baseUrl, srcId:srcId, steps:{}, pollId:null, cancelled:false, startedAt:Date.now() };
+    for (var s = 0; s < DEEP_TEST_STEPS.length; s++) {
+      _deepTestState.steps[DEEP_TEST_STEPS[s].id] = { status:'Queued', detail:'', durationMs:0, attempts:0 };
+    }
+    _renderDeepTestModal(src);
+    _deepTestState.pollId = setInterval(function() { _renderDeepTestModal(src); }, 7000);
+    _executeDeepTestSequence(src, false);
+  }
+  window.runDataSourceDeepTest = runDataSourceDeepTest;
+  function _executeDeepTestSequence(src, retryFailedOnly) {
+    var idx = 0;
+    function next() {
+      if (_deepTestState.cancelled) { _deepTestState.running = false; _renderDeepTestModal(src); return; }
+      if (idx >= DEEP_TEST_STEPS.length) {
+        _deepTestState.running = false;
+        _stopDeepTestPolling();
+        _renderDeepTestModal(src);
+        return;
+      }
+      var step = DEEP_TEST_STEPS[idx++];
+      var stepState = _deepTestState.steps[step.id];
+      if (retryFailedOnly && stepState.status !== 'FAILED' && stepState.status !== 'Warning') {
+        next();
+        return;
+      }
+      stepState.status = 'Starting';
+      stepState.attempts++;
+      _renderDeepTestModal(src);
+      setTimeout(function() {
+        if (_deepTestState.cancelled) { stepState.status = 'Stopped'; _renderDeepTestModal(src); next(); return; }
+        stepState.status = 'Running';
+        _renderDeepTestModal(src);
+        var url = (src.baseUrl || '').replace(/\/+$/, '') + step.path;
+        var t0 = Date.now();
+        var fetchOpts = { method: step.method, mode: 'cors', credentials: 'omit' };
+        if (step.method === 'OPTIONS') {
+          fetchOpts.headers = { 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'X-CSRF-Token, Content-Type' };
+        }
+        fetch(url, fetchOpts).then(function(r) {
+          stepState.durationMs = Date.now() - t0;
+          stepState.httpStatus = r.status;
+          if (step.method === 'OPTIONS') {
+            var acao = r.headers.get('Access-Control-Allow-Origin') || '';
+            var acam = r.headers.get('Access-Control-Allow-Methods') || '';
+            stepState.detail = 'ACAO=' + acao + ' | Methods=' + acam;
+            stepState.status = (r.status === 204 || r.status === 200) ? 'Done-ReQued' : 'Warning';
+            _renderDeepTestModal(src); next(); return;
+          }
+          if (!r.ok) { stepState.status = 'FAILED'; stepState.detail = 'HTTP ' + r.status; _renderDeepTestModal(src); next(); return; }
+          return r.json().then(function(j) {
+            var missing = [];
+            for (var k = 0; k < step.required.length; k++) {
+              if (!(step.required[k] in (j || {}))) { missing.push(step.required[k]); }
+            }
+            if (missing.length > 0) {
+              stepState.status = 'Warning';
+              stepState.detail = 'Missing fields: ' + missing.join(', ');
+            } else {
+              stepState.status = 'Done-ReQued';
+              stepState.detail = (stepState.durationMs + 'ms') + (j && j.versionTag ? (' | v=' + j.versionTag) : '');
+            }
+            stepState.payloadKeys = Object.keys(j || {});
+            _renderDeepTestModal(src);
+            next();
+          });
+        }).catch(function(err) {
+          stepState.durationMs = Date.now() - t0;
+          stepState.status = 'FAILED';
+          stepState.detail = String(err && err.message || err);
+          _renderDeepTestModal(src);
+          next();
+        });
+      }, 80);
+    }
+    next();
+  }
+  function _renderDeepTestModal(src) {
+    var modal = document.getElementById('deepTestModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'deepTestModal';
+      modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#0c1220;border:1px solid #2a3a55;padding:14px;width:640px;max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-size:11px;color:#d4d4d4;border-radius:4px';
+      document.body.appendChild(modal);
+    }
+    var totals = { Done: 0, Failed: 0, Warning: 0, Running: 0, Queued: 0 };
+    var rows = '';
+    for (var i = 0; i < DEEP_TEST_STEPS.length; i++) {
+      var step = DEEP_TEST_STEPS[i];
+      var st = _deepTestState.steps[step.id] || { status:'Waiting', detail:'' };
+      var color = '#888';
+      switch (st.status) {
+        case 'Waiting':     color = '#666'; break;
+        case 'Queued':      color = '#7a9acc'; break;
+        case 'Starting':    color = '#dcdcaa'; break;
+        case 'Running':     color = '#4ec9b0'; break;
+        case 'Warning':     color = '#dcdcaa'; totals.Warning++; break;
+        case 'FAILED':      color = '#f44747'; totals.Failed++; break;
+        case 'Done-ReQued': color = '#4ec9b0'; totals.Done++; break;
+        case 'Stopped':     color = '#888'; break;
+      }
+      rows += '<tr style="border-bottom:1px solid #1a2a3a">' +
+        '<td style="padding:4px 6px;color:' + color + ';font-weight:600">' + escHtml(st.status) + '</td>' +
+        '<td style="padding:4px 6px">' + escHtml(step.label) + '</td>' +
+        '<td style="padding:4px 6px;color:#7a9acc;font-family:Consolas,monospace">' + escHtml(step.method + ' ' + step.path) + '</td>' +
+        '<td style="padding:4px 6px;color:#aaa">' + escHtml(st.detail || '') + '</td>' +
+        '<td style="padding:4px 6px;text-align:right;color:#888">' + (st.durationMs ? st.durationMs + 'ms' : '—') + '</td>' +
+        '</tr>';
+    }
+    var liveBadge = _deepTestState.running ? '<span style="color:#4ec9b0">● polling 7s</span>' : '<span style="color:#888">○ idle</span>';
+    modal.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+        '<div><b>Deep Test:</b> ' + escHtml(src.name) + ' <span style="color:#7a9acc">(' + escHtml(src.baseUrl) + ')</span></div>' +
+        '<div>' + liveBadge + '</div>' +
+      '</div>' +
+      '<div style="margin-bottom:6px;font-size:10px;color:#888">Done: ' + totals.Done + ' | Warning: ' + totals.Warning + ' | Failed: ' + totals.Failed + '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Status</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Step</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Endpoint</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Detail</th>' +
+        '<th style="padding:4px 6px;text-align:right;background:#1a1a1a">Time</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end">' +
+        '<button class="scan-btn" onclick="_deepTestRequeueAll()">Re-Queue All</button>' +
+        '<button class="scan-btn" onclick="_deepTestRequeueFailed()">Re-Queue Failed</button>' +
+        '<button class="scan-btn" onclick="_deepTestExport()">Export JSON</button>' +
+        '<button class="scan-btn" onclick="_deepTestCancel()">Cancel</button>' +
+        '<button class="scan-btn" onclick="_deepTestClose()">Close</button>' +
+      '</div>';
+  }
+  window._deepTestRequeueAll = function() {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (!src) { return; }
+    _deepTestState.cancelled = false; _deepTestState.running = true;
+    for (var k in _deepTestState.steps) { _deepTestState.steps[k].status = 'Queued'; }
+    _executeDeepTestSequence(src, false);
+  };
+  window._deepTestRequeueFailed = function() {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (!src) { return; }
+    _deepTestState.cancelled = false; _deepTestState.running = true;
+    _executeDeepTestSequence(src, true);
+  };
+  window._deepTestCancel = function() {
+    _deepTestState.cancelled = true; _deepTestState.running = false;
+    _stopDeepTestPolling();
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (src) { _renderDeepTestModal(src); }
+  };
+  window._deepTestExport = function() {
+    var blob = new Blob([JSON.stringify(_deepTestState, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'deep-test-' + (_deepTestState.srcId || 'src') + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  };
+  window._deepTestClose = function() {
+    _stopDeepTestPolling();
+    var modal = document.getElementById('deepTestModal');
+    if (modal) { modal.parentNode.removeChild(modal); }
+  };
+
+  /* ── Phase 4: Code Copy-Cats result tabs + persistence ──────────────── */
+  var CCC_TABS_KEY = 'pwshgui.hub.ccc.tabs.v1';
+  var _cccTabs = [];     /* [{id,name,query,results,createdAt}] */
+  var _cccActiveTab = null;
+  function _saveCccTabs() {
+    try {
+      var snap = { tabs: _cccTabs, active: _cccActiveTab, savedAt: Date.now() };
+      localStorage.setItem(CCC_TABS_KEY, JSON.stringify(snap));
+    } catch(e) { /* quota */ }
+  }
+  function _loadCccTabsSnapshot() {
+    try {
+      var s = localStorage.getItem(CCC_TABS_KEY);
+      if (s) {
+        var snap = JSON.parse(s);
+        _cccTabs = Array.isArray(snap.tabs) ? snap.tabs : [];
+        _cccActiveTab = snap.active || null;
+      }
+    } catch(e) { _cccTabs = []; _cccActiveTab = null; }
+  }
+  function _restoreCccTabs() {
+    if (_cccTabs.length === 0) { _loadCccTabsSnapshot(); }
+    _renderCccTabsStrip();
+  }
+  function _renderCccTabsStrip() {
+    var sec = document.getElementById('secCodeCopyCats');
+    if (!sec) { return; }
+    var strip = document.getElementById('cccTabsStrip');
+    if (!strip) {
+      strip = document.createElement('div');
+      strip.id = 'cccTabsStrip';
+      strip.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid #1a2a3a;margin-bottom:6px';
+      var results = sec.querySelector('#cccResults');
+      if (results) { sec.insertBefore(strip, results); }
+    }
+    var html = '';
+    for (var i = 0; i < _cccTabs.length; i++) {
+      var t = _cccTabs[i];
+      var active = (t.id === _cccActiveTab);
+      html += '<span style="padding:3px 8px;background:' + (active ? '#2a3a55' : '#1a1a1a') + ';border:1px solid #2a3a55;cursor:pointer;font-size:10px" onclick="_cccActivateTab(\'' + t.id + '\')">' +
+        escHtml(t.name) + ' <span style="color:#888">(' + (t.results ? t.results.length : 0) + ')</span>' +
+        ' <a href="#" onclick="event.stopPropagation();_cccCloseTab(\'' + t.id + '\');return false" style="color:#f44747;text-decoration:none;margin-left:4px">×</a>' +
+        '</span>';
+    }
+    html += '<button class="scan-btn" style="font-size:10px;padding:2px 6px" onclick="_cccNewTabFromCurrentQuery()">+ New Search Tab</button>';
+    strip.innerHTML = html;
+    if (_cccActiveTab) {
+      var t2 = _cccTabs.filter(function(x){ return x.id === _cccActiveTab; })[0];
+      if (t2) { _renderCccGridForTab(t2); }
+    }
+  }
+  function _renderCccGridForTab(tab) {
+    var wrap = document.getElementById('cccResults');
+    if (!wrap) { return; }
+    var rows = tab.results || [];
+    if (rows.length === 0) {
+      wrap.innerHTML = '<div class="ccc-empty">No results in tab "' + escHtml(tab.name) + '"</div>';
+      return;
+    }
+    var html = '<div style="margin-bottom:6px;display:flex;gap:6px;align-items:center;font-size:10px">' +
+      '<b>' + escHtml(tab.name) + '</b> ' +
+      '<span style="color:#888">' + rows.length + ' rows</span> ' +
+      '<button class="scan-btn" style="font-size:10px;padding:2px 6px" onclick="_cccExportTabCsv(\'' + tab.id + '\')">Export CSV</button>' +
+      '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Title</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Source</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Path</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Match</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < Math.min(rows.length, 500); i++) {
+      var r = rows[i] || {};
+      html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+        '<td style="padding:3px 4px">' + escHtml(r.title || r.name || '') + '</td>' +
+        '<td style="padding:3px 4px;color:#7a9acc">' + escHtml(r.source || '') + '</td>' +
+        '<td style="padding:3px 4px;font-family:Consolas,monospace;color:#888">' + escHtml(r.path || '') + '</td>' +
+        '<td style="padding:3px 4px;color:#dcdcaa">' + escHtml(r.match || '') + '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+  window._cccActivateTab = function(id) { _cccActiveTab = id; _saveCccTabs(); _renderCccTabsStrip(); };
+  window._cccCloseTab = function(id) {
+    _cccTabs = _cccTabs.filter(function(t){ return t.id !== id; });
+    if (_cccActiveTab === id) { _cccActiveTab = _cccTabs.length > 0 ? _cccTabs[_cccTabs.length-1].id : null; }
+    _saveCccTabs(); _renderCccTabsStrip();
+  };
+  window._cccNewTabFromCurrentQuery = function() {
+    var sInput = document.getElementById('cccSearch');
+    var notInput = document.getElementById('cccNotTokens');
+    var modeSel = document.getElementById('cccMatchMode');
+    var query = {
+      search: sInput ? sInput.value : '',
+      not: notInput ? notInput.value : '',
+      mode: modeSel ? modeSel.value : 'and'
+    };
+    var rows = (typeof _codeCopyCats !== 'undefined' && _codeCopyCats && _codeCopyCats.filtered) ? _codeCopyCats.filtered.slice() : [];
+    var simplified = rows.slice(0, 200).map(function(r) {
+      return {
+        title:  r.title || r.name || r.scriptName || '',
+        source: r.source || r.module || r.scriptName || '',
+        path:   r.path || r.scriptPath || '',
+        match:  r.matchedTokens ? r.matchedTokens.join(',') : (r.purpose || '')
+      };
+    });
+    var tab = {
+      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+      name: 'Search ' + (_cccTabs.length + 1) + (query.search ? ': ' + query.search.slice(0, 20) : ''),
+      query: query,
+      results: simplified,
+      createdAt: new Date().toISOString()
+    };
+    _cccTabs.push(tab);
+    _cccActiveTab = tab.id;
+    _saveCccTabs();
+    _renderCccTabsStrip();
+  };
+  window._cccExportTabCsv = function(id) {
+    var tab = _cccTabs.filter(function(t){ return t.id === id; })[0];
+    if (!tab) { return; }
+    var lines = ['Title,Source,Path,Match'];
+    for (var i = 0; i < tab.results.length; i++) {
+      var r = tab.results[i];
+      lines.push([r.title, r.source, r.path, r.match].map(function(v) {
+        return '"' + String(v || '').replace(/"/g, '""') + '"';
+      }).join(','));
+    }
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = tab.name.replace(/[^a-z0-9]+/gi,'_') + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  };
+
+  /* Auto-snapshot CCC tabs on auto-save and visibility change events */
+  window.addEventListener('beforeunload', _saveCccTabs);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') { _saveCccTabs(); }
+  });
+
+  /* Hook deep test button into source rows once they render */
+  var _origRenderDataSources = window.renderDataSources;
+  if (_origRenderDataSources) {
+    window.renderDataSources = function() {
+      _origRenderDataSources.apply(this, arguments);
+      var wrap = document.getElementById('srcTableWrap');
+      if (!wrap) { return; }
+      /* Append Deep Test buttons next to existing Validate buttons */
+      var rows = wrap.querySelectorAll('tr[data-src-id]');
+      for (var i = 0; i < rows.length; i++) {
+        var sid = rows[i].getAttribute('data-src-id');
+        if (rows[i].querySelector('.deep-test-btn')) { continue; }
+        var lastTd = rows[i].querySelector('td:last-child');
+        if (lastTd && sid) {
+          var btn = document.createElement('button');
+          btn.className = 'scan-btn deep-test-btn';
+          btn.style.cssText = 'font-size:10px;padding:2px 6px;margin-left:4px';
+          btn.textContent = 'Deep Test';
+          btn.setAttribute('data-src-id', sid);
+          btn.onclick = (function(id){ return function(){ runDataSourceDeepTest(id); }; })(sid);
+          lastTd.appendChild(btn);
+        }
+      }
+    };
+  }
+
+  /* Boot the version sync immediately after bootstrap */
+  setTimeout(loadWorkspaceVersion, 250);
+  /* Hydrate CCC snapshot at startup so tab strip is populated when section opens */
+  _loadCccTabsSnapshot();
 
   })();
   //]]>

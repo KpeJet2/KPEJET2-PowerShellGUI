@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $path = 'C:\PowerShellGUI\scripts\Build-AgenticManifest.ps1'
 $bytes = [System.IO.File]::ReadAllBytes($path)
 # bytes 0-2 = BOM, byte 3 = stray '?' (3F) from round-trip damage

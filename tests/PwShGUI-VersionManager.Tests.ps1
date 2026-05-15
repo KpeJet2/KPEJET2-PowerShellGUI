@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -83,7 +83,7 @@ Describe 'Format-VersionTag' {
 Describe 'Get-FileVersion / Set-FileVersion' {
     BeforeEach {
         $testFile = Join-Path $env:TEMP "version-test-$(Get-Random).psm1"
-        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.2`nfunction Test-Something { }" -Encoding UTF8
+        Set-Content -Path $testFile -Value "# VersionTag: 2605.B5.V46.0`nfunction Test-Something { }" -Encoding UTF8
     }
 
     AfterEach {
@@ -106,7 +106,7 @@ Describe 'Get-FileVersion / Set-FileVersion' {
 Describe 'Step-MinorVersion' {
     BeforeEach {
         $testFile = Join-Path $env:TEMP "step-minor-test-$(Get-Random).psm1"
-        Set-Content -Path $testFile -Value "# VersionTag: 2604.B2.V31.2`nfunction Test-Bump { }" -Encoding UTF8
+        Set-Content -Path $testFile -Value "# VersionTag: 2605.B5.V46.0`nfunction Test-Bump { }" -Encoding UTF8
     }
 
     AfterEach {

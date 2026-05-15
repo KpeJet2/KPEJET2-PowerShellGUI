@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260515221955-9ab184bf",
+  "title": "Resurfacing bug pattern: 4 functions with no try/catch blocks",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260504180329-b02d1a76",
+    "Bug-20260507013545-d21b2cee"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\Invoke-ChangelogDiff.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

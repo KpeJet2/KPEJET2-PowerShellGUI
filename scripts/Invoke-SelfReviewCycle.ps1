@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -31,7 +31,7 @@
     Compute scores and report but do not write pipeline items or update history.
 .NOTES
     Author    : The Establishment
-    VersionTag: 2604.B1.v1.0
+    VersionTag: 2605.B5.V46.0
 #>
 #Requires -Version 5.1
 [CmdletBinding()]

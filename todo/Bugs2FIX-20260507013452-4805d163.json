@@ -1,9 +1,8 @@
 {
-  "executionAgent": "",
-  "notes": "",
+  "executionAgent": "CronAiAthon-Pipeline",
   "parentId": "Bug-20260507013450-befb602a",
   "executionMethod": "",
-  "modified": "2026-05-06T17:34:52.3892173Z",
+  "modified": "2026-05-15T14:36:41.1388049Z",
   "title": "FIX: [2026-05-04 21:31:36][BOOT][ERROR] FATAL: HttpListener failed to start on port 8042 — Exception calling \"Start\" with \"0\" argument(s): \"Failed to listen on prefix 'http://127.0.0.1:8042/' because it co",
   "linkedFeatures": [],
   "fixesImplementedCount": 0,
@@ -16,8 +15,8 @@
   "description": "Fix for bug Bug-20260507013450-befb602a: Error pattern in log engine-bootstrap.log:56",
   "linkedBugs": [],
   "sinId": "",
-  "created": "2026-05-06T17:34:52.3891440Z",
-  "plannedAt": null,
+  "created": "2026-05-06T17:34:52.389144Z",
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
   "firstSeenAt": "2026-05-06T17:34:52.3892579Z",
   "suggestedBy": "CronAiAthon",
   "acknowledged": null,
@@ -29,7 +28,7 @@
   "priority": "CRITICAL",
   "implementedAt": null,
   "bugHistory": [],
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "bugResurfaced": false,
   "filesFixedCount": 0,
   "bugReferrals": [
@@ -42,5 +41,6 @@
   "reopenedAt": null,
   "completedAt": null,
   "executedAt": null,
-  "id": "Bugs2FIX-20260507013452-4805d163"
+  "id": "Bugs2FIX-20260507013452-4805d163",
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

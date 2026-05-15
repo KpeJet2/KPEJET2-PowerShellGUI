@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
 httpx>=0.27.0

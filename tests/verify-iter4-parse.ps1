@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 Add-Type -AssemblyName System.Management.Automation
 $dbl = Get-ChildItem 'C:\PowerShellGUI\scripts\Build-Agentic*' -ErrorAction SilentlyContinue
 $sample = @()

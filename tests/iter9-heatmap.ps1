@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-SinHeatmap.psm1 -Force -DisableNameChecking
 

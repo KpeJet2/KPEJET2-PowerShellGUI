@@ -1,48 +1,59 @@
 {
-  "lastFullScan": "",
+  "generated": "2026-05-16T03:38:00.3883592+08:00",
+  "mode": "Static",
+  "currentScanMode": "Full",
+  "currentScanPid": 6556,
+  "version": "2604.B1.V32.0",
+  "dataFile": "workspace-dependency-map-20260516-034108.json",
   "phases": {
-    "scripts": {
-      "count": 318,
-      "durationMs": 8886,
-      "error": "",
-      "completedAt": "2026-05-07T01:37:41.9792987+08:00",
-      "status": "done"
-    },
     "folders": {
-      "count": 176,
-      "durationMs": 5048,
-      "error": "",
-      "completedAt": "2026-05-07T01:37:38.1399796+08:00",
-      "status": "done"
-    },
-    "urls_ips": {
-      "count": 55,
-      "durationMs": 8893,
-      "error": "",
-      "completedAt": "2026-05-07T01:37:41.9865093+08:00",
-      "status": "done"
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
     },
     "modules": {
-      "count": 95,
-      "durationMs": 8877,
-      "error": "",
-      "completedAt": "2026-05-07T01:37:41.9703939+08:00",
-      "status": "done"
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
     },
-    "dns_resolution": {
-      "count": 39,
-      "durationMs": 35062,
-      "error": "",
-      "completedAt": "2026-05-07T01:38:08.1548853+08:00",
-      "status": "done"
+    "scripts": {
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
     },
     "configs": {
-      "count": 66,
-      "durationMs": 19806,
-      "error": "",
-      "completedAt": "2026-05-07T01:37:52.8990499+08:00",
-      "status": "done"
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
+    },
+    "urls_ips": {
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
+    },
+    "dns_resolution": {
+      "status": "done",
+      "timestamp": "2026-05-16T03:41:45",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 37438
     }
   },
-  "version": "2604.B1.V32.0"
+  "lastFullScan": "2026-05-16T03:41:45"
 }

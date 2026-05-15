@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $path = 'C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml'
 $lines = [System.IO.File]::ReadAllLines($path)
 # Keep through line 869 (index 868)

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SIN Registry — README
 
 > **VersionTag:** 2604.B2.V31.0  

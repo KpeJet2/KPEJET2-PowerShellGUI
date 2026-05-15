@@ -1,56 +1,46 @@
-﻿{
-    "id":  "Bugs2FIX-20260504185750-7f67f032",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Fix for bug Bug-20260504185640-d4e3f864: Script iter34-add-shouldprocess.ps1 has 1 functions but zero try/catch blocks",
-    "lastSeenAt":  "2026-05-04T10:57:50.2646996Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "FIX: 1 functions with no try/catch blocks",
-    "parentId":  "Bug-20260504185640-d4e3f864",
-    "type":  "Bugs2FIX",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-05-04T10:57:50.2646996Z",
-    "priority":  "MEDIUM",
-    "suggestedBy":  "CronAiAthon",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\tests\\iter34-add-shouldprocess.ps1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "",
-    "bugReferrals":  [
-                         "Bug-20260504185640-d4e3f864"
-                     ],
-    "implementedAt":  null,
-    "notes":  "",
-    "category":  "error-handling",
-    "reopenedAt":  null,
-    "created":  "2026-05-04T10:57:50.2646996Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-05-04T10:57:50.2646996Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bugs2FIX-20260504185750-7f67f032",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Fix for bug Bug-20260504185640-d4e3f864: Script iter34-add-shouldprocess.ps1 has 1 functions but zero try/catch blocks",
+  "lastSeenAt": "2026-05-04T10:57:50.2646996Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "parentId": "Bug-20260504185640-d4e3f864",
+  "type": "Bugs2FIX",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-05-04T10:57:50.2646996Z",
+  "priority": "MEDIUM",
+  "suggestedBy": "CronAiAthon",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\tests\\iter34-add-shouldprocess.ps1"
+  ],
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
+  "linkedBugs": [],
+  "status": "IN-PROGRESS",
+  "sinId": "",
+  "bugReferrals": [
+    "Bug-20260504185640-d4e3f864"
+  ],
+  "implementedAt": null,
+  "category": "error-handling",
+  "reopenedAt": null,
+  "created": "2026-05-04T10:57:50.2646996Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "CronAiAthon-Pipeline",
+  "modified": "2026-05-15T14:36:41.1388049Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null,
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

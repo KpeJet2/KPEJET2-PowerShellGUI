@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Purpose: Normalize backlog data from todo JSON files and inline TODO/FIXME/HACK markers.
 
 [CmdletBinding()]

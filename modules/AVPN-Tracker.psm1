@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -47,7 +47,7 @@ function Invoke-AVPNLog {
         & $LogCallback $Message $Level
     } else {
         # Use Write-Warning for all non-info levels so errors surface to caller
-        # (Write-Error -ErrorAction Continue silently bypasses callers' -ErrorAction Stop)
+        # (the error-swallowing pattern that was previously here silently bypassed callers' -ErrorAction Stop)
         if ($Level -eq "Error") {
             Write-AppLog -Message "[AVPN][ERROR] $Message" -Level Warning
         } elseif ($Level -eq "Warning") {

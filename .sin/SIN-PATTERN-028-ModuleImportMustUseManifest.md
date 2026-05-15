@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SIN-PATTERN-028: Module Import Must Use Manifest
 #
 # All Import-Module statements for workspace modules must reference the .psd1 manifest file, not the .psm1 script file.

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 $tokens = $null; $errors = $null
 [System.Management.Automation.Language.Parser]::ParseFile('c:\PowerShellGUI\Main-GUI.ps1', [ref]$tokens, [ref]$errors) | Out-Null

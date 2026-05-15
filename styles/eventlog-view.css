@@ -1,5 +1,5 @@
 /* eventlog-view.css -- shared dark-theme XHTML EventLogView partial */
-/* VersionTag: 2604.B2.V31.0 */
+/* VersionTag: 2605.B5.V46.0 */
 
 .evlv-root { display: flex; flex-direction: column; gap: 6px; font-family: 'Segoe UI', Tahoma, sans-serif; color: #c9d1d9; background: #0d1117; padding: 8px; border: 1px solid #30363d; border-radius: 8px; }
 .evlv-title { font-size: 13px; font-weight: 600; color: #2dd4bf; display: flex; align-items: center; gap: 8px; }

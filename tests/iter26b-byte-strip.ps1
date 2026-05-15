@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter26b: byte-level trailing-ws strip on the fragile file
 $path = 'C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1'
 $bytes = [IO.File]::ReadAllBytes($path)

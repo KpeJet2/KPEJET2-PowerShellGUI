@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Iter15: PSSA inventory by rule
 $findings = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -ExcludeRule PSAvoidUsingWriteHost
 $grouped = $findings | Group-Object RuleName | Sort-Object Count -Descending

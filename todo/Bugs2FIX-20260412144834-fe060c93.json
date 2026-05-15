@@ -1,6 +1,6 @@
 {
   "completedAt": null,
-  "plannedAt": null,
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
   "source": "BugTracker",
   "executedAt": null,
   "outlineTag": "OUTLINE-PROTO-v0",
@@ -13,21 +13,21 @@
   "linkedBugs": [],
   "id": "Bugs2FIX-20260412144834-fe060c93",
   "description": "Fix for bug Bug-20260412144727-fa026715: Script Script-B.ps1 has 1 functions but zero try/catch blocks",
-  "executionAgent": "",
+  "executionAgent": "CronAiAthon-Pipeline",
   "outlinePhase": "assessment",
   "linkedFeatures": [],
-  "modified": "2026-04-12T06:48:34.7881747Z",
+  "modified": "2026-05-15T14:36:41.1388049Z",
   "acknowledged": null,
   "sinId": "",
   "result": null,
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "suggestedBy": "CronAiAthon",
   "priority": "MEDIUM",
   "outlineVersion": "v0",
-  "notes": "",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\scripts\\Script-B.ps1"
-  ]
+  ],
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

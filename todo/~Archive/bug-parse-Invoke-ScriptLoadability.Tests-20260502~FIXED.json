@@ -1,0 +1,25 @@
+﻿{
+  "description": "Parse validation failed: The string is missing the terminator: \".",
+  "type": "bug",
+  "file_refs": [
+    "tests\\Invoke-ScriptLoadability.Tests.ps1"
+  ],
+  "category": "bug",
+  "suggested_by": "CronProcessor-DeepTest",
+  "title": "Parse error in Invoke-ScriptLoadability.Tests.ps1",
+  "created_at": "2026-05-02T00:07:39.1784211+08:00",
+  "status": "DONE",
+  "severity": "HIGH",
+  "todo_id": "bug-parse-Invoke-ScriptLoadability.Tests-20260502",
+  "priority": "HIGH",
+  "notes": "Auto-detected by cron deep-test cycle\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\tests\\Invoke-ScriptLoadability.Tests.ps1",
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:45.6797078+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:46",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

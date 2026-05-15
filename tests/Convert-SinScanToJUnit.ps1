@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 <#
 .SYNOPSIS
     Converts a SIN scanner result JSON into a JUnit-format XML for CI consumption.

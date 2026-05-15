@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 $RegistryPath = 'C:\PowerShellGUI\sin_registry'
 $all = New-Object System.Collections.Generic.List[object]

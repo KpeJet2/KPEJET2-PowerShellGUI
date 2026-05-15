@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -19,6 +19,8 @@
 .PARAMETER MaxSummaries    Summaries to retain before rotating older ones to archive zip.
 .PARAMETER NoParallel      Run all scans sequentially (safety / low-memory environments).
 .PARAMETER CreatePipeItems If set, add a pipeline item for each scan finding > 0 issues.
+.PARAMETER ProgressQuiet   Suppress rainbow bar and progress host output.
+.PARAMETER ProgressDetailed Emit per-scan processing logs to console in addition to persisted scan logs.
 .NOTES
     Author  : The Establishment
     Date    : 2026-04-03
@@ -30,7 +32,9 @@ param(
     [switch]$DeltaMode,
     [int]   $MaxSummaries   = 7,
     [switch]$NoParallel,
-    [switch]$CreatePipeItems
+    [switch]$CreatePipeItems,
+    [switch]$ProgressQuiet,
+    [switch]$ProgressDetailed
 )
 
 Set-StrictMode -Off
@@ -50,10 +54,70 @@ if (Test-Path $pipeModPath) {
 function Write-ScanLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Severity = 'Informational', [string]$Source = 'FullSystemsScan')
     if (Get-Command Write-CronLog -ErrorAction SilentlyContinue) {
-        Write-CronLog -Message $Msg -Severity $Severity -Source $Source
+        try {
+            $null = Write-CronLog -WorkspacePath $WorkspacePath -Message $Msg -Severity $Severity -Source $Source
+        } catch {
+            Write-Verbose "[Write-CronLog fallback][$Severity] $Msg -- $($_.Exception.Message)"
+        }
     } else {
         Write-Verbose "[$Severity] $Msg"
     }
+}
+
+function Write-ProcessingLog {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Message)
+
+    Write-ScanLog -Msg $Message -Severity 'Informational' -Source 'FullSystemsScan'
+    if ($ProgressDetailed -and -not $ProgressQuiet) {
+        Write-Host ("[scan-log] {0}" -f $Message) -ForegroundColor DarkCyan
+    }
+}
+
+$script:ProgressActivity = 'FullSystemsScan'
+$script:ProgressTotal = 0
+$script:ProgressCurrent = 0
+$script:RainbowPalette = @('Red','Yellow','Green','Cyan','Blue','Magenta','White')
+
+function Initialize-ScanProgress {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [int]$TotalSteps)
+
+    $script:ProgressTotal = if ($TotalSteps -lt 1) { 1 } else { $TotalSteps }
+    $script:ProgressCurrent = 0
+    $palettes = @(
+        @('Red','Yellow','Green','Cyan','Blue','Magenta','White'),
+        @('Yellow','Green','Cyan','Blue','Magenta','Red','White'),
+        @('Cyan','Blue','Magenta','Red','Yellow','Green','White'),
+        @('Magenta','Red','Yellow','Green','Cyan','Blue','White')
+    )
+    $script:RainbowPalette = @($palettes | Get-Random)
+}
+
+function Write-RainbowProgress {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Status,
+        [switch]$Advance
+    )
+
+    if ($Advance) { $script:ProgressCurrent++ }
+    if ($script:ProgressCurrent -gt $script:ProgressTotal) { $script:ProgressCurrent = $script:ProgressTotal }
+
+    if ($ProgressQuiet) { return }
+
+    $pct = [int][Math]::Round((100.0 * $script:ProgressCurrent) / [Math]::Max($script:ProgressTotal, 1), 0)
+    Write-Progress -Id 91 -Activity $script:ProgressActivity -Status $Status -PercentComplete $pct
+
+    $barLen = 20
+    $fill = [int][Math]::Round(($barLen * $pct) / 100.0, 0)
+    if ($fill -lt 0) { $fill = 0 }
+    if ($fill -gt $barLen) { $fill = $barLen }
+    $bar = ('=' * $fill) + ('-' * ($barLen - $fill))
+    $idx = if (@($script:RainbowPalette).Count -gt 0) { $script:ProgressCurrent % @($script:RainbowPalette).Count } else { 0 }
+    $color = if (@($script:RainbowPalette).Count -gt 0) { $script:RainbowPalette[$idx] } else { 'Gray' }
+
+    Write-Host ("[scan-progress] [{0}] {1,3}% ({2}/{3}) {4}" -f $bar, $pct, $script:ProgressCurrent, $script:ProgressTotal, $Status) -ForegroundColor $color
 }
 #endregion
 
@@ -110,10 +174,15 @@ $parallelScripts = @(
 )
 
 $parallelResults = @{}
+$plannedSequentialCount = 3
+Initialize-ScanProgress -TotalSteps (@($parallelScripts).Count + $plannedSequentialCount + 1)
+Write-RainbowProgress -Status 'Preparing scan pipeline'
 if ($NoParallel) {
     Write-ScanLog "Running parallel scans sequentially (NoParallel switch)"
     foreach ($spec in $parallelScripts) {
+        Write-ProcessingLog ("Processing content scan: {0} ({1})" -f $spec.Name, $spec.Path)
         $parallelResults[$spec.Name] = Invoke-ScanScript -ScriptPath $spec.Path -Name $spec.Name
+        Write-RainbowProgress -Status ("Completed {0}" -f $spec.Name) -Advance
     }
 } else {
     Write-ScanLog "Launching $(@($parallelScripts).Count) parallel scan jobs..."
@@ -153,7 +222,9 @@ if ($NoParallel) {
             try {
                 $r = Receive-Job -Job $jb.Job -ErrorAction SilentlyContinue
                 $parallelResults[$jb.Name] = $r
+                Write-ProcessingLog ("Processed content scan: {0} => {1}" -f $jb.Name, $parallelResults[$jb.Name].Summary)
             } catch { $parallelResults[$jb.Name] = [PSCustomObject]@{ Name=$jb.Name; Issues=0; Summary='job receive failed'; ErrorMsg=$_.Exception.Message; Elapsed=0 } }
+            Write-RainbowProgress -Status ("Completed {0}" -f $jb.Name) -Advance
             Remove-Job -Job $jb.Job -Force -ErrorAction SilentlyContinue
         }
     }
@@ -169,7 +240,9 @@ $seqScripts  = @(
     @{ Name = 'AgenticManifestRebuild'; Path = Join-Path (Join-Path $WorkspacePath 'scripts') 'Build-AgenticManifest.ps1' }
 )
 foreach ($spec in $seqScripts) {
+    Write-ProcessingLog ("Processing content scan: {0} ({1})" -f $spec.Name, $spec.Path)
     [void]$seqResults.Add((Invoke-ScanScript -ScriptPath $spec.Path -Name $spec.Name))
+    Write-RainbowProgress -Status ("Completed {0}" -f $spec.Name) -Advance
 }
 #endregion
 
@@ -181,6 +254,7 @@ if (-not (Test-Path $steerPath)) {
 }
 if (Test-Path $steerPath) {
     try {
+        Write-ProcessingLog ("Processing content scan: PipelineSteering ({0})" -f $steerPath)
         Import-Module $steerPath -Force -ErrorAction Stop
         if (Get-Command Invoke-PipelineSteer -ErrorAction SilentlyContinue) {
             $steerOutRaw = Invoke-PipelineSteer -WorkspacePath $WorkspacePath -DryRun -ErrorAction SilentlyContinue
@@ -196,6 +270,7 @@ if (Test-Path $steerPath) {
 } else {
     $steerResult = [PSCustomObject]@{ Name = 'PipelineSteering'; Issues = 0; Summary = 'module not found'; Elapsed = 0 }
 }
+Write-RainbowProgress -Status 'Completed PipelineSteering' -Advance
 #endregion
 
 #region ─── ASSEMBLE SUMMARY ────────────────────────────────────────────────────
@@ -249,6 +324,19 @@ if ($DeltaMode) {
 #region ─── WRITE SUMMARY ────────────────────────────────────────────────────────
 $summaryJson | Set-Content -Path $sumFile -Encoding UTF8
 Write-ScanLog "Summary written: $sumFile ($totalIssues total issues)"
+
+# Maintain a stable pointer file for dashboard/XHTML consumers.
+$latestFile = Join-Path $outDir 'scan-latest.json'
+try {
+    $summaryJson | Set-Content -Path $latestFile -Encoding UTF8
+    Write-ScanLog "Latest summary updated: $latestFile"
+} catch {
+    Write-ScanLog "Failed to update scan-latest.json: $($_.Exception.Message)" 'Warning'
+}
+
+if (-not $ProgressQuiet) {
+    Write-Progress -Id 91 -Activity $script:ProgressActivity -Completed
+}
 #endregion
 
 #region ─── ROTATION (compress overflow summaries) ───────────────────────────────

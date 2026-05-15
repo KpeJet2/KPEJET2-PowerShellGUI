@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 {"ts":"2026-04-29T16:17:16.7020812Z","severity":"INFO","scope":"pipeline","component":"V33.5-Smoke","msg":"kernel mirror smoke","corrId":"","host":"XPS15-MS","pid":36844,"source":""}
 {"ts":"2026-04-29T16:17:21.8277965Z","severity":"WARN","scope":"pipeline","component":"PesterTest","msg":"round-trip-check","corrId":"PESTER-e9fa78f8","host":"XPS15-MS","pid":4996,"source":""}
 {"ts":"2026-04-29T16:58:34.1952889Z","severity":"INFO","scope":"pipeline","component":"DiffScheduler","msg":"Pair changelog-vs-enhancements: +1478/-244/~0 -> changelog-vs-enhancements-20260430-005833.patch","corrId":"changelog-vs-enhancements","host":"XPS15-MS","pid":48312,"source":""}

@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-6f354cc3",
+  "title": "Resurfacing bug pattern: Missing module reference: path/to/module/updateMods",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260504194026-a939a684",
+    "Bug-20260507013701-ce48729a"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter36: bulk-add [OutputType()] from PSSA findings
 # Each finding tells us "cmdlet '<func>' returns an object of type '<type>'"
 # We aggregate distinct types per (file, func) and inject one [OutputType(...)] attribute.

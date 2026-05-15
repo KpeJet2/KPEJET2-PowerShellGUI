@@ -4,11 +4,15 @@
   "title": "Scheduler task failure: TASK-MasterAggregate",
   "taskId": "TASK-MasterAggregate",
   "id": "BUG-SCHED-C532F238",
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "source": "CronAiAthon-Scheduler",
   "createdAt": "2026-05-06T17:37:09.4318066Z",
   "priority": "High",
   "detail": "The property 'description' cannot be found on this object. Verify that the property exists.",
   "lastUpdated": "2026-05-06T17:37:09.4318066Z",
-  "description": "The property 'description' cannot be found on this object. Verify that the property exists."
+  "description": "The property 'description' cannot be found on this object. Verify that the property exists.",
+  "modified": "2026-05-14T20:42:29.8231546Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-05-14T20:42:29.8231546Z",
+  "notes": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-14T20:42:29.8231546Z"
 }

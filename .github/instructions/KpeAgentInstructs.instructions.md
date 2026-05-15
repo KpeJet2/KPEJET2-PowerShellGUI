@@ -16,6 +16,7 @@ modelProfile:
 	priority: reliability-security-maintainability-observability
 	targetRuntime: powershell-5.1-strict
 ---
+<!-- VersionTag: 2605.B5.V46.0 -->
 
 # KPE Workspace Instructions (SOV-Sys-zero)
 

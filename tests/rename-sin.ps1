@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $f = 'C:\PowerShellGUI\sin_registry\SIN-PATTERN-036-DICTKEYS-COUNT-IN-LITERAL_20260430.json'
 $nf = 'C:\PowerShellGUI\sin_registry\SIN-PATTERN-037-DICTKEYS-COUNT-IN-LITERAL_20260430.json'
 $c = Get-Content $f -Raw -Encoding UTF8

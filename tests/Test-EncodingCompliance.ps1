@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -14,7 +14,7 @@
 
     Returns a result object with findings count and details.
 .NOTES
-    VersionTag: 2604.B2.V31.0
+    VersionTag: 2605.B5.V46.0
     FileRole: Test
     Category: Encoding / Quality Gate
 .PARAMETER WorkspacePath

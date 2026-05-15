@@ -1,5 +1,5 @@
 /* eventlog-view.js -- shared XHTML EventLogView mountable bundle
-   VersionTag: 2604.B2.V31.0
+   VersionTag: 2605.B5.V46.0
    Contract: docs/EVENT-LOG-STANDARD.md
    Mount:
      <div class="evlv-mount" data-scope="pipeline" data-title="Pipeline Events"></div>

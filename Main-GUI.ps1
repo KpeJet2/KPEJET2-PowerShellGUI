@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B2.V31.8
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -2576,6 +2576,18 @@ function Update-VersionTag {
     }
     Write-AppLog "Update-VersionTag complete: processed=$processed written=$written skipped=$skipped" "Info"
     Write-Information "Update-VersionTag complete: processed=$processed written=$written skipped=$skipped" -InformationAction Continue
+
+    # Refresh XHTML version feed so styles/pwshgui-version-link.js can render
+    # live version badges on every wired XHTML page (idempotent rebuild).
+    try {
+        $feedScript = Join-Path $PSScriptRoot 'scripts\Build-XhtmlVersionFeed.ps1'
+        if (Test-Path -LiteralPath $feedScript) {
+            & $feedScript -WorkspacePath $PSScriptRoot | Out-Null
+            Write-AppLog "XHTML version feed refreshed via Build-XhtmlVersionFeed.ps1" "Info"
+        }
+    } catch {
+        Write-AppLog "Build-XhtmlVersionFeed failed: $($_.Exception.Message)" "Warning"
+    }
 }
 function New-BuildManifest {
     [CmdletBinding(SupportsShouldProcess = $true)]

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter26: targeted trailing-ws strip on files PSSA flagged, preserving BOM and CRLF
 $f = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSAvoidTrailingWhitespace
 $byFile = $f | Group-Object ScriptPath

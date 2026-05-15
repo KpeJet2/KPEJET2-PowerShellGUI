@@ -2,6 +2,7 @@
 description: "Use when working in PowerShellGUI to enforce PS7.6-first engineering, PS5.1-safe fallback patterns, dual-engine smoke testing, and SIN governance with integrity audit controls."
 applyTo: "**/*.{ps1,psm1,psd1,bat,cmd,json,yaml,yml,md,xhtml,html,js,ts,css}"
 ---
+<!-- VersionTag: 2605.B5.V46.0 -->
 # Sin-Ai-Voidance (PS7.6 Primary, PS5.1 Fallback)
 
 Follow these hard rules whenever creating or editing files in this workspace.

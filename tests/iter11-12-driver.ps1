@@ -1,5 +1,5 @@
 # Iter11: Surface diff vs iter5 JSON baseline + Iter12: SIN drift scan
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'
 $outDir = Join-Path $root 'reports\iter11'

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $mods = @(
     'AVPN-Tracker', 'CronAiAthon-ErrorLinker', 'CronAiAthon-Pipeline', 'Get-LaunchTelemetry',
     'PKIChainManager', 'PwSh-HelpFilesUpdateSource-ReR', 'PwShGUI-ConvoVault', 'PwShGUI-IntegrityCore',

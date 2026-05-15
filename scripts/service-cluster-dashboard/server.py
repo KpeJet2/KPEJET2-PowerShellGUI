@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # FileRole: ServiceDashboard-Backend
 # service-cluster-dashboard/server.py
 # FastAPI backend for PwShGUI Service Cluster Dashboard
@@ -13,6 +13,7 @@ Auth: node-shared HMAC token header  X-Cluster-Token
 from __future__ import annotations
 
 import asyncio
+import html
 import hashlib
 import hmac
 import json
@@ -189,10 +190,16 @@ def _collect_metrics() -> Dict[str, Any]:
     except Exception:
         disk_info = {}
     proc_list = []
-    for proc in psutil.process_iter(["pid", "name", "cpu_percent", "memory_mb", "status"]):
+    # NOTE: 'memory_mb' is NOT a valid psutil attr name — it raises
+    # "invalid attr name 'memory_mb'" in process_iter(). We compute it
+    # ourselves from memory_info().rss below.
+    for proc in psutil.process_iter(["pid", "name", "cpu_percent", "status"]):
         try:
             pi = proc.info
-            pi["memory_mb"] = round(proc.memory_info().rss / 1e6, 1)
+            try:
+                pi["memory_mb"] = round(proc.memory_info().rss / 1e6, 1)
+            except Exception:
+                pi["memory_mb"] = 0
             proc_list.append(pi)
         except Exception:
             pass
@@ -411,9 +418,55 @@ class EngineAction(BaseModel):
 async def root():
     index = STATIC_DIR / "index.html"
     if index.exists():
-        return HTMLResponse(content=index.read_text(encoding="utf-8"))
+        content = index.read_text(encoding="utf-8")
+        # Inject runtime cluster token so local dashboard can authenticate on
+        # first load and recover from stale browser cache tokens.
+        content = content.replace("__CLUSTER_TOKEN__", html.escape(CLUSTER_TOKEN, quote=True))
+        return HTMLResponse(content=content)
     return HTMLResponse("<p>Static files not found. Check static/index.html.</p>")
 
+
+# ─── Root-level passthroughs for page-relative asset references ──────────────
+# index.html references 'style.css' and 'app.js' as page-relative URLs, which
+# the browser resolves to '/style.css' and '/app.js'. Serve these (plus the
+# common implicit /favicon.ico and /robots.txt requests) from /static so the
+# page renders without 404 chatter in the access log.
+from fastapi.responses import FileResponse, Response
+
+@app.get("/style.css", include_in_schema=False)
+async def _root_stylecss():
+    f = STATIC_DIR / "style.css"
+    if f.exists():
+        return FileResponse(str(f), media_type="text/css")
+    return Response(status_code=404)
+
+@app.get("/app.js", include_in_schema=False)
+async def _root_appjs():
+    f = STATIC_DIR / "app.js"
+    if f.exists():
+        return FileResponse(str(f), media_type="application/javascript")
+    return Response(status_code=404)
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def _root_favicon():
+    f = STATIC_DIR / "favicon.ico"
+    if f.exists():
+        return FileResponse(str(f), media_type="image/x-icon")
+    # 1x1 transparent ICO — silences browser auto-request
+    return Response(
+        content=(
+            b"\x00\x00\x01\x00\x01\x00\x01\x01\x00\x00\x01\x00\x18\x00\x30\x00"
+            b"\x00\x00\x16\x00\x00\x00\x28\x00\x00\x00\x01\x00\x00\x00\x02\x00"
+            b"\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        ),
+        media_type="image/x-icon",
+    )
+
+@app.get("/robots.txt", include_in_schema=False)
+async def _root_robots():
+    return Response(content="User-agent: *\nDisallow: /\n", media_type="text/plain")
 
 @app.get("/api/ping", tags=["Health"])
 async def ping():

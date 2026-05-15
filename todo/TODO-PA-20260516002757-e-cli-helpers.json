@@ -1,0 +1,26 @@
+{
+  "id": "TODO-PA-20260516002757-e-cli-helpers",
+  "todo_id": "TODO-PA-20260516002757-e-cli-helpers",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Expose Get-VaultSecret / Set-VaultSecret cmdlets in PwShGUICore",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "HIGH",
+  "status": "PENDING_APPROVAL",
+  "source_id": "feature-F001",
+  "source_status": "IN-PROGRESS",
+  "parentId": "feature-F001",
+  "created": "2026-05-15T16:27:57.2676106Z",
+  "createdAt": "2026-05-15T16:27:57.2676106Z",
+  "modified": "2026-05-15T16:27:57.2676106Z",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN-PROGRESS",
+  "status_history": [
+    {
+      "timestamp": "2026-05-15T16:27:57.2676106Z",
+      "by": "CronAiAthon-Pipeline",
+      "status": "PENDING_APPROVAL"
+    }
+  ]
+}

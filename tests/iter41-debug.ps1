@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 try {
     & 'C:\PowerShellGUI\tests\iter41-scoreboard-data-gen.ps1'
 } catch {

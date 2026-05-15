@@ -1,4 +1,4 @@
-REM VersionTag: 2604.B2.V31.1
+REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Inject PSModulePath for all child PowerShell processes
 REM   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)

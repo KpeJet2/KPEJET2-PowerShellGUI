@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.8
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-07
@@ -48,6 +48,37 @@ if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
     $WorkspacePath = Split-Path $scriptDir -Parent
 }
 
+function Resolve-WorkspaceRootPath {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$PathValue)
+
+    $candidate = [System.IO.Path]::GetFullPath($PathValue)
+    $hasScripts = Test-Path -LiteralPath (Join-Path $candidate 'scripts') -PathType Container
+    $hasModules = Test-Path -LiteralPath (Join-Path $candidate 'modules') -PathType Container
+    if ($hasScripts -and $hasModules) {
+        return $candidate
+    }
+
+    if ((Split-Path -Leaf $candidate).ToLowerInvariant() -eq 'scripts') {
+        $parent = Split-Path -Parent $candidate
+        if (-not [string]::IsNullOrWhiteSpace($parent)) {
+            $parentHasScripts = Test-Path -LiteralPath (Join-Path $parent 'scripts') -PathType Container
+            $parentHasModules = Test-Path -LiteralPath (Join-Path $parent 'modules') -PathType Container
+            if ($parentHasScripts -and $parentHasModules) {
+                return [System.IO.Path]::GetFullPath($parent)
+            }
+        }
+    }
+
+    return $candidate
+}
+
+$originalWorkspacePath = $WorkspacePath
+$WorkspacePath = Resolve-WorkspaceRootPath -PathValue $WorkspacePath
+if ($WorkspacePath -ne $originalWorkspacePath) {
+    Write-Host ("[workspace-normalize] '{0}' -> '{1}'" -f $originalWorkspacePath, $WorkspacePath) -ForegroundColor DarkGray
+}
+
 $engineScript = Join-Path $scriptDir 'Start-LocalWebEngine.ps1'
 if (-not (Test-Path -LiteralPath $engineScript)) {
     Write-Host "Engine script not found: $engineScript" -ForegroundColor Red
@@ -71,6 +102,43 @@ function Write-ServiceLog {
         default { 'Gray' }
     }
     Write-Host $line -ForegroundColor $color
+}
+
+function Get-ResolutionHint {
+    [CmdletBinding()]
+    param([AllowEmptyString()] [string]$ErrorText)
+
+    $text = if ($null -eq $ErrorText) { '' } else { [string]$ErrorText }
+    if ($text -match '(?i)401|unauthorized|invalid cluster token') {
+        return 'Auth token mismatch. Relaunch Service Cluster Dashboard, then reconnect using the token from scripts/service-cluster-dashboard/cluster.token.'
+    }
+    if ($text -match '(?i)No PowerShell host executable found') {
+        return 'PowerShell host not found. Ensure pwsh.exe or powershell.exe is available on PATH.'
+    }
+    if ($text -match '(?i)not found|cannot find path|target not found') {
+        return 'Target path missing. Verify workspace root and that the script/file exists at the configured location.'
+    }
+    if ($text -match '(?i)access is denied|permission') {
+        return 'Permission issue. Re-run elevated if required and verify antivirus/app-control is not blocking the script.'
+    }
+    if ($text -match '(?i)timed out|timeout') {
+        return 'Operation timed out. Check whether the engine/service is already starting and review logs/engine-service.log.'
+    }
+    return 'Review logs/engine-service.log and logs/engine-bootstrap.log, then retry with -Action Status for quick diagnostics.'
+}
+
+function Write-ServiceWarningWithHint {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Context,
+        [Parameter(Mandatory)] [string]$ErrorText
+    )
+
+    Write-ServiceLog -Level 'WARN' -Message ("{0}: {1}" -f $Context, $ErrorText)
+    $hint = Get-ResolutionHint -ErrorText $ErrorText
+    if (-not [string]::IsNullOrWhiteSpace($hint)) {
+        Write-ServiceLog -Level 'INFO' -Message ("Hint: {0}" -f $hint)
+    }
 }
 
 function Resolve-PowerShellHost {
@@ -455,6 +523,25 @@ function Resolve-WorkspaceChildPath {
 
     $resolved = $null
     try { $resolved = [System.IO.Path]::GetFullPath($combined) } catch { return $null }
+
+    if (-not (Test-Path -LiteralPath $resolved)) {
+        # Fallback: if WorkspacePath already points at scripts/, avoid scripts/scripts/* doubling.
+        if (-not $isRooted -and $candidate.StartsWith('scripts\', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $trimmed = $candidate.Substring('scripts\'.Length)
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $fallbackCombined = Join-Path $WorkspacePath $trimmed
+                try {
+                    $fallbackResolved = [System.IO.Path]::GetFullPath($fallbackCombined)
+                    if (Test-Path -LiteralPath $fallbackResolved) {
+                        $resolved = $fallbackResolved
+                    }
+                } catch {
+                    <# Intentional: non-fatal fallback path parse #>
+                }
+            }
+        }
+    }
+
     $wsRoot = [System.IO.Path]::GetFullPath($WorkspacePath).TrimEnd('\\')
     $resolvedNorm = $resolved.TrimEnd('\\')
     $wsPrefix = $wsRoot + '\\'
@@ -463,6 +550,89 @@ function Resolve-WorkspaceChildPath {
         return $null
     }
     return $resolved
+}
+
+function Get-TrayServiceDefinitions {
+    [CmdletBinding()]
+    param()
+
+    return @(
+        [PSCustomObject]@{
+            Name = 'ServiceClusterDashboard'
+            Path = 'scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat'
+            StartArgs = @()
+            StatusHints = @('Launch-ServiceDashboard.bat','uvicorn server:app','--port 8099')
+        },
+        [PSCustomObject]@{
+            Name = 'EngineBootstrap'
+            Path = 'scripts/Start-Engines.ps1'
+            StartArgs = @('-Quiet')
+            StatusHints = @('Start-Engines.ps1')
+        },
+        [PSCustomObject]@{
+            Name = 'Start-EngineServiceMonitor'
+            Path = 'scripts/Invoke-EngineServiceMonitor.ps1'
+            StartArgs = @('/AUTO','-Quiet')
+            StatusHints = @('Invoke-EngineServiceMonitor.ps1','engine-monitor')
+        },
+        [PSCustomObject]@{
+            Name = 'Invoke-CronProcessor.ps1 #1'
+            Path = 'scripts/Invoke-CronProcessor.ps1'
+            StartArgs = @()
+            StatusHints = @('Invoke-CronProcessor.ps1')
+        },
+        [PSCustomObject]@{
+            Name = 'Invoke-CronProcessor.ps1 #2'
+            Path = 'scripts/Invoke-CronProcessor.ps1'
+            StartArgs = @()
+            StatusHints = @('Invoke-CronProcessor.ps1')
+        }
+    )
+}
+
+function Start-TrayService {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [object]$Definition)
+
+    $resolved = Resolve-WorkspaceChildPath -PathValue ([string]$Definition.Path)
+    if ($null -eq $resolved -or -not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+        throw "Service target not found: $($Definition.Path)"
+    }
+
+    $args = ConvertTo-StringArray -Value $Definition.StartArgs
+    $ext = [System.IO.Path]::GetExtension($resolved).ToLowerInvariant()
+
+    if ($ext -eq '.ps1') {
+        $hostExe = Resolve-PowerShellHost
+        if ($null -eq $hostExe) {
+            throw 'No PowerShell host executable found.'
+        }
+        $psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$resolved) + $args
+        Start-Process -FilePath $hostExe -ArgumentList $psArgs -WindowStyle Hidden | Out-Null
+        return
+    }
+
+    if ($ext -in @('.bat','.cmd')) {
+        $cmdArgs = @('/c', '"' + $resolved + '"') + $args
+        Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WindowStyle Hidden | Out-Null
+        return
+    }
+
+    throw "Unsupported service file extension: $ext"
+}
+
+function Test-TrayServiceRunning {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Definition,
+        [Parameter(Mandatory)] [object[]]$ProcessSnapshot
+    )
+
+    $targetLike = [PSCustomObject]@{
+        path = [string]$Definition.Path
+        statusHints = @($Definition.StatusHints)
+    }
+    return (Get-TargetIsRunning -Target $targetLike -ProcessSnapshot $ProcessSnapshot)
 }
 
 function Resolve-BootstrapTokens {
@@ -764,7 +934,8 @@ function Invoke-BootstrapMenuAction {
         }
         'engineaction' {
             if ($target -in @('Start', 'Stop', 'Restart', 'Status', 'LaunchWebpage')) {
-                Invoke-EngineAction -EngineAction $target | Out-Null
+                $backgroundAction = ($target -in @('Start','Stop','Restart'))
+                Invoke-EngineAction -EngineAction $target -Background:$backgroundAction | Out-Null
             } else {
                 Write-ServiceLog -Level 'WARN' -Message "Invalid engineAction target: $target"
             }
@@ -1079,6 +1250,27 @@ function Start-ServiceTray {
     $notify.Visible = $true
     $notify.Text = 'Local Web Engine Service Wrapper'
 
+    $showError = {
+        param(
+            [Parameter(Mandatory)] [string]$Title,
+            [Parameter(Mandatory)] [string]$ErrorText
+        )
+        Write-ServiceWarningWithHint -Context $Title -ErrorText $ErrorText
+        try {
+            $hint = Get-ResolutionHint -ErrorText $ErrorText
+            $msg = $ErrorText
+            if (-not [string]::IsNullOrWhiteSpace($hint)) {
+                $msg = $ErrorText + "`r`nHint: " + $hint
+            }
+            $notify.BalloonTipTitle = $Title
+            $notify.BalloonTipText = $msg.Substring(0, [Math]::Min(240, $msg.Length))
+            $notify.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Warning
+            $notify.ShowBalloonTip(5000)
+        } catch {
+            <# Intentional: non-fatal tray tooltip failure #>
+        }
+    }
+
     $context = New-Object System.Windows.Forms.ContextMenuStrip
     $statusItem = New-Object System.Windows.Forms.ToolStripMenuItem('Status: loading...')
     $statusItem.Enabled = $false
@@ -1156,6 +1348,50 @@ function Start-ServiceTray {
     & $reloadBootstrapMenu
     [void]$context.Items.Add($bootstrapRoot)
 
+    $serviceFlyoutRoot = New-Object System.Windows.Forms.ToolStripMenuItem('Services Startup + Monitor')
+    $serviceDefs = @(Get-TrayServiceDefinitions)
+    $serviceNodes = [System.Collections.ArrayList]@()
+    foreach ($svc in $serviceDefs) {
+        $svcItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$svc.Name)
+        $svcItem.CheckOnClick = $true
+        $svcItem.Tag = $svc
+        $svcItem.ToolTipText = [string]$svc.Path
+        $svcItem.Add_Click({
+            param($sender)
+            $menuItemArg = [System.Windows.Forms.ToolStripMenuItem]$sender
+            $svcDef = $menuItemArg.Tag
+            try {
+                $snapshot = @()
+                try {
+                    $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+                } catch {
+                    $snapshot = @()
+                }
+
+                $isRunning = $false
+                if (@($snapshot).Count -gt 0) {
+                    $isRunning = Test-TrayServiceRunning -Definition $svcDef -ProcessSnapshot $snapshot
+                }
+
+                if ($isRunning) {
+                    $menuItemArg.Checked = $true
+                    Write-ServiceLog -Level 'INFO' -Message ("Service already running: {0}" -f $svcDef.Name)
+                    return
+                }
+
+                Start-TrayService -Definition $svcDef
+                $menuItemArg.Checked = $true
+                Write-ServiceLog -Level 'ACTION' -Message ("Service start requested: {0}" -f $svcDef.Name)
+            } catch {
+                $menuItemArg.Checked = $false
+                & $showError ("Service start failed: " + $svcDef.Name) $_.Exception.Message
+            }
+        })
+        [void]$serviceFlyoutRoot.DropDownItems.Add($svcItem)
+        [void]$serviceNodes.Add([PSCustomObject]@{ Item = $svcItem; Definition = $svc })
+    }
+    [void]$context.Items.Add($serviceFlyoutRoot)
+
     $launchA = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Auto Five (A)')
     $launchA.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets })
     [void]$context.Items.Add($launchA)
@@ -1193,7 +1429,7 @@ function Start-ServiceTray {
         try {
             Invoke-EngineAction -EngineAction 'Start' -Background | Out-Null
         } catch {
-            Write-ServiceLog -Level 'WARN' -Message "Tray start failed: $($_.Exception.Message)"
+            & $showError 'Tray start failed' $_.Exception.Message
         }
     })
     [void]$context.Items.Add($startItem)
@@ -1201,9 +1437,9 @@ function Start-ServiceTray {
     $restartItem = New-Object System.Windows.Forms.ToolStripMenuItem('Restart engine')
     $restartItem.Add_Click({
         try {
-            Invoke-EngineAction -EngineAction 'Restart' | Out-Null
+            Invoke-EngineAction -EngineAction 'Restart' -Background | Out-Null
         } catch {
-            Write-ServiceLog -Level 'WARN' -Message "Tray restart failed: $($_.Exception.Message)"
+            & $showError 'Tray restart failed' $_.Exception.Message
         }
     })
     [void]$context.Items.Add($restartItem)
@@ -1211,9 +1447,9 @@ function Start-ServiceTray {
     $stopItem = New-Object System.Windows.Forms.ToolStripMenuItem('Stop engine')
     $stopItem.Add_Click({
         try {
-            Invoke-EngineAction -EngineAction 'Stop' | Out-Null
+            Invoke-EngineAction -EngineAction 'Stop' -Background | Out-Null
         } catch {
-            Write-ServiceLog -Level 'WARN' -Message "Tray stop failed: $($_.Exception.Message)"
+            & $showError 'Tray stop failed' $_.Exception.Message
         }
     })
     [void]$context.Items.Add($stopItem)
@@ -1249,6 +1485,20 @@ function Start-ServiceTray {
 
         $statusItem.Text = "Status: $($health.State) | Running=$($health.Running)/$($health.Total) | Warn=$($health.Warning) | Err=$($health.Error)"
         $notify.Text = "LWE Service | $($health.State) | $($health.Running)/$($health.Total)"
+
+        $snap = @()
+        try {
+            $snap = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+        } catch {
+            $snap = @()
+        }
+        foreach ($node in @($serviceNodes)) {
+            $runningNow = $false
+            if (@($snap).Count -gt 0) {
+                $runningNow = Test-TrayServiceRunning -Definition $node.Definition -ProcessSnapshot $snap
+            }
+            $node.Item.Checked = [bool]$runningNow
+        }
     }
 
     $timer = New-Object System.Windows.Forms.Timer

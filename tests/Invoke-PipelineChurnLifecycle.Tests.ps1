@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V45.0
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES
 # SupportsPS7.6: YES
 # SupportPS5.1TestedDate: 2026-05-07

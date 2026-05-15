@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: 2026-04-21
@@ -66,6 +66,20 @@ $script:EventLogSources = @('PowerShellGUI-CRON', 'PowerShellGUI-CORE')
 $script:DefaultSyslogPort = 514
 $script:SyslogFileSuffix = '.SYSLOG'
 
+function Write-EventLogInternalMessage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Message,
+        [ValidateSet('Debug','Info','Warning','Error','Critical','Audit')] [string]$Level = 'Error'
+    )
+
+    if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+        Write-AppLog -Message $Message -Level $Level
+    } else {
+        Write-Verbose "[CronAiAthon-EventLog][$Level] $Message"
+    }
+}
+
 # ========================== SOURCE REGISTRATION ==========================
 
 function Register-EventLogSources {
@@ -101,7 +115,7 @@ function Register-EventLogSources {
                 }
             }
         } catch {
-            Write-AppLog -Message "Register-EventLogSource failed for ${src}: $($_.Exception.Message)" -Level Error
+            Write-EventLogInternalMessage -Message "Register-EventLogSource failed for ${src}: $($_.Exception.Message)" -Level Error
             $results += [ordered]@{
                 source  = $src
                 status  = 'FAILED'
@@ -125,7 +139,7 @@ function Test-EventLogSourceReady {
     try {
         return [System.Diagnostics.EventLog]::SourceExists($Source)
     } catch {
-        Write-AppLog -Message "Test-EventLogSourceReady failed for ${Source}: $($_.Exception.Message)" -Level Error
+        Write-EventLogInternalMessage -Message "Test-EventLogSourceReady failed for ${Source}: $($_.Exception.Message)" -Level Error
         return $false
     }
 }

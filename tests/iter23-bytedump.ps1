@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $b = [IO.File]::ReadAllBytes('C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1')
 # Locate "Save-Help operation completed" anchor and dump 200 bytes before it
 $text = [Text.Encoding]::UTF8.GetString($b)

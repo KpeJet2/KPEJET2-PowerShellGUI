@@ -1,56 +1,46 @@
-﻿{
-    "id":  "Bugs2FIX-20260504184727-8d035173",
-    "bugHistory":  [
-
-                   ],
-    "completedAt":  null,
-    "outlineVersion":  "v0",
-    "executionMethod":  "",
-    "tags":  [
-
-             ],
-    "description":  "Fix for bug Bug-20260504184537-d2994b6a: Script ConvertTo-BugTask.ps1 has 3 functions but zero try/catch blocks",
-    "lastSeenAt":  "2026-05-04T10:47:27.7729082Z",
-    "linkedFeatures":  [
-
-                       ],
-    "fixesImplementedCount":  0,
-    "title":  "FIX: 3 functions with no try/catch blocks",
-    "parentId":  "Bug-20260504184537-d2994b6a",
-    "type":  "Bugs2FIX",
-    "result":  null,
-    "filesFixedCount":  0,
-    "executedAt":  null,
-    "outlineTag":  "OUTLINE-PROTO-v0",
-    "firstSeenAt":  "2026-05-04T10:47:27.7729082Z",
-    "priority":  "MEDIUM",
-    "suggestedBy":  "CronAiAthon",
-    "outlinePhase":  "assessment",
-    "affectedFiles":  [
-                          "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1"
-                      ],
-    "plannedAt":  null,
-    "linkedBugs":  [
-
-                   ],
-    "status":  "OPEN",
-    "sinId":  "",
-    "bugReferrals":  [
-                         "Bug-20260504184537-d2994b6a"
-                     ],
-    "implementedAt":  null,
-    "notes":  "",
-    "category":  "error-handling",
-    "reopenedAt":  null,
-    "created":  "2026-05-04T10:47:27.7729082Z",
-    "bugResurfaced":  false,
-    "source":  "BugTracker",
-    "sessionModCount":  1,
-    "executionAgent":  "",
-    "modified":  "2026-05-04T10:47:27.7729082Z",
-    "filesRemainingCount":  0,
-    "countermeasures":  [
-
-                        ],
-    "acknowledged":  null
+{
+  "id": "Bugs2FIX-20260504184727-8d035173",
+  "bugHistory": [],
+  "completedAt": null,
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "tags": [],
+  "description": "Fix for bug Bug-20260504184537-d2994b6a: Script ConvertTo-BugTask.ps1 has 3 functions but zero try/catch blocks",
+  "lastSeenAt": "2026-05-04T10:47:27.7729082Z",
+  "linkedFeatures": [],
+  "fixesImplementedCount": 0,
+  "title": "FIX: 3 functions with no try/catch blocks",
+  "parentId": "Bug-20260504184537-d2994b6a",
+  "type": "Bugs2FIX",
+  "result": null,
+  "filesFixedCount": 0,
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "firstSeenAt": "2026-05-04T10:47:27.7729082Z",
+  "priority": "MEDIUM",
+  "suggestedBy": "CronAiAthon",
+  "outlinePhase": "assessment",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1"
+  ],
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
+  "linkedBugs": [],
+  "status": "IN-PROGRESS",
+  "sinId": "",
+  "bugReferrals": [
+    "Bug-20260504184537-d2994b6a"
+  ],
+  "implementedAt": null,
+  "category": "error-handling",
+  "reopenedAt": null,
+  "created": "2026-05-04T10:47:27.7729082Z",
+  "bugResurfaced": false,
+  "source": "BugTracker",
+  "sessionModCount": 1,
+  "executionAgent": "CronAiAthon-Pipeline",
+  "modified": "2026-05-15T14:36:41.1388049Z",
+  "filesRemainingCount": 0,
+  "countermeasures": [],
+  "acknowledged": null,
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter39: bulk-add comment-based help skeleton to functions missing it.
 # PSSA PSProvideCommentHelp fires on functions without .SYNOPSIS.
 # We inject minimal <# .SYNOPSIS  Auto-generated stub: derived from function name. #>

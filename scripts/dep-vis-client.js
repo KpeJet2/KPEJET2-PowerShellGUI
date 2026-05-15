@@ -1,4 +1,4 @@
-/* VersionTag: 2604.B1.V32.0 */
+/* VersionTag: 2605.B5.V46.0 */
 /* dep-vis-client.js
    Client-side logic for the Dependency Visualiser:
      - WebSocket connection with auto-reconnect (falls back to fetch polling)

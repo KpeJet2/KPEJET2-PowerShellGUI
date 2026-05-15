@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V45.0
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -137,6 +137,7 @@ function New-PipelineItem {
         [string[]]$AffectedFiles = @(),
         [string]$SuggestedBy = 'Commander',
         [string]$SinId = '',
+        [string]$SinPattern = '',
         [string]$ParentId = '',
         [string[]]$BugReferrals = @(),
         [string]$OutlineTag = 'OUTLINE-PROTO-v0',
@@ -160,6 +161,7 @@ function New-PipelineItem {
         suggestedBy      = $SuggestedBy
         affectedFiles    = $AffectedFiles
         sinId            = $SinId
+        sinPattern       = $SinPattern
         parentId         = $ParentId
         created          = (Get-Date).ToUniversalTime().ToString('o')
         modified         = (Get-Date).ToUniversalTime().ToString('o')
@@ -731,19 +733,41 @@ function Invoke-SinRegistryFeedback {
     $sinDir = Join-Path $WorkspacePath 'sin_registry'
     if (-not (Test-Path $sinDir)) { New-Item -ItemType Directory -Path $sinDir -Force | Out-Null }
 
+    # Best-effort SIN-scope event adapter (P048: every SIN feedback decision emits an audit event).
+    $sinEventAdapter = Join-Path $WorkspacePath 'modules\PwShGUI-EventLogAdapter.psm1'
+    $sinEventReady = $false
+    if (Test-Path $sinEventAdapter) {
+        try { Import-Module $sinEventAdapter -Force -DisableNameChecking -ErrorAction Stop; $sinEventReady = $true } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+    }
+
     # Load existing sins
     $sinFiles = Get-ChildItem -Path $sinDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -ne 'fixes' }
+        Where-Object { $_.Name -notlike 'REINDEX-*' -and $_.Name -ne 'package.json' }
     $matched = $false
 
     foreach ($sf in $sinFiles) {
         try {
-            $sin = Get-Content $sf.FullName -Raw | ConvertFrom-Json
+            $sin = Get-Content $sf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($sin.title -and $BugItem.title -and
                 ($sin.title -like "*$($BugItem.title)*" -or $BugItem.title -like "*$($sin.title)*")) {
-                # Match found -- link bug to sin
-                $BugItem.sinId = if ($sin.sin_id) { $sin.sin_id } else { $sf.BaseName }
+                # Match found -- link bug to sin (G7: support both legacy sin_id and newer id field).
+                $sinIdCanonical = if ($sin.PSObject.Properties.Name -contains 'sin_id' -and $sin.sin_id) { [string]$sin.sin_id } `
+                                  elseif ($sin.PSObject.Properties.Name -contains 'id' -and $sin.id) { [string]$sin.id } else { $sf.BaseName }
+                $BugItem.sinId = $sinIdCanonical
+                # G12: stamp canonical SIN-PATTERN-NNN onto Bug item when matched against a PATTERN file.
+                if ($sf.Name -like 'SIN-PATTERN-*') {
+                    if ($BugItem.PSObject.Properties.Name -contains 'sinPattern') { $BugItem.sinPattern = $sinIdCanonical } else { $BugItem['sinPattern'] = $sinIdCanonical }
+                }
                 $BugItem.notes = "Matched existing sin: $($sin.title)"
+                if ($sinEventReady) {
+                    try {
+                        Write-EventLogNormalized -Scope sin -Component 'Invoke-SinRegistryFeedback' `
+                            -Message ("Bug {0} matched SIN {1}" -f $BugItem.id, $sinIdCanonical) `
+                            -Severity Audit -WorkspacePath $WorkspacePath -ItemId $BugItem.id -ItemType 'Bug' `
+                            -ActionId 'sin-feedback' -AgentId 'CronAiAthon' -CorrId $sinIdCanonical -Editor ([string]$env:USERNAME) `
+                            -EventId ([int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), (Get-Random -Minimum 100 -Maximum 999)))
+                    } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+                }
                 $matched = $true
                 break
             }
@@ -775,6 +799,15 @@ function Invoke-SinRegistryFeedback {
         $newSin | ConvertTo-Json -Depth 6 | Set-Content -Path $sinFile -Encoding UTF8
         $BugItem.sinId = $sinId
         $BugItem.notes = "New sin created: $sinId"
+        if ($sinEventReady) {
+            try {
+                Write-EventLogNormalized -Scope sin -Component 'Invoke-SinRegistryFeedback' `
+                    -Message ("New SIN instance {0} created from bug {1}" -f $sinId, $BugItem.id) `
+                    -Severity Notice -WorkspacePath $WorkspacePath -ItemId $BugItem.id -ItemType 'Bug' `
+                    -ActionId 'sin-feedback' -AgentId 'CronAiAthon' -CorrId $sinId -Editor ([string]$env:USERNAME) `
+                    -EventId ([int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), (Get-Random -Minimum 100 -Maximum 999)))
+            } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+        }
     }
 
     return $BugItem
@@ -795,11 +828,15 @@ function ConvertTo-Bugs2FIX {
 
     $bugDescription = Get-PipelineDescriptionValue -Item $BugItem -Default ''
     $refIds = @(@($BugReferrals) + @($BugItem.id) | Select-Object -Unique)
+    # G12: propagate sinId + sinPattern from parent Bug onto FIX item.
+    $parentSinId      = if ($BugItem.PSObject.Properties.Name -contains 'sinId') { [string]$BugItem.sinId } else { '' }
+    $parentSinPattern = if ($BugItem.PSObject.Properties.Name -contains 'sinPattern') { [string]$BugItem.sinPattern } else { '' }
     $fixItem = New-PipelineItem -Type 'Bugs2FIX' -Title "FIX: $($BugItem.title)" `
         -Description "Fix for bug $($BugItem.id): $bugDescription" `
         -Priority $BugItem.priority -Source 'BugTracker' -Category $BugItem.category `
         -AffectedFiles @($BugItem.affectedFiles) -SuggestedBy 'CronAiAthon' `
-        -ParentId $BugItem.id -BugReferrals $refIds
+        -ParentId $BugItem.id -BugReferrals $refIds `
+        -SinId $parentSinId -SinPattern $parentSinPattern
 
     Add-PipelineItem -WorkspacePath $WorkspacePath -Item $fixItem
     return $fixItem

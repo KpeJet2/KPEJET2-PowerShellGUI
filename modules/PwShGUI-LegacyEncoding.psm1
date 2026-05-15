@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Module: PwShGUI-LegacyEncoding
 # Purpose: Detect and repair P006 (no-BOM UTF-8 with Unicode) and P023 (double-encoded UTF-8).
 # History: V2.0 (2026-04-30) - P039 fix: strip BOM before Win-1252 round-trip.

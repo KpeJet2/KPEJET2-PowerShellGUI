@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $today = (Get-Date).ToString('yyyy-MM-dd')
 $files = Get-ChildItem C:\PowerShellGUI\sin_registry -Filter 'SIN-20260430081505-P034-*.json'
 foreach ($f in $files) {

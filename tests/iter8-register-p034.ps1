@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 $ErrorActionPreference = 'Stop'
 $pssa = Get-Content 'C:\PowerShellGUI\reports\iter6\pssa-modules.json' -Raw | ConvertFrom-Json
 $autoVar = @($pssa.Findings | Where-Object { $_.RuleName -eq 'PSAvoidAssignmentToAutomaticVariable' })

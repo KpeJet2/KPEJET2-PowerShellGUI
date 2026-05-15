@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter38: bulk-suppress PSAvoidUsingWriteHost — UI/CLI banner code policy-acceptable
 $findings = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSAvoidUsingWriteHost
 Write-Host "Hits: $(@($findings).Count)"

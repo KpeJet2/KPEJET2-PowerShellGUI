@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter19+20: drift scan + low-volume rule inventory
 try { Import-Module 'C:\PowerShellGUI\modules\PwShGUI-SinDriftScan.psm1' -Force -ErrorAction Stop } catch { Write-Warning "iter19-20: SinDriftScan import failed: $_" }
 $drift = Invoke-SinDriftScan -SinRegistry 'C:\PowerShellGUI\sin_registry' -ScanRoot 'C:\PowerShellGUI\modules' -ErrorAction SilentlyContinue

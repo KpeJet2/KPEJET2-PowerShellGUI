@@ -1,11 +1,16 @@
 /* PwShGUI Service Cluster Dashboard frontend
-   VersionTag: 2604.B2.V31.0 */
+   VersionTag: 2605.B5.V46.0 */
 
 (() => {
   'use strict';
 
+  const bootToken = (() => {
+    const el = document.querySelector('meta[name="cluster-token"]');
+    return el ? String(el.getAttribute('content') || '').trim() : '';
+  })();
+
   const state = {
-    token: localStorage.getItem('dash.cluster.token') || '',
+    token: localStorage.getItem('dash.cluster.token') || bootToken || '',
     ws: null,
     wsConnected: false,
     refreshSec: Number(localStorage.getItem('dash.refresh.sec') || 3),
@@ -31,7 +36,17 @@
 
   async function api(path, opts = {}) {
     const init = { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } };
-    const res = await fetch(path, init);
+    let res = await fetch(path, init);
+    if (res.status === 401 && bootToken && state.token !== bootToken) {
+      state.token = bootToken;
+      localStorage.setItem('dash.cluster.token', state.token);
+      const tokenInput = $('tokenInput');
+      if (tokenInput) { tokenInput.value = state.token; }
+      const settingsToken = $('settingsToken');
+      if (settingsToken) { settingsToken.value = state.token; }
+      const retryInit = { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } };
+      res = await fetch(path, retryInit);
+    }
     if (!res.ok) {
       const text = await res.text();
       throw new Error(`${res.status} ${res.statusText} :: ${text}`);

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-28
@@ -24,7 +24,7 @@
       - agenticAPI section: enriched routes, coverage map, call chains,
         agent tracking interface, topological boot order
 .NOTES
-    VersionTag: 2604.B3.V33.0
+    VersionTag: 2605.B5.V46.0
     VersionBuildHistory: 2604.B3.V33.0  2026-04-28  PS7.6/PS5.1 validation metadata and canonical VersionTag parsing updates
                          2604.B2.V31.1  2026-04-14  Add recursive tests, root launchers/utils, module psd1, agent coreModules+configFiles, recursive config subdirs, XHTML-Checker ps1
                          2604.B2.V31.0  2026-04-05  V31 alignment

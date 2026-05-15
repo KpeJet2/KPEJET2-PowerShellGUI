@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # iter17 smoke: import every module on both engines, count successes/failures
 $root = 'C:\PowerShellGUI\modules'
 $mods = Get-ChildItem -Path $root -Filter '*.psm1' -File

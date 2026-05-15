@@ -1,4 +1,4 @@
-# VersionTag: 2605.B2.V31.7
+# VersionTag: 2605.B5.V46.0
 # Registers a local PowerShell repository in the workspace
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $repoPath = Join-Path $workspaceRoot 'gallery'
