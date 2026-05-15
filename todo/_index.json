@@ -1,21 +1,21 @@
 {
-  "generated": "2026-05-15T20:10:44.8094496Z",
-  "count": 1446,
-  "fileCount": 601,
+  "generated": "2026-05-15T20:13:02.9081135Z",
+  "count": 1447,
+  "fileCount": 602,
   "types": {
     "todos": 13,
-    "bugs": 1433,
+    "bugs": 1434,
     "features": 0
   },
   "pipelineTypes": {
     "FeatureRequest": 0,
-    "Bug": 780,
+    "Bug": 781,
     "Items2ADD": 9,
     "Bugs2FIX": 653,
     "ToDo": 4
   },
   "statusCounts": {
-    "OPEN": 110,
+    "OPEN": 111,
     "PLANNED": 0,
     "IN_PROGRESS": 359,
     "TESTING": 0,
@@ -301,6 +301,7 @@
     "Bug-20260516040643-a1a51363.json",
     "Bug-20260516040749-0d1a9ea6.json",
     "Bug-20260516040908-566e3e5a.json",
+    "Bug-20260516041044-832b4ffb.json",
     "BUG-SCHED-0008A2B8.json",
     "BUG-SCHED-02676ED5.json",
     "BUG-SCHED-0D26B6FF.json",
@@ -1408,6 +1409,7 @@
     "Bug-20260516040643-a1a51363",
     "Bug-20260516040749-0d1a9ea6",
     "Bug-20260516040908-566e3e5a",
+    "Bug-20260516041044-832b4ffb",
     "IMPL-20260405-001",
     "IMPL-20260405-002",
     "IMPL-20260405-003",
