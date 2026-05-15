@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: YES(As of: 2026-04-29)
 # SupportsPS7.6: YES(As of: 2026-04-29)
 # SupportPS5.1TestedDate: 2026-04-29
@@ -193,7 +193,7 @@ for ($i = 1; $i -le $Iterations; $i++) {
 
 $summary = [pscustomobject]@{
     schema = 'ObjectivePipelineCycle/1.0'
-    versionTag = '2604.B3.V33.0'
+    versionTag = '2605.B5.V46.1'
     workspacePath = $WorkspacePath
     generatedAt = (Get-Date).ToString('o')
     requestedIterations = $Iterations

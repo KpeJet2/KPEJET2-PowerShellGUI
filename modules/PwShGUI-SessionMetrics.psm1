@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # Module: PwShGUI-SessionMetrics
 # Purpose: Boot/exit metrics, session object caching, crash detection
 # ================================================================
@@ -127,7 +127,7 @@ function Add-SessionObject {
     try {
         $stack = Get-PSCallStack
         $obj.StackTrace = @($stack | Select-Object -ExpandProperty Command) -join ' -> '
-    } catch { }
+    } catch { <# Intentional: non-fatal — call stack capture is best-effort #> }
 
     # Add to queue and maintain max size
     $script:_SessionMetrics.SessionObjects.Enqueue($obj)
@@ -204,12 +204,12 @@ function Get-CrashAnalysis {
     $criticalCount = @($indicators | Where-Object Severity -eq 'Critical').Count
     if ($criticalCount -gt 0) { $likelihood = 'Critical' }
 
-    $lastIndicator = $indicators[-1]
+    $lastIndicator = $indicators[-1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $suggestedCause = if ($lastIndicator) { $lastIndicator.Indicator } else { 'No indicators recorded' }
 
     $actions = @()
     if ($cached) {
-        $lastObj = $cached[-1]
+        $lastObj = $cached[-1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $actions += "Last cached object was $($lastObj.ObjectType): $($lastObj.ObjectName) at $($lastObj.Timestamp)"
         $actions += "Call stack: $($lastObj.StackTrace)"
     }

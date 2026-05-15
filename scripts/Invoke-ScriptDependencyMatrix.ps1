@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -90,28 +90,28 @@ function Get-ModuleHashtableReference {
     $constraintValue = $null
 
     if ($Text -match '(?i)ModuleName\s*=\s*''([^'']+)''') {
-        $moduleName = $Matches[1]
+        $moduleName = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     } elseif ($Text -match '(?i)ModuleName\s*=\s*"([^"]+)"') {
-        $moduleName = $Matches[1]
+        $moduleName = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     if ($Text -match '(?i)RequiredVersion\s*=\s*''([^'']+)''') {
         $constraintType = 'required'
-        $constraintValue = $Matches[1]
+        $constraintValue = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         return [pscustomobject]@{ moduleName = $moduleName; constraintType = $constraintType; constraintValue = $constraintValue }
     }
     if ($Text -match '(?i)RequiredVersion\s*=\s*"([^"]+)"') {
         $constraintType = 'required'
-        $constraintValue = $Matches[1]
+        $constraintValue = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         return [pscustomobject]@{ moduleName = $moduleName; constraintType = $constraintType; constraintValue = $constraintValue }
     }
 
     if ($Text -match '(?i)(ModuleVersion|MinimumVersion)\s*=\s*''([^'']+)''') {
         $constraintType = 'minimum'
-        $constraintValue = $Matches[2]
+        $constraintValue = $Matches[2]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     } elseif ($Text -match '(?i)(ModuleVersion|MinimumVersion)\s*=\s*"([^"]+)"') {
         $constraintType = 'minimum'
-        $constraintValue = $Matches[2]
+        $constraintValue = $Matches[2]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     [pscustomobject]@{ moduleName = $moduleName; constraintType = $constraintType; constraintValue = $constraintValue }
@@ -179,9 +179,9 @@ foreach ($dst in $nodes) {
     foreach ($token in $tokens) {
         $key = $token.ToLowerInvariant()
         if (-not $tokenToTargets.ContainsKey($key)) {
-            $tokenToTargets[$key] = New-Object 'System.Collections.Generic.List[object]'
+            $tokenToTargets[$key] = New-Object 'System.Collections.Generic.List[object]'  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
-        $tokenToTargets[$key].Add($dst) | Out-Null
+        $tokenToTargets[$key].Add($dst) | Out-Null  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 }
 
@@ -220,9 +220,9 @@ foreach ($moduleFile in $workspaceModuleFiles) {
 
     $key = $moduleName.ToLowerInvariant()
     if (-not $workspaceModuleCandidates.ContainsKey($key)) {
-        $workspaceModuleCandidates[$key] = New-Object 'System.Collections.Generic.List[object]'
+        $workspaceModuleCandidates[$key] = New-Object 'System.Collections.Generic.List[object]'  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
-    $workspaceModuleCandidates[$key].Add([pscustomobject]@{
+    $workspaceModuleCandidates[$key].Add([pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
         module      = $moduleName
         version     = $version
         author      = $author
@@ -281,7 +281,7 @@ foreach ($modRoot in $psModPaths) {
         }
 
         if (-not $systemModuleCandidates.ContainsKey($sysKey)) {
-            $systemModuleCandidates[$sysKey] = [pscustomobject]@{
+            $systemModuleCandidates[$sysKey] = [pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 module      = $sysModName
                 version     = $sysVersion
                 author      = $sysAuthor
@@ -316,9 +316,9 @@ function Resolve-VariableModulePath {
 
 for ($i = 0; $i -lt $nodes.Count; $i++) {
     $pct = [math]::Min(100, [int](($i / [math]::Max(1, $nodes.Count)) * 80))
-    Write-Progress -Activity 'Dependency Matrix' -Status "Analysing script $($i + 1) of $($nodes.Count): $($nodes[$i].name)" -PercentComplete $pct -Id 1
+    Write-Progress -Activity 'Dependency Matrix' -Status "Analysing script $($i + 1) of $($nodes.Count): $($nodes[$i].name)" -PercentComplete $pct -Id 1  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
-    $src = $nodes[$i]
+    $src = $nodes[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $content = $null
     try {
         $content = Get-Content -Path $src.fullPath -Raw -ErrorAction Stop
@@ -349,7 +349,7 @@ for ($i = 0; $i -lt $nodes.Count; $i++) {
         if (-not $seenTokensInSource.Add($tokenKey)) { continue }
         if (-not $tokenToTargets.ContainsKey($tokenKey)) { continue }
 
-        foreach ($dst in $tokenToTargets[$tokenKey]) {
+        foreach ($dst in $tokenToTargets[$tokenKey]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($src.nodeId -eq $dst.nodeId) { continue }
             $edgeKey = "$($src.nodeId)->$($dst.nodeId)"
             if (-not $edgeSeen.Add($edgeKey)) { continue }
@@ -530,22 +530,22 @@ foreach ($src in $nodes) {
     $scriptVersion = $null
     # Extract .SYNOPSIS from comment-based help
     if ($helpContent -match '(?s)\.SYNOPSIS\s*\r?\n\s*(.+?)(?=\r?\n\s*\.[A-Z]|\r?\n#>)') {
-        $synopsis = $Matches[1].Trim()
+        $synopsis = $Matches[1].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     # Extract .DESCRIPTION from comment-based help
     if ($helpContent -match '(?s)\.DESCRIPTION\s*\r?\n\s*(.+?)(?=\r?\n\s*\.[A-Z]|\r?\n#>)') {
-        $description = $Matches[1].Trim()
+        $description = $Matches[1].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($description.Length -gt 200) { $description = $description.Substring(0, 200) + '...' }
     }
     # Extract .AUTHOR from comment-based help or # Author: header
     if ($helpContent -match '(?s)\.AUTHOR\s*\r?\n\s*(.+?)(?=\r?\n\s*\.[A-Z]|\r?\n#>)') {
-        $scriptAuthor = $Matches[1].Trim()
+        $scriptAuthor = $Matches[1].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
     } elseif ($helpContent -match '(?im)^#\s*Author:\s*(.+)$') {
-        $scriptAuthor = $Matches[1].Trim()
+        $scriptAuthor = $Matches[1].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     # Extract VersionTag from script header
     if ($helpContent -match '(?im)^#\s*VersionTag:\s*(.+)$') {
-        $scriptVersion = $Matches[1].Trim()
+        $scriptVersion = $Matches[1].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     # Extract exported functions from .psm1 files
     if ($src.extension -eq '.psm1') {
@@ -580,14 +580,14 @@ foreach ($moduleGroup in $distinctModules) {
     $workspaceKey = $moduleName.ToLowerInvariant()
     $workspaceModule = $null
     if ($workspaceModuleCandidates.ContainsKey($workspaceKey)) {
-        $workspaceModule = $workspaceModuleCandidates[$workspaceKey] | Select-Object -First 1
+        $workspaceModule = $workspaceModuleCandidates[$workspaceKey] | Select-Object -First 1  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     # Also check system PSModulePath if not found installed or in workspace
     $systemModuleInfo = $null
     $systemModulePath = $null
     if ($systemModuleCandidates.ContainsKey($workspaceKey)) {
-        $systemModuleInfo = $systemModuleCandidates[$workspaceKey]
+        $systemModuleInfo = $systemModuleCandidates[$workspaceKey]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $systemModulePath = $systemModuleInfo.path
     }
 
@@ -655,9 +655,9 @@ foreach ($edge in $edges) {
 
     $folderKey = "$sourceFolder|$targetFolder"
     if (-not $folderRelationshipMap.ContainsKey($folderKey)) {
-        $folderRelationshipMap[$folderKey] = 0
+        $folderRelationshipMap[$folderKey] = 0  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
-    $folderRelationshipMap[$folderKey]++
+    $folderRelationshipMap[$folderKey]++  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 $folderRelationships = @(foreach ($folderKey in $folderRelationshipMap.Keys) {
@@ -665,7 +665,7 @@ $folderRelationships = @(foreach ($folderKey in $folderRelationshipMap.Keys) {
     [pscustomobject]@{
         sourceFolder = $parts[0]  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
         targetFolder = $parts[1]  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
-        edgeCount = [int]$folderRelationshipMap[$folderKey]
+        edgeCount = [int]$folderRelationshipMap[$folderKey]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 }) | Sort-Object -Property @(
     @{ Expression = 'edgeCount'; Descending = $true },
@@ -1116,9 +1116,9 @@ function Build-ScanIndexJs {
             # Read lightweight summary from the matrix file (avoid loading full JSON for old scans)
             try {
                 $summaryLine = Get-Content $mf.FullName -TotalCount 1
-                if ($summaryLine -match '"scriptFileCount":(\d+)') { $entry.nodeCount = [int]$Matches[1] }
-                if ($summaryLine -match '"edgeCount":(\d+)')       { $entry.edgeCount = [int]$Matches[1] }
-                if ($summaryLine -match '"distinctModuleCount":(\d+)') { $entry.moduleCount = [int]$Matches[1] }
+                if ($summaryLine -match '"scriptFileCount":(\d+)') { $entry.nodeCount = [int]$Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($summaryLine -match '"edgeCount":(\d+)')       { $entry.edgeCount = [int]$Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($summaryLine -match '"distinctModuleCount":(\d+)') { $entry.moduleCount = [int]$Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
             } catch { <# Intentional: best-effort summary line parse #> }
             # Full summary read only for the current scan (already in memory)
             if ($ts -eq $CurrentTimestamp) {

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -31,7 +31,7 @@ function Write-Log {
 function Invoke-IfExists {
     param(
         [string]$Path,
-        [array]$Args = @(),
+        [array]$ScriptArgs = @(),
         [switch]$Required
     )
 
@@ -45,7 +45,7 @@ function Invoke-IfExists {
 
     try {
         Write-Log "Executing: $Path"
-        & $Path @Args
+        & $Path @ScriptArgs
         if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
             throw "Non-zero exit code $LASTEXITCODE from $Path"
         }
@@ -87,15 +87,19 @@ $fixCheck = Join-Path $RepoRoot 'fix_check_version.ps1'
 if (-not (Invoke-IfExists -Path $fixUpdate)) { exit 1 }
 if (-not (Invoke-IfExists -Path $fixCheck)) { exit 1 }
 
+# 1.1) Viewer/changelog sync + AI action summary refresh
+$syncViewer = Join-Path $RepoRoot 'scripts\Sync-ChangelogViewerData.ps1'
+if (-not (Invoke-IfExists -Path $syncViewer -ScriptArgs @('-WorkspacePath', $RepoRoot, '-RefreshAiActionSummary:$true', '-IncludeTestAiActions'))) { exit 1 }
+
 # 2) Module environment diagnostics
 $validateImports = Join-Path $RepoRoot 'scripts\Validate-ModuleImports.ps1'
 $setupModuleEnv = Join-Path $RepoRoot 'scripts\Setup-ModuleEnvironment.ps1'
-if (-not (Invoke-IfExists -Path $validateImports -Args @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-IfExists -Path $validateImports -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
 if (-not (Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot)) { exit 1 }
 
 # 3) Manifest refresh
 $buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
-if (-not (Invoke-IfExists -Path $buildAgenticManifest -Args @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
+if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
 
 # 4) Optional local engine + SIN script helpers
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
@@ -106,6 +110,10 @@ $sinAlt = Join-Path $RepoRoot 'scripts\Run-SIN-Scan.ps1'
 if (-not (Invoke-IfExists -Path $sinScript)) {
     if (-not (Invoke-IfExists -Path $sinAlt)) { exit 1 }
 }
+
+# 4.1) Proactive UI event safety scan
+$uiEventSafetyScan = Join-Path $RepoRoot 'tests\Invoke-UIEventSafetyScan.ps1'
+if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
 
 # 5) Full test gate (Pester + SIN + smoke + module accessibility)
 $runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
@@ -118,7 +126,7 @@ if ($NoModuleValidation) {
 } else {
     $testArgs += @('-IncludeModuleValidation', $true)
 }
-if (-not (Invoke-IfExists -Path $runAllTests -Args $testArgs -Required)) { exit 1 }
+if (-not (Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required)) { exit 1 }
 
 # 6) Optional launch batch runs
 if (-not $SkipLaunchBatches) {

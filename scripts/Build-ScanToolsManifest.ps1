@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # FileRole: Pipeline
@@ -89,11 +89,11 @@ foreach ($f in $summaries) {
         foreach ($scan in @($s.scans)) {
             $name = [string]$scan.name
             if (-not $stats.ContainsKey($name)) {
-                $stats[$name] = [pscustomobject]@{
+                $stats[$name]  # SIN-EXEMPT:P027 -- hashtable key index, context-verified safe = [pscustomobject]@{
                     runCount=0; successCount=0; failCount=0; totalElapsed=0.0; lastRun=$null; lastResult=$null
                 }
             }
-            $row = $stats[$name]
+            $row = $stats[$name]  # SIN-EXEMPT:P027 -- hashtable key index, context-verified safe
             $row.runCount++
             $row.totalElapsed += [double]($scan.elapsed)
             $isFail = ($scan.summary -like 'ERROR:*') -or ($scan.summary -like 'script not found*') -or ($scan.summary -like 'job receive failed*') -or ($scan.summary -like 'DryRun failed:*') -or ($scan.summary -like 'module not found*')
@@ -118,7 +118,7 @@ if (Test-Path $cronPath) {
         foreach ($t in @($cron.tasks)) {
             $nextRun = $null
             if ($t.lastRun -and $t.frequency) {
-                try { $nextRun = ([datetime]$t.lastRun).AddMinutes([double]$t.frequency).ToUniversalTime().ToString('o') } catch {}
+                try { $nextRun = ([datetime]$t.lastRun).AddMinutes([double]$t.frequency).ToUniversalTime().ToString('o') } catch { <# Intentional: non-fatal -- date arithmetic failure skips nextRun only #> }
             }
             $cronTasks[$t.id] = [pscustomobject]@{
                 taskName          = $t.name

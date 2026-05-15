@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # iter34: AST-targeted SupportsShouldProcess injection
 # For each PSSA-flagged function: find its [CmdletBinding(...)] attribute and
 # add SupportsShouldProcess. If no CmdletBinding present, insert one.
@@ -18,7 +18,7 @@ foreach ($g in $byFile) {
     }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -71,7 +71,7 @@ foreach ($g in $byFile) {
                 $paramStart = $paramBlock.Extent.StartOffset
                 # Find indent: walk back from paramStart to previous newline
                 $i = $paramStart - 1
-                while ($i -ge 0 -and $text[$i] -ne "`n") { $i-- }
+                while ($i -ge 0 -and $text[$i] -ne "`n") { $i-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $indent = $text.Substring($i + 1, $paramStart - $i - 1) -replace '\S.*', ''
                 $insertion = "[CmdletBinding(SupportsShouldProcess)]`r`n$indent"
                 $edits.Add([pscustomobject]@{

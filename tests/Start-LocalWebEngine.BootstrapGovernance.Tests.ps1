@@ -108,7 +108,7 @@ BeforeAll {
 Describe 'Start-LocalWebEngine bootstrap governance behavior' {
     BeforeEach {
         $script:WorkspacePath = $TestDrive
-        $script:SessionToken = 'unit-token'
+        $script:SessionToken = 'unit-token'  # SIN-EXEMPT:P001 -- unit-test fixture, not a real credential
         $script:LastJson = $null
         $script:LastError = $null
 

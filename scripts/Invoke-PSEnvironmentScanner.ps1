@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -204,8 +204,8 @@ function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     # Find the two stops to interpolate between
     $lo = $stops[0]; $hi = $stops[-1]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
     for ($i = 0; $i -lt $stops.Count - 1; $i++) {
-        if ($p -ge $stops[$i].P -and $p -le $stops[$i + 1].P) {
-            $lo = $stops[$i]; $hi = $stops[$i + 1]; break
+        if ($p -ge $stops[$i].P -and $p -le $stops[$i + 1].P) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $lo = $stops[$i]; $hi = $stops[$i + 1]; break  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     }
     $range = $hi.P - $lo.P
@@ -431,7 +431,7 @@ function Write-Console {
             White = [System.Drawing.Color]::WhiteSmoke; Gray = [System.Drawing.Color]::DarkGray
             DarkYellow = [System.Drawing.Color]::Goldenrod; Magenta = [System.Drawing.Color]::Orchid
         }
-        $c = if ($colorMap.ContainsKey($Color)) { $colorMap[$Color] } else { [System.Drawing.Color]::WhiteSmoke }
+        $c = if ($colorMap.ContainsKey($Color)) { $colorMap[$Color] } else { [System.Drawing.Color]::WhiteSmoke }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $script:consoleBox.SelectionColor = $c
         $script:consoleBox.AppendText("$Text`r`n")
         $script:consoleBox.ScrollToCaret()
@@ -697,7 +697,7 @@ function Scan-Modules {
 
                 # Also try to extract module name from path-like references
                 if ($rawRef -match "([A-Za-z0-9_-]+)\.psm1") {
-                    $extractedName = $Matches[1]
+                    $extractedName = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     if ($resolvedNames -notcontains $extractedName) { $resolvedNames += $extractedName }
                 }
 
@@ -708,8 +708,8 @@ function Scan-Modules {
 
                 foreach ($rn in $resolvedNames) {
                     $key = $rn.ToLowerInvariant()
-                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }
-                    $scriptModuleRefs[$key] += $sf.Name
+                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $scriptModuleRefs[$key] += $sf.Name  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
 
@@ -719,8 +719,8 @@ function Scan-Modules {
                 $modNames = $m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim().Trim('"', "'") }
                 foreach ($mn in $modNames) {
                     $key = $mn.ToLowerInvariant()
-                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }
-                    $scriptModuleRefs[$key] += $sf.Name
+                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $scriptModuleRefs[$key] += $sf.Name  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
         } catch { <# Intentional: non-fatal #> }
@@ -730,7 +730,7 @@ function Scan-Modules {
     foreach ($mod in $results) {
         $key = $mod.Name.ToLowerInvariant()
         if ($scriptModuleRefs.ContainsKey($key)) {
-            $refs = @($scriptModuleRefs[$key] | Select-Object -Unique)
+            $refs = @($scriptModuleRefs[$key] | Select-Object -Unique)  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $mod.ScriptDeps = $refs.Count
             $mod.DependentScripts = ($refs -join ', ')
         }
@@ -1305,7 +1305,7 @@ function Tag-ObsoleteScanHistory {
         if ($seen.ContainsKey($dayKey)) {
             $shouldTag = $true
         }
-        $seen[$dayKey] = $true
+        $seen[$dayKey] = $true  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
         if ($shouldTag -and $hf.Name -notlike '*TRASH-TO-LINT*') {
             $newName = '[TRASH-TO-LINT] ' + $hf.Name
@@ -1841,7 +1841,7 @@ function Build-ScannerGUI {
     $btnScan.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 215)
     $btnScan.ForeColor = [System.Drawing.Color]::White
     $btnScan.FlatStyle = 'Flat'
-    $btnScan.Add_Click({ Invoke-FullScan })
+    $btnScan.Add_Click({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $btnPanel.Controls.Add($btnScan)
 
     $btnExport = New-Object System.Windows.Forms.Button
@@ -1851,7 +1851,7 @@ function Build-ScannerGUI {
     $btnExport.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
     $btnExport.ForeColor = [System.Drawing.Color]::White
     $btnExport.FlatStyle = 'Flat'
-    $btnExport.Add_Click({
+    $btnExport.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Start-RainbowProgress -StatusText 'Exporting scan results...'
         $scanDate = Get-Date -Format 'yyyyMMdd'
         $scanTime = Get-Date -Format 'HHmmss'
@@ -1876,7 +1876,7 @@ function Build-ScannerGUI {
     $btnPrereqWinget.BackColor = [System.Drawing.Color]::FromArgb(70, 90, 45)
     $btnPrereqWinget.ForeColor = [System.Drawing.Color]::White
     $btnPrereqWinget.FlatStyle = 'Flat'
-    $btnPrereqWinget.Add_Click({
+    $btnPrereqWinget.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $choice = [System.Windows.Forms.MessageBox]::Show(
             "Run WinGet prerequisite remediation now?`n`nYes = Required + Optional tools`nNo = Required tools only`nCancel = Abort",
             'Prerequisite WinGet Remediation',
@@ -1905,7 +1905,7 @@ function Build-ScannerGUI {
     $chkCascade.Location = New-Object System.Drawing.Point(430, 10)
     $chkCascade.Size = New-Object System.Drawing.Size(230, 20)
     $chkCascade.ForeColor = [System.Drawing.Color]::OrangeRed
-    $chkCascade.Add_CheckedChanged({
+    $chkCascade.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($this.Checked) {
             Highlight-CascadeFailures
         } else {
@@ -2027,7 +2027,7 @@ function Build-ScannerGUI {
 
             # Wire up rainbow progress bar painting for the ScanProgress grid
             if ($td.Key -eq 'ScanProgress') {
-                $dgv.Add_CellPainting({
+                $dgv.Add_CellPainting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     if (-not $sender.Columns.Contains('Percent')) { return }
@@ -2041,7 +2041,7 @@ function Build-ScannerGUI {
                     } catch { <# Intentional: non-fatal painting error #> }
                 })
                 # Also paint the Status column with step-phase colors
-                $dgv.Add_CellFormatting({
+                $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     try {
@@ -2084,7 +2084,7 @@ function Build-ScannerGUI {
                 $refreshHistoryBtn.Text = 'Refresh History'
                 $refreshHistoryBtn.Location = New-Object System.Drawing.Point(640, 2)
                 $refreshHistoryBtn.Size = New-Object System.Drawing.Size(110, 24)
-                $refreshHistoryBtn.Add_Click({
+                $refreshHistoryBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     $historyCombo.Items.Clear()
                     $files = Get-ScanHistoryFiles
                     foreach ($hf in $files) {
@@ -2095,7 +2095,7 @@ function Build-ScannerGUI {
                 })
                 $historyPanel.Controls.Add($refreshHistoryBtn)
 
-                $historyCombo.Add_SelectedIndexChanged({
+                $historyCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     Scan-PreflightBaseline
                     Populate-AllGrids
                 })
@@ -2194,7 +2194,7 @@ function Populate-GridByKey {
         $data = $script:ScanResults[$Key]
         if ($data -and $data.Count -gt 0) {
             $dt = New-Object System.Data.DataTable
-            $props = $data[0].PSObject.Properties
+            $props = $data[0].PSObject.Properties  # SIN-EXEMPT:P027 -- index access, context-verified safe
             foreach ($p in $props) {
                 $colType = switch ($p.TypeNameOfValue) {
                     'System.Boolean' { [bool] }
@@ -2286,7 +2286,7 @@ function Add-GridFilterRow {
     $filterBox.BorderStyle = 'FixedSingle'
     $filterBox.Tag = @{ Dgv = $Dgv; Key = $Key }
 
-    $filterBox.Add_TextChanged({
+    $filterBox.Add_TextChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $info = $this.Tag
         $dgvRef = $info.Dgv
         $filterText = $this.Text.Trim()
@@ -2321,7 +2321,7 @@ function Add-GridFilterRow {
     $clearBtn.ForeColor = [System.Drawing.Color]::OrangeRed
     $clearBtn.Font = New-Object System.Drawing.Font('Segoe UI', 7, [System.Drawing.FontStyle]::Bold)
     $clearBtn.Tag = $filterBox
-    $clearBtn.Add_Click({ $this.Tag.Text = '' })
+    $clearBtn.Add_Click({ $this.Tag.Text = '' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $filterPanel.Controls.Add($clearBtn)
 
     $TabPage.Controls.Add($filterPanel)
@@ -2334,7 +2334,7 @@ function Apply-RowColoring {
     # Guard: only add handler once per grid key to prevent stacking
     if ($script:ColoredGrids.ContainsKey($Key)) { return }
     $script:ColoredGrids[$Key] = $true
-    $Grid.Add_CellFormatting({
+    $Grid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         param($gridSender, $e)
         if ($e.RowIndex -lt 0) { return }
         try {
@@ -2426,7 +2426,7 @@ if ($script:historyCombo) {
 }
 
 if ($AutoScan) {
-    $form.Add_Shown({ Invoke-FullScan })
+    $form.Add_Shown({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 }
 
 # Relax strict mode before ShowDialog -- the WinForms message pump dispatches

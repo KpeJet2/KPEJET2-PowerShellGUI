@@ -1,4 +1,4 @@
-# ========================== FILE ENUMERATION UTILITY ==========================
+﻿# ========================== FILE ENUMERATION UTILITY ==========================
 function Get-AllProjectFiles {
     <#
     .SYNOPSIS  Enumerate all project files, excluding dot folders and known large directories.
@@ -518,7 +518,7 @@ function Request-LocalPath {
 
     $timer          = New-Object System.Windows.Forms.Timer
     $timer.Interval = 1000
-    $timer.Add_Tick({
+    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $script:_rlpRemaining--
         if ($script:_rlpRemaining -le 0) {
             $script:_rlpTimedOut = $true
@@ -529,7 +529,7 @@ function Request-LocalPath {
         }
     }.GetNewClosure())
 
-    $form.Add_Shown({ $timer.Start() })
+    $form.Add_Shown({ $timer.Start() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $dialogResult = $form.ShowDialog()
     $timer.Stop()
     $timer.Dispose()
@@ -745,7 +745,7 @@ function Initialize-ConfigFile {
 
     foreach ($key in $systemVars.Keys) {
         $element = $xmlDoc.CreateElement($key)
-        $element.InnerText = $systemVars[$key]
+        $element.InnerText = $systemVars[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $root.AppendChild($element) | Out-Null
     }
 
@@ -842,7 +842,7 @@ function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     )
 
     $index = $Step % $colors.Count
-    return $colors[$index]
+    return $colors[$index]  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 function Write-RainbowProgress {

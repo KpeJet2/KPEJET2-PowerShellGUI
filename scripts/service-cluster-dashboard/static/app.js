@@ -22,7 +22,12 @@
     pipeline: [],
     tools: [],
     sins: null,
+    engineHealth: { current: 'unknown', pending: null, pendingSince: 0, misses: 0 },
   };
+
+  const ENGINE_STALE_SEC = 45;
+  const ENGINE_MISS_THRESHOLD = 2;
+  const ENGINE_DOWNGRADE_HOLD_MS = 12000;
 
   const $ = (id) => document.getElementById(id);
   const fmt = {
@@ -74,6 +79,63 @@
     el.textContent = text;
     el.classList.remove('ok', 'bad');
     el.classList.add(ok ? 'ok' : 'bad');
+  }
+
+  function rankEngineHealth(name) {
+    const n = String(name || 'unknown').toLowerCase();
+    if (n === 'online') return 5;
+    if (n === 'degraded') return 4;
+    if (n === 'stale') return 3;
+    if (n === 'offline') return 2;
+    return 1;
+  }
+
+  function desiredEngineHealth(e) {
+    if (!e) return 'unknown';
+    const responding = !!e.responding;
+    const running = !!e.running;
+    const age = Number(e.statusAgeSec ?? e.heartbeat?.ageSec ?? -1);
+    const staleByAge = Number.isFinite(age) && age >= 0 ? age > ENGINE_STALE_SEC : false;
+    const staleByMiss = (state.engineHealth.misses >= ENGINE_MISS_THRESHOLD);
+    const stale = staleByAge || staleByMiss;
+    if (!running || !responding) return stale ? 'stale' : 'offline';
+    if (stale) return 'stale';
+    if ((Number(e.requestsServerError || 0) > 0) || String(e.heartbeat?.status || '').toLowerCase() === 'dead') {
+      return 'degraded';
+    }
+    return 'online';
+  }
+
+  function commitEngineHealth(desired) {
+    const want = String(desired || 'unknown').toLowerCase();
+    const cur = String(state.engineHealth.current || 'unknown').toLowerCase();
+    const now = Date.now();
+    if (want === cur) {
+      state.engineHealth.pending = null;
+      state.engineHealth.pendingSince = 0;
+      return cur;
+    }
+
+    if (rankEngineHealth(want) >= rankEngineHealth(cur)) {
+      state.engineHealth.current = want;
+      state.engineHealth.pending = null;
+      state.engineHealth.pendingSince = 0;
+      return want;
+    }
+
+    if (state.engineHealth.pending !== want) {
+      state.engineHealth.pending = want;
+      state.engineHealth.pendingSince = now;
+      return cur;
+    }
+
+    if ((now - state.engineHealth.pendingSince) >= ENGINE_DOWNGRADE_HOLD_MS) {
+      state.engineHealth.current = want;
+      state.engineHealth.pending = null;
+      state.engineHealth.pendingSince = 0;
+      return want;
+    }
+    return cur;
   }
 
   function setBar(id, pct) {
@@ -187,11 +249,23 @@
   }
 
   async function refreshEngine() {
-    const e = await api('/api/engine/status');
+    let e = null;
+    try {
+      e = await api('/api/engine/status');
+      state.engineHealth.misses = 0;
+    } catch (err) {
+      state.engineHealth.misses += 1;
+      throw err;
+    }
     $('engineInfo').textContent = JSON.stringify(e, null, 2);
 
-    setPill($('engineStatusPill'), `Engine: ${e.running ? 'ONLINE' : 'OFFLINE'}${e.responding ? ' / RESPONDING' : ''}`, !!e.running);
-    $('mEngine').textContent = e.running ? 'ONLINE' : 'OFFLINE';
+    const desired = desiredEngineHealth(e);
+    const visual = commitEngineHealth(desired);
+    const pid = e && e.pid ? ` | PID ${e.pid}` : '';
+    const age = Number(e?.statusAgeSec ?? e?.heartbeat?.ageSec ?? -1);
+    const ageTxt = (Number.isFinite(age) && age >= 0) ? ` | age ${age}s` : '';
+    setPill($('engineStatusPill'), `Engine: ${String(visual || 'unknown').toUpperCase()}${pid}${ageTxt}`, visual === 'online' || visual === 'degraded');
+    $('mEngine').textContent = String(visual || 'UNKNOWN').toUpperCase();
 
     const nodeInfo = await api('/api/node/info');
     setPill($('nodeRolePill'), `ROLE: ${nodeInfo.role}`, nodeInfo.role === 'MASTER');
@@ -527,6 +601,7 @@
       try {
         await Promise.allSettled([
           refreshOverview(),
+          refreshEngine(),
           refreshCluster(),
           refreshJobs(),
           refreshSins(),

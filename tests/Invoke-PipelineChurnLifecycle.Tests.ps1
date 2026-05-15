@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES
 # SupportsPS7.6: YES
 # SupportPS5.1TestedDate: 2026-05-07
@@ -60,7 +60,7 @@ BeforeAll {
         $rows = @()
         foreach ($line in @(Get-Content -LiteralPath $Path -Encoding UTF8 -ErrorAction SilentlyContinue)) {
             if ([string]::IsNullOrWhiteSpace($line)) { continue }
-            try { $rows += ($line | ConvertFrom-Json) } catch { }
+            try { $rows += ($line | ConvertFrom-Json) } catch { <# Intentional: skip malformed JSONL lines — parse-fail is expected in test log parse #> }
         }
         return @($rows)
     }

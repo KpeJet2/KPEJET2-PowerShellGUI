@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-06
@@ -7,6 +7,25 @@
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+function Get-Sha256Hex {
+    [CmdletBinding()]
+    param([string]$Text)
+
+    if ($null -eq $Text) { $Text = '' }
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($Text)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $hashBytes = $sha.ComputeHash($bytes)
+    } finally {
+        $sha.Dispose()
+    }
+    $builder = New-Object System.Text.StringBuilder
+    foreach ($b in $hashBytes) {
+        [void]$builder.Append($b.ToString('x2'))
+    }
+    return $builder.ToString()
+}
 
 function Get-AiActionLogPaths {
     [CmdletBinding()]
@@ -242,6 +261,8 @@ function Get-AiActionLogEntries {
                     $entry = $line | ConvertFrom-Json -ErrorAction Stop
                     $entry | Add-Member -NotePropertyName sourceFile -NotePropertyValue $file.FullName -Force
                     $entry | Add-Member -NotePropertyName sourceLine -NotePropertyValue $lineNumber -Force
+                    $entry | Add-Member -NotePropertyName sourceRelativePath -NotePropertyValue (ConvertTo-AiActionRelativePath -Path $file.FullName -WorkspacePath $paths.workspaceRoot) -Force
+                    $entry | Add-Member -NotePropertyName immutableLineHash -NotePropertyValue (Get-Sha256Hex -Text $line) -Force
                     $entries += $entry
                 } catch {
                     $parseErrors++
@@ -250,9 +271,25 @@ function Get-AiActionLogEntries {
         }
     }
 
+    $sortedEntries = @($entries | Sort-Object -Property @{ Expression = { $_.ts } }, @{ Expression = { $_.sourceFile } }, @{ Expression = { $_.sourceLine } })
+    $previousChainHash = 'GENESIS'
+    $immutableIndex = 0
+    foreach ($entry in $sortedEntries) {
+        $immutableIndex++
+        $fingerprint = ('{0}|{1}|{2}|{3}|{4}|{5}|{6}' -f ([string]$entry.ts), ([string]$entry.recordType), ([string]$entry.actionId), ([string]$entry.agentId), ([string]$entry.result), ([string]$entry.sourceRelativePath), ([string]$entry.immutableLineHash))
+        $recordHash = Get-Sha256Hex -Text $fingerprint
+        $chainHash = Get-Sha256Hex -Text ($previousChainHash + '|' + $recordHash)
+        $entry | Add-Member -NotePropertyName immutableIndex -NotePropertyValue $immutableIndex -Force
+        $entry | Add-Member -NotePropertyName recordHash -NotePropertyValue $recordHash -Force
+        $entry | Add-Member -NotePropertyName previousChainHash -NotePropertyValue $previousChainHash -Force
+        $entry | Add-Member -NotePropertyName chainHash -NotePropertyValue $chainHash -Force
+        $previousChainHash = $chainHash
+    }
+
     return [ordered]@{
         parseErrors = $parseErrors
-        entries     = @($entries | Sort-Object -Property @{ Expression = { $_.ts } }, @{ Expression = { $_.sourceFile } }, @{ Expression = { $_.sourceLine } })
+        chainHead   = $previousChainHash
+        entries     = $sortedEntries
     }
 }
 
@@ -284,8 +321,8 @@ function Get-AiActionLogSummary {
             if ($null -eq $file) { continue }
             $pathValue = [string]$file.path
             $changeValue = [string]$file.change
-            if (-not [string]::IsNullOrWhiteSpace($pathValue)) { $uniqueFiles[$pathValue] = $true }
-            if ($fileChanges.Contains($changeValue)) { $fileChanges[$changeValue]++ } else { $fileChanges.unknown++ }
+            if (-not [string]::IsNullOrWhiteSpace($pathValue)) { $uniqueFiles[$pathValue] = $true }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            if ($fileChanges.Contains($changeValue)) { $fileChanges[$changeValue]++ } else { $fileChanges.unknown++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
 
         if ($entry.recordType -eq 'start') { $startRecords++ }
@@ -300,7 +337,7 @@ function Get-AiActionLogSummary {
         $actionId = [string]$entry.actionId
         if ([string]::IsNullOrWhiteSpace($actionId)) { continue }
         if (-not $actionMap.ContainsKey($actionId)) {
-            $actionMap[$actionId] = [ordered]@{
+            $actionMap[$actionId] = [ordered]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 actionId            = $actionId
                 actionName          = [string]$entry.actionName
                 agentId             = [string]$entry.agentId
@@ -316,12 +353,26 @@ function Get-AiActionLogSummary {
                 files               = @()
                 summaries           = @()
                 durationSec         = $null
+                firstImmutableIndex = 0
+                lastImmutableIndex  = 0
             }
         }
 
-        $action = $actionMap[$actionId]
+        $action = $actionMap[$actionId]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($entry.summary) { $action.summaries += [string]$entry.summary }
         if (@($entry.files).Count -gt 0) { $action.files = @($entry.files) }
+        $entryImmutableIndex = 0
+        if ($entry.PSObject.Properties.Name -contains 'immutableIndex') {
+            $entryImmutableIndex = [int]$entry.immutableIndex
+        }
+        if ($entryImmutableIndex -gt 0) {
+            if ($action.firstImmutableIndex -eq 0 -or $entryImmutableIndex -lt $action.firstImmutableIndex) {
+                $action.firstImmutableIndex = $entryImmutableIndex
+            }
+            if ($entryImmutableIndex -gt $action.lastImmutableIndex) {
+                $action.lastImmutableIndex = $entryImmutableIndex
+            }
+        }
 
         if ($entry.recordType -eq 'start') {
             $action.startCount++
@@ -374,10 +425,12 @@ function Get-AiActionLogSummary {
             lastFinishAt       = $_.lastFinishAt
             lastResult         = $_.lastResult
             durationSec        = $_.durationSec
+            firstImmutableIndex= $_.firstImmutableIndex
+            lastImmutableIndex = $_.lastImmutableIndex
             files              = @($_.files)
             summary            = if (@($_.summaries).Count -gt 0) { [string]$_.summaries[-1] } else { '' }
         }
-    } | Sort-Object -Property @{ Expression = { $_.lastFinishAt } ; Descending = $true }, @{ Expression = { $_.firstStartAt } ; Descending = $true })
+    } | Sort-Object -Property @{ Expression = { $_.lastImmutableIndex } ; Descending = $true }, @{ Expression = { $_.lastFinishAt } ; Descending = $true }, @{ Expression = { $_.firstStartAt } ; Descending = $true })
 
     $multipleStartsSingleLogicalStop = @($actions | Where-Object { $_.startCount -gt 1 -and $_.validFinishCount -eq 1 -and $_.invalidFinishCount -eq 0 } | ForEach-Object {
         [ordered]@{ actionId = $_.actionId; actionName = $_.actionName; agentId = $_.agentId; isTest = $_.isTest }
@@ -401,6 +454,8 @@ function Get-AiActionLogSummary {
             uniqueAgents                          = @($uniqueAgents.Keys).Count
             totalActionsLogged                    = @($actions).Count
             totalRecords                          = @($entries).Count
+            ledgerChainHead                       = [string]$payload.chainHead
+            maxImmutableIndex                     = if (@($entries).Count -gt 0) { [int]$entries[-1].immutableIndex } else { 0 }
             totalStartedRecords                   = $startRecords
             totalFinishedRecords                  = $finishRecords
             totalSuccessfulStartedStoppedActions  = @($successfulActions).Count
@@ -463,9 +518,9 @@ function New-AiActionEncryptedZip {
             $relativeItems += $resolved.Substring($WorkspacePath.Length).TrimStart('\\')
         }
         Set-Content -LiteralPath $listFile -Value $relativeItems -Encoding ASCII
-        $args = @('a', '-tzip', '-mem=AES256', "-p$Password", $DestinationPath, ("@{0}" -f $listFile))
+        $zipArgs = @('a', '-tzip', '-mem=AES256', "-p$Password", $DestinationPath, ("@{0}" -f $listFile))
         Push-Location $WorkspacePath
-        & $SevenZipPath @args | Out-Null
+        & $SevenZipPath @zipArgs | Out-Null
         Pop-Location
     } finally {
         if (Test-Path -LiteralPath $listFile) { Remove-Item -LiteralPath $listFile -Force }

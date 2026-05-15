@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # Analyse untagged files for taggability candidacy.
 
 [CmdletBinding()]

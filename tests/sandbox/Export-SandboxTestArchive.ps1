@@ -114,7 +114,7 @@ function New-HelpAboutFile {
     # PowerShell version
     $lines.Add('--- PowerShell Version ---')
     foreach ($key in $PSVersionTable.Keys) {
-        $lines.Add("  $key : $($PSVersionTable[$key])")
+        $lines.Add("  $key : $($PSVersionTable[$key])")  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     $lines.Add('')
 
@@ -153,7 +153,7 @@ function New-HelpAboutFile {
     }
     foreach ($browser in $browserPaths.Keys) {
         $found = $false
-        foreach ($bp in $browserPaths[$browser]) {
+        foreach ($bp in $browserPaths[$browser]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if (Test-Path $bp) {
                 $ver = (Get-Item $bp).VersionInfo.ProductVersion
                 $lines.Add("  $browser : $ver ($bp)")

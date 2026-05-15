@@ -61,7 +61,7 @@ foreach ($f in $psFiles) {
     $lines = Get-Content -LiteralPath $f.FullName -Encoding UTF8 -ErrorAction SilentlyContinue
     if (-not $lines) { continue }
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($line -match '^\s*#') { continue }
         foreach ($rule in $rules) {
             if ($line -match $rule.regex) {

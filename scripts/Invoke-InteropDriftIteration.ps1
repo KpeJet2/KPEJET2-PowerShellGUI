@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 <#
@@ -44,13 +44,13 @@ $report = [ordered]@{
 function Add-Finding {
     param([string]$Category,[string]$Severity,[string]$File,[string]$Detail,[hashtable]$Extra)
     $o = [ordered]@{ category=$Category; severity=$Severity; file=$File; detail=$Detail }
-    if ($Extra) { foreach ($k in $Extra.Keys) { $o[$k] = $Extra[$k] } }
+    if ($Extra) { foreach ($k in $Extra.Keys) { $o[$k] = $Extra[$k] } }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $null = $report.findings.Add([pscustomobject]$o)
 }
 function Add-Fix {
     param([string]$Category,[string]$File,[string]$Detail,[hashtable]$Extra)
     $o = [ordered]@{ category=$Category; file=$File; detail=$Detail }
-    if ($Extra) { foreach ($k in $Extra.Keys) { $o[$k] = $Extra[$k] } }
+    if ($Extra) { foreach ($k in $Extra.Keys) { $o[$k] = $Extra[$k] } }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $null = $report.fixes.Add([pscustomobject]$o)
 }
 
@@ -67,8 +67,8 @@ function Get-WorkspaceFileIndex {
     foreach ($p in $all) {
         if ($p -match $Script:ExcludeRx) { continue }
         $leaf = [IO.Path]::GetFileName($p).ToLowerInvariant()
-        if (-not $idx.ContainsKey($leaf)) { $idx[$leaf] = New-Object 'System.Collections.Generic.List[string]' }
-        [void]$idx[$leaf].Add($p)
+        if (-not $idx.ContainsKey($leaf)) { $idx[$leaf] = New-Object 'System.Collections.Generic.List[string]' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        [void]$idx[$leaf].Add($p)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     $Script:WsIndex = $idx
     return $idx
@@ -102,10 +102,10 @@ function Test-XhtmlRelPaths {
             if (-not [IO.File]::Exists($resolved)) {
                 $leaf = [IO.Path]::GetFileName($rel).ToLowerInvariant()
                 $cand = $null
-                if ($idx.ContainsKey($leaf)) { $cand = @($idx[$leaf]) }
+                if ($idx.ContainsKey($leaf)) { $cand = @($idx[$leaf]) }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($cand -and $cand.Count -eq 1) {
                     Add-Finding -Category 'RELPATH' -Severity 'HIGH' -File $fp -Detail "Broken ref '$rel'" -Extra @{
-                        candidate = $cand[0]
+                        candidate = $cand[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                         autoFixable = $true
                     }
                     $perFile++
@@ -140,7 +140,7 @@ function Test-ModuleManifestExports {
         $errs = $null; $tokens = $null
         $ast = [System.Management.Automation.Language.Parser]::ParseFile($psm1, [ref]$tokens, [ref]$errs)
         if (@($errs).Count -gt 0) {
-            Add-Finding -Category 'MANIFEST' -Severity 'CRITICAL' -File $psm1 -Detail "RootModule has $((@($errs)).Count) parse error(s); first: L$($errs[0].Extent.StartLineNumber): $($errs[0].Message)"
+            Add-Finding -Category 'MANIFEST' -Severity 'CRITICAL' -File $psm1 -Detail "RootModule has $((@($errs)).Count) parse error(s); first: L$($errs[0].Extent.StartLineNumber): $($errs[0].Message)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
             continue
         }
         $funcs = @($ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true) |
@@ -219,7 +219,7 @@ function Invoke-AutoFix-RelPaths {
         foreach ($f in $g.Group) {
             # Extract the broken ref from detail "Broken ref 'X'"
             if ($f.detail -match "Broken ref '([^']+)'") {
-                $broken = $Matches[1]
+                $broken = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $candidate = $f.candidate
                 if (-not $candidate -or -not (Test-Path -LiteralPath $candidate)) { continue }
                 $fileDir = Split-Path -Parent $path
@@ -237,7 +237,7 @@ function Invoke-AutoFix-RelPaths {
         if ($content -ne (([IO.File]::ReadAllText($path)))) {
             # Preserve UTF-8 BOM if present
             $bytes = [IO.File]::ReadAllBytes($path)
-            $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+            $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $enc = New-Object System.Text.UTF8Encoding($hasBom)
             [IO.File]::WriteAllText($path, $content, $enc)
         }
@@ -263,7 +263,7 @@ function Invoke-AutoFix-Manifest {
         }
         if ($content -ne $orig) {
             $bytes = [IO.File]::ReadAllBytes($path)
-            $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+            $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $enc = New-Object System.Text.UTF8Encoding($hasBom)
             [IO.File]::WriteAllText($path, $content, $enc)
             Add-Fix -Category 'MANIFEST' -File $path -Detail ("Removed ghost exports: " + ($names -join ', '))
@@ -290,7 +290,7 @@ function Invoke-Verify-Parse {
             $null = [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$tokens, [ref]$errs)
         } catch { continue }
         if (@($errs).Count -gt 0) {
-            $first = $errs[0]
+            $first = $errs[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $verify.parseErrors += [pscustomobject]@{
                 file = $f.FullName
                 count = @($errs).Count

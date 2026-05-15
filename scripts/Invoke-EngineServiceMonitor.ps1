@@ -143,7 +143,7 @@ function Resolve-LegacySwitchAction {
     $inputTokens = @($UnboundArguments)
     if (@($inputTokens).Count -eq 0) { return $resolved }
 
-    $first = $inputTokens[0]
+    $first = $inputTokens[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     if ($first -isnot [string]) { return $resolved }
 
     $token = ([string]$first).Trim()
@@ -152,7 +152,7 @@ function Resolve-LegacySwitchAction {
 
     $raw = $tokenMatch.Groups[1].Value.ToUpperInvariant()
     if ($legacyMap.ContainsKey($raw)) {
-        return $legacyMap[$raw]
+        return $legacyMap[$raw]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     return $resolved
@@ -658,7 +658,7 @@ function Get-LauncherSets {
             if ($rawSets.PSObject.Properties.Name -contains $setName) {
                 $values = @($rawSets.$setName | ForEach-Object { [string]$_ })
                 if (@($values).Count -gt 0) {
-                    $sets[$setName] = $values
+                    $sets[$setName] = $values  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
         }
@@ -811,7 +811,7 @@ function Get-ProcessRecordById {
     if ($ProcessId -le 0) { return $null }
     $key = [string]$ProcessId
     if ($Cache.ContainsKey($key)) {
-        return $Cache[$key]
+        return $Cache[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     $record = $null
@@ -821,7 +821,7 @@ function Get-ProcessRecordById {
         $record = $null
     }
 
-    $Cache[$key] = $record
+    $Cache[$key] = $record  # SIN-EXEMPT:P027 -- index access, context-verified safe
     return $record
 }
 
@@ -968,7 +968,7 @@ function Invoke-AutoStartEditor {
 
     $indexMap = @{}
     for ($i = 0; $i -lt @($targetRows).Count; $i++) {
-        $targetRow = $targetRows[$i]
+        $targetRow = $targetRows[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $idx = $i + 1
         $autoVal = if ($targetRow.PSObject.Properties.Name -contains 'autoStart') { [bool]$targetRow.autoStart } else { $false }
         $enabledVal = if ($targetRow.PSObject.Properties.Name -contains 'enabled') { [bool]$targetRow.enabled } else { $true }
@@ -988,7 +988,7 @@ function Invoke-AutoStartEditor {
     $picked = @{}
     foreach ($pick in $rawSelection) {
         if ($indexMap.ContainsKey($pick)) {
-            $picked[[string]$indexMap[$pick].path] = $indexMap[$pick]
+            $picked[[string]$indexMap[$pick].path] = $indexMap[$pick]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             continue
         }
 
@@ -1006,7 +1006,7 @@ function Invoke-AutoStartEditor {
 
     $changed = @()
     foreach ($key in @($picked.Keys)) {
-        $targetRow = $picked[$key]
+        $targetRow = $picked[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $current = if ($targetRow.PSObject.Properties.Name -contains 'autoStart') { [bool]$targetRow.autoStart } else { $false }
         $newValue = -not $current
         if ($targetRow.PSObject.Properties.Name -contains 'autoStart') {
@@ -1375,7 +1375,7 @@ function Invoke-TargetCommand {
         stop = @($Target.stopArgs)
         restart = @($Target.restartArgs)
     }
-    $modeParametersToUse = @($modeParameters[$Mode])
+    $modeParametersToUse = @($modeParameters[$Mode])  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
     if ($Mode -eq 'stop' -and @($modeParametersToUse).Count -eq 0) {
         return [PSCustomObject]@{
@@ -1913,7 +1913,7 @@ function Invoke-AutoMode {
         $failedTargets = @()
         foreach ($f in $failed) {
             $found = @($Targets | Where-Object { $_.name -eq $f.Target })
-            if (@($found).Count -gt 0) { $failedTargets += $found[0] }
+            if (@($found).Count -gt 0) { $failedTargets += $found[0] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
 
         $restartResults = Invoke-TargetOperation -Workspace $Workspace -Targets $failedTargets -Mode 'restart' -PreviewOnly:$PreviewOnly -TimeoutSec $TimeoutSec

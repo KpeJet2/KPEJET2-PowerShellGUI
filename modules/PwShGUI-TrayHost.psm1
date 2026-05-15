@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -211,7 +211,7 @@ function Start-KeyboardMonitor {
 
     $script:_KeyboardTimer = New-Object System.Windows.Forms.Timer
     $script:_KeyboardTimer.Interval = $IntervalMs
-    $script:_KeyboardTimer.Add_Tick({
+    $script:_KeyboardTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)

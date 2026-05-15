@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -127,7 +127,7 @@ function Write-CoalLog {
     }
     $ts   = Get-Date -Format 'HH:mm:ss'
     $line = "[{0}] {1,-5}  {2,-20} {3,-40} {4}" -f $ts, $Status, $Group, $Name, $Detail
-    Write-Host $line -ForegroundColor $colours[$Status]
+    Write-Host $line -ForegroundColor $colours[$Status]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     try {
         $line | Out-File -Append -FilePath $runLogPath -Encoding UTF8
     } catch { <# Intentional: non-fatal - run log write failure should not abort test #> }
@@ -249,7 +249,7 @@ function Flush-CoalBugsToTodo {
             if ($pipelineLoaded) {
                 # Convert ordered hashtable to plain hashtable for Add-PipelineItem
                 $bugHt = @{}
-                foreach ($k in $bug.Keys) { $bugHt[$k] = $bug[$k] }
+                foreach ($k in $bug.Keys) { $bugHt[$k] = $bug[$k] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 Add-PipelineItem -WorkspacePath $WsPath -Item $bugHt -ErrorAction Stop | Out-Null
             } else {
                 # Direct JSON write fallback
@@ -294,7 +294,7 @@ function Invoke-CoalTestCase {
     $grp  = $TestCase.Group
 
     # Check crash ceiling before attempting
-    $priorCrashes = if ($CrashMap.ContainsKey($id)) { $CrashMap[$id] } else { 0 }
+    $priorCrashes = if ($CrashMap.ContainsKey($id)) { $CrashMap[$id] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     if ($priorCrashes -ge $MaxCrashes) {
         Write-CoalLog -Status 'SKIP' -Group $grp -TestId $id -Name $name `
             -Detail "Auto-skip: crashed $priorCrashes times (max $MaxCrashes)"
@@ -324,9 +324,9 @@ function Invoke-CoalTestCase {
     } catch {
         # Unhandled exception = CRASH (not a test assertion failure)
         $crashDetail = $_.Exception.Message
-        if (-not $CrashMap.ContainsKey($id)) { $CrashMap[$id] = 0 }
-        $CrashMap[$id]++
-        $newCrashCount = $CrashMap[$id]
+        if (-not $CrashMap.ContainsKey($id)) { $CrashMap[$id] = 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        $CrashMap[$id]++  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        $newCrashCount = $CrashMap[$id]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         Write-CoalLog -Status 'CRASH' -Group $grp -TestId $id -Name $name `
             -Detail "Crash #$newCrashCount — $crashDetail"
         Register-CoalBug -TestId $id -Name $name -Detail "CRASH #$newCrashCount`: $crashDetail" `
@@ -473,7 +473,7 @@ Register-CoalTest @{
             if ($errs -and @($errs).Count -gt 0) {
                 $failures++
                 Write-CoalLog -Status 'WARN' -Group 'GUI-Phase0' -TestId 'syntax' `
-                    -Name $f.Name -Detail $errs[0].Message
+                    -Name $f.Name -Detail $errs[0].Message  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
         if ($failures -gt 0) {
@@ -1051,7 +1051,7 @@ Register-CoalTest @{
             return [pscustomobject]@{ Status = 'WARN'; Detail = "No log files found in logs/" }
         }
         return [pscustomobject]@{ Status = 'PASS'
-            Detail = "$(@($logFiles).Count) log file(s) found, newest: $($logFiles[0].Name)" }
+            Detail = "$(@($logFiles).Count) log file(s) found, newest: $($logFiles[0].Name)" }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 }
 
@@ -1850,7 +1850,7 @@ if ($ckpt) {
     foreach ($s in @($ckpt.skippedTests))   { [void]$skippedTests.Add($s) }
     if ($ckpt.crashes) {
         foreach ($k in $ckpt.crashes.PSObject.Properties.Name) {
-            $crashMap[$k] = $ckpt.crashes.$k
+            $crashMap[$k] = $ckpt.crashes.$k  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     }
 }

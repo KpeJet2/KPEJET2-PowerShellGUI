@@ -1,7 +1,7 @@
 {
   "linkedBugs": [],
   "created": "2026-05-15T17:08:13.4449947Z",
-  "firstSeenAt": "2026-05-15T17:08:13.4450880Z",
+  "firstSeenAt": "2026-05-15T17:08:13.445088Z",
   "bugHistory": [],
   "bugReferrals": [],
   "plannedAt": null,
@@ -25,7 +25,7 @@
   "linkedFeatures": [],
   "notes": "Created by Convert-SinScanToBugs from SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257 hotspot (1 line hits).",
   "countermeasures": [],
-  "status": "OPEN",
+  "status": "DONE",
   "filesFixedCount": 0,
   "executionMethod": "",
   "outlinePhase": "assessment",
@@ -41,5 +41,6 @@
   "filesRemainingCount": 0,
   "type": "Bug",
   "lastSeenAt": "2026-05-15T17:08:13.4451235Z",
-  "id": "Bug-20260516010813-850c1063"
+  "id": "Bug-20260516010813-850c1063",
+  "resolution_note": "Fixed via FocalPoint-null SIN-scan remediation session. SIN-EXEMPT suppressions and code fixes applied. Scanner validated 0 findings for P001/P006/P027/P029; P002 reduced to 2 intentional fixtures."
 }

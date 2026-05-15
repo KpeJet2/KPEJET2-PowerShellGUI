@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # iter39: bulk-add comment-based help skeleton to functions missing it.
 # PSSA PSProvideCommentHelp fires on functions without .SYNOPSIS.
 # We inject minimal <# .SYNOPSIS  Auto-generated stub: derived from function name. #>
@@ -28,7 +28,7 @@ foreach ($g in $byFile) {
     if ($path -like '*\PwSh-HelpFilesUpdateSource-ReR*') { continue }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -64,7 +64,7 @@ foreach ($g in $byFile) {
         # Insert just before the 'function' keyword line — line-prefix indent
         $insertOffset = $func.Extent.StartOffset
         $j = $insertOffset - 1
-        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $indent = $text.Substring($j + 1, $insertOffset - $j - 1) -replace '\S.*', ''
 
         $help = "<#`r`n$indent.SYNOPSIS`r`n$indent  $synopsis`r`n$indent#>`r`n$indent"

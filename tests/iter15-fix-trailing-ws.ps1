@@ -8,7 +8,7 @@ $linesFixed = 0
 foreach ($f in $files) {
     $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
     if ($bytes.Length -eq 0) { continue }
-    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $startIdx = if ($hasBom) { 3 } else { 0 }
     $text = [System.Text.Encoding]::UTF8.GetString($bytes, $startIdx, $bytes.Length - $startIdx)
     $orig = $text

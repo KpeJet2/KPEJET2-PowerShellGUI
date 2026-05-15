@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -144,7 +144,7 @@ function Write-TestLog {
 
     $colours = @{ PASS = 'Green'; FAIL = 'Red'; SKIP = 'DarkYellow'; INFO = 'Gray'; WARN = 'Yellow' }
     $line = "[{0}] {1,-4}  {2,-10} {3}  {4}" -f $entry.Time, $Status, $Phase, $Test, $Detail
-    Write-Host $line -ForegroundColor $colours[$Status]
+    Write-Host $line -ForegroundColor $colours[$Status]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $line | Out-File -Append -FilePath $logPath -Encoding UTF8
 }
 
@@ -438,7 +438,7 @@ if ($runPhase0) {
         }
         $rel = $f.FullName.Replace($scriptRoot, '').TrimStart('\')
         if ($errors -and $errors.Count -gt 0) {
-            Write-TestLog 'FAIL' 'Phase0' 'SyntaxParse' "$rel -- $($errors[0].Message)"
+            Write-TestLog 'FAIL' 'Phase0' 'SyntaxParse' "$rel -- $($errors[0].Message)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $parseFailures++
         }
     }
@@ -676,7 +676,7 @@ if ($runPhase0) {
             $errors = @([pscustomobject]@{ Message = $_.Exception.Message })
         }
         if ($errors -and $errors.Count -gt 0) {
-            Write-TestLog 'FAIL' 'Phase0' 'EnvScanner' "Parse errors: $($errors[0].Message)"
+            Write-TestLog 'FAIL' 'Phase0' 'EnvScanner' "Parse errors: $($errors[0].Message)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
         } else {
             Write-TestLog 'PASS' 'Phase0' 'EnvScanner' 'Invoke-PSEnvironmentScanner.ps1 parses clean'
         }
@@ -972,7 +972,7 @@ if ($runPhase0) {
             }
             $sfRel = $sf.Name
             if ($errors -and $errors.Count -gt 0) {
-                Write-TestLog 'FAIL' 'Phase0' 'ScriptFnParse' "$sfRel -- $($errors[0].Message)"
+                Write-TestLog 'FAIL' 'Phase0' 'ScriptFnParse' "$sfRel -- $($errors[0].Message)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $scriptFnFail++
             } else {
                 # Extract the primary function name and check it exists
@@ -1553,7 +1553,7 @@ if ($runPhase2) {
                 continue
             }
 
-            $children = $menuMap[$topMenuName]
+            $children = $menuMap[$topMenuName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
             # Links menu -- enumerate dynamically, skip all
             if ($topMenuName -eq 'Links') {

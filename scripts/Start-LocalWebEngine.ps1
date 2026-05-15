@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -41,6 +41,7 @@ param(
     [switch]$Help,
     [switch]$AsService,
     [switch]$Force,
+    [switch]$AllowFileOrigin,
     [int]$PortRetryMax = 5
 )
 
@@ -55,6 +56,7 @@ Start-LocalWebEngine.ps1 — Unified Launcher/Service
   -NoLaunchBrowser         # Suppress browser launch
   -AsService               # Run as background service
   -Force                   # Force restart/stop
+    -AllowFileOrigin         # Allow file:// or Origin:null requests (disabled by default)
   -PortRetryMax <n>        # Max port increments if busy
   -Help                    # Show this help
 "@
@@ -381,19 +383,62 @@ Write-BootstrapLog "=== Engine Bootstrap Start ==="
 Write-BootstrapLog "PID=$PID  PSVersion=$($PSVersionTable.PSVersion)  Host=$($Host.Name)" 'INFO'
 Write-BootstrapLog "WorkspacePath=$WorkspacePath"
 
-# Port availability pre-check
+# Port availability pre-check + stale-engine cleanup
 try {
     $tcpTest = New-Object System.Net.Sockets.TcpClient
     $conn = $tcpTest.BeginConnect('127.0.0.1', $Port, $null, $null)
     $portInUse = $conn.AsyncWaitHandle.WaitOne(300)
     if ($portInUse) {
         try { $tcpTest.EndConnect($conn) } catch { <# Intentional: non-fatal, TCP EndConnect cleanup #> }
-        Write-BootstrapLog "Port $Port may already be in use" 'WARN'
+        Write-BootstrapLog "Port $Port in use — checking for stale engine process" 'WARN'
+        # Attempt to kill any stale engine process from the PID file
+        $stalePidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+        if (Test-Path -LiteralPath $stalePidFile) {
+            try {
+                $stalePid = [int](Get-Content -LiteralPath $stalePidFile -Raw -Encoding UTF8).Trim()
+                if ($stalePid -gt 0 -and (Get-Process -Id $stalePid -ErrorAction SilentlyContinue)) {
+                    Write-BootstrapLog "Stopping stale engine PID $stalePid" 'WARN'
+                    Stop-Process -Id $stalePid -Force -ErrorAction SilentlyContinue
+                    Start-Sleep -Milliseconds 1200
+                } else {
+                    Write-BootstrapLog "Stale PID file (PID $stalePid already gone) — removing" 'WARN'
+                    Remove-Item -LiteralPath $stalePidFile -Force -ErrorAction SilentlyContinue
+                }
+            } catch { Write-BootstrapLog "Stale engine cleanup error: $_" 'WARN' }
+        }
+        # Re-check port after cleanup attempt
+        try {
+            $tcpTest2 = New-Object System.Net.Sockets.TcpClient
+            $conn2 = $tcpTest2.BeginConnect('127.0.0.1', $Port, $null, $null)
+            $stillInUse = $conn2.AsyncWaitHandle.WaitOne(600)
+            if ($stillInUse) {
+                try { $tcpTest2.EndConnect($conn2) } catch { <# Intentional: non-fatal #> }
+                Write-BootstrapLog "Port $Port still in use after cleanup — attempting URL ACL reset" 'WARN'
+            } else {
+                Write-BootstrapLog "Port $Port freed after stale engine cleanup" 'INFO'
+            }
+            $tcpTest2.Close()
+        } catch { <# Intentional: non-fatal port re-check #> }
     } else {
         Write-BootstrapLog "Port $Port is available" 'INFO'
     }
     $tcpTest.Close()
 } catch { Write-BootstrapLog "Port check error: $_" 'WARN' }
+
+# URL ACL registration — ensures HttpListener can bind without admin elevation per-session
+# On Windows, loopback-only HttpListener requires either admin OR an explicit netsh URL ACL.
+try {
+    $urlPrefix = "http://127.0.0.1:$Port/"
+    $aclCheck = & netsh http show urlacl url=$urlPrefix 2>&1
+    if ($aclCheck -notmatch 'User:') {
+        Write-BootstrapLog "Registering URL ACL for $urlPrefix" 'INFO'
+        $userSid = "$env:USERDOMAIN\$env:USERNAME"
+        $aclOut = & netsh http add urlacl url=$urlPrefix user=$userSid 2>&1
+        Write-BootstrapLog "URL ACL add result: $aclOut" 'INFO'
+    } else {
+        Write-BootstrapLog "URL ACL already registered for $urlPrefix" 'INFO'
+    }
+} catch { Write-BootstrapLog "URL ACL registration skipped (may require elevation): $_" 'WARN' }
 
 # ─── Load config ───────────────────────────────────────────────────────────────
 $cfg = $null
@@ -438,6 +483,15 @@ $rng.Dispose()
 
 # ─── WebSocket client registry ─────────────────────────────────────────────────
 $WsClients = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
+$script:_EngineRequestsTotal  = [long]0
+$script:_EngineRequestsServed = [long]0
+$script:_EngineRequestsFailed = [long]0
+$script:_EngineRequestsClientError = [long]0
+$script:_EngineRequestsServerError = [long]0
+$script:_EngineBytesIn = [long]0
+$script:_EngineBytesOut = [long]0
+$script:_EngineLastErrorMessage = ''
+$script:_EngineStatusFreshnessSec = 45
 
 <#
 .SYNOPSIS
@@ -525,6 +579,15 @@ function Send-Response {
         [hashtable]$ExtraHeaders = @{}
     )
     $resp = $Context.Response
+    [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsTotal)
+    if ($StatusCode -ge 500) {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsFailed)
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsServerError)
+    } elseif ($StatusCode -ge 400) {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsClientError)
+    } else {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsServed)
+    }
     $resp.StatusCode    = $StatusCode
     $resp.ContentType   = $ContentType
     # Security headers
@@ -533,18 +596,16 @@ function Send-Response {
     $resp.Headers.Set('Content-Security-Policy',
         "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:$Port ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
     $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
-    # CORS — engine is 127.0.0.1 only, so any same-machine page may call it.
-    # Browsers send Origin: null for file:// pages — that MUST be reflected verbatim,
-    # not normalised to http://127.0.0.1:$Port (which would cause the browser to
-    # silently drop the response and the page to render an "(offline)" cache fallback).
     $reqOrigin = $Context.Request.Headers['Origin']
     $allowCreds = $false
-    if ($reqOrigin -and ($reqOrigin -eq 'null' -or $reqOrigin -match '^(https?://(127\.0\.0\.1|localhost)(:\d+)?$)|^file://|^vscode-webview://|^vscode-file://|^vscode://|^https?://[^/]*vscode[^/]*(:\d+)?$|^https?://[^/]*vscode-cdn\.net(:\d+)?$')) {
-        $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
-        $resp.Headers.Set('Vary', 'Origin')
-        # Browsers reject Allow-Credentials when origin is "null" or "*" — only set for real origins.
-        if ($reqOrigin -ne 'null') { $allowCreds = $true }
+    if ($reqOrigin) {
+        if (Test-RequestOriginAllowed -Context $Context) {
+            $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+            $resp.Headers.Set('Vary', 'Origin')
+            if ($reqOrigin -ne 'null') { $allowCreds = $true }
+        }
     } else {
+        # Non-browser clients do not send Origin; keep loopback default for tooling compatibility.
         $resp.Headers.Set('Access-Control-Allow-Origin', 'http://127.0.0.1:' + $Port)
         $allowCreds = $true
     }
@@ -554,11 +615,112 @@ function Send-Response {
     $resp.Headers.Set('Access-Control-Max-Age', '600')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
+    [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
     $resp.ContentLength64 = $bytes.Length
     try {
         $resp.OutputStream.Write($bytes, 0, $bytes.Length)
         $resp.OutputStream.Close()
-    } catch { <# client disconnected #> }
+    } catch {
+        $script:_EngineLastErrorMessage = "Response write failure: $($_.Exception.Message)"
+        <# client disconnected #>
+    }
+}
+
+function Get-PublicKeyFingerprint {
+    [CmdletBinding()]
+    param()
+    $pkiDir = Join-Path $WorkspacePath 'pki'
+    if (-not (Test-Path -LiteralPath $pkiDir -PathType Container)) {
+        return 'Unavailable'
+    }
+
+    $candidate = Join-Path $pkiDir 'FocalPoint-null-00.pub'
+    if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+        $pub = Get-ChildItem -LiteralPath $pkiDir -Filter '*.pub' -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -eq $pub) { return 'Unavailable' }
+        $candidate = $pub.FullName
+    }
+
+    try {
+        $raw = Get-Content -LiteralPath $candidate -Raw -Encoding UTF8 -ErrorAction Stop
+        if ([string]::IsNullOrWhiteSpace($raw)) { return 'Unavailable' }
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $bytes = [System.Text.Encoding]::UTF8.GetBytes($raw.Trim())
+            $hashBytes = $sha.ComputeHash($bytes)
+            $hex = [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant()
+            if ($hex.Length -gt 24) { $hex = $hex.Substring(0, 24) }
+            $label = [System.IO.Path]::GetFileName($candidate)
+            return "${label}:$hex"
+        } finally {
+            $sha.Dispose()
+        }
+    } catch {
+        return 'Unavailable'
+    }
+}
+
+function Get-EngineLastErrorMessage {
+    [CmdletBinding()]
+    param()
+    if (-not [string]::IsNullOrWhiteSpace($script:_EngineLastErrorMessage)) {
+        return $script:_EngineLastErrorMessage
+    }
+
+    if (@($script:_BootstrapErrors).Count -gt 0) {
+        $last = @($script:_BootstrapErrors)[@($script:_BootstrapErrors).Count - 1]
+        if ($null -ne $last -and $last.PSObject.Properties.Name -contains 'msg') {
+            return [string]$last.msg
+        }
+    }
+
+    try {
+        if (Test-Path -LiteralPath $script:CrashLogFile -PathType Leaf) {
+            $tail = @(Get-Content -LiteralPath $script:CrashLogFile -Tail 20 -Encoding UTF8 -ErrorAction SilentlyContinue)
+            if (@($tail).Count -gt 0) {
+                $jsonLine = $null
+                for ($i = @($tail).Count - 1; $i -ge 0; $i--) {
+                    $line = [string]$tail[$i]
+                    if ([string]::IsNullOrWhiteSpace($line)) { continue }
+                    if ($line.TrimStart().StartsWith('{')) {
+                        $jsonLine = $line
+                        break
+                    }
+                }
+                if (-not [string]::IsNullOrWhiteSpace($jsonLine)) {
+                    try {
+                        $obj = $jsonLine | ConvertFrom-Json -ErrorAction Stop
+                        if ($null -ne $obj -and $obj.PSObject.Properties.Name -contains 'lastLogLine' -and -not [string]::IsNullOrWhiteSpace([string]$obj.lastLogLine)) {
+                            return [string]$obj.lastLogLine
+                        }
+                    } catch { <# Intentional: non-fatal JSON parse fallback #> }
+                }
+            }
+        }
+    } catch { <# Intentional: non-fatal fallback path #> }
+
+    return ''
+}
+
+function Get-EngineProcessTelemetry {
+    [CmdletBinding()]
+    param()
+    $p = Get-Process -Id $PID -ErrorAction SilentlyContinue
+    if ($null -eq $p) {
+        return [pscustomobject]@{
+            processName = 'Unknown'
+            memoryWorkingSetMB = 0
+            memoryPeakWorkingSetMB = 0
+        }
+    }
+
+    $wsMb = [math]::Round(([double]$p.WorkingSet64 / 1MB), 2)
+    $peakMb = [math]::Round(([double]$p.PeakWorkingSet64 / 1MB), 2)
+    return [pscustomobject]@{
+        processName = [string]$p.ProcessName
+        memoryWorkingSetMB = $wsMb
+        memoryPeakWorkingSetMB = $peakMb
+    }
 }
 
 <#
@@ -578,6 +740,53 @@ function Send-Json {
     param($Context, $Object, [int]$StatusCode = 200)
     $json = $Object | ConvertTo-Json -Depth 5
     Send-Response -Context $Context -StatusCode $StatusCode -ContentType 'application/json; charset=utf-8' -Body $json
+}
+
+function Test-RequestOriginAllowed {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Net.HttpListenerContext]$Context
+    )
+
+    $origin = [string]$Context.Request.Headers['Origin']
+    if ([string]::IsNullOrWhiteSpace($origin)) {
+        return $true
+    }
+
+    if ($origin -eq ('http://127.0.0.1:' + $Port) -or $origin -eq ('http://localhost:' + $Port)) {
+        return $true
+    }
+
+    if ($origin -match '^vscode-webview://[a-z0-9-]+$' -or $origin -eq 'vscode://') {
+        return $true
+    }
+
+    if ($AllowFileOrigin -and ($origin -eq 'null' -or $origin -match '^file://')) {
+        return $true
+    }
+
+    return $false
+}
+
+function Get-RequestClientClass {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Net.HttpListenerContext]$Context
+    )
+
+    $origin = [string]$Context.Request.Headers['Origin']
+    if (-not [string]::IsNullOrWhiteSpace($origin)) {
+        return 'browser-origin'
+    }
+
+    $ua = [string]$Context.Request.UserAgent
+    if (-not [string]::IsNullOrWhiteSpace($ua) -and $ua -match 'Mozilla|Chrome|Firefox|Safari|Edg') {
+        return 'browser-opaque'
+    }
+
+    return 'non-browser'
 }
 
 <#
@@ -679,22 +888,76 @@ function Get-EngineStatus {
     param($Context)
     $upSec = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
     $nowIso = (Get-Date -Format 'o')
+    $freshUntilIso = (Get-Date).AddSeconds($script:_EngineStatusFreshnessSec).ToString('o')
+    $wsCount = [int]$WsClients.Count
+    $reqTotal = [int]$script:_EngineRequestsTotal
+    $reqServed = [int]$script:_EngineRequestsServed
+    $reqFailed = [int]$script:_EngineRequestsFailed
+    $reqClientErr = [int]$script:_EngineRequestsClientError
+    $reqServerErr = [int]$script:_EngineRequestsServerError
+    $bytesIn = [int64]$script:_EngineBytesIn
+    $bytesOut = [int64]$script:_EngineBytesOut
+    $proc = Get-EngineProcessTelemetry
+    $publicKey = Get-PublicKeyFingerprint
+    $lastErr = Get-EngineLastErrorMessage
     Send-Json -Context $Context -Object @{
         running     = $true
         responding  = $true
         pid         = $PID
+        processName = $proc.processName
         port        = $Port
         state       = 'Running'
         uptime      = $upSec
         uptimeSec   = $upSec
         startupTime = $script:_EngineStartTime
         startedAt   = $script:_EngineStartTime
+        heartbeatAt = $nowIso
+        statusAgeSec = 0
+        statusFreshUntil = $freshUntilIso
         serverTime  = $nowIso
+        memoryWorkingSetMB = $proc.memoryWorkingSetMB
+        memoryPeakWorkingSetMB = $proc.memoryPeakWorkingSetMB
+        networkIo = @{
+            bytesIn = $bytesIn
+            bytesOut = $bytesOut
+        }
+        publicKeyFingerprint = $publicKey
+        lastErrorMessage = $lastErr
+        localWebClientsConnected = $wsCount
+        connectedClients = $wsCount
+        requestQueueLength = 0
+        totalRequests = $reqTotal
+        requestTotal = $reqTotal
+        servedRequests = $reqServed
+        failedRequests = $reqFailed
+        requestsClientError = $reqClientErr
+        requestsServerError = $reqServerErr
+        requests = @{
+            total  = $reqTotal
+            served = $reqServed
+            failed = $reqFailed
+            clientError = $reqClientErr
+            serverError = $reqServerErr
+        }
+        stats = @{
+            clientsConnected  = $wsCount
+            requestQueueLength = 0
+            requestsTotal     = $reqTotal
+            requestsServed    = $reqServed
+            requestsFailed    = $reqFailed
+            requestsClientError = $reqClientErr
+            requestsServerError = $reqServerErr
+            networkBytesIn = $bytesIn
+            networkBytesOut = $bytesOut
+            uptimeSec         = $upSec
+            startedAt         = $script:_EngineStartTime
+        }
         heartbeat   = @{
             ok         = $true
             status     = 'alive'
             ageSec     = 0
             at         = $nowIso
+            freshUntil = $freshUntilIso
             startedAt  = $script:_EngineStartTime
             uptime     = $upSec
             serverTime = $nowIso
@@ -932,6 +1195,47 @@ function Get-AgentStats {
         Send-Json -Context $Context -Object @{ error = 'stats_unavailable'; stats = @{} } -StatusCode 200
     } else {
         Send-Json -Context $Context -Object $statsData
+    }
+}
+
+# ─── Route: GET /api/ai-actions/summary ─────────────────────────────────────
+<#
+.SYNOPSIS
+Return live AI-action summary data.
+.DESCRIPTION
+Loads the AI-action log module and computes a current summary directly from
+JSONL logs so the viewer always has up-to-date action rows.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-AiActionSummaryLive {
+    [CmdletBinding()]
+    param($Context)
+
+    $includeTest = $false
+    $includeTestRaw = [string]$Context.Request.QueryString['includeTest']
+    if (-not [string]::IsNullOrWhiteSpace($includeTestRaw)) {
+        $includeTest = $includeTestRaw -match '^(1|true|yes)$'
+    }
+
+    $modulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AiActionLog.psm1'
+    if (-not (Test-Path -LiteralPath $modulePath)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'AI action log module missing'
+        return
+    }
+
+    try {
+        Import-Module $modulePath -Force -DisableNameChecking
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ('AI action log module import failed: ' + $_.Exception.Message)
+        return
+    }
+
+    try {
+        $summary = Get-AiActionLogSummary -IncludeTest:$includeTest -WorkspacePath $WorkspacePath
+        Send-Json -Context $Context -Object $summary
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ('AI action summary failed: ' + $_.Exception.Message)
     }
 }
 
@@ -1469,6 +1773,28 @@ function Get-StaticFile {
     Send-Response -Context $Context -StatusCode 200 -ContentType $ct -Body $content
 }
 
+function Test-StaticFallbackAllowed {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RelativePath)) { return $false }
+
+    $path = $RelativePath -replace '/', '\\'
+    $ext = [System.IO.Path]::GetExtension($path).ToLowerInvariant()
+    $allowedExt = @('.xhtml', '.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico')
+    if (@($allowedExt | Where-Object { $_ -eq $ext }).Count -eq 0) { return $false }
+
+    if ($path -match '(^|\\)(config|logs|pki|agents|modules|tests|todo|temp|checkpoints|reports|~REPORTS|~HISTORY|~DOWNLOADS)(\\|$)') {
+        return $false
+    }
+
+    if ($path -match '(^|\\)\.') { return $false }
+    return $true
+}
+
 # ─── WebSocket handler (runs in scriptblock via background runspace) ───────────
 <#
 .SYNOPSIS
@@ -1487,8 +1813,8 @@ function Start-WebSocketHandler {
         $wsId  = [System.Guid]::NewGuid().ToString()
         $WsClients.TryAdd($wsId, $ws) | Out-Null
 
-        # Send hello + CSRF token
-        $hello = @{ event = 'connected'; wsId = $wsId; csrfToken = $SessionToken; serverTime = (Get-Date -Format 'o') }
+        # Send hello metadata only; do not expose CSRF token over WebSocket.
+        $hello = @{ event = 'connected'; wsId = $wsId; serverTime = (Get-Date -Format 'o') }
         $helloBytes = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
         $ws.SendAsync([System.ArraySegment[byte]]::new($helloBytes), `
             [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
@@ -2006,8 +2332,23 @@ try {
     Write-BootstrapLog "=== Bootstrap Complete — HttpListener active on port $Port ===" 'INFO'
     Write-EngineLog "Engine started on port $Port, workspace: $WorkspacePath" -Level 'INFO'
 } catch {
-    Write-BootstrapLog "FATAL: HttpListener failed to start on port $Port — $_" 'ERROR'
-    Write-EngineLog "Failed to start HttpListener on port $Port — $_" -Level 'ERROR'
+    $errMsg = "$_"
+    Write-BootstrapLog "FATAL: HttpListener failed to start on port $Port — $errMsg" 'ERROR'
+    Write-EngineLog "Failed to start HttpListener on port $Port — $errMsg" -Level 'ERROR'
+    Write-Host "" -ForegroundColor Red
+    Write-Host "  [ENGINE ERROR] HttpListener could not bind to http://127.0.0.1:$Port/" -ForegroundColor Red
+    Write-Host "  Cause: $errMsg" -ForegroundColor DarkRed
+    Write-Host "" -ForegroundColor Red
+    Write-Host "  REMEDIATION OPTIONS:" -ForegroundColor Yellow
+    Write-Host "  1. Run as Administrator and re-launch" -ForegroundColor Yellow
+    Write-Host "  2. Register URL ACL (run once as admin):" -ForegroundColor Yellow
+    Write-Host "     netsh http add urlacl url=http://127.0.0.1:${Port}/ user=Everyone" -ForegroundColor Cyan
+    Write-Host "  3. Release stale port (run as admin):" -ForegroundColor Yellow
+    Write-Host "     netsh http delete urlacl url=http://127.0.0.1:${Port}/" -ForegroundColor Cyan
+    Write-Host "     netsh http add urlacl url=http://127.0.0.1:${Port}/ user=Everyone" -ForegroundColor Cyan
+    Write-Host "  4. Check what is using port ${Port}:" -ForegroundColor Yellow
+    Write-Host "     netstat -ano | findstr :$Port" -ForegroundColor Cyan
+    Write-Host "" -ForegroundColor Red
     Write-Error "Failed to start HttpListener on port $Port. $_"
     exit 1
 }
@@ -2068,6 +2409,9 @@ try {
         $req    = $context.Request
         $method = $req.HttpMethod.ToUpper()
         $url    = $req.Url.AbsolutePath.TrimEnd('/')
+        if ($req.ContentLength64 -gt 0) {
+            [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesIn, [int64]$req.ContentLength64)
+        }
         if ([string]::IsNullOrEmpty($url)) { $url = '/' }
 
         # Legacy filename + permalink redirects for dependency visualisation page.
@@ -2090,10 +2434,9 @@ try {
             # Start-Job creates a new process without script functions — use a runspace instead
             $wsCtxRef  = $context
             $wsClRef   = $WsClients
-            $wsTokRef  = $SessionToken
             $wsPsInst  = [System.Management.Automation.PowerShell]::Create()
             $null = $wsPsInst.AddScript({
-                param($wsCtx, $wsClients, $csrfToken)
+                param($wsCtx, $wsClients)
                 $wsId = $null
                 $ws   = $null
                 try {
@@ -2101,7 +2444,7 @@ try {
                     $ws     = $acc.WebSocket
                     $wsId   = [System.Guid]::NewGuid().ToString()
                     $wsClients.TryAdd($wsId, $ws) | Out-Null
-                    $hello  = @{ event='connected'; wsId=$wsId; csrfToken=$csrfToken; serverTime=(Get-Date -Format 'o') }
+                    $hello  = @{ event='connected'; wsId=$wsId; serverTime=(Get-Date -Format 'o') }
                     $helloB = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
                     $ws.SendAsync(
                         [System.ArraySegment[byte]]::new($helloB),
@@ -2135,7 +2478,7 @@ try {
                     }
                     if ($null -ne $ws) { try { $ws.Dispose() } catch { <# Intentional: non-fatal, WebSocket disposal #> } }
                 }
-            }).AddArgument($wsCtxRef).AddArgument($wsClRef).AddArgument($wsTokRef)
+            }).AddArgument($wsCtxRef).AddArgument($wsClRef)
             $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
             continue
         }
@@ -2143,6 +2486,11 @@ try {
         # ── CORS preflight ────────────────────────────────────────────────
         if ($method -eq 'OPTIONS') {
             Send-Response -Context $context -StatusCode 204 -Body ''
+            continue
+        }
+
+        if (($method -eq 'POST' -or $method -eq 'PUT' -or $method -eq 'DELETE') -and -not (Test-RequestOriginAllowed -Context $context)) {
+            Send-Error -Context $context -StatusCode 403 -Message 'Origin not allowed'
             continue
         }
 
@@ -2172,6 +2520,10 @@ try {
                 if ($method -eq 'GET') { Get-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/ai-actions/summary$' {
+                if ($method -eq 'GET') { Get-AiActionSummaryLive -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/workspace/files$' {
                 if ($method -eq 'GET') { Get-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
@@ -2199,7 +2551,12 @@ try {
                 break
             }
             '^/api/csrf-token$' {
-                Send-Json -Context $context -Object @{ csrfToken = $SessionToken }
+                if (-not (Test-RequestOriginAllowed -Context $context)) {
+                    Send-Error -Context $context -StatusCode 403 -Message 'Origin not allowed'
+                } else {
+                    $clientClass = Get-RequestClientClass -Context $context
+                    Send-Json -Context $context -Object @{ csrfToken = $SessionToken; clientClass = $clientClass }
+                }
                 break
             }
             '^/api/engine/status$' {
@@ -2301,11 +2658,13 @@ try {
                 break
             }
             # ── Generic static file fallback (workspace-relative) ────────
-            '^/(.+\.(xhtml|html|md|css|js|json|png|jpg|gif|svg|ico))$' {
+            '^/(.+\.(xhtml|html|css|js|png|jpg|jpeg|gif|svg|ico))$' {
                 $relFile = $Matches[1] -replace '/', '\'  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 # P009: validate path does not escape workspace
                 if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
                     Send-Error -Context $context -StatusCode 400 -Message 'Invalid path'
+                } elseif (-not (Test-StaticFallbackAllowed -RelativePath $relFile)) {
+                    Send-Error -Context $context -StatusCode 403 -Message 'Path not allowed'
                 } else {
                     Get-StaticFile -Context $context -RelPath $relFile
                 }

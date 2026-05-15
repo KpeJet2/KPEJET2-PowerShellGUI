@@ -15,7 +15,7 @@ foreach ($g in $byFile) {
     if ($path -like '*\PwSh-HelpFilesUpdateSource-ReR*') { Write-Host "  SKIP fragile: $path"; continue }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -43,10 +43,10 @@ foreach ($g in $byFile) {
         $insertOffset = $paramBlock.Extent.EndOffset
         # Find indent inside body: walk forward looking for next non-blank line
         $i = $insertOffset
-        while ($i -lt $text.Length -and ($text[$i] -eq "`r" -or $text[$i] -eq "`n" -or $text[$i] -eq ' ' -or $text[$i] -eq "`t")) { $i++ }
+        while ($i -lt $text.Length -and ($text[$i] -eq "`r" -or $text[$i] -eq "`n" -or $text[$i] -eq ' ' -or $text[$i] -eq "`t")) { $i++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         # Walk back from $i to start of that line to grab indent
         $j = $i - 1
-        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $indent = ''
         if ($i -lt $text.Length) {
             $indent = $text.Substring($j + 1, $i - $j - 1) -replace '\S.*', ''

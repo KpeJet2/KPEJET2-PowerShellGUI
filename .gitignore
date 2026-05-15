@@ -18,6 +18,9 @@ __pycache__/
 testResults.xml
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master.zip
+# private key material (generated locally; never commit)
+pki/*.key
+agents/*/pki/*.key
 # ignore PowerShell generated files
 *.ps1xml
 *.psd1

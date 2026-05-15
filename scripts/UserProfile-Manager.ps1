@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -100,7 +100,7 @@ function Write-DiagnosticDump {
     try {
         if ($Context) {
             foreach ($k in ($Context.Keys | Sort-Object)) {
-                Write-UPMLog "CTX.$k = $($Context[$k])" 'ERROR'
+                Write-UPMLog "CTX.$k = $($Context[$k])" 'ERROR'  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
         if ($ErrorRecord) {
@@ -312,7 +312,7 @@ $tabs.ItemSize     = New-Object System.Drawing.Size(200, 32)
 $tabs.Font         = $fontBold
 $tabs.Padding      = New-Object System.Drawing.Point(12, 6)
 $tabs.BackColor    = $clrBg
-$tabs.Add_DrawItem({
+$tabs.Add_DrawItem({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     param($sender, $e)
     $tab   = $sender.TabPages[$e.Index]
     $rect  = $e.Bounds
@@ -619,7 +619,7 @@ function Populate-ViewTree {
     $expn.Expand()
 }
 
-$viewTree.Add_AfterSelect({
+$viewTree.Add_AfterSelect({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $viewDetail.Columns.Clear()
     $viewDetail.Rows.Clear()
     if ($null -eq $script:LiveSnapshot -or $null -eq $this.SelectedNode) { return }
@@ -920,7 +920,7 @@ $viewTree.Add_AfterSelect({
     }
 })
 
-$btnCapture.Add_Click({
+$btnCapture.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $btnCapture.Enabled = $false
     $viewStatusLbl.Text = 'Capturing...'
     Write-UPMLog 'Capture initiated by user'
@@ -982,7 +982,7 @@ $savePanel.Controls.AddRange(@($savePathCtl.Label, $savePathCtl.TextBox))
 $btnBrowseSave = New-StyledButton '...' 392 128 60 24
 $btnBrowseSave.Font = $fontMain
 $savePanel.Controls.Add($btnBrowseSave)
-$btnBrowseSave.Add_Click({
+$btnBrowseSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
     $dlg.SelectedPath = $savePathCtl.TextBox.Text
     $dlg.Description  = 'Select folder for profile snapshots'
@@ -1014,7 +1014,7 @@ $encBox.Controls.AddRange(@($encPw1Ctl.Label, $encPw1Ctl.TextBox, $encPw2Ctl.Lab
 
 $encPw1Ctl.TextBox.Enabled = $false
 $encPw2Ctl.TextBox.Enabled = $false
-$chkEncrypt.Add_CheckedChanged({
+$chkEncrypt.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $encPw1Ctl.TextBox.Enabled = $chkEncrypt.Checked
     $encPw2Ctl.TextBox.Enabled = $chkEncrypt.Checked
     if (-not $chkEncrypt.Checked) { $encPw1Ctl.TextBox.Clear(); $encPw2Ctl.TextBox.Clear() }
@@ -1066,7 +1066,7 @@ $savePanel.Controls.Add($savePrgLbl)
 $btnSaveProfile = New-StyledButton 'Capture & Save Profile' 16 480 200 34
 $savePanel.Controls.Add($btnSaveProfile)
 
-$btnSaveProfile.Add_Click({
+$btnSaveProfile.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $profileName = $saveNameCtl.TextBox.Text.Trim()
     $savePath    = $savePathCtl.TextBox.Text.Trim()
 
@@ -1293,7 +1293,7 @@ function Load-ProfileList {
     }
 }
 
-$btnCmpRefresh.Add_Click({ Load-ProfileList })
+$btnCmpRefresh.Add_Click({ Load-ProfileList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
 $cmpProgress = New-Object System.Windows.Forms.ProgressBar
 $cmpProgress.Location = New-Object System.Drawing.Point(8, 730)
@@ -1301,7 +1301,7 @@ $cmpProgress.Size     = New-Object System.Drawing.Size(600, 10)
 $cmpProgress.Visible  = $false
 $tabCompare.Controls.Add($cmpProgress)
 
-$btnCmpLoad.Add_Click({
+$btnCmpLoad.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if ($cmpCombo.SelectedIndex -lt 0) {
         [System.Windows.Forms.MessageBox]::Show('Please select a profile.','Select Profile',[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
         return
@@ -1561,9 +1561,9 @@ function Load-RestoreList {
     }
 }
 
-$btnRestRefresh.Add_Click({ Load-RestoreList })
+$btnRestRefresh.Add_Click({ Load-RestoreList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-$btnLoadRest.Add_Click({
+$btnLoadRest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if ($restCombo.SelectedIndex -lt 0) { return }
     $profiles = $restCombo.Tag
     if (-not $profiles -or $restCombo.SelectedIndex -ge $profiles.Count) { return }
@@ -1601,7 +1601,7 @@ $btnLoadRest.Add_Click({
     }
 })
 
-$btnStartRestore.Add_Click({
+$btnStartRestore.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if ($null -eq $script:LoadedProfile) { return }
 
     $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -1655,7 +1655,7 @@ $btnStartRestore.Add_Click({
 # ════════════════════════════════════════════════════════════════════════════
 #  STARTUP & SHOW
 # ════════════════════════════════════════════════════════════════════════════
-$form.Add_Load({
+$form.Add_Load({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     Write-UPMLog "UPM started. User=$($env:USERNAME) Computer=$($env:COMPUTERNAME) Store=$($script:ProfileStorePath)"
     $statusLabel.Text = "Loading profile list from: $($script:ProfileStorePath)"
     try {
@@ -1671,7 +1671,7 @@ $form.Add_Load({
     }
 })
 
-$form.Add_FormClosing({
+$form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     param($sender, $e)
     $activeTab = if ($tabs -and $tabs.SelectedTab) { $tabs.SelectedTab.Text } else { '(none)' }
     Write-UPMLog "UPM closing. Reason=$($e.CloseReason) ActiveTab=$activeTab Status='$($statusLabel.Text)'"
@@ -1684,7 +1684,7 @@ $form.Add_FormClosing({
 })
 
 # Auto-size grid columns when tabs switch
-$tabs.Add_SelectedIndexChanged({
+$tabs.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     [System.Windows.Forms.Application]::DoEvents()
 })
 

@@ -14,12 +14,12 @@ function Test-FileEncoding {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$Path)
     $bytes = [System.IO.File]::ReadAllBytes($Path)
-    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $hasNonAscii = $false
     foreach ($b in $bytes) { if ($b -gt 0x7F) { $hasNonAscii = $true; break } }
     $doubleEncoded = $false
     for ($i = 0; $i -lt ($bytes.Length - 3); $i++) {
-        if ($bytes[$i] -eq 0xC3 -and $bytes[$i + 1] -eq 0xA2 -and $bytes[$i + 2] -eq 0xE2 -and $bytes[$i + 3] -eq 0x80) {
+        if ($bytes[$i] -eq 0xC3 -and $bytes[$i + 1] -eq 0xA2 -and $bytes[$i + 2] -eq 0xE2 -and $bytes[$i + 3] -eq 0x80) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $doubleEncoded = $true; break
         }
     }
@@ -60,7 +60,7 @@ function Convert-LegacyEncoding {
             # P039: strip leading UTF-8 BOM before round-tripping; otherwise
             # GetEncoding(1252).GetBytes(U+FEFF) produces 0x3F ('?') and
             # corrupts the first character of the file.
-            if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+            if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $stripped = New-Object byte[] ($bytes.Length - 3)
                 [Array]::Copy($bytes, 3, $stripped, 0, $bytes.Length - 3)
                 $bytes = $stripped

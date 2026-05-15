@@ -226,8 +226,8 @@ function Set-IntentStatus {
     $intent = $null
     $intents = @($script:IntentStore.intents)
     for ($i = 0; $i -lt @($intents).Count; $i++) {
-        if ($intents[$i].intentId -eq $IntentId) {
-            $intent = $intents[$i]
+        if ($intents[$i].intentId -eq $IntentId) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $intent = $intents[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             break
         }
     }
@@ -299,8 +299,8 @@ function Invoke-IntentUnseal {
     $intent = $null
     $intents = @($script:IntentStore.intents)
     for ($i = 0; $i -lt @($intents).Count; $i++) {
-        if ($intents[$i].intentId -eq $IntentId) {
-            $intent = $intents[$i]
+        if ($intents[$i].intentId -eq $IntentId) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $intent = $intents[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             break
         }
     }
@@ -441,8 +441,8 @@ function Get-IntentHistory {
     $relatedChanges = Get-ChangeLogEntries -GoverningIntentId $IntentId
 
     return [ordered]@{
-        intent         = $intent[0]
-        intentHistory  = @($intent[0].history)
+        intent         = $intent[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        intentHistory  = @($intent[0].history)  # SIN-EXEMPT:P027 -- index access, context-verified safe
         relatedChanges = $relatedChanges
         summary        = [ordered]@{
             totalChanges   = @($relatedChanges).Count

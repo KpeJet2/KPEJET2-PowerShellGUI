@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # iter40: PSProvideCommentHelp default config requires BOTH .SYNOPSIS and .DESCRIPTION.
 # Most flagged funcs have .SYNOPSIS but not .DESCRIPTION — inject the missing block.
 # For funcs with no help comment at all, prepend a full skeleton.
@@ -24,7 +24,7 @@ foreach ($g in $byFile) {
     if ($path -like '*\PwSh-HelpFilesUpdateSource-ReR*') { continue }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -64,7 +64,7 @@ foreach ($g in $byFile) {
             # Determine block's leading indent on each interior line
             $blockStart = $helpTok.Extent.StartOffset
             $j = $blockStart - 1
-            while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+            while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $indent = $text.Substring($j + 1, $blockStart - $j - 1) -replace '\S.*', ''
 
             # Find first .SYNOPSIS line — append .DESCRIPTION on next line same indent
@@ -89,7 +89,7 @@ foreach ($g in $byFile) {
             $synopsis = Convert-FuncNameToSynopsis -Name $func.Name
             $insertOffset = $func.Extent.StartOffset
             $j = $insertOffset - 1
-            while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+            while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $indent = $text.Substring($j + 1, $insertOffset - $j - 1) -replace '\S.*', ''
             $help = "<#`r`n$indent.SYNOPSIS`r`n$indent  $synopsis`r`n$indent.DESCRIPTION`r`n$indent  Detailed behaviour: $synopsis`r`n$indent#>`r`n$indent"
             $edits.Add([pscustomobject]@{

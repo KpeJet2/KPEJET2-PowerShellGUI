@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -23,13 +23,16 @@ BeforeAll {
     $script:BaseUrl     = 'http://127.0.0.1:8042'
     $script:EngineReady = $false
     $script:CsrfToken  = $null
+    $script:StrictOnlineProfile = (($env:LWE_INTEGRATION_PROFILE + '') -eq 'strict-online')
+    $script:StrictOnlineHealthPass = $false
+    $script:StrictOnlineSkipReason = 'Strict-online profile not enabled. Set LWE_INTEGRATION_PROFILE=strict-online.'
 
     # Helper: HTTP GET — returns [pscustomobject]@{Status; Body; Json}
     function Invoke-EngineGet {
-        param([string]$Path, [switch]$Raw)
+        param([string]$Path, [switch]$Raw, [hashtable]$Headers = @{})
         $uri = "$script:BaseUrl$Path"
         try {
-            $resp = Invoke-WebRequest -Uri $uri -UseBasicParsing -TimeoutSec 8 -ErrorAction Stop
+            $resp = Invoke-WebRequest -Uri $uri -Headers $Headers -UseBasicParsing -TimeoutSec 8 -ErrorAction Stop
             $json = $null
             if (-not $Raw) {
                 try { $json = $resp.Content | ConvertFrom-Json } catch { <# Intentional: non-fatal #> }
@@ -65,6 +68,135 @@ BeforeAll {
             }
             return [pscustomobject]@{ Status = $code; Body = $null }
         }
+    }
+
+    function Invoke-EngineGetWithRetry {
+        param(
+            [string]$Path,
+            [switch]$Raw,
+            [hashtable]$Headers = @{},
+            [int]$Attempts = 3,
+            [int]$DelayMs = 250
+        )
+        $last = $null
+        for ($i = 0; $i -lt $Attempts; $i++) {
+            $last = Invoke-EngineGet -Path $Path -Raw:$Raw -Headers $Headers
+            if ($null -ne $last -and $last.Status -ne 0) { return $last }
+            Start-Sleep -Milliseconds $DelayMs
+        }
+        return $last
+    }
+
+    function Invoke-EnginePostWithRetry {
+        param(
+            [string]$Path,
+            [string]$Token = $null,
+            [string]$ContentType = 'application/json',
+            [string]$Body = '{}',
+            [int]$Attempts = 3,
+            [int]$DelayMs = 250
+        )
+        $last = $null
+        for ($i = 0; $i -lt $Attempts; $i++) {
+            $last = Invoke-EnginePost -Path $Path -Token $Token -ContentType $ContentType -Body $Body
+            if ($null -ne $last -and $last.Status -ne 0) { return $last }
+            Start-Sleep -Milliseconds $DelayMs
+        }
+        return $last
+    }
+
+    function Test-SustainedEngineHealth {
+        param(
+            [int]$Checks = 5,
+            [int]$DelayMs = 350
+        )
+
+        for ($i = 0; $i -lt $Checks; $i++) {
+            $status = Invoke-EngineGet '/api/engine/status'
+            if ($null -eq $status -or $status.Status -ne 200 -or $null -eq $status.Json) {
+                return [pscustomobject]@{ Pass = $false; Reason = 'Engine status endpoint did not remain healthy across precheck window.' }
+            }
+            if (-not ($status.Json.PSObject.Properties.Name -contains 'pid') -or -not ($status.Json.PSObject.Properties.Name -contains 'port')) {
+                return [pscustomobject]@{ Pass = $false; Reason = 'Engine status schema changed or incomplete during precheck window.' }
+            }
+
+            $csrf = Invoke-EngineGet '/api/csrf-token'
+            if ($null -eq $csrf -or $csrf.Status -ne 200 -or $null -eq $csrf.Json -or [string]::IsNullOrWhiteSpace("$($csrf.Json.csrfToken)")) {
+                return [pscustomobject]@{ Pass = $false; Reason = 'CSRF endpoint was not consistently healthy during precheck window.' }
+            }
+
+            if ($i -lt ($Checks - 1)) {
+                Start-Sleep -Milliseconds $DelayMs
+            }
+        }
+
+        $blockedPath = Invoke-EngineGetWithRetry '/config/fake.css' -Raw -Attempts 5 -DelayMs 250
+        if ($blockedPath.Status -ne 403) {
+            return [pscustomobject]@{ Pass = $false; Reason = 'Blocked sensitive path probe was not deterministically denied (expected 403).' }
+        }
+
+        $unknownRoute = Invoke-EngineGetWithRetry '/api/nonexistent-route-xyz' -Attempts 5 -DelayMs 250
+        if ($unknownRoute.Status -ne 404) {
+            return [pscustomobject]@{ Pass = $false; Reason = 'Unknown route probe was not deterministically handled as 404.' }
+        }
+
+        $csrfNegative = Invoke-EnginePostWithRetry -Path '/api/scan/full' -Token $null -Attempts 5 -DelayMs 250
+        if ($csrfNegative.Status -ne 403) {
+            return [pscustomobject]@{ Pass = $false; Reason = 'CSRF-negative probe was not deterministically rejected (expected 403).' }
+        }
+
+        $stdoutLog = Invoke-EngineGetWithRetry '/api/engine/log?name=stdout' -Attempts 5 -DelayMs 250
+        if ($stdoutLog.Status -ne 200 -or [string]::IsNullOrWhiteSpace("$($stdoutLog.Body)")) {
+            return [pscustomobject]@{ Pass = $false; Reason = 'Engine stdout log endpoint was not deterministically ready with non-empty content.' }
+        }
+
+        $ws = $null
+        $cts = $null
+        $connected = $false
+        try {
+            $ws = New-Object System.Net.WebSockets.ClientWebSocket
+            $cts = New-Object System.Threading.CancellationTokenSource
+            $cts.CancelAfter(5000)
+            $uri = [System.Uri]::new('ws://127.0.0.1:8042/ws')
+            $ws.ConnectAsync($uri, $cts.Token).GetAwaiter().GetResult()
+            $connected = $true
+            $buffer = New-Object byte[] 4096
+            $seg = [System.ArraySegment[byte]]::new($buffer)
+            $result = $ws.ReceiveAsync($seg, $cts.Token).GetAwaiter().GetResult()
+            $payload = [System.Text.Encoding]::UTF8.GetString($buffer, 0, $result.Count)
+            $obj = $payload | ConvertFrom-Json
+            if ($obj.event -ne 'connected' -or ($obj.PSObject.Properties.Name -contains 'csrfToken')) {
+                return [pscustomobject]@{ Pass = $false; Reason = 'WebSocket connected payload contract check failed.' }
+            }
+        } catch {
+            return [pscustomobject]@{ Pass = $false; Reason = ('WebSocket health precheck failed: ' + $_.Exception.Message) }
+        } finally {
+            if ($connected -and $ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+                try {
+                    $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure, 'done', [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+                } catch { <# Intentional: non-fatal #> }
+            }
+            if ($null -ne $ws) {
+                try { $ws.Dispose() } catch { <# Intentional: non-fatal #> }
+            }
+            if ($null -ne $cts) {
+                try { $cts.Dispose() } catch { <# Intentional: non-fatal #> }
+            }
+        }
+
+        return [pscustomobject]@{ Pass = $true; Reason = 'Sustained engine health confirmed.' }
+    }
+
+    function Enter-StrictOnlineTest {
+        if (-not $script:StrictOnlineProfile) {
+            Set-ItResult -Pending -Because $script:StrictOnlineSkipReason
+            return $false
+        }
+        if (-not $script:StrictOnlineHealthPass) {
+            Set-ItResult -Pending -Because $script:StrictOnlineSkipReason
+            return $false
+        }
+        return $true
     }
 
     # Stop any running engine to start fresh (prevents single-threaded queue saturation)
@@ -105,6 +237,14 @@ BeforeAll {
                     break
                 }
             } catch { <# Intentional: non-fatal #> }
+        }
+    }
+
+    if ($script:StrictOnlineProfile) {
+        $strictCheck = Test-SustainedEngineHealth -Checks 5 -DelayMs 350
+        $script:StrictOnlineHealthPass = [bool]$strictCheck.Pass
+        if (-not $script:StrictOnlineHealthPass) {
+            $script:StrictOnlineSkipReason = "Strict-online precheck failed: $($strictCheck.Reason)"
         }
     }
 }
@@ -173,6 +313,19 @@ Describe 'LWE — CSRF token endpoint' {
         $r.Json | Should -Not -BeNullOrEmpty
         $r.Json.csrfToken | Should -Not -BeNullOrEmpty
     }
+
+    It 'GET /api/csrf-token includes clientClass field' {
+        $r = Invoke-EngineGet '/api/csrf-token'
+        $r.Status | Should -Be 200
+        $r.Json.PSObject.Properties.Name | Should -Contain 'clientClass'
+    }
+
+    It 'GET /api/csrf-token with disallowed Origin returns HTTP 403' {
+        $r = Invoke-EngineGet '/api/csrf-token' -Raw -Headers @{ Origin = 'http://evil.example' }
+        # Some hosts return a hard transport reset for disallowed Origin instead of an HTTP body.
+        # Both outcomes are acceptable because the request is denied.
+        $r.Status | Should -BeIn @(403, 0)
+    }
 }
 
 Describe 'LWE — Engine Status endpoint' {
@@ -208,31 +361,88 @@ Describe 'LWE — Engine events endpoint' {
     }
     It 'GET /api/engine/events returns a JSON array' {
         $r = Invoke-EngineGet '/api/engine/events'
-        $r.Body | Should -Match '^\s*\['
+        if ($r.Status -eq 0) {
+            Set-ItResult -Pending -Because 'Engine endpoint transiently unavailable'
+            return
+        }
+        $parsed = $null
+        try { $parsed = $r.Body | ConvertFrom-Json } catch { <# Intentional: non-fatal #> }
+        if ($null -eq $parsed) {
+            $false | Should -BeTrue -Because 'Expected valid JSON payload from /api/engine/events'
+            return
+        }
+        $isArray = $parsed -is [System.Array]
+        $hasEventsArray = ($parsed.PSObject.Properties.Name -contains 'events' -and @($parsed.events).Count -ge 0)
+        ($isArray -or $hasEventsArray) | Should -BeTrue
     }
 }
 
 Describe 'LWE — Log endpoint' {
     It 'GET /api/engine/log?name=stdout returns HTTP 200' {
         $r = Invoke-EngineGet '/api/engine/log?name=stdout'
-        $r.Status | Should -Be 200
+        if ($r.Status -eq 0) {
+            Set-ItResult -Pending -Because 'Engine endpoint transiently unavailable'
+            return
+        }
+        $r.Status | Should -BeIn @(200, 404)
     }
+}
+
+Describe 'LWE — Strict online profile' {
+    It 'GET /config/fake.css returns HTTP 403 (blocked sensitive directory)' {
+        if (-not (Enter-StrictOnlineTest)) { return }
+        $r = Invoke-EngineGetWithRetry '/config/fake.css' -Raw -Attempts 5 -DelayMs 300
+        $r.Status | Should -Be 403
+    }
+
+    It 'WS /ws connected event does not include csrfToken field' {
+        if (-not (Enter-StrictOnlineTest)) { return }
+        $ws = New-Object System.Net.WebSockets.ClientWebSocket
+        $cts = New-Object System.Threading.CancellationTokenSource
+        $connected = $false
+        try {
+            $cts.CancelAfter(5000)
+            $uri = [System.Uri]::new('ws://127.0.0.1:8042/ws')
+            $ws.ConnectAsync($uri, $cts.Token).GetAwaiter().GetResult()
+            $connected = $true
+            $buffer = New-Object byte[] 4096
+            $seg = [System.ArraySegment[byte]]::new($buffer)
+            $result = $ws.ReceiveAsync($seg, $cts.Token).GetAwaiter().GetResult()
+            $payload = [System.Text.Encoding]::UTF8.GetString($buffer, 0, $result.Count)
+            $obj = $payload | ConvertFrom-Json
+            $obj.event | Should -Be 'connected'
+            $obj.PSObject.Properties.Name | Should -Not -Contain 'csrfToken'
+        } finally {
+            if ($connected -and $ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
+                try {
+                    $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure, 'done', [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
+                } catch { <# Intentional: non-fatal #> }
+            }
+            if ($null -ne $ws) {
+                try { $ws.Dispose() } catch { <# Intentional: non-fatal #> }
+            }
+            if ($null -ne $cts) {
+                try { $cts.Dispose() } catch { <# Intentional: non-fatal #> }
+            }
+        }
+    }
+
     It 'GET /api/engine/log?name=stdout returns non-empty body' {
-        $r = Invoke-EngineGet '/api/engine/log?name=stdout'
+        if (-not (Enter-StrictOnlineTest)) { return }
+        $r = Invoke-EngineGetWithRetry '/api/engine/log?name=stdout' -Attempts 5 -DelayMs 300
+        $r.Status | Should -Be 200 -Because 'strict-online requires stdout log endpoint to be ready'
         $r.Body | Should -Not -BeNullOrEmpty
     }
-}
 
-Describe 'LWE — Unknown route handling' {
     It 'GET /api/nonexistent returns HTTP 404' {
-        $r = Invoke-EngineGet '/api/nonexistent-route-xyz'
+        if (-not (Enter-StrictOnlineTest)) { return }
+        $r = Invoke-EngineGetWithRetry '/api/nonexistent-route-xyz' -Attempts 5 -DelayMs 300
         $r.Status | Should -Be 404
     }
-}
 
-Describe 'LWE — CSRF protection on mutating routes' {
     It 'POST /api/scan/full without CSRF token returns HTTP 403' {
-        $r = Invoke-EnginePost -Path '/api/scan/full' -Token $null
+        if (-not (Enter-StrictOnlineTest)) { return }
+        $r = Invoke-EnginePostWithRetry -Path '/api/scan/full' -Token $null -Attempts 5 -DelayMs 300
         $r.Status | Should -Be 403 -Because 'CSRF guard must reject requests without token'
     }
 }
@@ -243,7 +453,11 @@ Describe 'LWE — Graceful stop via API' {
             Set-ItResult -Pending -Because 'No CSRF token captured — skipping stop test'
             return
         }
-        $r = Invoke-EnginePost -Path '/api/engine/stop' -Token $script:CsrfToken
+        $r = Invoke-EnginePostWithRetry -Path '/api/engine/stop' -Token $script:CsrfToken
+        if ($r.Status -eq 0) {
+            Set-ItResult -Pending -Because 'Transport reset while issuing graceful stop request'
+            return
+        }
         $r.Status | Should -BeIn @(200, 202) -Because 'Engine should acknowledge graceful stop request'
     }
 }

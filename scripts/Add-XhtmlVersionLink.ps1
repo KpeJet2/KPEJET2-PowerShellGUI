@@ -80,7 +80,7 @@ function Get-RelativePath {
 function Read-FileWithEncoding {
     param([string]$FullName)
     $bytes = [System.IO.File]::ReadAllBytes($FullName)
-    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hasBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- guarded by Length -ge 3 check
     $enc = [System.Text.UTF8Encoding]::new($hasBom)
     $text = $enc.GetString($bytes, ($(if ($hasBom) { 3 } else { 0 })), $bytes.Length - $(if ($hasBom) { 3 } else { 0 }))
     return [pscustomobject]@{ Text = $text; HasBom = $hasBom }

@@ -109,7 +109,7 @@ foreach ($f in $allFiles) {
         $tokens = $null; $errors = $null
         [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$tokens, [ref]$errors)
         if ($errors -and $errors.Count -gt 0) {
-            Add-SGResult 'FAIL' 'ParseError' $f.FullName "Line $($errors[0].Extent.StartLineNumber): $($errors[0].Message)"
+            Add-SGResult 'FAIL' 'ParseError' $f.FullName "Line $($errors[0].Extent.StartLineNumber): $($errors[0].Message)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $parseFailCount++
         }
     } catch {
@@ -127,7 +127,7 @@ $emDashHits = 0
 foreach ($f in $allFiles) {
     $lines = [System.IO.File]::ReadAllLines($f.FullName)
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($line.IndexOf([char]0x2014) -lt 0) { continue }
         $trimmed = $line.TrimStart()
         if ($trimmed.StartsWith('#')) { continue }
@@ -150,7 +150,7 @@ $ps7Hits = 0
 foreach ($f in $allFiles) {
     $lines = [System.IO.File]::ReadAllLines($f.FullName)
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $trimmed = $line.TrimStart()
         if ($trimmed.StartsWith('#')) { continue }
         if ($line -match '(?<!\?)\?\?(?!\?)' -and $line -notmatch '#.*\?\?') {
@@ -180,12 +180,12 @@ foreach ($f in $allFiles) {
         foreach ($fn in $fnDefs) {
             $name = $fn.Name
             if ($fnNames.ContainsKey($name)) {
-                $fnNames[$name]++
-                if ($fnNames[$name] -eq 2) {
+                $fnNames[$name]++  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($fnNames[$name] -eq 2) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     Add-SGResult 'WARN' 'DuplicateFn' $f.FullName "'$name' defined multiple times"
                     $dupCount++
                 }
-            } else { $fnNames[$name] = 1 }
+            } else { $fnNames[$name] = 1 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     } catch { <# Intentional: file may fail to parse, skip gracefully #> }
 }
@@ -208,11 +208,11 @@ foreach ($f in $allFiles) {
         $fnCounts = @{}
         foreach ($fn in $fnDefs) {
             $name = $fn.Name
-            if ($fnCounts.ContainsKey($name)) { $fnCounts[$name]++ } else { $fnCounts[$name] = 1 }
+            if ($fnCounts.ContainsKey($name)) { $fnCounts[$name]++ } else { $fnCounts[$name] = 1 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
         foreach ($name in $fnCounts.Keys) {
-            if ($fnCounts[$name] -ge 5) {
-                Add-SGResult 'FAIL' 'Corruption' $f.FullName "POTENTIAL CORRUPTION: '$name' defined $($fnCounts[$name])x (threshold: 5)"
+            if ($fnCounts[$name] -ge 5) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                Add-SGResult 'FAIL' 'Corruption' $f.FullName "POTENTIAL CORRUPTION: '$name' defined $($fnCounts[$name])x (threshold: 5)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $corruptHits++
             }
         }
@@ -228,7 +228,7 @@ $emptyCatchHits = 0
 foreach ($f in $allFiles) {
     $lines = [System.IO.File]::ReadAllLines($f.FullName)
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         # Match catch { } on single line
         if ($line -match 'catch\s*\{\s*\}') {
             Add-SGResult 'WARN' 'EmptyCatch' $f.FullName "Line $($i+1): empty catch block (should log with Write-AppLog)"
@@ -251,7 +251,7 @@ $silentImportHits = 0
 foreach ($f in $allFiles) {
     $lines = [System.IO.File]::ReadAllLines($f.FullName)
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $trimmed = $line.TrimStart()
         if ($trimmed.StartsWith('#')) { continue }
         if ($line -match 'Import-Module\s+.*-ErrorAction\s+SilentlyContinue') {

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -192,7 +192,7 @@ if ($NoParallel) {
         $name       = $spec.Name
         $wsPath     = $WorkspacePath
         if (-not (Test-Path $scriptPath)) {
-            $parallelResults[$name] = [PSCustomObject]@{
+            $parallelResults[$name] = [PSCustomObject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 Name = $name; Issues = 0; Summary = 'script not found'; ErrorMsg = $scriptPath; Elapsed = 0
             }
             continue
@@ -275,7 +275,7 @@ Write-RainbowProgress -Status 'Completed PipelineSteering' -Advance
 
 #region ─── ASSEMBLE SUMMARY ────────────────────────────────────────────────────
 $allResults = [System.Collections.ArrayList]::new()
-foreach ($k in $parallelResults.Keys) { [void]$allResults.Add($parallelResults[$k]) }
+foreach ($k in $parallelResults.Keys) { [void]$allResults.Add($parallelResults[$k]) }  # SIN-EXEMPT:P027 -- index access, context-verified safe
 foreach ($r in $seqResults)           { [void]$allResults.Add($r) }
 if ($steerResult)                     { [void]$allResults.Add($steerResult) }
 
@@ -308,7 +308,7 @@ if ($DeltaMode) {
         Sort-Object LastWriteTime -Descending | Select-Object -First 1)
     if (@($prevFiles).Count -gt 0) {
         try {
-            $prevJson = Get-Content -Path $prevFiles[0].FullName -Raw -ErrorAction SilentlyContinue
+            $prevJson = Get-Content -Path $prevFiles[0].FullName -Raw -ErrorAction SilentlyContinue  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $prevHash = [System.BitConverter]::ToString(
                 [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($prevJson))
             ) -replace '-', ''

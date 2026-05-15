@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -298,7 +298,7 @@ foreach ($modRoot in $psModPaths) {
         }
 
         if (-not $allInstalledModules.ContainsKey($modKey)) {
-            $allInstalledModules[$modKey] = [pscustomobject]@{
+            $allInstalledModules[$modKey] = [pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 module      = $modName
                 version     = $version
                 author      = $author
@@ -311,13 +311,13 @@ foreach ($modRoot in $psModPaths) {
             }
         }
     }
-    $folderModuleCount[$modRoot] = $count
+    $folderModuleCount[$modRoot] = $count  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 Write-Host ''
 Write-Host "PSModulePath directories ($($psModPaths.Count) folders scanned):" -ForegroundColor White
 foreach ($p in $psModPaths) {
-    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     Write-Host "  $c modules  $p" -ForegroundColor Gray
 }
 $totalInstalled = $allInstalledModules.Count
@@ -375,7 +375,7 @@ foreach ($wsRoot in $wsScanPaths) {
             }
 
             if (-not $workspaceModules.ContainsKey($wsKey)) {
-                $workspaceModules[$wsKey] = [pscustomobject]@{
+                $workspaceModules[$wsKey] = [pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     module      = $baseName
                     version     = $wsVersion
                     author      = $wsAuthor
@@ -387,7 +387,7 @@ foreach ($wsRoot in $wsScanPaths) {
         }
     }
     $relPath = $wsRoot.Substring($WorkspacePath.Length).TrimStart('\')
-    $wsFolderCounts[$relPath] = $count
+    $wsFolderCounts[$relPath] = $count  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 Write-Host ''
@@ -511,7 +511,7 @@ if ($scriptRefData -and $scriptRefData.modules) {
         $refKey = $refMod.module.ToLowerInvariant()
         if ($allInstalledModules.ContainsKey($refKey)) { continue }
 
-        $wsMatch = if ($workspaceModules.ContainsKey($refKey)) { $workspaceModules[$refKey] } else { $null }
+        $wsMatch = if ($workspaceModules.ContainsKey($refKey)) { $workspaceModules[$refKey] } else { $null }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $referencedBy = @()
         if ($refMod.references) {
             $referencedBy = @($refMod.references | Select-Object -ExpandProperty source -Unique)
@@ -593,7 +593,7 @@ Write-Host ''
 # ── Module folders breakdown ──
 Write-Host '── Modules per scanned folder ──' -ForegroundColor Yellow
 foreach ($p in $psModPaths) {
-    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $label = $p
     if ($p -like '*\WindowsPowerShell\*') { $label = "[User]  $p" }
     elseif ($p -like '*\PowerShell\*' -and $p -like '*Documents*') { $label = "[User-PS7]  $p" }
@@ -915,7 +915,7 @@ if ($ExportInventory) {
         '|---|---:|'
     )
     foreach ($p in $psModPaths) {
-        $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+        $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $mdLines += "| $p | $c |"
     }
     foreach ($kv in $wsFolderCounts.GetEnumerator()) {

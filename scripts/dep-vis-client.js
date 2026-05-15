@@ -308,7 +308,9 @@
         try {
           var msg = JSON.parse(ev.data);
           if (msg.event === 'connected') {
-            _csrfToken = msg.csrfToken || '';
+            if (msg.csrfToken) {
+              _csrfToken = msg.csrfToken;
+            }
           } else if (msg.event === 'scan_progress' && msg.data) {
             onStatusData({ progress: msg.data });
           } else if (msg.event === 'scan_started') {

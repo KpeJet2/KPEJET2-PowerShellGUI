@@ -15,7 +15,7 @@ if (Get-Command Test-ConfigPaths -ErrorAction SilentlyContinue) { Write-Host 'Te
 # Confirm BOMs
 foreach ($f in 'C:\PowerShellGUI\modules\CronAiAthon-Scheduler.psm1','C:\PowerShellGUI\modules\UserProfileManager.psd1') {
     $b = [System.IO.File]::ReadAllBytes($f)
-    $bom = ($b.Length -ge 3 -and $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF)
+    $bom = ($b.Length -ge 3 -and $b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     Write-Host "$f BOM=$bom"
 }
 # Re-run targeted PSSA

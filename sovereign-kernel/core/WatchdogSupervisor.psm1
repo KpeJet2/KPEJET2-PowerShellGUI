@@ -306,7 +306,7 @@ function Invoke-BalthazarAnomalyCheck {
     # Check for modules with high failure counts
     $allHealth = Get-ModuleHealth
     foreach ($key in $allHealth.Keys) {
-        $h = $allHealth[$key]
+        $h = $allHealth[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($h.failures -ge 3) {
             $anomalies += @{
                 type     = 'REPEATED_FAILURE'
@@ -348,13 +348,13 @@ function Invoke-BalthazarAnomalyCheck {
                 $dropCount = 0
                 for ($i = 1; $i -lt @($checkSet).Count; $i++) {
                     $prev = if ($checkSet[$i - 1].PSObject.Properties.Name -contains 'compositeScore') { [double]$checkSet[$i - 1].compositeScore } else { 1.0 }
-                    $curr = if ($checkSet[$i].PSObject.Properties.Name -contains 'compositeScore')     { [double]$checkSet[$i].compositeScore     } else { 1.0 }
+                    $curr = if ($checkSet[$i].PSObject.Properties.Name -contains 'compositeScore')     { [double]$checkSet[$i].compositeScore     } else { 1.0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     if ($curr -ge $prev) { $allDrops = $false; break }
                     $dropCount++
                 }
 
                 if ($allDrops -and $dropCount -ge $consecutiveDropsRequired) {
-                    $latestScore = if ($srRuns[-1].PSObject.Properties.Name -contains 'compositeScore') { [double]$srRuns[-1].compositeScore } else { 0 }
+                    $latestScore = if ($srRuns[-1].PSObject.Properties.Name -contains 'compositeScore') { [double]$srRuns[-1].compositeScore } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     $anomalies += @{
                         type          = 'SELF_REVIEW_CONSECUTIVE_DROP'
                         drops         = $dropCount

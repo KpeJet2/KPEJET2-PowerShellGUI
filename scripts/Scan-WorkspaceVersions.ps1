@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 $ws = 'C:\PowerShellGUI'
 $exts = @('.ps1','.psm1','.psd1','.bat','.cmd','.json','.yaml','.yml','.md','.xhtml','.html','.js','.ts','.css','.py','.txt','.xml','.csv')
 # Permanent exclusions: vendored deps, VCS internals, virtualenvs, runtime artefacts,
@@ -9,6 +9,7 @@ $out = New-Object System.Collections.Generic.List[object]
 Get-ChildItem -LiteralPath $ws -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
     $rel = $_.FullName.Substring($ws.Length).TrimStart('\').Replace('\','/')
     foreach ($x in $exclude) { if ($rel.StartsWith("$x/") -or $rel -eq $x) { return } }
+    if ($rel -match '^todo/(Bug|Bugs2FIX)-.*\.json$') { return }
     if ($exts -notcontains $_.Extension.ToLower()) { return }
     $tag = $null
     try {
@@ -17,7 +18,7 @@ Get-ChildItem -LiteralPath $ws -Recurse -File -ErrorAction SilentlyContinue | Fo
             $m = $rx.Match($line)
             if ($m.Success) { $tag = $m.Groups[1].Value; break }
         }
-    } catch {}
+    } catch { <# Intentional: non-fatal — unreadable files silently skipped during version scan #> }
     $out.Add([pscustomobject]@{ Path=$rel; Version=$tag; SizeKB=[math]::Round($_.Length/1KB,1) })
 }
 $out | Sort-Object Path | Export-Csv -LiteralPath 'C:\PowerShellGUI\temp\workspace-versions.csv' -NoTypeInformation -Encoding UTF8

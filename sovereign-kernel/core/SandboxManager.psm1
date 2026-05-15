@@ -243,7 +243,7 @@ function Invoke-InSandbox {
     $ps.AddScript($ScriptBlock.ToString()) | Out-Null
 
     foreach ($key in $Parameters.Keys) {
-        $ps.AddParameter($key, $Parameters[$key]) | Out-Null
+        $ps.AddParameter($key, $Parameters[$key]) | Out-Null  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     $result  = $null

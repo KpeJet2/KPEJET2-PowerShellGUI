@@ -92,7 +92,7 @@ if (Test-Path -LiteralPath $todoDir) {
                 $af = if ($bj.PSObject.Properties.Name -contains 'affectedFiles' -and @($bj.affectedFiles).Count -gt 0) { @($bj.affectedFiles)[0] } else { '' }
                 if ($sp -and $af) { $existing["$sp|$af"] = $true }
             }
-        } catch { }
+        } catch { <# Intentional: non-fatal -- malformed bug JSON silently skipped during dedup scan #> }
     }
 }
 

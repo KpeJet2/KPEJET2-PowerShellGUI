@@ -1,4 +1,4 @@
-/* VersionTag: 2605.B5.V46.0 */
+/* VersionTag: 2605.B5.V46.1 */
 /* FileRole: BrowserAsset
  * pwshgui-version-link.js
  *   Replaces static version strings on any XHTML page with a live link to the
@@ -6,7 +6,7 @@
  *   the page works under both file:// and the local web engine.
  *
  *   Activation:
- *     <meta name="pwshgui-version-tag"  content="2605.B5.V46.0" />
+ *     <meta name="pwshgui-version-tag"  content="2605.B5.V46.1" />
  *     <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
  *     <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
  *
@@ -33,7 +33,7 @@
   if (!PAGE_TAG) { return; }
 
   var TOKEN_RE  = /v?\d{4}\.B\d+\.V\d+(?:\.\d+)?/i;
-  var SELECTOR  = '[data-pwshgui-version],.pwshgui-version,.ver-badge,.ft-version,.hdr-ver,span.ver,span.version,#hdrVer,#headerVersion';
+  var SELECTOR  = '[data-pwshgui-version],.pwshgui-version,.version-tag,.ver-badge,.ft-version,.hdr-ver,span.ver,span.version,#hdrVer,#headerVersion';
 
   function buildLink(tag, title) {
     var a = document.createElement('a');

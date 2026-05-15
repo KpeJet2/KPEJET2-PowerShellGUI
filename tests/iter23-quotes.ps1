@@ -4,7 +4,7 @@ $lines = [IO.File]::ReadAllLines($path)
 # Count quotes in each line up to find the unbalanced one
 $totalDQ = 0
 for ($i=0; $i -lt $lines.Count; $i++) {
-    $line = $lines[$i]
+    $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     # naive count, skip backtick-escaped
     $c = ($line.ToCharArray() | Where-Object { $_ -eq '"' }).Count
     if ($c -gt 0) { $totalDQ += $c }

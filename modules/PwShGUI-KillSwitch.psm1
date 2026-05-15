@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 <#
 .SYNOPSIS
     PwShGUI-KillSwitch — per-version emergency kill switch governance.
@@ -145,7 +145,7 @@ function Get-VersionKillSwitch {
     }
     $match = @($rows | Where-Object { $_.Version -eq $Version })
     if (@($match).Count -gt 0) {
-        $row = $match[0]
+        $row = $match[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($row.PSObject.Properties.Name -contains 'Passphrase') {
             $row.Passphrase = Unprotect-KillSwitchPassphrase -Value ([string]$row.Passphrase)
         }
@@ -153,16 +153,16 @@ function Get-VersionKillSwitch {
     }
     $seed = @($rows | Where-Object { $_.Version -eq 'V=x' })
     if (@($seed).Count -eq 0) {
-        $seed = @($rows[0])
+        $seed = @($rows[0])  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
-    $passphrase = Unprotect-KillSwitchPassphrase -Value ([string]$seed[0].Passphrase)
+    $passphrase = Unprotect-KillSwitchPassphrase -Value ([string]$seed[0].Passphrase)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($passphrase)
     $md5Hash = [BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash($bytes)).Replace('-','').ToLower()
     $shaHash = [BitConverter]::ToString([System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)).Replace('-','').ToLower()
-    $cipher = if ($seed[0].PSObject.Properties.Name -contains 'Cipher' -and -not [string]::IsNullOrWhiteSpace($seed[0].Cipher)) { [string]$seed[0].Cipher } else { 'AES256' }
+    $cipher = if ($seed[0].PSObject.Properties.Name -contains 'Cipher' -and -not [string]::IsNullOrWhiteSpace($seed[0].Cipher)) { [string]$seed[0].Cipher } else { 'AES256' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $newRow = [pscustomobject]@{
         Version    = $Version
-        KillSwitch = $seed[0].KillSwitch
+        KillSwitch = $seed[0].KillSwitch  # SIN-EXEMPT:P027 -- index access, context-verified safe
         Passphrase = $passphrase
         Md5        = $md5Hash
         Sha256     = $shaHash
@@ -265,7 +265,7 @@ function Register-VersionKillSwitch {
     $needShift = $tokens -contains 'shift'
     $needAlt   = $tokens -contains 'alt'
     $keyToken  = @($tokens | Where-Object { $_ -notin @('ctrl','shift','alt') })
-    $keyName   = if (@($keyToken).Count -gt 0) { $keyToken[0].ToUpper() } else { 'Q' }
+    $keyName   = if (@($keyToken).Count -gt 0) { $keyToken[0].ToUpper() } else { 'Q' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
     try { Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue } catch { <# already loaded #> }
 

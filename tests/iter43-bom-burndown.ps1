@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # Iter43 — P006 BOM burndown helper
 # Reads latest scan JSON, ensures UTF-8 BOM on every flagged file.
 [CmdletBinding()]

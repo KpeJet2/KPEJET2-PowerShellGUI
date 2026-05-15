@@ -5,6 +5,14 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
 
+- **2605.B5.V46.1** — Changelog and AI-actions reliability pass: live indexed AI ledger + stale-version fixes.
+  1. **⚙ Live AI summary API** — `scripts/Start-LocalWebEngine.ps1`: new `GET /api/ai-actions/summary` route computes `Get-AiActionLogSummary` on demand (no stale prebuilt summary dependency when running under LocalWebEngine).
+  2. **⚙ Immutable sequential indexing** — `modules/PwShGUI-AiActionLog.psm1`: each record now emits `immutableIndex`, `recordHash`, `previousChainHash`, and `chainHash` (SHA-256). Summary exposes `metrics.ledgerChainHead` and `metrics.maxImmutableIndex`; actions expose `firstImmutableIndex`/`lastImmutableIndex`.
+  3. **⚙ Viewer auto-refresh + index rendering** — `XHTML-ChangelogViewer.xhtml` Ai-actions tab now loads live API data when `ENGINE_BASE` is present, auto-refreshes every 15s, and renders per-action ledger index plus chain-head metadata.
+  4. **⚙ Stale version-header remediation** — `styles/pwshgui-version-link.js` now targets `.version-tag`, allowing headers like `PwShGUI Suite - <tag>` to auto-link and stay current.
+  5. **🔁 Pipeline consolidation** — `scripts/Sync-ChangelogViewerData.ps1` now selects the freshest changelog source (`CHANGELOG.md` vs `~README.md/CHANGELOG.md`) and refreshes AI summary artifacts during sync; `scripts/Run-FullPipeline.ps1` now executes this sync step.
+  6. **⸸ Parse hardening** — `scripts/Start-LocalWebEngine.ps1` fixed invalid `"$Port:"` interpolation (`${Port}:`) in remediation messages.
+
 - **2605.B5.V46.0** — Canonical version unification + governance tooling pass.
   1. **🔁 Bulk re-tag** — every known-tagged source file (3,294 entries in pre-pass inventory) re-tagged from `2605.B2.V31.8` → `2605.B5.V46.0` via encoding-safe rewriter (`temp/Apply-CanonicalVersion.ps1`, promoted to `scripts/`). First-match-only replacement; per-file BOM (utf8-bom / utf8-nobom / utf16-le / utf16-be) preserved. 0 failures.
   2. **📋 Inventory governance** — workspace version scanner (`scripts/Scan-WorkspaceVersions.ps1`) now permanently excludes `.history/` (VS Code Local History auto-snapshot folder), removing ~4,065 phantom entries. True source-file count: **2,469** (previously 6,534 with snapshot noise).

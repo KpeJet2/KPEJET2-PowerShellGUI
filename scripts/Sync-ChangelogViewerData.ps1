@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: YES(As of: 2026-04-28)
 # SupportsPS7.6: YES(As of: 2026-04-28)
 # SupportPS5.1TestedDate: 2026-04-28
@@ -14,7 +14,9 @@
 
 [CmdletBinding()]
 param(
-    [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent)
+    [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent),
+    [bool]$RefreshAiActionSummary = $true,
+    [switch]$IncludeTestAiActions
 )
 
 Set-StrictMode -Version Latest
@@ -69,10 +71,60 @@ function Build-JsArrayBlock {
     return ($buffer -join [Environment]::NewLine)
 }
 
+function ConvertFrom-VersionTagValue {
+    param([string]$Tag)
+
+    if ([string]::IsNullOrWhiteSpace($Tag)) { return $null }
+    if ($Tag -notmatch '^(\d{4})\.B(\d+)\.V(\d+)\.(\d+)$') { return $null }
+    return [pscustomobject]@{
+        YearMonth = [int]$Matches[1]
+        Build     = [int]$Matches[2]
+        Major     = [int]$Matches[3]
+        Minor     = [int]$Matches[4]
+    }
+}
+
+function Get-ChangelogTopVersion {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return '0000.B0.V0.0' }
+    $lines = @(Get-Content -LiteralPath $Path -Encoding UTF8 -TotalCount 120)
+    foreach ($line in $lines) {
+        if ($line -match '^## \[(\d{4}\.B\d+\.V\d+\.\d+)\]') {
+            return [string]$Matches[1]
+        }
+    }
+    return '0000.B0.V0.0'
+}
+
+function Compare-VersionTagValue {
+    param([string]$Left, [string]$Right)
+
+    $l = ConvertFrom-VersionTagValue -Tag $Left
+    $r = ConvertFrom-VersionTagValue -Tag $Right
+    if ($null -eq $l -and $null -eq $r) { return 0 }
+    if ($null -eq $l) { return -1 }
+    if ($null -eq $r) { return 1 }
+
+    foreach ($prop in @('YearMonth','Build','Major','Minor')) {
+        if ($l.$prop -gt $r.$prop) { return 1 }
+        if ($l.$prop -lt $r.$prop) { return -1 }
+    }
+    return 0
+}
+
 $viewerPath = Join-Path $WorkspacePath 'XHTML-ChangelogViewer.xhtml'
 $readmePath = Join-Path $WorkspacePath '~README.md'
-$changelogPath = Join-Path $readmePath 'CHANGELOG.md'
+$readmeChangelogPath = Join-Path $readmePath 'CHANGELOG.md'
+$rootChangelogPath = Join-Path $WorkspacePath 'CHANGELOG.md'
 $enhancementsPath = Join-Path $readmePath 'ENHANCEMENTS-LOG.md'
+
+$readmeTopVersion = Get-ChangelogTopVersion -Path $readmeChangelogPath
+$rootTopVersion = Get-ChangelogTopVersion -Path $rootChangelogPath
+$changelogPath = $readmeChangelogPath
+if (Compare-VersionTagValue -Left $rootTopVersion -Right $readmeTopVersion -gt 0) {
+    $changelogPath = $rootChangelogPath
+}
 
 if (-not (Test-Path -LiteralPath $viewerPath)) {
     throw "Viewer file missing: $viewerPath"
@@ -87,6 +139,19 @@ if (-not (Test-Path -LiteralPath $enhancementsPath)) {
 $viewerContent = Get-Content -LiteralPath $viewerPath -Raw -Encoding UTF8
 $changelogLines = @(Get-Content -LiteralPath $changelogPath -Encoding UTF8)
 $enhancementLines = @(Get-Content -LiteralPath $enhancementsPath -Encoding UTF8)
+
+if ($RefreshAiActionSummary) {
+    $aiReportScript = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-AiActionLogReport.ps1'
+    if (Test-Path -LiteralPath $aiReportScript) {
+        $aiParams = @{ WorkspacePath = $WorkspacePath }
+        if ($IncludeTestAiActions) { $aiParams['IncludeTest'] = $true }
+        try {
+            & $aiReportScript @aiParams | Out-Null
+        } catch {
+            Write-Warning ('AI-action summary refresh failed: ' + $_.Exception.Message)
+        }
+    }
+}
 
 $changelogBlock = Build-JsArrayBlock -VariableName 'CHANGELOG_CONTENT' -Lines $changelogLines
 $enhancementBlock = Build-JsArrayBlock -VariableName 'ENHANCEMENTS_CONTENT' -Lines $enhancementLines
@@ -117,7 +182,7 @@ if ($changeCount -eq 0) {
 }
 
 Set-Content -LiteralPath $viewerPath -Value $finalContent -Encoding UTF8
-Write-Output "Changelog viewer embedded data updated from source markdown"
+Write-Output ("Changelog viewer embedded data updated from source markdown: " + $changelogPath)
 
 <# Outline:
     Synchronize markdown changelog sources into XHTML JS arrays with parser-safe escaping.

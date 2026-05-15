@@ -7,16 +7,16 @@ foreach ($g in $byFile) {
     $path = $g.Name
     if ($path -like '*PwSh-HelpFilesUpdateSource-ReR*') { Write-Host "  SKIP (iter15 known-fragile): $path"; continue }
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) } # strip BOM char
     # split preserving CRLF; we'll rewrite with CRLF
     $lines = $text -split "`r`n", 0
     $changed = 0
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $orig = $lines[$i]
+        $orig = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $stripped = $orig -replace '[ \t]+$', ''
-        if ($stripped -ne $orig) { $lines[$i] = $stripped; $changed++ }
+        if ($stripped -ne $orig) { $lines[$i] = $stripped; $changed++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     if ($changed -gt 0) {
         $newText = $lines -join "`r`n"

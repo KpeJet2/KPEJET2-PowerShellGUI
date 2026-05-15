@@ -15,7 +15,7 @@ foreach ($g in $byFile) {
     if ($path -like '*\PwSh-HelpFilesUpdateSource-ReR*') { Write-Host "  SKIP fragile: $path"; continue }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -50,7 +50,7 @@ foreach ($g in $byFile) {
         $insertOffset = if ($firstAttr) { $firstAttr.Extent.StartOffset } else { $paramBlock.Extent.StartOffset }
 
         $j = $insertOffset - 1
-        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $indent = $text.Substring($j + 1, $insertOffset - $j - 1) -replace '\S.*', ''
 
         $attr = "[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='$justification')]"

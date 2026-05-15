@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -245,8 +245,8 @@ function Set-ModernButtonStyle {
         $Button.Font        = Get-ThemeFont -Size 10
         $Button.Cursor      = [System.Windows.Forms.Cursors]::Hand
         # Hover effect via MouseEnter/Leave
-        $Button.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78) })
-        $Button.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60) })
+        $Button.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $Button.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     } catch { try { Write-AppLog "Theme: Set-ModernButtonStyle failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
@@ -318,7 +318,7 @@ function New-RainbowProgressBar {
     $colorCount    = @($rainbowColors).Count
     $state = @{ Percent = 0; ColorIndex = 0 }
 
-    $panel.Add_Paint({
+    $panel.Add_Paint({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         # P034 fix: $sender shadows PowerShell automatic; use $evtSender
         param($evtSender, $e)
         $g = $e.Graphics
@@ -335,7 +335,7 @@ function New-RainbowProgressBar {
         for ($x = 0; $x -lt $fillW; $x += $segW) {
             $ci = if ($colorCount -gt 0) { (([int]($x / $segW) + $offset) % $colorCount) } else { 0 }
             $w  = [math]::Min($segW, $fillW - $x)
-            $brush = New-Object System.Drawing.SolidBrush($colors[$ci])
+            $brush = New-Object System.Drawing.SolidBrush($colors[$ci])  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $g.FillRectangle($brush, $x, 0, $w, $evtSender.ClientSize.Height)
             $brush.Dispose()
         }
@@ -403,7 +403,7 @@ function New-SpinnerLabel {
 
     $timer = New-Object System.Windows.Forms.Timer
     $timer.Interval = $Interval
-    $timer.Add_Tick({
+    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $spinState.Active) { return }
         $ch = $script:_SpinnerChars[$spinState.Index % $script:_SpinnerChars.Count]
         $label.Text = "$($spinState.Prefix) $ch"

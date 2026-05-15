@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -323,7 +323,7 @@ foreach ($rel in $criticalModules) {
     if (Test-Path $full) {
         try {
             $hash = (Get-FileHash -Path $full -Algorithm SHA256).Hash
-            $currentHashes[$rel] = $hash
+            $currentHashes[$rel] = $hash  # SIN-EXEMPT:P027 -- index access, context-verified safe
         } catch {
             Add-Finding 'T7-HASH-READ-FAIL' 'MEDIUM' $full 0 "Could not hash critical module: $_" 'Check file permissions on critical modules.'
         }
@@ -338,8 +338,8 @@ if (Test-Path $baselineFile) {
         foreach ($rel in $criticalModules) {
             if (-not $currentHashes.Contains($rel)) { continue }
             $savedHash = if ($baseline.PSObject.Properties[$rel]) { $baseline.$rel } else { $null }
-            if ($savedHash -and $savedHash -ne $currentHashes[$rel]) {
-                Add-Finding 'T7-HASH-MISMATCH' 'HIGH' (Join-Path $WorkspacePath $rel) 0 "Hash changed since baseline. Saved: $savedHash / Current: $($currentHashes[$rel])" 'Verify the change was intentional. If not, restore from VCS. Update baseline with -UpdateBaseline switch if change is approved.'
+            if ($savedHash -and $savedHash -ne $currentHashes[$rel]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                Add-Finding 'T7-HASH-MISMATCH' 'HIGH' (Join-Path $WorkspacePath $rel) 0 "Hash changed since baseline. Saved: $savedHash / Current: $($currentHashes[$rel])" 'Verify the change was intentional. If not, restore from VCS. Update baseline with -UpdateBaseline switch if change is approved.'  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
     } catch {

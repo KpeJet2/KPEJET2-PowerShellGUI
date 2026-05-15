@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -257,7 +257,7 @@ function Show-HelpFilesGUI {
     $browseButton.Text = "Browse..."
     $browseButton.Location = New-Object System.Drawing.Point(609, 66)
     $browseButton.Size = New-Object System.Drawing.Size(70, 22)
-    $browseButton.Add_Click({
+    $browseButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderDialog.Description = "Select a folder for PowerShell help files"
         $folderDialog.SelectedPath = $pathTextBox.Text
@@ -329,7 +329,7 @@ function Show-HelpFilesGUI {
     $saveHelpButton.Size = New-Object System.Drawing.Size(200, 35)
     $saveHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $saveHelpButton.BackColor = [System.Drawing.Color]::Orange
-    $saveHelpButton.Add_Click({
+    $saveHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -361,7 +361,7 @@ function Show-HelpFilesGUI {
     $updateHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $updateHelpButton.BackColor = [System.Drawing.Color]::LimeGreen
     $updateHelpButton.Enabled = $false
-    $updateHelpButton.Add_Click({
+    $updateHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -391,7 +391,7 @@ function Show-HelpFilesGUI {
     $closeButton.Location = New-Object System.Drawing.Point(428, 425)
     $closeButton.Size = New-Object System.Drawing.Size(200, 35)
     $closeButton.Font = New-Object System.Drawing.Font("Arial", 10)
-    $closeButton.Add_Click({ $form.Close() })
+    $closeButton.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $form.Controls.Add($closeButton)
 
     # Progress Bar

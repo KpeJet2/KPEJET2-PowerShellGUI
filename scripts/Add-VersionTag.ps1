@@ -59,6 +59,12 @@ foreach ($rel in $targets) {
     $abs = Join-Path $ws ($rel -replace '/', '\')
     $row = [ordered]@{ Path=$rel; Action=''; Encoding=''; Detail='' }
 
+    if ($rel -match '^todo/(Bug|Bugs2FIX)-.*\.json$') {
+        $row.Action = 'exempt-todo-bug-json'
+        $results.Add([pscustomobject]$row) | Out-Null
+        continue
+    }
+
     if (-not (Test-Path -LiteralPath $abs)) {
         $row.Action = 'missing'
     } else {

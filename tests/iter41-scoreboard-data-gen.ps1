@@ -136,7 +136,7 @@ if (Test-Path $TodoPath) {
                 }
                 if ($glob -like 'Bug*-*' -or $glob -like 'BUG*-*') { if ($glob -like 'Bugs2FIX*') { $bugs2fixOpen += $rec } else { $bugsOpen += $rec } }
                 else { $bugs2fixOpen += $rec }
-            } catch { }
+            } catch { <# Intentional: non-fatal -- malformed record silently skipped during glob parse #> }
         }
     }
 }

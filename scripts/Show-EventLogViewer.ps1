@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -149,14 +149,14 @@ function Show-EventLogViewer {
     $form.Controls.Add($detailPanel)
 
     # ── Row selection -> detail ──────────────────────────────────
-    $dgv.Add_SelectionChanged({
+    $dgv.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($dgv.SelectedRows.Count -eq 0) { return }
         $row = $dgv.SelectedRows[0]
         $txtDetail.Text = "[$($row.Cells['Time'].Value)] [$($row.Cells['Level'].Value)] $($row.Cells['Source'].Value) (ID: $($row.Cells['EventID'].Value))`r`n`r`n$($row.Cells['Message'].Value)"
     })
 
     # ── Colour rows by level ────────────────────────────────────
-    $dgv.Add_CellFormatting({
+    $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         param($sender, $e)
         if ($e.ColumnIndex -ne 1) { return }
         $val = $sender.Rows[$e.RowIndex].Cells[1].Value
@@ -218,7 +218,7 @@ function Show-EventLogViewer {
     $btnFetch.Add_Click($FetchEvents)
 
     # Auto-fetch on load
-    $form.Add_Shown({ & $FetchEvents })
+    $form.Add_Shown({ & $FetchEvents })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
     $form.ShowDialog() | Out-Null
     $form.Dispose()

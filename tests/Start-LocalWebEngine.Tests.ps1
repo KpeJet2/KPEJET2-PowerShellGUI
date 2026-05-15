@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -85,6 +85,14 @@ Describe 'Start-LocalWebEngine — Handler functions present' {
         $script:Content | Should -Match 'function Get-EngineEvents'
     }
 
+    It 'Has request client class helper function' {
+        $script:Content | Should -Match 'function Get-RequestClientClass'
+    }
+
+    It 'Has static fallback allow-list helper function' {
+        $script:Content | Should -Match 'function Test-StaticFallbackAllowed'
+    }
+
     It 'Has bootstrap config validator function' {
         $script:Content | Should -Match 'function Test-BootstrapMenuConfigObject'
     }
@@ -160,6 +168,20 @@ Describe 'Start-LocalWebEngine — CSRF protection on mutating routes' {
         $fBlock = $content.Substring($fIdx, [Math]::Min(2000, $content.Length - $fIdx))
         # Should reach the next function without a CSRF block — just check it has Send-Json
         $fBlock | Should -Match 'Send-Json'
+    }
+
+    It '/api/csrf-token includes clientClass metadata' {
+        $script:Content | Should -Match 'clientClass\s*=\s*\$clientClass'
+    }
+}
+
+Describe 'Start-LocalWebEngine — WebSocket hello schema hardening' {
+    It 'WebSocket hello payload does not include csrfToken field' {
+        $helloLines = @($script:Lines | Where-Object { $_ -match '\$hello\s*=\s*@\{.*event\s*=\s*''connected''' })
+        @($helloLines).Count | Should -BeGreaterThan 0
+        foreach ($line in $helloLines) {
+            $line -cmatch 'csrfToken' | Should -BeFalse
+        }
     }
 }
 

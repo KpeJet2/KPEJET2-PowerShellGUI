@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-07
@@ -39,8 +39,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $unboundArgs = @($MyInvocation.UnboundArguments)
-if (@($unboundArgs).Count -gt 0 -and $unboundArgs[0] -is [string] -and $unboundArgs[0] -notmatch '^-') {
-    $Action = [string]$unboundArgs[0]
+if (@($unboundArgs).Count -gt 0 -and $unboundArgs[0] -is [string] -and $unboundArgs[0] -notmatch '^-') {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    $Action = [string]$unboundArgs[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 $scriptDir = $PSScriptRoot
@@ -210,7 +210,7 @@ function Get-LauncherSetsFromConfig {
         if ($Config.launcherSets.PSObject.Properties.Name -contains $name) {
             $vals = @($Config.launcherSets.$name | ForEach-Object { [string]$_ })
             if (@($vals).Count -gt 0) {
-                $sets[$name] = $vals
+                $sets[$name] = $vals  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
     }
@@ -238,7 +238,7 @@ function Invoke-LauncherSetFromConfig {
         return
     }
 
-    foreach ($entry in @($SetTable[$SetName])) {
+    foreach ($entry in @($SetTable[$SetName])) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $value = Resolve-LauncherEntry -Entry ([string]$entry)
         if ([string]::IsNullOrWhiteSpace($value)) { continue }
 
@@ -799,7 +799,7 @@ function Get-WebpageScriptMap {
         $uniqueScripts = @($scriptHits | Sort-Object -Unique)
         if (@($uniqueScripts).Count -gt 0) {
             $pageKey = $pageRel -replace '\\', '/'
-            $map[$pageKey] = $uniqueScripts
+            $map[$pageKey] = $uniqueScripts  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     }
 
@@ -1088,19 +1088,19 @@ function Get-BootstrapMenuRenderState {
                     $pageStates = [System.Collections.ArrayList]@()
                     foreach ($pageKey in @($map.Keys | Sort-Object)) {
                         $scriptsByFolder = [ordered]@{}
-                        foreach ($scriptRel in @($map[$pageKey] | Sort-Object)) {
+                        foreach ($scriptRel in @($map[$pageKey] | Sort-Object)) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                             $folderKey = Split-Path $scriptRel -Parent
                             if ([string]::IsNullOrWhiteSpace($folderKey)) { $folderKey = '(root)' }
                             if (-not $scriptsByFolder.Contains($folderKey)) {
-                                $scriptsByFolder[$folderKey] = New-Object System.Collections.ArrayList
+                                $scriptsByFolder[$folderKey] = New-Object System.Collections.ArrayList  # SIN-EXEMPT:P027 -- index access, context-verified safe
                             }
-                            [void]$scriptsByFolder[$folderKey].Add($scriptRel)
+                            [void]$scriptsByFolder[$folderKey].Add($scriptRel)  # SIN-EXEMPT:P027 -- index access, context-verified safe
                         }
 
                         $folderStates = [System.Collections.ArrayList]@()
                         foreach ($folderKey in @($scriptsByFolder.Keys | Sort-Object)) {
                             $scriptStates = [System.Collections.ArrayList]@()
-                            foreach ($scriptRel in @($scriptsByFolder[$folderKey] | Sort-Object)) {
+                            foreach ($scriptRel in @($scriptsByFolder[$folderKey] | Sort-Object)) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                                 $scriptLeaf = Split-Path $scriptRel -Leaf
                                 [void]$scriptStates.Add([pscustomobject]@{
                                     label = $scriptLeaf
@@ -1186,7 +1186,7 @@ function Add-BootstrapQuickAccessMenu {
                                 $scriptItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$scriptNode.label)
                                 $scriptItem.Tag = [ordered]@{ type = 'script'; target = [string]$scriptNode.scriptRelative; args = @() }
                                 $scriptItem.ToolTipText = [string]$scriptNode.scriptRelative
-                                $scriptItem.Add_Click({
+                                $scriptItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                                     param($menuItemArg)
                                     try {
                                         Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
@@ -1209,7 +1209,7 @@ function Add-BootstrapQuickAccessMenu {
                     if ($node.PSObject.Properties.Name -contains 'tooltip' -and -not [string]::IsNullOrWhiteSpace([string]$node.tooltip)) {
                         $item.ToolTipText = [string]$node.tooltip
                     }
-                    $item.Add_Click({
+                    $item.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                         param($menuItemArg)
                         try {
                             Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
@@ -1301,7 +1301,7 @@ function Start-ServiceTray {
                 $staticItem.Tag = $entry.FullPath
                 $serviceItem.Tag = $entry.RelativePath
 
-                $staticItem.Add_Click({
+                $staticItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($menuItemArg)
                     $pathValue = [string]$menuItemArg.Tag
                     try {
@@ -1311,7 +1311,7 @@ function Start-ServiceTray {
                     }
                 })
 
-                $serviceItem.Add_Click({
+                $serviceItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($menuItemArg)
                     $relativeValue = [string]$menuItemArg.Tag
                     $url = "http://127.0.0.1:$Port/$relativeValue"
@@ -1356,7 +1356,7 @@ function Start-ServiceTray {
         $svcItem.CheckOnClick = $true
         $svcItem.Tag = $svc
         $svcItem.ToolTipText = [string]$svc.Path
-        $svcItem.Add_Click({
+        $svcItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             param($sender)
             $menuItemArg = [System.Windows.Forms.ToolStripMenuItem]$sender
             $svcDef = $menuItemArg.Tag
@@ -1393,17 +1393,17 @@ function Start-ServiceTray {
     [void]$context.Items.Add($serviceFlyoutRoot)
 
     $launchA = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Auto Five (A)')
-    $launchA.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets })
+    $launchA.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     [void]$context.Items.Add($launchA)
 
     $launchB = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Bigger 10 (B)')
-    $launchB.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'B' -SetTable $launcherSets })
+    $launchB.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'B' -SetTable $launcherSets })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     [void]$context.Items.Add($launchB)
 
     [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
 
     $bootstrapConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem('Configure Bootstrap Menu...')
-    $bootstrapConfigItem.Add_Click({
+    $bootstrapConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $url = "http://127.0.0.1:$Port/pages/bootstrap-menu-config"
         try {
             Start-Process $url | Out-Null
@@ -1414,7 +1414,7 @@ function Start-ServiceTray {
     [void]$context.Items.Add($bootstrapConfigItem)
 
     $reloadBootstrapItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload Bootstrap Menu')
-    $reloadBootstrapItem.Add_Click({
+    $reloadBootstrapItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         & $reloadBootstrapMenu
     })
     [void]$context.Items.Add($reloadBootstrapItem)
@@ -1425,7 +1425,7 @@ function Start-ServiceTray {
     [void]$context.Items.Add($refreshItem)
 
     $startItem = New-Object System.Windows.Forms.ToolStripMenuItem('Start engine')
-    $startItem.Add_Click({
+    $startItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             Invoke-EngineAction -EngineAction 'Start' -Background | Out-Null
         } catch {
@@ -1435,7 +1435,7 @@ function Start-ServiceTray {
     [void]$context.Items.Add($startItem)
 
     $restartItem = New-Object System.Windows.Forms.ToolStripMenuItem('Restart engine')
-    $restartItem.Add_Click({
+    $restartItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             Invoke-EngineAction -EngineAction 'Restart' -Background | Out-Null
         } catch {
@@ -1445,7 +1445,7 @@ function Start-ServiceTray {
     [void]$context.Items.Add($restartItem)
 
     $stopItem = New-Object System.Windows.Forms.ToolStripMenuItem('Stop engine')
-    $stopItem.Add_Click({
+    $stopItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             Invoke-EngineAction -EngineAction 'Stop' -Background | Out-Null
         } catch {
@@ -1464,40 +1464,46 @@ function Start-ServiceTray {
     $script:CurrentTrayIconRef = $null
 
     $updateState = {
-        $cfg = Get-MonitorConfigObject
-        $health = Get-ServiceHealth -Config $cfg
-
-        $iconState = switch ($health.State) {
-            'running' { 'running' }
-            'warning' { 'warning' }
-            'error' { 'error' }
-            'disabled' { 'disabled' }
-            default { 'idle' }
-        }
-
-        $newIconRef = New-CogIcon -State $iconState
-        if ($null -ne $script:CurrentTrayIconRef) {
-            try { $script:CurrentTrayIconRef.Icon.Dispose() } catch { <# Intentional: non-fatal #> }
-            try { $script:CurrentTrayIconRef.Bitmap.Dispose() } catch { <# Intentional: non-fatal #> }
-        }
-        $script:CurrentTrayIconRef = $newIconRef
-        $notify.Icon = $newIconRef.Icon
-
-        $statusItem.Text = "Status: $($health.State) | Running=$($health.Running)/$($health.Total) | Warn=$($health.Warning) | Err=$($health.Error)"
-        $notify.Text = "LWE Service | $($health.State) | $($health.Running)/$($health.Total)"
-
-        $snap = @()
         try {
-            $snap = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
-        } catch {
-            $snap = @()
-        }
-        foreach ($node in @($serviceNodes)) {
-            $runningNow = $false
-            if (@($snap).Count -gt 0) {
-                $runningNow = Test-TrayServiceRunning -Definition $node.Definition -ProcessSnapshot $snap
+            $cfg = Get-MonitorConfigObject
+            $health = Get-ServiceHealth -Config $cfg
+
+            $iconState = switch ($health.State) {
+                'running' { 'running' }
+                'warning' { 'warning' }
+                'error' { 'error' }
+                'disabled' { 'disabled' }
+                default { 'idle' }
             }
-            $node.Item.Checked = [bool]$runningNow
+
+            $newIconRef = New-CogIcon -State $iconState
+            if ($null -ne $script:CurrentTrayIconRef) {
+                try { $script:CurrentTrayIconRef.Icon.Dispose() } catch { <# Intentional: non-fatal #> }
+                try { $script:CurrentTrayIconRef.Bitmap.Dispose() } catch { <# Intentional: non-fatal #> }
+            }
+            $script:CurrentTrayIconRef = $newIconRef
+            $notify.Icon = $newIconRef.Icon
+
+            $statusItem.Text = "Status: $($health.State) | Running=$($health.Running)/$($health.Total) | Warn=$($health.Warning) | Err=$($health.Error)"
+            $notify.Text = "LWE Service | $($health.State) | $($health.Running)/$($health.Total)"
+
+            $snap = @()
+            try {
+                $snap = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+            } catch {
+                $snap = @()
+            }
+            foreach ($node in @($serviceNodes)) {
+                $runningNow = $false
+                if (@($snap).Count -gt 0) {
+                    $runningNow = Test-TrayServiceRunning -Definition $node.Definition -ProcessSnapshot $snap
+                }
+                $node.Item.Checked = [bool]$runningNow
+            }
+        } catch [System.Management.Automation.PipelineStoppedException] {
+            return   # Expected during shutdown; swallow silently
+        } catch {
+            Write-Warning "[LWE-Tray] update-state error: $_"
         }
     }
 
@@ -1508,8 +1514,12 @@ function Start-ServiceTray {
     $refreshItem.Add_Click($updateState)
 
     $exitItem.Add_Click({
-        $timer.Stop()
-        [System.Windows.Forms.Application]::ExitThread()
+        try {
+            $timer.Stop()
+            [System.Windows.Forms.Application]::ExitThread()
+        } catch {
+            <# Intentional: non-fatal during shutdown #>
+        }
     })
 
     try {

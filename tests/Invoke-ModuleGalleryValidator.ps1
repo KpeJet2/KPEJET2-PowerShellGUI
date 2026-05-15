@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -133,10 +133,10 @@ $moduleMap   = @{}
 foreach ($psm1 in $psm1Files) {
     $name = $psm1.BaseName
     if (-not $moduleMap.ContainsKey($name)) {
-        $moduleMap[$name] = @{
+        $moduleMap[$name] = @{  # SIN-EXEMPT:P027 -- index access, context-verified safe
             Name    = $name
             Psm1    = $psm1.FullName
-            Psd1    = if ($psd1Map.ContainsKey($name)) { $psd1Map[$name] } else { $null }
+            Psd1    = if ($psd1Map.ContainsKey($name)) { $psd1Map[$name] } else { $null }  # SIN-EXEMPT:P027 -- index access, context-verified safe
             HasPsd1 = $psd1Map.ContainsKey($name)
         }
         $null = $moduleNames.Add($name)
@@ -159,7 +159,7 @@ Write-Log ''
 $results = [System.Collections.Generic.List[object]]::new()
 
 foreach ($name in $moduleNames) {
-    $mod     = $moduleMap[$name]
+    $mod     = $moduleMap[$name]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $psm1    = $mod.Psm1
     $psd1    = $mod.Psd1
     $hasPsd1 = $mod.HasPsd1
@@ -317,7 +317,7 @@ foreach ($name in $moduleNames) {
             $errRecs = @($raw | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
             if ($rawStr -match '^ERR:' -or @($errRecs).Count -gt 0) {
                 $r.PS51Test = $iFAIL
-                $detail = if ($rawStr -match '^ERR:') { $rawStr } else { "$($errRecs[0])" }
+                $detail = if ($rawStr -match '^ERR:') { $rawStr } else { "$($errRecs[0])" }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $r.Issues.Add("PS5.1 import failed: $detail")
             } elseif ($rawStr -eq '-1') {
                 $r.PS51Test = $iWARN
@@ -343,7 +343,7 @@ foreach ($name in $moduleNames) {
                 $errRecs = @($raw | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
                 if ($rawStr -match '^ERR:' -or @($errRecs).Count -gt 0) {
                     $r.PS7Test = $iFAIL
-                    $detail = if ($rawStr -match '^ERR:') { $rawStr } else { "$($errRecs[0])" }
+                    $detail = if ($rawStr -match '^ERR:') { $rawStr } else { "$($errRecs[0])" }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     $r.Issues.Add("PS7 import failed: $detail")
                 } elseif ($rawStr -eq '-1') {
                     $r.PS7Test = $iWARN
@@ -485,8 +485,8 @@ Write-Log "  Output : $OutputJson" 'Gray'
 $jsonResults = @($results | ForEach-Object {
     $copy = [ordered]@{}
     foreach ($k in $_.Keys) {
-        $v = $_[$k]
-        $copy[$k] = if ($v -is [System.Collections.Generic.List[string]]) { @($v) } else { $v }
+        $v = $_[$k]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        $copy[$k] = if ($v -is [System.Collections.Generic.List[string]]) { @($v) } else { $v }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     $copy
 })

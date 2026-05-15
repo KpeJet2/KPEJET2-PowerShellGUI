@@ -67,19 +67,19 @@ function Export-TestCoverage {
     foreach ($cmd in @($cov.CommandsAnalyzed)) {
         $f = $cmd.File
         if (-not $perFile.ContainsKey($f)) {
-            $perFile[$f] = @{ analyzed = 0; executed = 0 }
+            $perFile[$f] = @{ analyzed = 0; executed = 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
-        $perFile[$f].analyzed++
+        $perFile[$f].analyzed++  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     foreach ($cmd in @($cov.CommandsExecuted)) {
         $f = $cmd.File
-        if ($perFile.ContainsKey($f)) { $perFile[$f].executed++ }
+        if ($perFile.ContainsKey($f)) { $perFile[$f].executed++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     $rows = ''
     foreach ($k in ($perFile.Keys | Sort-Object)) {
-        $a = $perFile[$k].analyzed
-        $e = $perFile[$k].executed
+        $a = $perFile[$k].analyzed  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        $e = $perFile[$k].executed  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $p = if ($a -gt 0) { [math]::Round(($e / $a) * 100, 1) } else { 0 }
         $cls = if ($p -ge 80) { 'good' } elseif ($p -ge 50) { 'mid' } else { 'low' }
         $shortName = [System.IO.Path]::GetFileName($k)

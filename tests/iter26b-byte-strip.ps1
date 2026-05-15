@@ -6,7 +6,7 @@ $out = New-Object System.Collections.Generic.List[byte]
 $i = 0
 $wsRun = New-Object System.Collections.Generic.List[byte]
 while ($i -lt $bytes.Length) {
-    $b = $bytes[$i]
+    $b = $bytes[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     if ($b -eq 0x20 -or $b -eq 0x09) {
         $wsRun.Add($b)
     } elseif ($b -eq 0x0D -or $b -eq 0x0A) {

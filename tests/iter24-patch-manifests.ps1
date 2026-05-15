@@ -18,7 +18,7 @@ foreach ($t in $targets) {
     if ($new -ne $manifest) {
         # Preserve BOM
         $bytes = [IO.File]::ReadAllBytes($t.Psd1)
-        $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+        $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $enc = New-Object System.Text.UTF8Encoding($hadBom)
         [IO.File]::WriteAllBytes($t.Psd1, $enc.GetPreamble() + $enc.GetBytes($new))
         Write-Host ("  Patched: " + $t.Psd1)

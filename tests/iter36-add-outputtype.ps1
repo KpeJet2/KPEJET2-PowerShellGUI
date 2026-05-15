@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # iter36: bulk-add [OutputType()] from PSSA findings
 # Each finding tells us "cmdlet '<func>' returns an object of type '<type>'"
 # We aggregate distinct types per (file, func) and inject one [OutputType(...)] attribute.
@@ -26,13 +26,13 @@ foreach ($g in $byFile) {
         $tp = $m.Groups['type'].Value
         # Skip generics or arrays of object — too vague
         if ($tp -eq 'System.Object') { continue }
-        if (-not $funcMap.ContainsKey($fn)) { $funcMap[$fn] = New-Object System.Collections.Generic.HashSet[string] }
-        [void]$funcMap[$fn].Add($tp)
+        if (-not $funcMap.ContainsKey($fn)) { $funcMap[$fn] = New-Object System.Collections.Generic.HashSet[string] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        [void]$funcMap[$fn].Add($tp)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     if ($funcMap.Count -eq 0) { continue }
 
     $bytes = [IO.File]::ReadAllBytes($path)
-    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $hadBom = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $text = [Text.Encoding]::UTF8.GetString($bytes)
     if ($hadBom) { $text = $text.Substring(1) }
 
@@ -55,7 +55,7 @@ foreach ($g in $byFile) {
         }
         if ($existing) { continue }
 
-        $types = $funcMap[$fnName] | Sort-Object -Unique
+        $types = $funcMap[$fnName] | Sort-Object -Unique  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $typeArgs = ($types | ForEach-Object { "[$_]" }) -join ', '
         $newAttr = "[OutputType($typeArgs)]"
 
@@ -68,7 +68,7 @@ foreach ($g in $byFile) {
 
         # Compute indent: walk back to start of line
         $j = $insertOffset - 1
-        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }
+        while ($j -ge 0 -and $text[$j] -ne "`n") { $j-- }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $indent = $text.Substring($j + 1, $insertOffset - $j - 1) -replace '\S.*', ''
         $insertion = "$newAttr`r`n$indent"
 

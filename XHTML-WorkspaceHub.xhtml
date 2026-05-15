@@ -54,6 +54,9 @@
     .scan-btn:hover{background:var(--btn-hover)}
     .scan-btn.inc{border-color:var(--info);color:var(--info)}
     .scan-btn.full{border-color:var(--warn);color:var(--warn)}
+    .scan-btn.busy{opacity:.85;cursor:progress;filter:saturate(1.2)}
+    .scan-btn.ok{border-color:#22c55e;color:#22c55e}
+    .scan-btn.err{border-color:#ef4444;color:#ef4444}
     .scan-pgbar-wrap{flex:1;min-width:120px;max-width:200px;
                      height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden}
     .scan-pgbar-fill{height:100%;width:0;background:var(--accent);
@@ -367,12 +370,14 @@
   <!-- ── Scan action toolbar ── -->
   <div class="scan-bar">
     <span class="scan-bar-title" data-tip="Workspace scan controls. Engine-based scans require the LocalWebEngine running.">Scan Engine</span>
-    <button type="button" class="scan-btn inc" onclick="return doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
-    <button type="button" class="scan-btn full" onclick="return doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
-    <button type="button" class="scan-btn static" onclick="return doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
-    <button class="scan-btn" onclick="createTestCrashDump()" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
-    <button class="scan-btn" onclick="createTestEventLog()" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
-    <button class="scan-btn" onclick="createTestHistory()" data-tip="Write a synthetic runtime history entry and refresh History">&#x1F551; Test History</button>
+    <button type="button" class="scan-btn inc" onclick="return doScan('incremental', this, event)" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
+    <button type="button" class="scan-btn full" onclick="return doScan('full', this, event)" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
+    <button type="button" class="scan-btn static" onclick="return doStaticScan(this, event)" data-tip="Full 6-phase static scan&#xa;Works from engine-hosted or file-opened page when local engine is available&#xa;Falls back to terminal command guidance when engine is unavailable">&#x1F5C2; Full Scan (Static)</button>
+    <button class="scan-btn" onclick="return createTestCrashDump(this, event)" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
+    <button class="scan-btn" onclick="return createTestEventLog(this, event)" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
+    <button class="scan-btn" onclick="return createTestHistory(this, event)" data-tip="Write a synthetic runtime history entry, plus event log marker, and refresh History">&#x1F551; Test History</button>
+    <button class="scan-btn" onclick="return createTestPipeline(this, event)" data-tip="Run a pipeline processing test and write a production event log marker">&#x1F9EA; Test Pipeline</button>
+    <button class="scan-btn" onclick="return createTestLocalWebEngine(this, event)" data-tip="Validate Local Web Engine status endpoint and write a production event log marker">&#x2699; Test Local Web Engine</button>
     <div class="scan-pgbar-wrap"><div class="scan-pgbar-fill" id="scanPgHub"></div></div>
     <span id="scanMsgHub">Idle</span>
     <button class="scan-btn" onclick="refreshAll()" data-tip="Refresh engine status, scan badges and timeline">&#x21BB; Refresh</button>
@@ -617,6 +622,14 @@
           <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh local web engine stats">&#x21BB; Refresh Monitor</button>
           <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
         </div>
+        <div class="evt-filter-bar" style="margin-top:8px">
+          <label style="font-size:10px;color:var(--fg-sub)">WebEngine Pages:</label>
+          <select id="monPageSelect" multiple="multiple" style="min-width:320px;max-width:420px;height:84px"></select>
+          <button class="scan-btn" onclick="launchSelectedMonitorPages('service')" data-tip="Open selected pages via running web service base URL">Launch via Service</button>
+          <button class="scan-btn" onclick="launchSelectedMonitorPages('disk')" data-tip="Open selected static file:// pages from disk">Launch Static</button>
+          <button class="scan-btn" onclick="saveMonitorPageBundle()" data-tip="Save selected page paths and URLs as a bundle file">Save Bundle</button>
+          <button class="scan-btn" onclick="copyMonitorPagePaths()" data-tip="Copy selected page paths (or all if none selected)">Copy Paths</button>
+        </div>
         <div style="margin-top:6px;font-size:10px;color:var(--fg-sub)" id="monModeNote">Mode: auto</div>
         <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
       </div>
@@ -778,27 +791,44 @@
   var _codeCopyCats = { rows: [], filtered: [], loadedAt: null, sourceRefresh: [] };
   var SERVICE_HUB_PATH = '/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml';
   var ENGINE_STATUS_STALE_MS = 45000;
+  var ENGINE_STATUS_MISS_THRESHOLD = 2;
+  var ENGINE_STATUS_DOWNGRADE_HOLD_MS = 12000;
   var _monitorLastScanIso = null;
   var _engineLastLiveIso = null;
+  var _engineMissStreak = 0;
+  var _engineLastUptimeSec = 0;
+  var _engineLastUptimeSampleIso = null;
+  var _engineUiState = { current: 'unknown', pending: null, pendingSince: 0 };
   var MONITOR_FIELDS = [
     { key:'status', label:'Status', type:'state', group:'controls' },
     { key:'uptime', label:'Uptime', type:'state', group:'info' },
     { key:'lastScanTime', label:'Last Scan', type:'time', group:'info' },
     { key:'startupTime', label:'Startup Time', type:'time', group:'info' },
     { key:'pid', label:'PID', type:'id', group:'info' },
+    { key:'processName', label:'Process', type:'id', group:'info' },
     { key:'port', label:'Port', type:'id', group:'info' },
     { key:'serverTime', label:'Server Time', type:'time', group:'info' },
+    { key:'memoryWorkingSetMB', label:'Memory MB', type:'count', group:'info' },
+    { key:'memoryPeakWorkingSetMB', label:'Peak Memory MB', type:'count', group:'info' },
+    { key:'networkBytesIn', label:'Network In (bytes)', type:'count', group:'logs' },
+    { key:'networkBytesOut', label:'Network Out (bytes)', type:'count', group:'logs' },
+    { key:'publicKeyFingerprint', label:'Public Key', type:'state', group:'toggles' },
+    { key:'lastErrorMessage', label:'Last Error', type:'state', group:'toggles' },
     { key:'heartbeat', label:'Heartbeat', type:'state', group:'toggles' },
     { key:'clients', label:'Web Clients', type:'count', group:'logs' },
     { key:'queueLength', label:'Request Queue', type:'count', group:'logs' },
     { key:'requestsTotal', label:'Requests Total', type:'count', group:'logs' },
     { key:'requestsServed', label:'Requests Served', type:'count', group:'logs' },
+    { key:'requestsClientError', label:'Requests 4xx', type:'count', group:'logs' },
+    { key:'requestsServerError', label:'Requests 5xx', type:'count', group:'logs' },
     { key:'requestsFailed', label:'Requests Failed', type:'count', group:'logs' },
     { key:'config', label:'Config Detection', type:'state', group:'toggles' }
   ];
   var _monitorSelected = {
-    status:true, uptime:true, lastScanTime:true, startupTime:true, pid:true, port:true, serverTime:true, heartbeat:true,
-    clients:true, queueLength:true, requestsTotal:true, requestsServed:true, requestsFailed:true, config:true
+    status:true, uptime:true, lastScanTime:true, startupTime:true, pid:true, processName:true, port:true, serverTime:true,
+    memoryWorkingSetMB:true, memoryPeakWorkingSetMB:true, networkBytesIn:true, networkBytesOut:true,
+    publicKeyFingerprint:true, lastErrorMessage:true, heartbeat:true,
+    clients:true, queueLength:true, requestsTotal:true, requestsServed:true, requestsClientError:true, requestsServerError:true, requestsFailed:true, config:true
   };
   var STATIC_BOOTSTRAP_DATA_SOURCES = {
     schemaVersion: 'HubDataSources/1.0',
@@ -2796,8 +2826,53 @@
   }
   window.applyApprovalAction = applyApprovalAction;
 
-  function _postTestEndpoint(path, successMsg, onDone) {
-    _runMutation('postTestEndpoint-' + path, function() {
+  function _setActionButtonState(btn, state, label) {
+    if (!btn) { return; }
+    var baseLabel = btn.getAttribute('data-base-label') || '';
+    if (!baseLabel) {
+      baseLabel = btn.textContent || '';
+      btn.setAttribute('data-base-label', baseLabel);
+    }
+    btn.classList.remove('busy');
+    btn.classList.remove('ok');
+    btn.classList.remove('err');
+    btn.disabled = false;
+
+    if (state === 'busy') {
+      btn.classList.add('busy');
+      btn.disabled = true;
+      btn.textContent = label || 'Working...';
+      return;
+    }
+    if (state === 'ok') {
+      btn.classList.add('ok');
+      btn.textContent = label || baseLabel;
+      setTimeout(function() {
+        if (!btn.disabled) {
+          btn.classList.remove('ok');
+          btn.textContent = baseLabel;
+        }
+      }, 1800);
+      return;
+    }
+    if (state === 'err') {
+      btn.classList.add('err');
+      btn.textContent = label || baseLabel;
+      setTimeout(function() {
+        if (!btn.disabled) {
+          btn.classList.remove('err');
+          btn.textContent = baseLabel;
+        }
+      }, 2400);
+      return;
+    }
+
+    btn.textContent = label || baseLabel;
+  }
+
+  function _postTestEndpoint(path, successMsg, onDone, btn) {
+    _setActionButtonState(btn, 'busy', 'Running...');
+    return _runMutation('postTestEndpoint-' + path, function() {
       return new Promise(function(resolveOuter, rejectOuter) {
         fetchCsrf(function(tok) {
           if (!tok) {
@@ -2815,9 +2890,11 @@
           }).then(function(){
             setStatus(successMsg, 'ok', 'right');
             if (typeof onDone === 'function') { onDone(); }
+            _setActionButtonState(btn, 'ok', 'Done');
             resolveOuter();
           }).catch(function(err){
             setStatus('Test action failed: ' + err.message, 'warn', 'right');
+            _setActionButtonState(btn, 'err', 'Failed');
             rejectOuter(err);
           });
         });
@@ -2825,30 +2902,89 @@
     });
   }
 
-  function createTestCrashDump() {
+  function createTestCrashDump(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/crashdump', 'Test crash dump created', function(){
       loadCrashes();
       loadEventLogs();
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestCrashDump = createTestCrashDump;
 
-  function createTestEventLog() {
+  function createTestEventLog(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/eventlog', 'Test event log created', function(){
       loadEventLogs();
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestEventLog = createTestEventLog;
 
-  function createTestHistory() {
+  function createTestHistory(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/history', 'Test history entry created', function(){
       loadTimeline();
+      _postTestEndpoint('/api/test/eventlog', 'History test event marker written', function(){
+        loadEventLogs();
+      }, null);
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestHistory = createTestHistory;
+
+  function createTestPipeline(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    _setActionButtonState(btn, 'busy', 'Running...');
+    _runMutation('test-pipeline', function() {
+      return postJsonWithCsrf('/api/pipeline/process', {}).then(function(){
+        return postJsonWithCsrf('/api/test/eventlog', {});
+      }).then(function(){
+        setStatus('Pipeline test started and event log marker written', 'ok', 'right');
+        _setActionButtonState(btn, 'ok', 'Done');
+        loadPipelineApprovals();
+        loadEventLogs();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        _setActionButtonState(btn, 'err', 'Failed');
+        setStatus('Pipeline test failed: ' + err.message, 'warn', 'right');
+      });
+    });
+    return false;
+  }
+  window.createTestPipeline = createTestPipeline;
+
+  function createTestLocalWebEngine(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    _setActionButtonState(btn, 'busy', 'Testing...');
+    _runMutation('test-local-web-engine', function() {
+      return _safeFetchJson(LOCAL_ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3500).then(function(statusObj){
+        var ok = !!(statusObj && (statusObj.responding === true || statusObj.running === true));
+        if (!ok) { throw new Error('Local Web Engine did not report responding status'); }
+        return postJsonWithCsrf('/api/test/eventlog', {});
+      }).then(function(){
+        setStatus('Local Web Engine test passed and event log marker written', 'ok', 'right');
+        _setActionButtonState(btn, 'ok', 'Done');
+        refreshMonitor();
+        loadMonitorLog();
+        loadEventLogs();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        _setActionButtonState(btn, 'err', 'Failed');
+        setStatus('Local Web Engine test failed: ' + err.message, 'warn', 'right');
+      });
+    });
+    return false;
+  }
+  window.createTestLocalWebEngine = createTestLocalWebEngine;
 
   /* ── Crash dumps ── */
   function loadCrashes() {
@@ -2887,24 +3023,77 @@
   }
 
   /* ── Scan trigger ── */
-  function doScan(mode, evt) {
+  function _scanModeLabel(mode) {
+    if (mode === 'incremental') { return 'Get Missing Data'; }
+    if (mode === 'full') { return 'Full Scan'; }
+    if (mode === 'static') { return 'Full Scan (Static)'; }
+    return String(mode || 'scan');
+  }
+
+  function _scanFallbackModes(startMode) {
+    var order = ['static', 'full', 'incremental'];
+    var idx = order.indexOf(startMode);
+    if (idx < 0) { return ['static']; }
+    var modes = [];
+    for (var i = idx; i >= 0; i--) {
+      modes.push(order[i]);
+    }
+    return modes;
+  }
+
+  function _startScanWithCascade(initialMode, msgEl, pgEl, btn) {
+    var modes = _scanFallbackModes(initialMode);
+    var idx = 0;
+
+    function attemptNext(lastErr) {
+      if (idx >= modes.length) {
+        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed after fallback attempts: ' + (lastErr ? lastErr.message : 'unknown error'); }
+        _setActionButtonState(btn, 'err', 'Failed');
+        if (_isFileProtocol() || !window.navigator.onLine) {
+          _showStaticScanOfflineInstructions(msgEl);
+        }
+        return;
+      }
+
+      var mode = modes[idx++];
+      var label = _scanModeLabel(mode);
+      if (msgEl) {
+        msgEl.style.color = '#dcdcaa';
+        msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(label) + '&#x2026;';
+      }
+
+      postJsonWithCsrf('/api/scan/' + mode, {}).then(function(){
+        if (msgEl) {
+          msgEl.style.color = '#4ec9b0';
+          msgEl.innerHTML = '<span class="scan-spinner"></span>' + escHtml(label) + ' in progress&#x2026;';
+        }
+        if (pgEl) { pgEl.style.width = '10%'; }
+        _setActionButtonState(btn, 'ok', 'Started');
+        _startScanPolling(msgEl, pgEl);
+      }).catch(function(err){
+        if (idx < modes.length) {
+          var nextLabel = _scanModeLabel(modes[idx]);
+          if (msgEl) {
+            msgEl.style.color = '#dcdcaa';
+            msgEl.textContent = label + ' failed, cascading to ' + nextLabel + '...';
+          }
+          attemptNext(err);
+          return;
+        }
+        attemptNext(err);
+      });
+    }
+
+    attemptNext(null);
+  }
+
+  function doScan(mode, btn, evt) {
     if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
     if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
-    if (_isFileProtocol()) {
-      if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Offline page mode: run scan via terminal or open live hub endpoint.'; }
-      setStatus('Offline page mode: scans need live control endpoint or static scan script', 'warn', 'right');
-      return false;
-    }
-    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(mode) + ' scan&#x2026;'; }
-    postJsonWithCsrf('/api/scan/' + mode, {}).then(function(){
-        if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.innerHTML = '<span class="scan-spinner"></span>Scan in progress&#x2026;'; }
-        if (pgEl)  { pgEl.style.width = '10%'; }
-        _startScanPolling(msgEl, pgEl);
-      }).catch(function(err){
-        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + err.message; }
-      });
+    _setActionButtonState(btn, 'busy', 'Starting...');
+    _startScanWithCascade(mode, msgEl, pgEl, btn);
     return false;
   }
   window.doScan = doScan;
@@ -2978,35 +3167,14 @@
   }
 
   /* ── Static (no-engine) scan ── */
-  function doStaticScan(evt) {
+  function doStaticScan(btn, evt) {
     if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
     if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
-    if (_isFileProtocol()) {
-      _showStaticScanOfflineInstructions(msgEl);
-      return false;
-    }
-    /* Try engine first (it proxies to static scan worker) */
-    fetchCsrf(function(tok) {
-      if (tok) {
-        fetch(ENGINE_BASE + '/api/scan/static', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-          body: '{}'
-        }).then(function(r){
-          if (!r.ok) { throw new Error('HTTP ' + r.status); }
-          return r.json();
-        }).then(function(){
-          if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.innerHTML = '<span class="scan-spinner"></span>Static scan started via engine&#x2026;'; }
-          _startScanPolling(msgEl, pgEl);
-        }).catch(function() {
-          _showStaticScanOfflineInstructions(msgEl);
-        });
-      } else {
-        _showStaticScanOfflineInstructions(msgEl);
-      }
-    });
+    _setActionButtonState(btn, 'busy', 'Starting...');
+    _startScanWithCascade('static', msgEl, pgEl, btn);
+    return false;
   }
   function _showStaticScanOfflineInstructions(msgEl) {
     if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.textContent = 'Engine offline — see status bar for instructions'; }
@@ -3374,35 +3542,112 @@
   function _resolveEngineDisplayState(t, meta) {
     var m = meta || {};
     var fromCache = !!m.fromCache;
+    var missStreak = parseInt(m.missStreak || 0, 10) || 0;
     var hbBad = (t.heartbeat === false || t.heartbeat === 'dead' || t.heartbeat === 'stale' || t.heartbeat === 'down');
-    var liveAgeSec = _secondsSinceIso(_engineLastLiveIso);
+    var liveAgeSec = parseInt(t.statusAgeSec, 10);
+    if (isNaN(liveAgeSec) || liveAgeSec < 0) {
+      liveAgeSec = _secondsSinceIso(_engineLastLiveIso);
+    }
     var staleLive = (liveAgeSec === null) ? true : (liveAgeSec > Math.floor(ENGINE_STATUS_STALE_MS / 1000));
-    var stale = fromCache || staleLive;
+    var staleMiss = (missStreak >= ENGINE_STATUS_MISS_THRESHOLD);
+    var stale = staleLive || staleMiss;
+    if (fromCache && !staleLive && missStreak < ENGINE_STATUS_MISS_THRESHOLD) {
+      stale = false;
+    }
     var running = !!(t.running && t.responding && !hbBad && !stale);
     return {
       running: running,
       stale: stale,
       hbBad: hbBad,
       liveAgeSec: liveAgeSec,
-      fromCache: fromCache
+      fromCache: fromCache,
+      missStreak: missStreak
     };
+  }
+
+  function _rankEngineState(name) {
+    var n = String(name || 'unknown').toLowerCase();
+    if (n === 'online') { return 5; }
+    if (n === 'degraded') { return 4; }
+    if (n === 'stale') { return 3; }
+    if (n === 'offline') { return 2; }
+    return 1;
+  }
+
+  function _desiredEngineState(t, state) {
+    if (!t || !state) { return 'unknown'; }
+    if (!t.running || !t.responding) {
+      return state.stale ? 'stale' : 'offline';
+    }
+    if (state.stale) { return 'stale'; }
+    if (state.hbBad) { return 'degraded'; }
+    return 'online';
+  }
+
+  function _commitEngineUiState(desired) {
+    var want = String(desired || 'unknown').toLowerCase();
+    var now = Date.now();
+    var cur = String(_engineUiState.current || 'unknown').toLowerCase();
+    if (want === cur) {
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return cur;
+    }
+
+    var improving = (_rankEngineState(want) >= _rankEngineState(cur));
+    if (improving) {
+      _engineUiState.current = want;
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return want;
+    }
+
+    if (_engineUiState.pending !== want) {
+      _engineUiState.pending = want;
+      _engineUiState.pendingSince = now;
+      return cur;
+    }
+
+    if ((now - _engineUiState.pendingSince) >= ENGINE_STATUS_DOWNGRADE_HOLD_MS) {
+      _engineUiState.current = want;
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return want;
+    }
+    return cur;
   }
 
   function _normalizeEngineTelemetry(data) {
     var d = data || {};
     var running = !!_readMetric(d, ['running','isRunning','state.running'], false);
     var responding = !!_readMetric(d, ['responding','isResponding','health.responding'], running);
-    var uptime = parseInt(_readMetric(d, ['uptime','uptimeSec','heartbeat.uptime','heartbeat.uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
+    var uptimeRaw = parseInt(_readMetric(d, ['uptime','uptimeSec','heartbeat.uptime','heartbeat.uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
     var pid = _readMetric(d, ['pid','processId','enginePid','runtime.pid'], null);
+    var processName = _readMetric(d, ['processName','runtime.processName'], 'pwsh');
     var port = _readMetric(d, ['port','listenPort','httpPort','runtime.port'], null);
     var serverTime = _readMetric(d, ['serverTime','timestamp','now','heartbeat.serverTime','runtime.serverTime'], null);
+    var statusAgeSec = parseInt(_readMetric(d, ['statusAgeSec','heartbeat.ageSec','health.statusAgeSec'], -1), 10);
+    if (isNaN(statusAgeSec)) { statusAgeSec = -1; }
     var heartbeat = _readMetric(d, ['heartbeat.ok','heartbeat.status','isHeartbeatAlive','health.heartbeat'], null);
     if (typeof heartbeat === 'string') { heartbeat = heartbeat.toLowerCase(); }
     var clients = parseInt(_readMetric(d, ['localWebClientsConnected','connectedClients','webClients.connected','clients.connected','stats.clientsConnected'], 0), 10) || 0;
     var queueLength = parseInt(_readMetric(d, ['requestQueueLength','queue.length','requestQueue.length','stats.requestQueueLength'], 0), 10) || 0;
     var requestsTotal = parseInt(_readMetric(d, ['requests.total','totalRequests','requestTotal','stats.requestsTotal'], 0), 10) || 0;
     var requestsServed = parseInt(_readMetric(d, ['requests.served','requests.success','servedRequests','stats.requestsServed'], 0), 10) || 0;
-    var requestsFailed = parseInt(_readMetric(d, ['requests.failed','failedRequests','stats.requestsFailed'], 0), 10) || 0;
+    var requestsClientError = parseInt(_readMetric(d, ['requests.clientError','requestsClientError','stats.requestsClientError'], 0), 10) || 0;
+    var requestsServerError = parseInt(_readMetric(d, ['requests.serverError','requestsServerError','stats.requestsServerError'], -1), 10);
+    if (isNaN(requestsServerError) || requestsServerError < 0) {
+      requestsServerError = parseInt(_readMetric(d, ['requests.failed','failedRequests','stats.requestsFailed'], 0), 10) || 0;
+    }
+    var requestsFailed = requestsServerError;
+    var memoryWorkingSetMB = parseFloat(_readMetric(d, ['memoryWorkingSetMB','runtime.memoryWorkingSetMB'], 0));
+    if (isNaN(memoryWorkingSetMB)) { memoryWorkingSetMB = 0; }
+    var memoryPeakWorkingSetMB = parseFloat(_readMetric(d, ['memoryPeakWorkingSetMB','runtime.memoryPeakWorkingSetMB'], 0));
+    if (isNaN(memoryPeakWorkingSetMB)) { memoryPeakWorkingSetMB = 0; }
+    var networkBytesIn = parseInt(_readMetric(d, ['networkIo.bytesIn','networkIoBytesIn','stats.networkBytesIn'], 0), 10) || 0;
+    var networkBytesOut = parseInt(_readMetric(d, ['networkIo.bytesOut','networkIoBytesOut','stats.networkBytesOut'], 0), 10) || 0;
+    var publicKeyFingerprint = _readMetric(d, ['publicKeyFingerprint','security.publicKeyFingerprint'], 'Unavailable');
+    var lastErrorMessage = _readMetric(d, ['lastErrorMessage','runtime.lastErrorMessage'], '');
     var startupTime = _toIsoStringOrNull(_readMetric(d, ['startupTime','startTime','startedAt','heartbeat.startedAt','heartbeat.startTime','processStartTime','runtime.startedAt','stats.startedAt'], null));
     var hbAgeSec = parseInt(_readMetric(d, ['heartbeat.ageSec','heartbeatAgeSec','heartbeatAge','health.heartbeatAgeSec','health.heartbeatAge'], -1), 10);
     if (isNaN(hbAgeSec) || hbAgeSec < 0) {
@@ -3414,17 +3659,36 @@
         hbAgeSec = -1;
       }
     }
-    if (!startupTime && serverTime && uptime > 0) {
+    if (!startupTime && serverTime && uptimeRaw > 0) {
       var st = new Date(serverTime);
       if (!isNaN(st.getTime())) {
-        startupTime = new Date(st.getTime() - (uptime * 1000)).toISOString();
+        startupTime = new Date(st.getTime() - (uptimeRaw * 1000)).toISOString();
       }
     }
+
+    var uptime = uptimeRaw;
+    if (uptimeRaw < _engineLastUptimeSec) {
+      var elapsed = _secondsSinceIso(_engineLastUptimeSampleIso);
+      if (elapsed === null || elapsed < 0) { elapsed = 0; }
+      var projected = _engineLastUptimeSec + elapsed;
+      if (projected > uptimeRaw) { uptime = projected; }
+    }
+    var sampleIso = _toIsoStringOrNull(serverTime) || new Date().toISOString();
+    if (uptime >= _engineLastUptimeSec) {
+      _engineLastUptimeSec = uptime;
+      _engineLastUptimeSampleIso = sampleIso;
+    }
+
     return {
       running: running, responding: responding, uptime: uptime, pid: pid, port: port, serverTime: serverTime,
+      processName: processName,
       heartbeat: heartbeat, clients: clients, queueLength: queueLength,
       requestsTotal: requestsTotal, requestsServed: requestsServed, requestsFailed: requestsFailed,
-      startupTime: startupTime, heartbeatAgeSec: hbAgeSec
+      requestsClientError: requestsClientError, requestsServerError: requestsServerError,
+      memoryWorkingSetMB: memoryWorkingSetMB, memoryPeakWorkingSetMB: memoryPeakWorkingSetMB,
+      networkBytesIn: networkBytesIn, networkBytesOut: networkBytesOut,
+      publicKeyFingerprint: publicKeyFingerprint, lastErrorMessage: lastErrorMessage,
+      startupTime: startupTime, heartbeatAgeSec: hbAgeSec, statusAgeSec: statusAgeSec
     };
   }
 
@@ -3441,28 +3705,29 @@
     if (!dot || !link) { return; }
     var t = _normalizeEngineTelemetry(data);
     var state = _resolveEngineDisplayState(t, meta);
-    if (!state.running) {
-      if (state.stale) {
-        dot.className = 'ws-dot warn';
-        link.textContent = 'Engine status stale (waiting for live heartbeat)';
-      } else {
-        dot.className = 'ws-dot err';
-        link.textContent = 'Engine offline';
-      }
+    var desired = _desiredEngineState(t, state);
+    var visual = _commitEngineUiState(desired);
+    if (visual === 'offline' || visual === 'unknown') {
+      dot.className = 'ws-dot err';
+      link.textContent = (visual === 'unknown') ? 'Engine status unknown' : 'Engine offline';
       link.href = '#';
       link.removeAttribute('target');
       return;
     }
+
     var info = 'Engine up ' + _formatUptime(t.uptime) + ' | PID:' + (t.pid || '—') + ' | PORT:' + (t.port || '—');
     if (t.heartbeatAgeSec >= 0) {
       info += ' | HB age:' + t.heartbeatAgeSec + 's';
     }
-    if (t.responding && !state.hbBad) {
+    if (visual === 'online') {
       dot.className = 'ws-dot ok';
       link.textContent = info;
+    } else if (visual === 'degraded') {
+      dot.className = 'ws-dot warn';
+      link.textContent = info + ' | degraded';
     } else {
       dot.className = 'ws-dot warn';
-      link.textContent = info + (state.hbBad ? ' | heartbeat issue' : ' | starting');
+      link.textContent = info + ' | stale (misses:' + (state.missStreak || 0) + ')';
     }
     link.href = _joinSourceUrl(ENGINE_BASE, SERVICE_HUB_PATH);
     link.setAttribute('target', '_blank');
@@ -3471,10 +3736,18 @@
   function pollEngineStatus() {
     fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false)
       .then(function(res){
-        if (res && !res.fromCache) { _engineLastLiveIso = new Date().toISOString(); }
-        updateEngineStatus(res.data, { fromCache: !!(res && res.fromCache) });
+        if (res && !res.fromCache) {
+          _engineLastLiveIso = new Date().toISOString();
+          _engineMissStreak = 0;
+        } else {
+          _engineMissStreak++;
+        }
+        updateEngineStatus(res.data, { fromCache: !!(res && res.fromCache), missStreak: _engineMissStreak });
       })
-      .catch(function(){ updateEngineStatus(null, { fromCache: false }); });
+      .catch(function(){
+        _engineMissStreak++;
+        updateEngineStatus(null, { fromCache: false, missStreak: _engineMissStreak });
+      });
   }
 
   function startEngine() {
@@ -3824,13 +4097,22 @@
       lastScanTime: _monitorLastScanIso ? _formatLocalTimestamp(_monitorLastScanIso) : '—',
       startupTime: tel && tel.startupTime ? _formatLocalTimestamp(tel.startupTime) : '—',
       pid: tel && tel.pid ? String(tel.pid) : '—',
+      processName: tel && tel.processName ? String(tel.processName) : '—',
       port: tel && tel.port ? String(tel.port) : '—',
       serverTime: tel && tel.serverTime ? new Date(tel.serverTime).toLocaleString() : '—',
+      memoryWorkingSetMB: tel ? String(tel.memoryWorkingSetMB) : '—',
+      memoryPeakWorkingSetMB: tel ? String(tel.memoryPeakWorkingSetMB) : '—',
+      networkBytesIn: tel ? String(tel.networkBytesIn) : '—',
+      networkBytesOut: tel ? String(tel.networkBytesOut) : '—',
+      publicKeyFingerprint: tel && tel.publicKeyFingerprint ? String(tel.publicKeyFingerprint) : '—',
+      lastErrorMessage: tel && tel.lastErrorMessage ? String(tel.lastErrorMessage) : '—',
       heartbeat: tel ? ((tel.heartbeat === true || tel.heartbeat === 'ok' || tel.heartbeat === 'alive') ? '✅ Alive' : (tel.heartbeat ? String(tel.heartbeat) : '—')) : '—',
       clients: tel ? String(tel.clients) : '—',
       queueLength: tel ? String(tel.queueLength) : '—',
       requestsTotal: tel ? String(tel.requestsTotal) : '—',
       requestsServed: tel ? String(tel.requestsServed) : '—',
+      requestsClientError: tel ? String(tel.requestsClientError) : '—',
+      requestsServerError: tel ? String(tel.requestsServerError) : '—',
       requestsFailed: tel ? String(tel.requestsFailed) : '—',
       config: _monitorConfigStatus || '—'
     };
@@ -3846,7 +4128,10 @@
         else if (state && state.stale) { valCls += ' warn'; }
         else { valCls += ' err'; }
       }
+      if (f.key === 'requestsClientError' && tel && tel.requestsClientError > 0) { valCls += ' warn'; }
+      if (f.key === 'requestsServerError' && tel && tel.requestsServerError > 0) { valCls += ' err'; }
       if (f.key === 'requestsFailed' && tel && tel.requestsFailed > 0) { valCls += ' err'; }
+      if (f.key === 'lastErrorMessage' && tel && tel.lastErrorMessage) { valCls += ' warn'; }
       if (f.key === 'config' && _monitorConfigStatusClass) { valCls += ' ' + _monitorConfigStatusClass; }
       html += '<div class="eng-stat-card"><div class="eng-stat-label">' + escHtml(f.label) + '</div><div class="' + valCls + '">' + escHtml(val) + '</div></div>';
     }
@@ -3863,18 +4148,24 @@
       var telemetry = _normalizeEngineTelemetry(res.data);
       _lastMonitorTelemetry = telemetry;
       _lastMonitorFromCache = !!res.fromCache;
-      if (!res.fromCache) { _engineLastLiveIso = new Date().toISOString(); }
+      if (!res.fromCache) {
+        _engineLastLiveIso = new Date().toISOString();
+        _engineMissStreak = 0;
+      } else {
+        _engineMissStreak++;
+      }
       renderMonitorToolbar();
       renderMonitorGrid(telemetry);
-      updateEngineStatus(res.data, { fromCache: !!res.fromCache });
+      updateEngineStatus(res.data, { fromCache: !!res.fromCache, missStreak: _engineMissStreak });
       verifyConfigDetection();
       setStatus(res.fromCache ? 'Monitor loaded from cache' : 'Monitor loaded from live source', res.fromCache ? 'warn' : 'ok', 'right');
     }).catch(function(){
+      _engineMissStreak++;
       _lastMonitorTelemetry = null;
       _lastMonitorFromCache = false;
       renderMonitorToolbar();
       renderMonitorGrid(null);
-      updateEngineStatus(null, { fromCache: false });
+      updateEngineStatus(null, { fromCache: false, missStreak: _engineMissStreak });
       verifyConfigDetection();
     });
   }
@@ -3897,6 +4188,120 @@
     });
   }
   window.loadMonitorLog = loadMonitorLog;
+
+  function _getMonitorPageOptions() {
+    var out = [];
+    for (var i = 0; i < TOOLS.length; i++) {
+      var t = TOOLS[i] || {};
+      var href = String(t.href || '');
+      if (!href) { continue; }
+      if (href.indexOf('://') !== -1) { continue; }
+      if (!/\.(xhtml|html)$/i.test(href)) { continue; }
+      out.push({ title: String(t.title || href), href: href });
+    }
+    return out;
+  }
+
+  function initMonitorPageLaunchControls() {
+    var sel = document.getElementById('monPageSelect');
+    if (!sel) { return; }
+    var opts = _getMonitorPageOptions();
+    var html = '';
+    for (var i = 0; i < opts.length; i++) {
+      var o = opts[i];
+      html += '<option value="' + escAttr(o.href) + '">' + escHtml(o.title + ' | ' + o.href) + '</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function _getSelectedMonitorPagePaths() {
+    var sel = document.getElementById('monPageSelect');
+    if (!sel) { return []; }
+    var vals = [];
+    for (var i = 0; i < sel.options.length; i++) {
+      var op = sel.options[i];
+      if (op.selected) { vals.push(String(op.value || '')); }
+    }
+    if (vals.length > 0) { return vals; }
+    var all = _getMonitorPageOptions();
+    var out = [];
+    for (var j = 0; j < all.length; j++) { out.push(all[j].href); }
+    return out;
+  }
+
+  function _toStaticFileUrl(relPath) {
+    var p = String(relPath || '').replace(/\\/g, '/');
+    if (p.indexOf('/') === 0) { p = p.substring(1); }
+    return 'file:///C:/PowerShellGUI/' + encodeURI(p);
+  }
+
+  function launchSelectedMonitorPages(mode) {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No pages available to launch', 'warn', 'right');
+      return;
+    }
+    var opened = 0;
+    for (var i = 0; i < paths.length; i++) {
+      var p = paths[i];
+      var u = (mode === 'service') ? _joinSourceUrl(ENGINE_BASE, '/' + p) : _toStaticFileUrl(p);
+      try {
+        window.open(u, '_blank', 'noopener');
+        opened++;
+      } catch(e) { }
+    }
+    setStatus('Launched ' + opened + ' page(s) via ' + (mode === 'service' ? 'service' : 'static disk'), 'ok', 'right');
+  }
+  window.launchSelectedMonitorPages = launchSelectedMonitorPages;
+
+  function saveMonitorPageBundle() {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No pages selected for bundle', 'warn', 'right');
+      return;
+    }
+    var rows = [];
+    rows.push('# PwShGUI WebEngine Page Bundle');
+    rows.push('generatedAt=' + new Date().toISOString());
+    rows.push('engineBase=' + ENGINE_BASE);
+    rows.push('');
+    for (var i = 0; i < paths.length; i++) {
+      var p = paths[i];
+      rows.push('path=' + p);
+      rows.push('service=' + _joinSourceUrl(ENGINE_BASE, '/' + p));
+      rows.push('static=' + _toStaticFileUrl(p));
+      rows.push('');
+    }
+    var blob = new Blob([rows.join('\n')], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pwshgui-page-bundle-' + Date.now() + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    setStatus('Saved page bundle (' + paths.length + ' entries)', 'ok', 'right');
+  }
+  window.saveMonitorPageBundle = saveMonitorPageBundle;
+
+  function copyMonitorPagePaths() {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No page paths to copy', 'warn', 'right');
+      return;
+    }
+    var text = paths.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        setStatus('Copied ' + paths.length + ' page path(s) to clipboard', 'ok', 'right');
+      }).catch(function(){
+        setStatus('Clipboard copy failed in this runtime', 'warn', 'right');
+      });
+      return;
+    }
+    setStatus('Clipboard API unavailable in this runtime', 'warn', 'right');
+  }
+  window.copyMonitorPagePaths = copyMonitorPagePaths;
 
   /* ── Config detection verification ── */
   function verifyConfigDetection() {
@@ -3990,6 +4395,7 @@
         bindCodeCopyCatsEvents();
         initTooltipSystem();
         initMonitorFieldPicker();
+        initMonitorPageLaunchControls();
         _updateModeLabel();
         _setRuntimeNotes();
         refreshDataSourceHealth();

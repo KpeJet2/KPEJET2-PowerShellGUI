@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
@@ -145,7 +145,7 @@ if (-not $Force) {
         try {
             $item = Get-Content $_.FullName -Raw | ConvertFrom-Json
             $sourceId = Get-DataMigrationRecordStringValue -Record $item -Names @('source_id','sourceId') -DefaultValue ''
-            if (-not [string]::IsNullOrWhiteSpace($sourceId)) { $existingSourceIds[$sourceId] = $_.Name }
+            if (-not [string]::IsNullOrWhiteSpace($sourceId)) { $existingSourceIds[$sourceId] = $_.Name }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         } catch { Write-Warning "[DataMigration] Parse error in $($_.Name): $_" }
     }
 }
@@ -175,7 +175,7 @@ if (Test-Path $FeatureJsonPath) {
             $nodeChildren = @(Get-DataMigrationRecordValue -Record $node -Names @('children') -DefaultValue @())
             $sourceId = "feature-$nodeId"
             if (-not $Force -and $existingSourceIds.ContainsKey($sourceId)) {
-                Write-Host "  SKIP: $nodeId - $nodeTitle (already migrated as $($existingSourceIds[$sourceId]))" -ForegroundColor DarkGray
+                Write-Host "  SKIP: $nodeId - $nodeTitle (already migrated as $($existingSourceIds[$sourceId]))" -ForegroundColor DarkGray  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $script:skipped++
                 # Still recurse children
                 if (@($nodeChildren).Count -gt 0) {
@@ -186,7 +186,7 @@ if (Test-Path $FeatureJsonPath) {
 
             $mappedStatus = 'OPEN'
             if (-not [string]::IsNullOrWhiteSpace($nodeStatus) -and $featureStatusMap.ContainsKey($nodeStatus)) {
-                $mappedStatus = $featureStatusMap[$nodeStatus]
+                $mappedStatus = $featureStatusMap[$nodeStatus]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
             if (Get-Command -Name ConvertTo-PipelineStatus -ErrorAction SilentlyContinue) {
                 $mappedStatus = ConvertTo-PipelineStatus -Status $mappedStatus

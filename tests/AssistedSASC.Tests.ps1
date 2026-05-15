@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -18,7 +18,7 @@ BeforeAll {
     $script:WorkspaceRoot = Split-Path -Parent $PSScriptRoot
     # Pre-initialise the module so $script:_ModuleRoot is populated for Assert-SafePath default roots.
     if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
-        try { Initialize-SASCModule -ScriptDir $script:WorkspaceRoot | Out-Null } catch { }
+        try { Initialize-SASCModule -ScriptDir $script:WorkspaceRoot | Out-Null } catch { <# Intentional: non-fatal — SASC init is best-effort in test BeforeAll #> }
     }
 }
 

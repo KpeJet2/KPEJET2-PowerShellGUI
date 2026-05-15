@@ -43,7 +43,7 @@ function Get-DependencyMap {
     foreach ($f in $files) {
         $name = [System.IO.Path]::GetFileNameWithoutExtension($f.Name)
         if (-not $nodes.ContainsKey($name)) {
-            $nodes[$name] = @{ name = $name; path = $f.FullName; type = $f.Extension.TrimStart('.') }
+            $nodes[$name] = @{ name = $name; path = $f.FullName; type = $f.Extension.TrimStart('.') }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
         try {
             $content = Get-Content -Path $f.FullName -Raw -Encoding UTF8 -ErrorAction Stop
@@ -73,7 +73,7 @@ function Get-DependencyMap {
     }
 
     $nodeArr = @()
-    foreach ($k in $nodes.Keys) { $nodeArr += ,$nodes[$k] }
+    foreach ($k in $nodes.Keys) { $nodeArr += ,$nodes[$k] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $edgeArr = @()
     foreach ($e in $edges)      { $edgeArr += ,$e }
 

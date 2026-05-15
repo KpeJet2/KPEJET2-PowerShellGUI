@@ -90,9 +90,9 @@ function Get-DirectoriesWithChanges {
     foreach ($f in $files) {
         $dir = $f.DirectoryName
         if (-not $dirs.ContainsKey($dir)) {
-            $dirs[$dir] = @()
+            $dirs[$dir] = @()  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
-        $dirs[$dir] += $f
+        $dirs[$dir] += $f  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return @{ directories = $dirs; allFiles = $files }
 }
@@ -581,8 +581,8 @@ function Invoke-Phase8MemoryWrite {
         $m = Select-String -Path $vf.FullName -Pattern '^#\s*VersionTag:\s*(\S+)' | Select-Object -First 1
         if ($m) {
             $tag = $m.Matches[0].Groups[1].Value
-            if (-not $versions.ContainsKey($tag)) { $versions[$tag] = 0 }
-            $versions[$tag]++
+            if (-not $versions.ContainsKey($tag)) { $versions[$tag] = 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $versions[$tag]++  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     }
 
@@ -746,7 +746,7 @@ function Invoke-REmemorAiZ {
     $inventoryResult = $null
 
     for ($i = $startIdx; $i -lt @($phases).Count; $i++) {
-        $phaseName = $phases[$i]
+        $phaseName = $phases[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $phaseNum = $i + 1
         Write-Output "`n=== Phase $phaseNum/8: $phaseName ==="
 

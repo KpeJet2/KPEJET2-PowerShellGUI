@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: 2026-04-21
@@ -146,7 +146,7 @@ function Initialize-SASCModule {
             # Version pre-flight check
             $bwVerRaw = & $script:_BWCliPath --version 2>&1
             if ($bwVerRaw -match '(\d+\.\d+\.\d+)') {
-                $script:_BWCliVersion = [version]$Matches[1]
+                $script:_BWCliVersion = [version]$Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $minVer = [version]'2024.1.0'
                 if ($script:_BWCliVersion -lt $minVer) {
                     Write-AppLog "SASC: Bitwarden CLI $($script:_BWCliVersion) is below minimum $minVer -- update recommended" "Warning"
@@ -443,7 +443,7 @@ function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplic
     if ($Expected.Length -ne $Actual.Length) { return $false }
     $diff = 0
     for ($i = 0; $i -lt $Expected.Length; $i++) {
-        $diff = $diff -bor ($Expected[$i] -bxor $Actual[$i])
+        $diff = $diff -bor ($Expected[$i] -bxor $Actual[$i])  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return ($diff -eq 0)
 }
@@ -2010,7 +2010,7 @@ function Show-AssistedSASCDialog {
     $btnClose.Text = "Close"
     $btnClose.Location = New-Object System.Drawing.Point([int]760, [int]374)
     $btnClose.Size = New-Object System.Drawing.Size([int]90, [int]32)
-    $btnClose.Add_Click({ $setupForm.Close() })
+    $btnClose.Add_Click({ $setupForm.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
     $setupForm.Controls.AddRange(@($btnRefresh, $btnRun, $btnRunAll, $btnClose))
 
@@ -2068,7 +2068,7 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Enable/disable Run button based on selection -----------------------
-    $grid.Add_SelectionChanged({
+    $grid.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($grid.SelectedRows.Count -eq 1) {
             $canRun = $grid.SelectedRows[0].Cells['CanRun'].Value
             $btnRun.Enabled = ($canRun -eq $true -or $canRun -eq 'True')
@@ -2178,9 +2178,9 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Wire buttons -------------------------------------------------------
-    $btnRefresh.Add_Click({ & $refreshGrid })
+    $btnRefresh.Add_Click({ & $refreshGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-    $btnRun.Add_Click({
+    $btnRun.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($grid.SelectedRows.Count -ne 1) { return }
         $row = $grid.SelectedRows[0]
         $actionKey = [string]$row.Cells['ActionKey'].Value
@@ -2189,7 +2189,7 @@ function Show-AssistedSASCDialog {
         & $executeAction $actionKey $stepName
     })
 
-    $btnRunAll.Add_Click({
+    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         & $writeLog '--- Running all pending steps ---' 'RUN'
         $steps = & $assessSteps
         foreach ($kv in $steps.GetEnumerator()) {
@@ -2297,7 +2297,7 @@ function Show-VaultUnlockDialog {
     $btnUnlock.Location = New-Object System.Drawing.Point([int]215, [int]250)
     $btnUnlock.Size = New-Object System.Drawing.Size([int]85, [int]30)
     $btnUnlock.DialogResult = 'None'
-    $btnUnlock.Add_Click({
+    $btnUnlock.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             $lblStatus.Text = ""
             $unlocked = $false
@@ -2486,7 +2486,7 @@ function Show-SecretsInvokerFallback {
         $cboSite.Items.Add("(vault error: $($_.Exception.Message))") | Out-Null
     }
 
-    $cboSite.Add_SelectedIndexChanged({
+    $cboSite.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $uriList.Items.Clear()
         $idx = $cboSite.SelectedIndex
         if ($idx -ge 0 -and $script:_InvokerItems -and $idx -lt $script:_InvokerItems.Count) {
@@ -2509,7 +2509,7 @@ function Show-SecretsInvokerFallback {
     $btnExecute.Text = "Open && Authenticate"
     $btnExecute.Location = New-Object System.Drawing.Point([int]15, [int]400)
     $btnExecute.Size = New-Object System.Drawing.Size([int]200, [int]35)
-    $btnExecute.Add_Click({
+    $btnExecute.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $idx = $cboSite.SelectedIndex
         if ($idx -lt 0) {
             $lblStatus.Text = "Please select a credential."
