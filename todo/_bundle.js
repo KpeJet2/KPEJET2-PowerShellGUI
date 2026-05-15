@@ -1,6 +1,6 @@
 /* Auto-generated todo data bundle
-   Generated: 2026-05-15T20:11:52.9689640Z
-   Items: 605
+   Generated: 2026-05-15T20:14:21.1591711Z
+   Items: 606
    Regenerate: Import-Module modules/CronAiAthon-Pipeline.psm1; Update-TodoBundle -WorkspacePath . */
 var _todoBundle = [
   {
@@ -12094,6 +12094,51 @@ var _todoBundle = [
     "type": "Bug",
     "lastSeenAt": "2026-05-15T20:10:44.992624Z",
     "id": "Bug-20260516041044-832b4ffb"
+  },
+  {
+    "linkedBugs": [],
+    "created": "2026-05-15T20:13:03.1133905Z",
+    "firstSeenAt": "2026-05-15T20:13:03.1134818Z",
+    "bugHistory": [],
+    "bugReferrals": [],
+    "plannedAt": null,
+    "bugResurfaced": false,
+    "source": "BugTracker",
+    "sessionModCount": 1,
+    "description": "Scanner-detected violations of SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257 in tests\\iter34-add-shouldprocess.ps1 (1 hits).\nTitle: UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors\nSeverity: HIGH\n\nSample matches:\nline 1: [NO BOM but non-ASCII bytes detected]",
+    "result": null,
+    "completedAt": null,
+    "sinPattern": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+    "reopenedAt": null,
+    "outlineTag": "OUTLINE-PROTO-v0",
+    "sinId": "",
+    "suggestedBy": "SIN-Scanner",
+    "priority": "HIGH",
+    "implementedAt": null,
+    "executionAgent": "",
+    "category": "sin-scan",
+    "executedAt": null,
+    "outlineVersion": "v0",
+    "linkedFeatures": [],
+    "notes": "Created by Convert-SinScanToBugs from SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257 hotspot (1 line hits).",
+    "countermeasures": [],
+    "status": "OPEN",
+    "filesFixedCount": 0,
+    "executionMethod": "",
+    "outlinePhase": "assessment",
+    "parentId": "",
+    "affectedFiles": [
+      "tests\\iter34-add-shouldprocess.ps1"
+    ],
+    "acknowledged": null,
+    "tags": [],
+    "modified": "2026-05-15T20:13:03.1134405Z",
+    "fixesImplementedCount": 0,
+    "title": "[SIN-SCAN] SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257 :: UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
+    "filesRemainingCount": 0,
+    "type": "Bug",
+    "lastSeenAt": "2026-05-15T20:13:03.1135145Z",
+    "id": "Bug-20260516041303-1d0163fa"
   },
   {
     "category": "SchedulerFailure",
