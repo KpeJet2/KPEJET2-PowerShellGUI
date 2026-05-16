@@ -1,6 +1,11 @@
 /* Auto-generated todo data bundle
+<<<<<<< HEAD
    Generated: 2026-05-15T22:20:13.1700449Z
    Items: 725
+=======
+   Generated: 2026-05-15T20:14:21.1591711Z
+   Items: 606
+>>>>>>> a8b67b931845abb7dd367d39d5ca20397bfab6ae
    Regenerate: Import-Module modules/CronAiAthon-Pipeline.psm1; Update-TodoBundle -WorkspacePath . */
 var _todoBundle = [
   {
@@ -12141,6 +12146,7 @@ var _todoBundle = [
     "id": "Bug-20260516041303-1d0163fa"
   },
   {
+<<<<<<< HEAD
     "linkedBugs": [],
     "created": "2026-05-15T20:15:33.1343271Z",
     "firstSeenAt": "2026-05-15T20:15:33.1344458Z",
@@ -17496,6 +17502,8 @@ var _todoBundle = [
     "id": "Bug-20260516061943-dd54abc4"
   },
   {
+=======
+>>>>>>> a8b67b931845abb7dd367d39d5ca20397bfab6ae
     "category": "SchedulerFailure",
     "type": "Bug",
     "title": "Scheduler task failure: TASK-FullSystemsScan",
