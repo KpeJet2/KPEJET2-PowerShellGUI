@@ -1,5 +1,4 @@
-# VersionTag: 2604.B2.V32.7
-
+﻿# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -42,6 +41,7 @@ param(
     [switch]$Help,
     [switch]$AsService,
     [switch]$Force,
+    [switch]$AllowFileOrigin,
     [int]$PortRetryMax = 5
 )
 
@@ -56,6 +56,7 @@ Start-LocalWebEngine.ps1 — Unified Launcher/Service
   -NoLaunchBrowser         # Suppress browser launch
   -AsService               # Run as background service
   -Force                   # Force restart/stop
+    -AllowFileOrigin         # Allow file:// or Origin:null requests (disabled by default)
   -PortRetryMax <n>        # Max port increments if busy
   -Help                    # Show this help
 "@
@@ -63,28 +64,125 @@ Start-LocalWebEngine.ps1 — Unified Launcher/Service
 }
 
 # Main control flow
+if ([string]::IsNullOrEmpty($WorkspacePath)) {
+    $WorkspacePath = Split-Path $PSScriptRoot -Parent
+}
+if ($AsService -and $Action -eq 'Start') {
+    $Action = 'RunAsService'
+}
+
 switch ($Action) {
     'Start' {
-        # TODO: Implement negotiation/version check, safe restart, port fallback
-        # If another instance is healthy, return status/version
-        # If not, try to restart or prompt user
-        # If port busy, try next port up to PortRetryMax
-        # Start engine normally
+        # Continue into canonical in-process engine startup flow below.
     }
     'Stop' {
-        # TODO: Implement stop logic (find PID, signal/kill, cleanup)
+        $baseUrl = "http://127.0.0.1:$Port"
+        $stopRequested = $false
+        try {
+            $csrfResp = Invoke-WebRequest -Uri ($baseUrl + '/api/csrf-token') -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+            $csrfObj = $csrfResp.Content | ConvertFrom-Json
+            $token = if ($null -ne $csrfObj -and $csrfObj.PSObject.Properties.Name -contains 'csrfToken') { [string]$csrfObj.csrfToken } else { '' }
+            if (-not [string]::IsNullOrWhiteSpace($token)) {
+                $headers = @{ 'X-CSRF-Token' = $token; 'Content-Type' = 'application/json' }
+                Invoke-WebRequest -Uri ($baseUrl + '/api/engine/stop') -Method Post -Headers $headers -Body '{}' -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop | Out-Null
+                Write-Host "Stop requested via HTTP API on port $Port" -ForegroundColor Yellow
+                $stopRequested = $true
+            }
+        } catch {
+            Write-Host "Stop API request failed: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+
+        if (-not $stopRequested) {
+            $logsDir = Join-Path $WorkspacePath 'logs'
+            $stopSignal = Join-Path $logsDir 'engine.stop'
+            $pidFile = Join-Path $logsDir 'engine.pid'
+            $pidValue = $null
+            $pidRunning = $false
+
+            if (Test-Path -LiteralPath $pidFile) {
+                try {
+                    $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+                    if ($pidText -match '^\d+$') {
+                        $pidValue = [int]$pidText
+                        $pidRunning = @((Get-Process -Id $pidValue -ErrorAction SilentlyContinue)).Count -gt 0
+                    }
+                } catch {
+                    $pidRunning = $false
+                }
+            }
+
+            if ($pidRunning) {
+                try {
+                    New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
+                    Set-Content -LiteralPath $stopSignal -Value '1' -Encoding UTF8 -Force
+                    Write-Host "Stop signal file written: $stopSignal" -ForegroundColor Yellow
+                    $stopRequested = $true
+                } catch {
+                    Write-Host "Failed to write stop signal: $($_.Exception.Message)" -ForegroundColor DarkYellow
+                }
+
+                if ($Force -and $null -ne $pidValue) {
+                    try {
+                        Stop-Process -Id $pidValue -Force -ErrorAction Stop
+                        Write-Host "Force-stopped engine PID $pidValue" -ForegroundColor Yellow
+                        $stopRequested = $true
+                    } catch {
+                        Write-Host "Force stop failed: $($_.Exception.Message)" -ForegroundColor Red
+                    }
+                }
+            } else {
+                if (Test-Path -LiteralPath $stopSignal) {
+                    Remove-Item -LiteralPath $stopSignal -Force -ErrorAction SilentlyContinue
+                }
+                Write-Host "Engine is not running on port $Port. Nothing to stop." -ForegroundColor DarkYellow
+                exit 0
+            }
+        }
+
+        if ($stopRequested) { exit 0 }
+        exit 1
     }
     'Restart' {
-        # TODO: Stop then Start
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } else { $null }
+        if ($null -eq $hostExe) {
+            Write-Host 'No PowerShell host available for restart.' -ForegroundColor Red
+            exit 1
+        }
+
+        $scriptPath = $MyInvocation.MyCommand.Path
+        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $scriptPath -Action Stop -Port $Port -WorkspacePath $WorkspacePath -NoLaunchBrowser:$NoLaunchBrowser -Force:$Force
+        Start-Sleep -Milliseconds 700
+        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $scriptPath -Action Start -Port $Port -WorkspacePath $WorkspacePath -NoLaunchBrowser:$NoLaunchBrowser -Force:$Force
+        exit $LASTEXITCODE
     }
     'Status' {
-        # TODO: Query engine status/version, print result
+        $statusUrl = "http://127.0.0.1:$Port/api/engine/status"
+        try {
+            $resp = Invoke-WebRequest -Uri $statusUrl -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop
+            Write-Host $resp.Content
+            exit 0
+        } catch {
+            Write-Host "Engine offline on port $Port" -ForegroundColor Yellow
+            exit 1
+        }
     }
     'LaunchWebpage' {
-        # TODO: Open browser to engine URL
+        Start-Process "http://127.0.0.1:$Port/"
+        exit 0
     }
     'RunAsService' {
-        # TODO: Start as background service (hidden window, PID tracking)
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) { 'powershell.exe' } else { $null }
+        if ($null -eq $hostExe) {
+            Write-Host 'No PowerShell host available for RunAsService.' -ForegroundColor Red
+            exit 1
+        }
+
+        $serviceArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$MyInvocation.MyCommand.Path,'-Action','Start','-Port',$Port,'-WorkspacePath',$WorkspacePath)
+        if ($NoLaunchBrowser) { $serviceArgs += @('-NoLaunchBrowser') }
+        if ($Force) { $serviceArgs += @('-Force') }
+        $svcProc = Start-Process -FilePath $hostExe -ArgumentList $serviceArgs -PassThru -WindowStyle Hidden
+        Write-Host "RunAsService launched hidden PID $($svcProc.Id) on port $Port" -ForegroundColor Cyan
+        exit 0
     }
     default {
         Write-Host "Unknown action: $Action" -ForegroundColor Red
@@ -108,11 +206,14 @@ $ConfigFile = Join-Path $WorkspacePath 'config'
 $ConfigFile = Join-Path $ConfigFile 'dependency-scan-config.json'
 
 # ─── Log file paths ───────────────────────────────────────────────────────────
-$script:EngineLogFile    = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
-$script:BootstrapLogFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
-$script:CrashLogFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
-$script:_ExitClean       = $false   # set $true on graceful stop; $false = dirty exit
-$script:_BootstrapErrors = [System.Collections.ArrayList]@()
+$script:EngineLogFile      = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
+$script:BootstrapLogFile   = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
+$script:CrashLogFile       = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
+$script:EngineInstanceFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-instance-current.json'
+$script:StopSignalFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.stop'
+$script:_ExitClean         = $false   # set $true on graceful stop; $false = dirty exit
+$script:_BootstrapErrors   = [System.Collections.ArrayList]@()
+$script:_ConsoleCancelHandler = $null
 
 function Write-EngineLog {
     param([string]$Msg, [string]$Level = 'DEBUG')
@@ -134,24 +235,210 @@ function Write-BootstrapLog {
     }
 }
 
+function Request-EngineStop {
+    [CmdletBinding()]
+    param(
+        [string]$Reason = 'Stop requested',
+        [switch]$MarkClean
+    )
+    if ($MarkClean) {
+        $script:_ExitClean = $true
+    }
+    try {
+        Set-Content -LiteralPath $script:StopSignalFile -Value '1' -Encoding UTF8 -Force
+    } catch {
+        Write-EngineLog "Failed to write stop signal: $_" -Level 'WARN'
+    }
+    Write-EngineLog $Reason -Level 'INFO'
+}
+
+# ─── Write engine instance state file ──────────────────────────────────────────
+<#
+.SYNOPSIS
+Write engine instance state (Running/Stopped) to engine-instance-current.json
+.DESCRIPTION
+Creates or updates engine-instance-current.json with heartbeat info for offline detection.
+.PARAMETER State
+Instance state: 'Running' or 'Stopped'.
+.PARAMETER CleanStop
+Whether stop was graceful (true) or dirty exit (false).
+.PARAMETER ExitKind
+Exit kind: CLEAN_STOP, DIRTY_EXIT, or null if running.
+#>
+function Write-EngineInstanceState {
+    [CmdletBinding()]
+    param(
+        [ValidateSet('Running', 'Stopped')][string]$State = 'Running',
+        [bool]$CleanStop = $false,
+        [string]$ExitKind = $null
+    )
+    try {
+        $instanceData = @{
+            state       = $State
+            pid         = $PID
+            port        = $Port
+            startedAt   = if ($State -eq 'Running') { $script:_EngineStartTime } else { $null }
+            stoppedAt   = if ($State -eq 'Stopped') { (Get-Date -Format 'o') } else { $null }
+            cleanStop   = $CleanStop
+            exitKind    = $ExitKind
+            serverTime  = (Get-Date -Format 'o')
+            workspacePath = $WorkspacePath
+        }
+        $json = $instanceData | ConvertTo-Json -Depth 5
+        Set-Content -LiteralPath $script:EngineInstanceFile -Value $json -Encoding UTF8 -Force
+    } catch {
+        Write-EngineLog "Failed to write instance state: $_" -Level 'WARN'
+    }
+}
+
+function Request-EngineStop {
+    [CmdletBinding()]
+    param(
+        [string]$Reason = 'Stop requested',
+        [switch]$MarkClean
+    )
+    if ($MarkClean) {
+        $script:_ExitClean = $true
+    }
+    try {
+        Set-Content -LiteralPath $script:StopSignalFile -Value '1' -Encoding UTF8 -Force
+    } catch {
+        Write-EngineLog "Failed to write stop signal: $_" -Level 'WARN'
+    }
+    Write-EngineLog $Reason -Level 'INFO'
+}
+
+# Native C# Ctrl+C handler — script-block delegates throw 'no Runspace available'
+# when the OS calls them on the signal thread (PSInvalidOperationException), which
+# tears the process down (exit 0xE0434352). A real .NET delegate has no such issue.
+if (-not ('PwShGUI.EngineCancelHandler' -as [type])) {
+    try {
+        Add-Type -TypeDefinition @'
+using System;
+using System.IO;
+namespace PwShGUI {
+    public static class EngineCancelHandler {
+        public static string StopFile;
+        private static ConsoleCancelEventHandler _handler;
+        public static void Register(string stopFile) {
+            StopFile = stopFile;
+            if (_handler != null) { return; }
+            _handler = new ConsoleCancelEventHandler(OnCancel);
+            Console.CancelKeyPress += _handler;
+        }
+        public static void Unregister() {
+            if (_handler != null) {
+                try { Console.CancelKeyPress -= _handler; } catch { }
+                _handler = null;
+            }
+        }
+        private static void OnCancel(object sender, ConsoleCancelEventArgs e) {
+            try { e.Cancel = true; } catch { }
+            try {
+                if (!string.IsNullOrEmpty(StopFile)) {
+                    File.WriteAllText(StopFile, "1");
+                }
+            } catch { }
+            try { Console.WriteLine("Console stop requested - shutting down engine..."); } catch { }
+        }
+    }
+}
+'@ -Language CSharp -ErrorAction Stop
+    } catch {
+        Write-BootstrapLog "EngineCancelHandler type compile failed: $_" 'WARN'
+    }
+}
+
+function Register-ConsoleShutdownHandler {
+    [CmdletBinding()]
+    param()
+    if ($Host.Name -ne 'ConsoleHost') {
+        return
+    }
+    try {
+        if ('PwShGUI.EngineCancelHandler' -as [type]) {
+            [PwShGUI.EngineCancelHandler]::Register($script:StopSignalFile)
+            $script:_ConsoleCancelHandler = $true
+        }
+    } catch {
+        Write-BootstrapLog "Console shutdown handler registration failed: $_" 'WARN'
+    }
+}
+
+function Unregister-ConsoleShutdownHandler {
+    [CmdletBinding()]
+    param()
+    if ($script:_ConsoleCancelHandler) {
+        try {
+            if ('PwShGUI.EngineCancelHandler' -as [type]) {
+                [PwShGUI.EngineCancelHandler]::Unregister()
+            }
+        } catch { <# Intentional: non-fatal — handler removal is best-effort during shutdown #> }
+        $script:_ConsoleCancelHandler = $null
+    }
+}
+
 # ─── Pre-start bootstrap sequence ─────────────────────────────────────────────
 Write-BootstrapLog "=== Engine Bootstrap Start ==="
 Write-BootstrapLog "PID=$PID  PSVersion=$($PSVersionTable.PSVersion)  Host=$($Host.Name)" 'INFO'
 Write-BootstrapLog "WorkspacePath=$WorkspacePath"
 
-# Port availability pre-check
+# Port availability pre-check + stale-engine cleanup
 try {
     $tcpTest = New-Object System.Net.Sockets.TcpClient
     $conn = $tcpTest.BeginConnect('127.0.0.1', $Port, $null, $null)
     $portInUse = $conn.AsyncWaitHandle.WaitOne(300)
     if ($portInUse) {
         try { $tcpTest.EndConnect($conn) } catch { <# Intentional: non-fatal, TCP EndConnect cleanup #> }
-        Write-BootstrapLog "Port $Port may already be in use" 'WARN'
+        Write-BootstrapLog "Port $Port in use — checking for stale engine process" 'WARN'
+        # Attempt to kill any stale engine process from the PID file
+        $stalePidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+        if (Test-Path -LiteralPath $stalePidFile) {
+            try {
+                $stalePid = [int](Get-Content -LiteralPath $stalePidFile -Raw -Encoding UTF8).Trim()
+                if ($stalePid -gt 0 -and (Get-Process -Id $stalePid -ErrorAction SilentlyContinue)) {
+                    Write-BootstrapLog "Stopping stale engine PID $stalePid" 'WARN'
+                    Stop-Process -Id $stalePid -Force -ErrorAction SilentlyContinue
+                    Start-Sleep -Milliseconds 1200
+                } else {
+                    Write-BootstrapLog "Stale PID file (PID $stalePid already gone) — removing" 'WARN'
+                    Remove-Item -LiteralPath $stalePidFile -Force -ErrorAction SilentlyContinue
+                }
+            } catch { Write-BootstrapLog "Stale engine cleanup error: $_" 'WARN' }
+        }
+        # Re-check port after cleanup attempt
+        try {
+            $tcpTest2 = New-Object System.Net.Sockets.TcpClient
+            $conn2 = $tcpTest2.BeginConnect('127.0.0.1', $Port, $null, $null)
+            $stillInUse = $conn2.AsyncWaitHandle.WaitOne(600)
+            if ($stillInUse) {
+                try { $tcpTest2.EndConnect($conn2) } catch { <# Intentional: non-fatal #> }
+                Write-BootstrapLog "Port $Port still in use after cleanup — attempting URL ACL reset" 'WARN'
+            } else {
+                Write-BootstrapLog "Port $Port freed after stale engine cleanup" 'INFO'
+            }
+            $tcpTest2.Close()
+        } catch { <# Intentional: non-fatal port re-check #> }
     } else {
         Write-BootstrapLog "Port $Port is available" 'INFO'
     }
     $tcpTest.Close()
 } catch { Write-BootstrapLog "Port check error: $_" 'WARN' }
+
+# URL ACL registration — ensures HttpListener can bind without admin elevation per-session
+# On Windows, loopback-only HttpListener requires either admin OR an explicit netsh URL ACL.
+try {
+    $urlPrefix = "http://127.0.0.1:$Port/"
+    $aclCheck = & netsh http show urlacl url=$urlPrefix 2>&1
+    if ($aclCheck -notmatch 'User:') {
+        Write-BootstrapLog "Registering URL ACL for $urlPrefix" 'INFO'
+        $userSid = "$env:USERDOMAIN\$env:USERNAME"
+        $aclOut = & netsh http add urlacl url=$urlPrefix user=$userSid 2>&1
+        Write-BootstrapLog "URL ACL add result: $aclOut" 'INFO'
+    } else {
+        Write-BootstrapLog "URL ACL already registered for $urlPrefix" 'INFO'
+    }
+} catch { Write-BootstrapLog "URL ACL registration skipped (may require elevation): $_" 'WARN' }
 
 # ─── Load config ───────────────────────────────────────────────────────────────
 $cfg = $null
@@ -196,6 +483,15 @@ $rng.Dispose()
 
 # ─── WebSocket client registry ─────────────────────────────────────────────────
 $WsClients = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
+$script:_EngineRequestsTotal  = [long]0
+$script:_EngineRequestsServed = [long]0
+$script:_EngineRequestsFailed = [long]0
+$script:_EngineRequestsClientError = [long]0
+$script:_EngineRequestsServerError = [long]0
+$script:_EngineBytesIn = [long]0
+$script:_EngineBytesOut = [long]0
+$script:_EngineLastErrorMessage = ''
+$script:_EngineStatusFreshnessSec = 45
 
 <#
 .SYNOPSIS
@@ -283,6 +579,15 @@ function Send-Response {
         [hashtable]$ExtraHeaders = @{}
     )
     $resp = $Context.Response
+    [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsTotal)
+    if ($StatusCode -ge 500) {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsFailed)
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsServerError)
+    } elseif ($StatusCode -ge 400) {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsClientError)
+    } else {
+        [void][System.Threading.Interlocked]::Increment([ref]$script:_EngineRequestsServed)
+    }
     $resp.StatusCode    = $StatusCode
     $resp.ContentType   = $ContentType
     # Security headers
@@ -291,22 +596,131 @@ function Send-Response {
     $resp.Headers.Set('Content-Security-Policy',
         "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:$Port ws://127.0.0.1:$Port wss://127.0.0.1:$Port")
     $resp.Headers.Set('Cache-Control', 'no-cache, no-store, must-revalidate')
-    # CORS — allow file:// and localhost origins (engine is 127.0.0.1 only)
     $reqOrigin = $Context.Request.Headers['Origin']
-    if ($reqOrigin -and ($reqOrigin -match '^(https?://127\.0\.0\.1|file://)')) {
-        $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+    $allowCreds = $false
+    if ($reqOrigin) {
+        if (Test-RequestOriginAllowed -Context $Context) {
+            $resp.Headers.Set('Access-Control-Allow-Origin', $reqOrigin)
+            $resp.Headers.Set('Vary', 'Origin')
+            if ($reqOrigin -ne 'null') { $allowCreds = $true }
+        }
     } else {
+        # Non-browser clients do not send Origin; keep loopback default for tooling compatibility.
         $resp.Headers.Set('Access-Control-Allow-Origin', 'http://127.0.0.1:' + $Port)
+        $allowCreds = $true
     }
-    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token')
-    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, OPTIONS')
+    if ($allowCreds) { $resp.Headers.Set('Access-Control-Allow-Credentials', 'true') }
+    $resp.Headers.Set('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token, X-Requested-With')
+    $resp.Headers.Set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, HEAD, OPTIONS')
+    $resp.Headers.Set('Access-Control-Max-Age', '600')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
+    [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
     $resp.ContentLength64 = $bytes.Length
     try {
         $resp.OutputStream.Write($bytes, 0, $bytes.Length)
         $resp.OutputStream.Close()
-    } catch { <# client disconnected #> }
+    } catch {
+        $script:_EngineLastErrorMessage = "Response write failure: $($_.Exception.Message)"
+        <# client disconnected #>
+    }
+}
+
+function Get-PublicKeyFingerprint {
+    [CmdletBinding()]
+    param()
+    $pkiDir = Join-Path $WorkspacePath 'pki'
+    if (-not (Test-Path -LiteralPath $pkiDir -PathType Container)) {
+        return 'Unavailable'
+    }
+
+    $candidate = Join-Path $pkiDir 'FocalPoint-null-00.pub'
+    if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+        $pub = Get-ChildItem -LiteralPath $pkiDir -Filter '*.pub' -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -eq $pub) { return 'Unavailable' }
+        $candidate = $pub.FullName
+    }
+
+    try {
+        $raw = Get-Content -LiteralPath $candidate -Raw -Encoding UTF8 -ErrorAction Stop
+        if ([string]::IsNullOrWhiteSpace($raw)) { return 'Unavailable' }
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $bytes = [System.Text.Encoding]::UTF8.GetBytes($raw.Trim())
+            $hashBytes = $sha.ComputeHash($bytes)
+            $hex = [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant()
+            if ($hex.Length -gt 24) { $hex = $hex.Substring(0, 24) }
+            $label = [System.IO.Path]::GetFileName($candidate)
+            return "${label}:$hex"
+        } finally {
+            $sha.Dispose()
+        }
+    } catch {
+        return 'Unavailable'
+    }
+}
+
+function Get-EngineLastErrorMessage {
+    [CmdletBinding()]
+    param()
+    if (-not [string]::IsNullOrWhiteSpace($script:_EngineLastErrorMessage)) {
+        return $script:_EngineLastErrorMessage
+    }
+
+    if (@($script:_BootstrapErrors).Count -gt 0) {
+        $last = @($script:_BootstrapErrors)[@($script:_BootstrapErrors).Count - 1]
+        if ($null -ne $last -and $last.PSObject.Properties.Name -contains 'msg') {
+            return [string]$last.msg
+        }
+    }
+
+    try {
+        if (Test-Path -LiteralPath $script:CrashLogFile -PathType Leaf) {
+            $tail = @(Get-Content -LiteralPath $script:CrashLogFile -Tail 20 -Encoding UTF8 -ErrorAction SilentlyContinue)
+            if (@($tail).Count -gt 0) {
+                $jsonLine = $null
+                for ($i = @($tail).Count - 1; $i -ge 0; $i--) {
+                    $line = [string]$tail[$i]
+                    if ([string]::IsNullOrWhiteSpace($line)) { continue }
+                    if ($line.TrimStart().StartsWith('{')) {
+                        $jsonLine = $line
+                        break
+                    }
+                }
+                if (-not [string]::IsNullOrWhiteSpace($jsonLine)) {
+                    try {
+                        $obj = $jsonLine | ConvertFrom-Json -ErrorAction Stop
+                        if ($null -ne $obj -and $obj.PSObject.Properties.Name -contains 'lastLogLine' -and -not [string]::IsNullOrWhiteSpace([string]$obj.lastLogLine)) {
+                            return [string]$obj.lastLogLine
+                        }
+                    } catch { <# Intentional: non-fatal JSON parse fallback #> }
+                }
+            }
+        }
+    } catch { <# Intentional: non-fatal fallback path #> }
+
+    return ''
+}
+
+function Get-EngineProcessTelemetry {
+    [CmdletBinding()]
+    param()
+    $p = Get-Process -Id $PID -ErrorAction SilentlyContinue
+    if ($null -eq $p) {
+        return [pscustomobject]@{
+            processName = 'Unknown'
+            memoryWorkingSetMB = 0
+            memoryPeakWorkingSetMB = 0
+        }
+    }
+
+    $wsMb = [math]::Round(([double]$p.WorkingSet64 / 1MB), 2)
+    $peakMb = [math]::Round(([double]$p.PeakWorkingSet64 / 1MB), 2)
+    return [pscustomobject]@{
+        processName = [string]$p.ProcessName
+        memoryWorkingSetMB = $wsMb
+        memoryPeakWorkingSetMB = $peakMb
+    }
 }
 
 <#
@@ -326,6 +740,53 @@ function Send-Json {
     param($Context, $Object, [int]$StatusCode = 200)
     $json = $Object | ConvertTo-Json -Depth 5
     Send-Response -Context $Context -StatusCode $StatusCode -ContentType 'application/json; charset=utf-8' -Body $json
+}
+
+function Test-RequestOriginAllowed {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Net.HttpListenerContext]$Context
+    )
+
+    $origin = [string]$Context.Request.Headers['Origin']
+    if ([string]::IsNullOrWhiteSpace($origin)) {
+        return $true
+    }
+
+    if ($origin -eq ('http://127.0.0.1:' + $Port) -or $origin -eq ('http://localhost:' + $Port)) {
+        return $true
+    }
+
+    if ($origin -match '^vscode-webview://[a-z0-9-]+$' -or $origin -eq 'vscode://') {
+        return $true
+    }
+
+    if ($AllowFileOrigin -and ($origin -eq 'null' -or $origin -match '^file://')) {
+        return $true
+    }
+
+    return $false
+}
+
+function Get-RequestClientClass {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Net.HttpListenerContext]$Context
+    )
+
+    $origin = [string]$Context.Request.Headers['Origin']
+    if (-not [string]::IsNullOrWhiteSpace($origin)) {
+        return 'browser-origin'
+    }
+
+    $ua = [string]$Context.Request.UserAgent
+    if (-not [string]::IsNullOrWhiteSpace($ua) -and $ua -match 'Mozilla|Chrome|Firefox|Safari|Edg') {
+        return 'browser-opaque'
+    }
+
+    return 'non-browser'
 }
 
 <#
@@ -425,14 +886,83 @@ The HttpListenerContext for the request.
 function Get-EngineStatus {
     [CmdletBinding()]
     param($Context)
+    $upSec = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
+    $nowIso = (Get-Date -Format 'o')
+    $freshUntilIso = (Get-Date).AddSeconds($script:_EngineStatusFreshnessSec).ToString('o')
+    $wsCount = [int]$WsClients.Count
+    $reqTotal = [int]$script:_EngineRequestsTotal
+    $reqServed = [int]$script:_EngineRequestsServed
+    $reqFailed = [int]$script:_EngineRequestsFailed
+    $reqClientErr = [int]$script:_EngineRequestsClientError
+    $reqServerErr = [int]$script:_EngineRequestsServerError
+    $bytesIn = [int64]$script:_EngineBytesIn
+    $bytesOut = [int64]$script:_EngineBytesOut
+    $proc = Get-EngineProcessTelemetry
+    $publicKey = Get-PublicKeyFingerprint
+    $lastErr = Get-EngineLastErrorMessage
     Send-Json -Context $Context -Object @{
-        running    = $true
-        responding = $true
-        pid        = $PID
-        port       = $Port
-        startedAt  = $script:_EngineStartTime
-        uptime     = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
-        serverTime = (Get-Date -Format 'o')
+        running     = $true
+        responding  = $true
+        pid         = $PID
+        processName = $proc.processName
+        port        = $Port
+        state       = 'Running'
+        uptime      = $upSec
+        uptimeSec   = $upSec
+        startupTime = $script:_EngineStartTime
+        startedAt   = $script:_EngineStartTime
+        heartbeatAt = $nowIso
+        statusAgeSec = 0
+        statusFreshUntil = $freshUntilIso
+        serverTime  = $nowIso
+        memoryWorkingSetMB = $proc.memoryWorkingSetMB
+        memoryPeakWorkingSetMB = $proc.memoryPeakWorkingSetMB
+        networkIo = @{
+            bytesIn = $bytesIn
+            bytesOut = $bytesOut
+        }
+        publicKeyFingerprint = $publicKey
+        lastErrorMessage = $lastErr
+        localWebClientsConnected = $wsCount
+        connectedClients = $wsCount
+        requestQueueLength = 0
+        totalRequests = $reqTotal
+        requestTotal = $reqTotal
+        servedRequests = $reqServed
+        failedRequests = $reqFailed
+        requestsClientError = $reqClientErr
+        requestsServerError = $reqServerErr
+        requests = @{
+            total  = $reqTotal
+            served = $reqServed
+            failed = $reqFailed
+            clientError = $reqClientErr
+            serverError = $reqServerErr
+        }
+        stats = @{
+            clientsConnected  = $wsCount
+            requestQueueLength = 0
+            requestsTotal     = $reqTotal
+            requestsServed    = $reqServed
+            requestsFailed    = $reqFailed
+            requestsClientError = $reqClientErr
+            requestsServerError = $reqServerErr
+            networkBytesIn = $bytesIn
+            networkBytesOut = $bytesOut
+            uptimeSec         = $upSec
+            startedAt         = $script:_EngineStartTime
+        }
+        heartbeat   = @{
+            ok         = $true
+            status     = 'alive'
+            ageSec     = 0
+            at         = $nowIso
+            freshUntil = $freshUntilIso
+            startedAt  = $script:_EngineStartTime
+            uptime     = $upSec
+            serverTime = $nowIso
+        }
+        instanceFile = $script:EngineInstanceFile
     }
 }
 $script:_EngineStartTime  = (Get-Date -Format 'o')
@@ -443,7 +973,8 @@ $script:_EngineStartEpoch = [System.Diagnostics.Stopwatch]::GetTimestamp() / [Sy
 .SYNOPSIS
 Get the latest engine log lines.
 .DESCRIPTION
-Returns the last 50 lines from the specified engine log file as JSON.
+Returns the last N lines from the specified engine log file as JSON.
+Supports ?name=<logname> and ?tail=<count> query parameters.
 .PARAMETER Context
 The HttpListenerContext for the request.
 #>
@@ -452,18 +983,22 @@ function Get-EngineLog {
     param($Context)
     # Allowed log file names only — prevent path traversal
     $nameParam = $Context.Request.QueryString['name']
+    $tailParam = $Context.Request.QueryString['tail']
     $allowedNames = @{ stdout = 'engine-stdout.log'; stderr = 'engine-stderr.log'; service = 'engine-service.log'; bootstrap = 'engine-bootstrap.log'; crash = 'engine-crash.log' }
     $logKey = if ($null -ne $nameParam -and $allowedNames.ContainsKey($nameParam)) { $nameParam } else { 'stdout' }
+    $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 50 }
+    if ($tail -gt 5000) { $tail = 5000 }  # cap max tail
     $logFile = Join-Path $WorkspacePath (Join-Path 'logs' $allowedNames[$logKey])
     $lines = @()
     if (Test-Path -LiteralPath $logFile) {
-        $lines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -Tail 50 -ErrorAction SilentlyContinue)
+        $lines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -Tail $tail -ErrorAction SilentlyContinue)
     }
     Send-Json -Context $Context -Object @{
         logName  = $logKey
         logFile  = $logFile
         lines    = $lines
         lineCount = @($lines).Count
+        tail     = $tail
     }
 }
 
@@ -663,6 +1198,47 @@ function Get-AgentStats {
     }
 }
 
+# ─── Route: GET /api/ai-actions/summary ─────────────────────────────────────
+<#
+.SYNOPSIS
+Return live AI-action summary data.
+.DESCRIPTION
+Loads the AI-action log module and computes a current summary directly from
+JSONL logs so the viewer always has up-to-date action rows.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-AiActionSummaryLive {
+    [CmdletBinding()]
+    param($Context)
+
+    $includeTest = $false
+    $includeTestRaw = [string]$Context.Request.QueryString['includeTest']
+    if (-not [string]::IsNullOrWhiteSpace($includeTestRaw)) {
+        $includeTest = $includeTestRaw -match '^(1|true|yes)$'
+    }
+
+    $modulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AiActionLog.psm1'
+    if (-not (Test-Path -LiteralPath $modulePath)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'AI action log module missing'
+        return
+    }
+
+    try {
+        Import-Module $modulePath -Force -DisableNameChecking
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ('AI action log module import failed: ' + $_.Exception.Message)
+        return
+    }
+
+    try {
+        $summary = Get-AiActionLogSummary -IncludeTest:$includeTest -WorkspacePath $WorkspacePath
+        Send-Json -Context $Context -Object $summary
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ('AI action summary failed: ' + $_.Exception.Message)
+    }
+}
+
 # ─── Route: GET /api/config/menus ─────────────────────────────────────────────
 <#
 .SYNOPSIS
@@ -702,14 +1278,417 @@ function Save-Menus {
         return
     }
     try {
-        $bodyBytes = New-Object byte[] 65536
-        $read = $Context.Request.InputStream.Read($bodyBytes, 0, 65536)
-        $bodyStr = [System.Text.Encoding]::UTF8.GetString($bodyBytes, 0, $read)
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
         $parsed = $bodyStr | ConvertFrom-Json
         $menuFile = Join-Path $WorkspacePath 'config'
         $menuFile = Join-Path $menuFile 'menu-layout.json'
         Set-Content -LiteralPath $menuFile -Value ($parsed | ConvertTo-Json -Depth 8) -Encoding UTF8 -Force
         Send-Json -Context $Context -Object @{ saved = $true }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
+    }
+}
+
+# ─── Route: GET /api/config/bootstrap-menu ───────────────────────────────────
+<#
+.SYNOPSIS
+Get bootstrap tray menu configuration.
+.DESCRIPTION
+Returns the bootstrap tray menu configuration JSON used by Start-LocalWebEngineService.ps1.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+    $obj = $null
+    if (Test-Path -LiteralPath $cfgFile) {
+        try {
+            $obj = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+        } catch {
+            Send-Error -Context $Context -StatusCode 500 -Message "Config parse failed: $_"
+            return
+        }
+    }
+    if ($null -eq $obj) {
+        $obj = [ordered]@{
+            schema = 'BootstrapMenuConfig/1.0'
+            headings = @()
+        }
+    }
+    Send-Json -Context $Context -Object $obj
+}
+
+function Test-BootstrapMenuConfigObject {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Config,
+        [ref]$ValidationError
+    )
+
+    $ValidationError.Value = ''
+
+    if ($null -eq $Config) {
+        $ValidationError.Value = 'payload is null'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'headings')) {
+        $ValidationError.Value = 'headings[] is required'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'schema') -or [string]::IsNullOrWhiteSpace([string]$Config.schema)) {
+        $Config | Add-Member -NotePropertyName schema -NotePropertyValue 'BootstrapMenuConfig/1.0' -Force
+    }
+
+    $headings = @($Config.headings)
+    $allowedTypes = @('url','file','folder','script','engineaction','enginekill','command','webpagescripts','separator')
+
+    for ($h = 0; $h -lt @($headings).Count; $h++) {
+        $heading = $headings[$h]
+        $headingName = if ($null -ne $heading -and $heading.PSObject.Properties.Name -contains 'name') { [string]$heading.name } else { '' }
+        if ([string]::IsNullOrWhiteSpace($headingName)) {
+            $ValidationError.Value = "headings[$h].name is required"
+            return $false
+        }
+
+        if ($null -eq $heading -or -not ($heading.PSObject.Properties.Name -contains 'items')) {
+            $ValidationError.Value = "headings[$h].items is required"
+            return $false
+        }
+
+        $items = @($heading.items)
+        for ($i = 0; $i -lt @($items).Count; $i++) {
+            $item = $items[$i]
+            if ($null -eq $item) {
+                $ValidationError.Value = "headings[$h].items[$i] is null"
+                return $false
+            }
+
+            $itemType = if ($item.PSObject.Properties.Name -contains 'type') { [string]$item.type } else { '' }
+            if ([string]::IsNullOrWhiteSpace($itemType)) {
+                $ValidationError.Value = "headings[$h].items[$i].type is required"
+                return $false
+            }
+
+            $itemTypeLower = $itemType.ToLowerInvariant()
+            if ($allowedTypes -notcontains $itemTypeLower) {
+                $ValidationError.Value = "headings[$h].items[$i].type '$itemType' is not supported"
+                return $false
+            }
+
+            if ($itemTypeLower -eq 'separator') {
+                continue
+            }
+
+            if ($itemTypeLower -eq 'webpagescripts') {
+                if (-not ($item.PSObject.Properties.Name -contains 'sourcePages') -or @($item.sourcePages).Count -eq 0) {
+                    $ValidationError.Value = "headings[$h].items[$i].sourcePages[] is required for webpageScripts"
+                    return $false
+                }
+                continue
+            }
+
+            $target = if ($item.PSObject.Properties.Name -contains 'target') { [string]$item.target } else { '' }
+            if ([string]::IsNullOrWhiteSpace($target)) {
+                $ValidationError.Value = "headings[$h].items[$i].target is required"
+                return $false
+            }
+        }
+    }
+
+    return $true
+}
+
+function New-BootstrapMenuSnapshot {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$ConfigFile)
+
+    if (-not (Test-Path -LiteralPath $ConfigFile)) {
+        return $null
+    }
+
+    try {
+        $configRoot = Join-Path $WorkspacePath 'config'
+        $historyDir = Join-Path $configRoot 'bootstrap-menu.history'
+        if (-not (Test-Path -LiteralPath $historyDir)) {
+            New-Item -Path $historyDir -ItemType Directory -Force | Out-Null
+        }
+
+        $stamp = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
+        $snapshotName = "bootstrap-menu.config.$stamp.json"
+        $snapshotPath = Join-Path $historyDir $snapshotName
+
+        Copy-Item -LiteralPath $ConfigFile -Destination $snapshotPath -Force -ErrorAction Stop
+        return ($snapshotPath.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+    } catch {
+        Write-BootstrapLog "Bootstrap snapshot creation failed: $_" 'WARN'
+        return $null
+    }
+}
+
+function Get-BootstrapMenuSnapshots {
+    [CmdletBinding()]
+    param()
+
+    $historyDir = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.history'
+    if (-not (Test-Path -LiteralPath $historyDir)) {
+        return @()
+    }
+
+    return @(
+        Get-ChildItem -LiteralPath $historyDir -File -Filter 'bootstrap-menu.config.*.json' -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTimeUtc -Descending
+    )
+}
+
+function Invoke-BootstrapMenuSnapshotRetention {
+    [CmdletBinding()]
+    param([int]$Keep = 50)
+
+    if ($Keep -lt 1) {
+        $Keep = 1
+    }
+
+    $snapshots = @(Get-BootstrapMenuSnapshots)
+    if (@($snapshots).Count -le $Keep) {
+        return 0
+    }
+
+    $removedCount = 0
+    $toRemove = @($snapshots | Select-Object -Skip $Keep)
+    foreach ($snapshot in $toRemove) {
+        try {
+            Remove-Item -LiteralPath $snapshot.FullName -Force -ErrorAction Stop
+            $removedCount++
+        } catch {
+            Write-BootstrapLog "Bootstrap snapshot retention removal failed for $($snapshot.FullName): $_" 'WARN'
+        }
+    }
+
+    return $removedCount
+}
+
+function Resolve-BootstrapRollbackSnapshot {
+    [CmdletBinding()]
+    param(
+        [AllowEmptyString()] [string]$RequestedSnapshot,
+        [AllowEmptyString()] [string]$ExcludeSnapshotLeaf
+    )
+
+    $snapshots = @(Get-BootstrapMenuSnapshots)
+    if (@($snapshots).Count -eq 0) {
+        return $null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($RequestedSnapshot)) {
+        foreach ($snap in $snapshots) {
+            if ([string]::IsNullOrWhiteSpace($ExcludeSnapshotLeaf) -or $snap.Name -ne $ExcludeSnapshotLeaf) {
+                return $snap
+            }
+        }
+        return $null
+    }
+
+    $requestedLeaf = Split-Path -Path ($RequestedSnapshot -replace '/', '\\') -Leaf
+    if ([string]::IsNullOrWhiteSpace($requestedLeaf)) {
+        return $null
+    }
+
+    if ($requestedLeaf -notmatch '^bootstrap-menu\.config\.\d{8}-\d{6}-\d{3}\.json$') {
+        return $null
+    }
+
+    foreach ($snap in $snapshots) {
+        if ($snap.Name -eq $requestedLeaf) {
+            if (-not [string]::IsNullOrWhiteSpace($ExcludeSnapshotLeaf) -and $snap.Name -eq $ExcludeSnapshotLeaf) {
+                return $null
+            }
+            return $snap
+        }
+    }
+
+    return $null
+}
+
+function Get-BootstrapMenuSnapshotHistory {
+    [CmdletBinding()]
+    param($Context)
+
+    try {
+        $items = @()
+        $snapshots = @(Get-BootstrapMenuSnapshots)
+        foreach ($snapshot in $snapshots) {
+            $items += [ordered]@{
+                name = [string]$snapshot.Name
+                path = ($snapshot.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+                modifiedUtc = $snapshot.LastWriteTimeUtc.ToString('o')
+                size = [int64]$snapshot.Length
+            }
+        }
+
+        Send-Json -Context $Context -Object @{
+            snapshots = $items
+            count = @($items).Count
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "History query failed: $_"
+    }
+}
+
+function Rollback-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $requestedSnapshot = ''
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($bodyStr)) {
+            $rollbackReq = $null
+            try {
+                $rollbackReq = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+            } catch {
+                Send-Error -Context $Context -StatusCode 400 -Message 'Invalid rollback payload: malformed JSON'
+                return
+            }
+
+            if ($null -ne $rollbackReq -and $rollbackReq.PSObject.Properties.Name -contains 'snapshot') {
+                $requestedSnapshot = [string]$rollbackReq.snapshot
+            }
+        }
+
+        $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+        if (-not (Test-Path -LiteralPath $cfgFile)) {
+            Send-Error -Context $Context -StatusCode 404 -Message 'Bootstrap config file not found'
+            return
+        }
+
+        $backupBeforeRollback = New-BootstrapMenuSnapshot -ConfigFile $cfgFile
+        $backupLeaf = ''
+        if (-not [string]::IsNullOrWhiteSpace($backupBeforeRollback)) {
+            $backupLeaf = Split-Path -Path $backupBeforeRollback -Leaf
+        }
+
+        $sourceSnapshot = Resolve-BootstrapRollbackSnapshot -RequestedSnapshot $requestedSnapshot -ExcludeSnapshotLeaf $backupLeaf
+
+        if ($null -eq $sourceSnapshot -and [string]::IsNullOrWhiteSpace($requestedSnapshot)) {
+            Send-Error -Context $Context -StatusCode 404 -Message 'No bootstrap snapshots available for rollback'
+            return
+        }
+
+        if ($null -eq $sourceSnapshot) {
+            Send-Error -Context $Context -StatusCode 404 -Message "Requested snapshot not found or not eligible: $requestedSnapshot"
+            return
+        }
+
+        Copy-Item -LiteralPath $sourceSnapshot.FullName -Destination $cfgFile -Force -ErrorAction Stop
+
+        $restoredHeadingsCount = 0
+        try {
+            $restoredObj = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+            if ($null -ne $restoredObj -and $restoredObj.PSObject.Properties.Name -contains 'headings') {
+                $restoredHeadingsCount = @($restoredObj.headings).Count
+            }
+        } catch {
+            $restoredHeadingsCount = 0
+        }
+
+        $retainedRemoved = Invoke-BootstrapMenuSnapshotRetention -Keep 50
+        $restoredFromRel = ($sourceSnapshot.FullName.Substring($WorkspacePath.Length + 1) -replace '\\', '/')
+
+        Send-Json -Context $Context -Object @{
+            rolledBack = $true
+            file = 'config/bootstrap-menu.config.json'
+            restoredFrom = $restoredFromRel
+            requestedSnapshot = $requestedSnapshot
+            backupCreated = $backupBeforeRollback
+            headings = $restoredHeadingsCount
+            removedSnapshots = $retainedRemoved
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Rollback failed: $_"
+    }
+}
+
+# ─── Route: POST /api/config/bootstrap-menu ──────────────────────────────────
+<#
+.SYNOPSIS
+Save bootstrap tray menu configuration.
+.DESCRIPTION
+Validates and writes bootstrap tray menu configuration JSON used by Start-LocalWebEngineService.ps1.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Save-BootstrapMenuConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        $parsed = $bodyStr | ConvertFrom-Json
+        if ($null -eq $parsed) {
+            Send-Error -Context $Context -StatusCode 400 -Message 'Invalid payload: body is empty or malformed JSON'
+            return
+        }
+
+        if ($parsed.PSObject.Properties.Name -contains 'schema' -and -not [string]::IsNullOrWhiteSpace([string]$parsed.schema)) {
+            if ([string]$parsed.schema -ne 'BootstrapMenuConfig/1.0') {
+                Send-Error -Context $Context -StatusCode 400 -Message "Unsupported schema: $($parsed.schema)"
+                return
+            }
+        } else {
+            $parsed | Add-Member -NotePropertyName schema -NotePropertyValue 'BootstrapMenuConfig/1.0' -Force
+        }
+
+        $validationError = ''
+        if (-not (Test-BootstrapMenuConfigObject -Config $parsed -ValidationError ([ref]$validationError))) {
+            Send-Error -Context $Context -StatusCode 400 -Message "Invalid payload: $validationError"
+            return
+        }
+
+        $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'bootstrap-menu.config.json'
+        $snapshotRel = New-BootstrapMenuSnapshot -ConfigFile $cfgFile
+        Set-Content -LiteralPath $cfgFile -Value ($parsed | ConvertTo-Json -Depth 12) -Encoding UTF8 -Force
+        $retainedRemoved = Invoke-BootstrapMenuSnapshotRetention -Keep 50
+        Send-Json -Context $Context -Object @{
+            saved = $true
+            file = 'config/bootstrap-menu.config.json'
+            schema = [string]$parsed.schema
+            snapshot = $snapshotRel
+            removedSnapshots = $retainedRemoved
+        }
     } catch {
         Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
     }
@@ -794,6 +1773,28 @@ function Get-StaticFile {
     Send-Response -Context $Context -StatusCode 200 -ContentType $ct -Body $content
 }
 
+function Test-StaticFallbackAllowed {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RelativePath)) { return $false }
+
+    $path = $RelativePath -replace '/', '\\'
+    $ext = [System.IO.Path]::GetExtension($path).ToLowerInvariant()
+    $allowedExt = @('.xhtml', '.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico')
+    if (@($allowedExt | Where-Object { $_ -eq $ext }).Count -eq 0) { return $false }
+
+    if ($path -match '(^|\\)(config|logs|pki|agents|modules|tests|todo|temp|checkpoints|reports|~REPORTS|~HISTORY|~DOWNLOADS)(\\|$)') {
+        return $false
+    }
+
+    if ($path -match '(^|\\)\.') { return $false }
+    return $true
+}
+
 # ─── WebSocket handler (runs in scriptblock via background runspace) ───────────
 <#
 .SYNOPSIS
@@ -812,8 +1813,8 @@ function Start-WebSocketHandler {
         $wsId  = [System.Guid]::NewGuid().ToString()
         $WsClients.TryAdd($wsId, $ws) | Out-Null
 
-        # Send hello + CSRF token
-        $hello = @{ event = 'connected'; wsId = $wsId; csrfToken = $SessionToken; serverTime = (Get-Date -Format 'o') }
+        # Send hello metadata only; do not expose CSRF token over WebSocket.
+        $hello = @{ event = 'connected'; wsId = $wsId; serverTime = (Get-Date -Format 'o') }
         $helloBytes = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
         $ws.SendAsync([System.ArraySegment[byte]]::new($helloBytes), `
             [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
@@ -842,12 +1843,487 @@ function Start-WebSocketHandler {
     }
 }
 
+# ─── Route: GET /api/hub/version ─────────────────────────────────────────────
+<#
+.SYNOPSIS
+Get the canonical workspace VersionTag from CHANGELOG.md.
+.DESCRIPTION
+Reads the first '# VersionTag: <tag>' line from CHANGELOG.md and returns it as JSON.
+Falls back to '0000.B0.V0.0' if the file is missing or unreadable.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-HubVersion {
+    [CmdletBinding()]
+    param($Context)
+    $tag = '0000.B0.V0.0'
+    $source = 'fallback'
+    $generatedAt = (Get-Date -Format 'o')
+    try {
+        $clog = Join-Path $WorkspacePath 'CHANGELOG.md'
+        if (Test-Path -LiteralPath $clog) {
+            $first = Get-Content -LiteralPath $clog -TotalCount 1 -Encoding UTF8
+            if ($null -ne $first -and $first -match '^\s*#\s*VersionTag:\s*([0-9]{4}\.B\d+\.V\d+\.\d+)') {
+                $tag = $Matches[1]
+                $source = 'CHANGELOG.md'
+            }
+        }
+    } catch { <# non-fatal — keep fallback #> }
+    Send-Json -Context $Context -Object @{
+        versionTag  = $tag
+        source      = $source
+        generatedAt = $generatedAt
+    }
+}
+
+# ─── Route: GET /api/hub/schema ──────────────────────────────────────────────
+<#
+.SYNOPSIS
+Get the WorkspaceHub schema contract.
+.DESCRIPTION
+Returns schema version, supported schemas, and server time.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-HubSchema {
+    [CmdletBinding()]
+    param($Context)
+    Send-Json -Context $Context -Object @{
+        schemaVersion = 'PwShGUI-Hub/1.0'
+        supportedSchemas = @('PwShGUI-Hub/1.0', 'legacy/scan-v1')
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+
+# ─── Route: GET /api/history/list ───────────────────────────────────────────
+<#
+.SYNOPSIS
+Get aggregated history from cron-aiathon-history.json and action-log.json.
+.DESCRIPTION
+Returns up to 100 recent history entries, sorted by timestamp descending.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-HistoryList {
+    [CmdletBinding()]
+    param($Context)
+    $historyFile   = Join-Path (Join-Path $WorkspacePath 'logs') 'cron-aiathon-history.json'
+    $actionLogFile = Join-Path (Join-Path $WorkspacePath 'todo') 'action-log.json'
+    $engineHistFile= Join-Path (Join-Path $WorkspacePath 'logs') 'engine-runtime-history.jsonl'
+    $items = [System.Collections.ArrayList]@()
+
+    # Load cron-aiathon-history.json entries (scheduled scan jobs)
+    if (Test-Path -LiteralPath $historyFile) {
+        try {
+            $histData = Get-Content -LiteralPath $historyFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $histData -and $histData.PSObject.Properties.Name -contains 'tasks') {
+                foreach ($task in @($histData.tasks)) {
+                    if ($null -ne $task) {
+                        $null = $items.Add(@{
+                            source    = 'cron-history'
+                            eventType = if ($task.PSObject.Properties.Name -contains 'taskName') { $task.taskName } else { 'cron-task' }
+                            id        = if ($task.PSObject.Properties.Name -contains 'taskId') { $task.taskId } else { '' }
+                            title     = if ($task.PSObject.Properties.Name -contains 'taskName') { $task.taskName } else { 'Unknown' }
+                            timestamp = if ($task.PSObject.Properties.Name -contains 'endTime') { $task.endTime } else { if ($task.PSObject.Properties.Name -contains 'startTime') { $task.startTime } else { '' } }
+                            success   = if ($task.PSObject.Properties.Name -contains 'success') { $task.success } else { $null }
+                            duration  = if ($task.PSObject.Properties.Name -contains 'durationMs') { ([math]::Round($task.durationMs/1000,1).ToString() + 's') } else { '' }
+                        })
+                    }
+                }
+            }
+        } catch { <# non-fatal — skip unreadable history #> }
+    }
+
+    # Load action-log.json entries (todo/bug status changes)
+    if (Test-Path -LiteralPath $actionLogFile) {
+        try {
+            $logData = Get-Content -LiteralPath $actionLogFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $logData -and $logData.PSObject.Properties.Name -contains 'actions') {
+                foreach ($action in @($logData.actions)) {
+                    if ($null -ne $action) {
+                        $null = $items.Add(@{
+                            source    = 'action-log'
+                            eventType = if ($action.PSObject.Properties.Name -contains 'source') { $action.source } else { 'action' }
+                            id        = if ($action.PSObject.Properties.Name -contains 'id') { $action.id } else { '' }
+                            title     = if ($action.PSObject.Properties.Name -contains 'title') { $action.title } else { 'Action' }
+                            timestamp = if ($action.PSObject.Properties.Name -contains 'timestamp') { $action.timestamp } else { '' }
+                            status    = if ($action.PSObject.Properties.Name -contains 'status') { $action.status } else { '' }
+                        })
+                    }
+                }
+            }
+        } catch { <# non-fatal — skip unreadable action log #> }
+    }
+
+    # Load engine-runtime-history.jsonl entries (engine/scan-job lifecycle events)
+    if (Test-Path -LiteralPath $engineHistFile) {
+        try {
+            $lines = @(Get-Content -LiteralPath $engineHistFile -Encoding UTF8 -ErrorAction SilentlyContinue)
+            foreach ($ln in $lines) {
+                if ([string]::IsNullOrWhiteSpace($ln)) { continue }
+                try {
+                    $evt = $ln | ConvertFrom-Json -ErrorAction Stop
+                    if ($null -eq $evt) { continue }
+                    $null = $items.Add(@{
+                        source    = 'engine-runtime'
+                        eventType = if ($evt.PSObject.Properties.Name -contains 'type') { $evt.type } else { 'engine-event' }
+                        id        = if ($evt.PSObject.Properties.Name -contains 'pid') { ('pid-' + $evt.pid) } else { '' }
+                        title     = if ($evt.PSObject.Properties.Name -contains 'target') { ($evt.target + ' / ' + $evt.type) } else { $evt.type }
+                        timestamp = if ($evt.PSObject.Properties.Name -contains 'timestamp') { $evt.timestamp } else { '' }
+                        status    = if ($evt.PSObject.Properties.Name -contains 'result') { $evt.result } else { '' }
+                        version   = if ($evt.PSObject.Properties.Name -contains 'version') { $evt.version } else { '' }
+                    })
+                } catch { <# skip malformed jsonl line #> }
+            }
+        } catch { <# non-fatal — skip unreadable engine history #> }
+    }
+
+    # Sort by timestamp descending, return top 500 across all sources
+    $sorted = @($items | Sort-Object { $_.timestamp } -Descending | Select-Object -First 500)
+    # Emit both 'items' and 'history' aliases for frontend compatibility
+    Send-Json -Context $Context -Object @{
+        items   = $sorted
+        history = $sorted
+        count   = @($sorted).Count
+        sources = @('cron-history','action-log','engine-runtime')
+    }
+}
+
+# ─── Route: GET /api/pipeline/approvals ──────────────────────────────────────
+<#
+.SYNOPSIS
+Get pending approval items from todo/*.json files.
+.DESCRIPTION
+Scans todo folder for items with status=PENDING_APPROVAL.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-PipelineApprovals {
+    [CmdletBinding()]
+    param($Context)
+    $todoDir = Join-Path $WorkspacePath 'todo'
+    $approvals = [System.Collections.ArrayList]@()
+    
+    if (Test-Path -LiteralPath $todoDir) {
+        $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
+        foreach ($file in $jsonFiles) {
+            try {
+                $obj = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+                if ($null -ne $obj) {
+                    $status = if ($obj.PSObject.Properties.Name -contains 'status') { [string]$obj.status } else { '' }
+                    if ($status -ceq 'PENDING_APPROVAL') {  # case-sensitive per governance
+                        $null = $approvals.Add(@{
+                            id = if ($obj.PSObject.Properties.Name -contains 'id') { $obj.id } else { $file.BaseName }
+                            type = if ($obj.PSObject.Properties.Name -contains 'type') { $obj.type } else { 'Unknown' }
+                            title = if ($obj.PSObject.Properties.Name -contains 'title') { $obj.title } else { '' }
+                            priority = if ($obj.PSObject.Properties.Name -contains 'priority') { $obj.priority } else { 'MEDIUM' }
+                            created = if ($obj.PSObject.Properties.Name -contains 'created') { $obj.created } else { '' }
+                            description = if ($obj.PSObject.Properties.Name -contains 'description') { $obj.description } else { '' }
+                            filePath = $file.FullName
+                        })
+                    }
+                }
+            } catch { <# non-fatal — skip unreadable todo file #> }
+        }
+    }
+    
+    $sorted = @($approvals | Sort-Object { $_.priority; $_.created } -Descending)
+    Send-Json -Context $Context -Object @{ items = $sorted; count = @($sorted).Count }
+}
+
+# ─── Route: POST /api/pipeline/approvals ─────────────────────────────────────
+<#
+.SYNOPSIS
+Apply approval actions (approve, reject, done) to items.
+.DESCRIPTION
+Expects JSON body: { action: 'approve'|'reject'|'done', ids: [...] }
+Updates corresponding todo/*.json files with new status.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Set-PipelineApprovals {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    
+    # Read JSON body
+    $bodyReader = [System.IO.StreamReader]::new($Context.Request.InputStream)
+    $body = $bodyReader.ReadToEnd()
+    $bodyReader.Close()
+    
+    $payload = $null
+    try { $payload = $body | ConvertFrom-Json } catch { <# Intentional: invalid JSON #> }
+    
+    if ($null -eq $payload -or -not ($payload.PSObject.Properties.Name -contains 'action') -or -not ($payload.PSObject.Properties.Name -contains 'ids')) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Missing action or ids in request body'
+        return
+    }
+    
+    $action = [string]$payload.action
+    $ids = @($payload.ids)
+    $statusMap = @{ 'approve' = 'IN_PROGRESS'; 'reject' = 'CLOSED'; 'done' = 'DONE' }
+    $newStatus = $statusMap[$action]
+    
+    if ([string]::IsNullOrWhiteSpace($newStatus)) {
+        Send-Error -Context $Context -StatusCode 400 -Message "Unknown action: $action"
+        return
+    }
+    
+    $todoDir = Join-Path $WorkspacePath 'todo'
+    $updated = 0
+    $failed = @()
+    
+    foreach ($id in $ids) {
+        $idStr = [string]$id
+        $foundFile = $null
+        
+        # Search for matching file
+        if (Test-Path -LiteralPath $todoDir) {
+            $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
+            foreach ($file in $jsonFiles) {
+                try {
+                    $obj = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+                    $fileId = if ($obj.PSObject.Properties.Name -contains 'id') { [string]$obj.id } else { '' }
+                    if ($fileId -eq $idStr) {
+                        $foundFile = $file
+                        break
+                    }
+                } catch { <# skip unreadable #> }
+            }
+        }
+        
+        if ($null -eq $foundFile) {
+            $failed += $idStr
+            continue
+        }
+        
+        # Update status and write back
+        try {
+            $obj = Get-Content -LiteralPath $foundFile.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+            $obj | Add-Member -MemberType NoteProperty -Name 'status' -Value $newStatus -Force
+            $obj | Add-Member -MemberType NoteProperty -Name 'modified' -Value (Get-Date -Format 'o') -Force
+            $json = $obj | ConvertTo-Json -Depth 5
+            Set-Content -LiteralPath $foundFile.FullName -Value $json -Encoding UTF8 -Force
+            $updated++
+        } catch {
+            $failed += $idStr
+        }
+    }
+    
+    Send-Json -Context $Context -Object @{
+        action = $action
+        updated = $updated
+        failed = $failed
+        newStatus = $newStatus
+    }
+}
+
+# ─── Route: POST /api/pipeline/process ──────────────────────────────────────
+<#
+.SYNOPSIS
+Run the pipeline processor job (Invoke-PipelineProcess20.ps1).
+.DESCRIPTION
+Launches Invoke-PipelineProcess20.ps1 as a background job and returns job info.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Invoke-PipelineProcess {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    
+    $scriptPath = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-PipelineProcess20.ps1'
+    if (-not (Test-Path -LiteralPath $scriptPath)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'Invoke-PipelineProcess20.ps1 not found'
+        return
+    }
+    
+    # Launch as background job
+    $jobId = [guid]::NewGuid().ToString()
+    $null = Start-Job -ScriptBlock {
+        param($script, $ws)
+        & powershell.exe -NoProfile -NonInteractive -File $script -WorkspacePath $ws -PassThru
+    } -ArgumentList $scriptPath, $WorkspacePath -Name "pipeline-$jobId"
+    
+    Send-Json -Context $Context -Object @{
+        started = $true
+        jobId = $jobId
+        script = $scriptPath
+        timestamp = (Get-Date -Format 'o')
+    } -StatusCode 202
+}
+
+# ─── Route: POST /api/test/crashdump ────────────────────────────────────────
+<#
+.SYNOPSIS
+Create a test crash dump entry.
+.DESCRIPTION
+Writes a deterministic test crash dump to engine-crash.log for testing.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function New-TestCrashDump {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    
+    try {
+        $testCrash = @{
+            exitKind      = 'TEST_CRASH'
+            timestamp     = (Get-Date -Format 'o')
+            pid           = $PID
+            port          = $Port
+            workspacePath = $WorkspacePath
+            reason        = 'Test crash dump created via /api/test/crashdump'
+            testMarker    = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
+        } | ConvertTo-Json -Depth 4
+        
+        Add-Content -LiteralPath $script:CrashLogFile -Value $testCrash -Encoding UTF8
+        Send-Json -Context $Context -Object @{ created = $true; type = 'crash'; timestamp = (Get-Date -Format 'o') }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Failed to create test crash: $_"
+    }
+}
+
+# ─── Route: POST /api/test/eventlog ─────────────────────────────────────────
+<#
+.SYNOPSIS
+Create a test event log entry.
+.DESCRIPTION
+Writes a deterministic test event to engine event logs for testing.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function New-TestEventLog {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    
+    try {
+        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        $testId = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
+        $eventLine = "[$ts][SERVICE][INFO] Test event: $testId"
+        Add-Content -LiteralPath $script:EngineLogFile -Value $eventLine -Encoding UTF8
+        Send-Json -Context $Context -Object @{ created = $true; type = 'event'; testId = $testId; timestamp = (Get-Date -Format 'o') }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Failed to create test event: $_"
+    }
+}
+
+# ─── Route: POST /api/test/history ──────────────────────────────────────────
+<#
+.SYNOPSIS
+Create a test history entry.
+.DESCRIPTION
+Appends a test entry to action-log.json for testing.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function New-TestHistory {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+    
+    try {
+        $actionLogFile = Join-Path (Join-Path $WorkspacePath 'todo') 'action-log.json'
+        $testId = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
+        $testAction = @{
+            id = $testId
+            title = "Test history entry: $testId"
+            timestamp = (Get-Date -Format 'o')
+            status = 'IN_PROGRESS'
+            source = 'api-test'
+        }
+        
+        # Append to action log (create if missing)
+        if (Test-Path -LiteralPath $actionLogFile) {
+            $log = Get-Content -LiteralPath $actionLogFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if (-not ($log.PSObject.Properties.Name -contains 'actions')) {
+                $log | Add-Member -MemberType NoteProperty -Name 'actions' -Value @()
+            }
+            $log.actions += $testAction
+            $json = $log | ConvertTo-Json -Depth 5
+            Set-Content -LiteralPath $actionLogFile -Value $json -Encoding UTF8 -Force
+        } else {
+            $newLog = @{ meta = @{ schema = 'PwShGUI-ActionLog/1.0'; description = 'Test log entry' }; actions = @($testAction) }
+            $json = $newLog | ConvertTo-Json -Depth 5
+            Set-Content -LiteralPath $actionLogFile -Value $json -Encoding UTF8 -Force
+        }
+        
+        Send-Json -Context $Context -Object @{ created = $true; type = 'history'; testId = $testId; timestamp = (Get-Date -Format 'o') }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Failed to create test history: $_"
+    }
+}
+
+# ─── Route: POST /api/runtime/tool-exit (no CSRF — sendBeacon) ──────────────
+<#
+.SYNOPSIS
+Record a tool exit event via sendBeacon.
+.DESCRIPTION
+Appends to runtime history log on page unload. No CSRF validation (sendBeacon limitation).
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Add-RuntimeToolExit {
+    [CmdletBinding()]
+    param($Context)
+    try {
+        $runtimeHistFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-runtime-history.jsonl'
+        $exitEvent = @{
+            type = 'tool-exit'
+            timestamp = (Get-Date -Format 'o')
+            pid = $PID
+            runtime = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
+        } | ConvertTo-Json -Depth 3
+        
+        Add-Content -LiteralPath $runtimeHistFile -Value $exitEvent -Encoding UTF8
+        Send-Json -Context $Context -Object @{ recorded = $true; timestamp = (Get-Date -Format 'o') }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Failed to record tool exit: $_"
+    }
+}
+
 # ─── Main listener loop ────────────────────────────────────────────────────────
 $listener = [System.Net.HttpListener]::new()
 $listener.Prefixes.Add("http://127.0.0.1:$Port/")
 Write-BootstrapLog "HttpListener initialising on http://127.0.0.1:$Port/" 'INFO'
 try {
     $listener.Start()
+    Register-ConsoleShutdownHandler
+    $pidFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+    try {
+        Set-Content -LiteralPath $pidFile -Value $PID -Encoding UTF8 -Force
+    } catch {
+        Write-BootstrapLog "Unable to write PID file at ${pidFile}: $_" 'WARN'
+    }
+    # Write engine instance state
+    Write-EngineInstanceState -State 'Running' -CleanStop $false -ExitKind $null
     Write-Host ""
     Write-Host "  PowerShellGUI Local Web Engine" -ForegroundColor Cyan
     Write-Host "  Listening on http://127.0.0.1:$Port/" -ForegroundColor Cyan
@@ -856,8 +2332,23 @@ try {
     Write-BootstrapLog "=== Bootstrap Complete — HttpListener active on port $Port ===" 'INFO'
     Write-EngineLog "Engine started on port $Port, workspace: $WorkspacePath" -Level 'INFO'
 } catch {
-    Write-BootstrapLog "FATAL: HttpListener failed to start on port $Port — $_" 'ERROR'
-    Write-EngineLog "Failed to start HttpListener on port $Port — $_" -Level 'ERROR'
+    $errMsg = "$_"
+    Write-BootstrapLog "FATAL: HttpListener failed to start on port $Port — $errMsg" 'ERROR'
+    Write-EngineLog "Failed to start HttpListener on port $Port — $errMsg" -Level 'ERROR'
+    Write-Host "" -ForegroundColor Red
+    Write-Host "  [ENGINE ERROR] HttpListener could not bind to http://127.0.0.1:$Port/" -ForegroundColor Red
+    Write-Host "  Cause: $errMsg" -ForegroundColor DarkRed
+    Write-Host "" -ForegroundColor Red
+    Write-Host "  REMEDIATION OPTIONS:" -ForegroundColor Yellow
+    Write-Host "  1. Run as Administrator and re-launch" -ForegroundColor Yellow
+    Write-Host "  2. Register URL ACL (run once as admin):" -ForegroundColor Yellow
+    Write-Host "     netsh http add urlacl url=http://127.0.0.1:${Port}/ user=Everyone" -ForegroundColor Cyan
+    Write-Host "  3. Release stale port (run as admin):" -ForegroundColor Yellow
+    Write-Host "     netsh http delete urlacl url=http://127.0.0.1:${Port}/" -ForegroundColor Cyan
+    Write-Host "     netsh http add urlacl url=http://127.0.0.1:${Port}/ user=Everyone" -ForegroundColor Cyan
+    Write-Host "  4. Check what is using port ${Port}:" -ForegroundColor Yellow
+    Write-Host "     netstat -ano | findstr :$Port" -ForegroundColor Cyan
+    Write-Host "" -ForegroundColor Red
     Write-Error "Failed to start HttpListener on port $Port. $_"
     exit 1
 }
@@ -888,10 +2379,8 @@ try {
             # Wait with timeout to allow graceful shutdown
             if (-not $pendingTask.Wait(500)) {
                 # Check for graceful stop signal written by /api/engine/stop
-                $stopSig = Join-Path $WorkspacePath 'logs'
-                $stopSig = Join-Path $stopSig 'engine.stop'
-                if (Test-Path -LiteralPath $stopSig) {
-                    Remove-Item -LiteralPath $stopSig -Force -ErrorAction SilentlyContinue
+                if (Test-Path -LiteralPath $script:StopSignalFile) {
+                    Remove-Item -LiteralPath $script:StopSignalFile -Force -ErrorAction SilentlyContinue
                     Write-EngineLog 'Stop signal file detected — shutting down' -Level 'INFO'
                     $script:_ExitClean = $true
                     break
@@ -920,17 +2409,34 @@ try {
         $req    = $context.Request
         $method = $req.HttpMethod.ToUpper()
         $url    = $req.Url.AbsolutePath.TrimEnd('/')
+        if ($req.ContentLength64 -gt 0) {
+            [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesIn, [int64]$req.ContentLength64)
+        }
         if ([string]::IsNullOrEmpty($url)) { $url = '/' }
+
+        # Legacy filename + permalink redirects for dependency visualisation page.
+        $legacyRedirects = @{
+            '/xhtml-dependencyvis.xhtml'                       = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/scripts/xhtml-checker/xhtml-dependencyvis.xhtml' = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/pages/xhtml-dependencyvis'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/permalink/dependency-venn'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/venn'                                              = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+        }
+        $urlKey = $url.ToLowerInvariant()
+        if ($null -ne $legacyRedirects -and $legacyRedirects.Count -gt 0 -and $legacyRedirects.ContainsKey($urlKey)) {
+            $target = $legacyRedirects[$urlKey]
+            Send-Response -Context $context -StatusCode 302 -ContentType 'text/plain; charset=utf-8' -Body "Redirecting to $target" -ExtraHeaders @{ Location = $target }
+            continue
+        }
 
         # ── WebSocket upgrade ────────────────────────────────────────────
         if ($req.IsWebSocketRequest -and $url -eq '/ws') {
             # Start-Job creates a new process without script functions — use a runspace instead
             $wsCtxRef  = $context
             $wsClRef   = $WsClients
-            $wsTokRef  = $SessionToken
             $wsPsInst  = [System.Management.Automation.PowerShell]::Create()
             $null = $wsPsInst.AddScript({
-                param($wsCtx, $wsClients, $csrfToken)
+                param($wsCtx, $wsClients)
                 $wsId = $null
                 $ws   = $null
                 try {
@@ -938,7 +2444,7 @@ try {
                     $ws     = $acc.WebSocket
                     $wsId   = [System.Guid]::NewGuid().ToString()
                     $wsClients.TryAdd($wsId, $ws) | Out-Null
-                    $hello  = @{ event='connected'; wsId=$wsId; csrfToken=$csrfToken; serverTime=(Get-Date -Format 'o') }
+                    $hello  = @{ event='connected'; wsId=$wsId; serverTime=(Get-Date -Format 'o') }
                     $helloB = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
                     $ws.SendAsync(
                         [System.ArraySegment[byte]]::new($helloB),
@@ -972,7 +2478,7 @@ try {
                     }
                     if ($null -ne $ws) { try { $ws.Dispose() } catch { <# Intentional: non-fatal, WebSocket disposal #> } }
                 }
-            }).AddArgument($wsCtxRef).AddArgument($wsClRef).AddArgument($wsTokRef)
+            }).AddArgument($wsCtxRef).AddArgument($wsClRef)
             $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
             continue
         }
@@ -980,6 +2486,11 @@ try {
         # ── CORS preflight ────────────────────────────────────────────────
         if ($method -eq 'OPTIONS') {
             Send-Response -Context $context -StatusCode 204 -Body ''
+            continue
+        }
+
+        if (($method -eq 'POST' -or $method -eq 'PUT' -or $method -eq 'DELETE') -and -not (Test-RequestOriginAllowed -Context $context)) {
+            Send-Error -Context $context -StatusCode 403 -Message 'Origin not allowed'
             continue
         }
 
@@ -994,49 +2505,74 @@ try {
                 break
             }
             '^/api/scan/full$' {
-                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Full' } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-Scan -Context $context -ScanMode 'Full' } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/incremental$' {
-                if ($method -eq 'POST') { Handle-TriggerScan -Context $context -ScanMode 'Incremental' } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-Scan -Context $context -ScanMode 'Incremental' } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/scan/static$' {
-                if ($method -eq 'POST') { Handle-TriggerStaticScan -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'POST') { Invoke-StaticScan -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/agent/stats$' {
-                if ($method -eq 'GET') { Handle-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-AgentStats -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/ai-actions/summary$' {
+                if ($method -eq 'GET') { Get-AiActionSummaryLive -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/workspace/files$' {
-                if ($method -eq 'GET') { Handle-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-WorkspaceFiles -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/config/menus$' {
-                if ($method -eq 'GET')      { Handle-GetMenus  -Context $context }
-                elseif ($method -eq 'POST') { Handle-SaveMenus -Context $context }
+                if ($method -eq 'GET')      { Get-Menus -Context $context }
+                elseif ($method -eq 'POST') { Save-Menus -Context $context }
                 else                        { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/config/bootstrap-menu$' {
+                if ($method -eq 'GET')      { Get-BootstrapMenuConfig -Context $context }
+                elseif ($method -eq 'POST') { Save-BootstrapMenuConfig -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/bootstrap-menu/history$' {
+                if ($method -eq 'GET') { Get-BootstrapMenuSnapshotHistory -Context $context }
+                else                   { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/bootstrap-menu/rollback$' {
+                if ($method -eq 'POST') { Rollback-BootstrapMenuConfig -Context $context }
+                else                    { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/csrf-token$' {
-                Send-Json -Context $context -Object @{ csrfToken = $SessionToken }
+                if (-not (Test-RequestOriginAllowed -Context $context)) {
+                    Send-Error -Context $context -StatusCode 403 -Message 'Origin not allowed'
+                } else {
+                    $clientClass = Get-RequestClientClass -Context $context
+                    Send-Json -Context $context -Object @{ csrfToken = $SessionToken; clientClass = $clientClass }
+                }
                 break
             }
             '^/api/engine/status$' {
-                if ($method -eq 'GET') { Handle-EngineStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/log$' {
-                if ($method -eq 'GET') { Handle-EngineLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/events$' {
-                if ($method -eq 'GET') { Handle-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/logs/list$' {
-                if ($method -eq 'GET') { Handle-EngineLogsList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                if ($method -eq 'GET') { Get-EngineLogsList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/stop$' {
@@ -1046,52 +2582,91 @@ try {
                         Send-Error -Context $context -StatusCode 403 -Message 'CSRF token mismatch'
                     } else {
                         Send-Json -Context $context -Object @{ stopping = $true }
-                        # Write stop-signal file (ThreadPool workitems cannot reach $script: scope)
-                        $stopSig = Join-Path $WorkspacePath 'logs'
-                        $stopSig = Join-Path $stopSig 'engine.stop'
-                        try { Set-Content -LiteralPath $stopSig -Value '1' -Encoding UTF8 -Force } catch { <# Intentional: non-fatal — stop signal file write failure does not prevent shutdown #> }
-                        Write-EngineLog 'Stop requested via /api/engine/stop' -Level 'INFO'
-                        $script:_ExitClean = $true
+                        Request-EngineStop -Reason 'Stop requested via /api/engine/stop' -MarkClean
                     }
                 } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/hub/schema$' {
+                if ($method -eq 'GET') { Get-HubSchema -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/hub/version$' {
+                if ($method -eq 'GET') { Get-HubVersion -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/history/list$' {
+                if ($method -eq 'GET') { Get-HistoryList -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/pipeline/approvals$' {
+                if ($method -eq 'GET')  { Get-PipelineApprovals -Context $context }
+                elseif ($method -eq 'POST') { Set-PipelineApprovals -Context $context }
+                else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/pipeline/process$' {
+                if ($method -eq 'POST') { Invoke-PipelineProcess -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/test/crashdump$' {
+                if ($method -eq 'POST') { New-TestCrashDump -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/test/eventlog$' {
+                if ($method -eq 'POST') { New-TestEventLog -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/test/history$' {
+                if ($method -eq 'POST') { New-TestHistory -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/runtime/tool-exit$' {
+                if ($method -eq 'POST') { Add-RuntimeToolExit -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             # ── Page routes ──────────────────────────────────────────────
             '^/$' {
-                Handle-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
+                Get-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
                 break
             }
             '^/pages/dependency-vis$' {
-                Handle-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
+                Get-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
                 break
             }
             '^/pages/menu-builder$' {
-                Handle-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-MenuBuilder.xhtml'
+                break
+            }
+            '^/pages/bootstrap-menu-config$' {
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-BootstrapMenuConfig.xhtml'
                 break
             }
             '^/pages/bw-vault$' {
-                Handle-StaticFile -Context $context -RelPath 'BW-Vault-Checklist.xhtml'
+                Get-StaticFile -Context $context -RelPath 'BW-Vault-Checklist.xhtml'
                 break
             }
             # ── Static assets ────────────────────────────────────────────
             '^/styles/(.+)$' {
                 $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
-                Handle-StaticFile -Context $context -RelPath "styles\$file"
+                Get-StaticFile -Context $context -RelPath "styles\$file"
                 break
             }
             '^/scripts/(.+)$' {
                 $file = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
-                Handle-StaticFile -Context $context -RelPath "scripts\$file"
+                Get-StaticFile -Context $context -RelPath "scripts\$file"
                 break
             }
             # ── Generic static file fallback (workspace-relative) ────────
-            '^/(.+\.(xhtml|html|css|js|json|png|jpg|gif|svg|ico))$' {
+            '^/(.+\.(xhtml|html|css|js|png|jpg|jpeg|gif|svg|ico))$' {
                 $relFile = $Matches[1] -replace '/', '\'  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 # P009: validate path does not escape workspace
                 if ($relFile -match '\.\.' -or $relFile -match '[\x00-\x1f]') {
                     Send-Error -Context $context -StatusCode 400 -Message 'Invalid path'
+                } elseif (-not (Test-StaticFallbackAllowed -RelativePath $relFile)) {
+                    Send-Error -Context $context -StatusCode 403 -Message 'Path not allowed'
                 } else {
-                    Handle-StaticFile -Context $context -RelPath $relFile
+                    Get-StaticFile -Context $context -RelPath $relFile
                 }
                 break
             }
@@ -1101,23 +2676,37 @@ try {
         }
     }
 } finally {
+    Unregister-ConsoleShutdownHandler
+    $pidFileCleanup = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.pid'
+    if (Test-Path -LiteralPath $pidFileCleanup) {
+        try {
+            Remove-Item -LiteralPath $pidFileCleanup -Force -ErrorAction Stop
+        } catch {
+            Write-EngineLog "PID cleanup warning: $($_.Exception.Message)" -Level 'WARN'
+        }
+    }
     $listener.Stop()
     $listener.Close()
     $exitKind = if ($script:_ExitClean) { 'CLEAN_STOP' } else { 'DIRTY_EXIT' }
     $exitMsg  = "Engine exited [$exitKind] at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     Write-Host $exitMsg -ForegroundColor DarkCyan
     Write-EngineLog $exitMsg -Level 'INFO'
+    # Write instance state before crash dump (so offline detection is immediate)
+    Write-EngineInstanceState -State 'Stopped' -CleanStop $script:_ExitClean -ExitKind $exitKind
     # Write structured crash event on dirty exit
     if (-not $script:_ExitClean) {
+        $lastLogLine = 'unavailable'
+        try {
+            $lastLogLine = @(Get-Content -LiteralPath $script:EngineLogFile -Encoding UTF8 -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
+        } catch { <# Intentional: non-fatal, fallback already set to unavailable #> }
+
         $crashEvent = [pscustomobject]@{
             exitKind     = $exitKind
             timestamp    = (Get-Date -Format 'o')
             pid          = $PID
             port         = $Port
             workspacePath= $WorkspacePath
-            lastLogLine  = try {
-                @(Get-Content -LiteralPath $script:EngineLogFile -Encoding UTF8 -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
-            } catch { 'unavailable' }
+            lastLogLine  = $lastLogLine
         }
         try {
             $crashJson = $crashEvent | ConvertTo-Json -Depth 4
@@ -1142,6 +2731,8 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

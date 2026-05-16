@@ -1,0 +1,51 @@
+{
+  "completedAt": null,
+  "acknowledged": null,
+  "implementedAt": null,
+  "id": "Bug-20260515235418-9ac6586c",
+  "category": "error-handling",
+  "outlinePhase": "assessment",
+  "countermeasures": [],
+  "executionMethod": "",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1"
+  ],
+  "title": "9 functions with no try/catch blocks",
+  "priority": "MEDIUM",
+  "tags": [],
+  "plannedAt": "2026-05-15T16:08:37.2403116Z",
+  "sinId": "SIN-20260331045617-bbe262f7",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "filesFixedCount": 0,
+  "outlineVersion": "v0",
+  "reopenedAt": null,
+  "parentId": "",
+  "notes": "Matched existing sin: 9 functions with no try/catch blocks | Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-15T16:08:37.2403116Z",
+  "bugResurfaced": true,
+  "filesRemainingCount": 0,
+  "status": "IN-PROGRESS",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "fixesImplementedCount": 0,
+  "linkedBugs": [],
+  "sessionModCount": 1,
+  "bugReferrals": [],
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "source": "BugTracker",
+  "description": "Script PwShGUI-PSVersionStandards.psm1 has 9 functions but zero try/catch blocks",
+  "executedAt": null,
+  "firstSeenAt": "2026-05-15T15:54:18.7000785Z",
+  "type": "Bug",
+  "bugHistory": [
+    {
+      "event": "RESURFACED",
+      "timestamp": "2026-05-15T15:54:18.9345469Z",
+      "by": "CronAiAthon-BugTracker",
+      "prevStatus": "CLOSED"
+    }
+  ],
+  "linkedFeatures": [],
+  "created": "2026-05-15T15:54:18.7000042Z",
+  "result": null,
+  "lastSeenAt": "2026-05-15T15:54:18.7001022Z",
+  "modified": "2026-05-15T16:08:37.2403116Z"
+}

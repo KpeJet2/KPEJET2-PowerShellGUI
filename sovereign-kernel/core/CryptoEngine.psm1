@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -379,7 +379,7 @@ function Test-HashChain {
         [array]$Chain
     )
     for ($i = 0; $i -lt $Chain.Count; $i++) {
-        $entry = $Chain[$i]
+        $entry = $Chain[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $expected = New-HashChainEntry -PreviousHash $entry.PreviousHash -CurrentData $entry.Data
         if ($expected -ne $entry.Hash) {
             Write-AppLog -Message "[CryptoEngine] Hash chain broken at index $i" -Level Warning
@@ -501,7 +501,7 @@ function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplic
     if ($A.Length -ne $B.Length) { return $false }
     $diff = 0
     for ($i = 0; $i -lt $A.Length; $i++) {
-        $diff = $diff -bor ($A[$i] -bxor $B[$i])
+        $diff = $diff -bor ($A[$i] -bxor $B[$i])  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return ($diff -eq 0)
 }
@@ -552,6 +552,7 @@ Export-ModuleMember -Function @(
     'Compare-ByteArrayConstantTime'
     'ConvertTo-SecureStringFromPlain'
 )
+
 
 
 

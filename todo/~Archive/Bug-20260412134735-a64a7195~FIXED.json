@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:47:35.3039961Z",
+  "title": "[FAIL] H-Ai-Nikr-Agi.psm1 -- 5 parse error(s)",
+  "category": "crash-log",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412134735-a64a7195",
+  "description": "Error pattern in log cycle-1.log:7",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:47:35.3040596Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412134735-dce50621",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412134735-dce50621\nAuto-reconciled: target file currently parses cleanly (or absent). Path=",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:42.7555388+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:44",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

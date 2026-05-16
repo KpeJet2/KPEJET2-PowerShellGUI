@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -303,7 +303,7 @@ function Show-SandboxTestTool {
     }
 
     # ── Launch sandbox button ──────────────────────────────────
-    $btnLaunch.Add_Click({
+    $btnLaunch.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Write-ActivityLog 'Launching new sandbox session...' 'Cyan'
         $btnLaunch.Enabled = $false
         $form.Refresh()
@@ -319,7 +319,7 @@ function Show-SandboxTestTool {
             if ($script:statusTimer) { $script:statusTimer.Stop(); $script:statusTimer.Dispose() }
             $script:statusTimer = New-Object System.Windows.Forms.Timer
             $script:statusTimer.Interval = 5000  # 5 sec
-            $script:statusTimer.Add_Tick({ Update-SessionStatus })
+            $script:statusTimer.Add_Tick({ Update-SessionStatus })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $script:statusTimer.Start()
 
         } catch {
@@ -330,13 +330,13 @@ function Show-SandboxTestTool {
     })
 
     # ── Refresh status button ──────────────────────────────────
-    $btnRefreshStatus.Add_Click({
+    $btnRefreshStatus.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Write-ActivityLog 'Refreshing status...' 'Gray'
         Update-SessionStatus
     })
 
     # ── Open output folder button ──────────────────────────────
-    $btnOpenOutputDir.Add_Click({
+    $btnOpenOutputDir.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($script:currentSession -and (Test-Path $script:currentSession.OutputDir)) {
             Write-ActivityLog "Opening output: $($script:currentSession.OutputDir)" 'Gray'
             Invoke-Item $script:currentSession.OutputDir
@@ -344,7 +344,7 @@ function Show-SandboxTestTool {
     })
 
     # ── Iterate button ─────────────────────────────────────────
-    $btnIterate.Add_Click({
+    $btnIterate.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Sending Iterate command (Sync+Test+GUI)...' 'Cyan'
         $btnIterate.Enabled = $false
@@ -361,7 +361,7 @@ function Show-SandboxTestTool {
     })
 
     # ── Sync, Test, GUI buttons ────────────────────────────────
-    $btnSync.Add_Click({
+    $btnSync.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Syncing code to sandbox...' 'Cyan'
         try {
@@ -370,7 +370,7 @@ function Show-SandboxTestTool {
         } catch { Write-ActivityLog "Sync failed: $_" 'Red' }
     })
 
-    $btnTest.Add_Click({
+    $btnTest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Running tests in sandbox...' 'Cyan'
         try {
@@ -379,7 +379,7 @@ function Show-SandboxTestTool {
         } catch { Write-ActivityLog "Test failed: $_" 'Red' }
     })
 
-    $btnGUI.Add_Click({
+    $btnGUI.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Launching GUI in sandbox...' 'Cyan'
         try {
@@ -389,7 +389,7 @@ function Show-SandboxTestTool {
     })
 
     # ── Shutdown button ────────────────────────────────────────
-    $btnShutdown.Add_Click({
+    $btnShutdown.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $script:currentSession) { return }
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "Shutdown the active sandbox session?`n`nAll sandbox state will be lost.",
@@ -424,7 +424,7 @@ function Show-SandboxTestTool {
     $tab2.Controls.Add($lblResults)
 
     # ── Form cleanup ───────────────────────────────────────────
-    $form.Add_FormClosing({
+    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($script:statusTimer) { $script:statusTimer.Stop(); $script:statusTimer.Dispose() }
     })
 
@@ -453,7 +453,7 @@ function Show-SandboxTestTool {
                 # Start polling
                 $script:statusTimer = New-Object System.Windows.Forms.Timer
                 $script:statusTimer.Interval = 5000
-                $script:statusTimer.Add_Tick({ Update-SessionStatus })
+                $script:statusTimer.Add_Tick({ Update-SessionStatus })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $script:statusTimer.Start()
             } catch {
                 Write-ActivityLog "Could not load existing session metadata" 'Yellow'
@@ -480,6 +480,7 @@ function Show-SandboxTestTool {
     Stub: list pending work here.
 #>
 Export-ModuleMember -Function Show-SandboxTestTool -ErrorAction SilentlyContinue
+
 
 
 

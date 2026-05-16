@@ -1,5 +1,5 @@
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
 @echo off
 REM  Launch-SandboxSmokeTest.bat -- Run smoke test inside Windows Sandbox
 REM  Isolated environment for hyper-extended testing. Requires Windows
@@ -67,3 +67,4 @@ echo.
 echo Exit code: %exitCode%
 pause
 exit /b %exitCode%
+

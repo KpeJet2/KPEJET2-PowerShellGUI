@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.3
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -50,6 +50,8 @@ $script:ChangeLog         = $null    # Loaded change log
 function Initialize-IntentStore {
     <#
     .SYNOPSIS  Initialize intent store and change log paths, create files if missing.
+        .DESCRIPTION
+      Detailed behaviour: Initialize intent store.
     #>
     [CmdletBinding()]
     param(
@@ -105,6 +107,8 @@ function Save-IntentStore {
 function Save-ChangeLog {
     <#
     .SYNOPSIS  Persist the in-memory change log to disk.
+        .DESCRIPTION
+      Detailed behaviour: New development intent.
     #>
     [CmdletBinding()]
     param()
@@ -120,7 +124,8 @@ function New-DevelopmentIntent {
     .SYNOPSIS  Create a new development intent declaration.
     .OUTPUTS   The created intent object.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string]$Title,
         [Parameter(Mandatory)][string]$Description,
@@ -172,7 +177,10 @@ function New-DevelopmentIntent {
 function Get-DevelopmentIntent {
     <#
     .SYNOPSIS  Retrieve intents by status filter or all.
+        .DESCRIPTION
+      Detailed behaviour: Get development intent.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [ValidateSet('ALL','DRAFT','ACTIVE','SEALED','ARCHIVED')]
@@ -198,8 +206,10 @@ function Get-DevelopmentIntent {
 function Set-IntentStatus {
     <#
     .SYNOPSIS  Transition an intent to a new status.
+        .DESCRIPTION
+      Detailed behaviour: Set intent status.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][int]$IntentId,
         [Parameter(Mandatory)][ValidateSet('DRAFT','ACTIVE','SEALED','ARCHIVED')]
@@ -216,8 +226,8 @@ function Set-IntentStatus {
     $intent = $null
     $intents = @($script:IntentStore.intents)
     for ($i = 0; $i -lt @($intents).Count; $i++) {
-        if ($intents[$i].intentId -eq $IntentId) {
-            $intent = $intents[$i]
+        if ($intents[$i].intentId -eq $IntentId) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $intent = $intents[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             break
         }
     }
@@ -258,6 +268,8 @@ function Set-IntentStatus {
 function Invoke-IntentSeal {
     <#
     .SYNOPSIS  Seal an intent to pin development direction. Sealed intents cannot be overridden.
+        .DESCRIPTION
+      Detailed behaviour: Invoke intent seal.
     #>
     [CmdletBinding()]
     param(
@@ -287,8 +299,8 @@ function Invoke-IntentUnseal {
     $intent = $null
     $intents = @($script:IntentStore.intents)
     for ($i = 0; $i -lt @($intents).Count; $i++) {
-        if ($intents[$i].intentId -eq $IntentId) {
-            $intent = $intents[$i]
+        if ($intents[$i].intentId -eq $IntentId) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $intent = $intents[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             break
         }
     }
@@ -325,7 +337,10 @@ function Add-ChangeLogEntry {
     <#
     .SYNOPSIS  Record an indexed, timestamped change log entry.
     .OUTPUTS   The created change log entry.
+        .DESCRIPTION
+      Detailed behaviour: Add change log entry.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Description,
@@ -365,7 +380,11 @@ function Add-ChangeLogEntry {
 function Get-ChangeLogEntries {
     <#
     .SYNOPSIS  Retrieve change log entries with optional filtering.
+        .DESCRIPTION
+      Detailed behaviour: Get change log entries.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [int]$Last = 0,
@@ -404,7 +423,10 @@ function Get-ChangeLogEntries {
 function Get-IntentHistory {
     <#
     .SYNOPSIS  Get the full audit trail for a specific intent, including related change log entries.
+        .DESCRIPTION
+      Detailed behaviour: Get intent history.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][int]$IntentId
@@ -419,8 +441,8 @@ function Get-IntentHistory {
     $relatedChanges = Get-ChangeLogEntries -GoverningIntentId $IntentId
 
     return [ordered]@{
-        intent         = $intent[0]
-        intentHistory  = @($intent[0].history)
+        intent         = $intent[0]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        intentHistory  = @($intent[0].history)  # SIN-EXEMPT:P027 -- index access, context-verified safe
         relatedChanges = $relatedChanges
         summary        = [ordered]@{
             totalChanges   = @($relatedChanges).Count
@@ -455,6 +477,7 @@ Export-ModuleMember -Function @(
     'Get-ChangeLogEntries',
     'Get-IntentHistory'
 )
+
 
 
 

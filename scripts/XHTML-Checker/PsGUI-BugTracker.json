@@ -1,50 +1,2605 @@
 {
   "meta": {
-    "lastModified": "2026-04-05T05:37:11.3439999+08:00",
-    "source": "CronProcessor"
+    "source": "CronProcessor",
+    "lastModified": "2026-05-07T01:59:25.0416486+08:00"
   },
   "bugs": [
     {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
       "id": 1,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.0334127+08:00",
-      "description": "Parse validation failed: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
-      "script": "~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1"
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/12/2026 04:15:31",
+      "status": "Open"
     },
     {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
       "id": 2,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.103203+08:00",
-      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
-      "script": "~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1"
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:17:43",
+      "status": "Open"
     },
     {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 222: Unexpected token '}' in expression or statement.",
       "id": 3,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.4249165+08:00",
-      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
-      "script": "config\\error-handling-templates.ps1"
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:21:00",
+      "status": "Open"
     },
     {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
       "id": 4,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.1091887+08:00",
-      "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
-      "script": "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:24:42",
+      "status": "Open"
     },
     {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
       "id": 5,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.1363317+08:00",
-      "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
-      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:27:40",
+      "status": "Open"
     },
     {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 26: Unexpected token 'is' in expression or statement.",
       "id": 6,
-      "status": "Open",
-      "created": "2026-04-05T04:38:50.1431441+08:00",
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 04:31:05",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 60: Unexpected token 'does' in expression or statement.",
+      "id": 7,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 04:33:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 493: The string is missing the terminator: '.",
+      "id": 8,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 04:35:34",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 497: Missing closing ')' in subexpression.",
+      "id": 9,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 04:37:43",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 22: Missing closing '}' in statement block or type definition.",
+      "id": 10,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 04:39:55",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 418: Unexpected token 'Help' in expression or statement.",
+      "id": 11,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 04:42:08",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 440: The string is missing the terminator: \".",
+      "id": 12,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 04:44:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 416: Missing closing '}' in statement block or type definition.",
+      "id": 13,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 04:46:26",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 409: Missing closing '}' in statement block or type definition.",
+      "id": 14,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 04:48:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 212: Missing closing '}' in statement block or type definition.",
+      "id": 15,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 04:50:49",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwShGUI-IntegrityCore.psm1 line 44: Missing closing '}' in statement block or type definition.",
+      "id": 16,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "04/12/2026 04:53:08",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 17,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:55:23",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 222: Unexpected token '}' in expression or statement.",
+      "id": 18,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:57:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
+      "id": 19,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 04:59:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
+      "id": 20,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 05:01:19",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PSEnvironmentScanner.ps1 line 2186: Unexpected token '}' in expression or statement.",
+      "id": 21,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-PSEnvironmentScanner.ps1",
+      "created": "04/12/2026 05:03:15",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5603: Missing expression after ','.",
+      "id": 22,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:05:10",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5603: Unexpected token 'switch' in expression or statement.",
+      "id": 23,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:07:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5594: Missing closing '}' in statement block or type definition.",
+      "id": 24,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:09:01",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5592: Missing closing '}' in statement block or type definition.",
+      "id": 25,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:10:58",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5603: The Try statement is missing its Catch or Finally block.",
+      "id": 26,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:13:05",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5536: Missing closing '}' in statement block or type definition.",
+      "id": 27,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:15:28",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5603: Unexpected token ')' in expression or statement.",
+      "id": 28,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:17:48",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5604: Missing expression after ','.",
+      "id": 29,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:19:57",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5604: Unexpected token 'if' in expression or statement.",
+      "id": 30,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:22:04",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5604: Unexpected token ')' in expression or statement.",
+      "id": 31,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:24:00",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5606: Unexpected token '}' in expression or statement.",
+      "id": 32,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:25:57",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5609: Unexpected token '}' in expression or statement.",
+      "id": 33,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:27:52",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5716: Missing expression after ','.",
+      "id": 34,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:29:48",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5716: Unexpected token 'if' in expression or statement.",
+      "id": 35,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:31:47",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5701: Missing closing '}' in statement block or type definition.",
+      "id": 36,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:33:43",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5716: The Try statement is missing its Catch or Finally block.",
+      "id": 37,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:35:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5716: Unexpected token ')' in expression or statement.",
+      "id": 38,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:37:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5731: Unexpected token '}' in expression or statement.",
+      "id": 39,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:39:33",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Main-GUI.ps1 line 5780: Unexpected token '}' in expression or statement.",
+      "id": 40,
+      "script": "C:\\PowerShellGUI\\Main-GUI.ps1",
+      "created": "04/12/2026 05:41:36",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:5",
+      "id": 41,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:43:35",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:6",
+      "id": 42,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:45:35",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:7",
+      "id": 43,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:47:35",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:8",
+      "id": 44,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:49:35",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:9",
+      "id": 45,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:51:34",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:10",
+      "id": 46,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:53:31",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:11",
+      "id": 47,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:55:28",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:12",
+      "id": 48,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:57:25",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log cycle-1.log:13",
+      "id": 49,
+      "script": "C:\\PowerShellGUI\\logs\\cycle-1.log",
+      "created": "04/12/2026 05:59:22",
+      "status": "Open"
+    },
+    {
+      "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+      "id": 50,
+      "script": "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1",
+      "created": "04/12/2026 06:01:21",
+      "status": "Open"
+    },
+    {
+      "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+      "id": 51,
+      "script": "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1",
+      "created": "04/12/2026 06:03:18",
+      "status": "Open"
+    },
+    {
+      "description": "Script koe-RumA.psm1 has 12 functions but zero try/catch blocks",
+      "id": 52,
+      "script": "C:\\PowerShellGUI\\agents\\koe-RumA\\core\\koe-RumA.psm1",
+      "created": "04/12/2026 06:05:15",
+      "status": "Open"
+    },
+    {
+      "description": "Script PKIChainManager.psm1 has 7 functions but zero try/catch blocks",
+      "id": 53,
+      "script": "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1",
+      "created": "04/12/2026 06:07:12",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-PSVersionStandards.psm1 has 9 functions but zero try/catch blocks",
+      "id": 54,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1",
+      "created": "04/12/2026 06:09:10",
+      "status": "Open"
+    },
+    {
+      "description": "Script SINGovernance.psm1 has 6 functions but zero try/catch blocks",
+      "id": 55,
+      "script": "C:\\PowerShellGUI\\modules\\SINGovernance.psm1",
+      "created": "04/12/2026 06:11:10",
+      "status": "Open"
+    },
+    {
+      "description": "Script WorkspaceIntentReview.psm1 has 11 functions but zero try/catch blocks",
+      "id": 56,
+      "script": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+      "created": "04/12/2026 06:13:11",
+      "status": "Open"
+    },
+    {
+      "description": "Script CallASRWebSvcConnector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 57,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector.ps1",
+      "created": "04/12/2026 06:15:12",
+      "status": "Open"
+    },
+    {
+      "description": "Script CallASRWebSvcConnector2.ps1 has 2 functions but zero try/catch blocks",
+      "id": 58,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector2.ps1",
+      "created": "04/12/2026 06:17:13",
+      "status": "Open"
+    },
+    {
+      "description": "Script WebSvcConnector.ps1 has 11 functions but zero try/catch blocks",
+      "id": 59,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\WebSvcConnector.ps1",
+      "created": "04/12/2026 06:19:12",
+      "status": "Open"
+    },
+    {
+      "description": "Script ReportsLibrary.ps1 has 1 functions but zero try/catch blocks",
+      "id": 60,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\Statistics\\_LIB_\\ReportsLibrary.ps1",
+      "created": "04/12/2026 06:21:16",
+      "status": "Open"
+    },
+    {
+      "description": "Script Inghams_NewIntuneDeviceSetup.ps1 has 1 functions but zero try/catch blocks",
+      "id": 61,
+      "script": "C:\\PowerShellGUI\\scripts\\scripts\\Inghams_NewIntuneDeviceSetup.ps1",
+      "created": "04/12/2026 06:23:31",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-DirectoryTree.ps1 has 1 functions but zero try/catch blocks",
+      "id": 62,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1",
+      "created": "04/12/2026 06:25:29",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-ToolsInventory.ps1 has 1 functions but zero try/catch blocks",
+      "id": 63,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-ToolsInventory.ps1",
+      "created": "04/12/2026 06:27:26",
+      "status": "Open"
+    },
+    {
+      "description": "Script ConvertTo-FeatureToDo.ps1 has 1 functions but zero try/catch blocks",
+      "id": 64,
+      "script": "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+      "created": "04/12/2026 06:29:24",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_check_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 65,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_check_version.ps1",
+      "created": "04/12/2026 06:35:27",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 66,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1",
+      "created": "04/12/2026 06:37:58",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-ReleasePreFlight.ps1 has 1 functions but zero try/catch blocks",
+      "id": 67,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1",
+      "created": "04/12/2026 06:40:22",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-RenameProposal.ps1 has 5 functions but zero try/catch blocks",
+      "id": 68,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-RenameProposal.ps1",
+      "created": "04/12/2026 06:42:51",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-A.ps1 has 1 functions but zero try/catch blocks",
+      "id": 69,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-A.ps1",
+      "created": "04/12/2026 06:45:10",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-B.ps1 has 1 functions but zero try/catch blocks",
+      "id": 70,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-B.ps1",
+      "created": "04/12/2026 06:47:27",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-C.ps1 has 1 functions but zero try/catch blocks",
+      "id": 71,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-C.ps1",
+      "created": "04/12/2026 06:49:44",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-D.ps1 has 1 functions but zero try/catch blocks",
+      "id": 72,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-D.ps1",
+      "created": "04/12/2026 06:52:05",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-E.ps1 has 1 functions but zero try/catch blocks",
+      "id": 73,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-E.ps1",
+      "created": "04/12/2026 06:54:32",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F - LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+      "id": 74,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1",
+      "created": "04/12/2026 06:56:53",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 75,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/20/2026 17:50:16",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 76,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 17:53:04",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Setup-ModuleEnvironment.ps1 line 260: Unexpected token '}' in expression or statement.",
+      "id": 77,
+      "script": "C:\\PowerShellGUI\\scripts\\Setup-ModuleEnvironment.ps1",
+      "created": "04/20/2026 18:02:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 175: Unexpected token '$(' in expression or statement.",
+      "id": 78,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:03:58",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 175: Unexpected token '\"\r\n            }\r\n        }\r\n        $violations | Should -BeNullOrEmpty -Because 'Repo rule: XML declaration must be first content â€”' in expression or statement.",
+      "id": 79,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:05:31",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 178: Unexpected token 'VersionTag' in expression or statement.",
+      "id": 80,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:07:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 178: The '<' operator is reserved for future use.",
+      "id": 81,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:08:48",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 195: The '<' operator is reserved for future use.",
+      "id": 82,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:10:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 319: Unexpected token 'occurrences' in expression or statement.",
+      "id": 83,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:13:08",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 319: Missing closing ')' in expression.",
+      "id": 84,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/20/2026 18:15:15",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 319: The string is missing the terminator: \".",
+      "id": 85,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:17:51",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 283: Missing closing '}' in statement block or type definition.",
+      "id": 86,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:20:01",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 283: Missing closing '}' in statement block or type definition.",
+      "id": 87,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:22:25",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 88,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/20/2026 18:24:20",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 276: Missing closing '}' in statement block or type definition.",
+      "id": 89,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:24:53",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 90,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:26:41",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 276: Missing closing '}' in statement block or type definition.",
+      "id": 91,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:27:19",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 222: Unexpected token '}' in expression or statement.",
+      "id": 92,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:29:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 269: Missing closing '}' in statement block or type definition.",
+      "id": 93,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:29:46",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 94,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/20/2026 18:30:40",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
+      "id": 95,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:31:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 269: Missing closing '}' in statement block or type definition.",
+      "id": 96,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:31:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 97,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:32:41",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
+      "id": 98,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:33:29",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 262: Missing closing '}' in statement block or type definition.",
+      "id": 99,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:34:02",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 222: Unexpected token '}' in expression or statement.",
+      "id": 100,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:35:03",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 845: Missing '=' operator after key in hash literal.",
+      "id": 101,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:35:56",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-PreCommitValidation.ps1 line 262: Missing closing '}' in statement block or type definition.",
+      "id": 102,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/20/2026 18:36:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
+      "id": 103,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:37:19",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 848: Missing '=' operator after key in hash literal.",
+      "id": 104,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:38:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 105,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/20/2026 18:38:36",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
+      "id": 106,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:39:25",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 107,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/20/2026 18:46:49",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 108,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:48:23",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 222: Unexpected token '}' in expression or statement.",
+      "id": 109,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:49:55",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 405: Unexpected token '}' in expression or statement.",
+      "id": 110,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:51:34",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 428: Missing '=' operator after key in hash literal.",
+      "id": 111,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:53:49",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 845: Missing '=' operator after key in hash literal.",
+      "id": 112,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:55:58",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 848: Missing '=' operator after key in hash literal.",
+      "id": 113,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:57:59",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 896: Unexpected token '}' in expression or statement.",
+      "id": 114,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 18:59:41",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 26: Unexpected token 'is' in expression or statement.",
+      "id": 115,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/20/2026 19:01:18",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 60: Unexpected token 'does' in expression or statement.",
+      "id": 116,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/20/2026 19:02:47",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 493: The string is missing the terminator: '.",
+      "id": 117,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/20/2026 19:04:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 497: Missing closing ')' in subexpression.",
+      "id": 118,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/20/2026 19:05:51",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 497: The hash literal was incomplete.",
+      "id": 119,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/20/2026 19:07:29",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 418: Unexpected token 'Help' in expression or statement.",
+      "id": 120,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/20/2026 19:09:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 440: The string is missing the terminator: \".",
+      "id": 121,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/20/2026 19:10:48",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 416: Missing closing '}' in statement block or type definition.",
+      "id": 122,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/20/2026 19:12:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 409: Missing closing '}' in statement block or type definition.",
+      "id": 123,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/20/2026 19:14:04",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 212: Missing closing '}' in statement block or type definition.",
+      "id": 124,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/20/2026 19:15:42",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwShGUI-IntegrityCore.psm1 line 44: Missing closing '}' in statement block or type definition.",
+      "id": 125,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "04/20/2026 19:17:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2277: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 126,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\AssistedSASC.psm1",
+      "created": "04/20/2026 19:19:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 207: Unexpected token '}' in expression or statement.",
+      "id": 127,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "04/20/2026 19:21:03",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in New-PwShGUIModule.ps1 line 50: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 128,
+      "script": "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1",
+      "created": "05/01/2026 16:08:54",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in New-PwShGUIModule.ps1 line 53: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 129,
+      "script": "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1",
+      "created": "05/01/2026 16:10:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Show-CronAiAthonTool.ps1 line 875: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 130,
+      "script": "C:\\PowerShellGUI\\scripts\\Show-CronAiAthonTool.ps1",
+      "created": "05/01/2026 16:12:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-CoalTest2.ps1 line 335: Missing closing '}' in statement block or type definition.",
+      "id": 131,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-CoalTest2.ps1",
+      "created": "05/01/2026 16:14:00",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-CoalTest2.ps1 line 325: Missing closing '}' in statement block or type definition.",
+      "id": 132,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-CoalTest2.ps1",
+      "created": "05/01/2026 16:15:43",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-CoalTest2.ps1 line 281: Missing closing '}' in statement block or type definition.",
+      "id": 133,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-CoalTest2.ps1",
+      "created": "05/01/2026 16:17:16",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 180: Unexpected token '$(' in expression or statement.",
+      "id": 134,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/01/2026 16:18:59",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 180: Unexpected token '\"\r\n            }\r\n        }\r\n        $violations | Should -BeNullOrEmpty -Because 'Repo rule: XML declaration must be first content â€”' in expression or statement.",
+      "id": 135,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/01/2026 16:21:02",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 183: Unexpected token 'VersionTag' in expression or statement.",
+      "id": 136,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/01/2026 16:23:15",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 183: The '<' operator is reserved for future use.",
+      "id": 137,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/01/2026 16:25:24",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-ConventionComplianceSuite.Tests.ps1 line 200: The '<' operator is reserved for future use.",
+      "id": 138,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/01/2026 16:27:31",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2281: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 139,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "05/04/2026 02:12:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 211: Unexpected token '}' in expression or statement.",
+      "id": 140,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 02:15:31",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 226: Unexpected token '}' in expression or statement.",
+      "id": 141,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 02:18:32",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 409: Unexpected token '}' in expression or statement.",
+      "id": 142,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 02:21:34",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 432: Missing '=' operator after key in hash literal.",
+      "id": 143,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 02:25:16",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 30: Unexpected token 'is' in expression or statement.",
+      "id": 144,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 02:29:00",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 64: Unexpected token 'does' in expression or statement.",
+      "id": 145,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 02:32:13",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 509: The string is missing the terminator: '.",
+      "id": 146,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 02:36:04",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 518: Missing closing ')' in subexpression.",
+      "id": 147,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 02:40:07",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 26: Missing closing '}' in statement block or type definition.",
+      "id": 148,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 02:44:19",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 422: Unexpected token 'Help' in expression or statement.",
+      "id": 149,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 02:48:15",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 444: The string is missing the terminator: \".",
+      "id": 150,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 02:52:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-DataMigration.ps1 line 232: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 151,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1",
+      "created": "05/04/2026 06:19:08",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-DataMigration.ps1 line 236: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 152,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1",
+      "created": "05/04/2026 06:23:14",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Invoke-DataMigration.ps1 line 342: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 153,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1",
+      "created": "05/04/2026 06:26:52",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in New-PwShGUIModule.ps1 line 50: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 154,
+      "script": "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1",
+      "created": "05/04/2026 06:29:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in New-PwShGUIModule.ps1 line 53: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 155,
+      "script": "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1",
+      "created": "05/04/2026 06:32:46",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in Show-CronAiAthonTool.ps1 line 875: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 156,
+      "script": "C:\\PowerShellGUI\\scripts\\Show-CronAiAthonTool.ps1",
+      "created": "05/04/2026 06:36:38",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 211: Unexpected token '}' in expression or statement.",
+      "id": 157,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:40:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 226: Unexpected token '}' in expression or statement.",
+      "id": 158,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:44:45",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 409: Unexpected token '}' in expression or statement.",
+      "id": 159,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:48:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 432: Missing '=' operator after key in hash literal.",
+      "id": 160,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:52:11",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 849: Missing '=' operator after key in hash literal.",
+      "id": 161,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:56:01",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 852: Missing '=' operator after key in hash literal.",
+      "id": 162,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 06:59:47",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 900: Unexpected token '}' in expression or statement.",
+      "id": 163,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:04:10",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 422: Unexpected token 'â€œ' in expression or statement.",
+      "id": 164,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 07:08:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 444: The string is missing the terminator: \".",
+      "id": 165,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 07:13:12",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 420: Missing closing '}' in statement block or type definition.",
+      "id": 166,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 07:17:46",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 413: Missing closing '}' in statement block or type definition.",
+      "id": 167,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 07:22:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 216: Missing closing '}' in statement block or type definition.",
+      "id": 168,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 07:26:45",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2281: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 169,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\AssistedSASC.psm1",
+      "created": "05/04/2026 07:31:18",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 211: Unexpected token '}' in expression or statement.",
+      "id": 170,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:34:48",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 226: Unexpected token '}' in expression or statement.",
+      "id": 171,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:38:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 409: Unexpected token '}' in expression or statement.",
+      "id": 172,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:41:42",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 432: Missing '=' operator after key in hash literal.",
+      "id": 173,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:45:22",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 849: Missing '=' operator after key in hash literal.",
+      "id": 174,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:49:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 852: Missing '=' operator after key in hash literal.",
+      "id": 175,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:53:59",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 900: Unexpected token '}' in expression or statement.",
+      "id": 176,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/04/2026 07:58:26",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 30: Unexpected token 'is' in expression or statement.",
+      "id": 177,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 08:03:04",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 64: Unexpected token 'does' in expression or statement.",
+      "id": 178,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 08:07:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 509: The string is missing the terminator: '.",
+      "id": 179,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 08:12:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 517: Missing closing ')' in subexpression.",
+      "id": 180,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 08:16:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 517: The hash literal was incomplete.",
+      "id": 181,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/04/2026 08:21:20",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 422: Unexpected token 'Help' in expression or statement.",
+      "id": 182,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 08:25:59",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 444: The string is missing the terminator: \".",
+      "id": 183,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 08:30:36",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 420: Missing closing '}' in statement block or type definition.",
+      "id": 184,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 08:35:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 413: Missing closing '}' in statement block or type definition.",
+      "id": 185,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 08:39:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 216: Missing closing '}' in statement block or type definition.",
+      "id": 186,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/04/2026 08:44:17",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwShGUI-IntegrityCore.psm1 line 48: Missing closing '}' in statement block or type definition.",
+      "id": 187,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwShGUI-IntegrityCore.psm1",
+      "created": "05/04/2026 08:47:38",
+      "status": "Open"
+    },
+    {
+      "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+      "id": 188,
+      "script": "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1",
+      "created": "05/04/2026 08:51:03",
+      "status": "Open"
+    },
+    {
+      "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+      "id": 189,
+      "script": "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1",
+      "created": "05/04/2026 08:54:26",
+      "status": "Open"
+    },
+    {
+      "description": "Script koe-RumA.psm1 has 12 functions but zero try/catch blocks",
+      "id": 190,
+      "script": "C:\\PowerShellGUI\\agents\\koe-RumA\\core\\koe-RumA.psm1",
+      "created": "05/04/2026 08:57:49",
+      "status": "Open"
+    },
+    {
+      "description": "Script Import-WorkspaceModule.psm1 has 1 functions but zero try/catch blocks",
+      "id": 191,
+      "script": "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psm1",
+      "created": "05/04/2026 09:01:14",
+      "status": "Open"
+    },
+    {
+      "description": "Script PKIChainManager.psm1 has 7 functions but zero try/catch blocks",
+      "id": 192,
+      "script": "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1",
+      "created": "05/04/2026 09:04:33",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-AutoRemediate.psm1 has 2 functions but zero try/catch blocks",
+      "id": 193,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1",
+      "created": "05/04/2026 09:07:47",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-CoverageReport.psm1 has 1 functions but zero try/catch blocks",
+      "id": 194,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+      "created": "05/04/2026 09:09:52",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-LegacyEncoding.psm1 has 2 functions but zero try/catch blocks",
+      "id": 195,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-LegacyEncoding.psm1",
+      "created": "05/04/2026 09:12:05",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-PSScriptAnalyzerScan.psm1 has 1 functions but zero try/catch blocks",
+      "id": 196,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-PSScriptAnalyzerScan.psm1",
+      "created": "05/04/2026 09:14:15",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-PSVersionStandards.psm1 has 9 functions but zero try/catch blocks",
+      "id": 197,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1",
+      "created": "05/04/2026 09:16:25",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-SinFixBranch.psm1 has 1 functions but zero try/catch blocks",
+      "id": 198,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFixBranch.psm1",
+      "created": "05/04/2026 09:18:36",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-SinFromScan.psm1 has 2 functions but zero try/catch blocks",
+      "id": 199,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psm1",
+      "created": "05/04/2026 09:20:50",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-VersionTag.psm1 has 1 functions but zero try/catch blocks",
+      "id": 200,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionTag.psm1",
+      "created": "05/04/2026 09:22:59",
+      "status": "Open"
+    },
+    {
+      "description": "Script SINGovernance.psm1 has 6 functions but zero try/catch blocks",
+      "id": 201,
+      "script": "C:\\PowerShellGUI\\modules\\SINGovernance.psm1",
+      "created": "05/04/2026 09:25:09",
+      "status": "Open"
+    },
+    {
+      "description": "Script WorkspaceIntentReview.psm1 has 11 functions but zero try/catch blocks",
+      "id": 202,
+      "script": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+      "created": "05/04/2026 09:27:19",
+      "status": "Open"
+    },
+    {
+      "description": "Script CallASRWebSvcConnector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 203,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector.ps1",
+      "created": "05/04/2026 09:29:31",
+      "status": "Open"
+    },
+    {
+      "description": "Script CallASRWebSvcConnector2.ps1 has 2 functions but zero try/catch blocks",
+      "id": 204,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector2.ps1",
+      "created": "05/04/2026 09:31:48",
+      "status": "Open"
+    },
+    {
+      "description": "Script WebSvcConnector.ps1 has 11 functions but zero try/catch blocks",
+      "id": 205,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\WebSvcConnector.ps1",
+      "created": "05/04/2026 09:34:00",
+      "status": "Open"
+    },
+    {
+      "description": "Script ReportsLibrary.ps1 has 1 functions but zero try/catch blocks",
+      "id": 206,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\Statistics\\_LIB_\\ReportsLibrary.ps1",
+      "created": "05/04/2026 09:36:14",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 207,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector0\\FileInspector.ps1",
+      "created": "05/04/2026 09:38:24",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 208,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector1\\FileInspector.ps1",
+      "created": "05/04/2026 09:40:39",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector1.ps1 has 5 functions but zero try/catch blocks",
+      "id": 209,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector1\\FileInspector1.ps1",
+      "created": "05/04/2026 09:42:54",
+      "status": "Open"
+    },
+    {
+      "description": "Script Inghams_NewIntuneDeviceSetup.ps1 has 1 functions but zero try/catch blocks",
+      "id": 210,
+      "script": "C:\\PowerShellGUI\\scripts\\scripts\\Inghams_NewIntuneDeviceSetup.ps1",
+      "created": "05/04/2026 09:45:12",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-DirectoryTree.ps1 has 1 functions but zero try/catch blocks",
+      "id": 211,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1",
+      "created": "05/04/2026 09:48:32",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-ToolsInventory.ps1 has 1 functions but zero try/catch blocks",
+      "id": 212,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-ToolsInventory.ps1",
+      "created": "05/04/2026 09:52:06",
+      "status": "Open"
+    },
+    {
+      "description": "Script ConvertTo-FeatureToDo.ps1 has 3 functions but zero try/catch blocks",
+      "id": 213,
+      "script": "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+      "created": "05/04/2026 09:55:37",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_check_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 214,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_check_version.ps1",
+      "created": "05/04/2026 09:59:02",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 215,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1",
+      "created": "05/04/2026 10:01:16",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-ChangelogDiff.ps1 has 4 functions but zero try/catch blocks",
+      "id": 216,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-ChangelogDiff.ps1",
+      "created": "05/04/2026 10:03:29",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-EventLogViewInject.ps1 has 2 functions but zero try/catch blocks",
+      "id": 217,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-EventLogViewInject.ps1",
+      "created": "05/04/2026 10:05:43",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-HelpMenuCompliance.ps1 has 5 functions but zero try/catch blocks",
+      "id": 218,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-HelpMenuCompliance.ps1",
+      "created": "05/04/2026 10:07:57",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-ReleasePreFlight.ps1 has 1 functions but zero try/catch blocks",
+      "id": 219,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1",
+      "created": "05/04/2026 10:10:14",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-RenameProposal.ps1 has 5 functions but zero try/catch blocks",
+      "id": 220,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-RenameProposal.ps1",
+      "created": "05/04/2026 10:12:33",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-A.ps1 has 1 functions but zero try/catch blocks",
+      "id": 221,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-A.ps1",
+      "created": "05/04/2026 10:14:50",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-B.ps1 has 1 functions but zero try/catch blocks",
+      "id": 222,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-B.ps1",
+      "created": "05/04/2026 10:17:03",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-C.ps1 has 1 functions but zero try/catch blocks",
+      "id": 223,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-C.ps1",
+      "created": "05/04/2026 10:19:19",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-D.ps1 has 1 functions but zero try/catch blocks",
+      "id": 224,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-D.ps1",
+      "created": "05/04/2026 10:21:45",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-E.ps1 has 1 functions but zero try/catch blocks",
+      "id": 225,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-E.ps1",
+      "created": "05/04/2026 10:24:06",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F - LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+      "id": 226,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1",
+      "created": "05/04/2026 10:26:22",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F-LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+      "id": 227,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F-LinkToConfigJson.ps1",
+      "created": "05/04/2026 10:28:40",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F.ps1 has 1 functions but zero try/catch blocks",
+      "id": 228,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F.ps1",
+      "created": "05/04/2026 10:30:59",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script1.ps1 has 5 functions but zero try/catch blocks",
+      "id": 229,
+      "script": "C:\\PowerShellGUI\\scripts\\Script1.ps1",
+      "created": "05/04/2026 10:33:19",
+      "status": "Open"
+    },
+    {
+      "description": "Script Sync-ChangelogViewerData.ps1 has 2 functions but zero try/catch blocks",
+      "id": 230,
+      "script": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "created": "05/04/2026 10:35:37",
+      "status": "Open"
+    },
+    {
+      "description": "Script bad.ps1 has 1 functions but zero try/catch blocks",
+      "id": 231,
+      "script": "C:\\PowerShellGUI\\temp\\p027-manual-verify\\bad.ps1",
+      "created": "05/04/2026 10:38:19",
+      "status": "Open"
+    },
+    {
+      "description": "Script good.ps1 has 1 functions but zero try/catch blocks",
+      "id": 232,
+      "script": "C:\\PowerShellGUI\\temp\\p027-manual-verify\\good.ps1",
+      "created": "05/04/2026 10:41:57",
+      "status": "Open"
+    },
+    {
+      "description": "Script ConvertTo-BugTask.ps1 has 3 functions but zero try/catch blocks",
+      "id": 233,
+      "script": "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1",
+      "created": "05/04/2026 10:45:37",
+      "status": "Open"
+    },
+    {
+      "description": "Script CronAiAthon-BugTracker.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 234,
+      "script": "C:\\PowerShellGUI\\tests\\CronAiAthon-BugTracker.Tests.ps1",
+      "created": "05/04/2026 10:49:17",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter16-verify.ps1 has 2 functions but zero try/catch blocks",
+      "id": 235,
+      "script": "C:\\PowerShellGUI\\tests\\iter16-verify.ps1",
+      "created": "05/04/2026 10:52:04",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter24-patch-manifests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 236,
+      "script": "C:\\PowerShellGUI\\tests\\iter24-patch-manifests.ps1",
+      "created": "05/04/2026 10:54:23",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter34-add-shouldprocess.ps1 has 1 functions but zero try/catch blocks",
+      "id": 237,
+      "script": "C:\\PowerShellGUI\\tests\\iter34-add-shouldprocess.ps1",
+      "created": "05/04/2026 10:56:40",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter36-add-outputtype.ps1 has 1 functions but zero try/catch blocks",
+      "id": 238,
+      "script": "C:\\PowerShellGUI\\tests\\iter36-add-outputtype.ps1",
+      "created": "05/04/2026 10:59:00",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter38-suppress-writehost.ps1 has 1 functions but zero try/catch blocks",
+      "id": 239,
+      "script": "C:\\PowerShellGUI\\tests\\iter38-suppress-writehost.ps1",
+      "created": "05/04/2026 11:01:20",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter39-add-commenthelp.ps1 has 5 functions but zero try/catch blocks",
+      "id": 240,
+      "script": "C:\\PowerShellGUI\\tests\\iter39-add-commenthelp.ps1",
+      "created": "05/04/2026 11:03:45",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter40-add-description.ps1 has 2 functions but zero try/catch blocks",
+      "id": 241,
+      "script": "C:\\PowerShellGUI\\tests\\iter40-add-description.ps1",
+      "created": "05/04/2026 11:06:55",
+      "status": "Open"
+    },
+    {
+      "description": "Script ModuleMaintenance-Targeted.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 242,
+      "script": "C:\\PowerShellGUI\\tests\\ModuleMaintenance-Targeted.Tests.ps1",
+      "created": "05/04/2026 11:10:11",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-VersionManager.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 243,
+      "script": "C:\\PowerShellGUI\\tests\\PwShGUI-VersionManager.Tests.ps1",
+      "created": "05/04/2026 11:13:09",
+      "status": "Open"
+    },
+    {
+      "description": "Script Show-CronAiAthonTool.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 244,
+      "script": "C:\\PowerShellGUI\\tests\\Show-CronAiAthonTool.Tests.ps1",
+      "created": "05/04/2026 11:16:51",
+      "status": "Open"
+    },
+    {
+      "description": "Script Show-ScriptLoadability.Tests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 245,
+      "script": "C:\\PowerShellGUI\\tests\\Show-ScriptLoadability.Tests.ps1",
+      "created": "05/04/2026 11:21:26",
+      "status": "Open"
+    },
+    {
+      "description": "Script Start-LocalWebEngine.Tests.ps1 has 7 functions but zero try/catch blocks",
+      "id": 246,
+      "script": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngine.Tests.ps1",
+      "created": "05/04/2026 11:26:03",
+      "status": "Open"
+    },
+    {
+      "description": "Script VersionTag-Canonical.Tests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 247,
+      "script": "C:\\PowerShellGUI\\tests\\VersionTag-Canonical.Tests.ps1",
+      "created": "05/04/2026 11:31:35",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 248,
+      "script": "C:\\PowerShellGUI\\fix_update_version.ps1",
+      "created": "05/04/2026 11:36:03",
+      "status": "Open"
+    },
+    {
+      "description": "Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+      "id": 249,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1",
+      "created": "05/04/2026 11:40:26",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in AssistedSASC.psm1 line 2281: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 250,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "05/06/2026 17:34:03",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 211: Unexpected token '}' in expression or statement.",
+      "id": 251,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:05",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 226: Unexpected token '}' in expression or statement.",
+      "id": 252,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:08",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 409: Unexpected token '}' in expression or statement.",
+      "id": 253,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:10",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 432: Missing '=' operator after key in hash literal.",
+      "id": 254,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:12",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 30: Unexpected token 'is' in expression or statement.",
+      "id": 255,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/06/2026 17:34:14",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 64: Unexpected token 'does' in expression or statement.",
+      "id": 256,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/06/2026 17:34:16",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 509: The string is missing the terminator: '.",
+      "id": 257,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/06/2026 17:34:18",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 518: Missing closing ')' in subexpression.",
+      "id": 258,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/06/2026 17:34:20",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in H-Ai-Nikr-Agi.psm1 line 26: Missing closing '}' in statement block or type definition.",
+      "id": 259,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "05/06/2026 17:34:23",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 422: Unexpected token 'Help' in expression or statement.",
+      "id": 260,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/06/2026 17:34:25",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 444: The string is missing the terminator: \".",
+      "id": 261,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/06/2026 17:34:27",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 420: Missing closing '}' in statement block or type definition.",
+      "id": 262,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/06/2026 17:34:30",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 413: Missing closing '}' in statement block or type definition.",
+      "id": 263,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/06/2026 17:34:32",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 216: Missing closing '}' in statement block or type definition.",
+      "id": 264,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "05/06/2026 17:34:35",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in PwShGUI-IntegrityCore.psm1 line 48: Missing closing '}' in statement block or type definition.",
+      "id": 265,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "05/06/2026 17:34:38",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 211: Unexpected token '}' in expression or statement.",
+      "id": 266,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:41",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 226: Unexpected token '}' in expression or statement.",
+      "id": 267,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:43",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 409: Unexpected token '}' in expression or statement.",
+      "id": 268,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:46",
+      "status": "Open"
+    },
+    {
+      "description": "Parse error in CronAiAthon-Pipeline.psm1 line 432: Missing '=' operator after key in hash literal.",
+      "id": 269,
+      "script": "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+      "created": "05/06/2026 17:34:48",
+      "status": "Open"
+    },
+    {
+      "description": "Error pattern in log engine-bootstrap.log:56",
+      "id": 270,
+      "script": "C:\\PowerShellGUI\\logs\\engine-bootstrap.log",
+      "created": "05/06/2026 17:34:50",
+      "status": "Open"
+    },
+    {
+      "description": "Script Activate.ps1 has 7 functions but zero try/catch blocks",
+      "id": 271,
+      "script": "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1",
+      "created": "05/06/2026 17:34:53",
+      "status": "Open"
+    },
+    {
+      "description": "Script koe-RumA.psm1 has 12 functions but zero try/catch blocks",
+      "id": 272,
+      "script": "C:\\PowerShellGUI\\agents\\koe-RumA\\core\\koe-RumA.psm1",
+      "created": "05/06/2026 17:34:55",
+      "status": "Open"
+    },
+    {
+      "description": "Script Import-WorkspaceModule.psm1 has 1 functions but zero try/catch blocks",
+      "id": 273,
+      "script": "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psm1",
+      "created": "05/06/2026 17:34:57",
+      "status": "Open"
+    },
+    {
+      "description": "Script PKIChainManager.psm1 has 7 functions but zero try/catch blocks",
+      "id": 274,
+      "script": "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1",
+      "created": "05/06/2026 17:34:59",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-AutoRemediate.psm1 has 2 functions but zero try/catch blocks",
+      "id": 275,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1",
+      "created": "05/06/2026 17:35:02",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-CoverageReport.psm1 has 1 functions but zero try/catch blocks",
+      "id": 276,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+      "created": "05/06/2026 17:35:04",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-LegacyEncoding.psm1 has 2 functions but zero try/catch blocks",
+      "id": 277,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-LegacyEncoding.psm1",
+      "created": "05/06/2026 17:35:07",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-PSScriptAnalyzerScan.psm1 has 1 functions but zero try/catch blocks",
+      "id": 278,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-PSScriptAnalyzerScan.psm1",
+      "created": "05/06/2026 17:35:09",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-PSVersionStandards.psm1 has 9 functions but zero try/catch blocks",
+      "id": 279,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1",
+      "created": "05/06/2026 17:35:11",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-SinFixBranch.psm1 has 1 functions but zero try/catch blocks",
+      "id": 280,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFixBranch.psm1",
+      "created": "05/06/2026 17:35:13",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-SinFromScan.psm1 has 2 functions but zero try/catch blocks",
+      "id": 281,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psm1",
+      "created": "05/06/2026 17:35:15",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-VersionTag.psm1 has 1 functions but zero try/catch blocks",
+      "id": 282,
+      "script": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionTag.psm1",
+      "created": "05/06/2026 17:35:17",
+      "status": "Open"
+    },
+    {
+      "description": "Script SINGovernance.psm1 has 6 functions but zero try/catch blocks",
+      "id": 283,
+      "script": "C:\\PowerShellGUI\\modules\\SINGovernance.psm1",
+      "created": "05/06/2026 17:35:20",
+      "status": "Open"
+    },
+    {
+      "description": "Script WorkspaceIntentReview.psm1 has 11 functions but zero try/catch blocks",
+      "id": 284,
+      "script": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+      "created": "05/06/2026 17:35:22",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 285,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector0\\FileInspector.ps1",
+      "created": "05/06/2026 17:35:24",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector.ps1 has 1 functions but zero try/catch blocks",
+      "id": 286,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector1\\FileInspector.ps1",
+      "created": "05/06/2026 17:35:27",
+      "status": "Open"
+    },
+    {
+      "description": "Script FileInspector1.ps1 has 5 functions but zero try/catch blocks",
+      "id": 287,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector1\\FileInspector1.ps1",
+      "created": "05/06/2026 17:35:29",
+      "status": "Open"
+    },
+    {
+      "description": "Script Inghams_NewIntuneDeviceSetup.ps1 has 1 functions but zero try/catch blocks",
+      "id": 288,
+      "script": "C:\\PowerShellGUI\\scripts\\scripts\\Inghams_NewIntuneDeviceSetup.ps1",
+      "created": "05/06/2026 17:35:32",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-DirectoryTree.ps1 has 1 functions but zero try/catch blocks",
+      "id": 289,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1",
+      "created": "05/06/2026 17:35:34",
+      "status": "Open"
+    },
+    {
+      "description": "Script Build-ToolsInventory.ps1 has 1 functions but zero try/catch blocks",
+      "id": 290,
+      "script": "C:\\PowerShellGUI\\scripts\\Build-ToolsInventory.ps1",
+      "created": "05/06/2026 17:35:36",
+      "status": "Open"
+    },
+    {
+      "description": "Script ConvertTo-FeatureToDo.ps1 has 3 functions but zero try/catch blocks",
+      "id": 291,
+      "script": "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+      "created": "05/06/2026 17:35:38",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_check_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 292,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_check_version.ps1",
+      "created": "05/06/2026 17:35:40",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 293,
+      "script": "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1",
+      "created": "05/06/2026 17:35:42",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-ChangelogDiff.ps1 has 4 functions but zero try/catch blocks",
+      "id": 294,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-ChangelogDiff.ps1",
+      "created": "05/06/2026 17:35:45",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-EventLogViewInject.ps1 has 2 functions but zero try/catch blocks",
+      "id": 295,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-EventLogViewInject.ps1",
+      "created": "05/06/2026 17:35:47",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-HelpMenuCompliance.ps1 has 5 functions but zero try/catch blocks",
+      "id": 296,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-HelpMenuCompliance.ps1",
+      "created": "05/06/2026 17:35:49",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-ReleasePreFlight.ps1 has 1 functions but zero try/catch blocks",
+      "id": 297,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1",
+      "created": "05/06/2026 17:35:52",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-RenameProposal.ps1 has 5 functions but zero try/catch blocks",
+      "id": 298,
+      "script": "C:\\PowerShellGUI\\scripts\\Invoke-RenameProposal.ps1",
+      "created": "05/06/2026 17:35:54",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-A.ps1 has 1 functions but zero try/catch blocks",
+      "id": 299,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-A.ps1",
+      "created": "05/06/2026 17:35:56",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-B.ps1 has 1 functions but zero try/catch blocks",
+      "id": 300,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-B.ps1",
+      "created": "05/06/2026 17:35:58",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-C.ps1 has 1 functions but zero try/catch blocks",
+      "id": 301,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-C.ps1",
+      "created": "05/06/2026 17:36:01",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-D.ps1 has 1 functions but zero try/catch blocks",
+      "id": 302,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-D.ps1",
+      "created": "05/06/2026 17:36:03",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-E.ps1 has 1 functions but zero try/catch blocks",
+      "id": 303,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-E.ps1",
+      "created": "05/06/2026 17:36:05",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F - LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+      "id": 304,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1",
+      "created": "05/06/2026 17:36:08",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F-LinkToConfigJson.ps1 has 1 functions but zero try/catch blocks",
+      "id": 305,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F-LinkToConfigJson.ps1",
+      "created": "05/06/2026 17:36:10",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script-F.ps1 has 1 functions but zero try/catch blocks",
+      "id": 306,
+      "script": "C:\\PowerShellGUI\\scripts\\Script-F.ps1",
+      "created": "05/06/2026 17:36:12",
+      "status": "Open"
+    },
+    {
+      "description": "Script Script1.ps1 has 5 functions but zero try/catch blocks",
+      "id": 307,
+      "script": "C:\\PowerShellGUI\\scripts\\Script1.ps1",
+      "created": "05/06/2026 17:36:14",
+      "status": "Open"
+    },
+    {
+      "description": "Script Sync-ChangelogViewerData.ps1 has 2 functions but zero try/catch blocks",
+      "id": 308,
+      "script": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "created": "05/06/2026 17:36:17",
+      "status": "Open"
+    },
+    {
+      "description": "Script bad.ps1 has 1 functions but zero try/catch blocks",
+      "id": 309,
+      "script": "C:\\PowerShellGUI\\temp\\p027-manual-verify\\bad.ps1",
+      "created": "05/06/2026 17:36:19",
+      "status": "Open"
+    },
+    {
+      "description": "Script good.ps1 has 1 functions but zero try/catch blocks",
+      "id": 310,
+      "script": "C:\\PowerShellGUI\\temp\\p027-manual-verify\\good.ps1",
+      "created": "05/06/2026 17:36:21",
+      "status": "Open"
+    },
+    {
+      "description": "Script ConvertTo-BugTask.ps1 has 3 functions but zero try/catch blocks",
+      "id": 311,
+      "script": "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1",
+      "created": "05/06/2026 17:36:23",
+      "status": "Open"
+    },
+    {
+      "description": "Script CronAiAthon-BugTracker.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 312,
+      "script": "C:\\PowerShellGUI\\tests\\CronAiAthon-BugTracker.Tests.ps1",
+      "created": "05/06/2026 17:36:25",
+      "status": "Open"
+    },
+    {
+      "description": "Script Invoke-BacklogPipelineSmoke.ps1 has 1 functions but zero try/catch blocks",
+      "id": 313,
+      "script": "C:\\PowerShellGUI\\tests\\Invoke-BacklogPipelineSmoke.ps1",
+      "created": "05/06/2026 17:36:27",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter16-verify.ps1 has 2 functions but zero try/catch blocks",
+      "id": 314,
+      "script": "C:\\PowerShellGUI\\tests\\iter16-verify.ps1",
+      "created": "05/06/2026 17:36:29",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter24-patch-manifests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 315,
+      "script": "C:\\PowerShellGUI\\tests\\iter24-patch-manifests.ps1",
+      "created": "05/06/2026 17:36:32",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter34-add-shouldprocess.ps1 has 1 functions but zero try/catch blocks",
+      "id": 316,
+      "script": "C:\\PowerShellGUI\\tests\\iter34-add-shouldprocess.ps1",
+      "created": "05/06/2026 17:36:34",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter36-add-outputtype.ps1 has 1 functions but zero try/catch blocks",
+      "id": 317,
+      "script": "C:\\PowerShellGUI\\tests\\iter36-add-outputtype.ps1",
+      "created": "05/06/2026 17:36:36",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter38-suppress-writehost.ps1 has 1 functions but zero try/catch blocks",
+      "id": 318,
+      "script": "C:\\PowerShellGUI\\tests\\iter38-suppress-writehost.ps1",
+      "created": "05/06/2026 17:36:38",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter39-add-commenthelp.ps1 has 5 functions but zero try/catch blocks",
+      "id": 319,
+      "script": "C:\\PowerShellGUI\\tests\\iter39-add-commenthelp.ps1",
+      "created": "05/06/2026 17:36:40",
+      "status": "Open"
+    },
+    {
+      "description": "Script iter40-add-description.ps1 has 2 functions but zero try/catch blocks",
+      "id": 320,
+      "script": "C:\\PowerShellGUI\\tests\\iter40-add-description.ps1",
+      "created": "05/06/2026 17:36:43",
+      "status": "Open"
+    },
+    {
+      "description": "Script ModuleMaintenance-Targeted.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 321,
+      "script": "C:\\PowerShellGUI\\tests\\ModuleMaintenance-Targeted.Tests.ps1",
+      "created": "05/06/2026 17:36:45",
+      "status": "Open"
+    },
+    {
+      "description": "Script PwShGUI-VersionManager.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 322,
+      "script": "C:\\PowerShellGUI\\tests\\PwShGUI-VersionManager.Tests.ps1",
+      "created": "05/06/2026 17:36:48",
+      "status": "Open"
+    },
+    {
+      "description": "Script Show-CronAiAthonTool.Tests.ps1 has 2 functions but zero try/catch blocks",
+      "id": 323,
+      "script": "C:\\PowerShellGUI\\tests\\Show-CronAiAthonTool.Tests.ps1",
+      "created": "05/06/2026 17:36:50",
+      "status": "Open"
+    },
+    {
+      "description": "Script Show-ScriptLoadability.Tests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 324,
+      "script": "C:\\PowerShellGUI\\tests\\Show-ScriptLoadability.Tests.ps1",
+      "created": "05/06/2026 17:36:53",
+      "status": "Open"
+    },
+    {
+      "description": "Script Start-LocalWebEngine.Tests.ps1 has 7 functions but zero try/catch blocks",
+      "id": 325,
+      "script": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngine.Tests.ps1",
+      "created": "05/06/2026 17:36:55",
+      "status": "Open"
+    },
+    {
+      "description": "Script VersionTag-Canonical.Tests.ps1 has 1 functions but zero try/catch blocks",
+      "id": 326,
+      "script": "C:\\PowerShellGUI\\tests\\VersionTag-Canonical.Tests.ps1",
+      "created": "05/06/2026 17:36:57",
+      "status": "Open"
+    },
+    {
+      "description": "Script fix_update_version.ps1 has 3 functions but zero try/catch blocks",
+      "id": 327,
+      "script": "C:\\PowerShellGUI\\fix_update_version.ps1",
+      "created": "05/06/2026 17:36:59",
+      "status": "Open"
+    },
+    {
+      "description": "Import-Module path not found in Install-ModulesList.ps1: path/to/module/updateMods",
+      "id": 328,
+      "script": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1",
+      "created": "05/06/2026 17:37:01",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 329,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 330,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/12/2026 12:09:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+      "id": 331,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+      "created": "04/21/2026 01:47:36",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 332,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 333,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/12/2026 12:09:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 334,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+      "created": "04/21/2026 01:47:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 335,
+      "script": "config\\error-handling-templates.ps1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
+      "id": 336,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
+      "id": 337,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/12/2026 12:09:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'is' in expression or statement.",
+      "id": 338,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+      "created": "04/21/2026 01:47:37",
+      "status": "Open"
+    },
+    {
       "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
-      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1"
+      "id": 339,
+      "script": "tests\\Invoke-CoalTest2.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '$(' in expression or statement.",
+      "id": 340,
+      "script": "tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "04/21/2026 02:01:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '$(' in expression or statement.",
+      "id": 341,
+      "script": "tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 342,
+      "script": "scripts\\Invoke-DataMigration.ps1",
+      "created": "05/04/2026 10:08:30",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token ':' in expression or statement.",
+      "id": 343,
+      "script": "tests\\Invoke-PreCommitValidation.ps1",
+      "created": "04/21/2026 01:47:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 344,
+      "script": "scripts\\Invoke-PSEnvironmentScanner.ps1",
+      "created": "04/12/2026 12:09:46",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: The string is missing the terminator: \".",
+      "id": 345,
+      "script": "tests\\Invoke-ScriptLoadability.Tests.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Missing expression after ','.",
+      "id": 346,
+      "script": "Main-GUI.ps1",
+      "created": "04/12/2026 12:09:47",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 347,
+      "script": "scripts\\New-PwShGUIModule.ps1",
+      "created": "05/02/2026 00:07:38",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+      "id": 348,
+      "script": "scripts\\New-PwShGUIModule.ps1",
+      "created": "05/04/2026 10:08:30",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
+      "id": 349,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
+      "id": 350,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/12/2026 12:09:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token 'Help' in expression or statement.",
+      "id": 351,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "created": "04/21/2026 01:47:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
+      "id": 352,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "04/05/2026 04:38:50",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
+      "id": 353,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "04/12/2026 12:09:44",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
+      "id": 354,
+      "script": "~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+      "created": "04/21/2026 01:47:37",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 355,
+      "script": "scripts\\Setup-ModuleEnvironment.ps1",
+      "created": "04/21/2026 02:01:06",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 356,
+      "script": "scripts\\Show-CronAiAthonTool.ps1",
+      "created": "05/02/2026 00:07:38",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+      "id": 357,
+      "script": "scripts\\Show-CronAiAthonTool.ps1",
+      "created": "05/04/2026 10:08:30",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: The string is missing the terminator: \".",
+      "id": 358,
+      "script": "tests\\Show-ScriptLoadability.Tests.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Missing closing '}' in statement block or type definition.",
+      "id": 359,
+      "script": "tests\\SIN-P027-NullArrayIndex.Tests.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: Unexpected token '}' in expression or statement.",
+      "id": 360,
+      "script": "tests\\Test-CFRMenuOptions.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "Parse validation failed: An expression was expected after '('.",
+      "id": 361,
+      "script": "tests\\Test-PowerShellVersions.ps1",
+      "created": "05/02/2026 00:07:39",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 362,
+      "script": "",
+      "created": "05/06/2026 17:46:49",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 363,
+      "script": "",
+      "created": "05/06/2026 17:37:05",
+      "status": "Open"
+    },
+    {
+      "description": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+      "id": 364,
+      "script": "",
+      "created": "05/04/2026 11:51:35",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 365,
+      "script": "",
+      "created": "05/06/2026 17:39:24",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 366,
+      "script": "",
+      "created": "05/06/2026 17:37:31",
+      "status": "Open"
+    },
+    {
+      "description": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+      "id": 367,
+      "script": "",
+      "created": "05/04/2026 11:49:56",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 368,
+      "script": "",
+      "created": "05/06/2026 17:37:07",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 369,
+      "script": "",
+      "created": "05/06/2026 17:47:35",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 370,
+      "script": "",
+      "created": "05/06/2026 17:37:09",
+      "status": "Open"
+    },
+    {
+      "description": "",
+      "id": 371,
+      "script": "",
+      "created": "05/06/2026 17:39:22",
+      "status": "Open"
     }
   ]
 }

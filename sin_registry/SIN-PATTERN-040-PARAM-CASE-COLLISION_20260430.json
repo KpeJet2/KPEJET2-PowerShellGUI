@@ -1,0 +1,27 @@
+{
+  "pattern_id": "P040",
+  "title": "Typed parameter $X clobbered by reassignment to differently-cased local $x",
+  "severity": "MEDIUM",
+  "category": "STRICTMODE",
+  "status": "OPEN",
+  "registered": "2026-04-30",
+  "description": "PowerShell variables are case-insensitive: `$Top` and `$top` are the same variable. If a function declares `[int]$Top = 25` then later writes `$top = @($rows)`, the type constraint from the parameter declaration still applies, and PowerShell raises 'Cannot convert System.Object[] to System.Int32' at the assignment site (or at first use of `$Top` in pipeline binding). Detected when Get-SinHeatmap was called with `-Top 20` and threw the conversion error from inside the SVG-render branch where a local `$top = @($rows)` shadowed the parameter.",
+  "detection_regex": "\\[(?:int|long|byte|double|decimal|bool|string)\\]\\$([A-Z][A-Za-z0-9_]+)\\b[^\\n]*\\n[\\s\\S]+?\\$\\1(?=\\s*=)",
+  "fix_strategy": [
+    "Rename the local to something disjoint (e.g. `$rowsArr` instead of `$top`).",
+    "Treat function parameters as read-only; never reassign them.",
+    "If reassignment is required, drop the type constraint or use Set-Variable -Option None first."
+  ],
+  "examples_bad": [
+    "function Foo { param([int]$Top = 25); $top = @($rows) } # throws 'Cannot convert Object[] to Int32'"
+  ],
+  "examples_good": [
+    "function Foo { param([int]$Top = 25); $rowsArr = @($rows) }"
+  ],
+  "first_seen": {
+    "session": "Plan4Me iteration 9",
+    "tool": "Get-SinHeatmap -Top 20",
+    "outcome": "ERR: Cannot convert the System.Object[] value of type System.Object[] to type System.Int32 (line 37)"
+  },
+  "related": ["P034"]
+}

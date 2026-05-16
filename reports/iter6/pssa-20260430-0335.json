@@ -1,0 +1,1631 @@
+{
+  "count": 203,
+  "findings": [
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 100,
+      "Column": 3,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 155,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 167,
+      "Column": 120,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 188,
+      "Column": 93,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 384,
+      "Column": 102,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 505,
+      "Column": 99,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 582,
+      "Column": 150,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 618,
+      "Column": 110,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 667,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 776,
+      "Column": 107,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 778,
+      "Column": 88,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 781,
+      "Column": 106,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 804,
+      "Column": 117,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 830,
+      "Column": 87,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 832,
+      "Column": 76,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 835,
+      "Column": 93,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 840,
+      "Column": 76,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 843,
+      "Column": 135,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 852,
+      "Column": 117,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 855,
+      "Column": 113,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 857,
+      "Column": 77,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 862,
+      "Column": 138,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 867,
+      "Column": 123,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 890,
+      "Column": 59,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 906,
+      "Column": 54,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 974,
+      "Column": 101,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1086,
+      "Column": 88,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1128,
+      "Column": 95,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1140,
+      "Column": 71,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1184,
+      "Column": 95,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1221,
+      "Column": 86,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1329,
+      "Column": 87,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1382,
+      "Column": 83,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1415,
+      "Column": 107,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1513,
+      "Column": 89,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1520,
+      "Column": 31,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1527,
+      "Column": 72,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1569,
+      "Column": 103,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1631,
+      "Column": 69,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1675,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1961,
+      "Column": 137,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2139,
+      "Column": 69,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2248,
+      "Column": 81,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2322,
+      "Column": 65,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2332,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2347,
+      "Column": 121,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2456,
+      "Column": 121,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2485,
+      "Column": 115,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2507,
+      "Column": 77,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2511,
+      "Column": 94,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 2606,
+      "Column": 112,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1153,
+      "Column": 39,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'Passphrase' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 591,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Set-VaultFilePermissions' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1097,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Import-VaultSecrets' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1144,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Import-Certificates' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 94,
+      "Column": 13,
+      "RuleName": "PSUseDeclaredVarsMoreThanAssignments",
+      "Severity": "Warning",
+      "Message": "The variable 'varName' is assigned but never used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1370,
+      "Column": 9,
+      "RuleName": "PSAvoidAssignmentToAutomaticVariable",
+      "Severity": "Warning",
+      "Message": "The Variable 'matches' is an automatic variable that is built into PowerShell, assigning to it might have undesired side effects. If assignment is not by design, please use a different name."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1380,
+      "Column": 21,
+      "RuleName": "PSAvoidAssignmentToAutomaticVariable",
+      "Severity": "Warning",
+      "Message": "The Variable 'matches' is an automatic variable that is built into PowerShell, assigning to it might have undesired side effects. If assignment is not by design, please use a different name."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1359,
+      "Column": 62,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'srcIndex' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1388,
+      "Column": 5,
+      "RuleName": "PSUseDeclaredVarsMoreThanAssignments",
+      "Severity": "Warning",
+      "Message": "The variable 'isPowerInputUsed' is assigned but never used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+      "Line": 67,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+      "Line": 153,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+      "Line": 189,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+      "Line": 284,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+      "Line": 72,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Register-EventLogSources' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+      "Line": 357,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-SyslogEntries' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 674,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 816,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 845,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 873,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 1012,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 1206,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 323,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PipelineActiveTodoFiles' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 586,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PipelineItems' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 631,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PipelineStatistics' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 971,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PipelineHealthMetrics' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 1054,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-ValidCategories' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 1263,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PipelineInterruptions' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+      "Line": 645,
+      "Column": 31,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+      "Line": 688,
+      "Column": 27,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+      "Line": 720,
+      "Column": 27,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+      "Line": 1123,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Invoke-AllCronJobs' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 159,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 167,
+      "Column": 112,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 235,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 290,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 306,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 178,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-ConvoEntries' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+      "Line": 59,
+      "Column": 5,
+      "RuleName": "PSUseDeclaredVarsMoreThanAssignments",
+      "Severity": "Warning",
+      "Message": "The variable 'analysed' is assigned but never used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+      "Line": 60,
+      "Column": 5,
+      "RuleName": "PSUseDeclaredVarsMoreThanAssignments",
+      "Severity": "Warning",
+      "Message": "The variable 'covered' is assigned but never used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+      "Line": 110,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+      "Line": 144,
+      "Column": 54,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+      "Line": 156,
+      "Column": 58,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+      "Line": 43,
+      "Column": 81,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+      "Line": 285,
+      "Column": 5,
+      "RuleName": "PSUseDeclaredVarsMoreThanAssignments",
+      "Severity": "Warning",
+      "Message": "The variable 'secKey' is assigned but never used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psd1",
+      "Line": 76,
+      "Column": 21,
+      "RuleName": "PSUseToExportFieldsInManifest",
+      "Severity": "Warning",
+      "Message": "Do not use wildcard or $null in this field. Explicitly specify a list for FunctionsToExport."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psm1",
+      "Line": 24,
+      "Column": 14,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'TimeoutMs' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psd1",
+      "Line": 76,
+      "Column": 21,
+      "RuleName": "PSUseToExportFieldsInManifest",
+      "Severity": "Warning",
+      "Message": "Do not use wildcard or $null in this field. Explicitly specify a list for FunctionsToExport."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinDriftScan.psm1",
+      "Line": 7,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-ResolvedSinPatterns' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 97,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 139,
+      "Column": 3,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 171,
+      "Column": 85,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 192,
+      "Column": 86,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 210,
+      "Column": 89,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 222,
+      "Column": 86,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 269,
+      "Column": 15,
+      "RuleName": "PSAvoidAssignmentToAutomaticVariable",
+      "Severity": "Warning",
+      "Message": "The Variable 'sender' is an automatic variable that is built into PowerShell, assigning to it might have undesired side effects. If assignment is not by design, please use a different name."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 172,
+      "Column": 66,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 185,
+      "Column": 50,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 229,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 379,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 384,
+      "Column": 49,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 385,
+      "Column": 51,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 325,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-CompletedBackgroundTasks' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+      "Line": 496,
+      "Column": 75,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+      "Line": 51,
+      "Column": 10,
+      "RuleName": "PSUseApprovedVerbs",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Parse-VersionTag' uses an unapproved verb."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+      "Line": 64,
+      "Column": 23,
+      "RuleName": "PSPossibleIncorrectComparisonWithNull",
+      "Severity": "Warning",
+      "Message": "$null should be on the left side of equality comparisons."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+      "Line": 65,
+      "Column": 22,
+      "RuleName": "PSPossibleIncorrectComparisonWithNull",
+      "Severity": "Warning",
+      "Message": "$null should be on the left side of equality comparisons."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-XhtmlReportTester.psm1",
+      "Line": 5,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Test-XhtmlReports' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 628,
+      "Column": 81,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 984,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 988,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 1037,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 934,
+      "Column": 17,
+      "RuleName": "PSAvoidAssignmentToAutomaticVariable",
+      "Severity": "Warning",
+      "Message": "The Variable 'StackTrace' is an automatic variable that is built into PowerShell, assigning to it might have undesired side effects. If assignment is not by design, please use a different name."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 26,
+      "Column": 10,
+      "RuleName": "PSUseApprovedVerbs",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Validate-ConfigPaths' uses an unapproved verb."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 846,
+      "Column": 40,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'Activity' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 2,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-AllProjectFiles' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 26,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Validate-ConfigPaths' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 114,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Initialize-CorePaths' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 229,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-AllProjectPaths' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+      "Line": 866,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Assert-DirectoryExists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "Line": 76,
+      "Column": 21,
+      "RuleName": "PSUseToExportFieldsInManifest",
+      "Severity": "Warning",
+      "Message": "Do not use wildcard or $null in this field. Explicitly specify a list for FunctionsToExport."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 70,
+      "Column": 74,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 585,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 605,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 266,
+      "Column": 39,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'WorkspacePath' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 418,
+      "Column": 39,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'WorkspacePath' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 73,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-DirectoriesWithChanges' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 99,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Test-ReadmeExists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 73,
+      "Column": 124,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 76,
+      "Column": 84,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 185,
+      "Column": 117,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 296,
+      "Column": 121,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 353,
+      "Column": 100,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 357,
+      "Column": 111,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 390,
+      "Column": 116,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 392,
+      "Column": 153,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 397,
+      "Column": 118,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 459,
+      "Column": 95,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 487,
+      "Column": 90,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 491,
+      "Column": 109,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 524,
+      "Column": 98,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 123,
+      "Column": 17,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'UseKey' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 209,
+      "Column": 17,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'ConnectionFile' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 289,
+      "Column": 19,
+      "RuleName": "PSUseUsingScopeModifierInNewRunspaces",
+      "Severity": "Warning",
+      "Message": "The variable '$path' is not declared within this ScriptBlock, and is missing the 'Using:' scope modifier."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 291,
+      "Column": 40,
+      "RuleName": "PSUseUsingScopeModifierInNewRunspaces",
+      "Severity": "Warning",
+      "Message": "The variable '$path' is not declared within this ScriptBlock, and is missing the 'Using:' scope modifier."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 292,
+      "Column": 42,
+      "RuleName": "PSUseUsingScopeModifierInNewRunspaces",
+      "Severity": "Warning",
+      "Message": "The variable '$path' is not declared within this ScriptBlock, and is missing the 'Using:' scope modifier."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "Line": null,
+      "Column": null,
+      "RuleName": "PSUseBOMForUnicodeEncodedFile",
+      "Severity": "Warning",
+      "Message": "Missing BOM encoding for non-ASCII encoded file 'UserProfileManager.psd1'"
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 245,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 287,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 360,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 369,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 414,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 447,
+      "Column": 19,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 480,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 490,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 511,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 519,
+      "Column": 11,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 551,
+      "Column": 19,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 785,
+      "Column": 135,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 786,
+      "Column": 104,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 787,
+      "Column": 133,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 792,
+      "Column": 7,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1020,
+      "Column": 15,
+      "RuleName": "PSAvoidUsingEmptyCatchBlock",
+      "Severity": "Warning",
+      "Message": "Empty catch block is used. Please use Write-Error or throw statements in catch blocks."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 50,
+      "Column": 9,
+      "RuleName": "PSAvoidUsingPlainTextForPassword",
+      "Severity": "Warning",
+      "Message": "Parameter '$Password' should not use String type but either SecureString or PSCredential, otherwise it increases the chance to expose this sensitive information."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 79,
+      "Column": 9,
+      "RuleName": "PSAvoidUsingPlainTextForPassword",
+      "Severity": "Warning",
+      "Message": "Parameter '$Password' should not use String type but either SecureString or PSCredential, otherwise it increases the chance to expose this sensitive information."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 115,
+      "Column": 9,
+      "RuleName": "PSAvoidUsingPlainTextForPassword",
+      "Severity": "Warning",
+      "Message": "Parameter '$Password' should not use String type but either SecureString or PSCredential, otherwise it increases the chance to expose this sensitive information."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1169,
+      "Column": 23,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'ProgressCallback' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1550,
+      "Column": 24,
+      "RuleName": "PSReviewUnusedParameter",
+      "Severity": "Warning",
+      "Message": "The parameter 'ProgressCallback' has been declared but not used."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 153,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-WingetApplications' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 256,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-UserAppConfigs' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 374,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PrintDrivers' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 395,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-MimeTypes' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 425,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-WiFiProfiles' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 463,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-MRULocations' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 524,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-CertificateStores' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 675,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-PSHelpRepositories' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 695,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-ScreensaverSettings' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 775,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-RegionalSettings' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 808,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-EnvironmentVariables' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 830,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-MappedDrives' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 859,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-InstalledFonts' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1001,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-QuickAccessLinks' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1096,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-SearchProviders' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1443,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Compare-WingetLists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1461,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Compare-PSModuleLists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1484,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Compare-SimpleLists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1496,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Compare-MimeLists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1513,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Compare-ConfigFileLists' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "Line": 76,
+      "Column": 21,
+      "RuleName": "PSUseToExportFieldsInManifest",
+      "Severity": "Warning",
+      "Message": "Do not use wildcard or $null in this field. Explicitly specify a list for FunctionsToExport."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+      "Line": 366,
+      "Column": 10,
+      "RuleName": "PSUseSingularNouns",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-ChangeLogEntries' uses a plural noun. A singular noun should be used instead."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psd1",
+      "Line": 13,
+      "Column": 27,
+      "RuleName": "PSUseToExportFieldsInManifest",
+      "Severity": "Warning",
+      "Message": "Do not use wildcard or $null in this field. Explicitly specify a list for FunctionsToExport."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+      "Line": 43,
+      "Column": 1,
+      "RuleName": "PSReservedCmdletChar",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Get-[PREFIX]Status' uses a reserved char in its name."
+    },
+    {
+      "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+      "Line": 58,
+      "Column": 1,
+      "RuleName": "PSReservedCmdletChar",
+      "Severity": "Warning",
+      "Message": "The cmdlet 'Invoke-[PREFIX]Action' uses a reserved char in its name."
+    }
+  ],
+  "path": "C:\\PowerShellGUI\\modules",
+  "generated": "2026-04-29T19:35:16.8605926Z"
+}

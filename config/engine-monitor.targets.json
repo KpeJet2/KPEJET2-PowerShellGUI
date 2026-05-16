@@ -1,0 +1,172 @@
+{
+  "schema": "EngineMonitorTargets/1.0",
+  "description": "Static core targets plus wildcard discovery for current and future engine/service launchers.",
+  "includePatterns": [
+    "scripts/*Engine*.ps1",
+    "scripts/*Service*.ps1",
+    "Launch-*.bat",
+    "SmokeTest-*-FireUpAllEngines*.bat",
+    "scripts/service-cluster-dashboard/Launch-*.bat",
+    "scripts/windguits/*/Launch-*.bat"
+  ],
+  "excludePatterns": [
+    "tests/*",
+    "~REPORTS/*",
+    "reports/*",
+    "logs/*",
+    "temp/*",
+    ".venv/*",
+    "~DOWNLOADS/*"
+  ],
+  "inventorySeed": [
+    "scripts/Invoke-EngineCrashCleanup.ps1",
+    "scripts/Invoke-SINRemedyEngine.ps1",
+    "scripts/Show-MCPServiceConfig.ps1",
+    "scripts/Start-Engines.ps1",
+    "scripts/Start-LocalWebEngine.ps1",
+    "scripts/Start-LocalWebEngineService.ps1",
+    "Launch-CFRMenu.bat",
+    "Launch-CarGame.bat",
+    "Launch-ChaosTest.bat",
+    "Launch-GUI.bat",
+    "Launch-GUI-BUILD-VER.bat",
+    "Launch-GUI-quik_jnr.bat",
+    "Launch-GUI-slow_snr.bat",
+    "Launch-GUI-SmokeTest.bat",
+    "Launch-SandboxBrowserTest.bat",
+    "Launch-SandboxInteractive.bat",
+    "Launch-SandboxSmokeTest.bat",
+    "scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat",
+    "scripts/windguits/Qik-TERMInet0r/Launch-TERMInet0r2B.bat",
+    "SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat",
+    "SmokeTest-Batch-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat",
+    "SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+  ],
+  "targets": [
+    {
+      "name": "EngineBootstrap",
+      "path": "scripts/Start-Engines.ps1",
+      "kind": "PowerShellScript",
+      "runModel": "oneshot",
+      "enabled": true,
+      "autoStart": true,
+      "host": "auto",
+      "startArgs": ["-Quiet"],
+      "stopArgs": [],
+      "restartArgs": ["-Quiet"],
+      "statusHints": ["Start-Engines.ps1"]
+    },
+    {
+      "name": "LocalWebEngineService",
+      "path": "scripts/Start-LocalWebEngineService.ps1",
+      "kind": "PowerShellScript",
+      "runModel": "background",
+      "enabled": true,
+      "autoStart": false,
+      "host": "auto",
+      "startArgs": ["-Action", "Start", "-NoLaunchBrowser"],
+      "stopArgs": ["-Action", "Stop"],
+      "restartArgs": ["-Action", "Restart"],
+      "statusHints": ["Start-LocalWebEngine.ps1", "RunAsService"]
+    },
+    {
+      "name": "LocalWebEngineDirect",
+      "path": "scripts/Start-LocalWebEngine.ps1",
+      "kind": "PowerShellScript",
+      "runModel": "background",
+      "enabled": true,
+      "autoStart": true,
+      "host": "auto",
+      "startArgs": ["-Action", "Start", "-NoLaunchBrowser"],
+      "stopArgs": ["-Action", "Stop"],
+      "restartArgs": ["-Action", "Restart"],
+      "statusHints": ["Start-LocalWebEngine.ps1", "RunAsService"]
+    },
+    {
+      "name": "LaunchGuiQuick",
+      "path": "Launch-GUI-quik_jnr.bat",
+      "kind": "BatchFile",
+      "runModel": "background",
+      "enabled": true,
+      "autoStart": false,
+      "host": "auto",
+      "startArgs": [],
+      "stopArgs": [],
+      "restartArgs": [],
+      "statusHints": ["Launch-GUI-quik_jnr.bat", "Main-GUI.ps1"]
+    },
+    {
+      "name": "ServiceClusterDashboard",
+      "path": "scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat",
+      "kind": "BatchFile",
+      "runModel": "background",
+      "enabled": true,
+      "autoStart": false,
+      "host": "auto",
+      "startArgs": [],
+      "stopArgs": [],
+      "restartArgs": [],
+      "statusHints": ["Launch-ServiceDashboard.bat", "XHTML-ServiceClusterController.xhtml"]
+    }
+  ],
+  "webServiceReportPorts": [7042, 7771, 7772, 7773, 7774, 7775, 7776, 7777, 7778, 7779, 7080, 8042, 9042, 10042, 11042, 22042],
+  "monitorOptions": {
+    "refreshSeconds": 20,
+    "enableAutoStartEditor": true,
+    "enableHotkeys": true,
+    "autoRefreshStatus": true
+  },
+  "launcherSets": {
+    "A": [
+      "http://127.0.0.1:8042/",
+      "http://127.0.0.1:8042/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml",
+      "file:///{workspace}/XHTML-ChangelogViewer.xhtml",
+      "file:///{workspace}/~README.md/PwShGUI-Checklists.xhtml",
+      "file:///{workspace}/~REPORTS/SIN-Scoreboard.xhtml"
+    ],
+    "B": [
+      "http://127.0.0.1:8042/",
+      "http://127.0.0.1:8042/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml",
+      "file:///{workspace}/XHTML-ChangelogViewer.xhtml",
+      "file:///{workspace}/~README.md/PwShGUI-Checklists.xhtml",
+      "file:///{workspace}/~REPORTS/SIN-Scoreboard.xhtml",
+      "file:///{workspace}/XHTML-WorkspaceHub.xhtml",
+      "file:///{workspace}/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml",
+      "http://127.0.0.1:8042/XHTML-WorkspaceHub.xhtml",
+      "http://127.0.0.1:8042/pages/dependency-vis",
+      "http://127.0.0.1:8042/pages/menu-builder"
+    ]
+  },
+  "terminalTabs": {
+    "enabled": true,
+    "windowIdPrefix": "engine-monitor",
+    "launchUserTabs": true,
+    "userTabs": [
+      {
+        "title": "User nslookup",
+        "shell": "cmd.exe",
+        "args": ["/k", "nslookup"]
+      },
+      {
+        "title": "User cmd",
+        "shell": "cmd.exe",
+        "args": ["/k"]
+      },
+      {
+        "title": "User pwsh",
+        "shell": "pwsh.exe",
+        "args": ["-NoLogo", "-NoExit"]
+      }
+    ]
+  },
+  "pipeline": {
+    "integrityScript": "scripts/Invoke-PipelineIntegrityCheck.ps1",
+    "integrityArgs": ["-WriteReport"],
+    "processScript": "scripts/Invoke-PipelineProcess20.ps1",
+    "processArgs": ["-DryRun"],
+    "smokeScript": "tests/Invoke-GUISmokeTest.ps1",
+    "smokeArgs": ["-HeadlessOnly"],
+    "securityScript": "tests/Invoke-SecurityIntegrityTests.ps1",
+    "securityArgs": ["-Mode", "Advisory", "-FailOnCritical"]
+  }
+}

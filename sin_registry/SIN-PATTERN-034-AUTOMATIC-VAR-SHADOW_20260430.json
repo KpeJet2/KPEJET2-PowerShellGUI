@@ -1,0 +1,28 @@
+{
+  "sin_id": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
+  "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
+  "category": "scope",
+  "severity": "MEDIUM",
+  "status": "OPEN",
+  "is_resolved": false,
+  "scanner_pattern": "(?m)^\\s*\\$(matches|args|input|error|foreach|this|host|home|pwd|psitem|psversiontable)\\s*=",
+  "description": "Assigning to a PowerShell automatic/built-in variable name overrides session state and may cause undefined behaviour or, in strict-mode/PSScriptAnalyzer, a parse-time warning that surfaces as a load-time failure when -ErrorAction Stop is set. Re-uses are particularly common with $matches when iterating regex hits in a loop where the same name is used as a local accumulator.",
+  "fix_pattern": "Rename the local variable: prefer descriptive names like $regexMatches, $cliArgs, $inputItems, $caughtError. For regex iteration, use Matches return directly: foreach ($m in [regex]::Matches($text,$pat)) { ... }",
+  "examples_bad": [
+    "$matches = [regex]::Matches($content, $pattern)",
+    "$args = @('--force')"
+  ],
+  "examples_good": [
+    "$regexMatches = [regex]::Matches($content, $pattern)",
+    "$cliArgs = @('--force')"
+  ],
+  "first_seen": "2026-04-30",
+  "first_seen_in": "modules/PwShGUI-DependencyMap.psm1 (initial draft)",
+  "occurrences_known": 2,
+  "agent": "GitHub-Copilot",
+  "created_at": "2026-04-30T00:00:00Z",
+  "citations": [
+    "PSScriptAnalyzer rule PSAvoidAssignmentToAutomaticVariable",
+    "about_Automatic_Variables"
+  ]
+}

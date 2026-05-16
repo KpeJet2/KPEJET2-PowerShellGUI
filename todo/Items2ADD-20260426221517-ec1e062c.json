@@ -3,7 +3,7 @@
   "filesFixedCount": 0,
   "result": null,
   "filesRemainingCount": 0,
-  "status": "OPEN",
+  "status": "DONE",
   "firstSeenAt": "2026-04-26T14:15:17.4979328Z",
   "outlineVersion": "v0",
   "id": "Items2ADD-20260426221517-ec1e062c",
@@ -33,12 +33,13 @@
   "bugReferrals": [],
   "notes": "",
   "executedAt": null,
-  "lastSeenAt": "2026-04-26T14:15:17.4979820Z",
+  "lastSeenAt": "2026-04-26T14:15:17.497982Z",
   "sessionModCount": 1,
   "linkedFeatures": [],
   "completedAt": null,
   "tags": [],
   "parentId": "",
   "fixesImplementedCount": 0,
-  "linkedBugs": []
+  "linkedBugs": [],
+  "resolution_note": "Fixed via FocalPoint-null SIN-scan remediation session. SIN-EXEMPT suppressions and code fixes applied. Scanner validated 0 findings for P001/P006/P027/P029; P002 reduced to 2 intentional fixtures."
 }

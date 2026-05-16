@@ -1,0 +1,10 @@
+{
+  "ManifestBaseline": ".\\reports\\reassessment\\manifest-baseline-reconstructed-20260506-224642.json",
+  "ManifestAfter": ".\\reports\\reassessment\\manifest-after-20260506-224552.json",
+  "ManifestDiff": ".\\reports\\reassessment\\manifest-diff-20260506-224642-vs-224552.json",
+  "ManifestDiffCount": 0,
+  "QueueAfter": ".\\reports\\reassessment\\sin-review-queue-after-20260506-224552.json",
+  "QueueTotalEntries": 143,
+  "QueuePendingReview": 143,
+  "QueuePendingUnresolved": 64
+}

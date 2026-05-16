@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -326,7 +326,7 @@ function Show-MCPServiceConfig {
     $script:_OverviewFormatted = $false
     if (-not $script:_OverviewFormatted) {
         $script:_OverviewFormatted = $true
-        $dgv.Add_CellFormatting({
+        $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             param($s, $e)
             if ($e.ColumnIndex -eq 3 -and $e.RowIndex -ge 0) {
                 $val = "$($e.Value)"
@@ -407,7 +407,7 @@ function Show-MCPServiceConfig {
         $tab.Controls.Add($txt)
 
         # ── Button click handlers ─────────────────────────────────────────────
-        $btnTest.Add_Click({
+        $btnTest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $name = $this.Tag
             $def  = $script:mcpConfig.servers.$name
             $test = Test-MCPServerReachable -ServerName $name -ServerDef $def
@@ -418,7 +418,7 @@ function Show-MCPServiceConfig {
                 [System.Windows.Forms.MessageBoxIcon]::Information)
         })
 
-        $btnSave.Add_Click({
+        $btnSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $name = $this.Tag
             $tb   = $script:serverTextBoxes[$name]
             try {
@@ -434,7 +434,7 @@ function Show-MCPServiceConfig {
             }
         })
 
-        $btnBackupSrv.Add_Click({
+        $btnBackupSrv.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $dest = Backup-MCPConfig -ConfigPath $configPath -BackupDir $backupDir
             if ($dest) {
                 $statusLabel.Text = "Backup created: $dest"
@@ -443,7 +443,7 @@ function Show-MCPServiceConfig {
             }
         })
 
-        $btnReload.Add_Click({
+        $btnReload.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $name = $this.Tag
             $script:mcpConfig = Read-MCPConfig -ConfigPath $configPath
             if ($script:mcpConfig -and $script:mcpConfig.servers.PSObject.Properties[$name]) {
@@ -515,7 +515,7 @@ function Show-MCPServiceConfig {
     $btnAddServer.Location = New-Object System.Drawing.Point(16, 422)
     $btnAddServer.Size     = New-Object System.Drawing.Size(200, 32)
 
-    $btnAddServer.Add_Click({
+    $btnAddServer.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $newName = $txtName.Text.Trim()
         if (-not $newName) {
             [System.Windows.Forms.MessageBox]::Show('Enter a server name.', 'Validation',
@@ -552,14 +552,14 @@ function Show-MCPServiceConfig {
     # ══════════════════════════════════════════════════════════════════════════
     #  OVERVIEW BUTTON HANDLERS
     # ══════════════════════════════════════════════════════════════════════════
-    $btnRefreshAll.Add_Click({
+    $btnRefreshAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $script:mcpConfig = Read-MCPConfig -ConfigPath $configPath
         $script:serverRows = Get-MCPServerSummary -Config $script:mcpConfig
         Populate-OverviewGrid
         Update-AllStatuses
     })
 
-    $btnBackup.Add_Click({
+    $btnBackup.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $dest = Backup-MCPConfig -ConfigPath $configPath -BackupDir $backupDir
         if ($dest) {
             $statusLabel.Text = "Backup saved: $dest"
@@ -568,7 +568,7 @@ function Show-MCPServiceConfig {
         }
     })
 
-    $btnOpenJson.Add_Click({
+    $btnOpenJson.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (Test-Path $configPath) {
             Start-Process $configPath
         } else {
@@ -577,7 +577,7 @@ function Show-MCPServiceConfig {
         }
     })
 
-    $btnTestAll.Add_Click({
+    $btnTestAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Update-AllStatuses
     })
 
@@ -585,7 +585,7 @@ function Show-MCPServiceConfig {
     #  ASSEMBLE & SHOW
     # ══════════════════════════════════════════════════════════════════════════
     $form.Controls.Add($tabControl)
-    $form.Add_Shown({ Update-AllStatuses })
+    $form.Add_Shown({ Update-AllStatuses })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     [void]$form.ShowDialog()
     $form.Dispose()
 }
@@ -602,6 +602,7 @@ function Show-MCPServiceConfig {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

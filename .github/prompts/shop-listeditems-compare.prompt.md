@@ -5,6 +5,7 @@ description: "Use when you need to run Shop-ListedItemsBot with a structured ite
 argument-hint: "Paste item rows, country, and optional stores to compare"
 tools: [web, read, search, todo]
 ---
+<!-- VersionTag: 2605.B5.V46.0 -->
 Run this task with `Shop-ListedItemsBot`.
 
 ## Goal

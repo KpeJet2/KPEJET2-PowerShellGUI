@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
 # koe-RumA Agent Configuration
 # Version: 1.0.0
 # Created: 2026-03-29
@@ -79,3 +79,4 @@ pki:
   cert_file: "pki/koe-RumA-00.pem"
   public_key_file: "pki/koe-RumA-00.pub"
   cert_status: "PENDING_GENERATION"
+

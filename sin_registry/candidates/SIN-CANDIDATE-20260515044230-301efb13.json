@@ -1,0 +1,19 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-301efb13",
+  "title": "Resurfacing bug pattern: The assignment expression is not valid. The input to an assignment operator must be an object that is able to accept assignments, such as a variable or a property.",
+  "occurrences": 4,
+  "sample_bug_ids": [
+    "Bug-20260502000854-c947b9ef",
+    "Bug-20260502001035-56b23cc3",
+    "Bug-20260504142944-ea1d7143",
+    "Bug-20260504143246-ec30fec3"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

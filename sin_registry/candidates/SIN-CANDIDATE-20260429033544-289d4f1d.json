@@ -1,0 +1,32 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-289d4f1d",
+  "title": "Resurfacing bug pattern: 1 functions with no try/catch blocks",
+  "occurrences": 13,
+  "sample_bug_ids": [
+    "Bug-20260412141512-8200cc81",
+    "Bug-20260412142116-7506dccb",
+    "Bug-20260412142331-1566bd6c",
+    "Bug-20260412142529-5b67db1e",
+    "Bug-20260412142726-bfc95349"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector.ps1",
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\Statistics\\_LIB_\\ReportsLibrary.ps1",
+    "C:\\PowerShellGUI\\scripts\\scripts\\Inghams_NewIntuneDeviceSetup.ps1",
+    "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1",
+    "C:\\PowerShellGUI\\scripts\\Build-ToolsInventory.ps1",
+    "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+    "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-A.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-B.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-C.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-D.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-E.ps1",
+    "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

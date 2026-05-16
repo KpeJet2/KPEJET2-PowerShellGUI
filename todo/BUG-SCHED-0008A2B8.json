@@ -1,0 +1,18 @@
+{
+  "category": "SchedulerFailure",
+  "type": "Bug",
+  "title": "Scheduler task failure: TASK-FullSystemsScan",
+  "taskId": "TASK-FullSystemsScan",
+  "id": "BUG-SCHED-0008A2B8",
+  "status": "IN-PROGRESS",
+  "source": "CronAiAthon-Scheduler",
+  "createdAt": "2026-05-06T17:46:49.5014829Z",
+  "priority": "High",
+  "detail": "FullSystemsScan: A parameter cannot be found that matches parameter name 'Parallel'.",
+  "lastUpdated": "2026-05-06T17:46:49.5014829Z",
+  "description": "FullSystemsScan: A parameter cannot be found that matches parameter name 'Parallel'.",
+  "modified": "2026-05-14T20:42:29.8231546Z",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "plannedAt": "2026-05-14T20:42:29.8231546Z",
+  "notes": "Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-14T20:42:29.8231546Z"
+}

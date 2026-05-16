@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-c6e2f6b6",
+  "title": "Resurfacing bug pattern: Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.",
+  "occurrences": 5,
+  "sample_bug_ids": [
+    "Bug-20260502001217-e36934cc",
+    "Bug-20260504141908-ec48059e",
+    "Bug-20260504142314-07d5a90f",
+    "Bug-20260504142652-78264377",
+    "Bug-20260504143638-129e2b62"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\Show-CronAiAthonTool.ps1",
+    "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

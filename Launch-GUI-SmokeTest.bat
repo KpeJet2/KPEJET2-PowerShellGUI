@@ -1,17 +1,19 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B5.V46.0
 # VersionBuildHistory:
 #   2604.B2.V31.0  2026-04-12  Added /HEADLESSONLY, /NOPAUSE, and final FireUpAllEngines chain step
-#   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 4 entries)
+#   2603.B0.V27.0  2026-03-24 03:28  (deduplicated from 4 entries)
+# Show-Objectives: Run dual-engine smoke quickly, preserve fallback behavior, and keep final engine-chain invocation optional.
 REM ============================================================
 REM  Launch-GUI-SmokeTest.bat  |  Automated GUI Smoke Test
 REM  Author   : The Establishment
-REM  Version  : 2603.B0.v27.0
+REM  Version  : 2603.B0.V27.0
 REM  Modified : 24 Mar 2026
 REM  Purpose  : Launches Invoke-GUISmokeTest.ps1 which exercises
 REM             every menu, button and dialog in Main-GUI.ps1
 REM             using UI Automation, then logs pass/fail results.
 REM             Falls back to powershell.exe if pwsh 7+ absent.
 REM ============================================================
+REM Outline: Host-detect -> run shell-matrix smoke -> optionally invoke engine-chain -> return consolidated exit code.
 @echo off
 setlocal enabledelayedexpansion
 
@@ -87,6 +89,7 @@ if /I not "!NO_PAUSE!"=="TRUE" (
     pause >nul
 )
 exit /b !exitCode!
+
 
 
 

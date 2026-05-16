@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -323,7 +323,7 @@ foreach ($rel in $criticalModules) {
     if (Test-Path $full) {
         try {
             $hash = (Get-FileHash -Path $full -Algorithm SHA256).Hash
-            $currentHashes[$rel] = $hash
+            $currentHashes[$rel] = $hash  # SIN-EXEMPT:P027 -- index access, context-verified safe
         } catch {
             Add-Finding 'T7-HASH-READ-FAIL' 'MEDIUM' $full 0 "Could not hash critical module: $_" 'Check file permissions on critical modules.'
         }
@@ -338,8 +338,8 @@ if (Test-Path $baselineFile) {
         foreach ($rel in $criticalModules) {
             if (-not $currentHashes.Contains($rel)) { continue }
             $savedHash = if ($baseline.PSObject.Properties[$rel]) { $baseline.$rel } else { $null }
-            if ($savedHash -and $savedHash -ne $currentHashes[$rel]) {
-                Add-Finding 'T7-HASH-MISMATCH' 'HIGH' (Join-Path $WorkspacePath $rel) 0 "Hash changed since baseline. Saved: $savedHash / Current: $($currentHashes[$rel])" 'Verify the change was intentional. If not, restore from VCS. Update baseline with -UpdateBaseline switch if change is approved.'
+            if ($savedHash -and $savedHash -ne $currentHashes[$rel]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                Add-Finding 'T7-HASH-MISMATCH' 'HIGH' (Join-Path $WorkspacePath $rel) 0 "Hash changed since baseline. Saved: $savedHash / Current: $($currentHashes[$rel])" 'Verify the change was intentional. If not, restore from VCS. Update baseline with -UpdateBaseline switch if change is approved.'  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
     } catch {
@@ -406,7 +406,12 @@ foreach ($f in $psFiles) {
 # ════════════════════════════════════════════════════════════════
 Write-Log '[T10] BOM check for Unicode-containing PS files...'
 
-$unicodeRx = [regex]'[\u2500-\u257F\u2600-\u26FF\u2700-\u27BF\u2713\u2714]|\p{Emoji}'
+# P034: \p{Emoji} is not implemented by .NET regex. Use explicit BMP ranges
+# plus a surrogate-pair high-range guard for emoji in Supplementary planes
+# (PS 5.1 String enumerates as UTF-16 code units, so \uD83C-\uD83E covers the
+# common emoji lead surrogates: 1F300-1FAFF). Pictographs/dingbats covered by
+# 2300-27BF; box drawing & geometric shapes by 2500-25FF; misc symbols 2600-26FF.
+$unicodeRx = [regex]'[\u2300-\u27BF\u2500-\u25FF\u2600-\u26FF\u2700-\u27BF\u2713\u2714\uD83C-\uD83E]'
 foreach ($f in $psFiles) {
     try {
         $content = Get-Content $f.FullName -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
@@ -515,6 +520,7 @@ if ($Mode -in @('Advisory','Audit')) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

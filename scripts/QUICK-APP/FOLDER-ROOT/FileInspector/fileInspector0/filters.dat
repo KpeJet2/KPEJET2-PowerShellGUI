@@ -1,0 +1,7 @@
+# VersionTag: 2605.B5.V46.0
+*.psd1, *.psm1
+*.ps1
+*.bat
+*.html
+*.xhtml
+

@@ -1,0 +1,216 @@
+<!-- VersionTag: 2605.B5.V46.0 -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="cluster-token" content="__CLUSTER_TOKEN__" />
+<meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+<meta name="pwshgui-version-feed" content="../../../~REPORTS/xhtml-version-feed.json" />
+<title>PwShGUI · Service Cluster Dashboard</title>
+<link rel="stylesheet" href="style.css" />
+<script src="../../../styles/pwshgui-version-link.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">⛬</span>
+    <span class="title">PwShGUI · <em>Service Cluster Dashboard</em></span>
+    <span class="version pwshgui-version" id="versionTag" data-pwshgui-version="2605.B5.V46.0">v2605.B5.V46.0</span>
+  </div>
+
+  <!-- Dropdown Menu Bar (mirrors MainGUI) -->
+  <nav class="menubar" id="menuBar"><!-- populated dynamically from /api/menu/maingui --></nav>
+
+  <div class="topbar-right">
+    <span class="status-pill" id="engineStatusPill">Engine: …</span>
+    <span class="status-pill" id="nodeRolePill">ROLE: …</span>
+    <button class="btn btn-icon" id="themeToggle" title="Toggle theme">◐</button>
+    <button class="btn btn-icon" id="refreshAll" title="Refresh">⟲</button>
+    <input type="password" id="tokenInput" class="token-input" placeholder="Cluster token…" />
+    <button class="btn btn-primary" id="connectBtn">Connect</button>
+  </div>
+</header>
+
+<!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+<div class="layout">
+
+  <!-- ─── LEFT BLADE NAV ─── -->
+  <aside class="blade-nav">
+    <button class="blade-tab active" data-blade="overview">📊 Overview</button>
+    <button class="blade-tab" data-blade="engine">⚙ Engine</button>
+    <button class="blade-tab" data-blade="cluster">🌐 Cluster</button>
+    <button class="blade-tab" data-blade="jobs">📥 Jobs</button>
+    <button class="blade-tab" data-blade="mcp">🔌 MCP</button>
+    <button class="blade-tab" data-blade="agents">🤖 Agents</button>
+    <button class="blade-tab" data-blade="pipeline">🔁 Pipeline</button>
+    <button class="blade-tab" data-blade="tools">🛠 Tools</button>
+    <button class="blade-tab" data-blade="security">🛡 Security</button>
+    <button class="blade-tab" data-blade="logs">📜 Logs</button>
+    <button class="blade-tab" data-blade="settings">⚙ Settings</button>
+  </aside>
+
+  <!-- ─── MAIN CONTENT ─── -->
+  <main class="content">
+
+    <!-- ── OVERVIEW BLADE ── -->
+    <section class="blade active" id="blade-overview">
+      <h1>Live Overview</h1>
+      <div class="metric-grid">
+        <div class="metric-card"><h3>CPU</h3><div class="metric-value" id="mCpu">–</div><div class="metric-bar"><span id="mCpuBar"></span></div></div>
+        <div class="metric-card"><h3>Memory</h3><div class="metric-value" id="mRam">–</div><div class="metric-bar"><span id="mRamBar"></span></div></div>
+        <div class="metric-card"><h3>Disk (Workspace)</h3><div class="metric-value" id="mDisk">–</div><div class="metric-bar"><span id="mDiskBar"></span></div></div>
+        <div class="metric-card"><h3>Engine</h3><div class="metric-value" id="mEngine">–</div><div class="metric-sub" id="mEngineSub">port 8042</div></div>
+        <div class="metric-card"><h3>Cluster Nodes</h3><div class="metric-value" id="mNodes">–</div></div>
+        <div class="metric-card"><h3>Jobs Queued</h3><div class="metric-value" id="mJobs">–</div></div>
+        <div class="metric-card"><h3>SINs Open</h3><div class="metric-value" id="mSins">–</div><div class="metric-sub" id="mSinsSub">scan registry</div></div>
+        <div class="metric-card"><h3>Realtime Stream</h3><div class="metric-value" id="mWs">–</div><div class="metric-sub">WebSocket</div></div>
+      </div>
+
+      <h2>Top Processes</h2>
+      <div class="table-wrap"><table id="procTable"><thead><tr><th>PID</th><th>Name</th><th>CPU%</th><th>Mem MB</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ── ENGINE BLADE ── -->
+    <section class="blade" id="blade-engine">
+      <h1>Local Web Engine</h1>
+      <div class="control-row">
+        <button class="btn btn-success" data-engine-action="start">▶ Start</button>
+        <button class="btn btn-warn"    data-engine-action="restart">↻ Restart</button>
+        <button class="btn btn-danger"  data-engine-action="stop">■ Stop</button>
+        <button class="btn" id="engineRefresh">⟲ Refresh</button>
+      </div>
+      <pre class="info-block" id="engineInfo">–</pre>
+      <h2>Engine Logs</h2>
+      <select id="engineLogSelect" title="Choose engine log stream" aria-label="Engine log stream">
+        <option value="stdout">stdout</option>
+        <option value="service">service</option>
+        <option value="crash">crash</option>
+        <option value="boot">bootstrap</option>
+      </select>
+      <button class="btn" id="engineLogLoad">Load tail</button>
+      <pre class="log-block" id="engineLog">–</pre>
+    </section>
+
+    <!-- ── CLUSTER BLADE ── -->
+    <section class="blade" id="blade-cluster">
+      <h1>Service Cluster</h1>
+      <div class="control-row">
+        <button class="btn" id="clusterRefresh">⟲ Refresh peers</button>
+        <button class="btn btn-primary" id="addPeerBtn">+ Register Peer</button>
+      </div>
+      <div class="table-wrap">
+        <table id="clusterTable">
+          <thead><tr><th>Node ID</th><th>Host:Port</th><th>Role</th><th>Version</th><th>Last Seen</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <h2>Add Peer</h2>
+      <div class="form-row">
+        <input id="peerHost" placeholder="host (ip)" />
+        <input id="peerPort" type="number" placeholder="port" value="8099" />
+        <input id="peerId"   placeholder="node id" />
+        <select id="peerRole" title="Peer role" aria-label="Peer role"><option>CLONE</option><option>MASTER</option></select>
+        <button class="btn btn-primary" id="peerSubmit">Register</button>
+      </div>
+    </section>
+
+    <!-- ── JOBS BLADE ── -->
+    <section class="blade" id="blade-jobs">
+      <h1>Realtime Job Queue</h1>
+      <div class="control-row">
+        <button class="btn" id="jobsRefresh">⟲ Refresh</button>
+        <input id="jobToolName" placeholder="tool name (e.g. Show-NetworkDetails)" />
+        <button class="btn btn-primary" id="jobSubmit">+ Queue Job</button>
+      </div>
+      <div class="table-wrap"><table id="jobTable"><thead><tr><th>ID</th><th>Tool</th><th>Label</th><th>Status</th><th>Submitted</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ── MCP BLADE ── -->
+    <section class="blade" id="blade-mcp">
+      <h1>MCP Service Registry</h1>
+      <div class="control-row"><button class="btn" id="mcpRefresh">⟲ Refresh</button></div>
+      <div class="card-grid" id="mcpCards"></div>
+    </section>
+
+    <!-- ── AGENTS BLADE ── -->
+    <section class="blade" id="blade-agents">
+      <h1>Agents</h1>
+      <div class="control-row"><button class="btn" id="agentsRefresh">⟲ Refresh</button></div>
+      <div class="card-grid" id="agentCards"></div>
+    </section>
+
+    <!-- ── PIPELINE BLADE ── -->
+    <section class="blade" id="blade-pipeline">
+      <h1>Cron-Ai-Athon Pipeline</h1>
+      <div class="control-row"><button class="btn" id="pipelineRefresh">⟲ Refresh</button></div>
+      <div class="table-wrap"><table id="pipelineTable"><thead><tr><th>Category</th><th>ID</th><th>Title</th><th>Status</th><th>Priority</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ── TOOLS BLADE ── -->
+    <section class="blade" id="blade-tools">
+      <h1>Admin & Management Tools</h1>
+      <div class="control-row"><button class="btn" id="toolsRefresh">⟲ Refresh</button></div>
+      <div class="card-grid" id="toolCards"></div>
+    </section>
+
+    <!-- ── SECURITY BLADE ── -->
+    <section class="blade" id="blade-security">
+      <h1>Security & SIN Registry</h1>
+      <div class="control-row"><button class="btn" id="sinRefresh">⟲ Refresh</button></div>
+      <div class="metric-grid">
+        <div class="metric-card"><h3>Total SINs</h3><div class="metric-value" id="sinTotal">–</div></div>
+        <div class="metric-card"><h3>Critical</h3><div class="metric-value danger" id="sinCritical">–</div></div>
+        <div class="metric-card"><h3>High</h3><div class="metric-value warn" id="sinHigh">–</div></div>
+        <div class="metric-card"><h3>Medium / Low</h3><div class="metric-value" id="sinMedium">–</div></div>
+        <div class="metric-card"><h3>Penance</h3><div class="metric-value" id="sinPenance">–</div></div>
+        <div class="metric-card"><h3>Resolved</h3><div class="metric-value ok" id="sinResolved">–</div></div>
+      </div>
+      <h2>Connected Clients</h2>
+      <div class="table-wrap"><table id="connTable"><thead><tr><th>WS Client</th><th>Connected</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ── LOGS BLADE ── -->
+    <section class="blade" id="blade-logs">
+      <h1>Live Event Stream</h1>
+      <div class="control-row"><button class="btn" id="logsClear">Clear</button></div>
+      <pre class="log-block tall" id="liveLog">–</pre>
+    </section>
+
+    <!-- ── SETTINGS BLADE ── -->
+    <section class="blade" id="blade-settings">
+      <h1>Dashboard Settings</h1>
+      <div class="settings-grid">
+        <label>Theme
+          <select id="themeSelect"><option value="dark">Dark</option><option value="light">Light</option><option value="amber">Amber Console</option></select>
+        </label>
+        <label>Accent Color
+          <input type="color" id="accentColor" value="#4ec9b0" />
+        </label>
+        <label>Refresh Interval (s)
+          <input type="number" id="refreshInterval" min="2" max="60" value="3" />
+        </label>
+        <label>Cluster Token (write to memory only)
+          <input type="password" id="settingsToken" />
+        </label>
+      </div>
+      <p class="hint">Layout, accent and theme persist via localStorage.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════ FLYOUT (right side, MainGUI menu invocation) ═══════════════ -->
+<aside class="flyout" id="flyout">
+  <header><span id="flyoutTitle">Menu Action</span><button class="btn-icon" id="flyoutClose">✕</button></header>
+  <div class="flyout-body" id="flyoutBody"></div>
+</aside>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
+

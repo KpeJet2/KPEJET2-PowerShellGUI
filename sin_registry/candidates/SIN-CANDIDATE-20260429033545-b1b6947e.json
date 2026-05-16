@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260429033545-b1b6947e",
+  "title": "Resurfacing bug pattern: Unexpected token 'Help' in expression or statement.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260412124208-08546813",
+    "Bug-20260421030906-a4952d87"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

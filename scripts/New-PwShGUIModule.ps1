@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -14,19 +14,7 @@
     - Error handling templates (Template 3/5) pre-wired
     - Theme integration via Get-ThemeValue / Set-ControlProperty
     - Write-AppLog instead of Write-Warning/Write-Error
-    - 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember with explicit function list
+    - Export-ModuleMember with explicit function list
 .PARAMETER ModuleName
     Name of the new module (without .psm1 extension).
 .PARAMETER OutputDir
@@ -191,6 +179,7 @@ Write-Host "  Type:      $Type" -ForegroundColor Gray
 Write-Host "  Functions: $(@($Functions).Count)" -ForegroundColor Gray
 Write-Host "  BOM:       Yes (UTF-8)" -ForegroundColor Gray
 Write-Host "  SIN-compliant: VersionTag, CmdletBinding, Write-AppLog, try/catch" -ForegroundColor Gray
+
 
 
 

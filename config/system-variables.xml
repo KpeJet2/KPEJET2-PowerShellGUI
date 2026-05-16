@@ -1,4 +1,4 @@
-<!-- VersionTag: 2604.B0.v1 -->
+﻿<!-- VersionTag: 2605.B5.V46.0 -->
 <SystemVariables>
   <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
   <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
@@ -22,9 +22,11 @@
   <UserDomain>XPS15-MS</UserDomain>
   <UserName>msaib</UserName>
   <Version>
-    <Major>2604</Major>
-    <Minor>B0</Minor>
-    <Build>1</Build>
+    <Major>2605</Major>
+    <Minor>B5</Minor>
+    <Build>5</Build>
+    <VMajor>45</VMajor>
+    <VMinor>0</VMinor>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>

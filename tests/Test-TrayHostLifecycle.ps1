@@ -1,5 +1,5 @@
-#Requires -Version 5.1
-# VersionTag: 2604.B2.V31.2
+﻿#Requires -Version 5.1
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -118,7 +118,7 @@ if ($Interactive) {
     $btnExit.Text = "Force Exit"
     $btnExit.Location = New-Object System.Drawing.Point(150, 120)
     $btnExit.Size = New-Object System.Drawing.Size(100, 30)
-    $btnExit.Add_Click({ $script:_ForceClose = $true; $form.Close() })
+    $btnExit.Add_Click({ try { $script:_ForceClose = $true; $form.Close() } catch { Write-AppLog "Click handler error: $_" 'Error' } })
     $form.Controls.Add($btnExit)
 
     # Tray icon
@@ -141,25 +141,29 @@ if ($Interactive) {
     $trayIcon.Add_DoubleClick($restoreAction)
 
     # Minimize => hide
-    $form.Add_Resize({
-        if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) {
-            $form.Hide()
-            $form.ShowInTaskbar = $false
-            $trayIcon.ShowBalloonTip(1000, "TrayHost Test", "Press SPACEBAR or double-click icon", [System.Windows.Forms.ToolTipIcon]::Info)
-            Write-Host "  [HIDDEN] Form hidden to tray" -ForegroundColor Yellow
-        }
+    $form.Add_Resize({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        try {
+            if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) {
+                $form.Hide()
+                $form.ShowInTaskbar = $false
+                $trayIcon.ShowBalloonTip(1000, "TrayHost Test", "Press SPACEBAR or double-click icon", [System.Windows.Forms.ToolTipIcon]::Info)
+                Write-Host "  [HIDDEN] Form hidden to tray" -ForegroundColor Yellow
+            }
+        } catch { Write-AppLog "Resize handler error: $_" 'Error' }
     })
 
     # FormClosing
-    $form.Add_FormClosing({
+    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         param($s, $e)
-        if (-not $script:_ForceClose) {
-            $e.Cancel = $true
-            $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
-            return
-        }
-        $trayIcon.Visible = $false; $trayIcon.Dispose()
-        Stop-TrayHost
+        try {
+            if (-not $script:_ForceClose) {
+                $e.Cancel = $true
+                $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
+                return
+            }
+            $trayIcon.Visible = $false; $trayIcon.Dispose()
+            Stop-TrayHost
+        } catch { Write-AppLog "FormClosing handler error: $_" 'Error' }
     })
 
     # Init TrayHost
@@ -192,6 +196,7 @@ exit $failCount
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

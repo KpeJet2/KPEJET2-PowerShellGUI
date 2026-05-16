@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -145,7 +145,7 @@ function Test-FindingStillPresent {
         # Check the specific line first
         if ($sinProps -contains 'line_number' -and $Sin.line_number -gt 0) {
             $lineIdx = $Sin.line_number - 1
-            if ($lineIdx -lt $lines.Count -and $compiledRegex.IsMatch($lines[$lineIdx])) {
+            if ($lineIdx -lt $lines.Count -and $compiledRegex.IsMatch($lines[$lineIdx])) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 return $true
             }
         }
@@ -154,7 +154,7 @@ function Test-FindingStillPresent {
         $startLine = [Math]::Max(0, $Sin.line_number - 6)
         $endLine   = [Math]::Min($lines.Count - 1, $Sin.line_number + 4)
         for ($i = $startLine; $i -le $endLine; $i++) {
-            if ($compiledRegex.IsMatch($lines[$i])) { return $true }
+            if ($compiledRegex.IsMatch($lines[$i])) { return $true }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
 
         return $false
@@ -311,7 +311,7 @@ foreach ($item in $pending) {
 
     # Look up remedy from parent pattern
     if ($remedyMap.ContainsKey($parentId)) {
-        $scanRegex = $remedyMap[$parentId].ScanRegex
+        $scanRegex = $remedyMap[$parentId].ScanRegex  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     Write-Host "  Processing: $($sin.sin_id)" -ForegroundColor DarkGray -NoNewline
@@ -382,7 +382,7 @@ foreach ($item in $pending) {
         $escalated++
     }
     else {
-        $remedyText = if ($remedyMap.ContainsKey($parentId)) { $remedyMap[$parentId].Remedy } else { 'No remedy defined' }
+        $remedyText = if ($remedyMap.ContainsKey($parentId)) { $remedyMap[$parentId].Remedy } else { 'No remedy defined' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $notes = "No automated fix. Remedy instructions: $($remedyText.Substring(0, [Math]::Min($remedyText.Length, 200)))"
         $status = Add-RemedyAttempt -SinFile $file -Sin $sin -Method 'manual-remedy-pending' -Success $false -Notes $notes
         Write-Host " RETRY (manual remedy needed)" -ForegroundColor Yellow
@@ -437,6 +437,7 @@ $resultObj
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

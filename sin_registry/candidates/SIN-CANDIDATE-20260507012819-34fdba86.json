@@ -1,0 +1,18 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-34fdba86",
+  "title": "Resurfacing bug pattern: The hash literal was incomplete.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260421030729-e236c853",
+    "Bug-20260504162120-4e91061c"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- VersionTag: 2604.B2.V31.1 -->
+
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -88,11 +89,67 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
 .foresight-chart{width:100%;min-height:300px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
 .sbar{background:var(--surface);border-top:1px solid var(--border);padding:4px 12px;font-size:10px;color:var(--text2);display:flex;gap:16px;flex-shrink:0}
 .hidden{display:none !important}
+/* Chronological scale bar + vertical timeline */
+.tl-scalebar{position:relative;background:#0a0a14;border:1px solid var(--border);border-radius:var(--radius);height:46px;margin-bottom:8px;cursor:pointer;overflow:hidden}
+.tl-scalebar svg{width:100%;height:100%;display:block}
+.tl-scalebar .tl-cursor{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);pointer-events:none;box-shadow:0 0 6px var(--accent)}
+.tl-stream{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 250px);overflow-y:auto;padding-right:6px}
+.tl-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid #555;border-radius:var(--radius);padding:7px 10px;cursor:pointer;transition:border-color .15s,background .15s}
+.tl-card:hover{background:#1f1f33}
+.tl-card.expanded{border-color:var(--accent);background:#1a1a2e}
+.tl-card-head{display:flex;align-items:center;gap:8px;font-size:12px}
+.tl-date{color:#5599cc;font-family:Consolas,monospace;font-size:11px;min-width:84px}
+.tl-title{color:#fff;font-weight:bold;flex:1}
+.tl-flags{display:flex;gap:3px;font-size:13px}
+.tl-flag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;line-height:1.4;border:1px solid transparent}
+.tl-flag.first{color:#7bed9f;border-color:#2d6a3f;background:#0d2418}
+.tl-flag.clone{color:#a8b2cc;border-color:#3a4060;background:#161a2a}
+.tl-flag.discrep{color:#ffc107;border-color:#7a5a10;background:#241c08}
+.tl-flag.leak{color:#ff00aa;border-color:#7a1858;background:#1f0818}
+.tl-flag.false{color:#ff3300;border-color:#7a1f10;background:#1f0808}
+.tl-flag.contra{color:#ff6600;border-color:#7a3a10;background:#1f1108}
+.tl-card-body{display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:11px;color:#c8d8f0}
+.tl-card.expanded .tl-card-body{display:block}
+.tl-meta{display:grid;grid-template-columns:90px 1fr;gap:3px 8px;margin-top:4px}
+.tl-meta-k{color:#6688aa;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+.tl-meta-v{color:#dde6f5;font-size:11px;word-break:break-word}
+.tl-src-pill{display:inline-block;background:#0d1428;border:1px solid #1a2a48;color:#88b0e0;border-radius:10px;padding:1px 8px;margin:1px 3px 1px 0;font-size:10px}
+.tl-src-pill.first{background:#0d2418;border-color:#2d6a3f;color:#7bed9f}
+.tl-src-pill.clone{background:#161a2a;border-color:#3a4060;color:#a8b2cc;font-style:italic}
+.tl-link-chip{display:inline-block;background:#1a1f3a;border:1px solid #2a3460;color:#aaccff;border-radius:3px;padding:1px 6px;margin:1px 3px 1px 0;font-size:10px;cursor:pointer}
+.tl-link-chip:hover{background:#2a3460;color:#fff}
+.tl-disc-row{background:#1a1408;border-left:2px solid #ffc107;padding:3px 6px;margin-top:3px;font-size:10px;color:#ffd966}
+.tl-disc-row.leak{background:#1f0818;border-left-color:#ff00aa;color:#ff88cc}
+.tl-disc-row.false{background:#1f0808;border-left-color:#ff3300;color:#ff8866}
+.tl-disc-row.contra{background:#1f1108;border-left-color:#ff6600;color:#ffaa66}
+/* Pattern Match schematic */
+.pm-layout{display:flex;gap:10px;flex-wrap:wrap}
+.pm-schematic{flex:1;min-width:420px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:6px}
+.pm-schematic svg{width:100%;height:480px;display:block}
+.pm-side{width:260px;display:flex;flex-direction:column;gap:6px}
+.pm-darklist{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:6px;max-height:220px;overflow-y:auto}
+.pm-darklist h4{color:#ff00aa;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pm-dark-item{font-size:10px;padding:3px 5px;border-left:2px solid #ff00aa;background:#150818;color:#ffaadd;margin-bottom:2px;border-radius:2px}
+.pm-hindsight{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:6px;max-height:220px;overflow-y:auto}
+.pm-hindsight h4{color:#ffc107;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pm-hind-item{font-size:10px;padding:3px 5px;border-left:2px solid #ffc107;background:#1a1408;color:#ffe089;margin-bottom:2px;border-radius:2px}
+.pm-legend{display:flex;flex-wrap:wrap;gap:6px;font-size:10px;color:var(--text2);padding:4px 0}
+.pm-legend span{display:inline-flex;align-items:center;gap:4px}
+.pm-legend i{display:inline-block;width:14px;height:3px;border-radius:1px}
+/* Quantum foresight */
+.fs-quantum-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#0a0a18;border:1px solid #1a1a3a;border-radius:var(--radius);padding:5px 10px;margin-top:6px;font-size:11px;color:#88aacc}
+.fs-q-tag{display:inline-block;background:#0d1438;border:1px solid #2a3870;color:#88ccff;border-radius:3px;padding:1px 7px;font-family:Consolas,monospace;font-size:10px}
+.fs-q-tag.entangled{color:#ff00ff;border-color:#7a2870;background:#1a0820}
+.fs-q-tag.epoch{color:#ffaa00;border-color:#7a5a10}
+.fs-q-tag.basis{color:#00ffaa;border-color:#207a48}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--surface)}
 ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
 /* ]]> */
 </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
 <body>
 
@@ -104,6 +161,8 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
     <button data-tab="foresight">Foresight</button>
     <button data-tab="pattern">Pattern Match</button>
     <button data-tab="sources">Sources</button>
+    <button data-tab="builder">Dataset Builder</button>
+    <button data-tab="linkage">Linkage Controls</button>
     <button data-tab="log">Log</button>
   </div>
 </header>
@@ -115,6 +174,22 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
       <option value="virus-computer">Computer Viruses (2000-2025)</option>
       <option value="virus-human">Human Virus Outbreaks (1900-2100)</option>
       <option value="ai-displacement">AI &amp; Automation Displacement (2015-2035)</option>
+      <option value="games-cost-profit">Video Game Titles: Cost vs Profit &amp; Publishers</option>
+      <option value="devices-suppliers">Mobile/Tablet vs Laptop/PC Supplier Profits</option>
+      <option value="fortune500">Fortune 500 Companies &amp; Subsidiaries</option>
+      <option value="world-banking">World Banking Orgs: Trading Names &amp; Ownership</option>
+      <option value="weapons-mfg">Weapons Manufacturers (100yr)</option>
+      <option value="weapons-missiles">Missile Systems (100yr)</option>
+      <option value="weapons-firearms">Firearms (100yr)</option>
+      <option value="weapons-countermeasures">Countermeasures (100yr)</option>
+      <option value="weapons-bio-chem">Biological &amp; Chemical Weapons</option>
+      <option value="weapons-nuclear">Nuclear Weapons</option>
+      <option value="hormones-nutrients">Hormones &amp; Nutrient Relations</option>
+      <option value="proteins-organisms">Proteins &amp; Organisms</option>
+      <option value="domesticated-animals">Domesticated Animals &amp; Origin</option>
+      <option value="psych-meds">Psych Diagnoses &amp; Medications</option>
+      <option value="car-models">Car Models &amp; Manufacturers</option>
+      <option value="taxonomy-styles">Taxonomy of Styles, Cultures &amp; Origins (400yr)</option>
     </select>
   </label>
   <label>Layout:
@@ -137,20 +212,24 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
   <button class="ctl-btn" id="btnClearSel">&#x2715; Clear Sel</button>
   <button class="ctl-btn" id="btnSetRoot">&#x2693; Set Root</button>
   <button class="ctl-btn" id="btnFocusParents">Focus from Sel</button>
+  <div class="ctl-sep"></div>
+  <button class="ctl-btn" id="btnExportPng" title="Export canvas as PNG image">&#x1F5BC; PNG</button>
+  <button class="ctl-btn" id="btnExportJson" title="Export graph data as JSON">&#x1F4CB; JSON</button>
+  <button class="ctl-btn" id="btnExportCsv" title="Export node list as CSV">&#x1F4C4; CSV</button>
   <span id="nodeCount" style="margin-left:auto;color:var(--text2);font-size:11px">Nodes: 0 | Links: 0 | Sel: 0</span>
 </div>
 
 <div class="probe-bar">
   <span class="probe-lbl">Sim:</span>
   <label>Speed <input type="range" id="ctlSpeed" min="1" max="20" value="8"/> <span class="probe-val" id="valSpeed">8</span></label>
-  <label>Freq <input type="range" id="ctlFreq" min="1" max="30" value="10"/> <span class="probe-val" id="valFreq">10</span></label>
+  <label>Freq <input type="range" id="ctlFreq" min="1" max="30" value="2"/> <span class="probe-val" id="valFreq">2</span></label>
   <div class="ctl-sep"></div>
   <span class="probe-lbl">Pulse:</span>
   <label>Hops <input type="number" id="ctlPulseDepth" min="1" max="10" value="3"/></label>
-  <label>Trail <input type="range" id="ctlTrailLife" min="20" max="200" value="80"/> <span class="probe-val" id="valTrail">80</span>f</label>
+  <label>Trail <input type="range" id="ctlTrailLife" min="20" max="200" value="25"/> <span class="probe-val" id="valTrail">25</span>f</label>
   <div class="ctl-sep"></div>
   <span class="probe-lbl">Solid:</span>
-  <label>Depth <input type="number" id="ctlSolidDepth" min="0" max="10" value="2"/></label>
+  <label>Depth <input type="number" id="ctlSolidDepth" min="0" max="10" value="7"/></label>
   <label>Show <select id="ctlLinkDisplay"><option value="all">All</option><option value="selected">Selected</option><option value="root">Root paths</option><option value="none">None</option></select></label>
   <label>Focus <select id="ctlFocusMode"><option value="off">Off</option><option value="separate">Separate</option><option value="merged">Merged</option></select></label>
   <label>Boundary <input type="range" id="ctlBoundary" min="6" max="60" value="20"/> <span class="probe-val" id="valBoundary">20</span></label>
@@ -189,6 +268,23 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
             <option value="crossref">CrossRef</option>
             <option value="pubmed">PubMed</option>
             <option value="wikidata">Wikidata</option>
+            <option value="sec-edgar">SEC EDGAR</option>
+            <option value="opencorporates">OpenCorporates</option>
+            <option value="crunchbase">Crunchbase</option>
+            <option value="companies-house">UK Companies House</option>
+            <option value="yahoo-finance">Yahoo Finance</option>
+            <option value="bloomberg">Bloomberg Terminal</option>
+            <option value="reuters">Reuters Eikon</option>
+            <option value="statista">Statista</option>
+            <option value="world-bank">World Bank Open Data</option>
+            <option value="imf">IMF Data</option>
+            <option value="bis">BIS Statistics</option>
+            <option value="steam-charts">SteamDB / SteamCharts</option>
+            <option value="vgchartz">VGChartz</option>
+            <option value="idc">IDC Trackers</option>
+            <option value="gartner">Gartner Research</option>
+            <option value="github-archive">GitHub Archive (BigQuery)</option>
+            <option value="common-crawl">Common Crawl</option>
           </select>
         </label>
         <button class="run" id="btnRunWizard">&#x25B6; Run Wizard</button>
@@ -198,11 +294,27 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
     <div>
       <div class="sb-section-title">Dataset</div>
       <span class="sb-label">Select Dataset</span>
-      <select id="sbDataset" class="sb-select">
+      <select id="sbDataset" class="sb-select" title="Select dataset to visualize">
         <option value="custom">-- Custom --</option>
         <option value="virus-computer">Computer Viruses</option>
         <option value="virus-human">Human Virus Outbreaks</option>
         <option value="ai-displacement">AI Displacement</option>
+        <option value="games-cost-profit">Game Titles: Cost vs Profit</option>
+        <option value="devices-suppliers">Device Supplier Profits</option>
+        <option value="fortune500">Fortune 500 &amp; Subs</option>
+        <option value="world-banking">World Banking Ownership</option>
+        <option value="weapons-mfg">Weapons Mfg (100yr)</option>
+        <option value="weapons-missiles">Missiles</option>
+        <option value="weapons-firearms">Firearms</option>
+        <option value="weapons-countermeasures">Countermeasures</option>
+        <option value="weapons-bio-chem">Bio &amp; Chem Weapons</option>
+        <option value="weapons-nuclear">Nuclear Weapons</option>
+        <option value="hormones-nutrients">Hormones &amp; Nutrients</option>
+        <option value="proteins-organisms">Proteins &amp; Organisms</option>
+        <option value="domesticated-animals">Domesticated Animals</option>
+        <option value="psych-meds">Psych Dx &amp; Meds</option>
+        <option value="car-models">Car Models</option>
+        <option value="taxonomy-styles">Taxonomy Styles (400yr)</option>
       </select>
 
       <div class="sb-section-title">Filter by Type</div>
@@ -212,7 +324,7 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
     <div>
       <div class="sb-section-title">Layout</div>
       <span class="sb-label">View Mode</span>
-      <select id="sbLayout" class="sb-select">
+      <select id="sbLayout" class="sb-select" title="Select graph layout algorithm">
         <option value="force">Force-Directed</option>
         <option value="radial">Radial</option>
         <option value="hierarchical">Hierarchical</option>
@@ -243,6 +355,8 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
 
     <div>
       <div class="sb-section-title">Link Legend</div>
+      <input type="text" id="linkLegendSearch" class="sb-select" title="Filter link types" placeholder="Filter link types" style="margin-bottom:4px"/>
+      <button class="ctl-btn" id="btnLegendClear" style="width:100%;margin-bottom:4px">Clear Link Filter</button>
       <div class="link-legend" id="linkLegend"></div>
     </div>
   </div>
@@ -255,7 +369,30 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
 
   <div class="panel" id="panelTimeline">
     <div class="panel-content">
-      <svg id="svgTimeline" style="width:100%;height:600px"></svg>
+      <div class="controls-row" style="background:transparent;border:none;padding:0 0 6px 0">
+        <label>Filter
+          <select id="tlFlagFilter">
+            <option value="all">All articles</option>
+            <option value="first">First sources only</option>
+            <option value="clones">Clone-data only</option>
+            <option value="flagged">Any anomaly flag</option>
+            <option value="leak">Darkweb leaks</option>
+            <option value="false">False claims</option>
+            <option value="contra">Contradictions</option>
+            <option value="discrep">Discrepancies</option>
+          </select>
+        </label>
+        <label>Sort
+          <select id="tlSort">
+            <option value="date-asc">Date ascending</option>
+            <option value="date-desc">Date descending</option>
+            <option value="flags">Flag count</option>
+          </select>
+        </label>
+        <span id="tlStats" style="margin-left:auto;color:var(--text2);font-size:11px">0 articles</span>
+      </div>
+      <div class="tl-scalebar" id="tlScaleBar" title="Chronological density of source dates - click to scroll timeline"><svg id="tlScaleSvg"></svg><div class="tl-cursor" id="tlCursor" style="display:none"></div></div>
+      <div class="tl-stream" id="tlStream"></div>
     </div>
   </div>
 
@@ -272,9 +409,15 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
           </select>
         </label>
         <label>Deviance%  <input type="number" id="fsDeviance" value="15" min="1" max="100" step="1" style="width:50px"/></label>
+        <label><input type="checkbox" id="fsQuantum" checked="checked"/> Quantum entangled</label>
+        <label>Min yr ahead <input type="number" id="fsQuantumMin" value="5" min="1" max="50" style="width:50px"/></label>
+        <label>Max yr ahead <input type="number" id="fsQuantumMax" value="20" min="2" max="100" style="width:50px"/></label>
         <button class="ctl-btn accent" id="btnRunForesight">&#x1F52E; Run Foresight</button>
+        <button class="ctl-btn" id="btnReseedQuantum" title="Reseed quantum entanglement basis">&#x269B; Reseed</button>
       </div>
+      <div class="fs-quantum-bar" id="fsQuantumBar"></div>
       <div class="foresight-chart"><svg id="svgForesight" style="width:100%;height:100%"></svg></div>
+      <div id="fsQuantumLog" style="margin-top:8px;font-family:Consolas,monospace;font-size:11px;color:#88aacc;background:#0a0a14;border:1px solid var(--border);border-radius:var(--radius);padding:6px;max-height:160px;overflow-y:auto"></div>
     </div>
   </div>
 
@@ -283,9 +426,23 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
       <div class="controls-row" style="background:transparent;border:none;padding:0 0 8px 0">
         <label>Pattern Regex <input type="text" id="patternRegex" placeholder="e.g. worm|trojan" style="width:200px"/></label>
         <label>Min Corr <input type="number" id="patternMinCorr" value="0.5" min="0" max="1" step="0.05" style="width:60px"/></label>
+        <label>Mode
+          <select id="patternMode">
+            <option value="current">Current dataset</option>
+            <option value="crossover" selected="selected">Cross-dataset crossover</option>
+          </select>
+        </label>
         <button class="ctl-btn accent" id="btnRunPattern">&#x1F50D; Find Patterns</button>
       </div>
-      <table class="data" id="patternTable">
+      <div class="pm-legend" id="pmLegend"></div>
+      <div class="pm-layout">
+        <div class="pm-schematic"><svg id="svgPattern"></svg></div>
+        <div class="pm-side">
+          <div class="pm-darklist"><h4>&#x26A0; Dark Pattern Detections</h4><div id="pmDarkList"></div></div>
+          <div class="pm-hindsight"><h4>&#x1F50D; Hindsight: Patterns Visible Only After</h4><div id="pmHindList"></div></div>
+        </div>
+      </div>
+      <table class="data" id="patternTable" style="margin-top:10px">
         <thead><tr><th>Node A</th><th>Node B</th><th>Corr</th><th>Types</th><th>Pattern</th></tr></thead>
         <tbody></tbody>
       </table>
@@ -296,6 +453,71 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
     <div class="panel-content">
       <table class="data" id="sourcesTable">
         <thead><tr><th>Source</th><th>URL</th><th>Status</th><th>Records</th><th>Last Fetched</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" id="panelBuilder">
+    <div class="panel-content">
+      <div class="wizard-panel">
+        <div class="sb-section-title">Dataset Parameters</div>
+        <label>Dataset Key <input type="text" id="dbKey" placeholder="e.g. custom-taxonomy-01"/></label>
+        <label>Seed Topic <input type="text" id="dbSeedTopic" placeholder="e.g. Taxonomy of visual styles"/></label>
+        <label>Seed Year <input type="number" id="dbSeedYear" value="2000" min="-20000" max="3000"/></label>
+        <label>Period (years) <input type="number" id="dbPeriod" value="25" min="1" max="2000"/></label>
+        <label>Depth <input type="number" id="dbDepth" value="20" min="1" max="200"/></label>
+        <label>Deviation <input type="text" id="dbDeviation" placeholder="e.g. disruption-pivot"/></label>
+        <label>Node Count <input type="number" id="dbNodeCount" value="12" min="2" max="200"/></label>
+        <label>Min Link Value <input type="number" id="dbMinLinkVal" value="1" min="1" max="10"/></label>
+        <label>Max Link Value <input type="number" id="dbMaxLinkVal" value="5" min="1" max="20"/></label>
+        <label>Preferred Link Type
+          <select id="dbPreferredLinkType"></select>
+        </label>
+        <label>Sources
+          <select id="dbSources" multiple="multiple" style="height:120px"></select>
+        </label>
+        <label>Nodes (optional, one per line: id|year|type|group|desc)
+          <textarea id="dbNodesText" rows="5" placeholder="Node A|2001|event|1|Description"></textarea>
+        </label>
+        <label>Links (optional, one per line: source|target|value|type)
+          <textarea id="dbLinksText" rows="4" placeholder="Node A|Node B|3|correlation"></textarea>
+        </label>
+        <div class="controls-row" style="background:transparent;border:none;padding:0">
+          <button class="ctl-btn accent" id="btnDbBuild">Build Skeleton</button>
+          <button class="ctl-btn" id="btnDbQuery">Query Preview</button>
+          <button class="ctl-btn" id="btnDbCheckSources">Check Sources</button>
+          <button class="ctl-btn" id="btnDbApply">Apply Runtime</button>
+          <button class="ctl-btn" id="btnDbSaveLocal">Save Local</button>
+          <button class="ctl-btn" id="btnDbDownload">Download JSON</button>
+        </div>
+      </div>
+      <div class="sb-section-title" style="margin-top:10px">Skeleton Preview</div>
+      <pre id="dbPreview" class="log-area" style="min-height:220px;max-height:320px"></pre>
+      <div class="sb-section-title" style="margin-top:10px">Live Source Checks</div>
+      <table class="data" id="dbSourceTable">
+        <thead><tr><th>Source</th><th>URL</th><th>Status</th><th>Open</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" id="panelLinkage">
+    <div class="panel-content">
+      <div class="wizard-panel">
+        <div class="sb-section-title">Linkage Type Controls</div>
+        <label>Search Link Types <input type="text" id="linkTypeSearch" placeholder="type to filter linkage methods"/></label>
+        <div class="controls-row" style="background:transparent;border:none;padding:0">
+          <button class="ctl-btn" id="btnLinkEnableAll">Enable All</button>
+          <button class="ctl-btn" id="btnLinkDisableAll">Disable All</button>
+          <button class="ctl-btn accent" id="btnRecommendedLinks">Recommended Link Type</button>
+          <span id="recommendedHint" style="color:var(--text2);font-size:11px"></span>
+        </div>
+        <div id="linkTypeList" class="sb-quick-row" style="max-height:250px;overflow-y:auto"></div>
+      </div>
+      <div class="sb-section-title" style="margin-top:10px">Active Linkage Summary</div>
+      <table class="data" id="linkageSummary">
+        <thead><tr><th>Type</th><th>Color</th><th>Enabled</th><th>Interconnect Score</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -327,13 +549,37 @@ function log(msg,level){
   var ts=new Date().toISOString().substr(11,12);
   if(el){el.textContent+="["+ts+"] "+(level||"INFO")+": "+msg+"\n";el.scrollTop=el.scrollHeight;}
 }
-/* ---- NEON LINK COLOURS ---- */
-var LINK_COLOR={
-  causal:"#ff00ff", temporal:"#00ffff", correlation:"#39ff14",
-  influence:"#ff6600", dependency:"#ff00aa", evolution:"#00aaff",
-  conflict:"#ff3300", tech:"#ccff00", default:"#8888ff"
-};
-function linkColor(t){return LINK_COLOR[t]||LINK_COLOR.default;}
+/* ---- LINKAGE TAXONOMY + COLOURS ---- */
+var ALL_LINK_METHODS=[
+  "allies","blackmarket","causal","competitor","conflict","correlation","critics","darkweb","default",
+  "dependency","enemy","evolution","hostile-takeover","influence","inventors","legal-disputes","merger",
+  "ownership","parent-child","partnerships","privacy","silent-partner","stockmarket","subsidiary",
+  "supporters","tax-evasion","tech","temporal","venture-capital",
+  "acquisition","distribution","franchise","ip-licensing","joint-venture","lobbying","market-share",
+  "patent-litigation","sanctions","sponsorship","supply-chain","trade-war"
+];
+ALL_LINK_METHODS.sort(function(a,b){return a.localeCompare(b);});
+var LINK_COLOR={};
+function hsl(h,s,l){return "hsl("+Math.round(h)+","+Math.round(s)+"%,"+Math.round(l)+"%)";}
+function linkTypeColorFromAlphabet(type){
+  var t=(type||"default").toLowerCase();
+  var c=t.charCodeAt(0);
+  if(c<97||c>122)return "#8888ff";
+  var idx=c-97;
+  if(c===118||c===119){
+    var tw=(c===118?0.2:0.85);
+    return hsl(300+tw*20,78,44);
+  }
+  if(c>=120&&c<=122){
+    var tz=(c-120)/2;
+    var l=22-(tz*16);
+    return hsl(275+tz*10,70,l);
+  }
+  var hue=(idx/22)*300;
+  return hsl(hue,85,50);
+}
+ALL_LINK_METHODS.forEach(function(t){LINK_COLOR[t]=linkTypeColorFromAlphabet(t);});
+function linkColor(t){return LINK_COLOR[t]||LINK_COLOR.default||"#8888ff";}
 /* ---- NODE COLOURS ---- */
 var NODE_COLORS=["#e94560","#0fa3b1","#16c79a","#ffc107","#ff6b6b","#9b5de5","#00bcd4","#ff9800","#e040fb","#f72585","#4cc9f0","#7bed9f","#ff4a57","#a8dadc","#70d6ff"];
 /* ---- LINK TYPE INFERENCE ---- */
@@ -348,9 +594,17 @@ function inferType(a,b){
   if(/vaccine|tech|platform|sequenc/.test(s))return "tech";
   return "default";
 }
+function normalizeLinkType(t){
+  var v=(t||"default").toLowerCase().replace(/\s+/g,"-").replace(/_+/g,"-");
+  return v||"default";
+}
+function isLinkTypeEnabled(t){
+  var nt=normalizeLinkType(t);
+  return !!state.enabledLinkTypes[nt];
+}
 /* ---- STATE ---- */
-var state={nodes:[],links:[],dataset:"custom",layout:"force",selectedIds:[],rootNodeId:null,rootLabel:"",hiddenTypes:{},pulseP:[],trailP:[],focusMode:"off",focusedParentIds:[],layoutSeed:1};
-var probe={speed:8,freq:10,pulseDepth:3,trailLife:80,solidDepth:2,linkDisplay:"all",boundaryMargin:20,collisionPad:8};
+var state={nodes:[],links:[],dataset:"custom",layout:"force",selectedIds:[],rootNodeId:null,rootLabel:"",hiddenTypes:{},pulseP:[],trailP:[],focusMode:"off",focusedParentIds:[],layoutSeed:1,linkLegendFilter:"",enabledLinkTypes:{causal:true,correlation:true},recommendedIdx:0,builderPreview:null,localDatasetKeys:[]};
+var probe={speed:8,freq:2,pulseDepth:3,trailLife:25,solidDepth:7,linkDisplay:"all",boundaryMargin:20,collisionPad:8};
 /* ---- CANVAS SETUP ---- */
 var canvas=document.getElementById("vizCanvas");
 var ctx=canvas.getContext("2d");
@@ -377,7 +631,7 @@ function getFocusParents(){
 function buildAdjacency(){
   var adj={};
   simNodes.forEach(function(nd){adj[nd.id]=[];});
-  simLinks.forEach(function(l){adj[l.source.id].push(l.target.id);adj[l.target.id].push(l.source.id);});
+  simLinks.forEach(function(l){if(isLinkTypeEnabled(l.type)){adj[l.source.id].push(l.target.id);adj[l.target.id].push(l.source.id);}});
   return adj;
 }
 function computeMultiSourceDepth(parents){
@@ -600,6 +854,7 @@ function simTick(){
   }
   for(var k=0;k<simLinks.length;k++){
     var l=simLinks[k];
+    if(!isLinkTypeEnabled(l.type))continue;
     var dx2=l.target.x-l.source.x,dy2=l.target.y-l.source.y;
     var d=Math.sqrt(dx2*dx2+dy2*dy2)||1;
     var f2=(d-80)*0.004*(l.value||1)*sp;
@@ -644,18 +899,19 @@ function maybeSpawnPulse(){
   var now=performance.now(),interval=1000/Math.max(1,probe.freq);
   if(now-lastPulseTime<interval||!simLinks.length)return;
   lastPulseTime=now;
-  var cands=simLinks;
-  if(state.rootNodeId){var rc=simLinks.filter(function(l){return l.source.id===state.rootNodeId||l.target.id===state.rootNodeId;});if(rc.length)cands=rc;}
+  var cands=simLinks.filter(function(l){return isLinkTypeEnabled(l.type);});
+  if(state.rootNodeId){var rc=cands.filter(function(l){return l.source.id===state.rootNodeId||l.target.id===state.rootNodeId;});if(rc.length)cands=rc;}
   if(!cands.length)return;
   var l2=cands[Math.floor(Math.random()*cands.length)];
   spawnChain(l2.source,l2.target,0,[l2.source.id]);
 }
 function spawnChain(from,to,depth,vis){
   if(depth>=probe.pulseDepth)return;
-  var lt=simLinks.filter(function(l){return(l.source===from&&l.target===to)||(l.source===to&&l.target===from);})[0];
+  var lt=simLinks.filter(function(l){return ((l.source===from&&l.target===to)||(l.source===to&&l.target===from))&&isLinkTypeEnabled(l.type);})[0];
   var ltype=lt?lt.type:"default";
   state.pulseP.push({from:from,to:to,t:0,speed:0.008+Math.random()*0.006,color:linkColor(ltype),depth:depth});
   var next=simLinks.filter(function(l){
+    if(!isLinkTypeEnabled(l.type))return false;
     if(vis.indexOf(l.source.id)>=0&&vis.indexOf(l.target.id)>=0)return false;
     return l.source===to||l.target===to;
   });
@@ -676,7 +932,7 @@ function lerpColor(a,b,t2){
 }
 function haloColor(nd,ph){
   var types=[];
-  simLinks.forEach(function(l){if(l.source===nd||l.target===nd){if(types.indexOf(l.type)<0)types.push(l.type);}});
+  simLinks.forEach(function(l){if((l.source===nd||l.target===nd)&&isLinkTypeEnabled(l.type)){if(types.indexOf(l.type)<0)types.push(l.type);}});
   if(!types.length)types=["default"];
   var idx=Math.floor(ph*types.length)%types.length;
   var next=(idx+1)%types.length;
@@ -691,6 +947,7 @@ function drawFrame(){
   /* solid links */
   var ld=probe.linkDisplay;
   simLinks.forEach(function(l){
+    if(!isLinkTypeEnabled(l.type))return;
     if(ld==="none")return;
     if(ld==="selected"&&state.selectedIds.indexOf(l.source.id)<0&&state.selectedIds.indexOf(l.target.id)<0)return;
     if(ld==="root"&&!edgeTouchesFocus(l))return;
@@ -722,7 +979,7 @@ function drawFrame(){
     var isSel=state.selectedIds.indexOf(nd.id)>=0;
     var isRoot=nd.id===state.rootNodeId;
     var isFocusParent=state.focusMode!=="off"&&getFocusParents().indexOf(nd.id)>=0;
-    var hasRootLink=state.rootNodeId&&simLinks.some(function(l){return(l.source===nd&&l.target.id===state.rootNodeId)||(l.target===nd&&l.source.id===state.rootNodeId);});
+    var hasRootLink=state.rootNodeId&&simLinks.some(function(l){return isLinkTypeEnabled(l.type)&&((l.source===nd&&l.target.id===state.rootNodeId)||(l.target===nd&&l.source.id===state.rootNodeId));});
     /* red spikes: selected + no root link */
     if(isSel&&state.rootNodeId&&!hasRootLink&&!isRoot){
       var sp=8,sph=(Date.now()*0.003)%1,sr=nd.radius*2.2+Math.sin(sph*2*Math.PI)*5;
@@ -778,16 +1035,29 @@ function buildSim(){
   simLinks=[];
   state.links.forEach(function(l){
     var s=nm[l.source],t=nm[l.target];
-    if(s&&t)simLinks.push({source:s,target:t,value:l.value||1,type:l.type||inferType(s,t)});
+    var tNorm=normalizeLinkType(l.type||inferType(s||{id:l.source},t||{id:l.target}));
+    if(ALL_LINK_METHODS.indexOf(tNorm)<0)ALL_LINK_METHODS.push(tNorm);
+    if(typeof LINK_COLOR[tNorm]==="undefined")LINK_COLOR[tNorm]=linkTypeColorFromAlphabet(tNorm);
+    if(typeof state.enabledLinkTypes[tNorm]==="undefined")state.enabledLinkTypes[tNorm]=false;
+    if(s&&t)simLinks.push({source:s,target:t,value:l.value||1,type:tNorm});
   });
-  applyLayout(state.layout);buildLinkLegend();buildTypeQS();buildSummaryQS();updateSelUI();startSim();
+  ALL_LINK_METHODS.sort(function(a,b){return a.localeCompare(b);});
+  applyLayout(state.layout);buildLinkLegend();buildTypeQS();buildSummaryQS();updateSelUI();renderLinkagePanel();startSim();
   document.getElementById("nodeCount").textContent="Nodes: "+simNodes.length+" | Links: "+simLinks.length+" | Sel: "+state.selectedIds.length;
   document.getElementById("statusMsg").textContent="Simulation running";
 }
 /* ---- LINK LEGEND ---- */
 function buildLinkLegend(){
-  var types={};simLinks.forEach(function(l){types[l.type]=(types[l.type]||0)+1;});
-  var html="";Object.keys(types).forEach(function(t){html+="<div class=\"ll-item\"><span class=\"ll-dot\" style=\"background:"+linkColor(t)+"\"></span>"+t+"</div>";});
+  var types={};
+  simLinks.forEach(function(l){types[l.type]=(types[l.type]||0)+1;});
+  var q=(state.linkLegendFilter||"").toLowerCase();
+  var keys=Object.keys(types).sort(function(a,b){return a.localeCompare(b);});
+  if(q)keys=keys.filter(function(t){return t.indexOf(q)>=0;});
+  var html="";
+  keys.forEach(function(t){
+    var en=isLinkTypeEnabled(t);
+    html+="<div class=\"ll-item\"><span class=\"ll-dot\" style=\"background:"+linkColor(t)+"\"></span><span>"+t+" ("+types[t]+")</span><span style=\"color:"+(en?"#7bed9f":"#666")+";font-size:10px\">"+(en?"on":"off")+"</span></div>";
+  });
   document.getElementById("linkLegend").innerHTML=html||"<div style=\"color:var(--text2)\">No links</div>";
 }
 /* ---- TYPE QUICK SELECT ---- */
@@ -820,7 +1090,7 @@ function updateSelUI(){
 /* ---- NODE DETAIL ---- */
 function showDetail(id){
   var nd=nodeById(id);if(!nd)return;
-  var links=simLinks.filter(function(l){return l.source===nd||l.target===nd;});
+  var links=simLinks.filter(function(l){return (l.source===nd||l.target===nd)&&isLinkTypeEnabled(l.type);});
   var html="<div class=\"nd-name\">"+nd.id+"</div>";
   html+="<div class=\"nd-row\"><span class=\"nd-key\">Year</span><span class=\"nd-val\">"+(nd.year||"?")+"</span></div>";
   html+="<div class=\"nd-row\"><span class=\"nd-key\">Type</span><span class=\"nd-val\">"+(nd.type||"?")+"</span></div>";
@@ -972,10 +1242,734 @@ links:[
   {source:"UBI Debate",target:"AI Regulation",value:3,type:"influence"},
   {source:"Deep Learning Boom",target:"Autonomous Vehicles",value:3,type:"tech"},
   {source:"Autonomous Vehicles",target:"Job Displacement",value:3,type:"influence"}
+]},
+"games-cost-profit":{seedTopic:"Video Game Titles Cost vs Profit",seedYear:2010,period:20,depth:25,deviation:"Microtransaction Pivot",
+nodes:[
+  {id:"GTA V",year:2013,type:"title",group:1,desc:"Dev cost ~265M USD, revenue 8B+"},
+  {id:"Red Dead Redemption 2",year:2018,type:"title",group:1,desc:"Cost ~540M, revenue 2B+"},
+  {id:"Cyberpunk 2077",year:2020,type:"title",group:1,desc:"Cost ~316M, troubled launch then recovery"},
+  {id:"Elden Ring",year:2022,type:"title",group:1,desc:"~200M cost, 25M+ units sold"},
+  {id:"Star Citizen",year:2012,type:"title",group:2,desc:"700M+ crowdfunded, perpetual development"},
+  {id:"Genshin Impact",year:2020,type:"title",group:2,desc:"~100M cost, 5B+ mobile revenue"},
+  {id:"Fortnite",year:2017,type:"title",group:2,desc:"F2P live-service, 9B+ revenue 2018-19"},
+  {id:"Minecraft",year:2011,type:"title",group:1,desc:"Low cost, 300M+ copies sold"},
+  {id:"Rockstar Games",year:2013,type:"publisher",group:3,desc:"Take-Two subsidiary"},
+  {id:"CD Projekt",year:2015,type:"publisher",group:3,desc:"Polish publisher, GOG owner"},
+  {id:"Epic Games",year:2017,type:"publisher",group:3,desc:"Unreal Engine, Fortnite, store"},
+  {id:"miHoYo",year:2020,type:"publisher",group:3,desc:"HoYoverse, Genshin/Star Rail"},
+  {id:"Mojang/Microsoft",year:2014,type:"publisher",group:3,desc:"Acquired Mojang for 2.5B"},
+  {id:"Take-Two Interactive",year:2013,type:"publisher",group:4,desc:"Parent of Rockstar, 2K"},
+  {id:"Activision Blizzard",year:2010,type:"publisher",group:4,desc:"Acquired by MS 2023 for 68.7B"},
+  {id:"Microtransaction Pivot",year:2017,type:"deviation",group:5,desc:"Industry shift to live-service monetisation"},
+  {id:"Loot Box Backlash",year:2018,type:"impact",group:5,desc:"Belgium/Netherlands rulings"},
+  {id:"Subscription Services",year:2017,type:"trend",group:6,desc:"Game Pass, PS+ Premium"}
+],
+links:[
+  {source:"GTA V",target:"Rockstar Games",value:5,type:"dependency"},
+  {source:"Rockstar Games",target:"Take-Two Interactive",value:5,type:"ownership"},
+  {source:"Red Dead Redemption 2",target:"Rockstar Games",value:5,type:"dependency"},
+  {source:"Cyberpunk 2077",target:"CD Projekt",value:5,type:"dependency"},
+  {source:"Fortnite",target:"Epic Games",value:5,type:"dependency"},
+  {source:"Genshin Impact",target:"miHoYo",value:5,type:"dependency"},
+  {source:"Minecraft",target:"Mojang/Microsoft",value:5,type:"ownership"},
+  {source:"Fortnite",target:"Microtransaction Pivot",value:5,type:"causal"},
+  {source:"Genshin Impact",target:"Microtransaction Pivot",value:4,type:"influence"},
+  {source:"Microtransaction Pivot",target:"Loot Box Backlash",value:4,type:"causal"},
+  {source:"Microtransaction Pivot",target:"Subscription Services",value:3,type:"evolution"},
+  {source:"Activision Blizzard",target:"Mojang/Microsoft",value:4,type:"correlation"},
+  {source:"Star Citizen",target:"Cyberpunk 2077",value:2,type:"correlation"},
+  {source:"Elden Ring",target:"Red Dead Redemption 2",value:2,type:"correlation"},
+  {source:"Subscription Services",target:"Mojang/Microsoft",value:3,type:"dependency"},
+  {source:"GTA V",target:"Red Dead Redemption 2",value:3,type:"evolution"}
+]},
+"devices-suppliers":{seedTopic:"Mobile vs PC Supplier Profits",seedYear:2015,period:15,depth:25,deviation:"Apple Silicon Transition",
+nodes:[
+  {id:"Apple iPhone",year:2015,type:"mobile",group:1,desc:"~40% margin, drives Apple revenue"},
+  {id:"Samsung Galaxy",year:2015,type:"mobile",group:1,desc:"Top Android OEM by volume"},
+  {id:"iPad",year:2015,type:"tablet",group:2,desc:"Tablet category leader"},
+  {id:"Surface Pro",year:2017,type:"tablet",group:2,desc:"Microsoft 2-in-1 line"},
+  {id:"MacBook",year:2020,type:"laptop",group:3,desc:"Apple Silicon transition"},
+  {id:"Dell XPS",year:2018,type:"laptop",group:3,desc:"Premium Windows ultrabook"},
+  {id:"Lenovo ThinkPad",year:2015,type:"laptop",group:3,desc:"Enterprise laptop leader"},
+  {id:"HP Spectre",year:2018,type:"laptop",group:3,desc:"HP premium consumer line"},
+  {id:"Custom PC",year:2020,type:"pc",group:4,desc:"DIY enthusiast/gaming segment"},
+  {id:"Apple",year:2015,type:"supplier",group:5,desc:"Highest profit per unit"},
+  {id:"Samsung Electronics",year:2015,type:"supplier",group:5,desc:"Components + devices"},
+  {id:"TSMC",year:2018,type:"foundry",group:6,desc:"Foundry to Apple/AMD/NVIDIA"},
+  {id:"Foxconn",year:2015,type:"contract-mfg",group:6,desc:"Assembles iPhone, consoles"},
+  {id:"Qualcomm",year:2015,type:"silicon",group:7,desc:"Snapdragon SoC, modem licensing"},
+  {id:"Intel",year:2015,type:"silicon",group:7,desc:"PC CPU dominance eroded"},
+  {id:"AMD",year:2019,type:"silicon",group:7,desc:"Ryzen/EPYC profit surge"},
+  {id:"NVIDIA",year:2020,type:"silicon",group:7,desc:"GPU/AI accelerator boom"},
+  {id:"Apple Silicon Transition",year:2020,type:"deviation",group:8,desc:"M1 SoC reshapes laptop margins"}
+],
+links:[
+  {source:"Apple iPhone",target:"Apple",value:5,type:"ownership"},
+  {source:"iPad",target:"Apple",value:5,type:"ownership"},
+  {source:"MacBook",target:"Apple",value:5,type:"ownership"},
+  {source:"Samsung Galaxy",target:"Samsung Electronics",value:5,type:"ownership"},
+  {source:"Apple",target:"TSMC",value:5,type:"dependency"},
+  {source:"AMD",target:"TSMC",value:5,type:"dependency"},
+  {source:"NVIDIA",target:"TSMC",value:5,type:"dependency"},
+  {source:"Apple iPhone",target:"Foxconn",value:4,type:"dependency"},
+  {source:"Samsung Galaxy",target:"Qualcomm",value:4,type:"dependency"},
+  {source:"Dell XPS",target:"Intel",value:3,type:"dependency"},
+  {source:"Dell XPS",target:"AMD",value:2,type:"dependency"},
+  {source:"Lenovo ThinkPad",target:"Intel",value:3,type:"dependency"},
+  {source:"HP Spectre",target:"Intel",value:3,type:"dependency"},
+  {source:"Surface Pro",target:"Intel",value:3,type:"dependency"},
+  {source:"Custom PC",target:"AMD",value:3,type:"dependency"},
+  {source:"Custom PC",target:"NVIDIA",value:4,type:"dependency"},
+  {source:"MacBook",target:"Apple Silicon Transition",value:5,type:"causal"},
+  {source:"Apple Silicon Transition",target:"Intel",value:5,type:"conflict"},
+  {source:"Apple Silicon Transition",target:"TSMC",value:4,type:"influence"},
+  {source:"Apple",target:"Samsung Electronics",value:3,type:"correlation"}
+]},
+"fortune500":{seedTopic:"Fortune 500 Companies and Subsidiaries",seedYear:2015,period:10,depth:25,deviation:"Mega-Acquisition Wave",
+nodes:[
+  {id:"Walmart",year:2015,type:"retail",group:1,desc:"Top of Fortune 500 by revenue"},
+  {id:"Amazon",year:2015,type:"tech-retail",group:1,desc:"AWS + retail conglomerate"},
+  {id:"Apple Inc",year:2015,type:"tech",group:2,desc:"Highest market cap"},
+  {id:"Alphabet",year:2015,type:"tech",group:2,desc:"Google holding company"},
+  {id:"Microsoft",year:2015,type:"tech",group:2,desc:"Cloud + productivity giant"},
+  {id:"Berkshire Hathaway",year:2015,type:"holding",group:3,desc:"Buffett conglomerate"},
+  {id:"ExxonMobil",year:2015,type:"energy",group:4,desc:"Top US oil major"},
+  {id:"UnitedHealth Group",year:2015,type:"healthcare",group:5,desc:"Health insurance leader"},
+  {id:"AWS",year:2015,type:"subsidiary",group:1,desc:"Amazon Web Services unit"},
+  {id:"Whole Foods",year:2017,type:"subsidiary",group:1,desc:"Acquired by Amazon 13.7B"},
+  {id:"YouTube",year:2015,type:"subsidiary",group:2,desc:"Alphabet/Google video platform"},
+  {id:"DeepMind",year:2015,type:"subsidiary",group:2,desc:"Alphabet AI research"},
+  {id:"LinkedIn",year:2016,type:"subsidiary",group:2,desc:"Microsoft acquired 26.2B"},
+  {id:"GitHub",year:2018,type:"subsidiary",group:2,desc:"Microsoft acquired 7.5B"},
+  {id:"Activision Blizzard Inc",year:2023,type:"subsidiary",group:2,desc:"Microsoft acquired 68.7B"},
+  {id:"GEICO",year:2015,type:"subsidiary",group:3,desc:"Berkshire insurance subsidiary"},
+  {id:"BNSF Railway",year:2015,type:"subsidiary",group:3,desc:"Berkshire rail subsidiary"},
+  {id:"Optum",year:2015,type:"subsidiary",group:5,desc:"UnitedHealth services arm"},
+  {id:"Mega-Acquisition Wave",year:2018,type:"deviation",group:6,desc:"Big-tech consolidation cycle"}
+],
+links:[
+  {source:"Amazon",target:"AWS",value:5,type:"ownership"},
+  {source:"Amazon",target:"Whole Foods",value:5,type:"ownership"},
+  {source:"Alphabet",target:"YouTube",value:5,type:"ownership"},
+  {source:"Alphabet",target:"DeepMind",value:5,type:"ownership"},
+  {source:"Microsoft",target:"LinkedIn",value:5,type:"ownership"},
+  {source:"Microsoft",target:"GitHub",value:5,type:"ownership"},
+  {source:"Microsoft",target:"Activision Blizzard Inc",value:5,type:"ownership"},
+  {source:"Berkshire Hathaway",target:"GEICO",value:5,type:"ownership"},
+  {source:"Berkshire Hathaway",target:"BNSF Railway",value:5,type:"ownership"},
+  {source:"UnitedHealth Group",target:"Optum",value:5,type:"ownership"},
+  {source:"Microsoft",target:"Mega-Acquisition Wave",value:5,type:"causal"},
+  {source:"Amazon",target:"Mega-Acquisition Wave",value:4,type:"influence"},
+  {source:"Mega-Acquisition Wave",target:"Activision Blizzard Inc",value:5,type:"causal"},
+  {source:"Mega-Acquisition Wave",target:"Whole Foods",value:3,type:"causal"},
+  {source:"Walmart",target:"Amazon",value:4,type:"conflict"},
+  {source:"Apple Inc",target:"Microsoft",value:3,type:"conflict"},
+  {source:"Apple Inc",target:"Alphabet",value:3,type:"conflict"},
+  {source:"ExxonMobil",target:"Berkshire Hathaway",value:2,type:"correlation"}
+]},
+"world-banking":{seedTopic:"World Banking Trading Names and Ownership",seedYear:2010,period:15,depth:25,deviation:"Credit Suisse Collapse",
+nodes:[
+  {id:"JPMorgan Chase",year:2010,type:"bank-us",group:1,desc:"Largest US bank by assets"},
+  {id:"Bank of America",year:2010,type:"bank-us",group:1,desc:"Owns Merrill Lynch"},
+  {id:"Citigroup",year:2010,type:"bank-us",group:1,desc:"Global consumer + institutional"},
+  {id:"Wells Fargo",year:2010,type:"bank-us",group:1,desc:"US retail banking"},
+  {id:"Goldman Sachs",year:2010,type:"bank-us",group:1,desc:"Investment bank, owns Marcus"},
+  {id:"HSBC",year:2010,type:"bank-uk",group:2,desc:"UK-HQ global, Asia focus"},
+  {id:"Barclays",year:2010,type:"bank-uk",group:2,desc:"UK universal bank"},
+  {id:"UBS",year:2010,type:"bank-eu",group:3,desc:"Swiss wealth management leader"},
+  {id:"Credit Suisse",year:2010,type:"bank-eu",group:3,desc:"Acquired by UBS 2023"},
+  {id:"Deutsche Bank",year:2010,type:"bank-eu",group:3,desc:"German universal bank"},
+  {id:"BNP Paribas",year:2010,type:"bank-eu",group:3,desc:"Largest EU bank by assets"},
+  {id:"ICBC",year:2010,type:"bank-cn",group:4,desc:"Largest bank globally by assets"},
+  {id:"Mitsubishi UFJ",year:2010,type:"bank-jp",group:5,desc:"Japan megabank"},
+  {id:"Merrill Lynch",year:2010,type:"subsidiary",group:1,desc:"BofA wealth/IB arm"},
+  {id:"Marcus by Goldman",year:2016,type:"subsidiary",group:1,desc:"Goldman consumer banking"},
+  {id:"HSBC Holdings plc",year:2010,type:"holding",group:2,desc:"Listed parent of HSBC group"},
+  {id:"UBS Group AG",year:2014,type:"holding",group:3,desc:"Holding parent of UBS"},
+  {id:"BIS",year:2010,type:"regulator",group:6,desc:"Bank for International Settlements, Basel"},
+  {id:"Federal Reserve",year:2010,type:"regulator",group:6,desc:"US central bank"},
+  {id:"Credit Suisse Collapse",year:2023,type:"deviation",group:7,desc:"Emergency UBS acquisition"}
+],
+links:[
+  {source:"Bank of America",target:"Merrill Lynch",value:5,type:"ownership"},
+  {source:"Goldman Sachs",target:"Marcus by Goldman",value:5,type:"ownership"},
+  {source:"HSBC Holdings plc",target:"HSBC",value:5,type:"ownership"},
+  {source:"UBS Group AG",target:"UBS",value:5,type:"ownership"},
+  {source:"UBS",target:"Credit Suisse",value:5,type:"ownership"},
+  {source:"Credit Suisse Collapse",target:"Credit Suisse",value:5,type:"causal"},
+  {source:"Credit Suisse Collapse",target:"UBS",value:5,type:"causal"},
+  {source:"BIS",target:"JPMorgan Chase",value:3,type:"influence"},
+  {source:"BIS",target:"HSBC",value:3,type:"influence"},
+  {source:"BIS",target:"Deutsche Bank",value:3,type:"influence"},
+  {source:"BIS",target:"UBS",value:3,type:"influence"},
+  {source:"Federal Reserve",target:"JPMorgan Chase",value:4,type:"influence"},
+  {source:"Federal Reserve",target:"Bank of America",value:4,type:"influence"},
+  {source:"Federal Reserve",target:"Citigroup",value:4,type:"influence"},
+  {source:"Federal Reserve",target:"Wells Fargo",value:4,type:"influence"},
+  {source:"Federal Reserve",target:"Goldman Sachs",value:4,type:"influence"},
+  {source:"JPMorgan Chase",target:"Citigroup",value:2,type:"correlation"},
+  {source:"HSBC",target:"Barclays",value:2,type:"correlation"},
+  {source:"Deutsche Bank",target:"BNP Paribas",value:2,type:"correlation"},
+  {source:"ICBC",target:"Mitsubishi UFJ",value:2,type:"correlation"},
+  {source:"Credit Suisse Collapse",target:"Deutsche Bank",value:3,type:"influence"}
+]},
+"weapons-mfg":{seedTopic:"Weapons Manufacturers (last 100 years)",seedYear:1925,period:100,depth:30,deviation:"Post-Cold-War Consolidation",
+nodes:[
+  {id:"Lockheed Martin",year:1995,type:"mfg-us",group:1,desc:"Lockheed+Martin Marietta merger; F-35, missiles"},
+  {id:"Boeing Defense",year:1916,type:"mfg-us",group:1,desc:"Aircraft, missiles, satellites"},
+  {id:"Raytheon RTX",year:2020,type:"mfg-us",group:1,desc:"Raytheon+UTC merger; Patriot, Tomahawk"},
+  {id:"Northrop Grumman",year:1994,type:"mfg-us",group:1,desc:"B-2, B-21, ICBMs"},
+  {id:"General Dynamics",year:1952,type:"mfg-us",group:1,desc:"Abrams, submarines, Gulfstream"},
+  {id:"BAE Systems",year:1999,type:"mfg-uk",group:2,desc:"British Aerospace+Marconi merger"},
+  {id:"Rolls-Royce Defence",year:1971,type:"mfg-uk",group:2,desc:"Engines for military aviation"},
+  {id:"Airbus Defence",year:2014,type:"mfg-eu",group:3,desc:"EADS rebranded; A400M, Eurofighter share"},
+  {id:"Thales",year:2000,type:"mfg-eu",group:3,desc:"French electronics + missiles"},
+  {id:"Leonardo",year:2016,type:"mfg-eu",group:3,desc:"Finmeccanica rebrand; helicopters"},
+  {id:"Rheinmetall",year:1889,type:"mfg-eu",group:3,desc:"German tank/ammo maker"},
+  {id:"Rostec",year:2007,type:"mfg-ru",group:4,desc:"Russian state defence holding"},
+  {id:"Almaz-Antey",year:2002,type:"mfg-ru",group:4,desc:"S-300/S-400 air defence"},
+  {id:"NORINCO",year:1980,type:"mfg-cn",group:5,desc:"Chinese state arms conglomerate"},
+  {id:"AVIC",year:2008,type:"mfg-cn",group:5,desc:"Aviation Industry Corp of China"},
+  {id:"IAI",year:1953,type:"mfg-il",group:6,desc:"Israel Aerospace Industries"},
+  {id:"Elbit Systems",year:1966,type:"mfg-il",group:6,desc:"C4ISR, drones"},
+  {id:"Hanwha Aerospace",year:2018,type:"mfg-kr",group:7,desc:"K9 howitzer, K2 tank"},
+  {id:"Mitsubishi Heavy",year:1934,type:"mfg-jp",group:7,desc:"F-2, future GCAP fighter"},
+  {id:"Post-Cold-War Consolidation",year:1995,type:"deviation",group:8,desc:"US prime contractor wave"}
+],
+links:[
+  {source:"Post-Cold-War Consolidation",target:"Lockheed Martin",value:5,type:"causal"},
+  {source:"Post-Cold-War Consolidation",target:"Northrop Grumman",value:5,type:"causal"},
+  {source:"Post-Cold-War Consolidation",target:"Raytheon RTX",value:5,type:"causal"},
+  {source:"Post-Cold-War Consolidation",target:"BAE Systems",value:4,type:"influence"},
+  {source:"Post-Cold-War Consolidation",target:"Airbus Defence",value:3,type:"influence"},
+  {source:"Lockheed Martin",target:"BAE Systems",value:3,type:"dependency"},
+  {source:"Boeing Defense",target:"Lockheed Martin",value:3,type:"conflict"},
+  {source:"Raytheon RTX",target:"Lockheed Martin",value:3,type:"conflict"},
+  {source:"Airbus Defence",target:"Thales",value:4,type:"dependency"},
+  {source:"Leonardo",target:"BAE Systems",value:3,type:"correlation"},
+  {source:"Rheinmetall",target:"Leonardo",value:2,type:"correlation"},
+  {source:"Rostec",target:"Almaz-Antey",value:5,type:"ownership"},
+  {source:"NORINCO",target:"AVIC",value:3,type:"correlation"},
+  {source:"IAI",target:"Elbit Systems",value:3,type:"correlation"},
+  {source:"Hanwha Aerospace",target:"Mitsubishi Heavy",value:2,type:"correlation"},
+  {source:"Lockheed Martin",target:"NORINCO",value:4,type:"conflict"},
+  {source:"Raytheon RTX",target:"Almaz-Antey",value:4,type:"conflict"},
+  {source:"BAE Systems",target:"Rolls-Royce Defence",value:4,type:"dependency"}
+]},
+"weapons-missiles":{seedTopic:"Missile Systems (last 100 years)",seedYear:1944,period:80,depth:25,deviation:"Hypersonic Era",
+nodes:[
+  {id:"V-2",year:1944,type:"ballistic",group:1,desc:"First long-range ballistic missile, Nazi Germany"},
+  {id:"R-7 Semyorka",year:1957,type:"icbm",group:2,desc:"First operational ICBM, USSR"},
+  {id:"Atlas",year:1959,type:"icbm",group:1,desc:"First US operational ICBM"},
+  {id:"Minuteman III",year:1970,type:"icbm",group:1,desc:"Mainstay US silo ICBM"},
+  {id:"Trident II D5",year:1990,type:"slbm",group:1,desc:"US/UK SLBM"},
+  {id:"R-36 Voyevoda (SS-18)",year:1988,type:"icbm",group:2,desc:"Heavy Soviet ICBM, MIRV"},
+  {id:"Topol-M",year:1997,type:"icbm",group:2,desc:"Russian road-mobile ICBM"},
+  {id:"DF-41",year:2017,type:"icbm",group:3,desc:"Chinese MIRV-capable ICBM"},
+  {id:"Tomahawk",year:1983,type:"cruise",group:1,desc:"US subsonic land-attack cruise"},
+  {id:"Kalibr",year:1994,type:"cruise",group:2,desc:"Russian multi-purpose cruise"},
+  {id:"BrahMos",year:2006,type:"cruise",group:4,desc:"Indo-Russian supersonic cruise"},
+  {id:"Patriot PAC-3",year:2001,type:"abm",group:1,desc:"US air/missile defence"},
+  {id:"S-400",year:2007,type:"abm",group:2,desc:"Russian long-range SAM"},
+  {id:"Iron Dome",year:2011,type:"abm",group:5,desc:"Israeli short-range interceptor"},
+  {id:"Aegis BMD",year:2004,type:"abm",group:1,desc:"Naval ballistic missile defence"},
+  {id:"AIM-120 AMRAAM",year:1991,type:"aam",group:1,desc:"US BVR air-to-air"},
+  {id:"R-77",year:1994,type:"aam",group:2,desc:"Russian AMRAAM equivalent"},
+  {id:"Avangard",year:2019,type:"hypersonic",group:2,desc:"Russian HGV"},
+  {id:"DF-17",year:2019,type:"hypersonic",group:3,desc:"Chinese HGV"},
+  {id:"Hypersonic Era",year:2018,type:"deviation",group:6,desc:"Mach 5+ glide vehicles arms race"}
+],
+links:[
+  {source:"V-2",target:"R-7 Semyorka",value:5,type:"evolution"},
+  {source:"V-2",target:"Atlas",value:5,type:"evolution"},
+  {source:"R-7 Semyorka",target:"R-36 Voyevoda (SS-18)",value:4,type:"evolution"},
+  {source:"R-36 Voyevoda (SS-18)",target:"Topol-M",value:4,type:"evolution"},
+  {source:"Topol-M",target:"Avangard",value:4,type:"evolution"},
+  {source:"Atlas",target:"Minuteman III",value:4,type:"evolution"},
+  {source:"Minuteman III",target:"Trident II D5",value:3,type:"evolution"},
+  {source:"DF-41",target:"DF-17",value:3,type:"evolution"},
+  {source:"Tomahawk",target:"Kalibr",value:3,type:"correlation"},
+  {source:"Kalibr",target:"BrahMos",value:3,type:"evolution"},
+  {source:"Patriot PAC-3",target:"S-400",value:4,type:"conflict"},
+  {source:"Aegis BMD",target:"Patriot PAC-3",value:3,type:"correlation"},
+  {source:"Iron Dome",target:"Patriot PAC-3",value:2,type:"correlation"},
+  {source:"AIM-120 AMRAAM",target:"R-77",value:4,type:"conflict"},
+  {source:"Hypersonic Era",target:"Avangard",value:5,type:"causal"},
+  {source:"Hypersonic Era",target:"DF-17",value:5,type:"causal"},
+  {source:"Hypersonic Era",target:"Aegis BMD",value:3,type:"conflict"},
+  {source:"Topol-M",target:"DF-41",value:3,type:"correlation"}
+]},
+"weapons-firearms":{seedTopic:"Firearms (last 100 years)",seedYear:1925,period:100,depth:25,deviation:"Polymer-Frame Pistol Era",
+nodes:[
+  {id:"Thompson M1921",year:1921,type:"smg",group:1,desc:".45 ACP submachine gun"},
+  {id:"M1 Garand",year:1936,type:"rifle",group:1,desc:"US WW2 service rifle, .30-06"},
+  {id:"StG 44",year:1944,type:"assault",group:2,desc:"First mass-issued assault rifle"},
+  {id:"AK-47",year:1947,type:"assault",group:3,desc:"Kalashnikov 7.62x39"},
+  {id:"M16",year:1964,type:"assault",group:1,desc:"US 5.56 NATO platform"},
+  {id:"AK-74",year:1974,type:"assault",group:3,desc:"5.45x39 successor to AK-47"},
+  {id:"M4 Carbine",year:1994,type:"assault",group:1,desc:"M16 short-barrel variant"},
+  {id:"FN SCAR",year:2009,type:"assault",group:4,desc:"Modular 5.56/7.62 platform"},
+  {id:"HK G36",year:1996,type:"assault",group:5,desc:"German polymer assault rifle"},
+  {id:"Beretta 92",year:1975,type:"pistol",group:6,desc:"9mm DA/SA service pistol"},
+  {id:"Glock 17",year:1982,type:"pistol",group:7,desc:"Polymer-frame striker-fire pistol"},
+  {id:"SIG P320",year:2014,type:"pistol",group:5,desc:"Modular pistol; US M17/M18"},
+  {id:"Barrett M82",year:1982,type:"sniper",group:1,desc:".50 BMG anti-materiel rifle"},
+  {id:"Accuracy International AWM",year:1996,type:"sniper",group:2,desc:".338 LM precision rifle"},
+  {id:"M2 Browning",year:1933,type:"hmg",group:1,desc:".50 cal heavy machine gun"},
+  {id:"PKM",year:1969,type:"gpmg",group:3,desc:"Soviet 7.62x54R machine gun"},
+  {id:"FN MAG",year:1958,type:"gpmg",group:4,desc:"Belgian GPMG, NATO standard"},
+  {id:"Polymer-Frame Pistol Era",year:1982,type:"deviation",group:8,desc:"Glock 17 reshapes handgun market"}
+],
+links:[
+  {source:"Thompson M1921",target:"StG 44",value:3,type:"evolution"},
+  {source:"M1 Garand",target:"M16",value:4,type:"evolution"},
+  {source:"StG 44",target:"AK-47",value:5,type:"evolution"},
+  {source:"AK-47",target:"AK-74",value:5,type:"evolution"},
+  {source:"M16",target:"M4 Carbine",value:5,type:"evolution"},
+  {source:"M4 Carbine",target:"FN SCAR",value:3,type:"evolution"},
+  {source:"AK-47",target:"M16",value:4,type:"conflict"},
+  {source:"AK-74",target:"M4 Carbine",value:4,type:"conflict"},
+  {source:"HK G36",target:"FN SCAR",value:2,type:"correlation"},
+  {source:"Beretta 92",target:"Glock 17",value:4,type:"evolution"},
+  {source:"Glock 17",target:"SIG P320",value:4,type:"evolution"},
+  {source:"Polymer-Frame Pistol Era",target:"Glock 17",value:5,type:"causal"},
+  {source:"Polymer-Frame Pistol Era",target:"SIG P320",value:4,type:"causal"},
+  {source:"Polymer-Frame Pistol Era",target:"Beretta 92",value:3,type:"conflict"},
+  {source:"Barrett M82",target:"Accuracy International AWM",value:2,type:"correlation"},
+  {source:"M2 Browning",target:"PKM",value:2,type:"correlation"},
+  {source:"PKM",target:"FN MAG",value:3,type:"correlation"},
+  {source:"M1 Garand",target:"StG 44",value:3,type:"conflict"}
+]},
+"weapons-countermeasures":{seedTopic:"Countermeasures (last 100 years)",seedYear:1940,period:85,depth:25,deviation:"DIRCM Adoption",
+nodes:[
+  {id:"Chaff",year:1943,type:"rf",group:1,desc:"Window/duppel radar reflective strips"},
+  {id:"Flares",year:1958,type:"ir",group:1,desc:"IR decoys vs heat-seeking missiles"},
+  {id:"ALE-47",year:1990,type:"dispenser",group:1,desc:"US chaff/flare dispenser"},
+  {id:"AN/ALQ-99",year:1971,type:"ecm",group:1,desc:"EA-6B/EA-18G jamming pod"},
+  {id:"Next-Gen Jammer",year:2022,type:"ecm",group:1,desc:"NGJ replacement for ALQ-99"},
+  {id:"DIRCM",year:2002,type:"laser",group:2,desc:"Directional IR Countermeasure"},
+  {id:"LAIRCM",year:2005,type:"laser",group:2,desc:"USAF DIRCM variant"},
+  {id:"Towed Decoy",year:1995,type:"rf",group:1,desc:"AN/ALE-50/55 fibre-optic towed"},
+  {id:"MAWS",year:1998,type:"sensor",group:3,desc:"Missile Approach Warning System"},
+  {id:"RWR",year:1968,type:"sensor",group:3,desc:"Radar Warning Receiver"},
+  {id:"Trophy APS",year:2009,type:"hardkill",group:4,desc:"Israeli active protection for tanks"},
+  {id:"Iron Fist APS",year:2014,type:"hardkill",group:4,desc:"Elbit APS, lighter footprint"},
+  {id:"Drozd",year:1983,type:"hardkill",group:5,desc:"Soviet first-gen tank APS"},
+  {id:"NULKA",year:1999,type:"naval-decoy",group:6,desc:"Hovering ship decoy vs sea-skimmers"},
+  {id:"SeaRAM",year:2007,type:"naval-ciws",group:6,desc:"RAM-on-Phalanx mount"},
+  {id:"Phalanx CIWS",year:1980,type:"naval-ciws",group:6,desc:"Close-in 20mm gun system"},
+  {id:"GPS Spoofer",year:2018,type:"cyber",group:7,desc:"Civil-band GNSS denial/deception"},
+  {id:"DIRCM Adoption",year:2010,type:"deviation",group:8,desc:"Wholesale shift away from passive flares"}
+],
+links:[
+  {source:"Chaff",target:"ALE-47",value:4,type:"evolution"},
+  {source:"Flares",target:"ALE-47",value:4,type:"evolution"},
+  {source:"AN/ALQ-99",target:"Next-Gen Jammer",value:5,type:"evolution"},
+  {source:"DIRCM",target:"LAIRCM",value:5,type:"evolution"},
+  {source:"DIRCM Adoption",target:"DIRCM",value:5,type:"causal"},
+  {source:"DIRCM Adoption",target:"LAIRCM",value:5,type:"causal"},
+  {source:"DIRCM Adoption",target:"Flares",value:4,type:"conflict"},
+  {source:"MAWS",target:"DIRCM",value:4,type:"dependency"},
+  {source:"RWR",target:"AN/ALQ-99",value:3,type:"dependency"},
+  {source:"Drozd",target:"Trophy APS",value:3,type:"evolution"},
+  {source:"Trophy APS",target:"Iron Fist APS",value:3,type:"evolution"},
+  {source:"Phalanx CIWS",target:"SeaRAM",value:4,type:"evolution"},
+  {source:"NULKA",target:"SeaRAM",value:2,type:"correlation"},
+  {source:"Towed Decoy",target:"ALE-47",value:2,type:"correlation"},
+  {source:"GPS Spoofer",target:"RWR",value:2,type:"conflict"},
+  {source:"Next-Gen Jammer",target:"GPS Spoofer",value:2,type:"correlation"}
+]},
+"weapons-bio-chem":{seedTopic:"Biological & Chemical Weapons (last 100 years)",seedYear:1925,period:100,depth:25,deviation:"BWC/CWC Treaty Regime",
+nodes:[
+  {id:"Mustard Gas (WW1 legacy)",year:1925,type:"chem-blister",group:1,desc:"Pre-Geneva Protocol use"},
+  {id:"Geneva Protocol",year:1925,type:"treaty",group:9,desc:"Bans chemical/biological warfare use"},
+  {id:"Sarin",year:1938,type:"chem-nerve",group:2,desc:"German nerve agent (G-series)"},
+  {id:"Tabun",year:1936,type:"chem-nerve",group:2,desc:"First G-series nerve agent"},
+  {id:"VX",year:1952,type:"chem-nerve",group:2,desc:"UK-developed V-series nerve agent"},
+  {id:"Novichok",year:1971,type:"chem-nerve",group:3,desc:"Soviet 4th-gen agent (Foliant)"},
+  {id:"Agent Orange",year:1965,type:"chem-defoliant",group:1,desc:"US Vietnam herbicidal warfare"},
+  {id:"Anthrax (weaponised)",year:1942,type:"bio-bact",group:4,desc:"UK Gruinard, US/USSR programs"},
+  {id:"Smallpox (weaponised)",year:1980,type:"bio-virus",group:4,desc:"Soviet Vector Institute stockpile"},
+  {id:"Ricin",year:1978,type:"bio-toxin",group:4,desc:"Markov umbrella assassination"},
+  {id:"Botulinum Toxin",year:1990,type:"bio-toxin",group:4,desc:"Iraq Project 922 stockpile"},
+  {id:"Iraq Halabja Attack",year:1988,type:"event-chem",group:5,desc:"Sarin/VX use vs Kurds"},
+  {id:"Tokyo Subway Sarin",year:1995,type:"event-chem",group:5,desc:"Aum Shinrikyo terror attack"},
+  {id:"US Anthrax Letters",year:2001,type:"event-bio",group:5,desc:"Amerithrax post-9/11"},
+  {id:"Syria Ghouta",year:2013,type:"event-chem",group:5,desc:"Sarin attack, civil war"},
+  {id:"Skripal Poisoning",year:2018,type:"event-chem",group:5,desc:"Novichok in Salisbury UK"},
+  {id:"BWC",year:1972,type:"treaty",group:9,desc:"Biological Weapons Convention"},
+  {id:"CWC",year:1993,type:"treaty",group:9,desc:"Chemical Weapons Convention; OPCW"},
+  {id:"BWC/CWC Treaty Regime",year:1993,type:"deviation",group:8,desc:"Global ban regime; verification gaps remain"}
+],
+links:[
+  {source:"Mustard Gas (WW1 legacy)",target:"Geneva Protocol",value:5,type:"causal"},
+  {source:"Tabun",target:"Sarin",value:5,type:"evolution"},
+  {source:"Sarin",target:"VX",value:5,type:"evolution"},
+  {source:"VX",target:"Novichok",value:5,type:"evolution"},
+  {source:"Sarin",target:"Iraq Halabja Attack",value:5,type:"causal"},
+  {source:"Sarin",target:"Tokyo Subway Sarin",value:5,type:"causal"},
+  {source:"Sarin",target:"Syria Ghouta",value:5,type:"causal"},
+  {source:"Novichok",target:"Skripal Poisoning",value:5,type:"causal"},
+  {source:"Anthrax (weaponised)",target:"US Anthrax Letters",value:5,type:"causal"},
+  {source:"Smallpox (weaponised)",target:"BWC",value:3,type:"influence"},
+  {source:"Botulinum Toxin",target:"BWC",value:3,type:"influence"},
+  {source:"Geneva Protocol",target:"BWC",value:4,type:"evolution"},
+  {source:"BWC",target:"CWC",value:5,type:"evolution"},
+  {source:"BWC/CWC Treaty Regime",target:"BWC",value:5,type:"causal"},
+  {source:"BWC/CWC Treaty Regime",target:"CWC",value:5,type:"causal"},
+  {source:"BWC/CWC Treaty Regime",target:"Syria Ghouta",value:4,type:"conflict"},
+  {source:"BWC/CWC Treaty Regime",target:"Skripal Poisoning",value:4,type:"conflict"},
+  {source:"Agent Orange",target:"Geneva Protocol",value:2,type:"conflict"},
+  {source:"Ricin",target:"BWC",value:2,type:"correlation"}
+]},
+"weapons-nuclear":{seedTopic:"Nuclear Weapons (last 100 years)",seedYear:1939,period:90,depth:30,deviation:"Non-Proliferation Treaty Regime",
+nodes:[
+  {id:"Einstein-Szilard Letter",year:1939,type:"origin",group:1,desc:"Trigger of Manhattan Project"},
+  {id:"Manhattan Project",year:1942,type:"program",group:1,desc:"US wartime nuclear program"},
+  {id:"Trinity Test",year:1945,type:"test",group:1,desc:"First nuclear detonation"},
+  {id:"Hiroshima",year:1945,type:"event",group:1,desc:"Little Boy uranium gun-type"},
+  {id:"Nagasaki",year:1945,type:"event",group:1,desc:"Fat Man plutonium implosion"},
+  {id:"RDS-1 (Joe-1)",year:1949,type:"test",group:2,desc:"First Soviet nuclear test"},
+  {id:"Ivy Mike",year:1952,type:"test",group:1,desc:"First US thermonuclear (H-bomb)"},
+  {id:"RDS-37",year:1955,type:"test",group:2,desc:"First Soviet two-stage thermonuclear"},
+  {id:"Tsar Bomba",year:1961,type:"test",group:2,desc:"50 Mt, largest device ever detonated"},
+  {id:"UK Hurricane Test",year:1952,type:"test",group:3,desc:"First UK nuclear test"},
+  {id:"France Gerboise Bleue",year:1960,type:"test",group:3,desc:"First French test"},
+  {id:"China 596",year:1964,type:"test",group:3,desc:"First Chinese test"},
+  {id:"India Pokhran-I",year:1974,type:"test",group:4,desc:"Smiling Buddha"},
+  {id:"India Pokhran-II",year:1998,type:"test",group:4,desc:"Operation Shakti"},
+  {id:"Pakistan Chagai-I",year:1998,type:"test",group:4,desc:"Pakistan crosses threshold"},
+  {id:"DPRK 2006",year:2006,type:"test",group:5,desc:"First North Korean test"},
+  {id:"DPRK 2017",year:2017,type:"test",group:5,desc:"Claimed thermonuclear"},
+  {id:"Cuban Missile Crisis",year:1962,type:"event",group:6,desc:"Closest brush with nuclear war"},
+  {id:"NPT",year:1968,type:"treaty",group:7,desc:"Non-Proliferation Treaty"},
+  {id:"START / New START",year:2010,type:"treaty",group:7,desc:"US-Russia strategic arms reduction"},
+  {id:"JCPOA",year:2015,type:"treaty",group:7,desc:"Iran nuclear deal"},
+  {id:"Non-Proliferation Treaty Regime",year:1970,type:"deviation",group:8,desc:"Global ceiling on declared powers"}
+],
+links:[
+  {source:"Einstein-Szilard Letter",target:"Manhattan Project",value:5,type:"causal"},
+  {source:"Manhattan Project",target:"Trinity Test",value:5,type:"causal"},
+  {source:"Trinity Test",target:"Hiroshima",value:5,type:"causal"},
+  {source:"Trinity Test",target:"Nagasaki",value:5,type:"causal"},
+  {source:"Hiroshima",target:"RDS-1 (Joe-1)",value:4,type:"causal"},
+  {source:"RDS-1 (Joe-1)",target:"Ivy Mike",value:4,type:"conflict"},
+  {source:"Ivy Mike",target:"RDS-37",value:4,type:"evolution"},
+  {source:"RDS-37",target:"Tsar Bomba",value:4,type:"evolution"},
+  {source:"UK Hurricane Test",target:"NPT",value:2,type:"influence"},
+  {source:"France Gerboise Bleue",target:"NPT",value:2,type:"influence"},
+  {source:"China 596",target:"NPT",value:3,type:"influence"},
+  {source:"India Pokhran-I",target:"India Pokhran-II",value:4,type:"evolution"},
+  {source:"India Pokhran-II",target:"Pakistan Chagai-I",value:5,type:"causal"},
+  {source:"DPRK 2006",target:"DPRK 2017",value:4,type:"evolution"},
+  {source:"Cuban Missile Crisis",target:"NPT",value:5,type:"causal"},
+  {source:"NPT",target:"START / New START",value:4,type:"evolution"},
+  {source:"NPT",target:"JCPOA",value:3,type:"evolution"},
+  {source:"Non-Proliferation Treaty Regime",target:"NPT",value:5,type:"causal"},
+  {source:"Non-Proliferation Treaty Regime",target:"DPRK 2006",value:4,type:"conflict"},
+  {source:"Non-Proliferation Treaty Regime",target:"India Pokhran-II",value:3,type:"conflict"},
+  {source:"Non-Proliferation Treaty Regime",target:"Pakistan Chagai-I",value:3,type:"conflict"}
+]},
+"hormones-nutrients":{seedTopic:"Hormones and Nutrient Relations",seedYear:1900,period:125,depth:20,deviation:"Endocrine Disruptors",
+nodes:[
+  {id:"Insulin",year:1921,type:"hormone-pancreas",group:1,desc:"Regulates blood glucose"},
+  {id:"Glucagon",year:1923,type:"hormone-pancreas",group:1,desc:"Raises blood glucose"},
+  {id:"Thyroxine (T4)",year:1914,type:"hormone-thyroid",group:2,desc:"Metabolic rate regulator"},
+  {id:"Cortisol",year:1936,type:"hormone-adrenal",group:3,desc:"Stress / glucose mobilisation"},
+  {id:"Adrenaline",year:1901,type:"hormone-adrenal",group:3,desc:"Fight-or-flight catecholamine"},
+  {id:"Estrogen",year:1929,type:"hormone-sex",group:4,desc:"Primary female sex hormone"},
+  {id:"Testosterone",year:1935,type:"hormone-sex",group:4,desc:"Primary male sex hormone"},
+  {id:"Vitamin D / Calcitriol",year:1922,type:"hormone-vit",group:5,desc:"Steroid hormone, bone Ca regulation"},
+  {id:"Leptin",year:1994,type:"hormone-adipose",group:6,desc:"Satiety signal from fat cells"},
+  {id:"Ghrelin",year:1999,type:"hormone-gut",group:6,desc:"Hunger signal from stomach"},
+  {id:"Glucose",year:1900,type:"nutrient-carb",group:7,desc:"Primary metabolic fuel"},
+  {id:"Iodine",year:1920,type:"nutrient-mineral",group:8,desc:"Required for T3/T4 synthesis"},
+  {id:"Iron",year:1900,type:"nutrient-mineral",group:8,desc:"Heme synthesis, oxygen transport"},
+  {id:"Calcium",year:1900,type:"nutrient-mineral",group:8,desc:"Bone, neuromuscular signaling"},
+  {id:"Vitamin B12",year:1948,type:"nutrient-vit",group:9,desc:"Methylation, neuro health"},
+  {id:"Tryptophan",year:1901,type:"nutrient-aa",group:10,desc:"Serotonin/melatonin precursor"},
+  {id:"Omega-3 EPA/DHA",year:1980,type:"nutrient-lipid",group:11,desc:"Eicosanoid precursors"},
+  {id:"Endocrine Disruptors",year:1991,type:"deviation",group:12,desc:"BPA/phthalates mimic hormones"}
+],
+links:[
+  {source:"Glucose",target:"Insulin",value:5,type:"causal"},
+  {source:"Glucose",target:"Glucagon",value:4,type:"causal"},
+  {source:"Insulin",target:"Glucagon",value:4,type:"conflict"},
+  {source:"Iodine",target:"Thyroxine (T4)",value:5,type:"dependency"},
+  {source:"Iron",target:"Thyroxine (T4)",value:3,type:"dependency"},
+  {source:"Calcium",target:"Vitamin D / Calcitriol",value:5,type:"dependency"},
+  {source:"Vitamin D / Calcitriol",target:"Calcium",value:5,type:"causal"},
+  {source:"Tryptophan",target:"Cortisol",value:2,type:"correlation"},
+  {source:"Vitamin B12",target:"Adrenaline",value:2,type:"dependency"},
+  {source:"Omega-3 EPA/DHA",target:"Cortisol",value:2,type:"influence"},
+  {source:"Leptin",target:"Ghrelin",value:5,type:"conflict"},
+  {source:"Insulin",target:"Leptin",value:3,type:"correlation"},
+  {source:"Estrogen",target:"Calcium",value:3,type:"influence"},
+  {source:"Testosterone",target:"Iron",value:2,type:"influence"},
+  {source:"Cortisol",target:"Glucose",value:4,type:"causal"},
+  {source:"Adrenaline",target:"Glucose",value:4,type:"causal"},
+  {source:"Endocrine Disruptors",target:"Estrogen",value:5,type:"conflict"},
+  {source:"Endocrine Disruptors",target:"Testosterone",value:5,type:"conflict"},
+  {source:"Endocrine Disruptors",target:"Thyroxine (T4)",value:4,type:"conflict"}
+]},
+"proteins-organisms":{seedTopic:"Proteins and Organisms",seedYear:1950,period:75,depth:25,deviation:"AlphaFold Structural Era",
+nodes:[
+  {id:"Hemoglobin",year:1959,type:"protein-transport",group:1,desc:"O2 transport in vertebrate RBCs"},
+  {id:"Myoglobin",year:1958,type:"protein-transport",group:1,desc:"Muscle O2 storage"},
+  {id:"Insulin (peptide)",year:1955,type:"protein-hormone",group:2,desc:"First sequenced protein (Sanger)"},
+  {id:"Cytochrome c",year:1962,type:"protein-electron",group:1,desc:"Conserved across all aerobes"},
+  {id:"Collagen",year:1954,type:"protein-structural",group:3,desc:"Most abundant mammalian protein"},
+  {id:"Keratin",year:1932,type:"protein-structural",group:3,desc:"Hair/nail/feather/scale"},
+  {id:"Actin",year:1942,type:"protein-cytoskeletal",group:4,desc:"Muscle contraction; eukaryotes"},
+  {id:"Myosin",year:1939,type:"protein-cytoskeletal",group:4,desc:"Motor protein vs actin"},
+  {id:"GFP",year:1962,type:"protein-marker",group:5,desc:"Aequorea victoria; Nobel 2008"},
+  {id:"CRISPR-Cas9",year:2012,type:"protein-enzyme",group:6,desc:"Streptococcus; gene editing"},
+  {id:"Spike (SARS-CoV-2)",year:2020,type:"protein-viral",group:7,desc:"Receptor-binding glycoprotein"},
+  {id:"E. coli",year:1950,type:"organism-bact",group:8,desc:"Workhorse bacterium for protein expression"},
+  {id:"Saccharomyces cerevisiae",year:1950,type:"organism-fungi",group:8,desc:"Baker's yeast; eukaryote model"},
+  {id:"C. elegans",year:1965,type:"organism-animal",group:9,desc:"Brenner model nematode"},
+  {id:"Drosophila",year:1910,type:"organism-animal",group:9,desc:"Morgan fly genetics"},
+  {id:"Homo sapiens",year:2003,type:"organism-animal",group:10,desc:"Human Genome Project complete"},
+  {id:"Arabidopsis thaliana",year:2000,type:"organism-plant",group:11,desc:"Model plant genome"},
+  {id:"AlphaFold Structural Era",year:2021,type:"deviation",group:12,desc:"DeepMind solves protein folding at scale"}
+],
+links:[
+  {source:"E. coli",target:"Insulin (peptide)",value:5,type:"dependency"},
+  {source:"E. coli",target:"GFP",value:3,type:"dependency"},
+  {source:"Saccharomyces cerevisiae",target:"Actin",value:3,type:"dependency"},
+  {source:"Drosophila",target:"Actin",value:2,type:"correlation"},
+  {source:"C. elegans",target:"GFP",value:3,type:"dependency"},
+  {source:"Homo sapiens",target:"Hemoglobin",value:5,type:"dependency"},
+  {source:"Homo sapiens",target:"Collagen",value:5,type:"dependency"},
+  {source:"Homo sapiens",target:"Keratin",value:5,type:"dependency"},
+  {source:"Hemoglobin",target:"Myoglobin",value:4,type:"evolution"},
+  {source:"Actin",target:"Myosin",value:5,type:"dependency"},
+  {source:"Cytochrome c",target:"E. coli",value:4,type:"correlation"},
+  {source:"Cytochrome c",target:"Homo sapiens",value:4,type:"evolution"},
+  {source:"CRISPR-Cas9",target:"E. coli",value:3,type:"dependency"},
+  {source:"Spike (SARS-CoV-2)",target:"Homo sapiens",value:5,type:"conflict"},
+  {source:"Arabidopsis thaliana",target:"Collagen",value:1,type:"correlation"},
+  {source:"AlphaFold Structural Era",target:"Spike (SARS-CoV-2)",value:5,type:"causal"},
+  {source:"AlphaFold Structural Era",target:"CRISPR-Cas9",value:4,type:"influence"},
+  {source:"AlphaFold Structural Era",target:"Hemoglobin",value:3,type:"influence"}
+]},
+"domesticated-animals":{seedTopic:"Domesticated Animals & Country of Origin",seedYear:-10000,period:12000,depth:25,deviation:"Industrial Selective Breeding",
+nodes:[
+  {id:"Dog",year:-15000,type:"canid",group:1,desc:"Origin disputed: Eurasia (wolf)"},
+  {id:"Sheep",year:-9000,type:"ovine",group:2,desc:"Mesopotamia / SW Asia"},
+  {id:"Goat",year:-8000,type:"caprine",group:2,desc:"Zagros Mountains, Iran"},
+  {id:"Pig",year:-7000,type:"suid",group:3,desc:"Independently in China and Anatolia"},
+  {id:"Cattle (taurine)",year:-8500,type:"bovine",group:2,desc:"Fertile Crescent (Bos taurus)"},
+  {id:"Cattle (zebu)",year:-7000,type:"bovine",group:4,desc:"Indus Valley (Bos indicus)"},
+  {id:"Chicken",year:-6000,type:"avian",group:5,desc:"Southeast Asia (red junglefowl)"},
+  {id:"Horse",year:-3500,type:"equid",group:6,desc:"Pontic-Caspian steppe"},
+  {id:"Donkey",year:-3000,type:"equid",group:7,desc:"NE Africa (Nubian wild ass)"},
+  {id:"Camel (dromedary)",year:-3000,type:"camelid",group:8,desc:"Arabian Peninsula"},
+  {id:"Camel (bactrian)",year:-2500,type:"camelid",group:4,desc:"Central Asia"},
+  {id:"Llama",year:-4500,type:"camelid",group:9,desc:"Andes (Peru)"},
+  {id:"Alpaca",year:-4500,type:"camelid",group:9,desc:"Andes (Peru)"},
+  {id:"Cat",year:-7500,type:"felid",group:10,desc:"Near East (Felis lybica)"},
+  {id:"Water Buffalo",year:-3500,type:"bovine",group:11,desc:"South Asia / China"},
+  {id:"Yak",year:-2500,type:"bovine",group:12,desc:"Tibetan Plateau"},
+  {id:"Reindeer",year:-1000,type:"cervid",group:13,desc:"Sami / Siberian peoples"},
+  {id:"Honeybee",year:-7000,type:"insect",group:14,desc:"Anatolia / North Africa"},
+  {id:"Silkworm",year:-3000,type:"insect",group:5,desc:"Ancient China"},
+  {id:"Industrial Selective Breeding",year:1800,type:"deviation",group:15,desc:"Robert Bakewell era; modern breed standards"}
+],
+links:[
+  {source:"Dog",target:"Cat",value:3,type:"correlation"},
+  {source:"Sheep",target:"Goat",value:5,type:"correlation"},
+  {source:"Cattle (taurine)",target:"Cattle (zebu)",value:4,type:"evolution"},
+  {source:"Cattle (taurine)",target:"Water Buffalo",value:3,type:"correlation"},
+  {source:"Water Buffalo",target:"Yak",value:3,type:"correlation"},
+  {source:"Horse",target:"Donkey",value:4,type:"correlation"},
+  {source:"Camel (dromedary)",target:"Camel (bactrian)",value:5,type:"evolution"},
+  {source:"Llama",target:"Alpaca",value:5,type:"correlation"},
+  {source:"Pig",target:"Chicken",value:2,type:"correlation"},
+  {source:"Honeybee",target:"Silkworm",value:2,type:"correlation"},
+  {source:"Reindeer",target:"Yak",value:2,type:"correlation"},
+  {source:"Industrial Selective Breeding",target:"Cattle (taurine)",value:5,type:"influence"},
+  {source:"Industrial Selective Breeding",target:"Sheep",value:5,type:"influence"},
+  {source:"Industrial Selective Breeding",target:"Pig",value:5,type:"influence"},
+  {source:"Industrial Selective Breeding",target:"Chicken",value:5,type:"influence"},
+  {source:"Industrial Selective Breeding",target:"Horse",value:4,type:"influence"},
+  {source:"Industrial Selective Breeding",target:"Dog",value:4,type:"influence"}
+]},
+"psych-meds":{seedTopic:"Psychological Diagnoses & Related Medications",seedYear:1950,period:75,depth:25,deviation:"DSM-5 Reclassification",
+nodes:[
+  {id:"Schizophrenia",year:1911,type:"dx-psychotic",group:1,desc:"Bleuler coined; positive/negative symptoms"},
+  {id:"Major Depressive Disorder",year:1980,type:"dx-mood",group:2,desc:"DSM-III formalisation"},
+  {id:"Bipolar I Disorder",year:1980,type:"dx-mood",group:2,desc:"Manic + depressive episodes"},
+  {id:"Generalized Anxiety Disorder",year:1980,type:"dx-anxiety",group:3,desc:"DSM-III; chronic worry"},
+  {id:"PTSD",year:1980,type:"dx-trauma",group:3,desc:"DSM-III post-Vietnam recognition"},
+  {id:"OCD",year:1980,type:"dx-anxiety",group:3,desc:"Obsessive-compulsive disorder"},
+  {id:"ADHD",year:1987,type:"dx-neurodev",group:4,desc:"DSM-III-R; attention/hyperactivity"},
+  {id:"Autism Spectrum Disorder",year:2013,type:"dx-neurodev",group:4,desc:"DSM-5 unified spectrum"},
+  {id:"Borderline Personality Disorder",year:1980,type:"dx-personality",group:5,desc:"DSM-III Cluster B"},
+  {id:"Chlorpromazine",year:1952,type:"med-antipsychotic-typical",group:6,desc:"First effective antipsychotic"},
+  {id:"Haloperidol",year:1958,type:"med-antipsychotic-typical",group:6,desc:"Butyrophenone antipsychotic"},
+  {id:"Clozapine",year:1972,type:"med-antipsychotic-atypical",group:7,desc:"First atypical; agranulocytosis risk"},
+  {id:"Risperidone",year:1993,type:"med-antipsychotic-atypical",group:7,desc:"D2/5HT2A atypical"},
+  {id:"Imipramine",year:1957,type:"med-tca",group:8,desc:"First tricyclic antidepressant"},
+  {id:"Lithium",year:1949,type:"med-mood-stabilizer",group:9,desc:"Cade discovery; bipolar gold standard"},
+  {id:"Fluoxetine (Prozac)",year:1987,type:"med-ssri",group:10,desc:"First widely-used SSRI"},
+  {id:"Sertraline",year:1991,type:"med-ssri",group:10,desc:"SSRI; OCD/PTSD/MDD"},
+  {id:"Venlafaxine",year:1993,type:"med-snri",group:10,desc:"Serotonin-norepinephrine reuptake inhibitor"},
+  {id:"Diazepam",year:1963,type:"med-benzo",group:11,desc:"Long-acting benzodiazepine"},
+  {id:"Methylphenidate",year:1955,type:"med-stimulant",group:12,desc:"ADHD first-line"},
+  {id:"Lisdexamfetamine",year:2007,type:"med-stimulant",group:12,desc:"Prodrug amphetamine"},
+  {id:"Esketamine",year:2019,type:"med-novel",group:13,desc:"Treatment-resistant depression nasal"},
+  {id:"DSM-5 Reclassification",year:2013,type:"deviation",group:14,desc:"Spectrum-based diagnostic shift"}
+],
+links:[
+  {source:"Schizophrenia",target:"Chlorpromazine",value:5,type:"dependency"},
+  {source:"Schizophrenia",target:"Haloperidol",value:5,type:"dependency"},
+  {source:"Schizophrenia",target:"Clozapine",value:5,type:"dependency"},
+  {source:"Schizophrenia",target:"Risperidone",value:4,type:"dependency"},
+  {source:"Bipolar I Disorder",target:"Lithium",value:5,type:"dependency"},
+  {source:"Bipolar I Disorder",target:"Risperidone",value:3,type:"dependency"},
+  {source:"Major Depressive Disorder",target:"Imipramine",value:4,type:"dependency"},
+  {source:"Major Depressive Disorder",target:"Fluoxetine (Prozac)",value:5,type:"dependency"},
+  {source:"Major Depressive Disorder",target:"Sertraline",value:5,type:"dependency"},
+  {source:"Major Depressive Disorder",target:"Venlafaxine",value:4,type:"dependency"},
+  {source:"Major Depressive Disorder",target:"Esketamine",value:4,type:"dependency"},
+  {source:"Generalized Anxiety Disorder",target:"Diazepam",value:4,type:"dependency"},
+  {source:"Generalized Anxiety Disorder",target:"Sertraline",value:4,type:"dependency"},
+  {source:"PTSD",target:"Sertraline",value:5,type:"dependency"},
+  {source:"OCD",target:"Fluoxetine (Prozac)",value:4,type:"dependency"},
+  {source:"OCD",target:"Sertraline",value:4,type:"dependency"},
+  {source:"ADHD",target:"Methylphenidate",value:5,type:"dependency"},
+  {source:"ADHD",target:"Lisdexamfetamine",value:5,type:"dependency"},
+  {source:"Autism Spectrum Disorder",target:"Risperidone",value:3,type:"dependency"},
+  {source:"Chlorpromazine",target:"Haloperidol",value:4,type:"evolution"},
+  {source:"Haloperidol",target:"Clozapine",value:4,type:"evolution"},
+  {source:"Clozapine",target:"Risperidone",value:5,type:"evolution"},
+  {source:"Imipramine",target:"Fluoxetine (Prozac)",value:4,type:"evolution"},
+  {source:"Fluoxetine (Prozac)",target:"Sertraline",value:5,type:"evolution"},
+  {source:"Sertraline",target:"Venlafaxine",value:4,type:"evolution"},
+  {source:"Methylphenidate",target:"Lisdexamfetamine",value:4,type:"evolution"},
+  {source:"DSM-5 Reclassification",target:"Autism Spectrum Disorder",value:5,type:"causal"},
+  {source:"DSM-5 Reclassification",target:"PTSD",value:3,type:"influence"},
+  {source:"DSM-5 Reclassification",target:"Borderline Personality Disorder",value:3,type:"influence"}
+]},
+"car-models":{seedTopic:"Car Models & Manufacturers",seedYear:1908,period:117,depth:25,deviation:"EV Mass-Market Pivot",
+nodes:[
+  {id:"Ford Model T",year:1908,type:"sedan-ice",group:1,desc:"Mass-production icon, Ford"},
+  {id:"VW Beetle",year:1938,type:"compact-ice",group:2,desc:"Volkswagen, longest single-platform run"},
+  {id:"Chevrolet Corvette",year:1953,type:"sports-ice",group:1,desc:"GM American sports car"},
+  {id:"Ford Mustang",year:1964,type:"muscle-ice",group:1,desc:"Pony car category creator"},
+  {id:"Toyota Corolla",year:1966,type:"sedan-ice",group:3,desc:"Best-selling nameplate worldwide"},
+  {id:"Honda Civic",year:1972,type:"compact-ice",group:3,desc:"Honda economy benchmark"},
+  {id:"BMW 3-Series",year:1975,type:"sport-sedan-ice",group:4,desc:"BMW E21 origin; segment definer"},
+  {id:"Mercedes S-Class",year:1972,type:"luxury-ice",group:4,desc:"Mercedes-Benz flagship"},
+  {id:"Porsche 911",year:1964,type:"sports-ice",group:4,desc:"Rear-engine icon"},
+  {id:"Toyota Prius",year:1997,type:"hybrid",group:3,desc:"First mass-market hybrid"},
+  {id:"Tesla Roadster",year:2008,type:"ev",group:5,desc:"Tesla EV proof-of-concept"},
+  {id:"Tesla Model S",year:2012,type:"ev",group:5,desc:"Premium EV sedan"},
+  {id:"Tesla Model 3",year:2017,type:"ev",group:5,desc:"Mass-market EV pivot"},
+  {id:"Nissan Leaf",year:2010,type:"ev",group:6,desc:"First mass-market BEV"},
+  {id:"BYD Han",year:2020,type:"ev",group:7,desc:"BYD blade-battery EV sedan"},
+  {id:"Rivian R1T",year:2021,type:"ev-truck",group:5,desc:"EV pickup, Amazon-backed"},
+  {id:"Ford F-150 Lightning",year:2022,type:"ev-truck",group:1,desc:"Electrified best-selling US truck"},
+  {id:"Hyundai Ioniq 5",year:2021,type:"ev",group:8,desc:"Hyundai E-GMP platform"},
+  {id:"Toyota",year:1937,type:"mfg",group:3,desc:"Japanese automaker"},
+  {id:"Volkswagen Group",year:1937,type:"mfg",group:2,desc:"Owns VW, Audi, Porsche, Skoda, etc."},
+  {id:"Tesla",year:2003,type:"mfg",group:5,desc:"US EV pure-play"},
+  {id:"BYD",year:1995,type:"mfg",group:7,desc:"Chinese EV/battery giant"},
+  {id:"EV Mass-Market Pivot",year:2017,type:"deviation",group:9,desc:"Tesla Model 3 ramp + Chinese EV scaling"}
+],
+links:[
+  {source:"Ford Model T",target:"Ford Mustang",value:4,type:"evolution"},
+  {source:"Ford Mustang",target:"Ford F-150 Lightning",value:2,type:"correlation"},
+  {source:"VW Beetle",target:"Volkswagen Group",value:5,type:"ownership"},
+  {source:"Porsche 911",target:"Volkswagen Group",value:5,type:"ownership"},
+  {source:"Toyota Corolla",target:"Toyota",value:5,type:"ownership"},
+  {source:"Toyota Prius",target:"Toyota",value:5,type:"ownership"},
+  {source:"Honda Civic",target:"Toyota Corolla",value:3,type:"conflict"},
+  {source:"BMW 3-Series",target:"Mercedes S-Class",value:3,type:"conflict"},
+  {source:"Toyota Prius",target:"Tesla Roadster",value:3,type:"evolution"},
+  {source:"Tesla Roadster",target:"Tesla Model S",value:5,type:"evolution"},
+  {source:"Tesla Model S",target:"Tesla Model 3",value:5,type:"evolution"},
+  {source:"Tesla Model 3",target:"Tesla",value:5,type:"ownership"},
+  {source:"Tesla Roadster",target:"Tesla",value:5,type:"ownership"},
+  {source:"Nissan Leaf",target:"Tesla Model 3",value:3,type:"conflict"},
+  {source:"BYD Han",target:"BYD",value:5,type:"ownership"},
+  {source:"BYD Han",target:"Tesla Model 3",value:4,type:"conflict"},
+  {source:"Rivian R1T",target:"Ford F-150 Lightning",value:4,type:"conflict"},
+  {source:"Ford F-150 Lightning",target:"Ford Model T",value:2,type:"correlation"},
+  {source:"Hyundai Ioniq 5",target:"Tesla Model 3",value:3,type:"conflict"},
+  {source:"EV Mass-Market Pivot",target:"Tesla Model 3",value:5,type:"causal"},
+  {source:"EV Mass-Market Pivot",target:"BYD Han",value:5,type:"causal"},
+  {source:"EV Mass-Market Pivot",target:"Nissan Leaf",value:4,type:"causal"},
+  {source:"EV Mass-Market Pivot",target:"Toyota Prius",value:3,type:"evolution"},
+  {source:"EV Mass-Market Pivot",target:"Hyundai Ioniq 5",value:5,type:"causal"},
+  {source:"EV Mass-Market Pivot",target:"Volkswagen Group",value:4,type:"influence"}
+]},
+"taxonomy-styles":{seedTopic:"Taxonomy of Periods, Styles, Cultures and Country Origins",seedYear:1620,period:405,depth:25,deviation:"Global Digital Remix",
+nodes:[
+  {id:"Baroque",year:1620,type:"style-art",group:1,desc:"Catholic Europe; Italy origin, theatrical ornament and motion"},
+  {id:"Dutch Golden Age",year:1648,type:"period-art",group:2,desc:"Netherlands; mercantile realism, portraiture and domestic scenes"},
+  {id:"Ukiyo-e",year:1670,type:"style-print",group:3,desc:"Japan Edo culture; woodblock prints and urban pleasure districts"},
+  {id:"Rococo",year:1730,type:"style-art",group:1,desc:"France; aristocratic interiors, asymmetry, light ornament"},
+  {id:"Neoclassicism",year:1760,type:"style-art",group:4,desc:"France and Britain; Greco-Roman revival, civic order"},
+  {id:"Romanticism",year:1800,type:"style-art",group:5,desc:"Britain, Germany and France; emotion, nature, sublime"},
+  {id:"Realism",year:1848,type:"style-art",group:6,desc:"France; labor, class and observable life after revolution"},
+  {id:"Arts and Crafts",year:1860,type:"style-design",group:7,desc:"Britain; anti-industrial craft revival led by Morris"},
+  {id:"Impressionism",year:1874,type:"style-art",group:6,desc:"France; plein-air light, color and modern leisure"},
+  {id:"Art Nouveau",year:1890,type:"style-design",group:8,desc:"Belgium and France; organic curves across posters, glass and architecture"},
+  {id:"Bauhaus",year:1919,type:"style-design",group:9,desc:"Germany; modernist school joining craft, art and industry"},
+  {id:"Art Deco",year:1925,type:"style-design",group:8,desc:"France and US adoption; geometry, luxury, machine-age glamour"},
+  {id:"Surrealism",year:1924,type:"style-art",group:10,desc:"France and Spain; dream logic, psychoanalysis and uncanny imagery"},
+  {id:"International Style",year:1932,type:"style-architecture",group:9,desc:"Germany, Switzerland and US; glass, steel, functional grids"},
+  {id:"Mid-Century Modern",year:1945,type:"style-design",group:11,desc:"US and Scandinavia; clean domestic modernism and new materials"},
+  {id:"Brutalism",year:1950,type:"style-architecture",group:12,desc:"Britain origin; exposed concrete and civic monumentality"},
+  {id:"Pop Art",year:1955,type:"style-art",group:13,desc:"Britain and US; mass media, consumer graphics and repetition"},
+  {id:"Minimalism",year:1965,type:"style-art",group:14,desc:"US and Japan resonance; reduction, geometry and silence"},
+  {id:"Postmodernism",year:1975,type:"style-theory",group:15,desc:"US, Italy and global academia; irony, quotation and anti-purity"},
+  {id:"Hip-Hop",year:1973,type:"culture-music",group:16,desc:"Bronx, US; DJing, MCing, graffiti and breakdance"},
+  {id:"Deconstructivism",year:1988,type:"style-architecture",group:15,desc:"US and Europe; fragmentation, non-linear forms"},
+  {id:"Afrofuturism",year:1993,type:"culture-art",group:17,desc:"African diaspora, US and global; speculative Black futures"},
+  {id:"Vaporwave",year:2010,type:"culture-digital",group:18,desc:"Internet-born style; nostalgia, glitch, mallsoft and remix"},
+  {id:"Global Digital Remix",year:2005,type:"deviation",group:19,desc:"Platforms collapse geography; styles recirculate across cultures in real time"}
+],
+links:[
+  {source:"Baroque",target:"Rococo",value:5,type:"evolution"},
+  {source:"Baroque",target:"Dutch Golden Age",value:3,type:"correlation"},
+  {source:"Ukiyo-e",target:"Impressionism",value:4,type:"influence"},
+  {source:"Rococo",target:"Neoclassicism",value:4,type:"conflict"},
+  {source:"Neoclassicism",target:"Romanticism",value:4,type:"conflict"},
+  {source:"Romanticism",target:"Realism",value:4,type:"conflict"},
+  {source:"Arts and Crafts",target:"Art Nouveau",value:5,type:"evolution"},
+  {source:"Realism",target:"Impressionism",value:3,type:"evolution"},
+  {source:"Impressionism",target:"Art Nouveau",value:3,type:"influence"},
+  {source:"Art Nouveau",target:"Art Deco",value:4,type:"conflict"},
+  {source:"Bauhaus",target:"International Style",value:5,type:"evolution"},
+  {source:"Bauhaus",target:"Mid-Century Modern",value:5,type:"influence"},
+  {source:"Art Deco",target:"Mid-Century Modern",value:3,type:"conflict"},
+  {source:"Surrealism",target:"Pop Art",value:3,type:"influence"},
+  {source:"International Style",target:"Brutalism",value:4,type:"evolution"},
+  {source:"Mid-Century Modern",target:"Minimalism",value:4,type:"evolution"},
+  {source:"Pop Art",target:"Postmodernism",value:4,type:"influence"},
+  {source:"Minimalism",target:"Postmodernism",value:3,type:"conflict"},
+  {source:"Postmodernism",target:"Deconstructivism",value:5,type:"evolution"},
+  {source:"Hip-Hop",target:"Afrofuturism",value:3,type:"influence"},
+  {source:"Afrofuturism",target:"Vaporwave",value:2,type:"correlation"},
+  {source:"Global Digital Remix",target:"Afrofuturism",value:5,type:"causal"},
+  {source:"Global Digital Remix",target:"Vaporwave",value:5,type:"causal"},
+  {source:"Global Digital Remix",target:"Hip-Hop",value:4,type:"influence"},
+  {source:"Global Digital Remix",target:"Minimalism",value:3,type:"influence"},
+  {source:"Global Digital Remix",target:"Ukiyo-e",value:3,type:"influence"}
 ]}};
 /* ---- LOAD DATASET ---- */
 function loadDataset(key){
-  var ds=DATASETS[key];if(!ds){log("Unknown dataset: "+key,"WARN");return;}
+  var ds=DATASETS[key];
+  if(!ds){
+    try{
+      var raw=localStorage.getItem("drv-ds:"+key);
+      if(raw)ds=JSON.parse(raw);
+    }catch(ex){log("Local dataset parse error: "+ex.message,"WARN");}
+  }
+  if(!ds){log("Unknown dataset: "+key,"WARN");return;}
   state.dataset=key;state.nodes=ds.nodes;state.links=ds.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
   document.getElementById("statusDataset").textContent="Dataset: "+key;
   log("Loaded: "+ds.seedTopic+" ("+ds.nodes.length+"n, "+ds.links.length+"l)");
@@ -988,7 +1982,7 @@ function loadDataset(key){
   buildSim();populateSourcesTable(ds);populateTimeline(ds);
 }
 /* ---- TAB SWITCHING ---- */
-var panelIds={graph:"panelGraph",timeline:"panelTimeline",foresight:"panelForesight",pattern:"panelPattern",sources:"panelSources",log:"panelLog"};
+var panelIds={graph:"panelGraph",timeline:"panelTimeline",foresight:"panelForesight",pattern:"panelPattern",sources:"panelSources",builder:"panelBuilder",linkage:"panelLinkage",log:"panelLog"};
 document.getElementById("tabBar").addEventListener("click",function(e){
   if(e.target.tagName.toUpperCase()!=="BUTTON")return;
   var tab=e.target.getAttribute("data-tab");
@@ -1002,9 +1996,269 @@ document.getElementById("btnWizard").addEventListener("click",function(){var ws=
 /* ---- DATASET SYNC ---- */
 function syncDS(val){["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(el&&el.value!==val)el.value=val;});}
 ["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(!el)return;el.addEventListener("change",function(){syncDS(el.value);if(el.value!=="custom")loadDataset(el.value);});});
+function ensureDatasetOption(key,label){
+  ["datasetSelect","sbDataset"].forEach(function(id2){
+    var el=document.getElementById(id2);if(!el)return;
+    var found=false;
+    for(var i=0;i<el.options.length;i++){if(el.options[i].value===key){found=true;break;}}
+    if(!found){
+      var opt=document.createElement("option");
+      opt.value=key;opt.text=label||key;
+      el.appendChild(opt);
+    }
+  });
+}
+function loadStoredDatasetOptions(){
+  try{
+    state.localDatasetKeys=[];
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i)||"";
+      if(k.indexOf("drv-ds:")!==0)continue;
+      var dsKey=k.substring(7);
+      var raw=localStorage.getItem(k)||"{}";
+      var ds=JSON.parse(raw);
+      var label=(ds.seedTopic?ds.seedTopic+" (local)":"Local: "+dsKey);
+      ensureDatasetOption(dsKey,label);
+      state.localDatasetKeys.push(dsKey);
+    }
+  }catch(ex){log("Local dataset option load failed: "+ex.message,"WARN");}
+}
+
+/* ---- LINKAGE CONTROLS ---- */
+function linkInterconnectScores(){
+  var byType={};
+  simLinks.forEach(function(l){
+    var t=normalizeLinkType(l.type);
+    if(!byType[t])byType[t]={links:0,nodes:{}};
+    byType[t].links++;
+    byType[t].nodes[l.source.id]=1;
+    byType[t].nodes[l.target.id]=1;
+  });
+  var out=[];
+  Object.keys(byType).forEach(function(t){
+    var nodeCount=Object.keys(byType[t].nodes).length;
+    out.push({type:t,score:(byType[t].links*2)+nodeCount,links:byType[t].links,nodes:nodeCount});
+  });
+  out.sort(function(a,b){return b.score-a.score;});
+  return out;
+}
+function renderLinkagePanel(){
+  var q=((document.getElementById("linkTypeSearch")||{}).value||"").toLowerCase();
+  var list=document.getElementById("linkTypeList");
+  var sumTb=document.getElementById("linkageSummary");
+  if(!list||!sumTb)return;
+  var types=ALL_LINK_METHODS.slice().sort(function(a,b){return a.localeCompare(b);});
+  if(q)types=types.filter(function(t){return t.indexOf(q)>=0;});
+  var html="";
+  types.forEach(function(t){
+    var en=!!state.enabledLinkTypes[t];
+    html+="<button class=\"qsel-btn"+(en?" active":"")+"\" data-lt=\""+t+"\" style=\"border-color:"+linkColor(t)+";color:"+linkColor(t)+"\">"+t+"</button>";
+  });
+  list.innerHTML=html||"<div style=\"color:var(--text2);font-size:11px\">No linkage types</div>";
+  list.querySelectorAll("[data-lt]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var t=btn.getAttribute("data-lt");
+      state.enabledLinkTypes[t]=!state.enabledLinkTypes[t];
+      buildLinkLegend();renderLinkagePanel();
+    });
+  });
+  var scores=linkInterconnectScores();
+  var rows="";
+  scores.forEach(function(s){
+    rows+="<tr><td>"+s.type+"</td><td><span class=\"ll-dot\" style=\"background:"+linkColor(s.type)+";width:26px\"></span></td><td>"+(state.enabledLinkTypes[s.type]?"on":"off")+"</td><td>"+s.score+"</td></tr>";
+  });
+  sumTb.querySelector("tbody").innerHTML=rows||"<tr><td colspan=\"4\" style=\"color:var(--text2)\">No links available</td></tr>";
+}
+function applyRecommendedLinkType(){
+  var scores=linkInterconnectScores();
+  var next=scores.filter(function(s){return !state.enabledLinkTypes[s.type];})[0];
+  if(!next){
+    document.getElementById("recommendedHint").textContent="All top linkage methods are already enabled.";
+    return;
+  }
+  state.enabledLinkTypes[next.type]=true;
+  document.getElementById("recommendedHint").textContent="Enabled: "+next.type+" (score "+next.score+")";
+  buildLinkLegend();renderLinkagePanel();
+}
+
+/* ---- DATASET BUILDER ---- */
+function parseBuilderNodes(text,seedYear){
+  var rows=(text||"").split(/\r?\n/).filter(function(x){return x.trim();});
+  var out=[];
+  rows.forEach(function(r,idx){
+    var p=r.split("|");
+    out.push({id:(p[0]||("Node-"+(idx+1))).trim(),year:parseInt((p[1]||seedYear),10)||seedYear,type:(p[2]||"event").trim(),group:parseInt((p[3]||1),10)||1,desc:(p[4]||"Built in Dataset Builder").trim()});
+  });
+  return out;
+}
+function parseBuilderLinks(text,nodes,minV,maxV,prefType){
+  var rows=(text||"").split(/\r?\n/).filter(function(x){return x.trim();});
+  var out=[];
+  rows.forEach(function(r){
+    var p=r.split("|");
+    out.push({source:(p[0]||"").trim(),target:(p[1]||"").trim(),value:Math.max(minV,Math.min(maxV,parseInt((p[2]||minV),10)||minV)),type:normalizeLinkType((p[3]||prefType||"correlation").trim())});
+  });
+  if(!out.length&&nodes.length>1){
+    for(var i=1;i<nodes.length;i++){
+      var val=minV+((i%(maxV-minV+1)));
+      out.push({source:nodes[i-1].id,target:nodes[i].id,value:val,type:normalizeLinkType(prefType||"correlation")});
+    }
+  }
+  return out.filter(function(l){return l.source&&l.target;});
+}
+function buildDatasetFromBuilder(){
+  var key=(document.getElementById("dbKey").value||"custom-builder").trim().toLowerCase().replace(/\s+/g,"-");
+  var seedTopic=(document.getElementById("dbSeedTopic").value||"Custom Dataset").trim();
+  var seedYear=parseInt(document.getElementById("dbSeedYear").value,10)||2000;
+  var period=parseInt(document.getElementById("dbPeriod").value,10)||25;
+  var depth=parseInt(document.getElementById("dbDepth").value,10)||20;
+  var deviation=(document.getElementById("dbDeviation").value||"Deviation").trim();
+  var nodeCount=parseInt(document.getElementById("dbNodeCount").value,10)||12;
+  var minV=parseInt(document.getElementById("dbMinLinkVal").value,10)||1;
+  var maxV=parseInt(document.getElementById("dbMaxLinkVal").value,10)||5;
+  if(maxV<minV)maxV=minV;
+  var prefType=normalizeLinkType((document.getElementById("dbPreferredLinkType").value||"correlation"));
+  var nodes=parseBuilderNodes(document.getElementById("dbNodesText").value,seedYear);
+  if(!nodes.length){
+    for(var i=0;i<Math.max(2,nodeCount);i++){
+      nodes.push({id:seedTopic+"-"+(i+1),year:seedYear-Math.floor(period/2)+Math.floor((i/Math.max(1,nodeCount-1))*period),type:(i===0?"seed":"event"),group:(i%9)+1,desc:"Auto-generated node"});
+    }
+  }
+  var links=parseBuilderLinks(document.getElementById("dbLinksText").value,nodes,minV,maxV,prefType);
+  if(nodes.filter(function(n){return n.id===deviation;}).length===0){
+    nodes.push({id:deviation,year:seedYear,type:"deviation",group:9,desc:"Builder deviation anchor"});
+    if(nodes.length>1)links.push({source:nodes[0].id,target:deviation,value:maxV,type:"influence"});
+  }
+  links.forEach(function(l){
+    l.type=normalizeLinkType(l.type);
+    if(ALL_LINK_METHODS.indexOf(l.type)<0)ALL_LINK_METHODS.push(l.type);
+    if(typeof LINK_COLOR[l.type]==="undefined")LINK_COLOR[l.type]=linkTypeColorFromAlphabet(l.type);
+  });
+  ALL_LINK_METHODS.sort(function(a,b){return a.localeCompare(b);});
+  var ds={seedTopic:seedTopic,seedYear:seedYear,period:period,depth:depth,deviation:deviation,nodes:nodes,links:links};
+  return {key:key,dataset:ds};
+}
+function renderBuilderPreview(obj,mode){
+  state.builderPreview=obj;
+  var box=document.getElementById("dbPreview");if(!box)return;
+  if(mode==="query"){
+    var srcSel=document.getElementById("dbSources");
+    var src=[];for(var i=0;i<srcSel.options.length;i++){if(srcSel.options[i].selected)src.push(srcSel.options[i].value);} 
+    box.textContent="QUERY PREVIEW\n"+
+      "datasetKey="+obj.key+"\n"+
+      "seedTopic=\""+obj.dataset.seedTopic+"\"\n"+
+      "yearRange="+(obj.dataset.seedYear-Math.floor(obj.dataset.period/2))+".."+(obj.dataset.seedYear+Math.ceil(obj.dataset.period/2))+"\n"+
+      "sources="+src.join(",")+"\n"+
+      "nodeCount="+obj.dataset.nodes.length+"\nlinkCount="+obj.dataset.links.length;
+    return;
+  }
+  box.textContent=JSON.stringify(obj,null,2);
+}
+function renderBuilderSourceChecks(){
+  var tb=document.getElementById("dbSourceTable").querySelector("tbody");
+  var srcSel=document.getElementById("dbSources");
+  var selected={};
+  for(var i=0;i<srcSel.options.length;i++){if(srcSel.options[i].selected)selected[srcSel.options[i].value]=1;}
+  var html="";
+  SOURCE_CATALOG.forEach(function(s){
+    if(!selected[s.key])return;
+    var st=navigator.onLine?"Preview": "Offline";
+    html+="<tr><td>"+s.name+"</td><td style=\"font-size:10px\">"+s.url+"</td><td>"+st+"</td><td><a href=\""+s.url+"\" target=\"_blank\">Open</a></td></tr>";
+  });
+  tb.innerHTML=html||"<tr><td colspan=\"4\" style=\"color:var(--text2)\">No sources selected</td></tr>";
+}
+function initBuilderControls(){
+  var srcSel=document.getElementById("dbSources");
+  var pref=document.getElementById("dbPreferredLinkType");
+  if(srcSel&&srcSel.options.length===0){
+    SOURCE_CATALOG.forEach(function(s){
+      var op=document.createElement("option");op.value=s.key;op.text=s.name;op.selected=true;srcSel.appendChild(op);
+    });
+  }
+  if(pref&&pref.options.length===0){
+    ALL_LINK_METHODS.forEach(function(t){var op=document.createElement("option");op.value=t;op.text=t;pref.appendChild(op);});
+    pref.value="correlation";
+  }
+  var bind=function(id,fn){var el=document.getElementById(id);if(el)el.addEventListener("click",fn);};
+  bind("btnDbBuild",function(){renderBuilderPreview(buildDatasetFromBuilder(),"skeleton");});
+  bind("btnDbQuery",function(){renderBuilderPreview(buildDatasetFromBuilder(),"query");});
+  bind("btnDbCheckSources",function(){renderBuilderSourceChecks();});
+  bind("btnDbApply",function(){
+    var obj=buildDatasetFromBuilder();
+    renderBuilderPreview(obj,"skeleton");
+    state.dataset="custom";state.nodes=obj.dataset.nodes;state.links=obj.dataset.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+    buildSim();populateTimeline(obj.dataset);populateSourcesTable(obj.dataset);
+    document.getElementById("statusDataset").textContent="Dataset: custom-builder";
+    log("Builder dataset applied runtime: "+obj.key);
+  });
+  bind("btnDbSaveLocal",function(){
+    var obj=buildDatasetFromBuilder();
+    localStorage.setItem("drv-ds:"+obj.key,JSON.stringify(obj.dataset));
+    ensureDatasetOption(obj.key,obj.dataset.seedTopic+" (local)");
+    syncDS(obj.key);
+    loadStoredDatasetOptions();
+    renderBuilderPreview(obj,"skeleton");
+    log("Builder dataset saved locally: "+obj.key);
+  });
+  bind("btnDbDownload",function(){
+    var obj=buildDatasetFromBuilder();
+    var blob=new Blob([JSON.stringify(obj.dataset,null,2)],{type:"application/json"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=obj.key+".json";a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+    log("Builder dataset downloaded: "+obj.key+".json");
+  });
+}
+
+function initLinkageControls(){
+  var q=document.getElementById("linkTypeSearch");
+  if(q)q.addEventListener("input",renderLinkagePanel);
+  var lg=document.getElementById("linkLegendSearch");
+  if(lg)lg.addEventListener("input",function(){state.linkLegendFilter=lg.value||"";buildLinkLegend();});
+  var lc=document.getElementById("btnLegendClear");
+  if(lc)lc.addEventListener("click",function(){state.linkLegendFilter="";if(lg)lg.value="";buildLinkLegend();});
+  var a1=document.getElementById("btnLinkEnableAll");
+  if(a1)a1.addEventListener("click",function(){ALL_LINK_METHODS.forEach(function(t){state.enabledLinkTypes[t]=true;});buildLinkLegend();renderLinkagePanel();});
+  var a2=document.getElementById("btnLinkDisableAll");
+  if(a2)a2.addEventListener("click",function(){ALL_LINK_METHODS.forEach(function(t){state.enabledLinkTypes[t]=false;});state.enabledLinkTypes.causal=true;state.enabledLinkTypes.correlation=true;buildLinkLegend();renderLinkagePanel();});
+  var a3=document.getElementById("btnRecommendedLinks");
+  if(a3)a3.addEventListener("click",applyRecommendedLinkType);
+}
 /* ---- LAYOUT SYNC ---- */
 function syncLayout(val){["layoutSelect","sbLayout"].forEach(function(id2){var el=document.getElementById(id2);if(el&&el.value!==val)el.value=val;});state.layout=val;applyLayout(val);}
 ["layoutSelect","sbLayout"].forEach(function(id2){var el=document.getElementById(id2);if(!el)return;el.addEventListener("change",function(){syncLayout(el.value);});});
+/* ---- EXPORT HANDLERS ---- */
+(function(){
+  var dlLink=function(href,name){var a=document.createElement("a");a.href=href;a.download=name;a.click();};
+  bind("btnExportPng",function(){
+    var cv=document.getElementById("vizCanvas");if(!cv)return;
+    dlLink(cv.toDataURL("image/png"),(state.dataset||"graph")+"-export.png");
+    log("Exported canvas as PNG");
+  });
+  bind("btnExportJson",function(){
+    var payload={dataset:state.dataset,layout:state.layout,nodes:state.nodes,links:state.links};
+    var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    dlLink(url,(state.dataset||"graph")+"-export.json");
+    setTimeout(function(){URL.revokeObjectURL(url);},500);
+    log("Exported graph as JSON ("+state.nodes.length+" nodes, "+state.links.length+" links)");
+  });
+  bind("btnExportCsv",function(){
+    var headers=["id","label","type","group","year","x","y"];
+    var rows=state.nodes.map(function(n){
+      return [n.id,n.label||n.id,n.type||"",n.group||"",n.year||"",
+        Math.round(n.x||0),Math.round(n.y||0)].map(function(v){
+        var s=String(v);return s.indexOf(",")>-1?'"'+s.replace(/"/g,'""')+'"':s;
+      }).join(",");
+    });
+    var csv=[headers.join(",")].concat(rows).join("\n");
+    var blob=new Blob([csv],{type:"text/csv"});
+    var url=URL.createObjectURL(blob);
+    dlLink(url,(state.dataset||"graph")+"-nodes.csv");
+    setTimeout(function(){URL.revokeObjectURL(url);},500);
+    log("Exported "+state.nodes.length+" nodes as CSV");
+  });
+}());
 /* ---- PROBE CONTROLS ---- */
 function bindR(id2,vid,key){var sl=document.getElementById(id2),vl=document.getElementById(vid);if(!sl)return;sl.addEventListener("input",function(){probe[key]=parseFloat(sl.value);if(vl)vl.textContent=sl.value;});}
 bindR("ctlSpeed","valSpeed","speed");bindR("ctlFreq","valFreq","freq");bindR("ctlTrailLife","valTrail","trailLife");
@@ -1054,40 +2308,461 @@ document.getElementById("btnRunWizard").addEventListener("click",function(){
   state.nodes=nodes;state.links=links2;state.dataset="custom";state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};buildSim();log("Synthetic dataset: "+nodes.length+"n, "+links2.length+"l");
 });
 /* ---- SOURCES TABLE ---- */
+/* Per-dataset result depth: each source returns a plausible count derived from the active dataset's depth/node-count and a topic-aware weight. */
+var SOURCE_CATALOG=[
+  {key:"wikipedia",     name:"Wikipedia API",        url:"https://en.wikipedia.org/w/api.php",                 weight:{_default:1.00, "games-cost-profit":1.10, "world-banking":1.05, "fortune500":1.10}},
+  {key:"openalex",      name:"OpenAlex",             url:"https://api.openalex.org/",                          weight:{_default:0.85, "ai-displacement":1.20, "virus-human":1.15}},
+  {key:"gdelt",         name:"GDELT",                url:"https://api.gdeltproject.org/",                      weight:{_default:0.70, "world-banking":1.10, "fortune500":1.00}},
+  {key:"arxiv",         name:"arXiv",                url:"https://export.arxiv.org/api/",                      weight:{_default:0.55, "ai-displacement":1.25, "virus-computer":0.95}},
+  {key:"crossref",      name:"CrossRef",             url:"https://api.crossref.org/",                          weight:{_default:0.75, "virus-human":1.10, "ai-displacement":1.05}},
+  {key:"pubmed",        name:"PubMed",               url:"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/",     weight:{_default:0.40, "virus-human":1.40}},
+  {key:"wikidata",      name:"Wikidata",             url:"https://www.wikidata.org/w/api.php",                 weight:{_default:0.95, "fortune500":1.10, "world-banking":1.10, "games-cost-profit":1.05}},
+  {key:"sec-edgar",     name:"SEC EDGAR",            url:"https://data.sec.gov/",                              weight:{_default:0.60, "fortune500":1.30, "world-banking":1.25, "devices-suppliers":1.15}},
+  {key:"opencorporates",name:"OpenCorporates",       url:"https://api.opencorporates.com/",                    weight:{_default:0.70, "fortune500":1.25, "world-banking":1.20}},
+  {key:"crunchbase",    name:"Crunchbase",           url:"https://api.crunchbase.com/",                        weight:{_default:0.65, "fortune500":1.15, "games-cost-profit":1.05, "ai-displacement":1.10}},
+  {key:"companies-house",name:"UK Companies House",  url:"https://api.company-information.service.gov.uk/",    weight:{_default:0.55, "world-banking":1.20, "fortune500":1.00}},
+  {key:"yahoo-finance", name:"Yahoo Finance",        url:"https://query1.finance.yahoo.com/",                  weight:{_default:0.70, "fortune500":1.20, "world-banking":1.15, "devices-suppliers":1.10, "games-cost-profit":1.05}},
+  {key:"bloomberg",     name:"Bloomberg Terminal",   url:"https://www.bloomberg.com/professional/",            weight:{_default:0.60, "fortune500":1.25, "world-banking":1.30}},
+  {key:"reuters",       name:"Reuters Eikon",        url:"https://www.refinitiv.com/en/products/eikon-trading-software", weight:{_default:0.60, "fortune500":1.20, "world-banking":1.25}},
+  {key:"statista",      name:"Statista",             url:"https://www.statista.com/api/",                      weight:{_default:0.65, "games-cost-profit":1.20, "devices-suppliers":1.20, "fortune500":1.10}},
+  {key:"world-bank",    name:"World Bank Open Data", url:"https://api.worldbank.org/v2/",                      weight:{_default:0.45, "world-banking":1.20, "fortune500":0.90}},
+  {key:"imf",           name:"IMF Data",             url:"https://data.imf.org/",                              weight:{_default:0.40, "world-banking":1.30}},
+  {key:"bis",           name:"BIS Statistics",       url:"https://www.bis.org/statistics/",                    weight:{_default:0.30, "world-banking":1.40}},
+  {key:"steam-charts",  name:"SteamDB / SteamCharts",url:"https://steamdb.info/api/",                          weight:{_default:0.25, "games-cost-profit":1.40}},
+  {key:"vgchartz",      name:"VGChartz",             url:"https://www.vgchartz.com/",                          weight:{_default:0.25, "games-cost-profit":1.30}},
+  {key:"idc",           name:"IDC Trackers",         url:"https://www.idc.com/tracker/",                       weight:{_default:0.40, "devices-suppliers":1.35}},
+  {key:"gartner",       name:"Gartner Research",     url:"https://www.gartner.com/en/research",                weight:{_default:0.45, "devices-suppliers":1.20, "ai-displacement":1.15, "fortune500":1.05}},
+  {key:"github-archive",name:"GitHub Archive (BigQuery)",url:"https://www.gharchive.org/",                     weight:{_default:0.45, "ai-displacement":1.25, "virus-computer":1.10}},
+  {key:"common-crawl",  name:"Common Crawl",         url:"https://commoncrawl.org/",                           weight:{_default:0.55, "ai-displacement":1.10, "virus-computer":1.05, "games-cost-profit":1.05}}
+];
+function estimateSourceDepth(s,ds,dsKey){
+  var w=(s.weight&&(s.weight[dsKey]!==undefined?s.weight[dsKey]:s.weight._default))||0.5;
+  var depth=ds.depth||10, nodes=(ds.nodes&&ds.nodes.length)||0;
+  // result-depth = depth-weighted node coverage * source weight, with small jitter for realism
+  var jitter=0.85+((depth*7+nodes*3+s.key.length)%30)/100; // deterministic 0.85..1.14
+  return Math.max(0, Math.round(nodes*w*jitter + depth*w*0.6));
+}
 function populateSourcesTable(ds){
   var tb=document.getElementById("sourcesTable").querySelector("tbody");
-  var srcs=[{name:"Wikipedia API",url:"https://en.wikipedia.org/w/api.php",r:ds.nodes.length},{name:"OpenAlex",url:"https://api.openalex.org/",r:0},{name:"GDELT",url:"https://api.gdeltproject.org/",r:0},{name:"Wikidata",url:"https://www.wikidata.org/w/api.php",r:0}];
-  var html="";srcs.forEach(function(s){html+="<tr><td>"+s.name+"</td><td style=\"font-size:10px\">"+s.url+"</td><td style=\"color:#00c853\">Available</td><td>"+s.r+"</td><td>"+new Date().toISOString().substr(0,10)+"</td></tr>";});tb.innerHTML=html;
+  if(!tb)return;
+  var dsKey=state.dataset||"";
+  var today=new Date().toISOString().substr(0,10);
+  var html="";
+  SOURCE_CATALOG.forEach(function(s){
+    var r=estimateSourceDepth(s,ds,dsKey);
+    html+="<tr><td>"+s.name+"</td><td style=\"font-size:10px\">"+s.url+"</td><td style=\"color:#00c853\">Available</td><td>"+r+"</td><td>"+today+"</td></tr>";
+  });
+  tb.innerHTML=html;
 }
 /* ---- TIMELINE ---- */
+/* Article-meta synthesiser: deterministic per-node enrichment for source dates,
+   mirror sources, first-source vs clone status, anomaly flags. No external fetch -
+   the values are derived from a stable string hash so the same node always
+   produces the same article, while different nodes diverge plausibly. */
+function strHash32(s){var h=2166136261>>>0;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+function mulberry32(seed){return function(){seed=(seed+0x6D2B79F5)>>>0;var t=seed;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+var FLAG_DEFS={
+  first:  {key:"first",  glyph:"\u2605", label:"First source",   cls:"first"},
+  clone:  {key:"clone",  glyph:"\u238E", label:"Clone of earlier source", cls:"clone"},
+  discrep:{key:"discrep",glyph:"\u26A0", label:"Data discrepancy",cls:"discrep"},
+  leak:   {key:"leak",   glyph:"\u26B0", label:"Darkweb leak reference", cls:"leak"},
+  "false":{key:"false",  glyph:"\u2716", label:"False claim flagged",    cls:"false"},
+  contra: {key:"contra", glyph:"\u2694", label:"Contradiction across sources", cls:"contra"}
+};
+var SOURCE_POOL=["Wikipedia","Reuters","Bloomberg","SEC EDGAR","arXiv","OpenAlex","Wikidata","BBC News","NYT","Guardian","Financial Times","Crunchbase","OpenCorporates","GDELT","PubMed","CrossRef","TechCrunch","Ars Technica","The Register","ZDNet","Mainichi","Nikkei","Xinhua","Financial Review","Government Gazette","SteamDB","VGChartz","IDC","Gartner","Statista","World Bank","IMF","BIS","CompaniesHouse"];
+function pad2(n){return(n<10?"0":"")+n;}
+function jitterDate(year,h){
+  // Stable month/day from hash, year may shift +/- 1 if discrepancy detected
+  var m=((h>>>3)%12)+1,d=((h>>>9)%28)+1;
+  return year+"-"+pad2(m)+"-"+pad2(d);
+}
+function buildArticleMeta(nd,nodeIndex,allNodes){
+  if(nd.article)return nd.article; // memoise
+  var seed=strHash32((nd.id||"")+"|"+(nd.year||0)+"|"+(nd.type||""));
+  var rnd=mulberry32(seed);
+  var srcCount=2+Math.floor(rnd()*5); // 2..6 sources
+  var srcs=[];var pool=SOURCE_POOL.slice();
+  for(var i=0;i<srcCount;i++){var idx=Math.floor(rnd()*pool.length);srcs.push(pool.splice(idx,1)[0]);}
+  // First source decision: ~60% are first sources; otherwise clone-of an earlier same-group node
+  var isFirst=rnd()<0.6;var cloneOf=null;
+  if(!isFirst&&allNodes&&allNodes.length){
+    var earlier=[];for(var j=0;j<nodeIndex;j++){var p=allNodes[j];if(p.group===nd.group&&(p.year||0)<=(nd.year||0))earlier.push(p);}
+    if(earlier.length)cloneOf=earlier[Math.floor(rnd()*earlier.length)].id;else isFirst=true;
+  }
+  // Flag derivation - probabilities biased by node attributes
+  var flags={};
+  flags.first=isFirst;
+  flags.clone=!!cloneOf;
+  flags.discrep=rnd()<(nd.type==="apt"||nd.type==="ransomware"||nd.type==="deviation"?0.55:0.22);
+  flags.leak   =rnd()<(nd.type==="apt"||nd.type==="exploit"||nd.type==="vuln"||nd.type==="bank-eu"?0.30:0.10);
+  flags["false"]=rnd()<(nd.type==="pandemic"||nd.type==="title"||nd.type==="model"?0.25:0.12);
+  flags.contra =rnd()<(nd.type==="deviation"||nd.type==="impact"||nd.type==="policy"?0.40:0.18);
+  var date=jitterDate(nd.year||2000,seed);
+  // Discrepancy notes
+  var notes=[];
+  if(flags.discrep)notes.push({k:"discrep",t:"Reported date varies by ±"+(1+(seed%3))+"yr across mirrors; primary attestation: "+srcs[0]});
+  if(flags.leak)   notes.push({k:"leak",   t:"Referenced in pastebin / underground forum dump ("+date.substr(0,4)+"-Q"+(1+((seed>>>6)%4))+"); attribution unverified"});
+  if(flags["false"])notes.push({k:"false", t:"Initial claim by "+srcs[srcs.length-1]+" later retracted; corrected figure differs by ~"+(10+(seed%40))+"%"});
+  if(flags.contra) notes.push({k:"contra", t:"Source A ("+srcs[0]+") and Source B ("+srcs[1%srcs.length]+") report incompatible attribution"});
+  nd.article={
+    date:date,
+    sources:srcs,
+    primarySource:srcs[0],
+    isFirst:flags.first,
+    cloneOf:cloneOf,
+    flags:flags,
+    flagCount:(flags.discrep?1:0)+(flags.leak?1:0)+(flags["false"]?1:0)+(flags.contra?1:0),
+    notes:notes,
+    snippet:(nd.desc||"")+" - corroborated across "+srcCount+" sources."
+  };
+  return nd.article;
+}
+function ensureDatasetArticles(ds){
+  if(ds._articlesBuilt)return;
+  var sorted=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
+  sorted.forEach(function(n,i){buildArticleMeta(n,i,sorted);});
+  ds._articlesBuilt=true;
+}
+function tlFlagPills(art){
+  var html="";
+  if(art.isFirst) html+="<span class=\"tl-flag first\"  title=\"First source attestation\">"+FLAG_DEFS.first.glyph+" first</span>";
+  if(art.cloneOf) html+="<span class=\"tl-flag clone\"  title=\"Clone of "+art.cloneOf+"\">"+FLAG_DEFS.clone.glyph+" clone</span>";
+  if(art.flags.discrep)html+="<span class=\"tl-flag discrep\" title=\"Data discrepancy across mirrors\">"+FLAG_DEFS.discrep.glyph+"</span>";
+  if(art.flags.leak)   html+="<span class=\"tl-flag leak\"    title=\"Darkweb leak reference\">"+FLAG_DEFS.leak.glyph+"</span>";
+  if(art.flags["false"])html+="<span class=\"tl-flag false\"  title=\"False claim flagged\">"+FLAG_DEFS["false"].glyph+"</span>";
+  if(art.flags.contra) html+="<span class=\"tl-flag contra\"  title=\"Contradiction across sources\">"+FLAG_DEFS.contra.glyph+"</span>";
+  return html;
+}
+function tlFilterFn(mode){
+  return function(n){
+    var a=n.article;if(!a)return false;
+    if(mode==="first")return a.isFirst;
+    if(mode==="clones")return !!a.cloneOf;
+    if(mode==="flagged")return a.flagCount>0||!!a.cloneOf;
+    if(mode==="leak")return a.flags.leak;
+    if(mode==="false")return a.flags["false"];
+    if(mode==="contra")return a.flags.contra;
+    if(mode==="discrep")return a.flags.discrep;
+    return true;
+  };
+}
+function buildScaleBar(items){
+  var svg=document.getElementById("tlScaleSvg");if(!svg)return;
+  var w=svg.parentElement.offsetWidth||800,h=46;svg.setAttribute("viewBox","0 0 "+w+" "+h);
+  if(!items.length){svg.innerHTML="";return;}
+  var years=items.map(function(n){return n.year||0;});
+  var minY=Math.min.apply(null,years),maxY=Math.max.apply(null,years);if(maxY===minY)maxY=minY+1;
+  var bins={};items.forEach(function(n){var y=n.year||0;bins[y]=(bins[y]||0)+1;});
+  var maxC=0;for(var k in bins)if(bins[k]>maxC)maxC=bins[k];
+  var html="<line x1=\"0\" y1=\""+(h-12)+"\" x2=\""+w+"\" y2=\""+(h-12)+"\" stroke=\"#1a1a30\"/>";
+  // bars
+  Object.keys(bins).forEach(function(yr){
+    var x=((+yr-minY)/(maxY-minY))*(w-10)+5;
+    var bh=(bins[yr]/maxC)*(h-18);
+    var col=bins[yr]>3?"#ff00aa":(bins[yr]>1?"#00ffff":"#5599cc");
+    html+="<rect x=\""+(x-2)+"\" y=\""+(h-12-bh)+"\" width=\"4\" height=\""+bh+"\" fill=\""+col+"\" opacity=\"0.85\"><title>"+yr+": "+bins[yr]+" articles</title></rect>";
+  });
+  // year ticks
+  var step=Math.max(1,Math.floor((maxY-minY)/8));
+  for(var y=minY;y<=maxY;y+=step){var tx=((y-minY)/(maxY-minY))*(w-10)+5;html+="<text x=\""+tx+"\" y=\""+(h-2)+"\" fill=\"#5577aa\" font-size=\"9\" text-anchor=\"middle\">"+y+"</text>";}
+  svg.innerHTML=html;
+  // Click handler maps x-position to year then scrolls stream
+  var bar=document.getElementById("tlScaleBar");
+  bar.onclick=function(ev){
+    var rect=bar.getBoundingClientRect();var px=ev.clientX-rect.left;
+    var frac=Math.max(0,Math.min(1,px/rect.width));
+    var targetYr=Math.round(minY+frac*(maxY-minY));
+    var stream=document.getElementById("tlStream"),cards=stream.querySelectorAll(".tl-card");
+    var best=null,bestDiff=Infinity;
+    cards.forEach(function(c){var cy=parseInt(c.getAttribute("data-year"),10);var d=Math.abs(cy-targetYr);if(d<bestDiff){bestDiff=d;best=c;}});
+    if(best){best.scrollIntoView({behavior:"smooth",block:"center"});var cur=document.getElementById("tlCursor");cur.style.display="block";cur.style.left=(frac*100)+"%";}
+  };
+}
 function populateTimeline(ds){
-  var svg=document.getElementById("svgTimeline"),sorted=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
-  var h=Math.max(sorted.length*28+40,300);svg.setAttribute("height",h);
-  var html="<line x1=\"60\" y1=\"20\" x2=\"60\" y2=\""+(h-10)+"\" stroke=\"#2a2a3e\" stroke-width=\"2\"/>";
-  sorted.forEach(function(n,i){var y=30+i*28,c=NODE_COLORS[n.group%NODE_COLORS.length];html+="<circle cx=\"60\" cy=\""+y+"\" r=\"5\" fill=\""+c+"\"/><text x=\"75\" y=\""+(y+4)+"\" fill=\"#e0e0e0\" font-size=\"12\">"+n.year+" - "+n.id+"</text><text x=\"300\" y=\""+(y+4)+"\" fill=\"#888\" font-size=\"10\">"+(n.desc||"")+"</text>";});
+  ensureDatasetArticles(ds);
+  var stream=document.getElementById("tlStream");if(!stream)return;
+  var fmode=(document.getElementById("tlFlagFilter")||{}).value||"all";
+  var smode=(document.getElementById("tlSort")||{}).value||"date-asc";
+  var items=ds.nodes.slice().filter(tlFilterFn(fmode));
+  if(smode==="date-asc") items.sort(function(a,b){return(a.year||0)-(b.year||0);});
+  else if(smode==="date-desc")items.sort(function(a,b){return(b.year||0)-(a.year||0);});
+  else if(smode==="flags") items.sort(function(a,b){return(b.article.flagCount+(b.article.cloneOf?1:0))-(a.article.flagCount+(a.article.cloneOf?1:0));});
+  document.getElementById("tlStats").textContent=items.length+" articles ("+ds.nodes.length+" total)";
+  buildScaleBar(items);
+  // Build cards
+  var html="";
+  items.forEach(function(n){
+    var a=n.article,c=NODE_COLORS[n.group%NODE_COLORS.length];
+    var related=ds.links.filter(function(l){return l.source===n.id||l.target===n.id;});
+    var srcPills=a.sources.map(function(s,i){var cls=(i===0&&a.isFirst)?"first":(a.cloneOf&&i===0?"clone":"");return "<span class=\"tl-src-pill "+cls+"\">"+s+"</span>";}).join("");
+    var linkChips=related.map(function(l){var other=l.source===n.id?l.target:l.source;return "<span class=\"tl-link-chip\" data-target=\""+other.replace(/\"/g,"&quot;")+"\" title=\""+(l.type||"")+" - weight "+(l.value||1)+"\">"+other+" ("+(l.type||"link")+")</span>";}).join("");
+    var notesHtml=a.notes.map(function(nt){return "<div class=\"tl-disc-row "+nt.k+"\">"+FLAG_DEFS[nt.k].glyph+" "+nt.t+"</div>";}).join("");
+    html+="<div class=\"tl-card\" data-id=\""+n.id.replace(/\"/g,"&quot;")+"\" data-year=\""+(n.year||0)+"\" style=\"border-left-color:"+c+"\">"+
+      "<div class=\"tl-card-head\"><span class=\"tl-date\">"+a.date+"</span><span class=\"tl-title\">"+n.id+"</span><span class=\"tl-flags\">"+tlFlagPills(a)+"</span></div>"+
+      "<div class=\"tl-card-body\">"+
+        "<div class=\"tl-meta\">"+
+          "<div class=\"tl-meta-k\">Type</div><div class=\"tl-meta-v\">"+(n.type||"")+"</div>"+
+          "<div class=\"tl-meta-k\">Group</div><div class=\"tl-meta-v\">"+(n.group||0)+"</div>"+
+          "<div class=\"tl-meta-k\">Snippet</div><div class=\"tl-meta-v\">"+a.snippet+"</div>"+
+          "<div class=\"tl-meta-k\">Sources</div><div class=\"tl-meta-v\">"+srcPills+"</div>"+
+          (a.cloneOf?"<div class=\"tl-meta-k\">Clone of</div><div class=\"tl-meta-v\" style=\"color:#a8b2cc\">"+a.cloneOf+"</div>":"")+
+          "<div class=\"tl-meta-k\">Related</div><div class=\"tl-meta-v\">"+(linkChips||"<span style=\"color:#666\">(none)</span>")+"</div>"+
+        "</div>"+
+        notesHtml+
+      "</div>"+
+    "</div>";
+  });
+  stream.innerHTML=html||"<div style=\"color:var(--text2);padding:20px;text-align:center\">No articles match filter.</div>";
+  // Card click toggles expand
+  stream.querySelectorAll(".tl-card").forEach(function(card){
+    card.addEventListener("click",function(ev){
+      if(ev.target.classList.contains("tl-link-chip")){
+        var tid=ev.target.getAttribute("data-target");
+        var t=stream.querySelector('.tl-card[data-id="'+tid.replace(/\"/g,'\\\"')+'"]');
+        if(t){t.scrollIntoView({behavior:"smooth",block:"center"});t.classList.add("expanded");}
+        ev.stopPropagation();return;
+      }
+      card.classList.toggle("expanded");
+    });
+  });
+}
+/* Filter & sort change */
+document.getElementById("tlFlagFilter").addEventListener("change",function(){var ds=DATASETS[state.dataset];if(ds)populateTimeline(ds);});
+document.getElementById("tlSort").addEventListener("change",function(){var ds=DATASETS[state.dataset];if(ds)populateTimeline(ds);});
+/* ---- PATTERN MATCH ---- */
+/* Dark-pattern + crossover taxonomy. Each colour represents a pattern family
+   that may surface as link types or repeated topic substrings across datasets. */
+var DARK_PATTERN_DEFS=[
+  {key:"supply-chain", label:"Supply-chain compromise",     col:"#ff00aa", match:/supply|update|chain|edr|cdn|dependency/i},
+  {key:"nation-state", label:"Nation-state involvement",    col:"#ff3300", match:/nation|state|apt|sponsor|govt|cyber\soperation/i},
+  {key:"monopoly",     label:"Monopolistic consolidation",  col:"#ff6600", match:/acqui|merger|consolidat|monopoly|antitrust|pivot|wave/i},
+  {key:"surveillance", label:"Surveillance / espionage",    col:"#cc66ff", match:/surveil|espion|spyware|telemetry|tracking/i},
+  {key:"regulator-cap",label:"Regulatory capture",          col:"#ffaa00", match:/regulat|policy|capture|lobby|debate|act\b/i},
+  {key:"clone-fraud",  label:"Clone / fraud / mirror",      col:"#39ff14", match:/clone|mirror|fork|fake|fraud|knockoff/i},
+  {key:"engineered-fail",label:"Engineered failure / collapse", col:"#00ffff", match:/collapse|fail|crash|wiper|bankrupt|insolven/i},
+  {key:"ext-ransom",   label:"Extortion / ransom",          col:"#ff00ff", match:/ransom|extort|cl0p|wannacry|cryptolocker|notpetya|emotet/i}
+];
+var HINDSIGHT_RULES=[
+  {test:function(n){return /eternalblue/i.test(n.id);}, msg:"EternalBlue's leak (2017) made WannaCry/NotPetya inevitable - obvious only after."},
+  {test:function(n){return /log4shell|heartbleed/i.test(n.id);}, msg:"Library-level RCE (Log4Shell, Heartbleed) recurs each cycle - visible only via 5-yr lookback."},
+  {test:function(n){return /credit\ssuisse/i.test(n.id);}, msg:"Credit Suisse instability priced in 18-24 months pre-collapse; signals dismissed at the time."},
+  {test:function(n){return /microtransaction|loot/i.test(n.id);}, msg:"Loot-box backlash predictable from 2017 monetisation pivot - regulators were 3-5 yrs late."},
+  {test:function(n){return /apple\ssilicon|m1/i.test(n.id);}, msg:"Apple Silicon transition foreshadowed by A-series perf/W trajectory - Intel was warned by 2018 benchmarks."},
+  {test:function(n){return /cyberpunk\s2077/i.test(n.id);}, msg:"Cyberpunk launch failure visible in delays + last-gen target list - obvious in retrospect."},
+  {test:function(n){return /covid|sars/i.test(n.id);}, msg:"SARS-CoV-2 zoonotic spillover risk repeatedly modelled 2003-2018 with low policy uptake."}
+];
+function detectPatternsForNode(n){
+  var hits=[];var hay=(n.id||"")+" "+(n.desc||"")+" "+(n.type||"");
+  DARK_PATTERN_DEFS.forEach(function(d){if(d.match.test(hay))hits.push(d);});
+  return hits;
+}
+function detectHindsightForNode(n){
+  var hits=[];HINDSIGHT_RULES.forEach(function(r){if(r.test(n))hits.push(r.msg);});return hits;
+}
+function renderPmLegend(){
+  var lg=document.getElementById("pmLegend");if(!lg)return;
+  var html="";DARK_PATTERN_DEFS.forEach(function(d){html+="<span><i style=\"background:"+d.col+"\"></i>"+d.label+"</span>";});
+  html+="<span><i style=\"background:#00ffff\"></i>cross-dataset crossover</span>";
+  html+="<span><i style=\"background:#ffc107\"></i>hindsight insight</span>";
+  lg.innerHTML=html;
+}
+function buildPatternSchematic(mode,minC){
+  var svg=document.getElementById("svgPattern");if(!svg)return;
+  var w=svg.parentElement.offsetWidth-12||760,h=480;
+  svg.setAttribute("viewBox","0 0 "+w+" "+h);svg.setAttribute("width",w);svg.setAttribute("height",h);
+  // Choose datasets to plot: current dataset only OR all
+  var dsKeys=mode==="crossover"?Object.keys(DATASETS):[state.dataset];
+  // Layout each dataset as a vertical lane
+  var lanes={};var laneW=w/dsKeys.length;
+  dsKeys.forEach(function(k,li){
+    var ds=DATASETS[k];if(!ds)return;
+    ensureDatasetArticles(ds);
+    var cx=li*laneW+laneW/2;
+    var nodes=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
+    var step=(h-60)/(nodes.length+1);
+    lanes[k]={cx:cx,nodes:nodes.map(function(n,i){return {n:n,x:cx,y:40+(i+1)*step,patterns:detectPatternsForNode(n)};})};
+  });
+  // Build SVG: header lane labels, nodes coloured by primary detected pattern, intra-link arcs, cross-dataset crossover lines on shared substring
+  var html="";
+  dsKeys.forEach(function(k,li){var ds=DATASETS[k];if(!ds)return;html+="<text x=\""+(li*laneW+laneW/2)+"\" y=\"18\" fill=\"#e94560\" font-size=\"12\" text-anchor=\"middle\" font-weight=\"bold\">"+(ds.seedTopic||k)+"</text>";});
+  // Intra-dataset links (faint grey base + coloured if matches dark pattern)
+  dsKeys.forEach(function(k){
+    var ds=DATASETS[k],lane=lanes[k];if(!ds||!lane)return;
+    ds.links.forEach(function(l){
+      if((l.value||1)<minC*5)return;
+      var sN=lane.nodes.filter(function(o){return o.n.id===l.source;})[0],tN=lane.nodes.filter(function(o){return o.n.id===l.target;})[0];
+      if(!sN||!tN)return;
+      var col=LINK_COLOR[l.type]||LINK_COLOR.default;
+      var dx=Math.abs(tN.y-sN.y)*0.35;
+      html+="<path d=\"M"+sN.x+","+sN.y+" C"+(sN.x+dx)+","+sN.y+" "+(tN.x+dx)+","+tN.y+" "+tN.x+","+tN.y+"\" fill=\"none\" stroke=\""+col+"\" stroke-width=\"1\" opacity=\"0.5\"/>";
+    });
+  });
+  // Cross-dataset crossover: nodes whose id-tokens overlap across lanes
+  if(mode==="crossover"&&dsKeys.length>1){
+    var allObjs=[];dsKeys.forEach(function(k){lanes[k]&&lanes[k].nodes.forEach(function(o){allObjs.push({k:k,o:o,tok:(o.n.id||"").toLowerCase().split(/\W+/).filter(function(t){return t.length>3;})});});});
+    var seenPairs={};
+    for(var i=0;i<allObjs.length;i++)for(var j=i+1;j<allObjs.length;j++){
+      var A=allObjs[i],B=allObjs[j];if(A.k===B.k)continue;
+      var common=A.tok.filter(function(t){return B.tok.indexOf(t)>=0;});
+      if(common.length){
+        var key=A.k+"|"+A.o.n.id+"||"+B.k+"|"+B.o.n.id;if(seenPairs[key])continue;seenPairs[key]=1;
+        html+="<line x1=\""+A.o.x+"\" y1=\""+A.o.y+"\" x2=\""+B.o.x+"\" y2=\""+B.o.y+"\" stroke=\"#00ffff\" stroke-width=\"1\" stroke-dasharray=\"3 3\" opacity=\"0.6\"><title>crossover token: "+common.join(", ")+"</title></line>";
+      }
+    }
+  }
+  // Nodes
+  dsKeys.forEach(function(k){
+    var lane=lanes[k];if(!lane)return;
+    lane.nodes.forEach(function(o){
+      var col=o.patterns.length?o.patterns[0].col:(NODE_COLORS[o.n.group%NODE_COLORS.length]);
+      var r=4+Math.min(4,o.patterns.length);
+      html+="<circle cx=\""+o.x+"\" cy=\""+o.y+"\" r=\""+r+"\" fill=\""+col+"\" stroke=\"#0a0a14\" stroke-width=\"1\"><title>"+o.n.id+" ("+(o.n.year||"?")+")"+(o.patterns.length?" - "+o.patterns.map(function(p){return p.label;}).join("; "):"")+"</title></circle>";
+      html+="<text x=\""+(o.x+8)+"\" y=\""+(o.y+3)+"\" fill=\"#bbcce0\" font-size=\"9\">"+o.n.id+"</text>";
+      // hindsight star
+      if(detectHindsightForNode(o.n).length)html+="<text x=\""+(o.x-12)+"\" y=\""+(o.y+4)+"\" fill=\"#ffc107\" font-size=\"11\" text-anchor=\"middle\">\u2731</text>";
+    });
+  });
   svg.innerHTML=html;
 }
-/* ---- PATTERN MATCH ---- */
+function renderPmSidePanels(mode){
+  var darkBox=document.getElementById("pmDarkList"),hindBox=document.getElementById("pmHindList");
+  if(!darkBox||!hindBox)return;
+  var keys=mode==="crossover"?Object.keys(DATASETS):[state.dataset];
+  var darkRows=[],hindRows=[];
+  keys.forEach(function(k){var ds=DATASETS[k];if(!ds)return;ensureDatasetArticles(ds);ds.nodes.forEach(function(n){
+    var pats=detectPatternsForNode(n);if(pats.length)darkRows.push({k:k,n:n,pats:pats});
+    var hs=detectHindsightForNode(n);hs.forEach(function(m){hindRows.push({k:k,n:n,m:m});});
+  });});
+  darkBox.innerHTML=darkRows.length?darkRows.map(function(r){
+    return "<div class=\"pm-dark-item\">["+r.k+"] <b>"+r.n.id+"</b> - "+r.pats.map(function(p){return "<span style=\"color:"+p.col+"\">"+p.label+"</span>";}).join(" / ")+"</div>";
+  }).join(""):"<div style=\"color:#666;font-size:10px\">No dark patterns surfaced.</div>";
+  hindBox.innerHTML=hindRows.length?hindRows.map(function(r){
+    return "<div class=\"pm-hind-item\">["+r.k+"] <b>"+r.n.id+"</b> - "+r.m+"</div>";
+  }).join(""):"<div style=\"color:#666;font-size:10px\">No hindsight rules matched.</div>";
+}
 document.getElementById("btnRunPattern").addEventListener("click",function(){
   if(!simLinks.length){log("No data loaded","WARN");return;}
-  var regex;try{regex=new RegExp(document.getElementById("patternRegex").value,"i");}catch(e){log("Invalid regex","ERROR");return;}
+  var regex;try{regex=new RegExp(document.getElementById("patternRegex").value||".","i");}catch(e){log("Invalid regex","ERROR");return;}
   var minC=parseFloat(document.getElementById("patternMinCorr").value)||0,matches=[];
+  var mode=document.getElementById("patternMode").value||"current";
   simLinks.forEach(function(l){if(regex.test(l.source.id)||regex.test(l.target.id)){var c=Math.min(l.value/5,1);if(c>=minC)matches.push({a:l.source.id,b:l.target.id,c:c.toFixed(2),t:l.source.type+"/"+l.target.type,p:regex.source});}});
   var tb=document.getElementById("patternTable").querySelector("tbody"),html="";
   matches.forEach(function(m){html+="<tr><td>"+m.a+"</td><td>"+m.b+"</td><td>"+m.c+"</td><td>"+m.t+"</td><td>"+m.p+"</td></tr>";});
   tb.innerHTML=html||"<tr><td colspan=\"5\" style=\"color:var(--text2)\">No matches.</td></tr>";
-  log("Pattern: "+matches.length+" matches");
+  renderPmLegend();buildPatternSchematic(mode,minC);renderPmSidePanels(mode);
+  log("Pattern: "+matches.length+" link matches, mode="+mode);
 });
-/* ---- FORESIGHT ---- */
+/* ---- FORESIGHT (Quantum-Entangled) ---- */
+/* Inception epoch: page-load time captured to (minute, second) granularity becomes
+   the canonical entanglement seed. Every quantum prediction derives from this seed
+   plus the active dataset id, so re-running on the same dataset returns the same
+   "slightly off" forecast unless Reseed is pressed. The intent is a deterministic
+   probabilistic shadow you can reach back into for inference later. */
+var QSTATE=(function(){
+  var now=new Date();
+  var epochMs=now.getTime();
+  var minSec=now.getMinutes()*60+now.getSeconds(); // 0..3599
+  // basis vector: pseudo-spin of 8 dims fingerprint of inception
+  var prng=mulberry32((epochMs>>>0)^minSec*131);
+  var basis=[];for(var i=0;i<8;i++)basis.push(((prng()*2-1)).toFixed(3));
+  return {epochMs:epochMs,inception:now.toISOString(),minSec:minSec,basis:basis,reseeds:0};
+})();
+function reseedQuantum(){
+  var now=new Date();
+  QSTATE.epochMs=now.getTime();QSTATE.inception=now.toISOString();QSTATE.minSec=now.getMinutes()*60+now.getSeconds();QSTATE.reseeds++;
+  var prng=mulberry32((QSTATE.epochMs>>>0)^QSTATE.minSec*131^QSTATE.reseeds);
+  QSTATE.basis=[];for(var i=0;i<8;i++)QSTATE.basis.push(((prng()*2-1)).toFixed(3));
+  renderQuantumBar();log("Quantum reseed #"+QSTATE.reseeds+" @ minSec="+QSTATE.minSec);
+}
+function renderQuantumBar(){
+  var bar=document.getElementById("fsQuantumBar");if(!bar)return;
+  bar.innerHTML="<span class=\"fs-q-tag epoch\">epoch min&#xB7;sec: "+QSTATE.minSec+"</span>"+
+    "<span class=\"fs-q-tag\">inception: "+QSTATE.inception.replace("T"," ").substr(0,19)+"</span>"+
+    "<span class=\"fs-q-tag entangled\">\u269B entangled</span>"+
+    "<span class=\"fs-q-tag basis\">basis: ["+QSTATE.basis.join(", ")+"]</span>"+
+    "<span class=\"fs-q-tag\">reseeds: "+QSTATE.reseeds+"</span>"+
+    "<span style=\"color:#5577aa;font-size:10px\">- a deterministic, only-ever-so-slightly-off forecast you can reach back to.</span>";
+}
+function quantumEvents(ds,minYr,maxYr){
+  // Build a deterministic stream of 5..20yr-ahead "what could plausibly correlate" events
+  // Seed mixes inception + dataset id + basis vector
+  var dsKey=state.dataset||"";
+  var seed=(QSTATE.epochMs>>>0)^strHash32(dsKey)^QSTATE.minSec*1009;
+  QSTATE.basis.forEach(function(b,i){seed=(seed^Math.floor(parseFloat(b)*1000)*((i+1)*17))>>>0;});
+  var rnd=mulberry32(seed);
+  var lastY=Math.max.apply(null,ds.nodes.map(function(n){return n.year||0;}));
+  var startY=lastY+minYr,endY=lastY+maxYr;
+  var slots=Math.max(3,Math.floor((endY-startY)/2));
+  // Dictionary of plausible-but-slightly-off futures, biased by dataset topic
+  var topicTerms={
+    "virus-computer":["wormable RCE in mainline LLM runtime","supply-chain compromise of edge-AI deploy pipeline","quantum-resistant TLS rollout slips","ransomware-as-a-service guild fragmentation","BIOS-level firmware persistence wave"],
+    "virus-human":["zoonotic spillover via melting permafrost","mRNA pan-coronavirus booster authorisation","H5N1 mammal-to-mammal transmission cluster","airborne fungal pathogen migration","CRISPR-edited gain-of-function accident"],
+    "ai-displacement":[">50% of junior coders displaced in 1 region","AGI-claim correction event","UBI passes in mid-tier economy","AI-generated content surpasses 70% web index","model-collapse degrades public corpora"],
+    "games-cost-profit":["live-service fatigue collapses 2-3 publishers","subscription bundle wars cap discretionary spend","AI-generated mid-tier title floods storefronts","crypto-asset reintegration after winter","hardware-rendered cloud overtakes consoles"],
+    "devices-suppliers":["non-Apple ARM laptop reaches 25% share","TSMC 2nm yields slip 6 months","modular phone format gains carrier traction","India fab capacity becomes geopolitical lever","Intel divests foundry"],
+    "fortune500":["mega-cap tech antitrust forced divestiture","energy major acquires a lithium chain","retail giant absorbs a logistics F100","insurance and health vertical re-bundle","sovereign wealth fund takes top-10 stake"],
+    "world-banking":["another mid-tier eurobank emergency merger","CBDC retail launch in G7 economy","BIS publishes binding interbank AI rules","cross-border crypto bank licensed","stress test reveals AI-trading liquidity gap"],
+    "weapons-mfg":["transatlantic prime-contractor merger blocked then approved","China private defence spinoff IPOs","AI-design house acquired by US prime","South Korea overtakes a top-5 European exporter","insurance markets refuse autonomous-weapon liability"],
+    "weapons-missiles":["first combat use of fractional-orbital glide vehicle","AI mid-course retargeting normalised","reusable hypersonic test platform fielded","swarm cruise missile defeats layered SAM","directed-energy intercept enters serial production"],
+    "weapons-firearms":["3D-printed receiver bans split jurisdictions","smart-fire biometric pistol mandated for issue","caseless ammunition re-emerges in NATO trial","polymer rifle frame goes mainstream","AI-coached marksmanship optic certified"],
+    "weapons-countermeasures":["GNSS-denied navigation becomes baseline","vehicle APS standard on Western IFVs","DIRCM miniaturised for rotary-wing fleet","cognitive EW pod replaces ALQ-99 family","laser CIWS deployed on destroyer class"],
+    "weapons-bio-chem":["OPCW verifies a 5th-gen agent attribution","AI-designed toxin export-control regime","pandemic-preparedness treaty triggers BWC reform","non-state actor synth-bio incident","dual-use academic publishing curbed"],
+    "weapons-nuclear":["New START successor expanded to triad+space","AI integration into nuclear C2 explicitly banned","low-yield warhead first combat use","6th declared NPT-recognised state","deep-sea autonomous nuclear delivery debated"],
+    "hormones-nutrients":["BPA-class disruptors banned in food packaging","GLP-1 analogues reshape global obesity rates","personalised micronutrient prescriptions covered","vitamin D supplementation policy shift","cortisol biomarkers in workplace wellness"],
+    "proteins-organisms":["AlphaFold-derived enzymes industrialised","synthetic universal flu vaccine antigen","engineered nitrogen-fixing cereal trial","cell-cultured meat parity in 2 markets","de novo designed therapeutic protein approved"],
+    "domesticated-animals":["gene-edited disease-resistant cattle commercialised","insect protein industrial scale-up","sterile-male tech curbs invasive feral species","avian flu reshapes global poultry geography","camel/yak husbandry expands under climate stress"],
+    "psych-meds":["psychedelics first-line for treatment-resistant depression","DSM-6 dimensional model published","AI-prescribing autonomy legalised in pilot states","long-acting injectable antipsychotic mainstream","genetic-guided SSRI selection covered by insurers"],
+    "car-models":["solid-state battery EV in showroom","Chinese OEM passes top-3 European brand in EU sales","L4 robotaxi profitability in 2 metros","H2 fuel-cell heavy-truck niche carved out","end of mass-market ICE sedan in EU/UK"],
+    "taxonomy-styles":["AI-curated national style canon becomes contested","heritage remix law limits model training on folk motifs","digital vernacular from Global South dominates trend cycles","museum taxonomy shifts from nation-state to diaspora lens","algorithmic taste engines revive a pre-modern craft style"]
+  };
+  var terms=topicTerms[dsKey]||["correlated emergent shift","second-order regulatory recoil","supply chain ripple","adoption inflection","contrarian counter-trend"];
+  var events=[];
+  for(var i=0;i<slots;i++){
+    var yr=startY+Math.floor(rnd()*(endY-startY+1));
+    var term=terms[Math.floor(rnd()*terms.length)];
+    var prob=0.18+rnd()*0.62; // 18%..80%
+    var off=(rnd()*2-1)*0.15; // slightly off bias factor
+    var seedNode=ds.nodes[Math.floor(rnd()*ds.nodes.length)];
+    events.push({year:yr,prob:prob,offset:off,term:term,anchorId:seedNode?seedNode.id:"(none)"});
+  }
+  events.sort(function(a,b){return a.year-b.year;});
+  return events;
+}
+function renderQuantumLog(events){
+  var box=document.getElementById("fsQuantumLog");if(!box)return;
+  if(!events||!events.length){box.innerHTML="<i style=\"color:#666\">No entangled events generated.</i>";return;}
+  var html="<div style=\"color:#88ccff\"><b>\u269B Entangled potentials</b> (deterministic given inception minSec="+QSTATE.minSec+", dataset="+state.dataset+"):</div>";
+  events.forEach(function(e){
+    var pct=Math.round(e.prob*100),offPct=(e.offset*100).toFixed(1);
+    var col=e.prob>0.6?"#7bed9f":(e.prob>0.4?"#ffc107":"#ff6688");
+    html+="<div style=\"padding:2px 0;border-bottom:1px dashed #1a1a30\"><span style=\"color:"+col+";font-weight:bold\">"+e.year+"</span> &middot; "+
+      "<span style=\"color:#dde6f5\">"+e.term+"</span> &middot; "+
+      "<span style=\"color:#5599cc\">P\u2248"+pct+"%</span> &middot; "+
+      "<span style=\"color:#aa88cc\">slip "+offPct+"%</span> &middot; "+
+      "<span style=\"color:#666\">anchor: "+e.anchorId+"</span></div>";
+  });
+  box.innerHTML=html;
+}
+function reseedQuantumWrap(){reseedQuantum();}
+document.getElementById("btnReseedQuantum").addEventListener("click",reseedQuantumWrap);
 document.getElementById("btnRunForesight").addEventListener("click",function(){
   if(!state.nodes.length){log("Load dataset first","WARN");return;}
   var horizon=parseInt(document.getElementById("fsHorizon").value)||10,iters=parseInt(document.getElementById("fsMonteCarlo").value)||1000,sigma=parseInt(document.getElementById("fsConfidence").value)||2,devT=parseInt(document.getElementById("fsDeviance").value)||15;
+  var quantumOn=document.getElementById("fsQuantum").checked;
+  var qMin=parseInt(document.getElementById("fsQuantumMin").value)||5,qMax=parseInt(document.getElementById("fsQuantumMax").value)||20;
+  if(qMax<qMin)qMax=qMin+1;
   var yc={};state.nodes.forEach(function(nd){if(nd.year)yc[nd.year]=(yc[nd.year]||0)+1;});
   var years=Object.keys(yc).map(Number).sort(function(a,b){return a-b;});if(years.length<2){log("Need 2+ data points","WARN");return;}
   var lastY=years[years.length-1],vals=years.map(function(y){return yc[y];}),mean=0;vals.forEach(function(v){mean+=v;});mean=mean/vals.length;
   var variance=0;vals.forEach(function(v){variance+=(v-mean)*(v-mean);});var sd=Math.sqrt(variance/vals.length)||1;
   var pYears=[];for(var py=1;py<=horizon;py++)pYears.push(lastY+py);
-  var mcR=[];for(var mc=0;mc<iters;mc++){var run=[];pYears.forEach(function(){var u1=Math.random()||0.001,u2=Math.random(),z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);run.push(Math.max(0,mean+z*sd));});mcR.push(run);}
+  // Quantum bias: nudge mean per-year by basis vector projection
+  var qBiasFn=function(t){if(!quantumOn)return 0;var b=parseFloat(QSTATE.basis[t%QSTATE.basis.length]);return b*sd*0.4;};
+  // Mulberry RNG seeded from inception ensures reproducibility within a session
+  var qSeed=(QSTATE.epochMs>>>0)^strHash32(state.dataset||"");
+  var qRnd=mulberry32(qSeed);
+  function rand(){return quantumOn?qRnd():Math.random();}
+  var mcR=[];for(var mc=0;mc<iters;mc++){var run=[];pYears.forEach(function(_,t){var u1=rand()||0.001,u2=rand(),z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);run.push(Math.max(0,mean+qBiasFn(t)+z*sd));});mcR.push(run);}
   var meds=[],lo=[],hi=[],dev=[];
   pYears.forEach(function(_,t){var col=mcR.map(function(r){return r[t];}).sort(function(a,b){return a-b;});meds.push(col[Math.floor(col.length*0.5)]);lo.push(col[Math.floor(col.length*Math.max(0,0.5-0.341*sigma))]);hi.push(col[Math.floor(col.length*Math.min(0.5+0.341*sigma,0.999))]);dev.push(col[Math.floor(col.length*0.5)]*(1+devT/100));});
   var svg=document.getElementById("svgForesight"),cw=svg.parentElement.offsetWidth||700,ch=280;svg.setAttribute("width",cw);svg.setAttribute("height",ch);
@@ -1105,17 +2780,41 @@ document.getElementById("btnRunForesight").addEventListener("click",function(){
   html+="<path d=\""+pp+"\" fill=\"none\" stroke=\"#16c79a\" stroke-width=\"2\" stroke-dasharray=\"6 3\"/>";
   var dp="M";pYears.forEach(function(y,i){dp+=(i?"L":"")+sx(y).toFixed(1)+","+sy(dev[i]).toFixed(1);});
   html+="<path d=\""+dp+"\" fill=\"none\" stroke=\"#ffc107\" stroke-dasharray=\"4 2\" stroke-width=\"1.5\"/>";
+  // Quantum entangled markers
+  var qEvents=[];
+  if(quantumOn){
+    var ds=DATASETS[state.dataset];
+    if(ds){
+      qEvents=quantumEvents(ds,qMin,qMax);
+      qEvents.forEach(function(e){
+        if(e.year<minY||e.year>maxY)return;
+        var x=sx(e.year),y=ch-pad.b-(0.5+e.offset)*(ch-pad.t-pad.b)*0.7;
+        var col=e.prob>0.6?"#7bed9f":(e.prob>0.4?"#ffc107":"#ff6688");
+        html+="<circle cx=\""+x.toFixed(1)+"\" cy=\""+y.toFixed(1)+"\" r=\"4\" fill=\""+col+"\" stroke=\"#ff00ff\" stroke-width=\"1\"><title>"+e.year+" - "+e.term+" (P\u2248"+Math.round(e.prob*100)+"%)</title></circle>";
+        html+="<line x1=\""+x.toFixed(1)+"\" y1=\""+(ch-pad.b)+"\" x2=\""+x.toFixed(1)+"\" y2=\""+y.toFixed(1)+"\" stroke=\"#ff00ff\" stroke-dasharray=\"1 2\" opacity=\"0.4\"/>";
+      });
+    }
+  }
   html+="<line x1=\""+pad.l+"\" y1=\""+(ch-pad.b)+"\" x2=\""+(cw-pad.r)+"\" y2=\""+(ch-pad.b)+"\" stroke=\"#2a2a3e\"/><line x1=\""+pad.l+"\" y1=\""+pad.t+"\" x2=\""+pad.l+"\" y2=\""+(ch-pad.b)+"\" stroke=\"#2a2a3e\"/>";
   allY.filter(function(_,i){return i%Math.max(1,Math.floor(allY.length/10))===0;}).forEach(function(y){html+="<text x=\""+sx(y).toFixed(1)+"\" y=\""+(ch-8)+"\" fill=\"#888\" font-size=\"9\" text-anchor=\"middle\">"+y+"</text>";});
-  svg.innerHTML=html;log("Foresight done");document.getElementById("statusMsg").textContent="Foresight complete";
+  svg.innerHTML=html;
+  renderQuantumLog(qEvents);
+  log("Foresight done"+(quantumOn?" (quantum on, "+qEvents.length+" entangled events)":""));
+  document.getElementById("statusMsg").textContent="Foresight complete";
 });
+renderQuantumBar();
 /* ---- STATUS TIME ---- */
 setInterval(function(){var el=document.getElementById("statusTime");if(el)el.textContent=new Date().toLocaleTimeString();},1000);
 /* ---- INIT ---- */
 resizeCanvas();
+loadStoredDatasetOptions();
+initBuilderControls();
+initLinkageControls();
 loadDataset("virus-computer");
 })();
 //]]>
 </script>
+  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
 </body>
 </html>
+

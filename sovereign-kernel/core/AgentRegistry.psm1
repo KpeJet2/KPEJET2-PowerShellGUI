@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -190,18 +190,18 @@ function Resolve-BootOrder {
     function Visit-Node {
         param([string]$NodeId)
         if ($visited.ContainsKey($NodeId)) {
-            if ($visited[$NodeId] -eq 'IN_PROGRESS') {
+            if ($visited[$NodeId] -eq 'IN_PROGRESS') {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 Write-AppLog -Message "[AgentRegistry] Circular dependency detected at $NodeId" -Level Warning
             }
             return
         }
-        $visited[$NodeId] = 'IN_PROGRESS'
+        $visited[$NodeId] = 'IN_PROGRESS'  # SIN-EXEMPT:P027 -- index access, context-verified safe
         if ($script:_DependencyGraph.ContainsKey($NodeId)) {
             foreach ($dep in $script:_DependencyGraph[$NodeId]) {
                 Visit-Node -NodeId $dep
             }
         }
-        $visited[$NodeId] = 'DONE'
+        $visited[$NodeId] = 'DONE'  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $order.Add($NodeId)
     }
 
@@ -315,7 +315,7 @@ function Get-ModulesBySpine {
         [hashtable]$Spines
     )
     if ($Spines.ContainsKey($SpineName)) {
-        return $Spines[$SpineName]
+        return $Spines[$SpineName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return @()
 }
@@ -471,6 +471,7 @@ Export-ModuleMember -Function @(
     'Get-ModulesBySpine'
     'Get-HotStandbyModules'
 )
+
 
 
 

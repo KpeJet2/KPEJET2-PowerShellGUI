@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.3
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,6 +57,9 @@ $ReportsDir     = Join-Path $WorkspacePath '~REPORTS'
 $CrashLogFile   = Join-Path $LogsDir 'engine-crash.log'
 $BootstrapLog   = Join-Path $LogsDir 'engine-bootstrap.log'
 $StdoutLog      = Join-Path $LogsDir 'engine-stdout.log'
+$ServiceLog     = Join-Path $LogsDir 'engine-service.log'
+$CurrentInstanceFile = Join-Path $LogsDir 'engine-instance-current.json'
+$LastInstanceFile    = Join-Path $LogsDir 'engine-instance-last.json'
 $Timestamp      = Get-Date -Format 'yyyyMMdd-HHmmss'
 $CrashId        = "crash-$Timestamp"
 $QuarantineDir  = Join-Path (Join-Path $LogsDir 'crash-quarantine') $CrashId
@@ -124,7 +127,71 @@ function Push-DirtyShutdownBug2Fix {
     }
 }
 
+function Read-JsonFile {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return $null }
+    try {
+        $raw = Get-Content -LiteralPath $Path -Raw -Encoding UTF8
+        if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+        return ($raw | ConvertFrom-Json)
+    } catch {
+        return $null
+    }
+}
+
+function Get-ServiceLogState {
+    param([string]$Path)
+    $tail = @()
+    $hasClean = $false
+    $hasDirty = $false
+    $lastTs = $null
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return [pscustomobject]@{
+            path             = $Path
+            exists           = $false
+            hasCleanShutdown = $false
+            hasDirtyMarker   = $false
+            lastTimestamp    = $null
+            tail             = @()
+        }
+    }
+    if (Test-Path -LiteralPath $Path) {
+        try {
+            $tail = @(Get-Content -LiteralPath $Path -Encoding UTF8 -Tail 60 -ErrorAction SilentlyContinue)
+            $hasClean = @($tail | Where-Object { $_ -match 'CLEAN_STOP|SERVICE_SHUTDOWN CLEAN|Engine exited \[CLEAN_STOP\]' }).Count -gt 0
+            $hasDirty = @($tail | Where-Object { $_ -match 'DIRTY_EXIT|SERVICE_SHUTDOWN DIRTY|FORCED_CLOSE|FORCED_STOP' }).Count -gt 0
+            $tsLine = @($tail | Where-Object { $_ -match '^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]' } | Select-Object -Last 1)
+            if (@($tsLine).Count -gt 0) {
+                $null = ($tsLine[0] -match '^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]')
+                if ($Matches[1]) {
+                    try { $lastTs = [datetime]::ParseExact($Matches[1], 'yyyy-MM-dd HH:mm:ss', $null) } catch { <# Intentional: non-fatal #> }
+                }
+            }
+        } catch { <# Intentional: non-fatal #> }
+    }
+    return [pscustomobject]@{
+        path             = $Path
+        exists           = (Test-Path -LiteralPath $Path)
+        hasCleanShutdown = $hasClean
+        hasDirtyMarker   = $hasDirty
+        lastTimestamp    = $lastTs
+        tail             = $tail
+    }
+}
+
 Write-CleanupLog "=== Invoke-EngineCrashCleanup: $CrashId ==="
+
+$currentInstance = Read-JsonFile -Path $CurrentInstanceFile
+$lastInstance = Read-JsonFile -Path $LastInstanceFile
+$serviceLogPath = $null
+if ($null -ne $currentInstance -and $currentInstance.PSObject.Properties.Name -contains 'serviceLogFile' -and -not [string]::IsNullOrWhiteSpace($currentInstance.serviceLogFile)) {
+    $serviceLogPath = [string]$currentInstance.serviceLogFile
+} elseif ($null -ne $lastInstance -and $lastInstance.PSObject.Properties.Name -contains 'state' -and $null -ne $lastInstance.state -and $lastInstance.state.PSObject.Properties.Name -contains 'serviceLogFile' -and -not [string]::IsNullOrWhiteSpace($lastInstance.state.serviceLogFile)) {
+    $serviceLogPath = [string]$lastInstance.state.serviceLogFile
+} else {
+    $serviceLogPath = $ServiceLog
+}
+$serviceLogState = Get-ServiceLogState -Path $serviceLogPath
 
 # ─── Read crash event from crash log ─────────────────────────────────────────
 $crashEvent = $null
@@ -148,12 +215,14 @@ if (Test-Path -LiteralPath $CrashLogFile) {
         Write-CleanupLog "Could not parse crash log: $_" 'WARN'
     }
 }
+if ($null -eq $crashTime -and $null -ne $serviceLogState.lastTimestamp) { $crashTime = $serviceLogState.lastTimestamp }
 if ($null -eq $crashTime) { $crashTime = Get-Date }
 Write-CleanupLog "Crash reference time: $($crashTime.ToString('yyyy-MM-dd HH:mm:ss'))"
 
 # ─── Collect log tails for report ────────────────────────────────────────────
 $engineLogTail = @()
 $bootstrapLogTail = @()
+$serviceLogTail = @()
 try {
     if (Test-Path -LiteralPath $StdoutLog) {
         $engineLogTail = @(Get-Content -LiteralPath $StdoutLog -Encoding UTF8 -Tail 30 -ErrorAction SilentlyContinue)
@@ -162,6 +231,11 @@ try {
 try {
     if (Test-Path -LiteralPath $BootstrapLog) {
         $bootstrapLogTail = @(Get-Content -LiteralPath $BootstrapLog -Encoding UTF8 -Tail 20 -ErrorAction SilentlyContinue)
+    }
+} catch { <# non-fatal #> }
+try {
+    if (Test-Path -LiteralPath $serviceLogPath) {
+        $serviceLogTail = @(Get-Content -LiteralPath $serviceLogPath -Encoding UTF8 -Tail 40 -ErrorAction SilentlyContinue)
     }
 } catch { <# non-fatal #> }
 
@@ -270,12 +344,22 @@ $report = [pscustomobject]@{
     cleanExit           = $false
     dryRun              = $DryRun.IsPresent
     crashEvent          = $crashEvent
+    currentInstance     = $currentInstance
+    lastInstance        = $lastInstance
+    serviceLogState     = [pscustomobject]@{
+        path = $serviceLogState.path
+        exists = $serviceLogState.exists
+        hasCleanShutdown = $serviceLogState.hasCleanShutdown
+        hasDirtyMarker = $serviceLogState.hasDirtyMarker
+        lastTimestamp = if ($null -ne $serviceLogState.lastTimestamp) { $serviceLogState.lastTimestamp.ToString('o') } else { $null }
+    }
     quarantineDir       = $QuarantineDir
     quarantinedCount    = @($quarantineList | Where-Object { $_.quarantined }).Count
     suspiciousCount     = @($suspiciousFiles).Count
     suspiciousFiles     = @($quarantineList)
     bootstrapLogTail    = $bootstrapLogTail
     engineLogTail       = $engineLogTail
+    serviceLogTail      = $serviceLogTail
 }
 try {
     $rJson = $report | ConvertTo-Json -Depth 8
@@ -305,6 +389,7 @@ Write-CleanupLog "Cleanup complete. Quarantined: $(@($quarantineList | Where-Obj
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

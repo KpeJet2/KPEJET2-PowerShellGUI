@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- VersionTag: 2604.B1.V32.3 -->
+
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -53,6 +54,9 @@
     .scan-btn:hover{background:var(--btn-hover)}
     .scan-btn.inc{border-color:var(--info);color:var(--info)}
     .scan-btn.full{border-color:var(--warn);color:var(--warn)}
+    .scan-btn.busy{opacity:.85;cursor:progress;filter:saturate(1.2)}
+    .scan-btn.ok{border-color:#22c55e;color:#22c55e}
+    .scan-btn.err{border-color:#ef4444;color:#ef4444}
     .scan-pgbar-wrap{flex:1;min-width:120px;max-width:200px;
                      height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden}
     .scan-pgbar-fill{height:100%;width:0;background:var(--accent);
@@ -110,14 +114,12 @@
     }
     /* ── Tooltip system ── */
     [data-tip]{position:relative;}
-    [data-tip]:hover::after{
-      content:attr(data-tip);
-      position:absolute;bottom:calc(100% + 7px);left:50%;
-      transform:translateX(-50%);
+    .tip-bubble{
+      position:fixed;left:0;top:0;display:none;
       background:#111114;border:1px solid #3f3f46;color:#d4d4d4;
       font-size:10px;line-height:1.4;padding:5px 9px;
-      border-radius:5px;white-space:pre-wrap;max-width:260px;
-      z-index:9999;pointer-events:none;
+      border-radius:5px;white-space:pre-wrap;max-width:300px;
+      z-index:99999;pointer-events:none;
       box-shadow:0 3px 8px rgba(0,0,0,.7);
     }
     /* ── Stats strip ── */
@@ -128,6 +130,10 @@
     }
     .stat-item{display:flex;align-items:center;gap:5px;font-size:10px;cursor:default}
     .stat-val{color:#569cd6;font-weight:700}
+    .stat-trend{font-size:10px;min-width:12px;text-align:center;color:#666}
+    .stat-trend.up{color:#4ec9b0}
+    .stat-trend.down{color:#f44747}
+    .stat-trend.flat{color:#888}
     .stat-lbl{color:var(--fg-sub)}
     /* ── Event Log section ── */
     .evt-filter-bar{
@@ -188,7 +194,22 @@
       border-color:#f44747 !important;
     }
     .hub-card.cfg-error .hub-card-badge{background:#3a0000;color:#ff6464}
-    /* ── WebEngine Monitor section ── */
+    @keyframes missing-qmark-pulse{
+      0%{background:#6b1c1c;color:#ffd66b;border-color:#ffcf5a;transform:scale(1)}
+      50%{background:#9a2f00;color:#fff3b0;border-color:#ffe084;transform:scale(1.08)}
+      100%{background:#6b1c1c;color:#ffd66b;border-color:#ffcf5a;transform:scale(1)}
+    }
+    .hub-card.link-missing{border-color:#c65a5a !important;box-shadow:inset 0 0 0 1px rgba(198,90,90,.45)}
+    .hub-card.link-missing .hub-card-title{color:#ffd3d3}
+    .hub-card-missing-badge{
+      position:absolute;top:6px;right:6px;z-index:3;
+      min-width:18px;height:18px;line-height:16px;text-align:center;
+      border-radius:999px;border:1px solid #ffcf5a;font-size:12px;font-weight:700;
+      animation:missing-qmark-pulse 1.1s ease-in-out infinite;
+      box-shadow:0 0 0 1px rgba(0,0,0,.35);
+      pointer-events:none;
+    }
+    /* ── Local Web Engine section ── */
     .eng-monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
     .eng-stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
     .eng-stat-label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.5px}
@@ -196,6 +217,8 @@
     .eng-stat-value.ok{color:var(--pass)}
     .eng-stat-value.err{color:var(--fail)}
     .eng-log-pre{background:#0d0d10;border:1px solid var(--border);border-radius:var(--radius);padding:10px;font-family:'Cascadia Code',Consolas,monospace;font-size:11px;color:var(--fg);max-height:200px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+    .runtime-note{margin-top:8px;padding:8px 10px;border:1px dashed #344d6b;border-radius:8px;background:rgba(20,30,44,.55);color:#9fb6d1;font-size:10px;line-height:1.4}
+    .runtime-note.warn{border-color:#7a5a2b;background:rgba(52,40,20,.45);color:#d9c08f}
     /* ── Sidebar links ── */
     .hub-sidebar-links{border-top:1px solid var(--border);padding:8px 10px;margin-top:auto;flex-shrink:0}
     .hub-sidebar-link{display:block;font-size:11px;color:var(--info);text-decoration:none;padding:4px 6px;border-radius:var(--radius);margin-bottom:2px}
@@ -264,6 +287,14 @@
     .hub-cards.view-list .hub-card-chk{position:static;margin-right:4px}
     .hub-cards.view-detail .hub-card-chk{position:static;margin-top:3px;margin-right:4px}
     .hub-card{position:relative} /* ensure abs checkbox anchors */
+    .hub-card-star{
+      position:absolute;top:6px;right:6px;z-index:4;
+      width:18px;height:18px;line-height:16px;text-align:center;
+      border:1px solid #3a3a42;border-radius:999px;background:#1a1a1f;
+      color:#6f6f7a;font-size:12px;cursor:pointer;user-select:none;
+    }
+    .hub-card-star:hover{border-color:#b59f3b;color:#e5d27a}
+    .hub-card-star.pinned{border-color:#b59f3b;color:#e5d27a;background:#2a250f}
     /* ── Group pills on cards ── */
     .hub-card-groups{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
     .group-pill{font-size:8px;padding:1px 6px;border-radius:8px;
@@ -300,15 +331,38 @@
     .scan-spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--border);
       border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
       margin-right:6px;vertical-align:middle}
+    /* -- Code Copy-Cats -- */
+    .ccc-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:8px 10px;background:#12131b;border:1px solid #2a2d39;border-radius:var(--radius);margin-bottom:10px}
+    .ccc-field{display:flex;flex-direction:column;gap:3px;min-width:160px}
+    .ccc-field label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:.4px}
+    .ccc-field input,.ccc-field select{background:#1a1a1a;border:1px solid var(--border);color:var(--fg);padding:4px 6px;font-family:var(--font);font-size:11px;border-radius:var(--radius)}
+    .ccc-field select[multiple]{min-height:84px}
+    .ccc-status{font-size:10px;color:var(--fg-sub);margin:6px 0 8px}
+    .ccc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px}
+    .ccc-card{background:#0f1118;border:1px solid #2a2f40;border-radius:6px;padding:10px}
+    .ccc-card h4{font-size:13px;color:#9cdcfe;margin-bottom:5px}
+    .ccc-meta{font-size:10px;color:#7f8ea8;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+    .ccc-snippet{position:relative;background:#0a0d14;border:1px solid #263249;border-radius:6px;padding:10px 10px 28px;font-family:'Cascadia Code',Consolas,monospace;font-size:11px;white-space:pre-wrap;word-break:break-word;color:#d4d4d4;min-height:88px}
+    .ccc-copy{position:absolute;right:7px;bottom:6px;font-size:10px;padding:2px 7px;border:1px solid #3f5a82;background:#16243d;color:#9ec4ff;border-radius:4px;cursor:pointer}
+    .ccc-help{margin-top:8px;font-size:11px;color:#c7c7c7;line-height:1.45}
+    .ccc-sw{margin-top:6px;border-collapse:collapse;width:100%;font-size:10px}
+    .ccc-sw th,.ccc-sw td{border-bottom:1px solid #252a36;padding:3px 4px;vertical-align:top;text-align:left}
+    .ccc-sw th{color:#88a1c5;background:#131926}
+    .ccc-link{color:#9cdcfe;text-decoration:none}
+    .ccc-link:hover{text-decoration:underline}
+    .ccc-empty{padding:20px;text-align:center;color:var(--fg-sub);background:#111;border:1px dashed #333;border-radius:6px}
   </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
 <body>
   <!-- ── Header ── -->
   <div class="hdr">
     &#x1F3E0; Workspace Hub
-    <span class="hdr-ver">2604.B1.V32.3</span>
+    <span class="hdr-ver pwshgui-version" id="hdrVer" data-pwshgui-version="2605.B5.V46.0">v2605.B5.V46.0</span>
     <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
-    <span id="engStatus" class="eng-status-lbl" data-tip="LocalWebEngine uptime and PID">&#x2014;</span>
+    <a id="engStatusLink" class="eng-status-lbl" href="#" target="_blank" rel="noopener" data-tip="LocalWebEngine runtime status. When engine is up this becomes a live link to Service Hub with PID and PORT details.">&#x2014;</a>
     <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Live mode: verify/start via API route. File mode: shows local launch guidance and opens launcher when possible.">&#x25B6; Start Engine</button>
     <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Live mode: stop confirmation + API stop. File mode: graceful fallback guidance if remote control is unavailable.">&#x25A0; Stop</button>
   </div>
@@ -316,12 +370,14 @@
   <!-- ── Scan action toolbar ── -->
   <div class="scan-bar">
     <span class="scan-bar-title" data-tip="Workspace scan controls. Engine-based scans require the LocalWebEngine running.">Scan Engine</span>
-    <button class="scan-btn inc" onclick="doScan('incremental')" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
-    <button class="scan-btn full" onclick="doScan('full')" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
-    <button class="scan-btn static" onclick="doStaticScan()" data-tip="Full 6-phase static scan&#xa;No engine required — runs Invoke-StaticWorkspaceScan.ps1 directly&#xa;Results update scan-progress.json and checkpoint">&#x1F5C2; Full Scan (Static)</button>
-    <button class="scan-btn" onclick="createTestCrashDump()" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
-    <button class="scan-btn" onclick="createTestEventLog()" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
-    <button class="scan-btn" onclick="createTestHistory()" data-tip="Write a synthetic runtime history entry and refresh History">&#x1F551; Test History</button>
+    <button type="button" class="scan-btn inc" onclick="return doScan('incremental', this, event)" data-tip="Incremental: rescan only missing or stale phases. Requires engine online.">&#x1F9E9; Get Missing Data</button>
+    <button type="button" class="scan-btn full" onclick="return doScan('full', this, event)" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
+    <button type="button" class="scan-btn static" onclick="return doStaticScan(this, event)" data-tip="Full 6-phase static scan&#xa;Works from engine-hosted or file-opened page when local engine is available&#xa;Falls back to terminal command guidance when engine is unavailable">&#x1F5C2; Full Scan (Static)</button>
+    <button class="scan-btn" onclick="return createTestCrashDump(this, event)" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
+    <button class="scan-btn" onclick="return createTestEventLog(this, event)" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
+    <button class="scan-btn" onclick="return createTestHistory(this, event)" data-tip="Write a synthetic runtime history entry, plus event log marker, and refresh History">&#x1F551; Test History</button>
+    <button class="scan-btn" onclick="return createTestPipeline(this, event)" data-tip="Run a pipeline processing test and write a production event log marker">&#x1F9EA; Test Pipeline</button>
+    <button class="scan-btn" onclick="return createTestLocalWebEngine(this, event)" data-tip="Validate Local Web Engine status endpoint and write a production event log marker">&#x2699; Test Local Web Engine</button>
     <div class="scan-pgbar-wrap"><div class="scan-pgbar-fill" id="scanPgHub"></div></div>
     <span id="scanMsgHub">Idle</span>
     <button class="scan-btn" onclick="refreshAll()" data-tip="Refresh engine status, scan badges and timeline">&#x21BB; Refresh</button>
@@ -339,16 +395,20 @@
 
   <!-- ── Workspace Stats strip ── -->
   <div class="stats-strip" id="statsStrip" data-tip="Live workspace inventory from last completed scan">
-    <div class="stat-item" data-tip="Total non-excluded folders"><span class="stat-val" id="statFolders">81</span><span class="stat-lbl">Folders</span></div>
-    <div class="stat-item" data-tip="Module files (.psm1)"><span class="stat-val" id="statModules">45</span><span class="stat-lbl">Modules</span></div>
-    <div class="stat-item" data-tip="Script files (.ps1)"><span class="stat-val" id="statScripts">113</span><span class="stat-lbl">Scripts</span></div>
-    <div class="stat-item" data-tip="JSON config files"><span class="stat-val" id="statConfigs">28</span><span class="stat-lbl">Configs</span></div>
-    <div class="stat-item" data-tip="Exported functions across all modules and scripts"><span class="stat-val" id="statFunctions">775</span><span class="stat-lbl">Functions</span></div>
-    <div class="stat-item" data-tip="Variable declarations found"><span class="stat-val" id="statVars">306</span><span class="stat-lbl">Vars</span></div>
-    <div class="stat-item" data-tip="Direct dependency edges in graph"><span class="stat-val" id="statEdges">1267</span><span class="stat-lbl">Edges</span></div>
-    <div class="stat-item" data-tip="Cross-module reference links"><span class="stat-val" id="statXlinks">117</span><span class="stat-lbl">X-Links</span></div>
-    <div class="stat-item" data-tip="Files containing URLs"><span class="stat-val" id="statUrlFiles">37</span><span class="stat-lbl">URL Files</span></div>
-    <div class="stat-item" data-tip="Unique IP addresses found"><span class="stat-val" id="statIPs">19</span><span class="stat-lbl">Unique IPs</span></div>
+    <div class="stat-item" data-tip="Total non-excluded folders"><span class="stat-val" id="statFolders">81</span><span class="stat-trend" id="trend_statFolders">&#x2194;</span><span class="stat-lbl">Folders</span></div>
+    <div class="stat-item" data-tip="Module files (.psm1)"><span class="stat-val" id="statModules">45</span><span class="stat-trend" id="trend_statModules">&#x2194;</span><span class="stat-lbl">Modules</span></div>
+    <div class="stat-item" data-tip="Script files (.ps1)"><span class="stat-val" id="statScripts">113</span><span class="stat-trend" id="trend_statScripts">&#x2194;</span><span class="stat-lbl">Scripts</span></div>
+    <div class="stat-item" data-tip="JSON config files"><span class="stat-val" id="statConfigs">28</span><span class="stat-trend" id="trend_statConfigs">&#x2194;</span><span class="stat-lbl">Configs</span></div>
+    <div class="stat-item" data-tip="Exported functions across all modules and scripts"><span class="stat-val" id="statFunctions">775</span><span class="stat-trend" id="trend_statFunctions">&#x2194;</span><span class="stat-lbl">Functions</span></div>
+    <div class="stat-item" data-tip="Variable declarations found"><span class="stat-val" id="statVars">306</span><span class="stat-trend" id="trend_statVars">&#x2194;</span><span class="stat-lbl">Vars</span></div>
+    <div class="stat-item" data-tip="Direct dependency edges in graph"><span class="stat-val" id="statEdges">1267</span><span class="stat-trend" id="trend_statEdges">&#x2194;</span><span class="stat-lbl">Edges</span></div>
+    <div class="stat-item" data-tip="Cross-module reference links"><span class="stat-val" id="statXlinks">117</span><span class="stat-trend" id="trend_statXlinks">&#x2194;</span><span class="stat-lbl">X-Links</span></div>
+    <div class="stat-item" data-tip="Files containing URLs"><span class="stat-val" id="statUrlFiles">37</span><span class="stat-trend" id="trend_statUrlFiles">&#x2194;</span><span class="stat-lbl">URL Files</span></div>
+    <div class="stat-item" data-tip="Unique IP addresses found"><span class="stat-val" id="statIPs">19</span><span class="stat-trend" id="trend_statIPs">&#x2194;</span><span class="stat-lbl">Unique IPs</span></div>
+    <div class="stat-item" data-tip="Unique URLs discovered"><span class="stat-val" id="statUrls">0</span><span class="stat-trend" id="trend_statUrls">&#x2194;</span><span class="stat-lbl">URLs</span></div>
+    <div class="stat-item" data-tip="Unique hosts discovered from URL scan"><span class="stat-val" id="statHosts">0</span><span class="stat-trend" id="trend_statHosts">&#x2194;</span><span class="stat-lbl">Hosts</span></div>
+    <div class="stat-item" data-tip="DNS resolved host count"><span class="stat-val" id="statDnsOk">0</span><span class="stat-trend" id="trend_statDnsOk">&#x2194;</span><span class="stat-lbl">DNS OK</span></div>
+    <div class="stat-item" data-tip="DNS unresolved or failed host count"><span class="stat-val" id="statDnsFail">0</span><span class="stat-trend" id="trend_statDnsFail">&#x2194;</span><span class="stat-lbl">DNS Fail</span></div>
   </div>
 
   <!-- ── Hub body: sidebar + main ── -->
@@ -362,11 +422,13 @@
       <button class="hub-section-btn hub-nav-item"        id="navApprovals" onclick="showSection('approvals')" data-tip="Pending approval queue for feature, bug-fix and work-item todos"><span class="hub-nav-icon">&#x2705;</span>Pipeline Approvals</button>
       <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
-      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="WebEngine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Engine Monitor</button>
+      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="Local Web Engine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Local Web Engine</button>
       <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
+      <button class="hub-section-btn hub-nav-item"        id="navCodeCopyCats" onclick="showSection('codecopycats')" data-tip="Copy-ready snippets with switch/help details and compound filters"><span class="hub-nav-icon">&#x1F98B;</span>Code Copy-Cats</button>
       <div class="hub-sidebar-links">
         <a class="hub-sidebar-link" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help Index in a new window">&#x1F4D6; Help Index (local file)</a>
         <a class="hub-sidebar-link" id="helpHostedLink" href="http://127.0.0.1:8042/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help via WebEngine (requires engine running)">&#x1F310; Help Index (engine hosted)</a>
+        <a class="hub-sidebar-link" href="XHTML-WorkspaceHub.xhtml?section=codecopycats" target="_blank" rel="noopener" title="Open Code Copy-Cats in a new window">&#x1F98B; Code Copy-Cats</a>
       </div>
     </div>
 
@@ -432,14 +494,14 @@
 
       <!-- ── Timeline section ── -->
       <div id="secTimeline" style="display:none">
-        <div class="hub-section-title">Scan History</div>
-        <ul class="hub-timeline" id="hubTimeline">
-          <li><div class="tl-dot"></div><span class="tl-label">Loading scan history&#x2026;</span></li>
-        </ul>
+        <div class="hub-section-title">History</div>
+        <div class="runtime-note" id="runtimeNoteHistory">Loading runtime guidance...</div>
+        <div id="historyTableWrap" class="eng-log-pre" style="max-height:75vh;overflow:auto">Loading history operations...</div>
       </div>
 
       <div id="secApprovals" style="display:none">
         <div class="hub-section-title">Pipeline Approval Queue</div>
+        <div class="runtime-note" id="runtimeNoteApprovals">Loading runtime guidance...</div>
         <div class="evt-filter-bar">
           <button class="scan-btn" onclick="runPipelineProcess()" data-tip="Process outstanding Bugs2FIX, Items2Do/Items2ADD and Feature Requests into pending-approval todos">&#x1F680; Run Pipeline Process</button>
           <button class="scan-btn" onclick="loadPipelineApprovals()" data-tip="Refresh the pending approval list">&#x21BB; Refresh Queue</button>
@@ -469,6 +531,7 @@
       <!-- ── Crash dumps section ── -->
       <div id="secCrashes" style="display:none">
         <div class="hub-section-title">Crash Dumps</div>
+        <div class="runtime-note" id="runtimeNoteCrashes">Loading runtime guidance...</div>
         <div id="crashTable">
           <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
         </div>
@@ -503,6 +566,8 @@
             </select>
           </label>
           <button class="scan-btn" onclick="loadEventLogs()" data-tip="Refresh event logs from engine or local files">&#x21BB; Refresh</button>
+          <button class="scan-btn" onclick="setEventLogsView('canonical')" data-tip="Use canonical adapter Event Logs view">&#x21C4; Adapter View</button>
+          <button class="scan-btn" onclick="setEventLogsView('hub')" data-tip="Use WorkspaceHub Event Logs table view">&#x1F4CA; Hub View</button>
           <button class="scan-btn" onclick="saveEvtPreset()" data-tip="Save current filter as a reusable preset">+ Save Preset</button>
           <span id="evtCount" style="font-size:10px;color:var(--fg-sub);margin-left:4px"></span>
         </div>
@@ -527,23 +592,45 @@
             </tbody>
           </table>
         </div>
+        <div id="evtCanonicalWrap" style="display:none;margin-top:10px">
+          <div class="evlv-mount" id="hubEvlvMount" data-scope="root" data-title="Workspace Event Logs" data-tail="500"></div>
+        </div>
       </div>
 
-      <!-- ── WebEngine Monitor section ── -->
+      <!-- ── Local Web Engine section ── -->
       <div id="secMonitor" style="display:none">
-        <div class="hub-section-title">WebEngine Monitor</div>
-        <div class="eng-monitor-grid">
-          <div class="eng-stat-card"><div class="eng-stat-label">Status</div><div class="eng-stat-value" id="monStatus">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Uptime</div><div class="eng-stat-value" id="monUptime">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">PID</div><div class="eng-stat-value" id="monPid">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Port</div><div class="eng-stat-value" id="monPort">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Server Time</div><div class="eng-stat-value" id="monTime" style="font-size:14px">&#x2014;</div></div>
-          <div class="eng-stat-card"><div class="eng-stat-label">Config Detection</div><div class="eng-stat-value" id="monCfg">&#x2014;</div></div>
+        <div class="hub-section-title">Local Web Engine</div>
+        <div class="runtime-note" id="runtimeNoteMonitor">Loading runtime guidance...</div>
+
+        <div class="evt-filter-bar" style="margin-top:10px">
+          <details id="monFieldPicker" style="min-width:320px">
+            <summary class="scan-btn" style="display:inline-block;list-style:none;cursor:pointer">&#x1F5C3; Monitor Fields</summary>
+            <div id="monFieldChecks" style="margin-top:6px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 10px"></div>
+          </details>
+          <span id="monToolbarDynamic" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"></span>
         </div>
+
+        <div class="eng-monitor-grid" id="monGrid"></div>
         <div style="margin-top:12px">
-          <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh engine monitor stats">&#x21BB; Refresh Monitor</button>
+          <label style="font-size:10px;color:var(--fg-sub);margin-right:6px">Data Mode:
+            <select id="monDataMode" onchange="setMonitorDataMode(this.value)">
+              <option value="auto">Auto</option>
+              <option value="live">Force Online</option>
+              <option value="offline">Force Offline (Cache)</option>
+            </select>
+          </label>
+          <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh local web engine stats">&#x21BB; Refresh Monitor</button>
           <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
         </div>
+        <div class="evt-filter-bar" style="margin-top:8px">
+          <label style="font-size:10px;color:var(--fg-sub)">WebEngine Pages:</label>
+          <select id="monPageSelect" multiple="multiple" style="min-width:320px;max-width:420px;height:84px"></select>
+          <button class="scan-btn" onclick="launchSelectedMonitorPages('service')" data-tip="Open selected pages via running web service base URL">Launch via Service</button>
+          <button class="scan-btn" onclick="launchSelectedMonitorPages('disk')" data-tip="Open selected static file:// pages from disk">Launch Static</button>
+          <button class="scan-btn" onclick="saveMonitorPageBundle()" data-tip="Save selected page paths and URLs as a bundle file">Save Bundle</button>
+          <button class="scan-btn" onclick="copyMonitorPagePaths()" data-tip="Copy selected page paths (or all if none selected)">Copy Paths</button>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--fg-sub)" id="monModeNote">Mode: auto</div>
         <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
       </div>
 
@@ -569,6 +656,52 @@
           </label>
           <button class="scan-btn" onclick="addLiveSource()" data-tip="Connection is tested before the source is added">&#x2795; Add Source</button>
         </div>
+      </div>
+
+      <div id="secCodeCopyCats" style="display:none">
+        <div class="hub-section-title">Code Copy-Cats</div>
+        <div class="ccc-toolbar">
+          <div class="ccc-field" style="min-width:200px">
+            <label for="cccSearch">Search</label>
+            <input type="text" id="cccSearch" placeholder="script, switch, purpose, dependency" />
+          </div>
+          <div class="ccc-field">
+            <label for="cccMatchMode">Compile Mode</label>
+            <select id="cccMatchMode">
+              <option value="and">AND</option>
+              <option value="or">OR</option>
+            </select>
+          </div>
+          <div class="ccc-field" style="min-width:240px">
+            <label for="cccNotTokens">NOT Tokens (comma separated)</label>
+            <input type="text" id="cccNotTokens" placeholder="deprecated,legacy" />
+          </div>
+          <div class="ccc-field">
+            <label for="cccVerbFilter">Verbs</label>
+            <select id="cccVerbFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccPurposeFilter">Purposes</label>
+            <select id="cccPurposeFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccObjectiveFilter">Functional Objectives</label>
+            <select id="cccObjectiveFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field">
+            <label for="cccDependencyFilter">Dependency Relations</label>
+            <select id="cccDependencyFilter" multiple="multiple"></select>
+          </div>
+          <div class="ccc-field" style="min-width:220px">
+            <label for="cccScriptFilter">Script Files</label>
+            <select id="cccScriptFilter" multiple="multiple"></select>
+          </div>
+          <button class="scan-btn" id="cccApplyBtn">Apply Filter</button>
+          <button class="scan-btn" id="cccResetBtn">Reset</button>
+          <button class="scan-btn" id="cccCopyUrlBtn">Copy Filter URL</button>
+        </div>
+        <div class="ccc-status" id="cccStatus">Loading Code Copy-Cats data...</div>
+        <div id="cccResults" class="ccc-grid"><div class="ccc-empty">Loading snippets...</div></div>
       </div>
 
     </div><!-- hub-main -->
@@ -613,22 +746,30 @@
     <span id="sbarRight" class="st-ok">&#x2714; Initialising&#x2026;</span>
   </div>
 
+  <div id="tipBubble" class="tip-bubble"></div>
+
   <script type="text/javascript">
   //<![CDATA[
   (function(){
   'use strict';
 
-  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var LOCAL_ENGINE_BASE = 'http://127.0.0.1:8042';
+  var ENGINE_BASE = LOCAL_ENGINE_BASE;
   var _wsConn     = null;
   var _wsRetries  = 0;
   var WS_MAX_RETRY = 6;
   var _csrfToken  = '';
+  var _csrfBase   = '';
   var POLL_MS     = 8000;   /* fallback poll interval when WS unavailable */
   var _scanPollId = null;   /* interval ID for scan progress polling */
   var _viewMode   = 'tile'; /* tile | list | detail */
   var _sortMode   = 'default';
   var _groupFilter = 'all'; /* 'all' or a specific group tag */
   var _selectedTools = {};  /* id -> true for checked tool cards */
+  var FAVORITES_KEY = 'pwshgui_hub_favorite_tools_v1';
+  var _favoriteTools = {};
+  var _lastStatsSnapshot = {};
+  var _toolHrefAvailability = {}; /* normalized href -> ok|missing|unknown */
   var LOCAL_SCHEMA_VERSION = 'WorkspaceHubData/1.0';
   var SCHEMA_TRANSFORMS = {
     'WorkspaceHubData/1.0': 'compat-v1',
@@ -638,11 +779,57 @@
   };
   var DATASRC_KEY = 'pwshgui_hub_data_sources_v1';
   var CACHE_KEY = 'pwshgui_hub_offline_cache_v1';
+  var DATAMODE_KEY = 'pwshgui_hub_data_mode_v1';
   var _dataSources = [];
   var _offlineCache = { schemaVersion: LOCAL_SCHEMA_VERSION, updatedAt: null, sections: {} };
+  var _dataMode = 'auto';
   var _approvalItems = [];
   var _approvalSelected = {};
   var _approvalSort = 'priority-desc';
+  var _fetchInFlight = {};  // In-flight fetch dedup: key -> promise
+  var _mutationQueue = { running: false, pending: [] };  // Mutation concurrency queue
+  var _codeCopyCats = { rows: [], filtered: [], loadedAt: null, sourceRefresh: [] };
+  var SERVICE_HUB_PATH = '/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml';
+  var ENGINE_STATUS_STALE_MS = 45000;
+  var ENGINE_STATUS_MISS_THRESHOLD = 2;
+  var ENGINE_STATUS_DOWNGRADE_HOLD_MS = 12000;
+  var _monitorLastScanIso = null;
+  var _engineLastLiveIso = null;
+  var _engineMissStreak = 0;
+  var _engineLastUptimeSec = 0;
+  var _engineLastUptimeSampleIso = null;
+  var _engineUiState = { current: 'unknown', pending: null, pendingSince: 0 };
+  var MONITOR_FIELDS = [
+    { key:'status', label:'Status', type:'state', group:'controls' },
+    { key:'uptime', label:'Uptime', type:'state', group:'info' },
+    { key:'lastScanTime', label:'Last Scan', type:'time', group:'info' },
+    { key:'startupTime', label:'Startup Time', type:'time', group:'info' },
+    { key:'pid', label:'PID', type:'id', group:'info' },
+    { key:'processName', label:'Process', type:'id', group:'info' },
+    { key:'port', label:'Port', type:'id', group:'info' },
+    { key:'serverTime', label:'Server Time', type:'time', group:'info' },
+    { key:'memoryWorkingSetMB', label:'Memory MB', type:'count', group:'info' },
+    { key:'memoryPeakWorkingSetMB', label:'Peak Memory MB', type:'count', group:'info' },
+    { key:'networkBytesIn', label:'Network In (bytes)', type:'count', group:'logs' },
+    { key:'networkBytesOut', label:'Network Out (bytes)', type:'count', group:'logs' },
+    { key:'publicKeyFingerprint', label:'Public Key', type:'state', group:'toggles' },
+    { key:'lastErrorMessage', label:'Last Error', type:'state', group:'toggles' },
+    { key:'heartbeat', label:'Heartbeat', type:'state', group:'toggles' },
+    { key:'clients', label:'Web Clients', type:'count', group:'logs' },
+    { key:'queueLength', label:'Request Queue', type:'count', group:'logs' },
+    { key:'requestsTotal', label:'Requests Total', type:'count', group:'logs' },
+    { key:'requestsServed', label:'Requests Served', type:'count', group:'logs' },
+    { key:'requestsClientError', label:'Requests 4xx', type:'count', group:'logs' },
+    { key:'requestsServerError', label:'Requests 5xx', type:'count', group:'logs' },
+    { key:'requestsFailed', label:'Requests Failed', type:'count', group:'logs' },
+    { key:'config', label:'Config Detection', type:'state', group:'toggles' }
+  ];
+  var _monitorSelected = {
+    status:true, uptime:true, lastScanTime:true, startupTime:true, pid:true, processName:true, port:true, serverTime:true,
+    memoryWorkingSetMB:true, memoryPeakWorkingSetMB:true, networkBytesIn:true, networkBytesOut:true,
+    publicKeyFingerprint:true, lastErrorMessage:true, heartbeat:true,
+    clients:true, queueLength:true, requestsTotal:true, requestsServed:true, requestsClientError:true, requestsServerError:true, requestsFailed:true, config:true
+  };
   var STATIC_BOOTSTRAP_DATA_SOURCES = {
     schemaVersion: 'HubDataSources/1.0',
     updatedAt: '2026-04-26T00:00:00Z',
@@ -742,13 +929,14 @@
   /* ── Built-in tool registry ── */
   var TOOLS = [
     { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools', groups:['Core'] },
+    { title:'Code Copy-Cats',         icon:'&#x1F98B;', desc:'Copy-ready snippets with switch/help details and compound filters', href:'XHTML-WorkspaceHub.xhtml?section=codecopycats',       section:'tools', groups:['Core','Reporting'] },
     { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools', groups:['Scanning','Reporting'] },
     { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools', groups:['Core','Config'] },
     { title:'Master To-Do',           icon:'&#x2705;',  desc:'Full task manager with filters and priority tracking',         href:'scripts/XHTML-Checker/XHTML-MasterToDo.xhtml',         section:'tools', groups:['Core','DevOps'] },
     { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools', groups:['DevOps'] },
     { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
-    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-DependencyVis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
-    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'scripts/XHTML-Checker/PwShGUI-Checklists.xhtml',       section:'tools', groups:['Checklists'] },
+    { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'~README.md/PwShGUI-Checklists.xhtml',                  section:'tools', groups:['Checklists'] },
     { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
     { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
     { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools', groups:['Security','Checklists'] },
@@ -756,7 +944,7 @@
     { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools', groups:['Security'] },
     { title:'Data Relational Viz',    icon:'&#x1F578;', desc:'Interrelational data visualization with AI wizard and foresight modelling', href:'XHTML-DataRelationalViz.xhtml', section:'tools', badge:'NEW', groups:['Data','Reporting'] },
     { title:'Changelog Viewer',       icon:'&#x1F4DD;', desc:'Browse workspace changelog entries with filtering and search',href:'XHTML-ChangelogViewer.xhtml',                            section:'tools', groups:['Reporting','DevOps'] },
-    { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'XHTML-DependencyVis.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
+    { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
     { title:'Checklists V1 Root',      icon:'&#x2611;',  desc:'Version 1 root checklist with structured pre-flight gates', href:'PwShGUI-Checklists_V1-ROOT.xhtml',                       section:'tools', groups:['Checklists'] },
     { title:'Implementation Steps',    icon:'&#x1F4C3;', desc:'Step-by-step implementation guide for project features',    href:'~README.md/Implementation-Steps.xhtml',                 section:'tools', groups:['DevOps'] },
     { title:'Security Setup Guide',    icon:'&#x1F6E1;', desc:'Security configuration and DPAPI setup walkthrough',        href:'~README.md/SECURITY-SETUP-GUIDE.xhtml',                 section:'tools', groups:['Security'] },
@@ -768,7 +956,7 @@
   ];
 
   /* ── Section navigation ── */
-  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources'];
+  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources','CodeCopyCats'];
 
   function showSection(name) {
     for (var i = 0; i < _sections.length; i++) {
@@ -786,6 +974,7 @@
     if (name === 'monitor')    { refreshMonitor(); }
     if (name === 'reports')    { loadReports(); }
     if (name === 'sources')    { renderDataSources(); }
+    if (name === 'codecopycats') { ensureCodeCopyCatsLoaded(); }
   }
   window.showSection = showSection;
 
@@ -984,6 +1173,7 @@
     }
     if (section === 'historyList') {
       if (payload && Array.isArray(payload.history)) { return payload; }
+      if (payload && Array.isArray(payload.items))   { return { history: payload.items, count: payload.count || payload.items.length, sources: payload.sources || [] }; }
       if (Array.isArray(payload)) { return { history: payload, count: payload.length }; }
       return { history: [], count: 0 };
     }
@@ -1057,6 +1247,33 @@
     el.textContent = msg || '';
   }
 
+  function _renderRuntimeNote(featureName) {
+    if (_isFileProtocol()) {
+      return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Running from file:// static mode. Live API actions require Local Web Engine. Cached data remains available when previously synced.';
+    }
+    if (_effectiveDataMode() === 'offline') {
+      return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Force Offline mode is active. Reads are served from cache. Switch Data Mode to Auto or Force Online for live endpoints.';
+    }
+    return '<strong>' + escHtml(featureName) + ' runtime note:</strong> Live endpoint mode active. If engine is unavailable, the hub falls back to cached data automatically.';
+  }
+
+  function _setRuntimeNotes() {
+    var map = {
+      runtimeNoteMonitor: 'Local Web Engine',
+      runtimeNoteApprovals: 'Pipeline Approvals',
+      runtimeNoteCrashes: 'Crash Dumps',
+      runtimeNoteHistory: 'History'
+    };
+    var ids = Object.keys(map);
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      var el = document.getElementById(id);
+      if (!el) { continue; }
+      el.innerHTML = _renderRuntimeNote(map[id]);
+      el.className = 'runtime-note' + ((_isFileProtocol() || _effectiveDataMode() === 'offline') ? ' warn' : '');
+    }
+  }
+
   function validateSourceConnection(src) {
     var source = _clone(src);
     source.baseUrl = _normalizeBaseUrl(source.baseUrl);
@@ -1118,6 +1335,19 @@
   }
 
   function fetchSectionData(section, relPath, options, liveOnly) {
+    // In-flight dedup: return existing promise if same section+relPath is already fetching
+    var inflightKey = section + '||' + relPath;
+    if (_fetchInFlight[inflightKey]) { return _fetchInFlight[inflightKey]; }
+
+    var mode = _effectiveDataMode();
+    var forceOffline = (mode === 'offline');
+    if (forceOffline && !liveOnly) {
+      var cachedOnly = _readCachedSection(section);
+      if (cachedOnly !== null && cachedOnly !== undefined) {
+        return Promise.resolve({ data: _clone(cachedOnly), fromCache: true, source: null });
+      }
+      return Promise.reject(new Error('offline mode active and cache missing'));
+    }
     var sources = _getOrderedLiveSources();
     var idx = 0;
     function tryNext() {
@@ -1148,8 +1378,75 @@
         return tryNext();
       });
     }
-    return tryNext();
+    var promise = tryNext();
+    _fetchInFlight[inflightKey] = promise;
+    promise.then(function(v) { delete _fetchInFlight[inflightKey]; return v; })
+           .catch(function(e) { delete _fetchInFlight[inflightKey]; throw e; });
+    return promise;
   }
+
+  // Mutation queue: ensures mutating actions run one at a time
+  function _runMutation(label, fn) {
+    return new Promise(function(resolve, reject) {
+      _mutationQueue.pending.push({ label: label, fn: fn, resolve: resolve, reject: reject });
+      _drainMutationQueue();
+    });
+  }
+  function _drainMutationQueue() {
+    if (_mutationQueue.running || _mutationQueue.pending.length === 0) { return; }
+    _mutationQueue.running = true;
+    var next = _mutationQueue.pending.shift();
+    var result;
+    try { result = next.fn(); } catch(e) { _mutationQueue.running = false; next.reject(e); _drainMutationQueue(); return; }
+    Promise.resolve(result).then(function(v) {
+      _mutationQueue.running = false;
+      next.resolve(v);
+      _drainMutationQueue();
+    }).catch(function(e) {
+      _mutationQueue.running = false;
+      next.reject(e);
+      _drainMutationQueue();
+    });
+  }
+
+  function _effectiveDataMode() {
+    if (_dataMode === 'offline') { return 'offline'; }
+    if (_dataMode === 'live') { return 'live'; }
+    return _isFileProtocol() ? 'offline' : 'live';
+  }
+
+  function _persistDataModePreference() {
+    try { localStorage.setItem(DATAMODE_KEY, _dataMode); } catch(e) { }
+  }
+
+  function _loadDataModePreference() {
+    var v = '';
+    try { v = String(localStorage.getItem(DATAMODE_KEY) || '').toLowerCase(); } catch(e) { v = ''; }
+    if (v === 'offline' || v === 'live' || v === 'auto') { _dataMode = v; }
+  }
+
+  function _updateModeLabel() {
+    var sel = document.getElementById('monDataMode');
+    if (sel) { sel.value = _dataMode; }
+    var note = document.getElementById('monModeNote');
+    if (note) {
+      var eff = _effectiveDataMode();
+      note.textContent = 'Mode: ' + _dataMode + ' (effective: ' + eff + ')';
+    }
+  }
+
+  function setMonitorDataMode(mode) {
+    var m = String(mode || '').toLowerCase();
+    if (m !== 'offline' && m !== 'live' && m !== 'auto') { m = 'auto'; }
+    _dataMode = m;
+    _persistDataModePreference();
+    _updateModeLabel();
+    _setRuntimeNotes();
+    _updateHubFooter();
+    setStatus('Data mode set to ' + m, m === 'offline' ? 'warn' : 'ok', 'right');
+    refreshMonitor();
+  }
+  window.setMonitorDataMode = setMonitorDataMode;
 
   function renderDataSources() {
     var wrap = document.getElementById('srcTableWrap');
@@ -1169,7 +1466,7 @@
       if (s.healthy === false && s.lastChecked) { health = '&#x274C; Offline'; }
       var schemaCompat = s.schemaCompatible ? 'compatible' : 'mapped';
       var schema = (s.remoteSchemaVersion || '-') + ' / ' + LOCAL_SCHEMA_VERSION + ' [' + schemaCompat + '] (' + (s.transformId || 'compat-v1') + ')';
-      html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+      html += '<tr data-src-id="' + escAttr(s.id) + '" style="border-bottom:1px solid #1a2a3a">' +
         '<td style="padding:5px 8px">' + (s.isDefault ? '&#x2605; ' : '') + escHtml(s.name) + '</td>' +
         '<td style="padding:5px 8px;color:#7a9acc">' + escHtml(s.baseUrl) + '</td>' +
         '<td style="padding:5px 8px">' + health + '</td>' +
@@ -1256,41 +1553,6 @@
     });
   }
   window.retestDataSource = retestDataSource;
-
-  function addLiveSource() {
-    var nEl = document.getElementById('srcNameInput');
-    var uEl = document.getElementById('srcUrlInput');
-    var name = nEl ? String(nEl.value || '').trim() : '';
-    var url = uEl ? _normalizeBaseUrl(uEl.value || '') : '';
-    if (!name || !url) {
-      _setSourceMessage('Enter source name and base URL', 'warn');
-      return;
-    }
-    if (!window.confirm('Validate and add live source "' + name + '"?\nURL: ' + url)) { return; }
-    var candidate = {
-      id: 'src_' + (new Date().getTime()),
-      name: name,
-      baseUrl: url,
-      enabled: true,
-      isDefault: false,
-      healthy: false,
-      lastChecked: null,
-      remoteSchemaVersion: null,
-      transformId: 'compat-v1'
-    };
-    _setSourceMessage('Confirming live connection before add...', 'warn');
-    validateSourceConnection(candidate).then(function(validSrc) {
-      _dataSources.push(validSrc);
-      _persistDataSourceConfig();
-      renderDataSources();
-      if (nEl) { nEl.value = ''; }
-      if (uEl) { uEl.value = ''; }
-      _setSourceMessage('Source added and verified: ' + validSrc.name, 'ok');
-    }).catch(function(badSrc) {
-      _setSourceMessage('Source not added: ' + (badSrc.lastError || 'validation failed'), 'err');
-    });
-  }
-  window.addLiveSource = addLiveSource;
 
   function refreshDataSourceHealth() {
     _setSourceMessage('Validating all sources...', 'warn');
@@ -1413,6 +1675,78 @@
     });
   }
 
+  function _normalizeWorkspacePath(path) {
+    var p = String(path || '').replace(/\\/g, '/').replace(/^\.?\//, '');
+    p = p.split('?')[0].split('#')[0];
+    while (p.indexOf('//') !== -1) { p = p.replace(/\/\//g, '/'); }
+    return p.toLowerCase();
+  }
+
+  function _loadFavorites() {
+    try {
+      var raw = localStorage.getItem(FAVORITES_KEY);
+      var parsed = raw ? JSON.parse(raw) : {};
+      _favoriteTools = (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch(e) {
+      _favoriteTools = {};
+    }
+  }
+
+  function _saveFavorites() {
+    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(_favoriteTools)); } catch(e) { }
+  }
+
+  function _toolFavoriteKey(tool) {
+    return _normalizeWorkspacePath((tool && tool.href) ? tool.href : '');
+  }
+
+  function _isToolPinned(tool) {
+    var k = _toolFavoriteKey(tool);
+    return !!(k && _favoriteTools[k]);
+  }
+
+  function toggleToolPin(idx) {
+    var t = TOOLS[idx];
+    if (!t) { return; }
+    var key = _toolFavoriteKey(t);
+    if (!key) { return; }
+    if (_favoriteTools[key]) { delete _favoriteTools[key]; }
+    else { _favoriteTools[key] = true; }
+    _saveFavorites();
+    renderToolCards(null);
+  }
+  window.toggleToolPin = toggleToolPin;
+
+  function _isExternalHref(href) {
+    var h = String(href || '').toLowerCase();
+    return h.indexOf('http://') === 0 || h.indexOf('https://') === 0 || h.indexOf('file://') === 0;
+  }
+
+  function refreshToolLinkAvailability() {
+    return fetchSectionData('reportsList', '/api/workspace/files?ext=*.json,*.xhtml,*.html', { method: 'GET' }, false)
+      .then(function(res) {
+        var files = (res && res.data && Array.isArray(res.data.files)) ? res.data.files : [];
+        var fileMap = {};
+        for (var i = 0; i < files.length; i++) {
+          var p = _normalizeWorkspacePath(files[i] && files[i].path ? files[i].path : '');
+          if (p) { fileMap[p] = true; }
+        }
+
+        _toolHrefAvailability = {};
+        for (var j = 0; j < TOOLS.length; j++) {
+          var href = TOOLS[j].href || '';
+          var key = _normalizeWorkspacePath(href);
+          if (!key) { continue; }
+          if (_isExternalHref(href)) { _toolHrefAvailability[key] = 'ok'; continue; }
+          _toolHrefAvailability[key] = fileMap[key] ? 'ok' : 'missing';
+        }
+      })
+      .catch(function() {
+        _toolHrefAvailability = {};
+      });
+  }
+  window.refreshToolLinkAvailability = refreshToolLinkAvailability;
+
   /* ── Tool cards ── */
   function renderToolCards(extraItems) {
     var cards = document.getElementById('toolCards');
@@ -1445,6 +1779,13 @@
         return db - da;
       });
     }
+    /* keep pinned tools at the top regardless of sort mode */
+    allTools.sort(function(a, b) {
+      var ap = _isToolPinned(a) ? 1 : 0;
+      var bp = _isToolPinned(b) ? 1 : 0;
+      if (ap !== bp) { return bp - ap; }
+      return 0;
+    });
     /* apply view mode class */
     cards.className = 'hub-cards' + (_viewMode !== 'tile' ? ' view-' + _viewMode : '');
     var html = '';
@@ -1452,7 +1793,17 @@
       var t = allTools[i];
       var chkId = 'chk_' + t._idx;
       var checked = _selectedTools[t._idx] ? ' checked="checked"' : '';
-      html += '<a class="hub-card" href="' + escAttr(t.href) + '" title="' + escAttr(t.title) + '" data-idx="' + t._idx + '" onclick="return onCardClick(event,' + t._idx + ')">' +
+      var hrefKey = _normalizeWorkspacePath(t.href || '');
+      var linkState = _toolHrefAvailability[hrefKey] || 'unknown';
+      var linkMissing = (linkState === 'missing');
+      var cardClass = 'hub-card' + (linkMissing ? ' link-missing' : '');
+      var cardHref = linkMissing ? '#' : t.href;
+      var cardTitle = t.title + (linkMissing ? ' (missing target)' : '');
+      var pinned = _isToolPinned(t);
+      var starCls = 'hub-card-star' + (pinned ? ' pinned' : '');
+      var starGlyph = pinned ? '&#9733;' : '&#9734;';
+      html += '<a class="' + cardClass + '" href="' + escAttr(cardHref) + '" title="' + escAttr(cardTitle) + '" data-idx="' + t._idx + '" data-link-state="' + linkState + '" onclick="return onCardClick(event,' + t._idx + ')">' +
+        '<button type="button" class="' + starCls + '" onclick="event.preventDefault();event.stopPropagation();toggleToolPin(' + t._idx + ');" title="' + (pinned ? 'Unpin from top' : 'Pin to top') + '">' + starGlyph + '</button>' +
         '<input type="checkbox" class="hub-card-chk" id="' + chkId + '"' + checked + ' onclick="onCardCheck(event,' + t._idx + ')" title="Select ' + escAttr(t.title) + '" />' +
         '<div class="hub-card-icon">' + t.icon + '</div>' +
         '<div class="hub-card-title">' + escHtml(t.title) + '</div>' +
@@ -1469,6 +1820,9 @@
         }
         html += '</div>';
       }
+      if (linkMissing) {
+        html += '<span class="hub-card-missing-badge" title="Missing link target">?</span>';
+      }
       html += '<span class="hub-card-badge badge-grey" id="badge_' + t._idx + '">loading&#x2026;</span>' +
         '</a>';
     }
@@ -1482,6 +1836,12 @@
   function onCardClick(ev, idx) {
     /* If checkbox was clicked, don't navigate */
     if (ev.target.type === 'checkbox') { return true; }
+    var node = ev.currentTarget;
+    if (node && node.getAttribute('data-link-state') === 'missing') {
+      ev.preventDefault();
+      setStatus('Tool target is missing: tile retained with warning badge', 'warn', 'right');
+      return false;
+    }
     return true; /* allow default navigation */
   }
   window.onCardClick = onCardClick;
@@ -1582,6 +1942,443 @@
       html += '<option value="' + escAttr(allGroups[j]) + '">' + escHtml(allGroups[j]) + '</option>';
     }
     sel.innerHTML = html;
+  }
+
+  /* -- Code Copy-Cats -- */
+  function _basename(path) {
+    var p = String(path || '').replace(/\\/g, '/');
+    var i = p.lastIndexOf('/');
+    return i >= 0 ? p.substring(i + 1) : p;
+  }
+
+  function _cleanList(v) {
+    if (Array.isArray(v)) { return v; }
+    if (!v) { return []; }
+    return [v];
+  }
+
+  function _toListText(v) {
+    var arr = _cleanList(v);
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      var t = String(arr[i] || '').trim();
+      if (t) { out.push(t); }
+    }
+    return out;
+  }
+
+  function _versionFromInlineComment(content) {
+    var txt = String(content || '');
+    var m = txt.match(/(?:#|<!--)\s*VersionTag:\s*([^\r\n<]+)/i);
+    return m ? String(m[1] || '').trim() : '';
+  }
+
+  function _buildSnippet(path, switches) {
+    var cmd = '& .\\' + String(path || '').replace(/\\/g, '/');
+    if (switches && switches.length > 0) {
+      for (var i = 0; i < switches.length; i++) {
+        var sw = switches[i] || {};
+        var ex = String(sw.example || '').trim();
+        if (ex) { cmd += ' ' + ex; }
+      }
+    }
+    return cmd;
+  }
+
+  function _splitCsv(v) {
+    var text = String(v || '');
+    if (!text) { return []; }
+    var parts = text.split(',');
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var s = String(parts[i] || '').trim();
+      if (s) { out.push(s); }
+    }
+    return out;
+  }
+
+  function _getSelectValues(id) {
+    var sel = document.getElementById(id);
+    if (!sel) { return []; }
+    var vals = [];
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].selected && sel.options[i].value) { vals.push(sel.options[i].value); }
+    }
+    return vals;
+  }
+
+  function _setSelectValues(id, values) {
+    var sel = document.getElementById(id);
+    if (!sel) { return; }
+    var map = {};
+    for (var i = 0; i < values.length; i++) { map[values[i]] = true; }
+    for (var j = 0; j < sel.options.length; j++) {
+      sel.options[j].selected = !!map[sel.options[j].value];
+    }
+  }
+
+  function _populateMultiSelect(id, values) {
+    var sel = document.getElementById(id);
+    if (!sel) { return; }
+    var sorted = values.slice().sort();
+    var html = '';
+    for (var i = 0; i < sorted.length; i++) {
+      html += '<option value="' + escAttr(sorted[i]) + '">' + escHtml(sorted[i]) + '</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function _rowText(row) {
+    var bits = [];
+    bits.push(row.name || '');
+    bits.push(row.path || '');
+    bits.push(row.version || '');
+    bits.push(row.helpSummary || '');
+    bits.push((row.purpose || []).join(' '));
+    bits.push((row.objectives || []).join(' '));
+    bits.push((row.dependencies || []).join(' '));
+    bits.push((row.verbs || []).join(' '));
+    var sw = row.switches || [];
+    for (var i = 0; i < sw.length; i++) {
+      bits.push(sw[i].name || '');
+      bits.push(sw[i].description || '');
+      bits.push(sw[i].example || '');
+    }
+    return bits.join(' ').toLowerCase();
+  }
+
+  function _compileCodeCopyCatsRows(manifest, helpReg, launchSwitchText, launchQuickText) {
+    var scripts = (manifest && Array.isArray(manifest.scripts)) ? manifest.scripts : [];
+    var rows = [];
+    var i;
+    var helpScripts = helpReg && helpReg.scripts ? helpReg.scripts : {};
+    var commonSwitches = helpReg && helpReg.commonSwitches ? helpReg.commonSwitches : {};
+
+    for (i = 0; i < scripts.length; i++) {
+      var s = scripts[i] || {};
+      var scriptPath = String(s.path || '').replace(/\\/g, '/');
+      if (!scriptPath) { continue; }
+      var base = _basename(scriptPath);
+      var fn = _cleanList(s.functions);
+      var verbs = [];
+      var purposes = _toListText(s.fileRole);
+      var objectives = [];
+      var deps = _toListText(s.dependencies);
+
+      for (var f = 0; f < fn.length; f++) {
+        var fname = String(fn[f] && fn[f].function ? fn[f].function : '');
+        if (fname) {
+          var dash = fname.indexOf('-');
+          if (dash > 0) {
+            var vb = fname.substring(0, dash);
+            if (verbs.indexOf(vb) === -1) { verbs.push(vb); }
+          }
+          objectives.push(fname);
+        }
+      }
+
+      var helpSpec = helpScripts[String(s.name || '')] || null;
+      var sw = [];
+      if (helpSpec && helpSpec.params) {
+        var pKeys = Object.keys(helpSpec.params);
+        for (var pk = 0; pk < pKeys.length; pk++) {
+          sw.push({ name: pKeys[pk], description: String(helpSpec.params[pKeys[pk]] || ''), example: pKeys[pk] });
+        }
+      }
+      var cKeys = Object.keys(commonSwitches);
+      for (var ck = 0; ck < cKeys.length; ck++) {
+        var cs = commonSwitches[cKeys[ck]] || {};
+        var csName = String(cs.param || '');
+        if (!csName) { continue; }
+        var found = false;
+        for (var sx = 0; sx < sw.length; sx++) { if (sw[sx].name === csName) { found = true; break; } }
+        if (!found) {
+          sw.push({ name: csName, description: String(cs.description || ''), example: csName });
+        }
+      }
+
+      rows.push({
+        name: String(s.name || base),
+        path: scriptPath,
+        version: String(s.version || ''),
+        verbs: verbs,
+        purpose: purposes,
+        objectives: objectives,
+        dependencies: deps,
+        switches: sw,
+        helpSummary: helpSpec && helpSpec.helpFn ? ('HelpFn: ' + helpSpec.helpFn) : 'Help: not mapped',
+        snippet: _buildSnippet(scriptPath, sw)
+      });
+    }
+
+    rows.unshift({
+      name: 'Launch-GUI',
+      path: 'Launch-GUI.bat',
+      version: _versionFromInlineComment(launchSwitchText) || _versionFromInlineComment(launchQuickText),
+      verbs: ['Launch','Start','Use'],
+      purpose: ['Launcher','Runtime Selection','Execution Policy'],
+      objectives: ['Select PowerShell runtime','Apply script security mode','Launch selected GUI mode'],
+      dependencies: ['Main-GUI.ps1','Launch-CFRMenu.bat','scripts/Test-Prerequisites.ps1'],
+      switches: [
+        { name:'/usepsv:5', description:'Force PowerShell 5.1 path and skip PS7 prompt.', example:'/usepsv:5' },
+        { name:'/usepsv7', description:'Force PowerShell 7 path and skip PS7 prompt.', example:'/usepsv7' },
+        { name:'/skipps7', description:'Skip PS7 detection/installation prompt.', example:'/skipps7' },
+        { name:'/scriptsec:1', description:'Bypass policy for current session only.', example:'/scriptsec:1' },
+        { name:'/scriptsec:2', description:'Set RemoteSigned at CurrentUser scope.', example:'/scriptsec:2' },
+        { name:'/scriptsec:3', description:'Set RemoteSigned at LocalMachine scope (admin).', example:'/scriptsec:3' },
+        { name:'/scriptsec:4', description:'Set Unrestricted at CurrentUser scope.', example:'/scriptsec:4' },
+        { name:'/scriptsec:5', description:'Show manual policy instructions.', example:'/scriptsec:5' },
+        { name:'/scriptsec:6', description:'Continue without policy changes.', example:'/scriptsec:6' },
+        { name:'/skippolicy', description:'Skip script policy menu.', example:'/skippolicy' },
+        { name:'/TASKTRAY', description:'Pass TASKTRAY mode to child scripts.', example:'/TASKTRAY' }
+      ],
+      helpSummary: 'Switches/usage sourced from Launch-GUI help reference docs.',
+      snippet: 'Launch-GUI.bat /usepsv7 /scriptsec:1 /TASKTRAY'
+    });
+
+    return rows;
+  }
+
+  function _loadTextFile(path) {
+    return fetch(path, { method: 'GET' }).then(function(r) {
+      if (!r.ok) { throw new Error('http ' + r.status); }
+      return r.text();
+    });
+  }
+
+  function _loadJsonFile(path) {
+    return fetch(path, { method: 'GET' }).then(function(r) {
+      if (!r.ok) { throw new Error('http ' + r.status); }
+      return r.json();
+    });
+  }
+
+  function _buildCodeCopyCatsFilters(rows) {
+    var verbs = [];
+    var purposes = [];
+    var objectives = [];
+    var deps = [];
+    var scripts = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      scripts.push(r.path);
+      var lists = [r.verbs || [], r.purpose || [], r.objectives || [], r.dependencies || []];
+      var bags = [verbs, purposes, objectives, deps];
+      for (var li = 0; li < lists.length; li++) {
+        for (var lj = 0; lj < lists[li].length; lj++) {
+          var v = String(lists[li][lj] || '').trim();
+          if (v && bags[li].indexOf(v) === -1) { bags[li].push(v); }
+        }
+      }
+    }
+    _populateMultiSelect('cccVerbFilter', verbs);
+    _populateMultiSelect('cccPurposeFilter', purposes);
+    _populateMultiSelect('cccObjectiveFilter', objectives);
+    _populateMultiSelect('cccDependencyFilter', deps);
+    _populateMultiSelect('cccScriptFilter', scripts);
+  }
+
+  function _deepLinkForCodeCopyCats(row) {
+    var qs = [];
+    qs.push('section=codecopycats');
+    qs.push('scripts=' + encodeURIComponent(row.path));
+    return 'XHTML-WorkspaceHub.xhtml?' + qs.join('&');
+  }
+
+  function _renderCodeCopyCatsRows(rows) {
+    var wrap = document.getElementById('cccResults');
+    var status = document.getElementById('cccStatus');
+    if (!wrap || !status) { return; }
+    if (!rows || rows.length === 0) {
+      wrap.innerHTML = '<div class="ccc-empty">No snippets match the current filters.</div>';
+      status.textContent = '0 rows shown | data refreshed: ' + (_codeCopyCats.loadedAt || 'unknown');
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      html += '<div class="ccc-card">' +
+        '<h4>' + escHtml(r.name) + '</h4>' +
+        '<div class="ccc-meta"><span>' + escHtml(r.path) + '</span><span>Version: ' + escHtml(r.version || 'n/a') + '</span></div>' +
+        '<div class="ccc-snippet" id="cccSnippet_' + i + '">' + escHtml(r.snippet || '') +
+          '<button class="ccc-copy" onclick="copyCodeCopyCatsSnippet(' + i + ')">Copy</button>' +
+        '</div>' +
+        '<div class="ccc-help"><strong>Purpose:</strong> ' + escHtml((r.purpose || []).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Objectives:</strong> ' + escHtml((r.objectives || []).slice(0, 6).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Dependencies:</strong> ' + escHtml((r.dependencies || []).join(' | ') || 'n/a') + '<br/>' +
+          '<strong>Help:</strong> ' + escHtml(r.helpSummary || 'n/a') + '<br/>' +
+          '<a class="ccc-link" href="' + escAttr(_deepLinkForCodeCopyCats(r)) + '" target="_blank" rel="noopener">Open prefiltered view</a>' +
+        '</div>';
+      var sw = r.switches || [];
+      if (sw.length > 0) {
+        html += '<table class="ccc-sw"><thead><tr><th>Switch</th><th>Explanation</th><th>Snippet</th></tr></thead><tbody>';
+        for (var s = 0; s < sw.length; s++) {
+          html += '<tr><td>' + escHtml(sw[s].name || '') + '</td><td>' + escHtml(sw[s].description || '') + '</td><td>' + escHtml(sw[s].example || '') + '</td></tr>';
+        }
+        html += '</tbody></table>';
+      }
+      html += '</div>';
+    }
+    wrap.innerHTML = html;
+    status.textContent = rows.length + ' rows shown | data refreshed: ' + (_codeCopyCats.loadedAt || 'unknown') + ' | sources: ' + (_codeCopyCats.sourceRefresh || []).join(' ; ');
+  }
+
+  function _applyCodeCopyCatsFilter() {
+    var modeEl = document.getElementById('cccMatchMode');
+    var searchEl = document.getElementById('cccSearch');
+    var notEl = document.getElementById('cccNotTokens');
+    var mode = modeEl ? String(modeEl.value || 'and').toLowerCase() : 'and';
+    var search = searchEl ? String(searchEl.value || '').trim().toLowerCase() : '';
+    var notTokens = _splitCsv(notEl ? notEl.value : '').map(function(v){ return v.toLowerCase(); });
+    var verbs = _getSelectValues('cccVerbFilter');
+    var purposes = _getSelectValues('cccPurposeFilter');
+    var objectives = _getSelectValues('cccObjectiveFilter');
+    var deps = _getSelectValues('cccDependencyFilter');
+    var scripts = _getSelectValues('cccScriptFilter');
+
+    var rows = _codeCopyCats.rows || [];
+    var out = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var text = _rowText(r);
+      var checks = [];
+      if (verbs.length > 0) { checks.push(verbs.some(function(v){ return (r.verbs || []).indexOf(v) >= 0; })); }
+      if (purposes.length > 0) { checks.push(purposes.some(function(v){ return (r.purpose || []).indexOf(v) >= 0; })); }
+      if (objectives.length > 0) { checks.push(objectives.some(function(v){ return (r.objectives || []).indexOf(v) >= 0; })); }
+      if (deps.length > 0) { checks.push(deps.some(function(v){ return (r.dependencies || []).indexOf(v) >= 0; })); }
+      if (scripts.length > 0) { checks.push(scripts.indexOf(r.path) >= 0); }
+      if (search) { checks.push(text.indexOf(search) >= 0); }
+
+      var allow = true;
+      if (checks.length > 0) {
+        allow = (mode === 'or') ? checks.some(function(v){ return v; }) : checks.every(function(v){ return v; });
+      }
+      if (allow && notTokens.length > 0) {
+        for (var n = 0; n < notTokens.length; n++) {
+          if (text.indexOf(notTokens[n]) >= 0) { allow = false; break; }
+        }
+      }
+      if (allow) { out.push(r); }
+    }
+    _codeCopyCats.filtered = out;
+    _renderCodeCopyCatsRows(out);
+  }
+
+  function resetCodeCopyCatsFilter() {
+    var ids = ['cccSearch','cccNotTokens'];
+    for (var i = 0; i < ids.length; i++) {
+      var e = document.getElementById(ids[i]);
+      if (e) { e.value = ''; }
+    }
+    var selIds = ['cccVerbFilter','cccPurposeFilter','cccObjectiveFilter','cccDependencyFilter','cccScriptFilter'];
+    for (var s = 0; s < selIds.length; s++) { _setSelectValues(selIds[s], []); }
+    var mode = document.getElementById('cccMatchMode');
+    if (mode) { mode.value = 'and'; }
+    _applyCodeCopyCatsFilter();
+  }
+  window.resetCodeCopyCatsFilter = resetCodeCopyCatsFilter;
+
+  function copyCodeCopyCatsSnippet(index) {
+    var rows = _codeCopyCats.filtered || [];
+    var row = rows[index];
+    if (!row) { return; }
+    var text = String(row.snippet || '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        setStatus('Snippet copied: ' + row.name, 'ok', 'right');
+      }).catch(function() {
+        setStatus('Copy failed for snippet', 'warn', 'right');
+      });
+    } else {
+      setStatus('Clipboard API unavailable in this runtime', 'warn', 'right');
+    }
+  }
+  window.copyCodeCopyCatsSnippet = copyCodeCopyCatsSnippet;
+
+  function copyCodeCopyCatsFilterUrl() {
+    var mode = document.getElementById('cccMatchMode');
+    var search = document.getElementById('cccSearch');
+    var notTokens = document.getElementById('cccNotTokens');
+    var qs = [];
+    qs.push('section=codecopycats');
+    qs.push('mode=' + encodeURIComponent(mode ? mode.value : 'and'));
+    qs.push('search=' + encodeURIComponent(search ? search.value : ''));
+    qs.push('not=' + encodeURIComponent(notTokens ? notTokens.value : ''));
+    qs.push('verbs=' + encodeURIComponent(_getSelectValues('cccVerbFilter').join(',')));
+    qs.push('purposes=' + encodeURIComponent(_getSelectValues('cccPurposeFilter').join(',')));
+    qs.push('objectives=' + encodeURIComponent(_getSelectValues('cccObjectiveFilter').join(',')));
+    qs.push('deps=' + encodeURIComponent(_getSelectValues('cccDependencyFilter').join(',')));
+    qs.push('scripts=' + encodeURIComponent(_getSelectValues('cccScriptFilter').join(',')));
+    var url = 'XHTML-WorkspaceHub.xhtml?' + qs.join('&');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() { setStatus('Code Copy-Cats filter URL copied', 'ok', 'right'); });
+    }
+  }
+  window.copyCodeCopyCatsFilterUrl = copyCodeCopyCatsFilterUrl;
+
+  function _applyCodeCopyCatsQuery() {
+    var p = new URLSearchParams(window.location.search || '');
+    var section = String(p.get('section') || '').toLowerCase();
+    if (section === 'codecopycats') { showSection('codecopycats'); }
+    var mode = p.get('mode');
+    if (mode) {
+      var modeEl = document.getElementById('cccMatchMode');
+      if (modeEl && (mode === 'and' || mode === 'or')) { modeEl.value = mode; }
+    }
+    var search = p.get('search');
+    var notText = p.get('not');
+    if (search !== null) { var se = document.getElementById('cccSearch'); if (se) { se.value = search; } }
+    if (notText !== null) { var ne = document.getElementById('cccNotTokens'); if (ne) { ne.value = notText; } }
+    _setSelectValues('cccVerbFilter', _splitCsv(p.get('verbs')));
+    _setSelectValues('cccPurposeFilter', _splitCsv(p.get('purposes')));
+    _setSelectValues('cccObjectiveFilter', _splitCsv(p.get('objectives')));
+    _setSelectValues('cccDependencyFilter', _splitCsv(p.get('deps')));
+    _setSelectValues('cccScriptFilter', _splitCsv(p.get('scripts')));
+    _applyCodeCopyCatsFilter();
+  }
+
+  function ensureCodeCopyCatsLoaded() {
+    if (_codeCopyCats.rows && _codeCopyCats.rows.length > 0) {
+      _applyCodeCopyCatsQuery();
+      return;
+    }
+    var status = document.getElementById('cccStatus');
+    if (status) { status.textContent = 'Loading manifest/help sources...'; }
+    Promise.all([
+      _loadJsonFile('config/agentic-manifest.json').catch(function(){ return null; }),
+      _loadJsonFile('config/help-menu-registry.json').catch(function(){ return null; }),
+      _loadTextFile('~README.md/LAUNCH-GUI-SWITCHES-REFERENCE.md').catch(function(){ return ''; }),
+      _loadTextFile('~README.md/LAUNCH-GUI-QUICK-REFERENCE.md').catch(function(){ return ''; })
+    ]).then(function(res) {
+      var manifest = res[0] || { scripts: [] };
+      var helpReg = res[1] || { scripts: {}, commonSwitches: {} };
+      var rows = _compileCodeCopyCatsRows(manifest, helpReg, res[2], res[3]);
+      _codeCopyCats.rows = rows;
+      _codeCopyCats.filtered = rows.slice();
+      _codeCopyCats.loadedAt = new Date().toLocaleString();
+      _codeCopyCats.sourceRefresh = [
+        'config/agentic-manifest.json',
+        'config/help-menu-registry.json',
+        '~README.md/LAUNCH-GUI-SWITCHES-REFERENCE.md',
+        '~README.md/LAUNCH-GUI-QUICK-REFERENCE.md'
+      ];
+      _buildCodeCopyCatsFilters(rows);
+      _applyCodeCopyCatsQuery();
+    }).catch(function(err) {
+      if (status) { status.textContent = 'Failed to load Code Copy-Cats data: ' + err.message; }
+      var wrap = document.getElementById('cccResults');
+      if (wrap) { wrap.innerHTML = '<div class="ccc-empty">No Code Copy-Cats data could be loaded.</div>'; }
+    });
+  }
+  window.ensureCodeCopyCatsLoaded = ensureCodeCopyCatsLoaded;
+
+  function bindCodeCopyCatsEvents() {
+    var applyBtn = document.getElementById('cccApplyBtn');
+    if (applyBtn) { applyBtn.addEventListener('click', _applyCodeCopyCatsFilter); }
+    var resetBtn = document.getElementById('cccResetBtn');
+    if (resetBtn) { resetBtn.addEventListener('click', resetCodeCopyCatsFilter); }
+    var copyUrlBtn = document.getElementById('cccCopyUrlBtn');
+    if (copyUrlBtn) { copyUrlBtn.addEventListener('click', copyCodeCopyCatsFilterUrl); }
   }
 
   /* ── Scan status → freshness badges ── */
@@ -1704,53 +2501,141 @@
 
   /* ── Timeline ── */
   function loadTimeline() {
-    var el = document.getElementById('hubTimeline');
-    if (!el) { return; }
-    el.innerHTML = '<li><div class="tl-dot"></div><span class="tl-label">Loading&#x2026;</span></li>';
+    var wrap = document.getElementById('historyTableWrap');
+    if (!wrap) { return; }
+    wrap.innerHTML = 'Loading history operations...';
     Promise.all([
       fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false),
-      fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; })
-    ]).then(function(allRes){
-      var data = allRes[0] ? allRes[0].data : {};
-      var histPayload = allRes[1] ? allRes[1].data : { history: [] };
-      var pIds = PHASE_IDS;
-      var rows = '';
+      fetchSectionData('historyList', '/api/history/list', { method: 'GET' }, false).catch(function(){ return { data: { history: [] }, fromCache: true }; }),
+      fetchSectionData('pipelineApprovals', '/api/pipeline/approvals', { method: 'GET' }, false).catch(function(){ return { data: { pending: [] }, fromCache: true }; }),
+      fetchSectionData('scanCrashes', '/api/scan/crashes', { method: 'GET' }, false).catch(function(){ return { data: { crashes: [] }, fromCache: true }; }),
+      fetchSectionData('engineEvents', '/api/engine/events?tail=200', { method: 'GET' }, false).catch(function(){ return { data: { events: [] }, fromCache: true }; })
+    ]).then(function(allRes) {
+      var statusRes = allRes[0] || { data: {} };
+      var historyRes = allRes[1] || { data: { history: [] } };
+      var approvalsRes = allRes[2] || { data: { pending: [] } };
+      var crashesRes = allRes[3] || { data: { crashes: [] } };
+      var eventsRes = allRes[4] || { data: { events: [] } };
+      var data = statusRes.data || {};
+      var histPayload = historyRes.data || { history: [] };
+      var approvals = approvalsRes.data || { pending: [] };
+      var crashes = crashesRes.data || { crashes: [] };
+      var events = eventsRes.data || { events: [] };
       var prevPhase = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : {});
-      for (var p = 0; p < pIds.length; p++) {
-        var pid = pIds[p];
+      var rows = [];
+
+      for (var p = 0; p < PHASE_IDS.length; p++) {
+        var pid = PHASE_IDS[p];
         var ph = prevPhase[pid];
         if (!ph) { continue; }
-        var dotCls = (ph.status === 'ok' || ph.status === 'done') ? 'background:#22c55e' :
-                     ph.status === 'error' ? 'background:#dc2626' : 'background:#ca8a04';
-        var tsRaw = ph.completedAt || ph.timestamp || null;
-        var ts = tsRaw ? new Date(tsRaw).toLocaleString() : '—';
-        var dur = (ph.durationMs && ph.durationMs > 0) ? (ph.durationMs / 1000).toFixed(1) + 's' : '';
-        rows += '<li>' +
-          '<div class="tl-dot" style="' + dotCls + '"></div>' +
-          '<span class="tl-label">' + escHtml(pid.replace(/_/g,' ')) + '</span>' +
-          '<span class="tl-meta">' + escHtml(ts) + '</span>' +
-          '<span class="tl-size">' + escHtml(dur) + '</span>' +
-          '</li>';
+        var firstRun = ph.startedAt || ph.timestamp || ph.completedAt || '';
+        var doneAt = ph.completedAt || ph.timestamp || '';
+        var durSec = (ph.durationMs && ph.durationMs > 0) ? ((ph.durationMs / 1000).toFixed(1) + 's') : '—';
+        var phaseStatus = String(ph.status || '').toUpperCase();
+        var processName = pid.replace(/_/g, ' ');
+        var result = (phaseStatus ? (phaseStatus + ' ') : '') + durSec;
+        rows.push({
+          process: processName,
+          firstRun: firstRun,
+          nextRun: (phaseStatus === 'RUNNING' || phaseStatus === 'IN_PROGRESS') ? 'in progress' : 'on next cycle',
+          cycles: result,
+          fileLocation: ph.outputPath || ph.path || (ph.source || '—'),
+          sizeDisk: (typeof ph.sizeBytes === 'number') ? (Math.round(ph.sizeBytes / 1024) + ' KB') : '—'
+        });
       }
 
-      var histRows = Array.isArray(histPayload.history) ? histPayload.history : [];
-      for (var h = 0; h < Math.min(histRows.length, 15); h++) {
+      var histRows = Array.isArray(histPayload.history)
+        ? histPayload.history
+        : (Array.isArray(histPayload.items) ? histPayload.items : []);
+      var HIST_CAP = 500;
+      for (var h = 0; h < Math.min(histRows.length, HIST_CAP); h++) {
         var hr = histRows[h] || {};
-        var hTs = hr.timestamp ? new Date(hr.timestamp).toLocaleString() : '—';
-        var hLbl = (hr.eventType || hr.type || 'history') + ' | ' + (hr.target || hr.source || '');
-        var hRes = hr.result || '';
-        var hDot = (String(hRes).indexOf('DIRTY') !== -1 || String(hRes).toLowerCase().indexOf('fail') !== -1) ? 'background:#dc2626' : 'background:#4a6080';
-        rows += '<li>' +
-          '<div class="tl-dot" style="' + hDot + '"></div>' +
-          '<span class="tl-label">' + escHtml(hLbl) + '</span>' +
-          '<span class="tl-meta">' + escHtml(hTs) + '</span>' +
-          '<span class="tl-size">' + escHtml(hRes) + '</span>' +
-          '</li>';
+        var lbl = hr.eventType || hr.type || hr.title || (hr.source ? (hr.source + ' event') : 'history');
+        var statusTxt = hr.status || (hr.success === true ? 'SUCCESS' : (hr.success === false ? 'FAIL' : ''));
+        var cyclesTxt = (hr.cycles !== undefined ? String(hr.cycles) : '1') +
+          ' / ' + (hr.duration || hr.elapsed || hr.result || statusTxt || '—');
+        rows.push({
+          process: lbl + (hr.source ? ' [' + hr.source + ']' : ''),
+          firstRun: hr.firstRunSinceReboot || hr.timestamp || '',
+          nextRun: hr.nextRun || 'n/a',
+          cycles: cyclesTxt,
+          fileLocation: hr.path || hr.file || hr.target || hr.id || hr.source || '—',
+          sizeDisk: (hr.sizeOnDisk || hr.size || hr.bytes || hr.version || '—')
+        });
+      }
+      if (histRows.length > HIST_CAP) {
+        rows.push({
+          process: '… ' + (histRows.length - HIST_CAP) + ' older history rows truncated',
+          firstRun: '', nextRun: '', cycles: '', fileLocation: 'logs/cron-aiathon-history.json + logs/engine-runtime-history.jsonl + todo/action-log.json', sizeDisk: ''
+        });
       }
 
-      el.innerHTML = rows || '<li><div class="tl-dot"></div><span class="tl-label">No phase/history data yet</span></li>';
-    }).catch(function(){
-      el.innerHTML = '<li><div class="tl-dot" style="background:#dc2626"></div><span class="tl-label" style="color:#f44747">No live or cached history data</span></li>';
+      var pending = Array.isArray(approvals.pending) ? approvals.pending : [];
+      if (pending.length > 0) {
+        rows.push({
+          process: 'pipeline approvals',
+          firstRun: pending[0] && pending[0].created ? pending[0].created : '',
+          nextRun: 'on next pipeline cycle',
+          cycles: String(pending.length) + ' pending / queue refresh',
+          fileLocation: 'todo/Items2Approve',
+          sizeDisk: '—'
+        });
+      }
+
+      var crashList = Array.isArray(crashes.crashes) ? crashes.crashes : (Array.isArray(crashes.dumps) ? crashes.dumps : (Array.isArray(crashes) ? crashes : []));
+      if (crashList.length > 0) {
+        var lastCrash = crashList[0] || {};
+        rows.push({
+          process: 'crashdumps',
+          firstRun: lastCrash.timestamp || '',
+          nextRun: 'on next crash or scan',
+          cycles: String(crashList.length) + ' items / crash monitor',
+          fileLocation: 'logs/crashdumps',
+          sizeDisk: '—'
+        });
+      }
+
+      var evtRows = Array.isArray(events.events) ? events.events : (Array.isArray(events) ? events : []);
+      if (evtRows.length > 0) {
+        var errCount = 0;
+        for (var e = 0; e < evtRows.length; e++) {
+          var lvl = String((evtRows[e] || {}).level || '').toUpperCase();
+          if (lvl === 'ERROR' || lvl === 'CRASH') { errCount++; }
+        }
+        rows.push({
+          process: 'event logs',
+          firstRun: (evtRows[0] && evtRows[0].ts) ? evtRows[0].ts : '',
+          nextRun: 'continuous stream',
+          cycles: String(evtRows.length) + ' events / ' + String(errCount) + ' errors',
+          fileLocation: 'logs/events + adapter feeds',
+          sizeDisk: '—'
+        });
+      }
+
+      if (rows.length === 0) {
+        wrap.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No history data available in live source or cache</div>';
+        return;
+      }
+
+      var html = '<table class="evt-table"><thead><tr>' +
+        '<th>Processes</th><th>First run since reboot</th><th>Next run</th><th>Cycles/Time taken</th><th>Files Location</th><th>Size on disk</th>' +
+        '</tr></thead><tbody>';
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var fr = r.firstRun ? new Date(r.firstRun).toLocaleString() : '—';
+        html += '<tr>' +
+          '<td>' + escHtml(r.process || '—') + '</td>' +
+          '<td style="white-space:nowrap">' + escHtml(fr) + '</td>' +
+          '<td>' + escHtml(r.nextRun || '—') + '</td>' +
+          '<td>' + escHtml(r.cycles || '—') + '</td>' +
+          '<td title="' + escAttr(r.fileLocation || '') + '">' + escHtml(r.fileLocation || '—') + '</td>' +
+          '<td>' + escHtml(String(r.sizeDisk || '—')) + '</td>' +
+          '</tr>';
+      }
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }).catch(function() {
+      wrap.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No live or cached history data</div>';
     });
   }
 
@@ -1877,20 +2762,25 @@
         if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
         return;
       }
-      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Running pipeline process...'; }
-      fetch(ENGINE_BASE + '/api/pipeline/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r) {
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(data) {
-        if (msg) { msg.style.color = '#4ec9b0'; msg.textContent = 'Created ' + String(data.createdTodos || 0) + ' pending todos'; }
-        loadPipelineApprovals();
-        syncLiveDataToOfflineCache();
+      _runMutation('runPipelineProcess', function() {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Running pipeline process...'; }
+        return fetch(ENGINE_BASE + '/api/pipeline/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+          body: '{}'
+        }).then(function(r) {
+          if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          return r.json();
+        }).then(function(data) {
+          if (msg) { msg.style.color = '#4ec9b0'; msg.textContent = 'Created ' + String(data.createdTodos || 0) + ' pending todos'; }
+          loadPipelineApprovals();
+          syncLiveDataToOfflineCache();
+        }).catch(function(err) {
+          if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline process failed: ' + err.message; }
+          throw err;
+        });
       }).catch(function(err) {
-        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline process failed: ' + err.message; }
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Pipeline error: ' + err.message; }
       });
     });
   }
@@ -1908,75 +2798,193 @@
         if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Engine token unavailable'; }
         return;
       }
-      if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Applying action...'; }
-      fetch(ENGINE_BASE + '/api/pipeline/approvals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: JSON.stringify({ action: actionKey, ids: ids })
-      }).then(function(r) {
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(data) {
-        _approvalSelected = {};
-        if (msg) {
-          msg.style.color = (data.failed && data.failed.length > 0) ? '#dcdcaa' : '#4ec9b0';
-          msg.textContent = 'Updated ' + String(data.updated || 0) + ' item(s)' + ((data.failed && data.failed.length > 0) ? (', failed: ' + data.failed.length) : '');
-        }
-        loadPipelineApprovals();
-        syncLiveDataToOfflineCache();
+      _runMutation('applyApprovalAction-' + actionKey, function() {
+        if (msg) { msg.style.color = '#dcdcaa'; msg.textContent = 'Applying action...'; }
+        return fetch(ENGINE_BASE + '/api/pipeline/approvals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+          body: JSON.stringify({ action: actionKey, ids: ids })
+        }).then(function(r) {
+          if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          return r.json();
+        }).then(function(data) {
+          _approvalSelected = {};
+          if (msg) {
+            msg.style.color = (data.failed && data.failed.length > 0) ? '#dcdcaa' : '#4ec9b0';
+            msg.textContent = 'Updated ' + String(data.updated || 0) + ' item(s)' + ((data.failed && data.failed.length > 0) ? (', failed: ' + data.failed.length) : '');
+          }
+          loadPipelineApprovals();
+          syncLiveDataToOfflineCache();
+        }).catch(function(err) {
+          if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval action failed: ' + err.message; }
+          throw err;
+        });
       }).catch(function(err) {
-        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval action failed: ' + err.message; }
+        if (msg) { msg.style.color = '#f44747'; msg.textContent = 'Approval error: ' + err.message; }
       });
     });
   }
   window.applyApprovalAction = applyApprovalAction;
 
-  function _postTestEndpoint(path, successMsg, onDone) {
-    fetchCsrf(function(tok) {
-      if (!tok) {
-        setStatus('Engine offline or token unavailable', 'warn', 'right');
-        return;
-      }
-      fetch(ENGINE_BASE + path, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r){
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(){
-        setStatus(successMsg, 'ok', 'right');
-        if (typeof onDone === 'function') { onDone(); }
-      }).catch(function(err){
-        setStatus('Test action failed: ' + err.message, 'warn', 'right');
+  function _setActionButtonState(btn, state, label) {
+    if (!btn) { return; }
+    var baseLabel = btn.getAttribute('data-base-label') || '';
+    if (!baseLabel) {
+      baseLabel = btn.textContent || '';
+      btn.setAttribute('data-base-label', baseLabel);
+    }
+    btn.classList.remove('busy');
+    btn.classList.remove('ok');
+    btn.classList.remove('err');
+    btn.disabled = false;
+
+    if (state === 'busy') {
+      btn.classList.add('busy');
+      btn.disabled = true;
+      btn.textContent = label || 'Working...';
+      return;
+    }
+    if (state === 'ok') {
+      btn.classList.add('ok');
+      btn.textContent = label || baseLabel;
+      setTimeout(function() {
+        if (!btn.disabled) {
+          btn.classList.remove('ok');
+          btn.textContent = baseLabel;
+        }
+      }, 1800);
+      return;
+    }
+    if (state === 'err') {
+      btn.classList.add('err');
+      btn.textContent = label || baseLabel;
+      setTimeout(function() {
+        if (!btn.disabled) {
+          btn.classList.remove('err');
+          btn.textContent = baseLabel;
+        }
+      }, 2400);
+      return;
+    }
+
+    btn.textContent = label || baseLabel;
+  }
+
+  function _postTestEndpoint(path, successMsg, onDone, btn) {
+    _setActionButtonState(btn, 'busy', 'Running...');
+    return _runMutation('postTestEndpoint-' + path, function() {
+      return new Promise(function(resolveOuter, rejectOuter) {
+        fetchCsrf(function(tok) {
+          if (!tok) {
+            setStatus('Engine offline or token unavailable', 'warn', 'right');
+            rejectOuter(new Error('No CSRF token'));
+            return;
+          }
+          fetch(ENGINE_BASE + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+            body: '{}'
+          }).then(function(r){
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+          }).then(function(){
+            setStatus(successMsg, 'ok', 'right');
+            if (typeof onDone === 'function') { onDone(); }
+            _setActionButtonState(btn, 'ok', 'Done');
+            resolveOuter();
+          }).catch(function(err){
+            setStatus('Test action failed: ' + err.message, 'warn', 'right');
+            _setActionButtonState(btn, 'err', 'Failed');
+            rejectOuter(err);
+          });
+        });
       });
     });
   }
 
-  function createTestCrashDump() {
+  function createTestCrashDump(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/crashdump', 'Test crash dump created', function(){
       loadCrashes();
       loadEventLogs();
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestCrashDump = createTestCrashDump;
 
-  function createTestEventLog() {
+  function createTestEventLog(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/eventlog', 'Test event log created', function(){
       loadEventLogs();
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestEventLog = createTestEventLog;
 
-  function createTestHistory() {
+  function createTestHistory(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     _postTestEndpoint('/api/test/history', 'Test history entry created', function(){
       loadTimeline();
+      _postTestEndpoint('/api/test/eventlog', 'History test event marker written', function(){
+        loadEventLogs();
+      }, null);
       syncLiveDataToOfflineCache();
-    });
+    }, btn);
+    return false;
   }
   window.createTestHistory = createTestHistory;
+
+  function createTestPipeline(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    _setActionButtonState(btn, 'busy', 'Running...');
+    _runMutation('test-pipeline', function() {
+      return postJsonWithCsrf('/api/pipeline/process', {}).then(function(){
+        return postJsonWithCsrf('/api/test/eventlog', {});
+      }).then(function(){
+        setStatus('Pipeline test started and event log marker written', 'ok', 'right');
+        _setActionButtonState(btn, 'ok', 'Done');
+        loadPipelineApprovals();
+        loadEventLogs();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        _setActionButtonState(btn, 'err', 'Failed');
+        setStatus('Pipeline test failed: ' + err.message, 'warn', 'right');
+      });
+    });
+    return false;
+  }
+  window.createTestPipeline = createTestPipeline;
+
+  function createTestLocalWebEngine(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    _setActionButtonState(btn, 'busy', 'Testing...');
+    _runMutation('test-local-web-engine', function() {
+      return _safeFetchJson(LOCAL_ENGINE_BASE + '/api/engine/status', { method: 'GET' }, 3500).then(function(statusObj){
+        var ok = !!(statusObj && (statusObj.responding === true || statusObj.running === true));
+        if (!ok) { throw new Error('Local Web Engine did not report responding status'); }
+        return postJsonWithCsrf('/api/test/eventlog', {});
+      }).then(function(){
+        setStatus('Local Web Engine test passed and event log marker written', 'ok', 'right');
+        _setActionButtonState(btn, 'ok', 'Done');
+        refreshMonitor();
+        loadMonitorLog();
+        loadEventLogs();
+        syncLiveDataToOfflineCache();
+      }).catch(function(err) {
+        _setActionButtonState(btn, 'err', 'Failed');
+        setStatus('Local Web Engine test failed: ' + err.message, 'warn', 'right');
+      });
+    });
+    return false;
+  }
+  window.createTestLocalWebEngine = createTestLocalWebEngine;
 
   /* ── Crash dumps ── */
   function loadCrashes() {
@@ -2015,35 +3023,78 @@
   }
 
   /* ── Scan trigger ── */
-  function doScan(mode) {
-    var msgEl = document.getElementById('scanMsgHub');
-    var pgEl  = document.getElementById('scanPgHub');
-    if (_isFileProtocol()) {
-      if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Offline page mode: run scan via terminal or open live hub endpoint.'; }
-      setStatus('Offline page mode: scans need live control endpoint or static scan script', 'warn', 'right');
-      return;
+  function _scanModeLabel(mode) {
+    if (mode === 'incremental') { return 'Get Missing Data'; }
+    if (mode === 'full') { return 'Full Scan'; }
+    if (mode === 'static') { return 'Full Scan (Static)'; }
+    return String(mode || 'scan');
+  }
+
+  function _scanFallbackModes(startMode) {
+    var order = ['static', 'full', 'incremental'];
+    var idx = order.indexOf(startMode);
+    if (idx < 0) { return ['static']; }
+    var modes = [];
+    for (var i = idx; i >= 0; i--) {
+      modes.push(order[i]);
     }
-    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(mode) + ' scan&#x2026;'; }
-    fetchCsrf(function(tok) {
-      if (!tok) {
-        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Engine offline'; }
+    return modes;
+  }
+
+  function _startScanWithCascade(initialMode, msgEl, pgEl, btn) {
+    var modes = _scanFallbackModes(initialMode);
+    var idx = 0;
+
+    function attemptNext(lastErr) {
+      if (idx >= modes.length) {
+        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed after fallback attempts: ' + (lastErr ? lastErr.message : 'unknown error'); }
+        _setActionButtonState(btn, 'err', 'Failed');
+        if (_isFileProtocol() || !window.navigator.onLine) {
+          _showStaticScanOfflineInstructions(msgEl);
+        }
         return;
       }
-      fetch(ENGINE_BASE + '/api/scan/' + mode, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-        body: '{}'
-      }).then(function(r){
-        if (!r.ok) { throw new Error('HTTP ' + r.status); }
-        return r.json();
-      }).then(function(){
-        if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.innerHTML = '<span class="scan-spinner"></span>Scan in progress&#x2026;'; }
-        if (pgEl)  { pgEl.style.width = '10%'; }
+
+      var mode = modes[idx++];
+      var label = _scanModeLabel(mode);
+      if (msgEl) {
+        msgEl.style.color = '#dcdcaa';
+        msgEl.innerHTML = '<span class="scan-spinner"></span>Requesting ' + escHtml(label) + '&#x2026;';
+      }
+
+      postJsonWithCsrf('/api/scan/' + mode, {}).then(function(){
+        if (msgEl) {
+          msgEl.style.color = '#4ec9b0';
+          msgEl.innerHTML = '<span class="scan-spinner"></span>' + escHtml(label) + ' in progress&#x2026;';
+        }
+        if (pgEl) { pgEl.style.width = '10%'; }
+        _setActionButtonState(btn, 'ok', 'Started');
         _startScanPolling(msgEl, pgEl);
       }).catch(function(err){
-        if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Scan failed: ' + err.message; }
+        if (idx < modes.length) {
+          var nextLabel = _scanModeLabel(modes[idx]);
+          if (msgEl) {
+            msgEl.style.color = '#dcdcaa';
+            msgEl.textContent = label + ' failed, cascading to ' + nextLabel + '...';
+          }
+          attemptNext(err);
+          return;
+        }
+        attemptNext(err);
       });
-    });
+    }
+
+    attemptNext(null);
+  }
+
+  function doScan(mode, btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    var msgEl = document.getElementById('scanMsgHub');
+    var pgEl  = document.getElementById('scanPgHub');
+    _setActionButtonState(btn, 'busy', 'Starting...');
+    _startScanWithCascade(mode, msgEl, pgEl, btn);
+    return false;
   }
   window.doScan = doScan;
 
@@ -2116,33 +3167,14 @@
   }
 
   /* ── Static (no-engine) scan ── */
-  function doStaticScan() {
+  function doStaticScan(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
     var msgEl = document.getElementById('scanMsgHub');
     var pgEl  = document.getElementById('scanPgHub');
-    if (_isFileProtocol()) {
-      _showStaticScanOfflineInstructions(msgEl);
-      return;
-    }
-    /* Try engine first (it proxies to static scan worker) */
-    fetchCsrf(function(tok) {
-      if (tok) {
-        fetch(ENGINE_BASE + '/api/scan/static', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-          body: '{}'
-        }).then(function(r){
-          if (!r.ok) { throw new Error('HTTP ' + r.status); }
-          return r.json();
-        }).then(function(){
-          if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.innerHTML = '<span class="scan-spinner"></span>Static scan started via engine&#x2026;'; }
-          _startScanPolling(msgEl, pgEl);
-        }).catch(function() {
-          _showStaticScanOfflineInstructions(msgEl);
-        });
-      } else {
-        _showStaticScanOfflineInstructions(msgEl);
-      }
-    });
+    _setActionButtonState(btn, 'busy', 'Starting...');
+    _startScanWithCascade('static', msgEl, pgEl, btn);
+    return false;
   }
   function _showStaticScanOfflineInstructions(msgEl) {
     if (msgEl) { msgEl.style.color = '#b5a04a'; msgEl.textContent = 'Engine offline — see status bar for instructions'; }
@@ -2163,19 +3195,92 @@
     if (!data) { return; }
     var phases = (data.phases) ? data.phases : (data.checkpoint && data.checkpoint.phases ? data.checkpoint.phases : null);
     if (!phases) { return; }
-    var setVal = function(id, v) { var el = document.getElementById(id); if (el && v) { el.textContent = v; } };
-    if (phases.folders)      { setVal('statFolders',   phases.folders.count); }
-    if (phases.modules)      { setVal('statModules',   phases.modules.count); setVal('statFunctions', phases.modules.functionCount); }
-    if (phases.scripts)      { setVal('statScripts',   phases.scripts.count); setVal('statVars', phases.scripts.variableCount); }
-    if (phases.configs)      { setVal('statConfigs',   phases.configs.count); }
-    if (phases.urls_ips)     { setVal('statUrlFiles',  phases.urls_ips.urlFileCount); setVal('statIPs', phases.urls_ips.uniqueIPs); }
+    var _numOrNull = function(v) {
+      if (v === null || v === undefined || v === '') { return null; }
+      var n = Number(v);
+      return isNaN(n) ? null : n;
+    };
+    var _metric = function(obj, keys) {
+      var i;
+      for (i = 0; i < keys.length; i++) {
+        var val = _numOrNull(_readMetric(obj, [keys[i]], null));
+        if (val !== null) { return val; }
+      }
+      return null;
+    };
+    var _setTrend = function(id, currVal) {
+      var trendEl = document.getElementById('trend_' + id);
+      if (!trendEl || currVal === null) { return; }
+      var prev = _lastStatsSnapshot[id];
+      var cls = 'stat-trend flat';
+      var txt = '&#x2194;';
+      if (prev !== undefined && prev !== null) {
+        if (currVal > prev) { cls = 'stat-trend up'; txt = '&#x2191;'; }
+        else if (currVal < prev) { cls = 'stat-trend down'; txt = '&#x2193;'; }
+      }
+      trendEl.className = cls;
+      trendEl.innerHTML = txt;
+      _lastStatsSnapshot[id] = currVal;
+    };
+    var _setVal = function(id, v) {
+      var el = document.getElementById(id);
+      if (!el) { return; }
+      var n = _numOrNull(v);
+      if (n === null) { return; }
+      el.textContent = String(n);
+      _setTrend(id, n);
+    };
+
+    if (phases.folders)  { _setVal('statFolders', phases.folders.count); }
+    if (phases.modules)  {
+      _setVal('statModules', phases.modules.count);
+      _setVal('statFunctions', _metric(phases.modules, ['functionCount','functionsTotal','exportsCount']));
+    }
+    if (phases.scripts)  {
+      _setVal('statScripts', phases.scripts.count);
+      _setVal('statVars', _metric(phases.scripts, ['variableCount','variablesTotal']));
+    }
+    if (phases.configs)  { _setVal('statConfigs', phases.configs.count); }
+    if (phases.urls_ips) {
+      _setVal('statUrlFiles', _metric(phases.urls_ips, ['urlFileCount','filesWithUrls']));
+      _setVal('statIPs', _metric(phases.urls_ips, ['uniqueIPs','ipCount']));
+      _setVal('statUrls', _metric(phases.urls_ips, ['uniqueUrls','urlCount']));
+      _setVal('statHosts', _metric(phases.urls_ips, ['uniqueHosts','hostCount','dnsCandidates']));
+    }
+    if (phases.dns_resolution) {
+      _setVal('statDnsOk', _metric(phases.dns_resolution, ['resolvedCount','successCount','dnsResolved']));
+      _setVal('statDnsFail', _metric(phases.dns_resolution, ['failedCount','unresolvedCount','dnsFailed']));
+    }
+    _setVal('statEdges', _metric(data, ['dependencyEdges','graphEdges','edges']) || _metric(phases.modules || {}, ['dependencyEdges']) || _metric(phases.scripts || {}, ['dependencyEdges']));
+    _setVal('statXlinks', _metric(data, ['crossLinks','crossModuleLinks','xlinks']) || _metric(phases.modules || {}, ['crossLinks','crossModuleLinks']));
   }
 
   /* ── Event Logs ── */
   var _evtAllRows = [];
   var EVT_PRESET_KEY = 'hub_evt_presets';
+  var _eventLogsView = 'hub';
+
+  function setEventLogsView(mode) {
+    var m = String(mode || '').toLowerCase() === 'canonical' ? 'canonical' : 'hub';
+    _eventLogsView = m;
+    var tableWrap = document.querySelector('#secEventLogs .evt-table-wrap');
+    var filterBar = document.querySelector('#secEventLogs .evt-filter-bar');
+    var canonicalWrap = document.getElementById('evtCanonicalWrap');
+    if (tableWrap) { tableWrap.style.display = m === 'hub' ? '' : 'none'; }
+    if (filterBar) { filterBar.style.display = m === 'hub' ? '' : 'none'; }
+    if (canonicalWrap) { canonicalWrap.style.display = m === 'canonical' ? '' : 'none'; }
+    if (window.EvLV && m === 'canonical') { try { EvLV.mountAll(); } catch(e) { } }
+    var cntEl = document.getElementById('evtCount');
+    if (cntEl && m === 'canonical') { cntEl.textContent = 'Showing canonical adapter view'; }
+    if (m === 'hub') { applyEvtFilter(); }
+  }
+  window.setEventLogsView = setEventLogsView;
 
   function loadEventLogs() {
+    if (_eventLogsView === 'canonical') {
+      setEventLogsView('canonical');
+      return;
+    }
     var tbody = document.getElementById('evtTableBody');
     var cntEl = document.getElementById('evtCount');
     if (tbody) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:12px">Loading&#x2026;</td></tr>'; }
@@ -2185,12 +3290,11 @@
       applyEvtFilter();
       if (cntEl) { cntEl.textContent = _evtAllRows.length + (res.fromCache ? ' events (offline cache)' : ' events (live)'); }
     }).catch(function(){
-      /* Engine offline — read log file counts from checkpoint fallback */
       _evtAllRows = [];
-      if (cntEl) { cntEl.textContent = 'Engine offline — showing no events'; }
+      if (cntEl) { cntEl.textContent = (_effectiveDataMode() === 'offline' ? 'Offline mode active — cached event stream unavailable' : 'Engine offline — showing no events'); }
       if (tbody) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">' +
-          '&#x1F534; Engine offline — start LocalWebEngine to stream event logs, or run static scan to generate logs.' +
+          '&#x1F534; Event Logs require live engine feed for streaming. Use Adapter View for canonical file-backed event display when available.' +
           '</td></tr>';
       }
     });
@@ -2292,45 +3396,365 @@
   window.deleteEvtPreset = deleteEvtPreset;
 
   /* ── CSRF ── */
-  function fetchCsrf(cb) {
-    if (_csrfToken) { cb(_csrfToken); return; }
-    _safeFetchJson(ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 3000)
-      .then(function(d){ _csrfToken = d.csrfToken || d.token || ''; cb(_csrfToken); })
-      .catch(function(){ cb(''); });
+  function fetchCsrf(cb, forceRefresh) {
+    if (_csrfToken && !forceRefresh) { cb(_csrfToken); return; }
+
+    var tried = {};
+    var bases = [];
+    function pushBase(base) {
+      var n = _normalizeBaseUrl(base || '');
+      if (!n || tried[n]) { return; }
+      tried[n] = true;
+      bases.push(n);
+    }
+
+    pushBase(LOCAL_ENGINE_BASE);
+    pushBase(ENGINE_BASE);
+    var sources = _getOrderedLiveSources();
+    for (var i = 0; i < sources.length; i++) {
+      if (sources[i] && sources[i].enabled !== false) { pushBase(sources[i].baseUrl); }
+    }
+    pushBase(LOCAL_ENGINE_BASE);
+
+    var idx = 0;
+    function tryNext() {
+      if (idx >= bases.length) { cb(''); return; }
+      var base = bases[idx++];
+      _safeFetchJson(base + '/api/csrf-token', { method: 'GET' }, 3000)
+        .then(function(d){
+          _csrfToken = d.csrfToken || d.token || '';
+          if (_csrfToken) {
+            _csrfBase = base;
+            if (ENGINE_BASE !== base) {
+              ENGINE_BASE = base;
+              _updateHubFooter();
+            }
+            cb(_csrfToken);
+          } else {
+            tryNext();
+          }
+        })
+        .catch(function(){ tryNext(); });
+    }
+
+    tryNext();
+  }
+
+  function fetchCsrfLocalFirst(cb, forceRefresh) {
+    if (_csrfToken && !forceRefresh) { cb(_csrfToken); return; }
+    _safeFetchJson(LOCAL_ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 2500)
+      .then(function(d) {
+        _csrfToken = d.csrfToken || d.token || '';
+        if (_csrfToken) {
+          _csrfBase = LOCAL_ENGINE_BASE;
+          ENGINE_BASE = LOCAL_ENGINE_BASE;
+          _updateHubFooter();
+          cb(_csrfToken);
+          return;
+        }
+        fetchCsrf(cb, forceRefresh);
+      })
+      .catch(function() {
+        fetchCsrf(cb, forceRefresh);
+      });
+  }
+
+  function postJsonWithCsrf(path, payloadObj) {
+    return new Promise(function(resolve, reject) {
+      function send(forceRefresh, hasRetried) {
+        fetchCsrfLocalFirst(function(tok) {
+          if (!tok) { reject(new Error('Engine offline (token unavailable from configured sources)')); return; }
+          var targetBase = _normalizeBaseUrl(_csrfBase || ENGINE_BASE || LOCAL_ENGINE_BASE);
+          fetch(targetBase + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
+            body: JSON.stringify(payloadObj || {})
+          }).then(function(r) {
+            if (r.status === 403 && !hasRetried) {
+              _csrfToken = '';
+              _csrfBase = '';
+              send(true, true);
+              return;
+            }
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+          }).then(function(data) {
+            if (data !== undefined) { resolve(data); }
+          }).catch(function(err) {
+            if (!hasRetried && targetBase !== LOCAL_ENGINE_BASE) {
+              _csrfToken = '';
+              send(true, true);
+              return;
+            }
+            reject(err);
+          });
+        }, forceRefresh === true);
+      }
+      send(false, false);
+    });
   }
 
   /* ── Engine status indicator ── */
-  function updateEngineStatus(data) {
+  function _readMetric(data, keys, fallback) {
+    if (!data) { return fallback; }
+    for (var i = 0; i < keys.length; i++) {
+      var path = keys[i];
+      var parts = path.split('.');
+      var cur = data;
+      for (var p = 0; p < parts.length; p++) {
+        if (cur && cur[parts[p]] !== undefined && cur[parts[p]] !== null) { cur = cur[parts[p]]; }
+        else { cur = null; break; }
+      }
+      if (cur !== null && cur !== undefined && cur !== '') { return cur; }
+    }
+    return fallback;
+  }
+
+  function _toIsoStringOrNull(value) {
+    if (value === null || value === undefined || value === '') { return null; }
+    if (value instanceof Date) {
+      var tDate = value.getTime();
+      return isNaN(tDate) ? null : value.toISOString();
+    }
+    var d = new Date(value);
+    var t = d.getTime();
+    if (isNaN(t)) { return null; }
+    return d.toISOString();
+  }
+
+  function _formatLocalTimestamp(value) {
+    var iso = _toIsoStringOrNull(value);
+    if (!iso) { return '—'; }
+    var d = new Date(iso);
+    return isNaN(d.getTime()) ? '—' : d.toLocaleString();
+  }
+
+  function _secondsSinceIso(iso) {
+    var safeIso = _toIsoStringOrNull(iso);
+    if (!safeIso) { return null; }
+    var t = new Date(safeIso).getTime();
+    if (isNaN(t)) { return null; }
+    var now = Date.now();
+    if (now < t) { return 0; }
+    return Math.floor((now - t) / 1000);
+  }
+
+  function _resolveEngineDisplayState(t, meta) {
+    var m = meta || {};
+    var fromCache = !!m.fromCache;
+    var missStreak = parseInt(m.missStreak || 0, 10) || 0;
+    var hbBad = (t.heartbeat === false || t.heartbeat === 'dead' || t.heartbeat === 'stale' || t.heartbeat === 'down');
+    var liveAgeSec = parseInt(t.statusAgeSec, 10);
+    if (isNaN(liveAgeSec) || liveAgeSec < 0) {
+      liveAgeSec = _secondsSinceIso(_engineLastLiveIso);
+    }
+    var staleLive = (liveAgeSec === null) ? true : (liveAgeSec > Math.floor(ENGINE_STATUS_STALE_MS / 1000));
+    var staleMiss = (missStreak >= ENGINE_STATUS_MISS_THRESHOLD);
+    var stale = staleLive || staleMiss;
+    if (fromCache && !staleLive && missStreak < ENGINE_STATUS_MISS_THRESHOLD) {
+      stale = false;
+    }
+    var running = !!(t.running && t.responding && !hbBad && !stale);
+    return {
+      running: running,
+      stale: stale,
+      hbBad: hbBad,
+      liveAgeSec: liveAgeSec,
+      fromCache: fromCache,
+      missStreak: missStreak
+    };
+  }
+
+  function _rankEngineState(name) {
+    var n = String(name || 'unknown').toLowerCase();
+    if (n === 'online') { return 5; }
+    if (n === 'degraded') { return 4; }
+    if (n === 'stale') { return 3; }
+    if (n === 'offline') { return 2; }
+    return 1;
+  }
+
+  function _desiredEngineState(t, state) {
+    if (!t || !state) { return 'unknown'; }
+    if (!t.running || !t.responding) {
+      return state.stale ? 'stale' : 'offline';
+    }
+    if (state.stale) { return 'stale'; }
+    if (state.hbBad) { return 'degraded'; }
+    return 'online';
+  }
+
+  function _commitEngineUiState(desired) {
+    var want = String(desired || 'unknown').toLowerCase();
+    var now = Date.now();
+    var cur = String(_engineUiState.current || 'unknown').toLowerCase();
+    if (want === cur) {
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return cur;
+    }
+
+    var improving = (_rankEngineState(want) >= _rankEngineState(cur));
+    if (improving) {
+      _engineUiState.current = want;
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return want;
+    }
+
+    if (_engineUiState.pending !== want) {
+      _engineUiState.pending = want;
+      _engineUiState.pendingSince = now;
+      return cur;
+    }
+
+    if ((now - _engineUiState.pendingSince) >= ENGINE_STATUS_DOWNGRADE_HOLD_MS) {
+      _engineUiState.current = want;
+      _engineUiState.pending = null;
+      _engineUiState.pendingSince = 0;
+      return want;
+    }
+    return cur;
+  }
+
+  function _normalizeEngineTelemetry(data) {
+    var d = data || {};
+    var running = !!_readMetric(d, ['running','isRunning','state.running'], false);
+    var responding = !!_readMetric(d, ['responding','isResponding','health.responding'], running);
+    var uptimeRaw = parseInt(_readMetric(d, ['uptime','uptimeSec','heartbeat.uptime','heartbeat.uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
+    var pid = _readMetric(d, ['pid','processId','enginePid','runtime.pid'], null);
+    var processName = _readMetric(d, ['processName','runtime.processName'], 'pwsh');
+    var port = _readMetric(d, ['port','listenPort','httpPort','runtime.port'], null);
+    var serverTime = _readMetric(d, ['serverTime','timestamp','now','heartbeat.serverTime','runtime.serverTime'], null);
+    var statusAgeSec = parseInt(_readMetric(d, ['statusAgeSec','heartbeat.ageSec','health.statusAgeSec'], -1), 10);
+    if (isNaN(statusAgeSec)) { statusAgeSec = -1; }
+    var heartbeat = _readMetric(d, ['heartbeat.ok','heartbeat.status','isHeartbeatAlive','health.heartbeat'], null);
+    if (typeof heartbeat === 'string') { heartbeat = heartbeat.toLowerCase(); }
+    var clients = parseInt(_readMetric(d, ['localWebClientsConnected','connectedClients','webClients.connected','clients.connected','stats.clientsConnected'], 0), 10) || 0;
+    var queueLength = parseInt(_readMetric(d, ['requestQueueLength','queue.length','requestQueue.length','stats.requestQueueLength'], 0), 10) || 0;
+    var requestsTotal = parseInt(_readMetric(d, ['requests.total','totalRequests','requestTotal','stats.requestsTotal'], 0), 10) || 0;
+    var requestsServed = parseInt(_readMetric(d, ['requests.served','requests.success','servedRequests','stats.requestsServed'], 0), 10) || 0;
+    var requestsClientError = parseInt(_readMetric(d, ['requests.clientError','requestsClientError','stats.requestsClientError'], 0), 10) || 0;
+    var requestsServerError = parseInt(_readMetric(d, ['requests.serverError','requestsServerError','stats.requestsServerError'], -1), 10);
+    if (isNaN(requestsServerError) || requestsServerError < 0) {
+      requestsServerError = parseInt(_readMetric(d, ['requests.failed','failedRequests','stats.requestsFailed'], 0), 10) || 0;
+    }
+    var requestsFailed = requestsServerError;
+    var memoryWorkingSetMB = parseFloat(_readMetric(d, ['memoryWorkingSetMB','runtime.memoryWorkingSetMB'], 0));
+    if (isNaN(memoryWorkingSetMB)) { memoryWorkingSetMB = 0; }
+    var memoryPeakWorkingSetMB = parseFloat(_readMetric(d, ['memoryPeakWorkingSetMB','runtime.memoryPeakWorkingSetMB'], 0));
+    if (isNaN(memoryPeakWorkingSetMB)) { memoryPeakWorkingSetMB = 0; }
+    var networkBytesIn = parseInt(_readMetric(d, ['networkIo.bytesIn','networkIoBytesIn','stats.networkBytesIn'], 0), 10) || 0;
+    var networkBytesOut = parseInt(_readMetric(d, ['networkIo.bytesOut','networkIoBytesOut','stats.networkBytesOut'], 0), 10) || 0;
+    var publicKeyFingerprint = _readMetric(d, ['publicKeyFingerprint','security.publicKeyFingerprint'], 'Unavailable');
+    var lastErrorMessage = _readMetric(d, ['lastErrorMessage','runtime.lastErrorMessage'], '');
+    var startupTime = _toIsoStringOrNull(_readMetric(d, ['startupTime','startTime','startedAt','heartbeat.startedAt','heartbeat.startTime','processStartTime','runtime.startedAt','stats.startedAt'], null));
+    var hbAgeSec = parseInt(_readMetric(d, ['heartbeat.ageSec','heartbeatAgeSec','heartbeatAge','health.heartbeatAgeSec','health.heartbeatAge'], -1), 10);
+    if (isNaN(hbAgeSec) || hbAgeSec < 0) {
+      var hbAt = _toIsoStringOrNull(_readMetric(d, ['heartbeat.at','heartbeat.timestamp','lastHeartbeat','lastHeartbeatAt','health.lastHeartbeatAt'], null));
+      if (hbAt) {
+        var calc = _secondsSinceIso(hbAt);
+        hbAgeSec = (calc === null) ? -1 : calc;
+      } else {
+        hbAgeSec = -1;
+      }
+    }
+    if (!startupTime && serverTime && uptimeRaw > 0) {
+      var st = new Date(serverTime);
+      if (!isNaN(st.getTime())) {
+        startupTime = new Date(st.getTime() - (uptimeRaw * 1000)).toISOString();
+      }
+    }
+
+    var uptime = uptimeRaw;
+    if (uptimeRaw < _engineLastUptimeSec) {
+      var elapsed = _secondsSinceIso(_engineLastUptimeSampleIso);
+      if (elapsed === null || elapsed < 0) { elapsed = 0; }
+      var projected = _engineLastUptimeSec + elapsed;
+      if (projected > uptimeRaw) { uptime = projected; }
+    }
+    var sampleIso = _toIsoStringOrNull(serverTime) || new Date().toISOString();
+    if (uptime >= _engineLastUptimeSec) {
+      _engineLastUptimeSec = uptime;
+      _engineLastUptimeSampleIso = sampleIso;
+    }
+
+    return {
+      running: running, responding: responding, uptime: uptime, pid: pid, port: port, serverTime: serverTime,
+      processName: processName,
+      heartbeat: heartbeat, clients: clients, queueLength: queueLength,
+      requestsTotal: requestsTotal, requestsServed: requestsServed, requestsFailed: requestsFailed,
+      requestsClientError: requestsClientError, requestsServerError: requestsServerError,
+      memoryWorkingSetMB: memoryWorkingSetMB, memoryPeakWorkingSetMB: memoryPeakWorkingSetMB,
+      networkBytesIn: networkBytesIn, networkBytesOut: networkBytesOut,
+      publicKeyFingerprint: publicKeyFingerprint, lastErrorMessage: lastErrorMessage,
+      startupTime: startupTime, heartbeatAgeSec: hbAgeSec, statusAgeSec: statusAgeSec
+    };
+  }
+
+  function _formatUptime(upSec) {
+    var u = parseInt(upSec || 0, 10) || 0;
+    if (u < 60) { return u + 's'; }
+    if (u < 3600) { return Math.floor(u/60) + 'm ' + (u%60) + 's'; }
+    return Math.floor(u/3600) + 'h ' + Math.floor((u%3600)/60) + 'm';
+  }
+
+  function updateEngineStatus(data, meta) {
     var dot = document.getElementById('wsDot');
-    var lbl = document.getElementById('engStatus');
-    if (!dot || !lbl) { return; }
-    if (!data || !data.running) {
+    var link = document.getElementById('engStatusLink');
+    if (!dot || !link) { return; }
+    var t = _normalizeEngineTelemetry(data);
+    var state = _resolveEngineDisplayState(t, meta);
+    var desired = _desiredEngineState(t, state);
+    var visual = _commitEngineUiState(desired);
+    if (visual === 'offline' || visual === 'unknown') {
       dot.className = 'ws-dot err';
-      lbl.textContent = 'Engine offline';
+      link.textContent = (visual === 'unknown') ? 'Engine status unknown' : 'Engine offline';
+      link.href = '#';
+      link.removeAttribute('target');
       return;
     }
-    var upSec = data.uptime || 0;
-    var upTxt = upSec < 60 ? upSec + 's' : Math.floor(upSec / 60) + 'm';
-    if (data.responding) {
+
+    var info = 'Engine up ' + _formatUptime(t.uptime) + ' | PID:' + (t.pid || '—') + ' | PORT:' + (t.port || '—');
+    if (t.heartbeatAgeSec >= 0) {
+      info += ' | HB age:' + t.heartbeatAgeSec + 's';
+    }
+    if (visual === 'online') {
       dot.className = 'ws-dot ok';
-      lbl.textContent = 'Engine up ' + upTxt;
+      link.textContent = info;
+    } else if (visual === 'degraded') {
+      dot.className = 'ws-dot warn';
+      link.textContent = info + ' | degraded';
     } else {
       dot.className = 'ws-dot warn';
-      lbl.textContent = 'Engine starting…';
+      link.textContent = info + ' | stale (misses:' + (state.missStreak || 0) + ')';
     }
+    link.href = _joinSourceUrl(ENGINE_BASE, SERVICE_HUB_PATH);
+    link.setAttribute('target', '_blank');
   }
 
   function pollEngineStatus() {
     fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false)
-      .then(function(res){ updateEngineStatus(res.data); })
-      .catch(function(){ updateEngineStatus(null); });
+      .then(function(res){
+        if (res && !res.fromCache) {
+          _engineLastLiveIso = new Date().toISOString();
+          _engineMissStreak = 0;
+        } else {
+          _engineMissStreak++;
+        }
+        updateEngineStatus(res.data, { fromCache: !!(res && res.fromCache), missStreak: _engineMissStreak });
+      })
+      .catch(function(){
+        _engineMissStreak++;
+        updateEngineStatus(null, { fromCache: false, missStreak: _engineMissStreak });
+      });
   }
 
   function startEngine() {
     setStatus('Checking engine control path&#x2026;', 'ok', 'right');
     if (_isFileProtocol()) {
       setStatus('Offline page mode: launch via terminal or Launch-GUI.bat', 'warn', 'right');
-      _setSourceMessage('Start command: powershell -ExecutionPolicy Bypass -File .\\scripts\\Start-LocalWebEngineService.ps1', 'warn');
+      _setSourceMessage('Start command: powershell -ExecutionPolicy Bypass -File .\\scripts\\Start-LocalWebEngine.ps1 -Action Start -NoLaunchBrowser', 'warn');
       try { window.open('file:///C:/PowerShellGUI/Launch-GUI.bat', '_blank'); } catch(e) { }
       return;
     }
@@ -2340,7 +3764,7 @@
         else { setStatus('Engine endpoint reachable but reports stopped. Start service from terminal.', 'warn', 'right'); }
       })
       .catch(function(){
-        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngineService.ps1 from terminal', 'warn', 'right');
+        setStatus('&#x1F534; Engine is offline &#x2014; run Start-LocalWebEngine.ps1 from terminal', 'warn', 'right');
       });
   }
   window.startEngine = startEngine;
@@ -2535,6 +3959,49 @@
     el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
   }
 
+  function initTooltipSystem() {
+    var bubble = document.getElementById('tipBubble');
+    if (!bubble) { return; }
+    function showTip(target, ev) {
+      var tip = target.getAttribute('data-tip');
+      if (!tip) { return; }
+      bubble.textContent = tip;
+      bubble.style.display = 'block';
+      positionTip(ev);
+    }
+    function hideTip() {
+      bubble.style.display = 'none';
+      bubble.textContent = '';
+    }
+    function positionTip(ev) {
+      if (bubble.style.display !== 'block') { return; }
+      var pad = 10;
+      var vw = window.innerWidth || document.documentElement.clientWidth;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var rect = bubble.getBoundingClientRect();
+      var x = (ev.clientX || 0) + 12;
+      var y = (ev.clientY || 0) - rect.height - 12;
+      if (x + rect.width + pad > vw) { x = vw - rect.width - pad; }
+      if (x < pad) { x = pad; }
+      if (y < pad) { y = (ev.clientY || 0) + 14; }
+      if (y + rect.height + pad > vh) { y = vh - rect.height - pad; }
+      bubble.style.left = x + 'px';
+      bubble.style.top = y + 'px';
+    }
+    document.addEventListener('mouseover', function(ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('[data-tip]') : null;
+      if (!t) { return; }
+      showTip(t, ev);
+    });
+    document.addEventListener('mousemove', function(ev) { positionTip(ev); });
+    document.addEventListener('mouseout', function(ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('[data-tip]') : null;
+      if (!t) { return; }
+      hideTip();
+    });
+    window.addEventListener('scroll', hideTip, true);
+  }
+
   function _setFooterPill(id, text, cssClass) {
     var el = document.getElementById(id);
     if (!el) { return; }
@@ -2563,37 +4030,143 @@
     var cacheUpdated = (_offlineCache && _offlineCache.updatedAt) ? _offlineCache.updatedAt : 'never';
     var cacheSections = (_offlineCache && _offlineCache.sections) ? Object.keys(_offlineCache.sections).length : 0;
     _setFooterPill('ftCacheSummary', 'cache: ' + cacheSections + ' sections, updated ' + cacheUpdated, cacheSections > 0 ? 'ft-state-ok' : 'ft-state-missing');
-    _setFooterPill('ftModeSummary', 'mode: ' + (_isFileProtocol() ? 'offline-file' : 'live-http') + ' | Start/Stop adapts automatically', _isFileProtocol() ? 'ft-state-active' : 'ft-state-ok');
+    _setFooterPill('ftModeSummary', 'mode: ' + _dataMode + ' (effective ' + _effectiveDataMode() + ') | Start/Stop adapts automatically', (_effectiveDataMode() === 'offline') ? 'ft-state-active' : 'ft-state-ok');
   }
 
-  /* ── WebEngine Monitor ── */
-  function refreshMonitor() {
-    var sEl = document.getElementById('monStatus');
-    var uEl = document.getElementById('monUptime');
-    var pEl = document.getElementById('monPid');
-    var poEl = document.getElementById('monPort');
-    var tEl = document.getElementById('monTime');
-    var cfgEl = document.getElementById('monCfg');
-    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
-      var d = res.data;
-      if (sEl) { sEl.textContent = d.running ? '\u2705 Running' : '\u274C Stopped'; sEl.className = 'eng-stat-value ' + (d.running ? 'ok' : 'err'); }
-      if (uEl) {
-        var up = d.uptime || 0;
-        uEl.textContent = up < 60 ? up + 's' : up < 3600 ? Math.floor(up/60) + 'm ' + (up%60) + 's' : Math.floor(up/3600) + 'h ' + Math.floor((up%3600)/60) + 'm';
-        uEl.className = 'eng-stat-value ok';
+  /* ── Local Web Engine ── */
+  function initMonitorFieldPicker() {
+    var wrap = document.getElementById('monFieldChecks');
+    if (!wrap) { return; }
+    var html = '';
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      var checked = _monitorSelected[f.key] ? ' checked="checked"' : '';
+      html += '<label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:5px;cursor:pointer">'
+        + '<input type="checkbox" data-mon-field="' + escAttr(f.key) + '"' + checked + ' style="accent-color:var(--accent)" />'
+        + '<span>' + escHtml(f.label) + '</span></label>';
+    }
+    wrap.innerHTML = html;
+    wrap.addEventListener('change', function(ev){
+      var t = ev.target;
+      if (!t || !t.getAttribute) { return; }
+      var key = t.getAttribute('data-mon-field');
+      if (!key) { return; }
+      _monitorSelected[key] = !!t.checked;
+      renderMonitorToolbar();
+      renderMonitorGrid(_lastMonitorTelemetry);
+    });
+    renderMonitorToolbar();
+  }
+
+  function renderMonitorToolbar() {
+    var host = document.getElementById('monToolbarDynamic');
+    if (!host) { return; }
+    var groups = { controls:0, logs:0, toggles:0, info:0 };
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      if (_monitorSelected[f.key]) { groups[f.group] = (groups[f.group] || 0) + 1; }
+    }
+    var html = '';
+    if (groups.controls > 0) {
+      html += '<span class="scan-btn" title="Controls for selected monitor fields">Controls (' + groups.controls + ')</span>';
+    }
+    if (groups.logs > 0) {
+      html += '<button class="scan-btn" onclick="loadMonitorLog()" title="Reload log block for selected log metrics">Logs (' + groups.logs + ')</button>';
+    }
+    if (groups.toggles > 0) {
+      html += '<button class="scan-btn" onclick="refreshMonitor()" title="Refresh toggled metrics and engine heartbeat">Toggles (' + groups.toggles + ')</button>';
+    }
+    if (groups.info > 0) {
+      html += '<span class="scan-btn" title="Informational field group">Info (' + groups.info + ')</span>';
+    }
+    host.innerHTML = html;
+  }
+
+  var _lastMonitorTelemetry = null;
+  var _lastMonitorFromCache = false;
+  var _monitorConfigStatus = '—';
+  var _monitorConfigStatusClass = '';
+
+  function renderMonitorGrid(tel) {
+    var grid = document.getElementById('monGrid');
+    if (!grid) { return; }
+    var state = tel ? _resolveEngineDisplayState(tel, { fromCache: _lastMonitorFromCache }) : null;
+    var valueMap = {
+      status: tel ? (state.running ? '✅ Running' : (state.stale ? '⚠ Stale/Unknown' : '❌ Stopped')) : '—',
+      uptime: tel ? _formatUptime(tel.uptime) : '—',
+      lastScanTime: _monitorLastScanIso ? _formatLocalTimestamp(_monitorLastScanIso) : '—',
+      startupTime: tel && tel.startupTime ? _formatLocalTimestamp(tel.startupTime) : '—',
+      pid: tel && tel.pid ? String(tel.pid) : '—',
+      processName: tel && tel.processName ? String(tel.processName) : '—',
+      port: tel && tel.port ? String(tel.port) : '—',
+      serverTime: tel && tel.serverTime ? new Date(tel.serverTime).toLocaleString() : '—',
+      memoryWorkingSetMB: tel ? String(tel.memoryWorkingSetMB) : '—',
+      memoryPeakWorkingSetMB: tel ? String(tel.memoryPeakWorkingSetMB) : '—',
+      networkBytesIn: tel ? String(tel.networkBytesIn) : '—',
+      networkBytesOut: tel ? String(tel.networkBytesOut) : '—',
+      publicKeyFingerprint: tel && tel.publicKeyFingerprint ? String(tel.publicKeyFingerprint) : '—',
+      lastErrorMessage: tel && tel.lastErrorMessage ? String(tel.lastErrorMessage) : '—',
+      heartbeat: tel ? ((tel.heartbeat === true || tel.heartbeat === 'ok' || tel.heartbeat === 'alive') ? '✅ Alive' : (tel.heartbeat ? String(tel.heartbeat) : '—')) : '—',
+      clients: tel ? String(tel.clients) : '—',
+      queueLength: tel ? String(tel.queueLength) : '—',
+      requestsTotal: tel ? String(tel.requestsTotal) : '—',
+      requestsServed: tel ? String(tel.requestsServed) : '—',
+      requestsClientError: tel ? String(tel.requestsClientError) : '—',
+      requestsServerError: tel ? String(tel.requestsServerError) : '—',
+      requestsFailed: tel ? String(tel.requestsFailed) : '—',
+      config: _monitorConfigStatus || '—'
+    };
+
+    var html = '';
+    for (var i = 0; i < MONITOR_FIELDS.length; i++) {
+      var f = MONITOR_FIELDS[i];
+      if (!_monitorSelected[f.key]) { continue; }
+      var val = valueMap[f.key] !== undefined ? valueMap[f.key] : '—';
+      var valCls = 'eng-stat-value';
+      if (f.key === 'status') {
+        if (state && state.running) { valCls += ' ok'; }
+        else if (state && state.stale) { valCls += ' warn'; }
+        else { valCls += ' err'; }
       }
-      if (pEl) { pEl.textContent = d.pid || '\u2014'; pEl.className = 'eng-stat-value'; }
-      if (poEl) { poEl.textContent = d.port || '\u2014'; poEl.className = 'eng-stat-value'; }
-      if (tEl) { tEl.textContent = d.serverTime ? new Date(d.serverTime).toLocaleString() : '\u2014'; }
-      /* Check config detection */
-      verifyConfigDetection(cfgEl);
+      if (f.key === 'requestsClientError' && tel && tel.requestsClientError > 0) { valCls += ' warn'; }
+      if (f.key === 'requestsServerError' && tel && tel.requestsServerError > 0) { valCls += ' err'; }
+      if (f.key === 'requestsFailed' && tel && tel.requestsFailed > 0) { valCls += ' err'; }
+      if (f.key === 'lastErrorMessage' && tel && tel.lastErrorMessage) { valCls += ' warn'; }
+      if (f.key === 'config' && _monitorConfigStatusClass) { valCls += ' ' + _monitorConfigStatusClass; }
+      html += '<div class="eng-stat-card"><div class="eng-stat-label">' + escHtml(f.label) + '</div><div class="' + valCls + '">' + escHtml(val) + '</div></div>';
+    }
+    if (!html) {
+      html = '<div class="eng-stat-card"><div class="eng-stat-label">Monitor</div><div class="eng-stat-value">Select fields above</div></div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function refreshMonitor() {
+    _updateModeLabel();
+    _monitorLastScanIso = new Date().toISOString();
+    fetchSectionData('engineStatus', '/api/engine/status', { method: 'GET' }, false).then(function(res){
+      var telemetry = _normalizeEngineTelemetry(res.data);
+      _lastMonitorTelemetry = telemetry;
+      _lastMonitorFromCache = !!res.fromCache;
+      if (!res.fromCache) {
+        _engineLastLiveIso = new Date().toISOString();
+        _engineMissStreak = 0;
+      } else {
+        _engineMissStreak++;
+      }
+      renderMonitorToolbar();
+      renderMonitorGrid(telemetry);
+      updateEngineStatus(res.data, { fromCache: !!res.fromCache, missStreak: _engineMissStreak });
+      verifyConfigDetection();
+      setStatus(res.fromCache ? 'Monitor loaded from cache' : 'Monitor loaded from live source', res.fromCache ? 'warn' : 'ok', 'right');
     }).catch(function(){
-      if (sEl) { sEl.textContent = '\u274C Offline'; sEl.className = 'eng-stat-value err'; }
-      if (uEl) { uEl.textContent = '\u2014'; uEl.className = 'eng-stat-value err'; }
-      if (pEl) { pEl.textContent = '\u2014'; }
-      if (poEl) { poEl.textContent = '\u2014'; }
-      if (tEl) { tEl.textContent = '\u2014'; }
-      if (cfgEl) { cfgEl.textContent = '\u274C Engine offline'; cfgEl.className = 'eng-stat-value err'; }
+      _engineMissStreak++;
+      _lastMonitorTelemetry = null;
+      _lastMonitorFromCache = false;
+      renderMonitorToolbar();
+      renderMonitorGrid(null);
+      updateEngineStatus(null, { fromCache: false, missStreak: _engineMissStreak });
+      verifyConfigDetection();
     });
   }
   window.refreshMonitor = refreshMonitor;
@@ -2605,25 +4178,143 @@
     fetchSectionData('engineLog', '/api/engine/log?tail=40', { method: 'GET' }, false).then(function(res){
       var d = res.data;
       var lines = Array.isArray(d.lines) ? d.lines : (d.log ? d.log.split('\n') : []);
-      logEl.textContent = lines.length > 0 ? lines.join('\n') : '(no log data)';
+      if (lines.length > 0) {
+        logEl.textContent = lines.join('\n');
+      } else {
+        logEl.textContent = res.fromCache ? '(no cached monitor logs available)' : '(no log data)';
+      }
     }).catch(function(err){
-      logEl.textContent = 'Failed to load log: ' + err.message;
+      logEl.textContent = (_effectiveDataMode() === 'offline') ? 'Offline mode active and no cached recent logs available.' : ('Failed to load log: ' + err.message);
     });
   }
   window.loadMonitorLog = loadMonitorLog;
 
+  function _getMonitorPageOptions() {
+    var out = [];
+    for (var i = 0; i < TOOLS.length; i++) {
+      var t = TOOLS[i] || {};
+      var href = String(t.href || '');
+      if (!href) { continue; }
+      if (href.indexOf('://') !== -1) { continue; }
+      if (!/\.(xhtml|html)$/i.test(href)) { continue; }
+      out.push({ title: String(t.title || href), href: href });
+    }
+    return out;
+  }
+
+  function initMonitorPageLaunchControls() {
+    var sel = document.getElementById('monPageSelect');
+    if (!sel) { return; }
+    var opts = _getMonitorPageOptions();
+    var html = '';
+    for (var i = 0; i < opts.length; i++) {
+      var o = opts[i];
+      html += '<option value="' + escAttr(o.href) + '">' + escHtml(o.title + ' | ' + o.href) + '</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function _getSelectedMonitorPagePaths() {
+    var sel = document.getElementById('monPageSelect');
+    if (!sel) { return []; }
+    var vals = [];
+    for (var i = 0; i < sel.options.length; i++) {
+      var op = sel.options[i];
+      if (op.selected) { vals.push(String(op.value || '')); }
+    }
+    if (vals.length > 0) { return vals; }
+    var all = _getMonitorPageOptions();
+    var out = [];
+    for (var j = 0; j < all.length; j++) { out.push(all[j].href); }
+    return out;
+  }
+
+  function _toStaticFileUrl(relPath) {
+    var p = String(relPath || '').replace(/\\/g, '/');
+    if (p.indexOf('/') === 0) { p = p.substring(1); }
+    return 'file:///C:/PowerShellGUI/' + encodeURI(p);
+  }
+
+  function launchSelectedMonitorPages(mode) {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No pages available to launch', 'warn', 'right');
+      return;
+    }
+    var opened = 0;
+    for (var i = 0; i < paths.length; i++) {
+      var p = paths[i];
+      var u = (mode === 'service') ? _joinSourceUrl(ENGINE_BASE, '/' + p) : _toStaticFileUrl(p);
+      try {
+        window.open(u, '_blank', 'noopener');
+        opened++;
+      } catch(e) { }
+    }
+    setStatus('Launched ' + opened + ' page(s) via ' + (mode === 'service' ? 'service' : 'static disk'), 'ok', 'right');
+  }
+  window.launchSelectedMonitorPages = launchSelectedMonitorPages;
+
+  function saveMonitorPageBundle() {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No pages selected for bundle', 'warn', 'right');
+      return;
+    }
+    var rows = [];
+    rows.push('# PwShGUI WebEngine Page Bundle');
+    rows.push('generatedAt=' + new Date().toISOString());
+    rows.push('engineBase=' + ENGINE_BASE);
+    rows.push('');
+    for (var i = 0; i < paths.length; i++) {
+      var p = paths[i];
+      rows.push('path=' + p);
+      rows.push('service=' + _joinSourceUrl(ENGINE_BASE, '/' + p));
+      rows.push('static=' + _toStaticFileUrl(p));
+      rows.push('');
+    }
+    var blob = new Blob([rows.join('\n')], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pwshgui-page-bundle-' + Date.now() + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    setStatus('Saved page bundle (' + paths.length + ' entries)', 'ok', 'right');
+  }
+  window.saveMonitorPageBundle = saveMonitorPageBundle;
+
+  function copyMonitorPagePaths() {
+    var paths = _getSelectedMonitorPagePaths();
+    if (paths.length === 0) {
+      setStatus('No page paths to copy', 'warn', 'right');
+      return;
+    }
+    var text = paths.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        setStatus('Copied ' + paths.length + ' page path(s) to clipboard', 'ok', 'right');
+      }).catch(function(){
+        setStatus('Clipboard copy failed in this runtime', 'warn', 'right');
+      });
+      return;
+    }
+    setStatus('Clipboard API unavailable in this runtime', 'warn', 'right');
+  }
+  window.copyMonitorPagePaths = copyMonitorPagePaths;
+
   /* ── Config detection verification ── */
-  function verifyConfigDetection(cfgEl) {
-    /* Check if /api/config/menus returns valid JSON — if not, flag error */
+  function verifyConfigDetection() {
     fetchSectionData('configMenus', '/api/config/menus', { method: 'GET' }, false).then(function(res){
       var d = res.data;
       var ok = !!(d && (d.menus || Array.isArray(d)));
-      if (cfgEl) {
-        cfgEl.textContent = ok ? '\u2705 Config loaded' + (res.fromCache ? ' (offline)' : '') : '\u26A0 Config empty';
-        cfgEl.className = 'eng-stat-value ' + (ok ? 'ok' : '');
-      }
+      _monitorConfigStatus = ok ? ('✅ Config loaded' + (res.fromCache ? ' (cached)' : '')) : '⚠ Config empty';
+      _monitorConfigStatusClass = ok ? 'ok' : '';
+      renderMonitorGrid(_lastMonitorTelemetry);
     }).catch(function(){
-      if (cfgEl) { cfgEl.textContent = '\u274C Config not detected'; cfgEl.className = 'eng-stat-value err'; }
+      _monitorConfigStatus = (_effectiveDataMode() === 'offline') ? '⚠ Config unavailable in cache' : '❌ Config not detected';
+      _monitorConfigStatusClass = 'err';
+      renderMonitorGrid(_lastMonitorTelemetry);
     });
   }
 
@@ -2673,7 +4364,7 @@
     if (_isFileProtocol()) { return; }
     if (!_csrfToken) { return; }
     try {
-      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: '2604.B1.V32.3' });
+      var payload = JSON.stringify({ toolPath: 'XHTML-WorkspaceHub.xhtml', versionTag: (window._workspaceVersionTag || '2605.B5.V46.0') });
       if (navigator.sendBeacon) {
         var blob = new Blob([payload], { type: 'application/json' });
         navigator.sendBeacon(ENGINE_BASE + '/api/runtime/tool-exit', blob);
@@ -2690,15 +4381,23 @@
 
   /* ── Init ── */
   document.addEventListener('DOMContentLoaded', function() {
+    _loadDataModePreference();
     _loadOfflineCacheBootstrap()
       .then(function(){ return _loadDataSourceBootstrap(); })
       .then(function(){
         connectWs();
         startPoll();
+        _loadFavorites();
         _populateGroupFilter();
-        renderToolCards(null);
+        refreshToolLinkAvailability().then(function(){ renderToolCards(null); }).catch(function(){ renderToolCards(null); });
         renderEvtPresets();
         renderDataSources();
+        bindCodeCopyCatsEvents();
+        initTooltipSystem();
+        initMonitorFieldPicker();
+        initMonitorPageLaunchControls();
+        _updateModeLabel();
+        _setRuntimeNotes();
         refreshDataSourceHealth();
         setStatus(_isFileProtocol() ? 'Initialised (offline page mode with live-source fallback)' : 'Initialising&#x2026;', _isFileProtocol() ? 'warn' : 'ok', 'right');
         pollEngineStatus();
@@ -2706,6 +4405,10 @@
         fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false)
           .then(function(res){ _updateStatsStrip(res.data); })
           .catch(function(){});
+        var params = new URLSearchParams(window.location.search || '');
+        if (String(params.get('section') || '').toLowerCase() === 'codecopycats') {
+          showSection('codecopycats');
+        }
         setTimeout(checkToolConfigs, 3000);
       })
       .catch(function() {
@@ -2714,8 +4417,634 @@
   });
   window.addEventListener('beforeunload', notifyToolExit);
 
+  /* ════════════════════════════════════════════════════════════════════════
+     Phase 1-6 Enhancements (V31.8): version sync, uptime tick, crash auto-
+     refresh, reports filter/group, data-source deep test, CCC tabs/persist
+     ════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Phase 1: Workspace version sync from manifest ─────────────────── */
+  window._workspaceVersionTag = null;
+  function loadWorkspaceVersion() {
+    if (_isFileProtocol()) { return; }
+    fetchSectionData('hubVersion', '/api/hub/version', { method: 'GET' }, false).then(function(res) {
+      var d = res && res.data ? res.data : {};
+      var v = d.versionTag || null;
+      if (v && /^\d{4}\.B\d+\.V\d+\.\d+$/.test(v)) {
+        window._workspaceVersionTag = v;
+        var el = document.getElementById('hdrVer');
+        if (el) {
+          el.innerHTML = '';
+          var a = document.createElement('a');
+          a.className = 'pwshgui-ver-link';
+          a.href = '~REPORTS/xhtml-version-feed.json';
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.style.cssText = 'color:#58a6ff;text-decoration:none;border-bottom:1px dotted #58a6ff;font-family:Consolas,monospace;';
+          a.textContent = 'v' + v;
+          el.appendChild(a);
+          el.title = 'Source: ' + (d.source || 'unknown') + ' @ ' + (d.generatedAt || '');
+        }
+      }
+    }).catch(function() { /* keep fallback literal */ });
+  }
+  window.loadWorkspaceVersion = loadWorkspaceVersion;
+
+  /* ── Phase 2: Live uptime ticker for Monitor tab ────────────────────── */
+  var _uptimeTickerId = null;
+  var _monitorAutoRefreshId = null;
+  function _renderUptimeTick() {
+    var t = _lastMonitorTelemetry;
+    if (!t || !t.startupTime) { return; }
+    var startMs = new Date(t.startupTime).getTime();
+    if (isNaN(startMs)) { return; }
+    var liveSec = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+    /* Update dom in place to avoid full grid re-render */
+    var grid = document.getElementById('monGrid');
+    if (!grid) { return; }
+    var labels = grid.querySelectorAll('.eng-stat-label');
+    for (var i = 0; i < labels.length; i++) {
+      if ((labels[i].textContent || '').toLowerCase() === 'uptime') {
+        var v = labels[i].nextElementSibling;
+        if (v) { v.textContent = _formatUptime(liveSec); }
+        break;
+      }
+    }
+    /* Header link too */
+    var link = document.getElementById('engStatusLink');
+    if (link && link.textContent && link.textContent.indexOf('Engine up ') === 0) {
+      link.textContent = link.textContent.replace(/Engine up [^|]+/, 'Engine up ' + _formatUptime(liveSec) + ' ');
+    }
+  }
+  function startMonitorTickers() {
+    stopMonitorTickers();
+    _uptimeTickerId = setInterval(_renderUptimeTick, 1000);
+    _monitorAutoRefreshId = setInterval(function() {
+      if (typeof refreshMonitor === 'function') { refreshMonitor(); }
+    }, 7000);
+  }
+  function stopMonitorTickers() {
+    if (_uptimeTickerId) { clearInterval(_uptimeTickerId); _uptimeTickerId = null; }
+    if (_monitorAutoRefreshId) { clearInterval(_monitorAutoRefreshId); _monitorAutoRefreshId = null; }
+  }
+
+  /* ── Phase 3: Crash dump auto-refresh on tab + better empty-state ──── */
+  var _crashAutoRefreshId = null;
+  function startCrashAutoRefresh() {
+    stopCrashAutoRefresh();
+    _crashAutoRefreshId = setInterval(function() {
+      if (typeof loadCrashes === 'function') { loadCrashes(); }
+    }, 7000);
+  }
+  function stopCrashAutoRefresh() {
+    if (_crashAutoRefreshId) { clearInterval(_crashAutoRefreshId); _crashAutoRefreshId = null; }
+  }
+
+  /* ── Section navigation hook: start/stop pollers per active section ── */
+  var _origShowSection = window.showSection;
+  window.showSection = function(name) {
+    stopMonitorTickers();
+    stopCrashAutoRefresh();
+    if (typeof _stopDeepTestPolling === 'function') { _stopDeepTestPolling(); }
+    if (_origShowSection) { _origShowSection(name); }
+    if (name === 'monitor')  { startMonitorTickers(); }
+    if (name === 'crashes')  { startCrashAutoRefresh(); }
+    if (name === 'reports')  { _renderReportsToolbarOnce(); }
+    if (name === 'codecopycats') { _restoreCccTabs(); }
+  };
+
+  /* ── Phase 5: Reports filter + grouping (default = Group by Type) ──── */
+  var REPORTS_FILTER_KEY  = 'pwshgui.hub.reports.filters.v1';
+  var _reportsAllFiles = [];
+  function _reportTypeOf(path) {
+    var p = String(path || '').toLowerCase();
+    if (/bug/i.test(p))                          { return 'Bugs'; }
+    if (/sin/i.test(p))                          { return 'SIN'; }
+    if (/pipeline/i.test(p))                     { return 'Pipeline'; }
+    if (/static-?scan|scan-/i.test(p))           { return 'Scan'; }
+    if (/changelog|enhancement|guide|index/i.test(p)) { return 'Docs'; }
+    if (p.indexOf('~reports/') !== -1)           { return 'Reports'; }
+    return 'Other';
+  }
+  function _loadReportsFilters() {
+    try {
+      var s = localStorage.getItem(REPORTS_FILTER_KEY);
+      if (s) { return JSON.parse(s); }
+    } catch(e) { /* ignore */ }
+    return { search: '', type: 'all', groupBy: 'type', sortBy: 'name' };
+  }
+  function _saveReportsFilters(f) {
+    try { localStorage.setItem(REPORTS_FILTER_KEY, JSON.stringify(f)); } catch(e) { /* quota */ }
+  }
+  function _renderReportsToolbarOnce() {
+    var sec = document.getElementById('secReports');
+    if (!sec || sec.querySelector('#reportsToolbar')) { return; }
+    var f = _loadReportsFilters();
+    var bar = document.createElement('div');
+    bar.id = 'reportsToolbar';
+    bar.className = 'evt-filter-bar';
+    bar.style.marginBottom = '8px';
+    bar.innerHTML =
+      '<input type="text" id="rptSearch" placeholder="Search reports..." style="width:200px" value="' + escAttr(f.search) + '" />' +
+      '<select id="rptType"><option value="all">All types</option>' +
+        '<option value="Bugs">Bugs</option><option value="SIN">SIN</option>' +
+        '<option value="Pipeline">Pipeline</option><option value="Scan">Scan</option>' +
+        '<option value="Docs">Docs</option><option value="Reports">Reports</option>' +
+        '<option value="Other">Other</option></select>' +
+      '<select id="rptGroup">' +
+        '<option value="type">Group by Type</option>' +
+        '<option value="none">No grouping</option>' +
+        '<option value="folder">Group by Folder</option>' +
+      '</select>' +
+      '<select id="rptSort">' +
+        '<option value="name">Sort: Name</option>' +
+        '<option value="path">Sort: Path</option>' +
+        '<option value="type">Sort: Type</option>' +
+      '</select>' +
+      '<span id="rptCount" style="font-size:10px;color:var(--fg-sub)"></span>';
+    var card = sec.querySelector('#reportCards');
+    if (card) { sec.insertBefore(bar, card); }
+    /* hydrate selects */
+    bar.querySelector('#rptType').value  = f.type;
+    bar.querySelector('#rptGroup').value = f.groupBy;
+    bar.querySelector('#rptSort').value  = f.sortBy;
+    function onChange() {
+      var nf = {
+        search:  bar.querySelector('#rptSearch').value || '',
+        type:    bar.querySelector('#rptType').value || 'all',
+        groupBy: bar.querySelector('#rptGroup').value || 'type',
+        sortBy:  bar.querySelector('#rptSort').value || 'name'
+      };
+      _saveReportsFilters(nf);
+      _renderReportsList();
+    }
+    bar.querySelector('#rptSearch').addEventListener('input', onChange);
+    bar.querySelector('#rptType').addEventListener('change', onChange);
+    bar.querySelector('#rptGroup').addEventListener('change', onChange);
+    bar.querySelector('#rptSort').addEventListener('change', onChange);
+  }
+  function _renderReportsList() {
+    var el = document.getElementById('reportCards');
+    if (!el) { return; }
+    var f = _loadReportsFilters();
+    var files = _reportsAllFiles.slice();
+    /* Filter */
+    var q = String(f.search || '').toLowerCase();
+    if (q) {
+      files = files.filter(function(rf) {
+        return String(rf.path || '').toLowerCase().indexOf(q) !== -1
+            || String(rf.name || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    if (f.type && f.type !== 'all') {
+      files = files.filter(function(rf) { return _reportTypeOf(rf.path) === f.type; });
+    }
+    /* Sort */
+    files.sort(function(a, b) {
+      var av = '', bv = '';
+      if (f.sortBy === 'name') { av = (a.name || a.path || '').toLowerCase(); bv = (b.name || b.path || '').toLowerCase(); }
+      else if (f.sortBy === 'path') { av = (a.path || '').toLowerCase(); bv = (b.path || '').toLowerCase(); }
+      else if (f.sortBy === 'type') { av = _reportTypeOf(a.path); bv = _reportTypeOf(b.path); }
+      return av < bv ? -1 : av > bv ? 1 : 0;
+    });
+    var cnt = document.getElementById('rptCount');
+    if (cnt) { cnt.textContent = files.length + ' of ' + _reportsAllFiles.length + ' files'; }
+    if (files.length === 0) {
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">No reports match the current filter</div>';
+      return;
+    }
+    function cardHtml(rf) {
+      var href = String(rf.path || '').replace(/\\/g, '/');
+      var typ = _reportTypeOf(href);
+      return '<a class="hub-card" href="' + escAttr(href) + '" target="_blank" rel="noopener">' +
+        '<div class="hub-card-icon">&#x1F4C4;</div>' +
+        '<div class="hub-card-title">' + escHtml(rf.name || href) + '</div>' +
+        '<div class="hub-card-desc">' + escHtml(href) + '</div>' +
+        '<span class="hub-card-badge badge-grey">' + escHtml(typ) + '</span>' +
+        '</a>';
+    }
+    /* Grouping */
+    if (f.groupBy === 'none') {
+      var html = '';
+      for (var i = 0; i < files.length; i++) { html += cardHtml(files[i]); }
+      el.innerHTML = html;
+      return;
+    }
+    var groups = {};
+    var order  = [];
+    for (var j = 0; j < files.length; j++) {
+      var key;
+      if (f.groupBy === 'folder') {
+        var p = String(files[j].path || '').replace(/\\/g, '/');
+        var slash = p.lastIndexOf('/');
+        key = (slash > 0) ? p.slice(0, slash) : '(root)';
+      } else {
+        key = _reportTypeOf(files[j].path);
+      }
+      if (!groups[key]) { groups[key] = []; order.push(key); }
+      groups[key].push(files[j]);
+    }
+    order.sort();
+    var out = '';
+    for (var k = 0; k < order.length; k++) {
+      var g = order[k];
+      out += '<details open style="margin-bottom:10px">' +
+        '<summary style="cursor:pointer;padding:6px 8px;background:#1a1a1a;font-size:12px">' +
+        escHtml(g) + ' <span style="color:var(--fg-sub)">(' + groups[g].length + ')</span></summary>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 0">';
+      for (var m = 0; m < groups[g].length; m++) { out += cardHtml(groups[g][m]); }
+      out += '</div></details>';
+    }
+    el.innerHTML = out;
+  }
+  /* Wrap the original loadReports to populate _reportsAllFiles + new render */
+  var _origLoadReports = window.loadReports;
+  window.loadReports = function() {
+    _renderReportsToolbarOnce();
+    var el = document.getElementById('reportCards');
+    if (!el) { return; }
+    el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>';
+    fetchSectionData('reportsList', '/api/workspace/files?ext=*.json,*.xhtml,*.html,*.md', { method: 'GET' }, false).then(function(res) {
+      var payload = res.data || {};
+      var files = Array.isArray(payload.files) ? payload.files : [];
+      var filtered = [];
+      for (var i = 0; i < files.length; i++) {
+        var p = String(files[i].path || '').toLowerCase();
+        if (p.indexOf('~reports/') !== -1 || p.indexOf('~readme.md/') !== -1 || p.indexOf('reports/') !== -1) {
+          filtered.push(files[i]);
+        }
+      }
+      _reportsAllFiles = filtered;
+      _renderReportsList();
+    }).catch(function() {
+      el.innerHTML = '<div style="color:var(--fg-sub);font-size:11px;padding:20px;text-align:center">Unable to load reports from live or cache</div>';
+    });
+  };
+
+  /* ── Phase 6: Data Sources Deep Test (step tree, 7s polling) ──────── */
+  var DEEP_TEST_STEPS = [
+    { id:'csrf',     label:'CSRF token',          path:'/api/csrf-token',          method:'GET',  required:['csrfToken'] },
+    { id:'status',   label:'Engine status',       path:'/api/engine/status',       method:'GET',  required:['running','uptime'] },
+    { id:'schema',   label:'Hub schema',          path:'/api/hub/schema',          method:'GET',  required:['schemaVersion'] },
+    { id:'version',  label:'Hub version',         path:'/api/hub/version',         method:'GET',  required:['versionTag'] },
+    { id:'scan',     label:'Scan status',         path:'/api/scan/status',         method:'GET',  required:[] },
+    { id:'crashes',  label:'Crash dumps',         path:'/api/scan/crashes',        method:'GET',  required:['crashes'] },
+    { id:'menus',    label:'Config menus',        path:'/api/config/menus',        method:'GET',  required:[] },
+    { id:'cors',     label:'CORS preflight echo', path:'/api/csrf-token',          method:'OPTIONS', required:[] }
+  ];
+  var _deepTestState = { running:false, baseUrl:null, srcId:null, steps:{}, pollId:null, cancelled:false };
+  function _stopDeepTestPolling() {
+    if (_deepTestState.pollId) { clearInterval(_deepTestState.pollId); _deepTestState.pollId = null; }
+  }
+  function runDataSourceDeepTest(srcId) {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === srcId) { src = _dataSources[i]; break; } }
+    if (!src) { _setSourceMessage('Source not found', 'err'); return; }
+    _stopDeepTestPolling();
+    _deepTestState = { running:true, baseUrl:src.baseUrl, srcId:srcId, steps:{}, pollId:null, cancelled:false, startedAt:Date.now() };
+    for (var s = 0; s < DEEP_TEST_STEPS.length; s++) {
+      _deepTestState.steps[DEEP_TEST_STEPS[s].id] = { status:'Queued', detail:'', durationMs:0, attempts:0 };
+    }
+    _renderDeepTestModal(src);
+    _deepTestState.pollId = setInterval(function() { _renderDeepTestModal(src); }, 7000);
+    _executeDeepTestSequence(src, false);
+  }
+  window.runDataSourceDeepTest = runDataSourceDeepTest;
+  function _executeDeepTestSequence(src, retryFailedOnly) {
+    var idx = 0;
+    function next() {
+      if (_deepTestState.cancelled) { _deepTestState.running = false; _renderDeepTestModal(src); return; }
+      if (idx >= DEEP_TEST_STEPS.length) {
+        _deepTestState.running = false;
+        _stopDeepTestPolling();
+        _renderDeepTestModal(src);
+        return;
+      }
+      var step = DEEP_TEST_STEPS[idx++];
+      var stepState = _deepTestState.steps[step.id];
+      if (retryFailedOnly && stepState.status !== 'FAILED' && stepState.status !== 'Warning') {
+        next();
+        return;
+      }
+      stepState.status = 'Starting';
+      stepState.attempts++;
+      _renderDeepTestModal(src);
+      setTimeout(function() {
+        if (_deepTestState.cancelled) { stepState.status = 'Stopped'; _renderDeepTestModal(src); next(); return; }
+        stepState.status = 'Running';
+        _renderDeepTestModal(src);
+        var url = (src.baseUrl || '').replace(/\/+$/, '') + step.path;
+        var t0 = Date.now();
+        var fetchOpts = { method: step.method, mode: 'cors', credentials: 'omit' };
+        if (step.method === 'OPTIONS') {
+          fetchOpts.headers = { 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'X-CSRF-Token, Content-Type' };
+        }
+        fetch(url, fetchOpts).then(function(r) {
+          stepState.durationMs = Date.now() - t0;
+          stepState.httpStatus = r.status;
+          if (step.method === 'OPTIONS') {
+            var acao = r.headers.get('Access-Control-Allow-Origin') || '';
+            var acam = r.headers.get('Access-Control-Allow-Methods') || '';
+            stepState.detail = 'ACAO=' + acao + ' | Methods=' + acam;
+            stepState.status = (r.status === 204 || r.status === 200) ? 'Done-ReQued' : 'Warning';
+            _renderDeepTestModal(src); next(); return;
+          }
+          if (!r.ok) { stepState.status = 'FAILED'; stepState.detail = 'HTTP ' + r.status; _renderDeepTestModal(src); next(); return; }
+          return r.json().then(function(j) {
+            var missing = [];
+            for (var k = 0; k < step.required.length; k++) {
+              if (!(step.required[k] in (j || {}))) { missing.push(step.required[k]); }
+            }
+            if (missing.length > 0) {
+              stepState.status = 'Warning';
+              stepState.detail = 'Missing fields: ' + missing.join(', ');
+            } else {
+              stepState.status = 'Done-ReQued';
+              stepState.detail = (stepState.durationMs + 'ms') + (j && j.versionTag ? (' | v=' + j.versionTag) : '');
+            }
+            stepState.payloadKeys = Object.keys(j || {});
+            _renderDeepTestModal(src);
+            next();
+          });
+        }).catch(function(err) {
+          stepState.durationMs = Date.now() - t0;
+          stepState.status = 'FAILED';
+          stepState.detail = String(err && err.message || err);
+          _renderDeepTestModal(src);
+          next();
+        });
+      }, 80);
+    }
+    next();
+  }
+  function _renderDeepTestModal(src) {
+    var modal = document.getElementById('deepTestModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'deepTestModal';
+      modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#0c1220;border:1px solid #2a3a55;padding:14px;width:640px;max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-size:11px;color:#d4d4d4;border-radius:4px';
+      document.body.appendChild(modal);
+    }
+    var totals = { Done: 0, Failed: 0, Warning: 0, Running: 0, Queued: 0 };
+    var rows = '';
+    for (var i = 0; i < DEEP_TEST_STEPS.length; i++) {
+      var step = DEEP_TEST_STEPS[i];
+      var st = _deepTestState.steps[step.id] || { status:'Waiting', detail:'' };
+      var color = '#888';
+      switch (st.status) {
+        case 'Waiting':     color = '#666'; break;
+        case 'Queued':      color = '#7a9acc'; break;
+        case 'Starting':    color = '#dcdcaa'; break;
+        case 'Running':     color = '#4ec9b0'; break;
+        case 'Warning':     color = '#dcdcaa'; totals.Warning++; break;
+        case 'FAILED':      color = '#f44747'; totals.Failed++; break;
+        case 'Done-ReQued': color = '#4ec9b0'; totals.Done++; break;
+        case 'Stopped':     color = '#888'; break;
+      }
+      rows += '<tr style="border-bottom:1px solid #1a2a3a">' +
+        '<td style="padding:4px 6px;color:' + color + ';font-weight:600">' + escHtml(st.status) + '</td>' +
+        '<td style="padding:4px 6px">' + escHtml(step.label) + '</td>' +
+        '<td style="padding:4px 6px;color:#7a9acc;font-family:Consolas,monospace">' + escHtml(step.method + ' ' + step.path) + '</td>' +
+        '<td style="padding:4px 6px;color:#aaa">' + escHtml(st.detail || '') + '</td>' +
+        '<td style="padding:4px 6px;text-align:right;color:#888">' + (st.durationMs ? st.durationMs + 'ms' : '—') + '</td>' +
+        '</tr>';
+    }
+    var liveBadge = _deepTestState.running ? '<span style="color:#4ec9b0">● polling 7s</span>' : '<span style="color:#888">○ idle</span>';
+    modal.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+        '<div><b>Deep Test:</b> ' + escHtml(src.name) + ' <span style="color:#7a9acc">(' + escHtml(src.baseUrl) + ')</span></div>' +
+        '<div>' + liveBadge + '</div>' +
+      '</div>' +
+      '<div style="margin-bottom:6px;font-size:10px;color:#888">Done: ' + totals.Done + ' | Warning: ' + totals.Warning + ' | Failed: ' + totals.Failed + '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Status</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Step</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Endpoint</th>' +
+        '<th style="padding:4px 6px;text-align:left;background:#1a1a1a">Detail</th>' +
+        '<th style="padding:4px 6px;text-align:right;background:#1a1a1a">Time</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end">' +
+        '<button class="scan-btn" onclick="_deepTestRequeueAll()">Re-Queue All</button>' +
+        '<button class="scan-btn" onclick="_deepTestRequeueFailed()">Re-Queue Failed</button>' +
+        '<button class="scan-btn" onclick="_deepTestExport()">Export JSON</button>' +
+        '<button class="scan-btn" onclick="_deepTestCancel()">Cancel</button>' +
+        '<button class="scan-btn" onclick="_deepTestClose()">Close</button>' +
+      '</div>';
+  }
+  window._deepTestRequeueAll = function() {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (!src) { return; }
+    _deepTestState.cancelled = false; _deepTestState.running = true;
+    for (var k in _deepTestState.steps) { _deepTestState.steps[k].status = 'Queued'; }
+    _executeDeepTestSequence(src, false);
+  };
+  window._deepTestRequeueFailed = function() {
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (!src) { return; }
+    _deepTestState.cancelled = false; _deepTestState.running = true;
+    _executeDeepTestSequence(src, true);
+  };
+  window._deepTestCancel = function() {
+    _deepTestState.cancelled = true; _deepTestState.running = false;
+    _stopDeepTestPolling();
+    var src = null;
+    for (var i = 0; i < _dataSources.length; i++) { if (_dataSources[i].id === _deepTestState.srcId) { src = _dataSources[i]; break; } }
+    if (src) { _renderDeepTestModal(src); }
+  };
+  window._deepTestExport = function() {
+    var blob = new Blob([JSON.stringify(_deepTestState, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'deep-test-' + (_deepTestState.srcId || 'src') + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  };
+  window._deepTestClose = function() {
+    _stopDeepTestPolling();
+    var modal = document.getElementById('deepTestModal');
+    if (modal) { modal.parentNode.removeChild(modal); }
+  };
+
+  /* ── Phase 4: Code Copy-Cats result tabs + persistence ──────────────── */
+  var CCC_TABS_KEY = 'pwshgui.hub.ccc.tabs.v1';
+  var _cccTabs = [];     /* [{id,name,query,results,createdAt}] */
+  var _cccActiveTab = null;
+  function _saveCccTabs() {
+    try {
+      var snap = { tabs: _cccTabs, active: _cccActiveTab, savedAt: Date.now() };
+      localStorage.setItem(CCC_TABS_KEY, JSON.stringify(snap));
+    } catch(e) { /* quota */ }
+  }
+  function _loadCccTabsSnapshot() {
+    try {
+      var s = localStorage.getItem(CCC_TABS_KEY);
+      if (s) {
+        var snap = JSON.parse(s);
+        _cccTabs = Array.isArray(snap.tabs) ? snap.tabs : [];
+        _cccActiveTab = snap.active || null;
+      }
+    } catch(e) { _cccTabs = []; _cccActiveTab = null; }
+  }
+  function _restoreCccTabs() {
+    if (_cccTabs.length === 0) { _loadCccTabsSnapshot(); }
+    _renderCccTabsStrip();
+  }
+  function _renderCccTabsStrip() {
+    var sec = document.getElementById('secCodeCopyCats');
+    if (!sec) { return; }
+    var strip = document.getElementById('cccTabsStrip');
+    if (!strip) {
+      strip = document.createElement('div');
+      strip.id = 'cccTabsStrip';
+      strip.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid #1a2a3a;margin-bottom:6px';
+      var results = sec.querySelector('#cccResults');
+      if (results) { sec.insertBefore(strip, results); }
+    }
+    var html = '';
+    for (var i = 0; i < _cccTabs.length; i++) {
+      var t = _cccTabs[i];
+      var active = (t.id === _cccActiveTab);
+      html += '<span style="padding:3px 8px;background:' + (active ? '#2a3a55' : '#1a1a1a') + ';border:1px solid #2a3a55;cursor:pointer;font-size:10px" onclick="_cccActivateTab(\'' + t.id + '\')">' +
+        escHtml(t.name) + ' <span style="color:#888">(' + (t.results ? t.results.length : 0) + ')</span>' +
+        ' <a href="#" onclick="event.stopPropagation();_cccCloseTab(\'' + t.id + '\');return false" style="color:#f44747;text-decoration:none;margin-left:4px">×</a>' +
+        '</span>';
+    }
+    html += '<button class="scan-btn" style="font-size:10px;padding:2px 6px" onclick="_cccNewTabFromCurrentQuery()">+ New Search Tab</button>';
+    strip.innerHTML = html;
+    if (_cccActiveTab) {
+      var t2 = _cccTabs.filter(function(x){ return x.id === _cccActiveTab; })[0];
+      if (t2) { _renderCccGridForTab(t2); }
+    }
+  }
+  function _renderCccGridForTab(tab) {
+    var wrap = document.getElementById('cccResults');
+    if (!wrap) { return; }
+    var rows = tab.results || [];
+    if (rows.length === 0) {
+      wrap.innerHTML = '<div class="ccc-empty">No results in tab "' + escHtml(tab.name) + '"</div>';
+      return;
+    }
+    var html = '<div style="margin-bottom:6px;display:flex;gap:6px;align-items:center;font-size:10px">' +
+      '<b>' + escHtml(tab.name) + '</b> ' +
+      '<span style="color:#888">' + rows.length + ' rows</span> ' +
+      '<button class="scan-btn" style="font-size:10px;padding:2px 6px" onclick="_cccExportTabCsv(\'' + tab.id + '\')">Export CSV</button>' +
+      '</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Title</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Source</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Path</th>' +
+      '<th style="padding:4px;background:#1a1a1a;text-align:left">Match</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < Math.min(rows.length, 500); i++) {
+      var r = rows[i] || {};
+      html += '<tr style="border-bottom:1px solid #1a2a3a">' +
+        '<td style="padding:3px 4px">' + escHtml(r.title || r.name || '') + '</td>' +
+        '<td style="padding:3px 4px;color:#7a9acc">' + escHtml(r.source || '') + '</td>' +
+        '<td style="padding:3px 4px;font-family:Consolas,monospace;color:#888">' + escHtml(r.path || '') + '</td>' +
+        '<td style="padding:3px 4px;color:#dcdcaa">' + escHtml(r.match || '') + '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+  window._cccActivateTab = function(id) { _cccActiveTab = id; _saveCccTabs(); _renderCccTabsStrip(); };
+  window._cccCloseTab = function(id) {
+    _cccTabs = _cccTabs.filter(function(t){ return t.id !== id; });
+    if (_cccActiveTab === id) { _cccActiveTab = _cccTabs.length > 0 ? _cccTabs[_cccTabs.length-1].id : null; }
+    _saveCccTabs(); _renderCccTabsStrip();
+  };
+  window._cccNewTabFromCurrentQuery = function() {
+    var sInput = document.getElementById('cccSearch');
+    var notInput = document.getElementById('cccNotTokens');
+    var modeSel = document.getElementById('cccMatchMode');
+    var query = {
+      search: sInput ? sInput.value : '',
+      not: notInput ? notInput.value : '',
+      mode: modeSel ? modeSel.value : 'and'
+    };
+    var rows = (typeof _codeCopyCats !== 'undefined' && _codeCopyCats && _codeCopyCats.filtered) ? _codeCopyCats.filtered.slice() : [];
+    var simplified = rows.slice(0, 200).map(function(r) {
+      return {
+        title:  r.title || r.name || r.scriptName || '',
+        source: r.source || r.module || r.scriptName || '',
+        path:   r.path || r.scriptPath || '',
+        match:  r.matchedTokens ? r.matchedTokens.join(',') : (r.purpose || '')
+      };
+    });
+    var tab = {
+      id: 'tab-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+      name: 'Search ' + (_cccTabs.length + 1) + (query.search ? ': ' + query.search.slice(0, 20) : ''),
+      query: query,
+      results: simplified,
+      createdAt: new Date().toISOString()
+    };
+    _cccTabs.push(tab);
+    _cccActiveTab = tab.id;
+    _saveCccTabs();
+    _renderCccTabsStrip();
+  };
+  window._cccExportTabCsv = function(id) {
+    var tab = _cccTabs.filter(function(t){ return t.id === id; })[0];
+    if (!tab) { return; }
+    var lines = ['Title,Source,Path,Match'];
+    for (var i = 0; i < tab.results.length; i++) {
+      var r = tab.results[i];
+      lines.push([r.title, r.source, r.path, r.match].map(function(v) {
+        return '"' + String(v || '').replace(/"/g, '""') + '"';
+      }).join(','));
+    }
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = tab.name.replace(/[^a-z0-9]+/gi,'_') + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  };
+
+  /* Auto-snapshot CCC tabs on auto-save and visibility change events */
+  window.addEventListener('beforeunload', _saveCccTabs);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') { _saveCccTabs(); }
+  });
+
+  /* Hook deep test button into source rows once they render */
+  var _origRenderDataSources = window.renderDataSources;
+  if (_origRenderDataSources) {
+    window.renderDataSources = function() {
+      _origRenderDataSources.apply(this, arguments);
+      var wrap = document.getElementById('srcTableWrap');
+      if (!wrap) { return; }
+      /* Append Deep Test buttons next to existing Validate buttons */
+      var rows = wrap.querySelectorAll('tr[data-src-id]');
+      for (var i = 0; i < rows.length; i++) {
+        var sid = rows[i].getAttribute('data-src-id');
+        if (rows[i].querySelector('.deep-test-btn')) { continue; }
+        var lastTd = rows[i].querySelector('td:last-child');
+        if (lastTd && sid) {
+          var btn = document.createElement('button');
+          btn.className = 'scan-btn deep-test-btn';
+          btn.style.cssText = 'font-size:10px;padding:2px 6px;margin-left:4px';
+          btn.textContent = 'Deep Test';
+          btn.setAttribute('data-src-id', sid);
+          btn.onclick = (function(id){ return function(){ runDataSourceDeepTest(id); }; })(sid);
+          lastTd.appendChild(btn);
+        }
+      }
+    };
+  }
+
+  /* Boot the version sync immediately after bootstrap */
+  setTimeout(loadWorkspaceVersion, 250);
+  /* Hydrate CCC snapshot at startup so tab strip is populated when section opens */
+  _loadCccTabsSnapshot();
+
   })();
   //]]>
   </script>
+<!-- EvLV-AUTOMOUNT V31.0 (PwShGUI-EventLogAdapter contract: docs/EVENT-LOG-STANDARD.md) -->
+<link rel="stylesheet" href="./styles/eventlog-view.css"/>
+<script src="./scripts/XHTML-Checker/_assets/eventlog-view.js"></script>
+<div class="evlv-mount" data-scope="root" data-title="Workspace Aggregate Events" data-tail="500"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+

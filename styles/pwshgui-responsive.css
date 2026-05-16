@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
 /* PwShGUI Mobile/Responsive CSS | v26 | Import AFTER pwshgui-base.css */
 @media screen and (max-width:900px){
 :root{--pad:12px;--gap:10px;--fs-base:13px;--fs-heading:16px}
@@ -38,4 +38,5 @@ body{background:#fff;color:#000}
 .card{border:1px solid #ccc;break-inside:avoid}
 button,.btn{display:none}
 }
+
 

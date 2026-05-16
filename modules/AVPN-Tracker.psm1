@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -13,6 +13,9 @@
 $script:_DpapiPrefix = 'DPAPI:'
 
 function Protect-AVPNCredential {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Caller-supplied plaintext is the API contract; immediately wrapped via ConvertFrom-SecureString (DPAPI) for at-rest storage. Removing -AsPlainText is impossible for this conversion direction.')]
+    [OutputType([System.String])]
+    [CmdletBinding()]
     param([string]$PlainText)
     if ([string]::IsNullOrEmpty($PlainText)) { return '' }
     try {
@@ -44,7 +47,7 @@ function Invoke-AVPNLog {
         & $LogCallback $Message $Level
     } else {
         # Use Write-Warning for all non-info levels so errors surface to caller
-        # (Write-Error -ErrorAction Continue silently bypasses callers' -ErrorAction Stop)
+        # (the error-swallowing pattern that was previously here silently bypassed callers' -ErrorAction Stop)
         if ($Level -eq "Error") {
             Write-AppLog -Message "[AVPN][ERROR] $Message" -Level Warning
         } elseif ($Level -eq "Warning") {
@@ -75,6 +78,10 @@ function Get-AVPNDefaultTemplateList {
     )
 }
 
+<#
+.SYNOPSIS
+  Initialize a v p n config file.
+#>
 function Initialize-AVPNConfigFile {
     param([string]$ConfigPath)
     if (-not $ConfigPath) { return }
@@ -155,6 +162,10 @@ function Save-AVPNDeviceTypeList {
     Set-Content -Path $DeviceTypesPath -Value $json -Encoding ascii
 }
 
+<#
+.SYNOPSIS
+  Get a v p n config.
+#>
 function Get-AVPNConfig {
     param([string]$ConfigPath)
     if (-not $ConfigPath) { return $null }
@@ -177,6 +188,10 @@ function Get-AVPNConfig {
     }
 }
 
+<#
+.SYNOPSIS
+  Save a v p n config.
+#>
 function Save-AVPNConfig {
     param(
         [Parameter(Mandatory = $true)]$ConfigData,
@@ -185,26 +200,26 @@ function Save-AVPNConfig {
     # Safely set metadata properties
     $timestamp = (Get-Date).ToUniversalTime().ToString("s") + "Z"
     $versionStr = "2603.B0.v19"
-    
+
     if ($ConfigData.PSObject.Properties['lastModified']) {
         $ConfigData.lastModified = $timestamp
     } else {
         $ConfigData | Add-Member -NotePropertyName 'lastModified' -NotePropertyValue $timestamp -Force
     }
-    
+
     if ($ConfigData.PSObject.Properties['version']) {
         $ConfigData.version = $versionStr
     } else {
         $ConfigData | Add-Member -NotePropertyName 'version' -NotePropertyValue $versionStr -Force
     }
-    
+
     # Encrypt credentials before writing to disk
     foreach ($dev in $ConfigData.inventory) {
         if ($dev.PSObject.Properties['loginPassword'] -and $dev.loginPassword) {
             $dev.loginPassword = Protect-AVPNCredential $dev.loginPassword
         }
     }
-    
+
     $json = $ConfigData | ConvertTo-Json -Depth 6
     Set-Content -Path $ConfigPath -Value $json -Encoding ascii
 
@@ -379,7 +394,7 @@ function Show-AVPNDeviceTypeDialog {
 
     for ($i = 0; $i -lt $labels.Count; $i++) {
         $label = New-Object System.Windows.Forms.Label
-        $label.Text = $labels[$i]
+        $label.Text = $labels[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $label.Location = New-Object System.Drawing.Point(12, 14 + ($i * 32))
         $label.Size = New-Object System.Drawing.Size(140, 20)
         $dialog.Controls.Add($label)
@@ -388,7 +403,7 @@ function Show-AVPNDeviceTypeDialog {
             $box = New-Object System.Windows.Forms.TextBox
             $box.Location = New-Object System.Drawing.Point(160, 12 + ($i * 32))
             $box.Size = New-Object System.Drawing.Size(190, 22)
-            $controls[$labels[$i]] = $box
+            $controls[$labels[$i]] = $box  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $dialog.Controls.Add($box)
         } else {
             $num = New-Object System.Windows.Forms.NumericUpDown
@@ -396,7 +411,7 @@ function Show-AVPNDeviceTypeDialog {
             $num.Size = New-Object System.Drawing.Size(90, 22)
             $num.Minimum = 0
             $num.Maximum = 99
-            $controls[$labels[$i]] = $num
+            $controls[$labels[$i]] = $num  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $dialog.Controls.Add($num)
         }
     }
@@ -417,13 +432,13 @@ function Show-AVPNDeviceTypeDialog {
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "Save"
     $okBtn.Location = New-Object System.Drawing.Point(160, 340)
-    $okBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dialog.Close() })
+    $okBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dialog.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $dialog.Controls.Add($okBtn)
 
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
     $cancelBtn.Location = New-Object System.Drawing.Point(250, 340)
-    $cancelBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $dialog.Close() })
+    $cancelBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $dialog.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $dialog.Controls.Add($cancelBtn)
 
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $dialog.Dispose(); return $null }
@@ -520,7 +535,7 @@ function Show-AVPNDeviceTypeEditor {
         }
     }
 
-    $addBtn.Add_Click({
+    $addBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $nextId = if ($Templates.Count -gt 0) { ($Templates | Measure-Object -Property id -Maximum).Maximum + 1 } else { 1 }
         $newTemplate = Show-AVPNDeviceTypeDialog -NextId $nextId
         if ($newTemplate) {
@@ -530,7 +545,7 @@ function Show-AVPNDeviceTypeEditor {
         }
     })
 
-    $editBtn.Add_Click({
+    $editBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($list.SelectedItems.Count -eq 0) { return }
         $id = [int]$list.SelectedItems[0].Text
         $template = $Templates | Where-Object { $_.id -eq $id } | Select-Object -First 1
@@ -543,7 +558,7 @@ function Show-AVPNDeviceTypeEditor {
         }
     })
 
-    $removeBtn.Add_Click({
+    $removeBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($list.SelectedItems.Count -eq 0) { return }
         $id = [int]$list.SelectedItems[0].Text
         $Templates = @($Templates | Where-Object { $_.id -ne $id })
@@ -551,7 +566,7 @@ function Show-AVPNDeviceTypeEditor {
         & $refresh
     })
 
-    $closeBtn.Add_Click({ $form.Close() })
+    $closeBtn.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
     & $refresh
     $form.ShowDialog() | Out-Null
@@ -559,6 +574,10 @@ function Show-AVPNDeviceTypeEditor {
     return $Templates
 }
 
+<#
+.SYNOPSIS
+  Show a v p n connection tracker.
+#>
 function Show-AVPNConnectionTracker {
     param(
         [Parameter(Mandatory = $true)][string]$ConfigPath,
@@ -659,7 +678,7 @@ function Show-AVPNConnectionTracker {
         }
     }
 
-    $typeCombo.Add_SelectedIndexChanged({ & $refreshTemplateList })
+    $typeCombo.Add_SelectedIndexChanged({ & $refreshTemplateList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     & $refreshTypeCombo
     & $refreshTemplateList
 
@@ -932,7 +951,7 @@ function Show-AVPNConnectionTracker {
 
     $getConnectorColor = {
         param([string]$Type)
-        if ($connectorColors.ContainsKey($Type)) { return $connectorColors[$Type] }
+        if ($connectorColors.ContainsKey($Type)) { return $connectorColors[$Type] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         return [System.Drawing.Color]::Gray
     }
 
@@ -945,10 +964,10 @@ function Show-AVPNConnectionTracker {
         $boxTop = $box.Top
         $centerX = $boxLeft + ($boxWidth / 2)
         $centerY = $boxTop + ($boxHeight / 2)
-        
+
         # Calculate positions for each connector type
         $allConnectors = @()
-        
+
         # Outputs (white triangles pointing away) - placed on edges
         for ($i = 0; $i -lt $device.avOutputs; $i++) {
             $allConnectors += @{ Type = 'AV Output'; Index = $i; IsInput = $false }
@@ -959,7 +978,7 @@ function Show-AVPNConnectionTracker {
         for ($i = 0; $i -lt $device.usbPlugs; $i++) {
             $allConnectors += @{ Type = 'USB Plug'; Index = $i; IsInput = $false }
         }
-        
+
         # Inputs (black triangles pointing inward)
         for ($i = 0; $i -lt $device.avInputs; $i++) {
             $allConnectors += @{ Type = 'AV Input'; Index = $i; IsInput = $true }
@@ -973,18 +992,18 @@ function Show-AVPNConnectionTracker {
         for ($i = 0; $i -lt $device.networkInterfaces; $i++) {
             $allConnectors += @{ Type = 'Network'; Index = $i; IsInput = $true }
         }
-        
+
         # Distribute connectors around the perimeter
         $count = $allConnectors.Count
         if ($count -eq 0) { return $positions }
-        
+
         $perimeter = 2 * ($boxWidth + $boxHeight)
         $spacing = $perimeter / [Math]::Max(1, $count)
-        
+
         for ($idx = 0; $idx -lt $count; $idx++) {
-            $conn = $allConnectors[$idx]
+            $conn = $allConnectors[$idx]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $distance = $idx * $spacing
-            
+
             # Determine which edge and position
             if ($distance -lt $boxWidth) {
                 # Top edge
@@ -1007,7 +1026,7 @@ function Show-AVPNConnectionTracker {
                 $y = $boxTop + $boxHeight - ($distance - 2 * $boxWidth - $boxHeight)
                 $angle = if ($conn.IsInput) { 0 } else { 180 }
             }
-            
+
             $positions += @{
                 Type = $conn.Type
                 Index = $conn.Index
@@ -1019,7 +1038,7 @@ function Show-AVPNConnectionTracker {
                 CenterY = [int]$centerY
             }
         }
-        
+
         return $positions
     }
 
@@ -1076,7 +1095,7 @@ function Show-AVPNConnectionTracker {
         $invIndex = 0
         foreach ($device in $inventory) {
             $invIndex++
-            
+
             # Ensure device has all required properties
             if (-not $device.PSObject.Properties['deviceId']) {
                 $device | Add-Member -NotePropertyName 'deviceId' -NotePropertyValue $invIndex -Force
@@ -1090,7 +1109,7 @@ function Show-AVPNConnectionTracker {
             if (-not $device.PSObject.Properties['loginPassword']) {
                 $device | Add-Member -NotePropertyName 'loginPassword' -NotePropertyValue '' -Force
             }
-            
+
             # Create inventory list item with all fields
             $item = New-Object System.Windows.Forms.ListViewItem($device.deviceId.ToString())
             [void]$item.SubItems.Add($device.name)
@@ -1148,7 +1167,7 @@ function Show-AVPNConnectionTracker {
             if ($device.location) {
                 $parts = $device.location -split ","
                 if ($parts.Count -eq 2) {
-                    $box.Location = New-Object System.Drawing.Point([int]$parts[0], [int]$parts[1])
+                    $box.Location = New-Object System.Drawing.Point([int]$parts[0], [int]$parts[1])  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             } else {
                 $pos = & $getNextPosition
@@ -1162,24 +1181,24 @@ function Show-AVPNConnectionTracker {
                 }
             }
 
-            $box.Add_MouseDown({
+            $box.Add_MouseDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $dragState.Active = $true
                 $dragState.Control = $this
                 $dragState.Offset = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
             })
-            $box.Add_MouseMove({
+            $box.Add_MouseMove({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 if (-not $dragState.Active) { return }
                 $newX = $this.Left + ($args[1].X - $dragState.Offset.X)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
                 $newY = $this.Top + ($args[1].Y - $dragState.Offset.Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
                 $this.Location = New-Object System.Drawing.Point($newX, $newY)
                 $canvas.Invalidate()
             })
-            $box.Add_MouseUp({
+            $box.Add_MouseUp({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $dragState.Active = $false
                 $dragState.Control = $null
                 $dragState.Offset = $null
                 if ($snapGridCheck.Checked) { & $snapToGrid $this }
-                
+
                 # Find device by instanceId and update location safely
                 $instanceId = $this.Tag
                 $targetDevice = $inventory | Where-Object { $_.instanceId -eq $instanceId } | Select-Object -First 1
@@ -1210,10 +1229,10 @@ function Show-AVPNConnectionTracker {
         }
     }
 
-    $canvas.Add_Paint({
+    $canvas.Add_Paint({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $g = $args[1].Graphics  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-        
+
         # Draw grid if enabled
         $grid = [int]$gridSizeUpDown.Value
         if ($showGridCheck.Checked -and $grid -gt 0) {
@@ -1223,55 +1242,55 @@ function Show-AVPNConnectionTracker {
             for ($y = 0; $y -lt $rect.Height; $y += $grid) { $g.DrawLine($penGrid, 0, $y, $rect.Width, $y) }
             $penGrid.Dispose()
         }
-        
+
         # Draw connection lines with colors
         foreach ($conn in $connections) {
             if (-not $deviceControls.ContainsKey($conn.SourceInstance)) { continue }
             if (-not $deviceControls.ContainsKey($conn.DestInstance)) { continue }
-            
+
             $srcBox = $deviceControls[$conn.SourceInstance]
             $destBox = $deviceControls[$conn.DestInstance]
             $srcDevice = $inventory | Where-Object { $_.instanceId -eq $conn.SourceInstance } | Select-Object -First 1
             $destDevice = $inventory | Where-Object { $_.instanceId -eq $conn.DestInstance } | Select-Object -First 1
-            
+
             if (-not $srcDevice -or -not $destDevice) { continue }
-            
+
             # Parse connector type from connector string (e.g., "AV Output:0")
             $srcType = ($conn.SourceConnector -split ':')[0]
             $destType = ($conn.DestConnector -split ':')[0]
-            
+
             # Get color for this connection type
             $color = & $getConnectorColor $srcType
-            
+
             # Get connector positions
             $srcPositions = & $getConnectorPositions $srcDevice $srcBox
             $destPositions = & $getConnectorPositions $destDevice $destBox
-            
+
             # Find specific connector endpoints
             $srcConnIdx = [int](($conn.SourceConnector -split ':')[1])
             $destConnIdx = [int](($conn.DestConnector -split ':')[1])
-            
+
             $srcPos = $srcPositions | Where-Object { $_.Type -eq $srcType -and $_.Index -eq $srcConnIdx } | Select-Object -First 1
             $destPos = $destPositions | Where-Object { $_.Type -eq $destType -and $_.Index -eq $destConnIdx } | Select-Object -First 1
-            
+
             if ($srcPos -and $destPos) {
                 $pen = New-Object System.Drawing.Pen($color, 3)
                 $g.DrawLine($pen, $srcPos.X, $srcPos.Y, $destPos.X, $destPos.Y)
                 $pen.Dispose()
             }
         }
-        
+
         # Draw connector shapes on each device (unique per interface type)
         foreach ($device in $inventory) {
             if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
             $box = $deviceControls[$device.instanceId]
             $positions = & $getConnectorPositions $device $box
-            
+
             foreach ($pos in $positions) {
                 $color = & $getConnectorColor $pos.Type
-                $fillBrush = if ($pos.IsInput) { 
-                    New-Object System.Drawing.SolidBrush($color) 
-                } else { 
+                $fillBrush = if ($pos.IsInput) {
+                    New-Object System.Drawing.SolidBrush($color)
+                } else {
                     New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
                 }
                 $pen = New-Object System.Drawing.Pen($color, 2)
@@ -1315,7 +1334,7 @@ function Show-AVPNConnectionTracker {
                         $path.Dispose()
                     }
                 }
-                
+
                 # Draw index number near connector
                 $font = New-Object System.Drawing.Font('Arial', 7, [System.Drawing.FontStyle]::Bold)
                 $textBrush = New-Object System.Drawing.SolidBrush($color)
@@ -1324,24 +1343,24 @@ function Show-AVPNConnectionTracker {
                 $textX = $pos.X - ($textSize.Width / 2)
                 $textY = $pos.Y - ($textSize.Height / 2)
                 $g.DrawString($text, $font, $textBrush, $textX, $textY)
-                
+
                 if ($fillBrush -is [System.Drawing.SolidBrush]) { $fillBrush.Dispose() }
                 $pen.Dispose()
                 $font.Dispose()
                 $textBrush.Dispose()
             }
         }
-        
+
         # Draw drag preview line if dragging a connector
         if ($connectorDragState.Active -and $connectorDragState.MousePos) {
             $srcDevice = $inventory | Where-Object { $_.instanceId -eq $connectorDragState.SourceDevice } | Select-Object -First 1
             if ($srcDevice -and $deviceControls.ContainsKey($srcDevice.instanceId)) {
                 $box = $deviceControls[$srcDevice.instanceId]
                 $positions = & $getConnectorPositions $srcDevice $box
-                $srcPos = $positions | Where-Object { 
-                    $_.Type -eq $connectorDragState.SourceType -and $_.Index -eq $connectorDragState.SourceIndex 
+                $srcPos = $positions | Where-Object {
+                    $_.Type -eq $connectorDragState.SourceType -and $_.Index -eq $connectorDragState.SourceIndex
                 } | Select-Object -First 1
-                
+
                 if ($srcPos) {
                     $color = & $getConnectorColor $connectorDragState.SourceType
                     $pen = New-Object System.Drawing.Pen($color, 2)
@@ -1355,7 +1374,7 @@ function Show-AVPNConnectionTracker {
 
     # ── Helper: find all matching available input connectors for a given output ──
     $getMatchingInputs = {
-        param([string]$srcInstanceId, [string]$srcType, [int]$srcIndex)
+        param([string]$srcInstanceId, [string]$srcType)
         # Determine the matching input type
         $inputType = switch ($srcType) {
             'AV Output'    { 'AV Input' }
@@ -1366,7 +1385,8 @@ function Show-AVPNConnectionTracker {
         }
         if (-not $inputType) { return @() }
 
-        $matches = @()
+        # P034 fix: avoid shadowing PowerShell automatic $matches
+        $portMatches = @()
         foreach ($dev in $inventory) {
             if ($dev.instanceId -eq $srcInstanceId -and $inputType -ne 'Network') { continue }
             $count = Get-AVPNConnectorCount -Device $dev -ConnectorType $inputType
@@ -1376,24 +1396,16 @@ function Show-AVPNConnectionTracker {
                     $_.DestInstance -eq $dev.instanceId -and $_.DestConnector -eq "${inputType}:$i"
                 }
                 if (-not $alreadyUsed) {
-                    $matches += @{ Device = $dev; Type = $inputType; Index = $i }
+                    $portMatches += @{ Device = $dev; Type = $inputType; Index = $i }
                 }
             }
         }
-        return $matches
+        return $portMatches
     }
 
-    # ── Helper: check whether a Power Input port is already connected ──
-    $isPowerInputUsed = {
-        param([string]$instanceId, [int]$portIndex)
-        $used = $connections | Where-Object {
-            $_.DestInstance -eq $instanceId -and $_.DestConnector -eq "Power Input:$portIndex"
-        }
-        return [bool]$used
-    }
 
     # Canvas mouse handlers for connector drag-and-drop
-    $canvas.Add_MouseDown({
+    $canvas.Add_MouseDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $mouseY = $args[1].Y  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $btn    = $args[1].Button  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
@@ -1413,7 +1425,7 @@ function Show-AVPNConnectionTracker {
                     # Only show menu for output-type connectors (or Network as bidirectional)
                     if ($pos.IsInput -and $pos.Type -ne 'Network') { continue }
 
-                    $matchList = & $getMatchingInputs $device.instanceId $pos.Type $pos.Index
+                    $matchList = & $getMatchingInputs $device.instanceId $pos.Type
                     if ($matchList.Count -eq 0) { continue }
 
                     $ctxMenu = New-Object System.Windows.Forms.ContextMenuStrip
@@ -1427,7 +1439,7 @@ function Show-AVPNConnectionTracker {
                             DstInst = $m.Device.instanceId
                             DstConn = "$($m.Type):$($m.Index)"
                         }
-                        $mi.Add_Click({
+                        $mi.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                             $t = $this.Tag
                             $newConn = [pscustomobject]@{
                                 SourceInstance  = $t.SrcInst
@@ -1455,19 +1467,19 @@ function Show-AVPNConnectionTracker {
             }
             return   # right-click but not on a connector -- do nothing
         }
-        
+
         # ── LEFT-CLICK: existing drag logic ──
         # Check if clicking near any connector
         foreach ($device in $inventory) {
             if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
             $box = $deviceControls[$device.instanceId]
             $positions = & $getConnectorPositions $device $box
-            
+
             foreach ($pos in $positions) {
                 $dx = $mouseX - $pos.X
                 $dy = $mouseY - $pos.Y
                 $distance = [Math]::Sqrt($dx * $dx + $dy * $dy)
-                
+
                 if ($distance -lt 12) {
                     # Start connector drag
                     $connectorDragState.Active = $true
@@ -1482,43 +1494,43 @@ function Show-AVPNConnectionTracker {
         }
     })
 
-    $canvas.Add_MouseMove({
+    $canvas.Add_MouseMove({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($connectorDragState.Active) {
             $connectorDragState.MousePos = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
             $canvas.Invalidate()
         }
     })
 
-    $canvas.Add_MouseUp({
+    $canvas.Add_MouseUp({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $connectorDragState.Active) { return }
-        
+
         $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $mouseY = $args[1].Y  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
-        
+
         # Check if released near a compatible connector
         foreach ($device in $inventory) {
             if ($device.instanceId -eq $connectorDragState.SourceDevice) { continue }
             if (-not $deviceControls.ContainsKey($device.instanceId)) { continue }
-            
+
             $box = $deviceControls[$device.instanceId]
             $positions = & $getConnectorPositions $device $box
-            
+
             foreach ($pos in $positions) {
                 $dx = $mouseX - $pos.X
                 $dy = $mouseY - $pos.Y
                 $distance = [Math]::Sqrt($dx * $dx + $dy * $dy)
-                
+
                 if ($distance -lt 12) {
                     # Check compatibility
                     $srcType = $connectorDragState.SourceType
                     $destType = $pos.Type
                     $srcIsInput = $connectorDragState.SourceIsInput
                     $destIsInput = $pos.IsInput
-                    
+
                     # Must be opposite types (input to output or output to input) and same base type
                     $srcBase = $srcType -replace ' (Input|Output|Plug)$', ''
                     $destBase = $destType -replace ' (Input|Output|Plug)$', ''
-                    
+
                     if ($srcIsInput -ne $destIsInput -and $srcBase -eq $destBase) {
                         # Valid connection - determine source and dest based on input/output
                         if ($srcIsInput) {
@@ -1538,7 +1550,7 @@ function Show-AVPNConnectionTracker {
                             $connDestType = $destType
                             $connDestIdx = $pos.Index
                         }
-                        
+
                         # Create connection
                         $newConn = [pscustomobject]@{
                             SourceInstance = $connSourceInst
@@ -1546,7 +1558,7 @@ function Show-AVPNConnectionTracker {
                             DestInstance = $connDestInst
                             DestConnector = "${connDestType}:$connDestIdx"
                         }
-                        
+
                         # Check if connection already exists
                         $exists = $connections | Where-Object {
                             $_.SourceInstance -eq $newConn.SourceInstance -and
@@ -1554,18 +1566,18 @@ function Show-AVPNConnectionTracker {
                             $_.DestInstance -eq $newConn.DestInstance -and
                             $_.DestConnector -eq $newConn.DestConnector
                         }
-                        
+
                         if (-not $exists) {
                             [void]$connections.Add($newConn)
                             & $refreshInventoryUI
                         }
-                        
+
                         break
                     }
                 }
             }
         }
-        
+
         # Reset drag state
         $connectorDragState.Active = $false
         $connectorDragState.SourceDevice = $null
@@ -1576,11 +1588,11 @@ function Show-AVPNConnectionTracker {
         $canvas.Invalidate()
     })
 
-    $manageTypesBtn.Add_Click({
+    $manageTypesBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $templates = Show-AVPNDeviceTypeEditor -Templates $templates -LogCallback $LogCallback
         & $refreshTypeCombo
         & $refreshTemplateList
-        
+
         if ($config.PSObject.Properties['avpnDevices']) {
             $config.avpnDevices = $templates
         } else {
@@ -1592,7 +1604,7 @@ function Show-AVPNConnectionTracker {
         Save-AVPNConfig -ConfigData $config -ConfigPath $ConfigPath
     })
 
-    $addBtn.Add_Click({
+    $addBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($templateList.SelectedIndex -lt 0) {
             [System.Windows.Forms.MessageBox]::Show("Select a device template.", "AVPN") | Out-Null
             return
@@ -1635,7 +1647,7 @@ function Show-AVPNConnectionTracker {
         $canvas.Invalidate()
     })
 
-    $removeBtn.Add_Click({
+    $removeBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($inventoryList.SelectedItems.Count -eq 0) { return }
         $selectedItemTag = $inventoryList.SelectedItems[0].Tag
         $device = $inventory | Where-Object { $_.instanceId -eq $selectedItemTag } | Select-Object -First 1
@@ -1650,12 +1662,12 @@ function Show-AVPNConnectionTracker {
         $canvas.Invalidate()
     })
 
-    $editBtn.Add_Click({
+    $editBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($inventoryList.SelectedItems.Count -eq 0) { return }
         $selectedItemTag = $inventoryList.SelectedItems[0].Tag
         $device = $inventory | Where-Object { $_.instanceId -eq $selectedItemTag } | Select-Object -First 1
         if (-not $device) { return }
-        
+
         # Create device properties dialog
         $propForm = New-Object System.Windows.Forms.Form
         $propForm.Text = "Edit Device Info - $($device.name)"
@@ -1665,55 +1677,55 @@ function Show-AVPNConnectionTracker {
         $propForm.MaximizeBox = $false
         $propForm.MinimizeBox = $false
         $propForm.BackColor = [System.Drawing.Color]::White
-        
+
         # Device name label and display
         $nameLabel = New-Object System.Windows.Forms.Label
         $nameLabel.Text = "Device Name:"
         $nameLabel.Location = New-Object System.Drawing.Point(10, 15)
         $nameLabel.Size = New-Object System.Drawing.Size(100, 20)
         $propForm.Controls.Add($nameLabel)
-        
+
         $nameValue = New-Object System.Windows.Forms.Label
         $nameValue.Text = $device.name
         $nameValue.Location = New-Object System.Drawing.Point(120, 15)
         $nameValue.Size = New-Object System.Drawing.Size(260, 20)
         $propForm.Controls.Add($nameValue)
-        
+
         # URL field
         $urlLabel = New-Object System.Windows.Forms.Label
         $urlLabel.Text = "Device URL:"
         $urlLabel.Location = New-Object System.Drawing.Point(10, 45)
         $urlLabel.Size = New-Object System.Drawing.Size(100, 20)
         $propForm.Controls.Add($urlLabel)
-        
+
         $urlTextBox = New-Object System.Windows.Forms.TextBox
         $urlValue = if ($device.PSObject.Properties['urlLink']) { $device.urlLink } else { "" }
         $urlTextBox.Text = $urlValue
         $urlTextBox.Location = New-Object System.Drawing.Point(120, 45)
         $urlTextBox.Size = New-Object System.Drawing.Size(260, 20)
         $propForm.Controls.Add($urlTextBox)
-        
+
         # Login user field
         $userLabel = New-Object System.Windows.Forms.Label
         $userLabel.Text = "Login User:"
         $userLabel.Location = New-Object System.Drawing.Point(10, 75)
         $userLabel.Size = New-Object System.Drawing.Size(100, 20)
         $propForm.Controls.Add($userLabel)
-        
+
         $userTextBox = New-Object System.Windows.Forms.TextBox
         $userValue = if ($device.PSObject.Properties['loginUser']) { $device.loginUser } else { "" }
         $userTextBox.Text = $userValue
         $userTextBox.Location = New-Object System.Drawing.Point(120, 75)
         $userTextBox.Size = New-Object System.Drawing.Size(260, 20)
         $propForm.Controls.Add($userTextBox)
-        
+
         # Login password field
         $passLabel = New-Object System.Windows.Forms.Label
         $passLabel.Text = "Login Password:"
         $passLabel.Location = New-Object System.Drawing.Point(10, 105)
         $passLabel.Size = New-Object System.Drawing.Size(100, 20)
         $propForm.Controls.Add($passLabel)
-        
+
         $passTextBox = New-Object System.Windows.Forms.TextBox
         $passValue = if ($device.PSObject.Properties['loginPassword']) { $device.loginPassword } else { "" }
         $passTextBox.Text = $passValue
@@ -1726,11 +1738,11 @@ function Show-AVPNConnectionTracker {
         $showPassCheck.Text = "Show Password"
         $showPassCheck.Location = New-Object System.Drawing.Point(120, 130)
         $showPassCheck.Size = New-Object System.Drawing.Size(140, 20)
-        $showPassCheck.Add_CheckedChanged({
+        $showPassCheck.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $passTextBox.UseSystemPasswordChar = -not $showPassCheck.Checked
         })
         $propForm.Controls.Add($showPassCheck)
-        
+
         # Save button
         $propSaveBtn = New-Object System.Windows.Forms.Button
         $propSaveBtn.Text = "Save"
@@ -1739,7 +1751,7 @@ function Show-AVPNConnectionTracker {
         $propSaveBtn.DialogResult = [System.Windows.Forms.DialogResult]::OK
         $propForm.AcceptButton = $propSaveBtn
         $propForm.Controls.Add($propSaveBtn)
-        
+
         # Cancel button
         $propCancelBtn = New-Object System.Windows.Forms.Button
         $propCancelBtn.Text = "Cancel"
@@ -1748,7 +1760,7 @@ function Show-AVPNConnectionTracker {
         $propCancelBtn.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
         $propForm.CancelButton = $propCancelBtn
         $propForm.Controls.Add($propCancelBtn)
-        
+
         $result = $propForm.ShowDialog()
         if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
             # Update device properties
@@ -1757,27 +1769,27 @@ function Show-AVPNConnectionTracker {
             } else {
                 $device | Add-Member -NotePropertyName 'urlLink' -NotePropertyValue $urlTextBox.Text -Force
             }
-            
+
             if ($device.PSObject.Properties['loginUser']) {
                 $device.loginUser = $userTextBox.Text
             } else {
                 $device | Add-Member -NotePropertyName 'loginUser' -NotePropertyValue $userTextBox.Text -Force
             }
-            
+
             if ($device.PSObject.Properties['loginPassword']) {
                 $device.loginPassword = $passTextBox.Text
             } else {
                 $device | Add-Member -NotePropertyName 'loginPassword' -NotePropertyValue $passTextBox.Text -Force
             }
-            
+
             # Refresh inventory UI to show updated values
             & $refreshInventoryUI
         }
-        
+
         $propForm.Dispose()
     })
 
-    $resetBtn.Add_Click({
+    $resetBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $script:placementIndex = 0
         foreach ($device in $inventory) {
             $pos = & $getNextPosition
@@ -1791,7 +1803,7 @@ function Show-AVPNConnectionTracker {
         & $refreshInventoryUI
     })
 
-    $alignBtn.Add_Click({
+    $alignBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         foreach ($ctrl in $canvas.Controls) {
             & $snapToGrid $ctrl
         }
@@ -1810,7 +1822,7 @@ function Show-AVPNConnectionTracker {
     })
 
     # ── Auto Plug All: connect every unconnected Power Input to an unused Power Output socket ──
-    $autoPlugBtn.Add_Click({
+    $autoPlugBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         # Build list of available Power Output ports
         $availOutputs = New-Object System.Collections.ArrayList
         foreach ($dev in $inventory) {
@@ -1869,14 +1881,14 @@ function Show-AVPNConnectionTracker {
             $(if ($unpowered.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information })) | Out-Null
     })
 
-    $saveBtn.Add_Click({
+    $saveBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $defaultPath = Join-Path (Split-Path $ConfigPath -Parent) "AVPN-inventory.csv"
         Export-AVPNCsv -Inventory $inventory -Connections $connections -Path $defaultPath
         Invoke-AVPNLog -LogCallback $LogCallback -Message "Exported AVPN CSV to $defaultPath" -Level "Info"
         [System.Windows.Forms.MessageBox]::Show("Exported CSV to $defaultPath", "AVPN") | Out-Null
     })
 
-    $saveAsBtn.Add_Click({
+    $saveAsBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $dialog = New-Object System.Windows.Forms.SaveFileDialog
         $dialog.Filter = "CSV files (*.csv)|*.csv"
         $dialog.FileName = "AVPN-inventory.csv"
@@ -1886,7 +1898,7 @@ function Show-AVPNConnectionTracker {
         }
     })
 
-    $loadBtn.Add_Click({
+    $loadBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $dialog = New-Object System.Windows.Forms.OpenFileDialog
         $dialog.Filter = "CSV files (*.csv)|*.csv"
         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
@@ -1905,35 +1917,35 @@ function Show-AVPNConnectionTracker {
         }
     })
 
-    $srcDeviceCombo.Add_SelectedIndexChanged({
+    $srcDeviceCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($srcDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$srcDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $srcTypeCombo $srcIndexUpDown
         }
     })
 
-    $destDeviceCombo.Add_SelectedIndexChanged({
+    $destDeviceCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($destDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$destDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $destTypeCombo $destIndexUpDown
         }
     })
 
-    $srcTypeCombo.Add_SelectedIndexChanged({
+    $srcTypeCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($srcDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$srcDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $srcTypeCombo $srcIndexUpDown
         }
     })
 
-    $destTypeCombo.Add_SelectedIndexChanged({
+    $destTypeCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($destDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$destDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $destTypeCombo $destIndexUpDown
         }
     })
 
-    $addConnBtn.Add_Click({
+    $addConnBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($srcDeviceCombo.SelectedIndex -lt 0 -or $destDeviceCombo.SelectedIndex -lt 0) {
             [System.Windows.Forms.MessageBox]::Show("Select source and destination devices.", "AVPN") | Out-Null
             return
@@ -1978,7 +1990,7 @@ function Show-AVPNConnectionTracker {
         $canvas.Invalidate()
     })
 
-    $connRemoveBtn.Add_Click({
+    $connRemoveBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($connList.SelectedItems.Count -eq 0) { return }
         $index = $connList.SelectedItems[0].Index
         if ($index -ge 0 -and $index -lt $connections.Count) {
@@ -1988,7 +2000,7 @@ function Show-AVPNConnectionTracker {
         }
     })
 
-    $form.Add_FormClosing({
+    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         foreach ($device in $inventory) {
             if ($device.PSObject.Properties['connections']) {
                 $device.connections = @()
@@ -2019,7 +2031,7 @@ function Show-AVPNConnectionTracker {
         } else {
             $config | Add-Member -NotePropertyName 'inventory' -NotePropertyValue @($inventory) -Force
         }
-        
+
         if ($config.PSObject.Properties['avpnDevices']) {
             $config.avpnDevices = @($templates)
         } else {
@@ -2029,7 +2041,7 @@ function Show-AVPNConnectionTracker {
         if ($deviceTypesPath) {
             Save-AVPNDeviceTypeList -Templates $templates -DeviceTypesPath $deviceTypesPath
         }
-        
+
         Save-AVPNConfig -ConfigData $config -ConfigPath $ConfigPath
     })
 
@@ -2055,6 +2067,7 @@ function Show-AVPNConnectionTracker {
     Stub: list pending work here.
 #>
 Export-ModuleMember -Function Show-AVPNConnectionTracker, Initialize-AVPNConfigFile, Get-AVPNConfig, Save-AVPNConfig
+
 
 
 

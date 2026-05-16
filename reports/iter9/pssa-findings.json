@@ -1,0 +1,1017 @@
+[
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 100,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 155,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 167,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 188,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 384,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 505,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 582,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 618,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 667,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 776,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 778,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 781,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 804,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 830,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 832,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 835,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 840,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 843,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 852,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 855,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 857,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 862,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 867,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 890,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 906,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 974,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1086,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1128,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1140,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1184,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1221,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1329,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1382,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1415,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1513,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1520,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1527,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1569,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1631,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1675,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1961,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2139,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2248,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2322,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2332,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2347,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2456,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2485,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2507,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2511,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 2606,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1153,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 591,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1097,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 1144,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "Line": 94,
+    "Pattern": "PSUseDeclaredVarsMoreThanAssignments"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+    "Line": 1370,
+    "Pattern": "PSAvoidAssignmentToAutomaticVariable"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+    "Line": 1380,
+    "Pattern": "PSAvoidAssignmentToAutomaticVariable"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+    "Line": 1359,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+    "Line": 1388,
+    "Pattern": "PSUseDeclaredVarsMoreThanAssignments"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "Line": 67,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "Line": 153,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "Line": 189,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "Line": 284,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+    "Line": 72,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+    "Line": 357,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 674,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 816,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 845,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 873,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 1012,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 1206,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 323,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 586,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 631,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 971,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 1054,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+    "Line": 1263,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+    "Line": 645,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+    "Line": 688,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+    "Line": 720,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+    "Line": 1123,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 159,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 167,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 235,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 290,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 306,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "Line": 178,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+    "Line": 59,
+    "Pattern": "PSUseDeclaredVarsMoreThanAssignments"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+    "Line": 60,
+    "Pattern": "PSUseDeclaredVarsMoreThanAssignments"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+    "Line": 110,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+    "Line": 144,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+    "Line": 156,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+    "Line": 43,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+    "Line": 285,
+    "Pattern": "PSUseDeclaredVarsMoreThanAssignments"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psd1",
+    "Line": 76,
+    "Pattern": "PSUseToExportFieldsInManifest"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psm1",
+    "Line": 24,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psd1",
+    "Line": 76,
+    "Pattern": "PSUseToExportFieldsInManifest"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinDriftScan.psm1",
+    "Line": 7,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 97,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 139,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 171,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 192,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 210,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 222,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "Line": 269,
+    "Pattern": "PSAvoidAssignmentToAutomaticVariable"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 172,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 185,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 229,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 379,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 384,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 385,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "Line": 325,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+    "Line": 496,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+    "Line": 51,
+    "Pattern": "PSUseApprovedVerbs"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+    "Line": 64,
+    "Pattern": "PSPossibleIncorrectComparisonWithNull"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+    "Line": 65,
+    "Pattern": "PSPossibleIncorrectComparisonWithNull"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-XhtmlReportTester.psm1",
+    "Line": 5,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 628,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 984,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 988,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 1037,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 934,
+    "Pattern": "PSAvoidAssignmentToAutomaticVariable"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 26,
+    "Pattern": "PSUseApprovedVerbs"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 846,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 2,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 26,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 114,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 229,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "Line": 866,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+    "Line": 76,
+    "Pattern": "PSUseToExportFieldsInManifest"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 70,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 585,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 605,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 266,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 418,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 73,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "Line": 99,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 73,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 76,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 185,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 296,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 353,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 357,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 390,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 392,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 397,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 459,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 487,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 491,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 524,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 123,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 209,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 289,
+    "Pattern": "PSUseUsingScopeModifierInNewRunspaces"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 291,
+    "Pattern": "PSUseUsingScopeModifierInNewRunspaces"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "Line": 292,
+    "Pattern": "PSUseUsingScopeModifierInNewRunspaces"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+    "Line": null,
+    "Pattern": "PSUseBOMForUnicodeEncodedFile"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 245,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 287,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 360,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 369,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 414,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 447,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 480,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 490,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 511,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 519,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 551,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 785,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 786,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 787,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 792,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1020,
+    "Pattern": "PSAvoidUsingEmptyCatchBlock"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 50,
+    "Pattern": "PSAvoidUsingPlainTextForPassword"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 79,
+    "Pattern": "PSAvoidUsingPlainTextForPassword"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 115,
+    "Pattern": "PSAvoidUsingPlainTextForPassword"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1169,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1550,
+    "Pattern": "PSReviewUnusedParameter"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 153,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 256,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 374,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 395,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 425,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 463,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 524,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 675,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 695,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 775,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 808,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 830,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 859,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1001,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1096,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1443,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1461,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1484,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1496,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "Line": 1513,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+    "Line": 76,
+    "Pattern": "PSUseToExportFieldsInManifest"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+    "Line": 366,
+    "Pattern": "PSUseSingularNouns"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psd1",
+    "Line": 13,
+    "Pattern": "PSUseToExportFieldsInManifest"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+    "Line": 43,
+    "Pattern": "PSReservedCmdletChar"
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+    "Line": 58,
+    "Pattern": "PSReservedCmdletChar"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-f4727e5c",
+  "title": "Resurfacing bug pattern: Unexpected token '\"\r\n            }\r\n        }\r\n        $violations | Should -BeNullOrEmpty -Because 'Repo rule: XML declaration must be first content â€”' in expression or statement.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260421020531-99ed1eee",
+    "Bug-20260502002102-907e3746"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

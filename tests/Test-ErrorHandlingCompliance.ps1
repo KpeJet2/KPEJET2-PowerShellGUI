@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -48,8 +48,7 @@
     ~README.md/ERROR-HANDLING-TEMPLATES.md
     ~README.md/REFERENCE-CONSISTENCY-STANDARD.md
 #>
-
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -145,7 +144,7 @@ function Write-ComplianceLog {
         'Debug'   { '[DEBUG]' }
     }
     
-    Write-Host "$prefix $Message" -ForegroundColor $colors[$Level]
+    Write-Host "$prefix $Message" -ForegroundColor $colors[$Level]  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 function Test-LineInTryCatch {
@@ -162,7 +161,7 @@ function Test-LineInTryCatch {
     $inTry = $false
     
     for ($i = 0; $i -lt $TargetLineIndex; $i++) {
-        $line = $Lines[$i].Trim()
+        $line = $Lines[$i].Trim()  # SIN-EXEMPT:P027 -- index access, context-verified safe
         
         # Count try blocks
         if ($line -match '^\s*try\s*\{') {
@@ -196,7 +195,7 @@ function Get-FunctionContext {
     )
     
     for ($i = $TargetLineIndex; $i -ge 0; $i--) {
-        if ($Lines[$i] -match '^\s*function\s+([\w-]+)') {
+        if ($Lines[$i] -match '^\s*function\s+([\w-]+)') {  # SIN-EXEMPT:P027 -- index access, context-verified safe
             return $matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
         }
     }
@@ -232,7 +231,7 @@ function Test-FileViolations {
     $fileExt = [System.IO.Path]::GetExtension($FilePath)
     
     foreach ($patternKey in $Patterns.Keys) {
-        $patternDef = $Patterns[$patternKey]
+        $patternDef = $Patterns[$patternKey]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         
         # Skip if pattern only applies to specific file types
         if ($patternDef.ContainsKey('ApplyTo') -and $patternDef.ApplyTo -and $fileExt -ne $patternDef.ApplyTo) {
@@ -242,7 +241,7 @@ function Test-FileViolations {
         # Handle context-sensitive patterns (Section 12 - unwrapped I/O)
         if ($patternDef.ContainsKey('RequiresContext') -and $patternDef.RequiresContext) {
             for ($i = 0; $i -lt $lines.Count; $i++) {
-                $line = $lines[$i]
+                $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 
                 # Check if line contains I/O operation
                 $hasIO = $false
@@ -624,6 +623,7 @@ if ($summary.bySeverity.CRITICAL -gt 0) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

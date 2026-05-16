@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-79530a7f",
+  "title": "Resurfacing bug pattern: Missing '=' operator after key in hash literal.",
+  "occurrences": 16,
+  "sample_bug_ids": [
+    "Bug-20260412122740-be22ed75",
+    "Bug-20260412130119-3f9745ab",
+    "Bug-20260421023329-2380fd93",
+    "Bug-20260421023556-695fdb13",
+    "Bug-20260421023806-29b6bec0"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

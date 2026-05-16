@@ -1,0 +1,178 @@
+{
+  "$schema": "PwShGUI-SchemaTransforms/1.0",
+  "meta": {
+    "description": "Schema version transformation chains for cross-version compatibility. Defines upgrade paths between incompatible schema versions.",
+    "generated": "2026-04-27T00:00:00Z",
+    "generator": "manual/PwShGUI-SchemaTranslator.psm1",
+    "purpose": "Enable automatic migration of data files when schema versions diverge, preventing data loss and maintaining backward compatibility."
+  },
+  "transforms": [
+    {
+      "id": "PipelineItem/0.9-to-1.0",
+      "fromSchema": "PipelineItem/0.9",
+      "toSchema": "PipelineItem/1.0",
+      "description": "Adds new schema version tracking fields to legacy pipeline items",
+      "operations": [
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "schemaVersion",
+          "value": "PipelineItem/1.0",
+          "position": "first",
+          "ifMissing": true
+        },
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "outlineTag",
+          "value": "OUTLINE-PROTO-v0",
+          "ifMissing": true
+        },
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "outlineVersion",
+          "value": "v0",
+          "ifMissing": true
+        },
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "outlinePhase",
+          "value": "assessment",
+          "ifMissing": true
+        },
+        {
+          "op": "set-field",
+          "target": "root",
+          "field": "sessionModCount",
+          "expression": "$value // 1"
+        }
+      ],
+      "validation": {
+        "before": ["id", "type", "title", "status"],
+        "after": ["id", "type", "title", "status", "schemaVersion", "outlineTag"]
+      }
+    },
+    {
+      "id": "DependencyMap/0.9-to-1.0",
+      "fromSchema": "DependencyMap/0.9",
+      "toSchema": "DependencyMap/1.0",
+      "description": "Adds schemaVersion field to dependency map exports",
+      "operations": [
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "schemaVersion",
+          "value": "DependencyMap/1.0",
+          "position": "first"
+        }
+      ]
+    },
+    {
+      "id": "AgenticManifest/0.9-to-1.0",
+      "fromSchema": "AgenticManifest/0.9",
+      "toSchema": "AgenticManifest/1.0",
+      "description": "Adds schemaVersion and outlineSchema fields to agentic manifests",
+      "operations": [
+        {
+          "op": "add-field",
+          "target": "root",
+          "field": "schemaVersion",
+          "value": "AgenticManifest/1.0",
+          "position": "first",
+          "ifMissing": true
+        },
+        {
+          "op": "ensure-field",
+          "target": "meta",
+          "field": "outlineSchema",
+          "value": "PwShGUI-Outline/0.1",
+          "ifMissing": true
+        }
+      ]
+    }
+  ],
+  "rollbacks": [
+    {
+      "id": "PipelineItem/1.0-to-0.9",
+      "fromSchema": "PipelineItem/1.0",
+      "toSchema": "PipelineItem/0.9",
+      "description": "Downgrades pipeline items by removing v1.0-specific fields (NOT RECOMMENDED)",
+      "isDestructive": true,
+      "operations": [
+        {
+          "op": "remove-field",
+          "target": "root",
+          "field": "schemaVersion",
+          "ifExists": true
+        },
+        {
+          "op": "remove-field",
+          "target": "root",
+          "field": "outlineTag",
+          "ifExists": true
+        },
+        {
+          "op": "remove-field",
+          "target": "root",
+          "field": "outlineVersion",
+          "ifExists": true
+        }
+      ]
+    }
+  ],
+  "discoveryRules": [
+    {
+      "schema": "PipelineItem/1.0",
+      "detectionMethod": "field:schemaVersion=PipelineItem/1.0",
+      "heuristicsIfAbsent": [
+        "field:outlineTag",
+        "field:outlineVersion",
+        "field:sessionModCount"
+      ]
+    },
+    {
+      "schema": "PipelineItem/0.9",
+      "detectionMethod": "missing:schemaVersion",
+      "heuristicsIfAbsent": [
+        "field:id",
+        "field:type",
+        "field:status",
+        "type:object"
+      ]
+    },
+    {
+      "schema": "DependencyMap/1.0",
+      "detectionMethod": "field:schemaVersion=DependencyMap/1.0",
+      "heuristicsIfAbsent": []
+    },
+    {
+      "schema": "DependencyMap/0.9",
+      "detectionMethod": "missing:schemaVersion",
+      "heuristicsIfAbsent": [
+        "field:nodes",
+        "field:edges",
+        "field:summary"
+      ]
+    }
+  ],
+  "items2DoOnSchemaMigration": [
+    {
+      "schema": "PipelineItem/0.9-to-1.0",
+      "priority": "MEDIUM",
+      "title": "Schema migration completed: PipelineItem 0.9 → 1.0",
+      "actionRequired": false,
+      "description": "Your pipeline items have been upgraded to schema v1.0. All legacy items now include outline tracking fields (outlineTag, outlineVersion, outlinePhase). No manual action needed.",
+      "affectedFiles": ["todo/*.json", "config/cron-aiathon-pipeline.json"]
+    },
+    {
+      "schema": "PipelineItem/1.0-to-1.1",
+      "priority": "HIGH",
+      "title": "BREAKING: PipelineItem schema v1.1 requires manual action",
+      "actionRequired": true,
+      "description": "Next version of schema requires reorganization of 'affectedFiles' field structure. Run: Invoke-PipelineItemSchemaMigration -Target 1.1 -Force",
+      "affectedFiles": ["todo/*.json"]
+    }
+  ]
+}

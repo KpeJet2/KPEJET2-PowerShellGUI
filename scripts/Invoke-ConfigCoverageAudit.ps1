@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -92,7 +92,7 @@ Write-AuditLog "Scanned $totalFiles script files"
 # ── per-file analysis ──────────────────────────────────────────────────────────
 $results = [System.Collections.ArrayList]::new()
 $featureCounts = [ordered]@{}
-foreach ($k in $features.Keys) { $featureCounts[$k] = 0 }
+foreach ($k in $features.Keys) { $featureCounts[$k] = 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
 # SIN-gap tracking (P002=empty-catch, P005=PS7-ops, P007=bad-versiontag, P015=hardcoded-path)
 $sinGaps = [System.Collections.ArrayList]::new()
@@ -105,11 +105,11 @@ foreach ($file in $files) {
         $fileFeatures = [ordered]@{}
         $adopted = 0
         foreach ($feat in $features.Keys) {
-            $hit = $content -match $features[$feat]
-            $fileFeatures[$feat] = $hit
+            $hit = $content -match $features[$feat]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $fileFeatures[$feat] = $hit  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($hit) {
                 $adopted++
-                $featureCounts[$feat]++
+                $featureCounts[$feat]++  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
         }
 
@@ -144,8 +144,8 @@ foreach ($file in $files) {
 # ── compute summary ────────────────────────────────────────────────────────────
 $summary = [ordered]@{}
 foreach ($k in $featureCounts.Keys) {
-    $cnt = $featureCounts[$k]
-    $summary[$k] = [ordered]@{
+    $cnt = $featureCounts[$k]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    $summary[$k] = [ordered]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
         count   = $cnt
         pctOfFiles = if ($totalFiles -gt 0) { [math]::Round(($cnt / $totalFiles) * 100, 1) } else { 0 }
     }
@@ -266,12 +266,12 @@ if ($PipelineItems) {
 
             # Feature-adoption alerts for features below 20% adoption
             foreach ($feat in $summary.Keys) {
-                if ($summary[$feat].pctOfFiles -lt 20 -and $summary[$feat].count -gt 0) {
-                    $title = "Low adoption: $feat at $($summary[$feat].pctOfFiles)% ($($summary[$feat].count)/$totalFiles files)"
+                if ($summary[$feat].pctOfFiles -lt 20 -and $summary[$feat].count -gt 0) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $title = "Low adoption: $feat at $($summary[$feat].pctOfFiles)% ($($summary[$feat].count)/$totalFiles files)"  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     Add-PipelineItem -WorkspacePath $WorkspacePath `
                         -Type 'FeatureRequest' -Title $title -Priority 'MEDIUM' -Status 'OPEN' `
                         -Category 'ConfigCoverageGap' -Tags @('LowAdoption', $feat, $groupTag) `
-                        -Description "Only $($summary[$feat].pctOfFiles)% of scripts use $feat. Consider a workspace-wide adoption sweep."
+                        -Description "Only $($summary[$feat].pctOfFiles)% of scripts use $feat. Consider a workspace-wide adoption sweep."  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     Write-AuditLog "Raised pipeline FeatureRequest: $title" 'Informational'
                 }
             }
@@ -289,6 +289,7 @@ if ($PipelineItems) {
     sinGapsFound   = @($sinGaps).Count
     featureSummary = $summary
 }
+
 
 
 

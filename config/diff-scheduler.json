@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "2604.B2.V31.0",
+  "engine": "DiffPlex",
+  "outputDir": "~REPORTS/diffs",
+  "outputFormats": ["unified","sideBySide","json"],
+  "defaults": {
+    "ignoreWhitespace": false,
+    "ignoreCase": false,
+    "mode": "line"
+  },
+  "pairs": [
+    {
+      "label": "changelog-vs-enhancements",
+      "left": "~README.md/CHANGELOG.md",
+      "right": "~README.md/ENHANCEMENTS-LOG.md",
+      "mode": "line"
+    }
+  ],
+  "watchGlobs": []
+}

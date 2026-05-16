@@ -1,0 +1,22 @@
+{
+  "id": "SIN-PATTERN-050-STALE-SCOREBOARD-MANIFEST",
+  "sin_id": "SIN-PATTERN-050-STALE-SCOREBOARD-MANIFEST",
+  "title": "SIN-Scoreboard data manifests stale (>24h since last regeneration)",
+  "description": "The `~REPORTS/scoreboard-data/*.json` manifests are produced by `tests/iter41-scoreboard-data-gen.ps1` and consumed via XHR by `~REPORTS/SIN-Scoreboard.xhtml`. Their `generated` timestamp must be refreshed any time sin_registry/, todo/, or modules/ change. Stale manifests cause the dashboard to misreport governance state (e.g., the audit on 2026-05-17 found a 13-day-stale manifest reporting 41 patterns when 44 existed on disk). The pipeline orchestrator MUST regenerate manifests at end-of-run, AND any standalone `Sync-PipelineRegistryFromDisk.ps1 -Apply` invocation MUST trigger a refresh.",
+  "severity": "Advisory",
+  "status": "pattern-defined",
+  "category": "Reporting/Freshness",
+  "detection_method": "Read ~REPORTS/scoreboard-data/index.json; parse .generated; flag if (Get-Date) - .generated > 24h. Cross-check Get-ChildItem sin_registry/*.json count against patterns.json .count -- mismatch is also a stale or parse-drop signal.",
+  "scan_regex": "",
+  "manual_only": true,
+  "context_guard_regex": "scoreboard-data/index\\.json",
+  "file_exclusion_regex": "",
+  "remediation": "Wire `& tests/iter41-scoreboard-data-gen.ps1` into `scripts/Sync-PipelineRegistryFromDisk.ps1` (post-write hook) AND into `scripts/Invoke-PipelineIntegrityCheck.ps1 -Refresh`. SIN-Scoreboard.xhtml drilldown displays a freshness badge derived from index.json.generated.",
+  "examples": [
+    "# Detection (PowerShell)\n$idx = Get-Content ~REPORTS\\scoreboard-data\\index.json -Raw | ConvertFrom-Json\n$age = (Get-Date) - [datetime]$idx.generated\nif ($age.TotalHours -gt 24) { Write-Warning \"Scoreboard stale by $([int]$age.TotalHours)h\" }"
+  ],
+  "tags": ["reporting", "freshness", "scoreboard", "audit-loop"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-17",
+  "date_added": "2026-05-17"
+}

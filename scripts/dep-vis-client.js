@@ -1,4 +1,4 @@
-/* VersionTag: 2604.B1.V32.0 */
+/* VersionTag: 2605.B5.V46.0 */
 /* dep-vis-client.js
    Client-side logic for the Dependency Visualiser:
      - WebSocket connection with auto-reconnect (falls back to fetch polling)
@@ -308,7 +308,9 @@
         try {
           var msg = JSON.parse(ev.data);
           if (msg.event === 'connected') {
-            _csrfToken = msg.csrfToken || '';
+            if (msg.csrfToken) {
+              _csrfToken = msg.csrfToken;
+            }
           } else if (msg.event === 'scan_progress' && msg.data) {
             onStatusData({ progress: msg.data });
           } else if (msg.event === 'scan_started') {

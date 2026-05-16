@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -632,6 +632,14 @@ Describe 'P027 SIN Registry Definition Validation' {
         { [regex]::new($def.context_guard_regex) } | Should -Not -Throw
     }
 
+    It 'P027 scan_regex detects numeric, negative, and variable index forms' {
+        $def = Get-Content $script:sinFile -Raw -Encoding UTF8 | ConvertFrom-Json
+        $rx = [regex]::new($def.scan_regex)
+        $rx.IsMatch('$files[0]') | Should -BeTrue
+        $rx.IsMatch('$files[-1]') | Should -BeTrue
+        $rx.IsMatch('$files[$idx]') | Should -BeTrue
+    }
+
     It 'P027 defines all six fix scenarios' {
         $def = Get-Content $script:sinFile -Raw -Encoding UTF8 | ConvertFrom-Json
         $fixes = $def.known_fix_scenarios.PSObject.Properties.Name
@@ -653,6 +661,65 @@ Describe 'P027 SIN Registry Definition Validation' {
     }
 }
 
+Describe 'P027 Scanner Gate Enforcement' {
+    BeforeAll {
+        $script:scannerPath = Join-Path $script:WorkspaceRoot 'tests\Invoke-SINPatternScanner.ps1'
+        $script:tmpDir = Join-Path $script:WorkspaceRoot 'temp\p027-scanner-gate-tests'
+        if (-not (Test-Path $script:tmpDir)) {
+            New-Item -ItemType Directory -Path $script:tmpDir -Force | Out-Null
+        }
+        $script:scannerOut = Join-Path $script:tmpDir 'scanner-output.json'
+        $script:violationFile = Join-Path $script:tmpDir 'P027-Violation.ps1'
+        $script:guardedFile = Join-Path $script:tmpDir 'P027-Guarded.ps1'
+        @(
+            '# VersionTag: 2605.B5.V46.0',
+            '$items = $null',
+            '$first = $items[0]'
+        ) | Set-Content -LiteralPath $script:violationFile -Encoding UTF8
+        @(
+            '# VersionTag: 2605.B5.V46.0',
+            '$items = @(''a'')',
+            'if (@($items).Count -gt 0) { $first = $items[0] }'
+        ) | Set-Content -LiteralPath $script:guardedFile -Encoding UTF8
+    }
+
+    AfterAll {
+        Remove-Item -LiteralPath $script:violationFile -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $script:guardedFile -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $script:scannerOut -ErrorAction SilentlyContinue
+        if (Test-Path $script:tmpDir) {
+            Remove-Item -LiteralPath $script:tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    It 'Scanner reports a P027 finding for an unguarded index' {
+        $result = & $script:scannerPath -WorkspacePath $script:WorkspaceRoot -IncludeFiles $script:violationFile -Quiet
+        $p027Hits = @($result.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*27(?:\D|$)|NULL-ARRAY-INDEX|(?:^|-)P027(?:\D|$)' })
+        @($p027Hits).Count | Should -BeGreaterThan 0
+    }
+
+    It 'Scanner suppresses a guarded P027 pattern' {
+        $result = & $script:scannerPath -WorkspacePath $script:WorkspaceRoot -IncludeFiles $script:guardedFile -Quiet
+        $p027Hits = @($result.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*27(?:\D|$)|NULL-ARRAY-INDEX|(?:^|-)P027(?:\D|$)' })
+        @($p027Hits).Count | Should -Be 0
+    }
+
+    It 'Scanner exits non-zero when FailOnSinId targets P027' {
+        if (Test-Path $script:scannerOut) { Remove-Item -LiteralPath $script:scannerOut -ErrorAction SilentlyContinue }
+        $scannerProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+            '-NoProfile',
+            '-ExecutionPolicy', 'Bypass',
+            '-File', $script:scannerPath,
+            '-WorkspacePath', $script:WorkspaceRoot,
+            '-IncludeFiles', $script:violationFile,
+            '-FailOnSinId', 'P027',
+            '-OutputJson', $script:scannerOut,
+            '-Quiet'
+        ) -Wait -PassThru -NoNewWindow
+        $scannerProc.ExitCode | Should -Be 1
+    }
+}
+
 <# Outline:
     Stub: describe module/script purpose here.
 #>
@@ -664,6 +731,7 @@ Describe 'P027 SIN Registry Definition Validation' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

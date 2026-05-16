@@ -181,7 +181,7 @@ All new code adheres to PowerShellGUI SIN patterns:
 - ✅ P004 (Always wrap .Count with @()) - `@($showScripts).Count` pattern used
 - ✅ P005 (No PS7-only operators) - Pure PS 5.1 compatible syntax
 - ✅ P006 (UTF-8 WITH BOM) - All files saved with BOM for Unicode safety
-- ✅ P007 (Include VersionTag) - All files have `# VersionTag: 2604.B1.v1.0`
+- ✅ P007 (Include VersionTag) - All files have `# VersionTag: 2605.B5.V46.0`
 - ✅ P012 (Always -Encoding on Set-Content) - Used in Build-ToolsInventory.ps1
 - ✅ P015 (No hardcoded absolute paths) - Used `$WorkspacePath`, `$PSScriptRoot`, `Join-Path`
 - ✅ P022 (Null guard before method calls) - Session state checked before operations

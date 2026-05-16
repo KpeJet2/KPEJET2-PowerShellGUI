@@ -1,7 +1,7 @@
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
 """
 FocalPoint-null PKI Manager
 RSA-2048 certificate generation, signing and verification for inter-agent identity.
@@ -270,6 +270,7 @@ class PKIManager:
                 # Log but continue — partial PKI is better than none
                 print(f"[PKIManager] Warning: Could not generate keypair for {agent_id}: {e}")
         return result
+
 
 
 

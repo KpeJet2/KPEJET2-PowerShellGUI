@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -128,7 +128,7 @@ Describe 'Write-ErrorReport' {
 
 Describe 'PwShGUICore Utility Functions' {
     It 'Validates config paths successfully' {
-        $result = Validate-ConfigPaths
+        $result = Test-ConfigPaths
         $result | Should -Be $true
     }
     It 'Enumerates project files' {
@@ -149,6 +149,7 @@ Describe 'PwShGUICore Utility Functions' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,0 +1,36 @@
+{
+  "schema": "EngineMonitorHandoff/1.0",
+  "stamp": "2026-05-06T23:23:26.6909809+08:00",
+  "reason": "test-run",
+  "failedTargetCount": 1,
+  "failedTargets": [
+    null
+  ],
+  "pipelineSteps": [
+    {
+      "Script": "scripts/Invoke-PipelineIntegrityCheck.ps1",
+      "Success": true,
+      "Message": "DryRun",
+      "ExitCode": 0
+    },
+    {
+      "Script": "scripts/Invoke-PipelineProcess20.ps1",
+      "Success": true,
+      "Message": "DryRun",
+      "ExitCode": 0
+    },
+    {
+      "Script": "tests/Invoke-GUISmokeTest.ps1",
+      "Success": true,
+      "Message": "DryRun",
+      "ExitCode": 0
+    },
+    {
+      "Script": "tests/Invoke-SecurityIntegrityTests.ps1",
+      "Success": true,
+      "Message": "DryRun",
+      "ExitCode": 0
+    }
+  ],
+  "previewOnly": true
+}

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V32.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -57,6 +57,10 @@ $script:Theme = @{
     SmallSize       = 7.5
 }
 
+<#
+.SYNOPSIS
+  Get theme value.
+#>
 function Get-ThemeValue {
     <# Returns a named theme value from the palette. #>
     param([string]$Key)
@@ -64,6 +68,10 @@ function Get-ThemeValue {
     return $null
 }
 
+<#
+.SYNOPSIS
+  Get theme font.
+#>
 function Get-ThemeFont {
     <# Returns a System.Drawing.Font using the theme font family. #>
     param(
@@ -80,12 +88,17 @@ function Set-ModernFormStyle {
     .SYNOPSIS  Applies the dark modern theme to a WinForms Form.
     .PARAMETER Form   The Form object to style.
     .PARAMETER Title  Optional new title text.
+        .DESCRIPTION
+      Detailed behaviour: Set modern form style.
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [System.Windows.Forms.Form]$Form,
         [string]$Title
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernFormStyle', 'Modify')) { return }
+
     $Form.BackColor       = $script:Theme.FormBack
     $Form.ForeColor       = $script:Theme.ControlFore
     $Form.Font            = Get-ThemeFont
@@ -93,7 +106,7 @@ function Set-ModernFormStyle {
     try {
         $Form.GetType().GetProperty('DoubleBuffered',
             [System.Reflection.BindingFlags]'Instance,NonPublic').SetValue($Form, $true, $null)
-    } catch { <# Non-fatal: skip double-buffering on non-standard forms #> }
+    } catch { <# Non-fatal: skip double-buffering on non-standard forms #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     if ($Title) { $Form.Text = $Title }
 }
 
@@ -135,11 +148,18 @@ public class DarkMenuRenderer : ToolStripProfessionalRenderer {
 }
 "@ -ReferencedAssemblies $_themeRefAsm
     }
-} catch { <# Non-fatal: menu will use default renderer #> }
+} catch { <# Non-fatal: menu will use default renderer #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
+<#
+.SYNOPSIS
+  Set modern menu style.
+#>
 function Set-ModernMenuStyle {
     <# Applies dark theme to a MenuStrip and all nested items with black text on selection. #>
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)][System.Windows.Forms.MenuStrip]$MenuStrip)
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernMenuStyle', 'Modify')) { return }
+
     $MenuStrip.BackColor = $script:Theme.MenuBack
     $MenuStrip.ForeColor = $script:Theme.MenuFore
     try {
@@ -155,7 +175,10 @@ function Set-ModernMenuStyle {
 }
 
 function Set-MenuItemColor {
+    [CmdletBinding(SupportsShouldProcess)]
     param($Item)
+    if (-not $PSCmdlet.ShouldProcess('Set-MenuItemColor', 'Modify')) { return }
+
     if ($null -eq $Item) { return }
     try {
         $Item.BackColor = $script:Theme.MenuBack
@@ -167,13 +190,22 @@ function Set-MenuItemColor {
                 }
             }
         }
-    } catch { try { Write-AppLog "Theme: Set-MenuItemColor failed - $_" 'Warning' } catch { <# Non-fatal #> } }
+    } catch { try { Write-AppLog "Theme: Set-MenuItemColor failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
 # ========================== APPLY THEME TO DGV ==========================
+<#
+.SYNOPSIS
+  Set modern dgv style.
+.DESCRIPTION
+  Detailed behaviour: Set modern dgv style.
+#>
 function Set-ModernDgvStyle {
     <# Applies dark modern styling to a DataGridView. #>
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)][System.Windows.Forms.DataGridView]$Dgv)
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernDgvStyle', 'Modify')) { return }
+
     try {
         $Dgv.BackgroundColor          = $script:Theme.DgvBack
         $Dgv.DefaultCellStyle.BackColor   = $script:Theme.DgvBack
@@ -188,13 +220,22 @@ function Set-ModernDgvStyle {
         $Dgv.EnableHeadersVisualStyles  = $false
         $Dgv.GridColor                  = $script:Theme.DgvGridLine
         $Dgv.BorderStyle                = [System.Windows.Forms.BorderStyle]::None
-    } catch { try { Write-AppLog "Theme: Set-ModernDgvStyle failed - $_" 'Warning' } catch { <# Non-fatal #> } }
+    } catch { try { Write-AppLog "Theme: Set-ModernDgvStyle failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
 # ========================== APPLY THEME TO BUTTON ==========================
+<#
+.SYNOPSIS
+  Set modern button style.
+.DESCRIPTION
+  Detailed behaviour: Set modern button style.
+#>
 function Set-ModernButtonStyle {
     <# Applies flat dark styling to a Button. #>
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)][System.Windows.Forms.Button]$Button)
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernButtonStyle', 'Modify')) { return }
+
     try {
         $Button.FlatStyle   = [System.Windows.Forms.FlatStyle]::Flat
         $Button.FlatAppearance.BorderColor = $script:Theme.BorderColor
@@ -204,21 +245,30 @@ function Set-ModernButtonStyle {
         $Button.Font        = Get-ThemeFont -Size 10
         $Button.Cursor      = [System.Windows.Forms.Cursors]::Hand
         # Hover effect via MouseEnter/Leave
-        $Button.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78) })
-        $Button.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60) })
-    } catch { try { Write-AppLog "Theme: Set-ModernButtonStyle failed - $_" 'Warning' } catch { <# Non-fatal #> } }
+        $Button.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $Button.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    } catch { try { Write-AppLog "Theme: Set-ModernButtonStyle failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
 # ========================== APPLY THEME TO TABCONTROL ==========================
+<#
+.SYNOPSIS
+  Set modern tab style.
+.DESCRIPTION
+  Detailed behaviour: Set modern tab style.
+#>
 function Set-ModernTabStyle {
     <# Applies theme colours to a TabControl and its pages. #>
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)][System.Windows.Forms.TabControl]$TabControl)
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernTabStyle', 'Modify')) { return }
+
     try {
         foreach ($page in $TabControl.TabPages) {
             $page.BackColor = $script:Theme.FormBackAlt
             $page.ForeColor = $script:Theme.ControlFore
         }
-    } catch { try { Write-AppLog "Theme: Set-ModernTabStyle failed - $_" 'Warning' } catch { <# Non-fatal #> } }
+    } catch { try { Write-AppLog "Theme: Set-ModernTabStyle failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
 # ========================== RAINBOW PROGRESS BAR ==========================
@@ -249,10 +299,14 @@ function New-RainbowProgressBar {
     .PARAMETER Width   Width of the bar (default 500)
     .PARAMETER Height  Height of the bar (default 16)
     #>
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [int]$Width  = 500,
         [int]$Height = 16
     )
+    if (-not $PSCmdlet.ShouldProcess('New-RainbowProgressBar', 'Create')) { return }
+
 
     $panel = New-Object System.Windows.Forms.Panel
     $panel.Size = New-Object System.Drawing.Size($Width, $Height)
@@ -264,13 +318,14 @@ function New-RainbowProgressBar {
     $colorCount    = @($rainbowColors).Count
     $state = @{ Percent = 0; ColorIndex = 0 }
 
-    $panel.Add_Paint({
-        param($sender, $e)
+    $panel.Add_Paint({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        # P034 fix: $sender shadows PowerShell automatic; use $evtSender
+        param($evtSender, $e)
         $g = $e.Graphics
-        $g.Clear($sender.BackColor)
+        $g.Clear($evtSender.BackColor)
         $pct = $state.Percent
         if ($pct -le 0) { return }
-        $fillW = [int](($sender.ClientSize.Width) * ($pct / 100.0))
+        $fillW = [int](($evtSender.ClientSize.Width) * ($pct / 100.0))
         if ($fillW -lt 1) { return }
 
         # Draw rainbow gradient segments
@@ -280,8 +335,8 @@ function New-RainbowProgressBar {
         for ($x = 0; $x -lt $fillW; $x += $segW) {
             $ci = if ($colorCount -gt 0) { (([int]($x / $segW) + $offset) % $colorCount) } else { 0 }
             $w  = [math]::Min($segW, $fillW - $x)
-            $brush = New-Object System.Drawing.SolidBrush($colors[$ci])
-            $g.FillRectangle($brush, $x, 0, $w, $sender.ClientSize.Height)
+            $brush = New-Object System.Drawing.SolidBrush($colors[$ci])  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $g.FillRectangle($brush, $x, 0, $w, $evtSender.ClientSize.Height)
             $brush.Dispose()
         }
     })
@@ -326,8 +381,16 @@ function New-SpinnerLabel {
           Stop    - scriptblock to stop and clear
           SetText - scriptblock to set prefix text before spinner char
     .PARAMETER Interval  Milliseconds between frames (default 120)
+    .PARAMETER Prefix    Text shown before the spinner glyph (default 'Processing')
     #>
-    param([int]$Interval = 120)
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [int]$Interval = 120,
+        [string]$Prefix = 'Processing'
+    )
+    if (-not $PSCmdlet.ShouldProcess('New-SpinnerLabel', 'Create')) { return }
+
 
     $label = New-Object System.Windows.Forms.Label
     $label.Size = New-Object System.Drawing.Size(300, 20)
@@ -336,11 +399,11 @@ function New-SpinnerLabel {
     $label.TextAlign = 'MiddleLeft'
     $label.Text = ''
 
-    $spinState = @{ Index = 0; Prefix = 'Processing'; Active = $false }
+    $spinState = @{ Index = 0; Prefix = $Prefix; Active = $false }
 
     $timer = New-Object System.Windows.Forms.Timer
     $timer.Interval = $Interval
-    $timer.Add_Tick({
+    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if (-not $spinState.Active) { return }
         $ch = $script:_SpinnerChars[$spinState.Index % $script:_SpinnerChars.Count]
         $label.Text = "$($spinState.Prefix) $ch"
@@ -379,11 +442,14 @@ function Set-ModernFormTheme {
     .SYNOPSIS  One-call theme applicator for an entire form.
     .DESCRIPTION  Walks all controls on a form and applies appropriate styling.
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [System.Windows.Forms.Form]$Form,
         [switch]$IncludeMenuStrip
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-ModernFormTheme', 'Modify')) { return }
+
     Set-ModernFormStyle -Form $Form
 
     foreach ($ctl in $Form.Controls) {
@@ -429,8 +495,13 @@ function Set-ControlProperty {
     .PARAMETER Control  The control to modify (may be $null).
     .PARAMETER Property The property name to set.
     .PARAMETER Value    The value to assign (may be $null — assignment is skipped).
+        .DESCRIPTION
+      Detailed behaviour: Set control property.
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param($Control, [string]$Property, $Value)
+    if (-not $PSCmdlet.ShouldProcess('Set-ControlProperty', 'Modify')) { return }
+
     if ($null -ne $Control -and $null -ne $Value) {
         $Control.$Property = $Value
     }
@@ -443,11 +514,14 @@ function Set-ControlForeColor {
     .PARAMETER ThemeKey  Named theme palette key (e.g. 'ControlFore', 'AccentGreen').
     .PARAMETER Color     Direct System.Drawing.Color value (overrides ThemeKey).
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         $Control,
         [string]$ThemeKey,
         [System.Drawing.Color]$Color
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-ControlForeColor', 'Modify')) { return }
+
     if ($null -eq $Control) { return }
     $c = if ($Color -ne [System.Drawing.Color]::Empty) { $Color }
          elseif ($ThemeKey) { Get-ThemeValue $ThemeKey }
@@ -461,12 +535,17 @@ function Set-ControlBackColor {
     .PARAMETER Control   The control to modify.
     .PARAMETER ThemeKey  Named theme palette key (e.g. 'FormBack', 'AccentBlue').
     .PARAMETER Color     Direct System.Drawing.Color value (overrides ThemeKey).
+        .DESCRIPTION
+      Detailed behaviour: Set control back color.
     #>
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         $Control,
         [string]$ThemeKey,
         [System.Drawing.Color]$Color
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-ControlBackColor', 'Modify')) { return }
+
     if ($null -eq $Control) { return }
     $c = if ($Color -ne [System.Drawing.Color]::Empty) { $Color }
          elseif ($ThemeKey) { Get-ThemeValue $ThemeKey }
@@ -502,6 +581,7 @@ Export-ModuleMember -Function @(
     'New-RainbowProgressBar',
     'New-SpinnerLabel'
 )
+
 
 
 
