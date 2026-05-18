@@ -1,0 +1,27 @@
+{
+  "id": "SIN-CANDIDATE-20260517021331-43eed811",
+  "title": "Resurfacing bug pattern: [SIN-SCAN] SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257 :: Empty catch block swallows errors silently",
+  "occurrences": 8,
+  "sample_bug_ids": [
+    "Bug-20260516005620-768ce5a3",
+    "Bug-20260516010208-3ed1be0c",
+    "Bug-20260516010325-6ef03612",
+    "Bug-20260516010425-6d174c7f",
+    "Bug-20260516010528-994184a1"
+  ],
+  "affected_files": [
+    "Main-GUI.ps1",
+    "modules\\CronAiAthon-Pipeline.psm1",
+    "modules\\PwShGUI-SessionMetrics.psm1",
+    "scripts\\R3-StressTest.ps1",
+    "scripts\\Scan-WorkspaceVersions.ps1",
+    "tests\\AssistedSASC.Tests.ps1",
+    "tests\\Invoke-PipelineChurnLifecycle.Tests.ps1",
+    "tests\\Invoke-SINPatternScanner.Tests.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-17",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

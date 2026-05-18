@@ -1,0 +1,26 @@
+{
+  "id": "TODO-PA-20260517014941-b-windows-hello",
+  "todo_id": "TODO-PA-20260517014941-b-windows-hello",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Wire Windows Hello unlock to vault entry point",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "HIGH",
+  "status": "PENDING_APPROVAL",
+  "source_id": "feature-F001",
+  "source_status": "IN-PROGRESS",
+  "parentId": "feature-F001",
+  "created": "2026-05-16T17:49:41.1266357Z",
+  "createdAt": "2026-05-16T17:49:41.1266357Z",
+  "modified": "2026-05-16T17:49:41.1266357Z",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN-PROGRESS",
+  "status_history": [
+    {
+      "timestamp": "2026-05-16T17:49:41.1266357Z",
+      "by": "CronAiAthon-Pipeline",
+      "status": "PENDING_APPROVAL"
+    }
+  ]
+}

@@ -1186,14 +1186,15 @@ function Add-BootstrapQuickAccessMenu {
                                 $scriptItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$scriptNode.label)
                                 $scriptItem.Tag = [ordered]@{ type = 'script'; target = [string]$scriptNode.scriptRelative; args = @() }
                                 $scriptItem.ToolTipText = [string]$scriptNode.scriptRelative
-                                $scriptItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-                                    param($menuItemArg)
+                                $scriptItemClick = {
                                     try {
+                                        $menuItemArg = if (@($args).Count -gt 0) { $args[0] } else { $null }
                                         Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
                                     } catch {
                                         Write-ServiceLog -Level 'WARN' -Message "Bootstrap script launch failed: $($_.Exception.Message)"
                                     }
-                                })
+                                }
+                                $scriptItem.Add_Click($scriptItemClick)
                                 [void]$folderMenu.DropDownItems.Add($scriptItem)
                             }
                             [void]$pageMenu.DropDownItems.Add($folderMenu)
@@ -1209,14 +1210,15 @@ function Add-BootstrapQuickAccessMenu {
                     if ($node.PSObject.Properties.Name -contains 'tooltip' -and -not [string]::IsNullOrWhiteSpace([string]$node.tooltip)) {
                         $item.ToolTipText = [string]$node.tooltip
                     }
-                    $item.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-                        param($menuItemArg)
+                    $itemClick = {
                         try {
+                            $menuItemArg = if (@($args).Count -gt 0) { $args[0] } else { $null }
                             Invoke-BootstrapMenuAction -Entry $menuItemArg.Tag
                         } catch {
                             Write-ServiceLog -Level 'WARN' -Message "Bootstrap action failed: $($_.Exception.Message)"
                         }
-                    })
+                    }
+                    $item.Add_Click($itemClick)
                     [void]$headingMenu.DropDownItems.Add($item)
                 }
             }
@@ -1301,26 +1303,28 @@ function Start-ServiceTray {
                 $staticItem.Tag = $entry.FullPath
                 $serviceItem.Tag = $entry.RelativePath
 
-                $staticItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-                    param($menuItemArg)
-                    $pathValue = [string]$menuItemArg.Tag
+                $staticItemClick = {
                     try {
+                        $menuItemArg = if (@($args).Count -gt 0) { $args[0] } else { $null }
+                        $pathValue = [string]$menuItemArg.Tag
                         Start-Process $pathValue | Out-Null
                     } catch {
                         Write-ServiceLog -Level 'WARN' -Message ("Failed to open static page {0}: {1}" -f $pathValue, $_.Exception.Message)
                     }
-                })
+                }
+                $staticItem.Add_Click($staticItemClick)
 
-                $serviceItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-                    param($menuItemArg)
-                    $relativeValue = [string]$menuItemArg.Tag
-                    $url = "http://127.0.0.1:$Port/$relativeValue"
+                $serviceItemClick = {
                     try {
+                        $menuItemArg = if (@($args).Count -gt 0) { $args[0] } else { $null }
+                        $relativeValue = [string]$menuItemArg.Tag
+                        $url = "http://127.0.0.1:$Port/$relativeValue"
                         Start-Process $url | Out-Null
                     } catch {
                         Write-ServiceLog -Level 'WARN' -Message ("Failed to open service page {0}: {1}" -f $url, $_.Exception.Message)
                     }
-                })
+                }
+                $serviceItem.Add_Click($serviceItemClick)
 
                 [void]$staticFolderItem.DropDownItems.Add($staticItem)
                 [void]$serviceFolderItem.DropDownItems.Add($serviceItem)
@@ -1356,11 +1360,10 @@ function Start-ServiceTray {
         $svcItem.CheckOnClick = $true
         $svcItem.Tag = $svc
         $svcItem.ToolTipText = [string]$svc.Path
-        $svcItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-            param($sender)
-            $menuItemArg = [System.Windows.Forms.ToolStripMenuItem]$sender
-            $svcDef = $menuItemArg.Tag
+        $svcItemClick = {
             try {
+                $menuItemArg = if (@($args).Count -gt 0) { [System.Windows.Forms.ToolStripMenuItem]$args[0] } else { $null }
+                $svcDef = $menuItemArg.Tag
                 $snapshot = @()
                 try {
                     $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
@@ -1386,37 +1389,58 @@ function Start-ServiceTray {
                 $menuItemArg.Checked = $false
                 & $showError ("Service start failed: " + $svcDef.Name) $_.Exception.Message
             }
-        })
+        }
+        $svcItem.Add_Click($svcItemClick)
         [void]$serviceFlyoutRoot.DropDownItems.Add($svcItem)
         [void]$serviceNodes.Add([PSCustomObject]@{ Item = $svcItem; Definition = $svc })
     }
     [void]$context.Items.Add($serviceFlyoutRoot)
 
     $launchA = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Auto Five (A)')
-    $launchA.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $launchAClick = {
+        try {
+            Invoke-LauncherSetFromConfig -SetName 'A' -SetTable $launcherSets
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message "Launcher set A failed: $($_.Exception.Message)"
+        }
+    }
+    $launchA.Add_Click($launchAClick)
     [void]$context.Items.Add($launchA)
 
     $launchB = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Bigger 10 (B)')
-    $launchB.Add_Click({ Invoke-LauncherSetFromConfig -SetName 'B' -SetTable $launcherSets })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $launchBClick = {
+        try {
+            Invoke-LauncherSetFromConfig -SetName 'B' -SetTable $launcherSets
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message "Launcher set B failed: $($_.Exception.Message)"
+        }
+    }
+    $launchB.Add_Click($launchBClick)
     [void]$context.Items.Add($launchB)
 
     [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
 
     $bootstrapConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem('Configure Bootstrap Menu...')
-    $bootstrapConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-        $url = "http://127.0.0.1:$Port/pages/bootstrap-menu-config"
+    $bootstrapConfigClick = {
         try {
+            $url = "http://127.0.0.1:$Port/pages/bootstrap-menu-config"
             Start-Process $url | Out-Null
         } catch {
             Write-ServiceLog -Level 'WARN' -Message ("Failed to launch bootstrap config page {0}: {1}" -f $url, $_.Exception.Message)
         }
-    })
+    }
+    $bootstrapConfigItem.Add_Click($bootstrapConfigClick)
     [void]$context.Items.Add($bootstrapConfigItem)
 
     $reloadBootstrapItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload Bootstrap Menu')
-    $reloadBootstrapItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-        & $reloadBootstrapMenu
-    })
+    $reloadBootstrapClick = {
+        try {
+            & $reloadBootstrapMenu
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message "Reload bootstrap menu failed: $($_.Exception.Message)"
+        }
+    }
+    $reloadBootstrapItem.Add_Click($reloadBootstrapClick)
     [void]$context.Items.Add($reloadBootstrapItem)
 
     [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
@@ -1425,38 +1449,48 @@ function Start-ServiceTray {
     [void]$context.Items.Add($refreshItem)
 
     $startItem = New-Object System.Windows.Forms.ToolStripMenuItem('Start engine')
-    $startItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $startItemClick = {
         try {
             Invoke-EngineAction -EngineAction 'Start' -Background | Out-Null
         } catch {
             & $showError 'Tray start failed' $_.Exception.Message
         }
-    })
+    }
+    $startItem.Add_Click($startItemClick)
     [void]$context.Items.Add($startItem)
 
     $restartItem = New-Object System.Windows.Forms.ToolStripMenuItem('Restart engine')
-    $restartItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-        try {
-            Invoke-EngineAction -EngineAction 'Restart' -Background | Out-Null
-        } catch {
-            & $showError 'Tray restart failed' $_.Exception.Message
+        $svcItemClick = {
+            try {
+                $menuItemArg = if (@($args).Count -gt 0) { [System.Windows.Forms.ToolStripMenuItem]$args[0] } else { $null }
+                $svcDef = $menuItemArg.Tag
+                $snapshot = @()
+                try {
+                    $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+                } catch {
+                    $snapshot = @()
+                }
+                if ($svcDef -and $svcDef.ControlMode -eq 'manual') {
+                    Invoke-EngineServiceControl -Action 'Start' -Definition $svcDef -Background | Out-Null
+                } else {
+                    Invoke-EngineServiceControl -Action 'Toggle' -Definition $svcDef -Background | Out-Null
+                }
+            } catch {
+                Write-ServiceLog -Level 'WARN' -Message "Service tray action failed: $($_.Exception.Message)"
+            }
         }
-    })
-    [void]$context.Items.Add($restartItem)
-
-    $stopItem = New-Object System.Windows.Forms.ToolStripMenuItem('Stop engine')
-    $stopItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-        try {
-            Invoke-EngineAction -EngineAction 'Stop' -Background | Out-Null
-        } catch {
-            & $showError 'Tray stop failed' $_.Exception.Message
-        }
-    })
-    [void]$context.Items.Add($stopItem)
-
-    [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+        $svcItem.Add_Click($svcItemClick)
 
     $exitItem = New-Object System.Windows.Forms.ToolStripMenuItem('Exit tray')
+    $exitItemClick = {
+        try {
+            $timer.Stop()
+            [System.Windows.Forms.Application]::ExitThread()
+        } catch {
+            <# Intentional: non-fatal during shutdown #>
+        }
+    }
+    $exitItem.Add_Click($exitItemClick)
     [void]$context.Items.Add($exitItem)
 
     $notify.ContextMenuStrip = $context
@@ -1513,14 +1547,15 @@ function Start-ServiceTray {
 
     $refreshItem.Add_Click($updateState)
 
-    $exitItem.Add_Click({
+    $exitItemClick = {
         try {
             $timer.Stop()
             [System.Windows.Forms.Application]::ExitThread()
         } catch {
             <# Intentional: non-fatal during shutdown #>
         }
-    })
+    }
+    $exitItem.Add_Click($exitItemClick)
 
     try {
         & $updateState

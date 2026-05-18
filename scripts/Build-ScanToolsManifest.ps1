@@ -89,7 +89,8 @@ foreach ($f in $summaries) {
         foreach ($scan in @($s.scans)) {
             $name = [string]$scan.name
             if (-not $stats.ContainsKey($name)) {
-                $stats[$name]  # SIN-EXEMPT:P027 -- hashtable key index, context-verified safe = [pscustomobject]@{
+                # SIN-EXEMPT:P027 -- hashtable key index, context-verified safe
+                $stats[$name] = [pscustomobject]@{
                     runCount=0; successCount=0; failCount=0; totalElapsed=0.0; lastRun=$null; lastResult=$null
                 }
             }
