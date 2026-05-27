@@ -1,0 +1,169 @@
+{
+  "schema": "BootstrapMenuConfig/1.0",
+  "headings": [
+    {
+      "name": "Services",
+      "items": [
+        {
+          "label": "Engine Status JSON",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/api/engine/status"
+        },
+        {
+          "label": "Start Local WebEngine",
+          "type": "engineAction",
+          "target": "Start"
+        },
+        {
+          "label": "Stop Local WebEngine",
+          "type": "engineAction",
+          "target": "Stop"
+        },
+        {
+          "label": "Restart Local WebEngine",
+          "type": "engineAction",
+          "target": "Restart"
+        },
+        {
+          "label": "Kill Local WebEngine (Force)",
+          "type": "engineKill",
+          "target": "force"
+        }
+      ]
+    },
+    {
+      "name": "SCRIPT-Tests",
+      "items": [
+        {
+          "label": "LWE Integration Tests",
+          "type": "script",
+          "target": "tests/Start-LocalWebEngineIntegration.Tests.ps1"
+        },
+        {
+          "label": "LWE Unit Tests",
+          "type": "script",
+          "target": "tests/Start-LocalWebEngine.Tests.ps1"
+        },
+        {
+          "label": "WebEngine Sustained Test",
+          "type": "script",
+          "target": "tests/Test-WebEngineSustained.ps1"
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "items": [
+        {
+          "label": "Open ~REPORTS Folder",
+          "type": "folder",
+          "target": "~REPORTS"
+        },
+        {
+          "label": "Open reports Folder",
+          "type": "folder",
+          "target": "reports"
+        },
+        {
+          "label": "Engine Events API",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/api/engine/events"
+        }
+      ]
+    },
+    {
+      "name": "WebPages-127.0.0.1",
+      "items": [
+        {
+          "label": "Workspace Hub",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/"
+        },
+        {
+          "label": "Service Cluster Controller",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml"
+        },
+        {
+          "label": "Menu Builder",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/menu-builder"
+        }
+      ]
+    },
+    {
+      "name": "WebPages-LocalFolder",
+      "items": [
+        {
+          "label": "XHTML-WorkspaceHub.xhtml",
+          "type": "file",
+          "target": "XHTML-WorkspaceHub.xhtml"
+        },
+        {
+          "label": "XHTML-ServiceClusterController.xhtml",
+          "type": "file",
+          "target": "scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml"
+        },
+        {
+          "label": "XHTML-MenuBuilder.xhtml",
+          "type": "file",
+          "target": "scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml"
+        }
+      ]
+    },
+    {
+      "name": "system tools",
+      "items": [
+        {
+          "label": "Services Console",
+          "type": "command",
+          "target": "services.msc"
+        },
+        {
+          "label": "Task Manager",
+          "type": "command",
+          "target": "taskmgr.exe"
+        },
+        {
+          "label": "Event Viewer",
+          "type": "command",
+          "target": "eventvwr.msc"
+        }
+      ]
+    },
+    {
+      "name": "URLs",
+      "items": [
+        {
+          "label": "Local MCP (3000)",
+          "type": "url",
+          "target": "http://127.0.0.1:3000/mcp"
+        },
+        {
+          "label": "GitHub Repo",
+          "type": "url",
+          "target": "https://github.com/KpeJet2/KPEJET2-PowerShellGUI"
+        },
+        {
+          "label": "Bootstrap Menu Config UI",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/bootstrap-menu-config"
+        }
+      ]
+    },
+    {
+      "name": "WebPage-SCRIPTs",
+      "items": [
+        {
+          "label": "Detect scripts referenced by pages",
+          "type": "webpageScripts",
+          "sourcePages": [
+            "XHTML-WorkspaceHub.xhtml",
+            "scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml",
+            "scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:49:41.7757064Z",
+  "title": "FIX: Missing closing '}' in statement block or type definition.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412124835-4a6dcd1c",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412124941-02ed1bba",
+  "description": "Fix for bug Bug-20260412124835-4a6dcd1c: Parse error in PwSh-HelpFilesUpdateSource-ReR.psm1 line 409: Missing closing '}' in statement block or type definition.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:49:41.775743Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "Auto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:46.654388+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:47",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

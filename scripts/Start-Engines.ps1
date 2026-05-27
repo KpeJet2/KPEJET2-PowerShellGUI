@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -51,7 +51,7 @@ if ($_seProc.Split(';') -notcontains $_seMods) {
 $_seUser = [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
 if ([string]::IsNullOrEmpty($_seUser)) { $_seUser = '' }
 if ($_seUser.Split(';') -notcontains $_seMods) {
-    $newUserPath = ($_seMods + ';' + $_seUser).TrimEnd(';')
+    $newUserPath = ($_seMods + ';' + $_seUser).TrimEnd(';')  # SIN-EXEMPT:P009 -- internal vars from $PSScriptRoot/env, not external input
     [System.Environment]::SetEnvironmentVariable('PSModulePath', $newUserPath, 'User')
 }
 
@@ -149,6 +149,7 @@ Remove-Variable -Name '_seScriptDir','_seRoot','_seMods','_seProc','_seUser','_s
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,6 +1,6 @@
 {
   "completedAt": null,
-  "plannedAt": null,
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
   "source": "BugTracker",
   "executedAt": null,
   "outlineTag": "OUTLINE-PROTO-v0",
@@ -13,21 +13,21 @@
   "linkedBugs": [],
   "id": "Bugs2FIX-20260412141812-fb83ecd4",
   "description": "Fix for bug Bug-20260412141713-b8d266bd: Script CallASRWebSvcConnector2.ps1 has 2 functions but zero try/catch blocks",
-  "executionAgent": "",
+  "executionAgent": "CronAiAthon-Pipeline",
   "outlinePhase": "assessment",
   "linkedFeatures": [],
-  "modified": "2026-04-12T06:18:12.8130401Z",
+  "modified": "2026-05-15T14:36:41.1388049Z",
   "acknowledged": null,
   "sinId": "",
   "result": null,
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "suggestedBy": "CronAiAthon",
   "priority": "MEDIUM",
   "outlineVersion": "v0",
-  "notes": "",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector2.ps1"
-  ]
+  ],
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

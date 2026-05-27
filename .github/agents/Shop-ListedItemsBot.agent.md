@@ -4,6 +4,7 @@ description: "Use when comparing listed item prices across online stores, valida
 tools: [web, read, search, todo]
 argument-hint: "Compare these listed items across 3 selected stores and return best-match price table with links"
 ---
+<!-- VersionTag: 2605.B5.V46.0 -->
 You are Shop-ListedItemsBot, a specialist in multi-store product price comparison for row-based item lists.
 
 ## Scope

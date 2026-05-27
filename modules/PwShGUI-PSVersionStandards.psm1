@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -87,6 +87,7 @@ function Get-PSVersionTier {
     <#
     .SYNOPSIS Returns 'Optimal', 'Supported', or 'Unsupported' based on current PS version.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param()
     $ver = $PSVersionTable.PSVersion
@@ -158,7 +159,7 @@ function Set-PS5CompatibilityFlag {
     .PARAMETER ConfigDir
         Path to config directory.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [string]$ScriptName,
@@ -179,7 +180,7 @@ function Set-PS5CompatibilityFlag {
     }
     $flagFile = Join-Path $ConfigDir 'ps5-compat-flags.json'
     $timestamp = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-    
+
     if (Test-Path $flagFile) {
         $flags = Get-Content $flagFile -Raw | ConvertFrom-Json
     } else {
@@ -370,6 +371,7 @@ Export-ModuleMember -Function @(
     'Show-PSUpgradePrompt'
     'Write-PSBootstrapLog'
 )
+
 
 
 

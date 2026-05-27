@@ -1,0 +1,18 @@
+{
+  "id": "SIN-CANDIDATE-20260515221955-7b097b6a",
+  "title": "Resurfacing bug pattern: Missing expression after ','.",
+  "occurrences": 3,
+  "sample_bug_ids": [
+    "Bug-20260412130510-94717bd8",
+    "Bug-20260412131957-aa73d2cc",
+    "Bug-20260412132948-da7a41e9"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

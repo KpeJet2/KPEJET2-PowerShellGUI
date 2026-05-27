@@ -1,6 +1,6 @@
 {
   "completedAt": null,
-  "plannedAt": null,
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
   "source": "BugTracker",
   "executedAt": null,
   "outlineTag": "OUTLINE-PROTO-v0",
@@ -13,21 +13,21 @@
   "linkedBugs": [],
   "id": "Bugs2FIX-20260412142627-e055ac74",
   "description": "Fix for bug Bug-20260412142529-5b67db1e: Script Build-DirectoryTree.ps1 has 1 functions but zero try/catch blocks",
-  "executionAgent": "",
+  "executionAgent": "CronAiAthon-Pipeline",
   "outlinePhase": "assessment",
   "linkedFeatures": [],
-  "modified": "2026-04-12T06:26:27.2108468Z",
+  "modified": "2026-05-15T14:36:41.1388049Z",
   "acknowledged": null,
   "sinId": "",
   "result": null,
-  "status": "OPEN",
+  "status": "IN-PROGRESS",
   "suggestedBy": "CronAiAthon",
   "priority": "MEDIUM",
   "outlineVersion": "v0",
-  "notes": "",
   "executionMethod": "",
   "sessionModCount": 1,
   "affectedFiles": [
     "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1"
-  ]
+  ],
+  "notes": "Auto-transitioned to IN-PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
 }

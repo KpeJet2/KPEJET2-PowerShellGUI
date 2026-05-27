@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2604.B0.v1 -->
+<!-- VersionTag: 2605.B5.V46.0 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -124,13 +124,16 @@
     .hidden { display:none !important; }
     .drag-over { border-style:dashed !important; border-color:var(--accent) !important; }
   </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="../../~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="../../styles/pwshgui-version-link.js"></script>
 </head>
 <body>
 
 <!-- ════════════════════════ TOP BAR ════════════════════════ -->
 <div class="top-bar">
   <h1>&#x1F9EA; Testing Routine Builder</h1>
-  <span class="ver">v2603.B0.v27.0 &#x2014; PwShGUI</span>
+  <span class="ver">v2605.B5.V46.0 &#x2014; PwShGUI</span>
 </div>
 
 <!-- ════════════════════════ TOOLBAR ════════════════════════ -->
@@ -222,7 +225,7 @@
 
 <!-- ════════════════════════ FOOTER ═════════════════════════ -->
 <footer>
-  Testing Routine Builder &#x2014; v2603.B0.v27.0
+  Testing Routine Builder &#x2014; v2605.B5.V46.0
   &#x2014; <a href="../../~README.md/FILES-MANIFEST.md">Files Manifest</a>
   &#x2014; <a href="../../~README.md/PwShGUI-Checklists.xhtml">Checklists</a>
   &#x2014; <a href="XHTML-FeatureRequests.xhtml">Feature Requests</a>
@@ -269,7 +272,7 @@ var steps = [];
 var results = [];
 var selectedStep = -1;
 var editIdx = -1;
-var routineMeta = { name:'Untitled Routine', description:'', version:'2603.B0.v27.0' };
+var routineMeta = { name:'Untitled Routine', description:'', version:'2605.B5.V46.0' };
 var TEMPLATE_DIR = '../../config/CONFIG-TEMPLATES/TESTING-TEMPLATES/';
 
 var TEST_TYPES = {
@@ -435,7 +438,7 @@ document.getElementById('btnSaveTemplate').addEventListener('click', function() 
       description: routineMeta.description || '',
       created: iso(),
       lastModified: iso(),
-      version: '2603.B0.v27.0'
+      version: '2605.B5.V46.0'
     },
     steps: steps
   };
@@ -477,7 +480,7 @@ document.getElementById('btnNewRoutine').addEventListener('click', function() {
   steps = [];
   results = [];
   selectedStep = -1;
-  routineMeta = { name:'Untitled Routine', description:'', version:'2603.B0.v27.0' };
+  routineMeta = { name:'Untitled Routine', description:'', version:'2605.B5.V46.0' };
   document.getElementById('routineName').textContent = 'Untitled Routine';
   renderSteps();
   renderResults();
@@ -655,7 +658,7 @@ window.addEventListener('message', function(ev) {
         name: routineMeta.name || 'Untitled Routine',
         description: routineMeta.description || '',
         lastModified: iso(),
-        version: routineMeta.version || '2603.B0.v27.0'
+        version: routineMeta.version || '2605.B5.V46.0'
       },
       steps: steps
     };
@@ -697,5 +700,6 @@ window.saveEdit = function() { _origSaveEdit(); notifyParentChanged(); };
 </script>
 </body>
 </html>
+
 
 

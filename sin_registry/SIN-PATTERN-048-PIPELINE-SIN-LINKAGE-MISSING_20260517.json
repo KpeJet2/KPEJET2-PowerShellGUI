@@ -1,0 +1,22 @@
+{
+  "id": "SIN-PATTERN-048-PIPELINE-SIN-LINKAGE-MISSING",
+  "sin_id": "SIN-PATTERN-048-PIPELINE-SIN-LINKAGE-MISSING",
+  "title": "Pipeline Bug or Bugs2FIX item lacks sinPattern propagation when matched against a SIN-PATTERN registry entry",
+  "description": "When `Invoke-SinRegistryFeedback` matches a Bug item against a SIN-PATTERN-*.json registry entry, it MUST stamp the canonical pattern id onto the item's `sinPattern` field. When `ConvertTo-Bugs2FIX` derives a FIX item from a Bug, it MUST inherit BOTH `sinId` and `sinPattern` from the parent so downstream tooling (SIN-Scoreboard.xhtml, integrity-check audits, reuse-count tracking on fixes) can reconstruct lineage. Items emitted without `sinPattern` (when one is known) are referentially orphaned and prevent fix reuse counters from incrementing on the originating SIN-PATTERN.",
+  "severity": "Blocking",
+  "status": "pattern-defined",
+  "category": "Pipeline/Linkage",
+  "detection_method": "Scan todo/Bug-*.json + todo/Bugs2FIX-*.json: items whose `notes` matches /Matched existing sin: SIN-PATTERN-/ MUST have non-empty `sinPattern`. Bugs2FIX items with non-empty parentId MUST inherit both sinId and sinPattern from the matching parent.",
+  "scan_regex": "(?s)\\\"notes\\\"\\s*:\\s*\\\"Matched existing sin: SIN-PATTERN-[^\\\"]+\\\"(?:(?!\\\"sinPattern\\\"\\s*:\\s*\\\"SIN-PATTERN-).)*$",
+  "context_guard_regex": "todo/Bug-|todo/Bugs2FIX-|todo/BUG-",
+  "file_exclusion_regex": "\\.bak$|\\.backup_|completed/",
+  "remediation": "Patched in `modules/CronAiAthon-Pipeline.psm1`: New-PipelineItem now accepts -SinPattern; Invoke-SinRegistryFeedback stamps it on PATTERN-file matches; ConvertTo-Bugs2FIX propagates parent's sinId AND sinPattern. Backfill historical orphans via scripts/Sync-PipelineRegistryFromDisk.ps1 -Apply.",
+  "examples": [
+    "# Bad - Bug matched a SIN-PATTERN but lost the linkage\n{ \"id\": \"Bug-...\", \"sinId\": \"SIN-PATTERN-027\", \"sinPattern\": \"\", \"notes\": \"Matched existing sin: ...\" }",
+    "# Good - both fields populated\n{ \"id\": \"Bug-...\", \"sinId\": \"SIN-PATTERN-027\", \"sinPattern\": \"SIN-PATTERN-027-NULL-ARRAY-INDEX\" }"
+  ],
+  "tags": ["pipeline", "linkage", "referential-integrity", "auto-remediation"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-17",
+  "date_added": "2026-05-17"
+}

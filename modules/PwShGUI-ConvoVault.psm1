@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.3
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -115,6 +115,7 @@ function Unprotect-ConvoData {
 
 # ─── Per-entry encryption for web bundle (no GZip -- small entries, raw AES-CBC Base64) ───
 function Protect-ConvoEntry {
+    [OutputType([System.String])]
     [CmdletBinding()]
     param([string]$PlainText, [byte[]]$Key)
     try {
@@ -144,7 +145,10 @@ function Protect-ConvoEntry {
 function Initialize-ConvoVaultKey {
     <#
     .SYNOPSIS Returns the 32-byte AES key from vault, creating one if absent.
+        .DESCRIPTION
+      Detailed behaviour: Initialize convo vault key.
     #>
+    [OutputType([System.Byte[]])]
     [CmdletBinding()]
     param([string]$WorkspacePath)
     try {
@@ -155,7 +159,7 @@ function Initialize-ConvoVaultKey {
             try {
                 $b64 = Get-VaultItem -Key $script:ConvoVaultKeyEntry -ErrorAction SilentlyContinue
                 if ($b64) { return [Convert]::FromBase64String($b64) }
-            } catch { <# Intentional: vault locked -- generate ephemeral key #> }
+            } catch { <# Intentional: vault locked -- generate ephemeral key #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
         # Generate + store new key
@@ -163,7 +167,7 @@ function Initialize-ConvoVaultKey {
         [System.Security.Cryptography.RNGCryptoServiceProvider]::new().GetBytes($newKey)
         $newB64 = [Convert]::ToBase64String($newKey)
         if (Get-Command Set-VaultItem -ErrorAction SilentlyContinue) {
-            try { Set-VaultItem -Key $script:ConvoVaultKeyEntry -Value $newB64 -ErrorAction SilentlyContinue } catch { <# vault locked -- non-fatal #> }
+            try { Set-VaultItem -Key $script:ConvoVaultKeyEntry -Value $newB64 -ErrorAction SilentlyContinue } catch { <# vault locked -- non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
         return $newKey
     } catch {
@@ -178,7 +182,11 @@ function Get-ConvoEntries {
     <#
     .SYNOPSIS Decrypts and returns all conversation entries. Returns empty array if vault unavailable.
     .OUTPUTS PSCustomObject[]
+        .DESCRIPTION
+      Detailed behaviour: Get convo entries.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -206,7 +214,10 @@ function Add-ConvoEntry {
     .SYNOPSIS Appends a single conversation exchange to the encrypted vault log.
     .PARAMETER WorkspacePath  Workspace root.
     .PARAMETER Entry  Ordered hashtable with: id, timestamp, sessionTag, topic, rumiVerse, rumiContext, nikrResponse, nikrCutoff, retort.
+        .DESCRIPTION
+      Detailed behaviour: Add convo entry.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -231,7 +242,7 @@ function Add-ConvoEntry {
                 $raw  = [System.IO.File]::ReadAllBytes($logPath)
                 $json = Unprotect-ConvoData -EncData $raw -Key $key
                 if ($json) { foreach ($e in @($json | ConvertFrom-Json)) { [void]$entries.Add($e) } }
-            } catch { <# Intentional: corrupt/unreadable -- start fresh #> }
+            } catch { <# Intentional: corrupt/unreadable -- start fresh #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
         [void]$entries.Add($Entry)
@@ -286,7 +297,7 @@ function Invoke-ConvoExchange {
                     $rumaVerse   = Get-RumiVerse
                     $rumaContext = "koe-RumA reflects on: $Topic"
                 }
-            } catch { <# Intentional: non-fatal, use defaults above #> }
+            } catch { <# Intentional: non-fatal, use defaults above #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
         # ── Load H-Ai-Nikr-Agi ────────────────────────────────────────────────
@@ -302,7 +313,7 @@ function Invoke-ConvoExchange {
                     $nikrCutoff   = Get-NikrAgiCutoff
                     $retort       = Get-NikrAgiRetort -AgentCount 2
                 }
-            } catch { <# Intentional: non-fatal, use defaults above #> }
+            } catch { <# Intentional: non-fatal, use defaults above #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
         $entryId = "CONVO-$(Get-Date -Format 'yyyyMMdd-HHmmss')-$(([System.Guid]::NewGuid().ToString('N')).Substring(0,6))"
@@ -428,6 +439,7 @@ Export-ModuleMember -Function @(
     'Invoke-ConvoExchange',
     'Export-ConvoBundle'
 )
+
 
 
 

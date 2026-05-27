@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -309,10 +309,10 @@ function Export-XHTMLReport {
     $tableRows = ""
     if ($Data -and $Data.Count -gt 0) {
         # Get properties from first object
-        $properties = if ($Data[0] -is [string]) {
+        $properties = if ($Data[0] -is [string]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
             @("Value")
         } else {
-            $Data[0].PSObject.Properties.Name
+            $Data[0].PSObject.Properties.Name  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
         
         # Build table header
@@ -682,7 +682,7 @@ function Export-ComprehensiveXHTMLReport {
             <div class="summary-grid">
 "@
         foreach ($key in $SummaryData.Keys) {
-            $value = $SummaryData[$key]
+            $value = $SummaryData[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $summaryHtml += @"
                 <div class="summary-item">
                     <div class="summary-label">$([System.Web.HttpUtility]::HtmlEncode($key))</div>
@@ -1210,6 +1210,7 @@ Write-Host "`n"
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

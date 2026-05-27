@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.7
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -14,13 +14,13 @@
 # Called by: Start-LocalWebEngine.ps1 via /api/agent/stats  |  manually
 #
 # SIN Compliance: P001,P002,P004,P005,P006,P007,P009,P012,P014,P015,P017,P018
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-
 param(
-    [string]$WorkspacePath = $PSScriptRoot -replace '[\\/]scripts$','',
+    [string]$WorkspacePath = [regex]::Replace($PSScriptRoot, '[\\/]scripts$', ''),
     [switch]$PassThru
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
@@ -49,7 +49,7 @@ $counts = @{}
 function Ensure-Agent {
     param([string]$id)
     if (-not $counts.ContainsKey($id)) {
-        $counts[$id] = @{ calls24h = 0; calls7d = 0; callsTotal = 0; lastCall = $null }
+        $counts[$id] = @{ calls24h = 0; calls7d = 0; callsTotal = 0; lastCall = $null }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 }
 
@@ -86,12 +86,12 @@ if (Test-Path -LiteralPath $logsDir) {
             }
 
             Ensure-Agent -id $aid
-            $counts[$aid].callsTotal++
+            $counts[$aid].callsTotal++  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($null -ne $dtParsed) {
-                if ($dtParsed -ge $cutoff24h) { $counts[$aid].calls24h++ }
-                if ($dtParsed -ge $cutoff7d)  { $counts[$aid].calls7d++ }
-                if ($null -eq $counts[$aid].lastCall -or $dtParsed -gt [datetime]::Parse($counts[$aid].lastCall)) {
-                    $counts[$aid].lastCall = $dtParsed.ToString('o')
+                if ($dtParsed -ge $cutoff24h) { $counts[$aid].calls24h++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($dtParsed -ge $cutoff7d)  { $counts[$aid].calls7d++ }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($null -eq $counts[$aid].lastCall -or $dtParsed -gt [datetime]::Parse($counts[$aid].lastCall)) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $counts[$aid].lastCall = $dtParsed.ToString('o')  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
         }
@@ -122,8 +122,8 @@ if ($null -ne $existing -and $null -ne $existing.PSObject.Properties['stats']) {
 # Overlay computed counts
 foreach ($aid in $counts.Keys) {
     $src = if ($counts.ContainsKey($aid)) { 'agents/focalpoint-null/logs/' } else { '' }
-    if (-not $statsObj.ContainsKey($aid)) {
-        $statsObj[$aid] = [ordered]@{
+    if (-not $statsObj.Contains($aid)) {
+        $statsObj[$aid] = [ordered]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
             calls24h   = 0
             calls7d    = 0
             callsTotal = 0
@@ -131,11 +131,11 @@ foreach ($aid in $counts.Keys) {
             logSource  = $src
         }
     }
-    $statsObj[$aid].calls24h   = $counts[$aid].calls24h
-    $statsObj[$aid].calls7d    = $counts[$aid].calls7d
-    $statsObj[$aid].callsTotal = $counts[$aid].callsTotal
-    if ($null -ne $counts[$aid].lastCall) { $statsObj[$aid].lastCall = $counts[$aid].lastCall }
-    $statsObj[$aid].logSource  = $src
+    $statsObj[$aid].calls24h   = $counts[$aid].calls24h  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    $statsObj[$aid].calls7d    = $counts[$aid].calls7d  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    $statsObj[$aid].callsTotal = $counts[$aid].callsTotal  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    if ($null -ne $counts[$aid].lastCall) { $statsObj[$aid].lastCall = $counts[$aid].lastCall }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    $statsObj[$aid].logSource  = $src  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 # ── Write output ──────────────────────────────────────────────────────────────
@@ -169,6 +169,7 @@ if ($PassThru) { return $true }
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

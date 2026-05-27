@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:36:37.6262228Z",
+  "title": "FIX: The string is missing the terminator: '.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412123534-996c7723",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412123637-5f9b4c29",
+  "description": "Fix for bug Bug-20260412123534-996c7723: Parse error in H-Ai-Nikr-Agi.psm1 line 493: The string is missing the terminator: '.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:36:37.6262721Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "Auto-reconciled: target file currently parses cleanly (or absent). Path=",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:46.5501892+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:47",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

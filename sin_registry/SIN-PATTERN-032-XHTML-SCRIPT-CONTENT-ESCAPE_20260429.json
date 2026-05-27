@@ -1,0 +1,16 @@
+{
+  "id": "SIN-PATTERN-032-XHTML-SCRIPT-CONTENT-ESCAPE",
+  "title": "Embedded JS in XHTML must escape </script> </style> and ]]> inside user data",
+  "description": "XHTML CDATA wrappers do NOT prevent HTML parsers from honouring `</script>` or `</style>` sequences inside script/style content. When user/log data is embedded as JS string literals, any literal `</script>` or `</style>` substring (or a `]]>` CDATA terminator) will break the host document. Standard JS \\\\ and \\' escaping is insufficient.",
+  "severity": "Blocking",
+  "category": "XHTML/Injection-Safety",
+  "detection": "Scan PS sync scripts that build JS-string payloads from external content for the absence of `</script>` and `</style>` neutralisation before write. Flag any Convert-To*JsString helper that does not call [regex]::Replace($x,'(?i)</(script|style)','<\\\\/$1') or equivalent.",
+  "remediation": "Hardened helper:\n  $escaped = $sanitized.Replace('\\\\','\\\\\\\\').Replace(\"'\",\"\\\\'\")\n  $escaped = $escaped.Replace(']]>',']]\\\\u003E')\n  $escaped = [regex]::Replace($escaped,'(?i)</(script|style)','<\\\\/$1')\n  $escaped = $escaped.Replace([string][char]0x2028,'\\\\u2028').Replace([string][char]0x2029,'\\\\u2029')\nVerify post-write that ScriptCloseTags == 1 and JS_PARSE_OK.",
+  "examples": [
+    "# Bad — log content with literal </script> blows up host XHTML\n$js = \"var X = '$logContent';\"",
+    "# Good — neutralise structural sequences first\n$safe = (Convert-ToJsString $logContent)\n$js = \"var X = '$safe';\""
+  ],
+  "occurrences_observed": 3,
+  "first_observed": "2026-04-28",
+  "date_added": "2026-04-29"
+}

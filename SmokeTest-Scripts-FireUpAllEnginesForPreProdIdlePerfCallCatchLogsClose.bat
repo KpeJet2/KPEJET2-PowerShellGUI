@@ -1,4 +1,4 @@
-REM VersionTag: 2604.B2.V32.0
+REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V32.0  2026-04-12  Script-only post-smoke routine wrapper
 @echo off

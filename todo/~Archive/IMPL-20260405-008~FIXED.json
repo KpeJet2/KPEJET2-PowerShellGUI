@@ -1,0 +1,16 @@
+﻿{
+  "type": "Bugs2FIX",
+  "category": "Pipeline",
+  "id": "IMPL-20260405-008",
+  "status": "DONE",
+  "title": "Wire 11 never-run scheduled tasks into CronProcessor dispatch",
+  "description": "11 of 19 tasks in cron-aiathon-schedule.json have lastRun null. Enabled but never triggered. Wire or disable.",
+  "priority": "MEDIUM",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:49",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

@@ -1,11 +1,11 @@
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.0
 "RecordType","InstanceId","TemplateId","Type","Model","Name","Location","AvInputs","AvOutputs","PowerInputs","PowerOutputs","NetworkInterfaces","UsbInputs","UsbPlugs","SourceInstance","SourceConnector","DestInstance","DestConnector"
 "Device","5e7f2c39-015d-4acf-8164-b56512f56cd1","1","Audio Player","Sonos Play:5","Living Room Speaker","360,120","2","0","1","0","1","0","0","","","",""
 "Device","bfd6d758-5bc6-44ce-bca3-cda1d1c99f9a","2","Video Media Player","Sony BDP-S6700","Blu-ray Player","160,320","0","2","1","0","1","1","0","","","",""
@@ -19,6 +19,7 @@
 "Connection","","","","","","","","","","","","","","bfd6d758-5bc6-44ce-bca3-cda1d1c99f9a","AV Output:1","5e7f2c39-015d-4acf-8164-b56512f56cd1","AV Input:0"
 "Connection","","","","","","","","","","","","","","d21a66c3-4e47-4cc6-bdce-3ca01a97eb62","Power Output:6","bfd6d758-5bc6-44ce-bca3-cda1d1c99f9a","Power Input:0"
 "Connection","","","","","","","","","","","","","","d21a66c3-4e47-4cc6-bdce-3ca01a97eb62","Power Output:11","5e7f2c39-015d-4acf-8164-b56512f56cd1","Power Input:0"
+
 
 
 

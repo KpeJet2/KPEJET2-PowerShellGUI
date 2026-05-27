@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -419,12 +419,12 @@ if ($scanSuccess) {
     # Write crash dump for final failure (P010: no iex)
     try {
         Write-CrashDump `
-            -Phase       'dependency-scan' `
-            -ErrorMessage $scanErrorMsg `
-            -StackTrace  $scanStackTrace `
-            -RetryCount  $maxRetries `
-            -CrashDumpDir $crashDumpPath `
-            -ExtraContext @{ mode = $Mode; script = $scanScriptPath }
+            -Phase           'dependency-scan' `
+            -ErrorMessage    $scanErrorMsg `
+            -StackTraceText  $scanStackTrace `
+            -RetryCount      $maxRetries `
+            -CrashDumpDir    $crashDumpPath `
+            -ExtraContext    @{ mode = $Mode; script = $scanScriptPath }
     } catch {
         Write-DSMLog -Level 'Warning' -Message "Could not write crash dump: $_"
     }
@@ -512,6 +512,7 @@ if ($scanSuccess) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

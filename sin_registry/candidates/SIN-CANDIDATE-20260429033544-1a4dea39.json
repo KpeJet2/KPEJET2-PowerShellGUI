@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-1a4dea39",
+  "title": "Resurfacing bug pattern: [FAIL] PwSh-HelpFilesUpdateSource-ReR.psm1 -- 5 parse error(s)",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260412134935-5be0b9e5",
+    "Bug-20260412135725-2a13076b"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

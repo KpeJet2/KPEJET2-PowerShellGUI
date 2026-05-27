@@ -6,8 +6,8 @@
   },
   "enabled": true,
   "frequencyMinutes": 15,
-  "lastRunTime": "2026-04-26T12:03:48.2185317Z",
-  "nextRunTime": "2026-04-26T12:18:48.2185317Z",
+  "lastRunTime": "2026-05-06T17:47:40.9505778Z",
+  "nextRunTime": "2026-05-06T18:02:40.9505778Z",
   "maxConcurrentJobs": 1,
   "autoStartOnGUILaunch": false,
   "tasks": [
@@ -17,8 +17,9 @@
       "enabled": true,
       "type": "BugScan",
       "frequency": 120,
-      "lastRun": "2026-03-30T21:14:44.2300189Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:05.6083232Z",
+      "lastResult": "FAILED",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-PipelineProcess",
@@ -26,9 +27,9 @@
       "enabled": true,
       "type": "PipelineProcess",
       "frequency": 60,
-      "lastRun": "2026-04-26T12:03:48.2185317Z",
-      "lastResult": "SUCCESS",
-      "consecutiveFailures": 0
+      "lastRun": "2026-05-06T17:37:07.8160983Z",
+      "lastResult": "FAILED",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-MasterAggregate",
@@ -36,8 +37,9 @@
       "enabled": true,
       "type": "MasterAggregate",
       "frequency": 30,
-      "lastRun": "2026-03-30T21:14:48.2758527Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:09.4318066Z",
+      "lastResult": "FAILED",
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-SinRegistryReview",
@@ -45,8 +47,9 @@
       "enabled": true,
       "type": "SinRegistryReview",
       "frequency": 240,
-      "lastRun": "2026-03-30T21:14:48.3279691Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:10.5718561Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-PreReqCheck",
@@ -54,8 +57,9 @@
       "enabled": true,
       "type": "PreReqCheck",
       "frequency": 480,
-      "lastRun": "2026-03-30T21:14:48.3569627Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:10.6587467Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-ReportRetention",
@@ -63,8 +67,9 @@
       "enabled": true,
       "type": "ReportRetention",
       "frequency": 10080,
-      "lastRun": "2026-03-30T21:14:48.3848466Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:11.6979556Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-DocFreshness",
@@ -72,8 +77,9 @@
       "enabled": true,
       "type": "DocFreshness",
       "frequency": 1440,
-      "lastRun": "2026-03-30T21:14:48.4791901Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:11.8435568Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-DocRebuild",
@@ -81,8 +87,9 @@
       "enabled": true,
       "type": "DocRebuild",
       "frequency": 120,
-      "lastRun": "2026-03-30T21:14:55.8261331Z",
-      "lastResult": "SUCCESS"
+      "lastRun": "2026-05-06T17:37:31.5980226Z",
+      "lastResult": "FAILED",
+      "consecutiveFailures": 2
     },
     {
       "id": "TASK-DepMap",
@@ -90,7 +97,7 @@
       "enabled": true,
       "type": "DepMap",
       "frequency": 1440,
-      "lastRun": "2026-04-18T06:58:18.084715Z",
+      "lastRun": "2026-05-06T17:39:21.993338Z",
       "lastResult": "SUCCESS",
       "consecutiveFailures": 0
     },
@@ -100,7 +107,7 @@
       "enabled": true,
       "type": "CertMonitor",
       "frequency": 1440,
-      "lastRun": "2026-04-14T17:40:34.8017899Z",
+      "lastRun": "2026-05-06T17:39:22.0314724Z",
       "lastResult": "SUCCESS",
       "consecutiveFailures": 0
     },
@@ -110,10 +117,10 @@
       "enabled": true,
       "type": "TabErrorFix",
       "frequency": 30,
-      "lastRun": "2026-04-14T17:40:40.0001829Z",
-      "lastResult": "SUCCESS",
+      "lastRun": "2026-05-06T17:39:22.5814455Z",
+      "lastResult": "FAILED",
       "description": "Process BUG pipeline items with category TabScanError. Attempt automated resolution and update item status.",
-      "consecutiveFailures": 0
+      "consecutiveFailures": 1
     },
     {
       "id": "TASK-AutopilotSuggestion",
@@ -121,10 +128,10 @@
       "enabled": true,
       "type": "AutopilotSuggestion",
       "frequency": 60,
-      "lastRun": "2026-04-14T17:40:48.2163667Z",
+      "lastRun": "2026-05-06T17:39:24.0662392Z",
       "lastResult": "FAILED",
       "description": "Every hour: derive one actionable suggestion from health signals in under 7 seconds and post to the Autopilot Suggestions store.",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     },
     {
       "id": "TASK-ConfigCoverage",
@@ -132,7 +139,7 @@
       "enabled": true,
       "type": "ConfigCoverageAudit",
       "frequency": 1440,
-      "lastRun": "2026-04-14T17:47:48.4045589Z",
+      "lastRun": "2026-05-06T17:39:37.3059551Z",
       "lastResult": "SUCCESS",
       "description": "Daily: scan all .ps1/.psm1 files for central config feature adoption. Report gaps and surface SIN violations as pipeline BUG items.",
       "consecutiveFailures": 0
@@ -154,10 +161,10 @@
       "enabled": true,
       "type": "PipelineSteer",
       "frequency": 1440,
-      "lastRun": "2026-04-18T07:40:05.345046Z",
-      "lastResult": "FAILED",
+      "lastRun": "2026-05-06T17:46:49.44264Z",
+      "lastResult": "SUCCESS",
       "description": "Daily: dry-run scan all workspace .ps1/.psm1 files for missing function descriptions, outline conformance, and dotfile presence. Report only, no changes applied.",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-PipelineSteerApply",
@@ -185,10 +192,10 @@
       "enabled": true,
       "type": "FullSystemsScan",
       "frequency": 10080,
-      "lastRun": "2026-04-18T08:08:20.5559471Z",
+      "lastRun": "2026-05-06T17:46:49.5014829Z",
       "lastResult": "FAILED",
       "description": "Weekly: orchestrated parallel+sequential integrity scan (SIN, SemiSin, Dependency, Orphan, ReferenceIntegrity, ConfigCoverage, AgenticManifest, PipelineSteering DryRun). Delta mode skips duplicate writes. Rotates summaries to archive after 7 files.",
-      "consecutiveFailures": 1
+      "consecutiveFailures": 2
     },
     {
       "id": "TASK-ConvoVaultExchange",
@@ -206,9 +213,10 @@
       "enabled": true,
       "type": "ErrorHandlingLoop",
       "frequency": 240,
-      "lastRun": "2026-04-04T14:01:03.7400597Z",
+      "lastRun": "2026-05-06T17:47:33.2675421Z",
       "lastResult": "SUCCESS",
-      "description": "Every 4 hours: run iterative error-handling scan/remediation loop for Priority 1 files until convergence."
+      "description": "Every 4 hours: run iterative error-handling scan/remediation loop for Priority 1 files until convergence.",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-SelfReview",
@@ -216,7 +224,7 @@
       "enabled": true,
       "type": "SelfReview",
       "frequency": 360,
-      "lastRun": "2026-04-18T07:43:25.7205145Z",
+      "lastRun": "2026-05-06T17:47:35.7467185Z",
       "lastResult": "SUCCESS",
       "description": "Every 6 hours: score workspace health across 8 dimensions, generate feedback items, track improvement trends, suggest config tuning.",
       "consecutiveFailures": 0
@@ -227,8 +235,9 @@
       "enabled": true,
       "type": "KoeRumaMilestone",
       "frequency": 43200,
-      "lastRun": null,
-      "lastResult": null
+      "lastRun": "2026-05-06T17:47:35.8538711Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     },
     {
       "id": "TASK-HelpMenuCompliance",
@@ -237,21 +246,32 @@
       "type": "HelpMenuCompliance",
       "frequency": 1440,
       "description": "Daily: audit help-menu readiness across modules/scripts. Checks compact TODO markers, Show-*Help functions, common switches. Uses config/help-menu-registry.json. Script: scripts/Invoke-HelpMenuCompliance.ps1 -Mode Audit",
-      "lastRun": null,
-      "lastResult": null
+      "lastRun": "2026-05-06T17:47:35.8698505Z",
+      "lastResult": "FAILED",
+      "consecutiveFailures": 1
+    },
+    {
+      "id": "TASK-VersionConsistency",
+      "name": "Version Consistency Validation",
+      "enabled": true,
+      "type": "VersionConsistency",
+      "frequency": 60,
+      "lastRun": "2026-05-06T17:47:40.9505778Z",
+      "lastResult": "SUCCESS",
+      "consecutiveFailures": 0
     }
   ],
   "jobStatistics": {
-    "totalCycles": 120,
-    "totalErrors": 29,
-    "totalItemsDone": 6388,
-    "totalBugsFound": 277,
+    "totalCycles": 151,
+    "totalErrors": 38,
+    "totalItemsDone": 9142,
+    "totalBugsFound": 455,
     "totalTestsMade": 0,
     "totalPlansMade": 0,
     "totalSubagentCalls": 0,
     "subagentTally": {},
-    "lastErrorMessage": "The property 'created' cannot be found on this object. Verify that the property exists.",
-    "lastErrorTime": "2026-04-26T12:02:38.278854Z",
+    "lastErrorMessage": "Unknown task type: HelpMenuCompliance",
+    "lastErrorTime": "2026-05-06T17:47:35.8698505Z",
     "questionsTotal": 7,
     "questionsAutopilot": 1,
     "questionsCommander": 6,

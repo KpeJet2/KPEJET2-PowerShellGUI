@@ -1,0 +1,25 @@
+{
+  "generated": "2026-05-02T00:06:18.0141173Z",
+  "baseline": "C:\\PowerShellGUI\\reports\\iter5\\modules-surface-baseline.json",
+  "verdict": "BREAKING",
+  "removed_count": 0,
+  "added_count": 1,
+  "changed_count": 1,
+  "removed": [],
+  "added": [
+    "CronAiAthon-Pipeline::Invoke-PipelineRegistryCompact"
+  ],
+  "changed": [
+    {
+      "Function": "PwShGUI-HistoryZip::Get-HistoryFileFromZip",
+      "Removed": [
+        "FileName:String:False",
+        "MajorVersion:String:False"
+      ],
+      "Added": [
+        "FileName:String:True",
+        "MajorVersion:String:True"
+      ]
+    }
+  ]
+}

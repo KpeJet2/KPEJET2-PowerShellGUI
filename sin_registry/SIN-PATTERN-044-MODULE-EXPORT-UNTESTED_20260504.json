@@ -1,0 +1,45 @@
+{
+  "sin_id": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+  "title": "Module exports a public function with no Pester smoke test",
+  "description": "A .psm1 module declares a function in Export-ModuleMember (or implicitly exports via no-block module) but no companion <ModuleName>.Tests.ps1 in tests/ contains a Describe/It that invokes that function. Untested public surface drifts: signatures change, parameter names get refactored (see P042), and consumers crash at runtime in ways that would have been caught by a 30-second smoke. This pattern enforces a minimum-viable test obligation per exported function.",
+  "severity": "MEDIUM",
+  "category": "test-coverage",
+  "vector": "missing-smoke-test",
+  "status": "pattern-defined",
+  "created_at": "2026-05-04T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "For each modules/*.psm1 collect Export-ModuleMember -Function names. For each name, search tests/<ModuleName>.Tests.ps1 (and tests/SIN-*.Tests.ps1) for at least one Describe/Context/It block that references the function name. Functions with zero references are flagged.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_untrapped_error": false,
+  "preventionRule": "Whenever a module adds or renames an exported function, add or update a corresponding It block in tests/<ModuleName>.Tests.ps1 that calls the function with valid parameters and asserts at least one observable outcome. CI should fail when an exported function has no test coverage.",
+  "scan_regex": "Export-ModuleMember\\s+-Function\\s+",
+  "scan_file_pattern": "*.psm1",
+  "context_guard_regex": "(?i)\\.Tests\\.ps1",
+  "context_guard_lines": 0,
+  "context_guard_direction": "both",
+  "file_exclusion_regex": "sin_registry|reports\\\\|UPM\\\\|sandbox",
+  "remedy": "Author a tests/<ModuleName>.Tests.ps1 with BeforeAll{Import-Module ...} and at least one It per exported function. Mock destructive cmdlets (Stop-Process, Remove-Item, Invoke-RestMethod). Wire into Run-AllTests.ps1.",
+  "first_instance": {
+    "instance_id": "SIN-20260504-001",
+    "module": "modules/PwShGUI-KillSwitch.psm1",
+    "missing_tests_for": ["Get-VersionKillSwitch", "Register-VersionKillSwitch", "Register-KillTarget", "Invoke-KillSwitch", "Get-RegisteredKillTargets"],
+    "status": "RESOLVED",
+    "fix_file": "tests/PwShGUI-KillSwitch.Tests.ps1",
+    "fix_version": "2604.B4.V44.0",
+    "fix_summary": "Added 7 Pester tests covering all 5 exported functions; mocks Stop-Process/Stop-Service; KILLSWITCH_NO_SELFTERMINATE env guard prevents test-runner suicide."
+  },
+  "tags": [
+    "test-coverage",
+    "pester",
+    "module-governance",
+    "smoke",
+    "ci"
+  ],
+  "examples_bad": [
+    "# modules/Foo.psm1 ends with: Export-ModuleMember -Function Bar  -- and tests/Foo.Tests.ps1 does not exist"
+  ],
+  "examples_good": [
+    "Export-ModuleMember -Function Bar  +  tests/Foo.Tests.ps1: Describe 'Foo' { It 'Bar returns expected' { Bar -X 1 | Should -Be 2 } }"
+  ]
+}

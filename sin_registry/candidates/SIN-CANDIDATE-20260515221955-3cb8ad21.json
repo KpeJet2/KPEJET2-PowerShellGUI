@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260515221955-3cb8ad21",
+  "title": "Resurfacing bug pattern: Unexpected token 'is' in expression or statement.",
+  "occurrences": 5,
+  "sample_bug_ids": [
+    "Bug-20260412123105-948a5afb",
+    "Bug-20260421030118-b012ac51",
+    "Bug-20260504102900-9d4d606c",
+    "Bug-20260504160304-f040fa74",
+    "Bug-20260507013414-e056a8e1"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

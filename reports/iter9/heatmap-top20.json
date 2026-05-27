@@ -1,0 +1,122 @@
+[
+  {
+    "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 17,
+    "DensityPer1k": 58.82
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+    "SinCount": 18,
+    "LinesOfCode": 514,
+    "DensityPer1k": 35.02
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+    "SinCount": 41,
+    "LinesOfCode": 1650,
+    "DensityPer1k": 24.85
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+    "SinCount": 56,
+    "LinesOfCode": 2307,
+    "DensityPer1k": 24.27
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+    "SinCount": 2,
+    "LinesOfCode": 88,
+    "DensityPer1k": 22.73
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+    "SinCount": 7,
+    "LinesOfCode": 383,
+    "DensityPer1k": 18.28
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-XhtmlReportTester.psm1",
+    "SinCount": 1,
+    "LinesOfCode": 59,
+    "DensityPer1k": 16.95
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+    "SinCount": 2,
+    "LinesOfCode": 121,
+    "DensityPer1k": 16.53
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+    "SinCount": 3,
+    "LinesOfCode": 186,
+    "DensityPer1k": 16.13
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+    "SinCount": 6,
+    "LinesOfCode": 388,
+    "DensityPer1k": 15.46
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+    "SinCount": 7,
+    "LinesOfCode": 462,
+    "DensityPer1k": 15.15
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psm1",
+    "SinCount": 12,
+    "LinesOfCode": 944,
+    "DensityPer1k": 12.71
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinDriftScan.psm1",
+    "SinCount": 1,
+    "LinesOfCode": 88,
+    "DensityPer1k": 11.36
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 91,
+    "DensityPer1k": 10.99
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 91,
+    "DensityPer1k": 10.99
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 91,
+    "DensityPer1k": 10.99
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 91,
+    "DensityPer1k": 10.99
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+    "SinCount": 1,
+    "LinesOfCode": 103,
+    "DensityPer1k": 9.71
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+    "SinCount": 4,
+    "LinesOfCode": 418,
+    "DensityPer1k": 9.57
+  },
+  {
+    "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+    "SinCount": 7,
+    "LinesOfCode": 750,
+    "DensityPer1k": 9.33
+  }
+]

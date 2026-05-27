@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-f6260fe9",
+  "title": "Resurfacing bug pattern: The '<' operator is reserved for future use.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260421020848-50e93fa2",
+    "Bug-20260421021044-34128d9b"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

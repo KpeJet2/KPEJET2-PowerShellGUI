@@ -1,0 +1,26 @@
+{
+  "id": "TODO-PA-20260515044230-g-docs",
+  "todo_id": "TODO-PA-20260515044230-g-docs",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Update SECRETS-MANAGEMENT-GUIDE.md and SECURITY-SETUP-GUIDE.xhtml cross-refs",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "LOW",
+  "status": "PENDING_APPROVAL",
+  "source_id": "feature-F001",
+  "source_status": "IN-PROGRESS",
+  "parentId": "feature-F001",
+  "created": "2026-05-14T20:42:29.8231546Z",
+  "createdAt": "2026-05-14T20:42:29.8231546Z",
+  "modified": "2026-05-14T20:42:29.8231546Z",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN-PROGRESS",
+  "status_history": [
+    {
+      "timestamp": "2026-05-14T20:42:29.8231546Z",
+      "status": "PENDING_APPROVAL",
+      "by": "CronAiAthon-Pipeline"
+    }
+  ]
+}

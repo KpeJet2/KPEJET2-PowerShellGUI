@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V32.3
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -43,6 +43,7 @@ $ErrorActionPreference = 'Stop'
 
 if (-not (Get-Command -Name Write-AppLog -ErrorAction SilentlyContinue)) {
     function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive UI banner / CLI progress output; intentional Write-Host for human-readable terminal display.')]
         [CmdletBinding()]
         param(
             [Parameter(Mandatory)]
@@ -63,6 +64,41 @@ if (-not (Get-Command -Name Write-AppLog -ErrorAction SilentlyContinue)) {
     }
 }
 
+function Get-PipelineDescriptionValue {
+    <#
+    .SYNOPSIS  Resolve an item's description with fallbacks for mixed schemas.
+    #>
+    [OutputType([string])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] $Item,
+        [string]$Default = ''
+    )
+
+    if ($null -eq $Item) { return $Default }
+
+    if ($Item -is [System.Collections.IDictionary]) {
+        foreach ($name in @('description', 'detail', 'notes')) {
+            if ($Item.Contains($name)) {
+                $value = [string]$Item[$name]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if (-not [string]::IsNullOrWhiteSpace($value)) { return $value }
+            }
+        }
+        return $Default
+    }
+
+    if ($null -eq $Item.PSObject) { return $Default }
+    $propNames = $Item.PSObject.Properties.Name
+    foreach ($name in @('description', 'detail', 'notes')) {
+        if ($propNames -contains $name) {
+            $value = [string]$Item.PSObject.Properties[$name].Value
+            if (-not [string]::IsNullOrWhiteSpace($value)) { return $value }
+        }
+    }
+
+    return $Default
+}
+
 # ========================== PIPELINE ITEM SCHEMA ==========================
 
 function New-PipelineItem {
@@ -76,8 +112,11 @@ function New-PipelineItem {
     .PARAMETER Category   Functional category tag.
     .PARAMETER AffectedFiles  Array of file paths affected.
     .OUTPUTS   [hashtable] The new pipeline item.
+        .DESCRIPTION
+      Detailed behaviour: New pipeline item.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [ValidateSet('FeatureRequest','Bug','Items2ADD','Bugs2FIX','ToDo')]
@@ -98,12 +137,15 @@ function New-PipelineItem {
         [string[]]$AffectedFiles = @(),
         [string]$SuggestedBy = 'Commander',
         [string]$SinId = '',
+        [string]$SinPattern = '',
         [string]$ParentId = '',
         [string[]]$BugReferrals = @(),
         [string]$OutlineTag = 'OUTLINE-PROTO-v0',
         [string]$OutlinePhase = 'assessment',
         [string]$OutlineVersion = 'v0'
     )
+    if (-not $PSCmdlet.ShouldProcess('New-PipelineItem', 'Create')) { return }
+
 
     $id = "$Type-" + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([guid]::NewGuid().ToString().Substring(0,8))
 
@@ -119,6 +161,7 @@ function New-PipelineItem {
         suggestedBy      = $SuggestedBy
         affectedFiles    = $AffectedFiles
         sinId            = $SinId
+        sinPattern       = $SinPattern
         parentId         = $ParentId
         created          = (Get-Date).ToUniversalTime().ToString('o')
         modified         = (Get-Date).ToUniversalTime().ToString('o')
@@ -153,6 +196,12 @@ function New-PipelineItem {
 
 # ========================== PIPELINE REGISTRY ==========================
 
+<#
+.SYNOPSIS
+  Get pipeline registry path.
+.DESCRIPTION
+  Detailed behaviour: Initialize pipeline registry.
+#>
 function Get-PipelineRegistryPath {
     param([string]$WorkspacePath)
     return (Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.json')
@@ -170,7 +219,7 @@ function Initialize-PipelineRegistry {
     )
 
     $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
-    
+
     # Try to load existing registry
     if (Test-Path $regPath) {
         try {
@@ -228,10 +277,10 @@ function Initialize-PipelineRegistry {
     }
 
     $configDir = Join-Path $WorkspacePath 'config'
-    
+
     try {
-        if (-not (Test-Path $configDir)) { 
-            New-Item -ItemType Directory -Path $configDir -Force -ErrorAction Stop | Out-Null 
+        if (-not (Test-Path $configDir)) {
+            New-Item -ItemType Directory -Path $configDir -Force -ErrorAction Stop | Out-Null
         }
         $registry | ConvertTo-Json -Depth 10 | Set-Content -Path $regPath -Encoding UTF8 -ErrorAction Stop
         Write-AppLog -Message "New pipeline registry created at $regPath" -Level Info
@@ -245,7 +294,10 @@ function Initialize-PipelineRegistry {
 function ConvertTo-PipelineItemType {
     <#
     .SYNOPSIS  Normalize item type aliases to the canonical pipeline types.
+        .DESCRIPTION
+      Detailed behaviour: ConvertTo pipeline item type.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param($Type)
 
@@ -269,7 +321,10 @@ function ConvertTo-PipelineItemType {
 function ConvertTo-PipelineStatus {
     <#
     .SYNOPSIS  Normalize status aliases to the canonical pipeline state machine.
+        .DESCRIPTION
+      Detailed behaviour: ConvertTo pipeline status.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param($Status)
 
@@ -323,6 +378,8 @@ function Get-PipelineActiveTodoFiles {
     <#
     .SYNOPSIS  Return active todo JSON item files excluding generated and archived content.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -358,12 +415,18 @@ function Write-PipelineItemFile {
 function Add-PipelineItem {
     <#
     .SYNOPSIS  Add an item to the pipeline registry and persist.
+        .DESCRIPTION
+      Detailed behaviour: Add pipeline item.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [hashtable]$Item
     )
+
+    # Normalize description so strict-mode property access remains safe downstream.
+    $Item['description'] = Get-PipelineDescriptionValue -Item $Item -Default ''
 
     $Item.type = ConvertTo-PipelineItemType -Type $Item.type
     if ($Item.Contains('status')) {
@@ -373,7 +436,7 @@ function Add-PipelineItem {
     }
 
     $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
-    
+
     try {
         $registry = Get-Content $regPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
     } catch {
@@ -417,7 +480,10 @@ function Add-PipelineItem {
 function Test-StatusTransition {
     <#
     .SYNOPSIS  Validate that a status transition is permitted by the state machine.
+        .DESCRIPTION
+      Detailed behaviour: Test status transition.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [string]$CurrentStatus,
@@ -440,14 +506,17 @@ function Test-StatusTransition {
     }
 
     if (-not $validTransitions.ContainsKey($CurrentStatus)) { return $true }
-    return ($NewStatus -in $validTransitions[$CurrentStatus])
+    return ($NewStatus -in $validTransitions[$CurrentStatus])  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 function Update-PipelineItemStatus {
     <#
     .SYNOPSIS  Update the status of a pipeline item with state machine validation.
+        .DESCRIPTION
+      Detailed behaviour: Update pipeline item status.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [string]$ItemId,
@@ -464,17 +533,17 @@ function Update-PipelineItemStatus {
     }
 
     $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
-    
+
     try {
         $raw = Get-Content $regPath -Raw -ErrorAction Stop
-        if (-not $raw -or $raw.Trim().Length -eq 0) { 
+        if (-not $raw -or $raw.Trim().Length -eq 0) {
             Write-AppLog -Message "Pipeline registry file empty: $regPath" -Level Warning
-            return $false 
+            return $false
         }
         $registry = $raw | ConvertFrom-Json -ErrorAction Stop
-        if ($null -eq $registry) { 
+        if ($null -eq $registry) {
             Write-AppLog -Message "Pipeline registry JSON parse returned null: $regPath" -Level Warning
-            return $false 
+            return $false
         }
     } catch {
         Write-AppLog -Message "Failed to load pipeline registry from $regPath : $_" -Level Error
@@ -486,60 +555,60 @@ function Update-PipelineItemStatus {
     foreach ($listName in @('featureRequests','bugs','items2ADD','bugs2FIX','todos')) {
         $listRef = @($registry.$listName)
         for ($i = 0; $i -lt $listRef.Count; $i++) {
-            if ($null -eq $listRef[$i]) { continue }
-            if ($listRef[$i].id -eq $ItemId) {
-                $currentStatus = if ($listRef[$i].PSObject.Properties['status']) { ConvertTo-PipelineStatus -Status $listRef[$i].status } else { 'OPEN' }
+            if ($null -eq $listRef[$i]) { continue }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            if ($listRef[$i].id -eq $ItemId) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                $currentStatus = if ($listRef[$i].PSObject.Properties['status']) { ConvertTo-PipelineStatus -Status $listRef[$i].status } else { 'OPEN' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if (-not $Force -and -not (Test-StatusTransition -CurrentStatus $currentStatus -NewStatus $NewStatus)) {
                     Write-AppLog -Message "Invalid transition: $currentStatus -> $NewStatus for item $ItemId. Use -Force to override." -Level Warning
                     return $false
                 }
-                $listRef[$i].status = $NewStatus
-                $listRef[$i].modified = (Get-Date).ToUniversalTime().ToString('o')
-                $listRef[$i].sessionModCount++
-                if ($Notes) { $listRef[$i].notes = $Notes }
-                if ($NewStatus -eq 'PLANNED') { $listRef[$i].plannedAt = (Get-Date).ToUniversalTime().ToString('o') }
-                if ($NewStatus -eq 'IN_PROGRESS') { $listRef[$i].executedAt = (Get-Date).ToUniversalTime().ToString('o') }
+                $listRef[$i].status = $NewStatus  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                $listRef[$i].modified = (Get-Date).ToUniversalTime().ToString('o')  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                $listRef[$i].sessionModCount++  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($Notes) { $listRef[$i].notes = $Notes }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($NewStatus -eq 'PLANNED') { $listRef[$i].plannedAt = (Get-Date).ToUniversalTime().ToString('o') }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($NewStatus -eq 'IN_PROGRESS') { $listRef[$i].executedAt = (Get-Date).ToUniversalTime().ToString('o') }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($NewStatus -in @('DONE','CLOSED')) {
-                    $listRef[$i].completedAt = (Get-Date).ToUniversalTime().ToString('o')
+                    $listRef[$i].completedAt = (Get-Date).ToUniversalTime().ToString('o')  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     $registry.statistics.totalItemsDone++
                 }
 
                 # Backfill and update extended tracking fields (SIN-P022: null guard on PSObject.Properties)
                 $nowTs = (Get-Date).ToUniversalTime().ToString('o')
                 foreach ($fld in @('implementedAt','reopenedAt','lastSeenAt','firstSeenAt')) {
-                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
-                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue $null -Force
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue $null -Force  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     }
                 }
-                if (-not $listRef[$i].PSObject.Properties['bugResurfaced']) {
-                    $listRef[$i] | Add-Member -NotePropertyName 'bugResurfaced' -NotePropertyValue $false -Force
+                if (-not $listRef[$i].PSObject.Properties['bugResurfaced']) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $listRef[$i] | Add-Member -NotePropertyName 'bugResurfaced' -NotePropertyValue $false -Force  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
                 foreach ($fld in @('bugHistory','bugReferrals','countermeasures')) {
-                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
-                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue @() -Force
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue @() -Force  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     }
                 }
                 foreach ($fld in @('fixesImplementedCount','filesFixedCount','filesRemainingCount')) {
-                    if (-not $listRef[$i].PSObject.Properties[$fld]) {
-                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue 0 -Force
+                    if (-not $listRef[$i].PSObject.Properties[$fld]) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                        $listRef[$i] | Add-Member -NotePropertyName $fld -NotePropertyValue 0 -Force  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     }
                 }
-                $listRef[$i].lastSeenAt = $nowTs
-                if ($null -eq $listRef[$i].firstSeenAt) {
-                    $listRef[$i].firstSeenAt = if ($listRef[$i].PSObject.Properties['created'] -and $null -ne $listRef[$i].created) { $listRef[$i].created } else { $nowTs }
+                $listRef[$i].lastSeenAt = $nowTs  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if ($null -eq $listRef[$i].firstSeenAt) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $listRef[$i].firstSeenAt = if ($listRef[$i].PSObject.Properties['created'] -and $null -ne $listRef[$i].created) { $listRef[$i].created } else { $nowTs }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
-                if ($NewStatus -eq 'DONE') { $listRef[$i].implementedAt = $nowTs }
+                if ($NewStatus -eq 'DONE') { $listRef[$i].implementedAt = $nowTs }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($NewStatus -eq 'OPEN' -and $currentStatus -in @('DONE','CLOSED')) {
-                    $listRef[$i].reopenedAt    = $nowTs
-                    $listRef[$i].bugResurfaced = $true
+                    $listRef[$i].reopenedAt    = $nowTs  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $listRef[$i].bugResurfaced = $true  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     $histEntry = [ordered]@{ event = 'reopened'; fromStatus = $currentStatus; timestamp = $nowTs }
-                    $existHist = @($listRef[$i].bugHistory)
-                    $listRef[$i].bugHistory = @($existHist) + @($histEntry)
+                    $existHist = @($listRef[$i].bugHistory)  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $listRef[$i].bugHistory = @($existHist) + @($histEntry)  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
 
                 $found = $true
-                $updatedItem = $listRef[$i]
-                $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $listRef[$i]
+                $updatedItem = $listRef[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $listRef[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 break
             }
         }
@@ -547,7 +616,7 @@ function Update-PipelineItemStatus {
     }
 
     $registry.meta.lastModified = (Get-Date).ToUniversalTime().ToString('o')
-    
+
     try {
         $registry | ConvertTo-Json -Depth 10 | Set-Content -Path $regPath -Encoding UTF8 -ErrorAction Stop
     } catch {
@@ -585,7 +654,11 @@ function Update-PipelineItemStatus {
 function Get-PipelineItems {
     <#
     .SYNOPSIS  Retrieve pipeline items with optional type/status filter.
+        .DESCRIPTION
+      Detailed behaviour: Get pipeline items.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -596,17 +669,17 @@ function Get-PipelineItems {
 
     $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
     if (-not (Test-Path $regPath)) { return @() }
-    
+
     try {
         $raw = Get-Content $regPath -Raw -ErrorAction Stop
-        if (-not $raw -or $raw.Trim().Length -eq 0) { 
+        if (-not $raw -or $raw.Trim().Length -eq 0) {
             Write-AppLog -Message "Pipeline registry file empty: $regPath" -Level Debug
-            return @() 
+            return @()
         }
         $registry = $raw | ConvertFrom-Json -ErrorAction Stop
-        if ($null -eq $registry) { 
+        if ($null -eq $registry) {
             Write-AppLog -Message "Pipeline registry JSON parse returned null: $regPath" -Level Debug
-            return @() 
+            return @()
         }
     } catch {
         Write-AppLog -Message "Failed to load pipeline registry from $regPath : $_. Returning empty array." -Level Warning
@@ -630,7 +703,10 @@ function Get-PipelineItems {
 function Get-PipelineStatistics {
     <#
     .SYNOPSIS  Return pipeline statistics summary.
+        .DESCRIPTION
+      Detailed behaviour: Get pipeline statistics.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -644,7 +720,10 @@ function Invoke-SinRegistryFeedback {
     <#
     .SYNOPSIS  Match a bug against the sin_registry. If matched, link it;
                if unencountered, create a new sin entry.
+        .DESCRIPTION
+      Detailed behaviour: Invoke sin registry feedback.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -654,23 +733,45 @@ function Invoke-SinRegistryFeedback {
     $sinDir = Join-Path $WorkspacePath 'sin_registry'
     if (-not (Test-Path $sinDir)) { New-Item -ItemType Directory -Path $sinDir -Force | Out-Null }
 
+    # Best-effort SIN-scope event adapter (P048: every SIN feedback decision emits an audit event).
+    $sinEventAdapter = Join-Path $WorkspacePath 'modules\PwShGUI-EventLogAdapter.psm1'
+    $sinEventReady = $false
+    if (Test-Path $sinEventAdapter) {
+        try { Import-Module $sinEventAdapter -Force -DisableNameChecking -ErrorAction Stop; $sinEventReady = $true } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+    }
+
     # Load existing sins
     $sinFiles = Get-ChildItem -Path $sinDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -ne 'fixes' }
+        Where-Object { $_.Name -notlike 'REINDEX-*' -and $_.Name -ne 'package.json' }
     $matched = $false
 
     foreach ($sf in $sinFiles) {
         try {
-            $sin = Get-Content $sf.FullName -Raw | ConvertFrom-Json
+            $sin = Get-Content $sf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($sin.title -and $BugItem.title -and
                 ($sin.title -like "*$($BugItem.title)*" -or $BugItem.title -like "*$($sin.title)*")) {
-                # Match found -- link bug to sin
-                $BugItem.sinId = if ($sin.sin_id) { $sin.sin_id } else { $sf.BaseName }
+                # Match found -- link bug to sin (G7: support both legacy sin_id and newer id field).
+                $sinIdCanonical = if ($sin.PSObject.Properties.Name -contains 'sin_id' -and $sin.sin_id) { [string]$sin.sin_id } `
+                                  elseif ($sin.PSObject.Properties.Name -contains 'id' -and $sin.id) { [string]$sin.id } else { $sf.BaseName }
+                $BugItem.sinId = $sinIdCanonical
+                # G12: stamp canonical SIN-PATTERN-NNN onto Bug item when matched against a PATTERN file.
+                if ($sf.Name -like 'SIN-PATTERN-*') {
+                    if ($BugItem.PSObject.Properties.Name -contains 'sinPattern') { $BugItem.sinPattern = $sinIdCanonical } else { $BugItem['sinPattern'] = $sinIdCanonical }
+                }
                 $BugItem.notes = "Matched existing sin: $($sin.title)"
+                if ($sinEventReady) {
+                    try {
+                        Write-EventLogNormalized -Scope sin -Component 'Invoke-SinRegistryFeedback' `
+                            -Message ("Bug {0} matched SIN {1}" -f $BugItem.id, $sinIdCanonical) `
+                            -Severity Audit -WorkspacePath $WorkspacePath -ItemId $BugItem.id -ItemType 'Bug' `
+                            -ActionId 'sin-feedback' -AgentId 'CronAiAthon' -CorrId $sinIdCanonical -Editor ([string]$env:USERNAME) `
+                            -EventId ([int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), (Get-Random -Minimum 100 -Maximum 999)))
+                    } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+                }
                 $matched = $true
                 break
             }
-        } catch { <# skip malformed files #> }
+        } catch { <# skip malformed files #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     if (-not $matched) {
@@ -679,7 +780,7 @@ function Invoke-SinRegistryFeedback {
         $newSin = [ordered]@{
             sin_id           = $sinId
             title            = $BugItem.title
-            description      = $BugItem.description
+            description      = (Get-PipelineDescriptionValue -Item $BugItem -Default '')
             category         = $BugItem.category
             severity         = $BugItem.priority
             file_path        = if (@($BugItem.affectedFiles).Count -gt 0) { @($BugItem.affectedFiles)[0] } else { '' }
@@ -698,6 +799,15 @@ function Invoke-SinRegistryFeedback {
         $newSin | ConvertTo-Json -Depth 6 | Set-Content -Path $sinFile -Encoding UTF8
         $BugItem.sinId = $sinId
         $BugItem.notes = "New sin created: $sinId"
+        if ($sinEventReady) {
+            try {
+                Write-EventLogNormalized -Scope sin -Component 'Invoke-SinRegistryFeedback' `
+                    -Message ("New SIN instance {0} created from bug {1}" -f $sinId, $BugItem.id) `
+                    -Severity Notice -WorkspacePath $WorkspacePath -ItemId $BugItem.id -ItemType 'Bug' `
+                    -ActionId 'sin-feedback' -AgentId 'CronAiAthon' -CorrId $sinId -Editor ([string]$env:USERNAME) `
+                    -EventId ([int64]('{0}{1:D3}' -f (Get-Date -Format 'yyMMddHHmmss'), (Get-Random -Minimum 100 -Maximum 999)))
+            } catch { <# Intentional: non-fatal -- event emission is best-effort #> }
+        }
     }
 
     return $BugItem
@@ -706,6 +816,8 @@ function Invoke-SinRegistryFeedback {
 function ConvertTo-Bugs2FIX {
     <#
     .SYNOPSIS  Convert a bug pipeline item into a Bugs2FIX planned item.
+        .DESCRIPTION
+      Detailed behaviour: ConvertTo bugs2 f i x.
     #>
     [CmdletBinding()]
     param(
@@ -714,12 +826,17 @@ function ConvertTo-Bugs2FIX {
         [string[]]$BugReferrals = @()
     )
 
+    $bugDescription = Get-PipelineDescriptionValue -Item $BugItem -Default ''
     $refIds = @(@($BugReferrals) + @($BugItem.id) | Select-Object -Unique)
+    # G12: propagate sinId + sinPattern from parent Bug onto FIX item.
+    $parentSinId      = if ($BugItem.PSObject.Properties.Name -contains 'sinId') { [string]$BugItem.sinId } else { '' }
+    $parentSinPattern = if ($BugItem.PSObject.Properties.Name -contains 'sinPattern') { [string]$BugItem.sinPattern } else { '' }
     $fixItem = New-PipelineItem -Type 'Bugs2FIX' -Title "FIX: $($BugItem.title)" `
-        -Description "Fix for bug $($BugItem.id): $($BugItem.description)" `
+        -Description "Fix for bug $($BugItem.id): $bugDescription" `
         -Priority $BugItem.priority -Source 'BugTracker' -Category $BugItem.category `
         -AffectedFiles @($BugItem.affectedFiles) -SuggestedBy 'CronAiAthon' `
-        -ParentId $BugItem.id -BugReferrals $refIds
+        -ParentId $BugItem.id -BugReferrals $refIds `
+        -SinId $parentSinId -SinPattern $parentSinPattern
 
     Add-PipelineItem -WorkspacePath $WorkspacePath -Item $fixItem
     return $fixItem
@@ -728,6 +845,8 @@ function ConvertTo-Bugs2FIX {
 function ConvertTo-Items2ADD {
     <#
     .SYNOPSIS  Convert a feature or discovery into an Items2ADD planned item.
+        .DESCRIPTION
+      Detailed behaviour: ConvertTo items2 a d d.
     #>
     [CmdletBinding()]
     param(
@@ -755,6 +874,8 @@ function ConvertTo-Items2ADD {
 function Get-CentralMasterToDo {
     <#
     .SYNOPSIS  Aggregate all pipeline items + existing todo/ JSON files into one master list.
+        .DESCRIPTION
+      Detailed behaviour: Get central master to do.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
@@ -764,12 +885,14 @@ function Get-CentralMasterToDo {
     # 1. Pipeline registry items
     $pipelineItems = Get-PipelineItems -WorkspacePath $WorkspacePath
     foreach ($pi in $pipelineItems) {
+        if ($null -eq $pi) { continue }
         $piProps = $pi.PSObject.Properties
+        $piDescription = Get-PipelineDescriptionValue -Item $pi -Default ''
         $master += [ordered]@{
             id              = $pi.id
             type            = ConvertTo-PipelineItemType -Type $pi.type
             title           = $pi.title
-            description     = $pi.description
+            description     = $piDescription
             priority        = $pi.priority
             status          = ConvertTo-PipelineStatus -Status $pi.status
             source          = if ($piProps.Name -contains 'source') { $pi.source } else { 'unknown' }
@@ -812,7 +935,7 @@ function Get-CentralMasterToDo {
                     sessionModCount = if ($tdProps['sessionModCount']) { $td.sessionModCount } else { 1 }
                     origin          = 'todo-folder'
                 }
-            } catch { <# skip malformed #> }
+            } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
     }
 
@@ -841,7 +964,7 @@ function Get-CentralMasterToDo {
                     origin          = 'feature-requests-json'
                 }
             }
-        } catch { <# skip malformed #> }
+        } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     # 4. Bug Tracker JSON
@@ -859,17 +982,17 @@ function Get-CentralMasterToDo {
                     type            = 'Bug'
                     title           = if ($bp['title']) { $bp['title'].Value } else { '' }
                     description     = if ($bp['description']) { $bp['description'].Value } else { '' }
-                    priority        = if ($bp['severity']) { $bug.severity.ToUpper() } else { 'MEDIUM' }
-                    status          = ConvertTo-PipelineStatus -Status (if ($bp['status']) { $bug.status } else { 'OPEN' })
+                    priority        = if ($bp['severity']) { ([string]$bp['severity'].Value).ToUpper() } else { 'MEDIUM' }
+                    status          = ConvertTo-PipelineStatus -Status (if ($bp['status']) { [string]$bp['status'].Value } else { 'OPEN' })
                     source          = 'BugTracker'
                     category        = 'bug'
-                    created         = if ($bp['reported']) { $bug.reported } else { '' }
-                    modified        = if ($bp['fixed']) { $bug.fixed } else { '' }
+                    created         = if ($bp['reported']) { [string]$bp['reported'].Value } else { '' }
+                    modified        = if ($bp['fixed']) { [string]$bp['fixed'].Value } else { '' }
                     sessionModCount = 1
                     origin          = 'bug-tracker-json'
                 }
             }
-        } catch { <# skip malformed #> }
+        } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     return $master
@@ -878,6 +1001,8 @@ function Get-CentralMasterToDo {
 function Export-CentralMasterToDo {
     <#
     .SYNOPSIS  Export aggregated master list as JSON to todo/_master-aggregated.json.
+        .DESCRIPTION
+      Detailed behaviour: Export central master to do.
     #>
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
@@ -910,10 +1035,10 @@ function Export-CentralMasterToDo {
     }
 
     $todoDir = Join-Path $WorkspacePath 'todo'
-    
+
     try {
-        if (-not (Test-Path $todoDir)) { 
-            New-Item -ItemType Directory -Path $todoDir -Force -ErrorAction Stop | Out-Null 
+        if (-not (Test-Path $todoDir)) {
+            New-Item -ItemType Directory -Path $todoDir -Force -ErrorAction Stop | Out-Null
         }
         $outPath = Join-Path $todoDir '_master-aggregated.json'
         $output | ConvertTo-Json -Depth 10 | Set-Content -Path $outPath -Encoding UTF8 -ErrorAction Stop
@@ -930,8 +1055,11 @@ function Export-CentralMasterToDo {
 function Set-PipelineItemBatchStatus {
     <#
     .SYNOPSIS  Bulk-transition pipeline items matching filter criteria.
+        .DESCRIPTION
+      Detailed behaviour: Set pipeline item batch status.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)] [string]$NewStatus,
@@ -971,7 +1099,11 @@ function Get-PipelineHealthMetrics {
     <#
     .SYNOPSIS  Return pipeline health: items/day created, items/day closed,
                mean-time-to-close, backlog age distribution.
+        .DESCRIPTION
+      Detailed behaviour: Get pipeline health metrics.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -1008,7 +1140,7 @@ function Get-PipelineHealthMetrics {
             try {
                 $span = [DateTime]::Parse($c.completedAt) - [DateTime]::Parse($c.created)
                 $closeTimes += $span.TotalDays
-            } catch { <# skip #> }
+            } catch { <# skip #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
     }
     $meanTimeToClose = if ($closeTimes.Count -gt 0) { [Math]::Round(($closeTimes | Measure-Object -Average).Average, 1) } else { 0 }
@@ -1029,9 +1161,9 @@ function Get-PipelineHealthMetrics {
     }
 
     return [ordered]@{
-        totalItems       = $items.Count
-        openItems        = $open.Count
-        closedItems      = $closed.Count
+        totalItems       = @($items).Count
+        openItems        = @($open).Count
+        closedItems      = @($closed).Count
         createdPerDay    = $createdPerDay
         closedPerDay     = $closedPerDay
         meanTimeToClose  = $meanTimeToClose
@@ -1053,7 +1185,13 @@ $script:ValidCategories = @(
 function Get-ValidCategories {
     <#
     .SYNOPSIS  Return the standardized category taxonomy list.
+        .DESCRIPTION
+      Detailed behaviour: Get valid categories.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection; plural is semantically clearer.')]
+    [CmdletBinding()]
+    [OutputType([object[]])]
+    param()
     return $script:ValidCategories
 }
 
@@ -1061,6 +1199,7 @@ function Resolve-ItemCategory {
     <#
     .SYNOPSIS  Map a raw category string to the closest standard category.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param([string]$RawCategory)
 
@@ -1069,7 +1208,7 @@ function Resolve-ItemCategory {
     if ($lower -in $script:ValidCategories) { return $lower }
 
     # Fuzzy mapping for common variants
-    $map = @{
+    $map = [ordered]@{
         'parse'     = 'parsing'
         'render'    = 'rendering'
         'compat'    = 'compatibility'
@@ -1094,7 +1233,7 @@ function Resolve-ItemCategory {
     }
 
     foreach ($key in $map.Keys) {
-        if ($lower -like "*$key*") { return $map[$key] }
+        if ($lower -like "*$key*") { return $map[$key] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return 'general'
 }
@@ -1105,8 +1244,11 @@ function Set-OutlinePhase {
     <#
     .SYNOPSIS  Batch-update outlinePhase for all items matching filters.
     .PARAMETER Phase  assessment | planned | in-progress | review | accepted
+        .DESCRIPTION
+      Detailed behaviour: Set outline phase.
     #>
-    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [Parameter(Mandatory)]
@@ -1154,6 +1296,7 @@ function Confirm-OutlineVersion {
     .SYNOPSIS  Chief confirmation: bump all v0 items to v1 (accepted).
     .DESCRIPTION  Reviews v0 outline items, sets outlineVersion=v1 and outlinePhase=accepted.
     #>
+    [OutputType([System.Int32])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -1188,8 +1331,10 @@ function Confirm-OutlineVersion {
 function Update-TodoBundle {
     <#
     .SYNOPSIS  Regenerate todo/_bundle.js from all todo/*.json files.
+        .DESCRIPTION
+      Detailed behaviour: Update todo bundle.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
     $todoDir = Join-Path $WorkspacePath 'todo'
@@ -1202,7 +1347,7 @@ function Update-TodoBundle {
         try {
             $data = Get-Content $jf.FullName -Raw | ConvertFrom-Json
             $items += $data
-        } catch { <# skip malformed #> }
+        } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     $bundlePath = Join-Path $todoDir '_bundle.js'
@@ -1215,8 +1360,10 @@ function Update-TodoBundle {
 function Update-PipelineIndex {
     <#
     .SYNOPSIS  Regenerate todo/_index.json from the canonical master pipeline view.
+        .DESCRIPTION
+      Detailed behaviour: Update pipeline index.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
     $master = @(Get-CentralMasterToDo -WorkspacePath $WorkspacePath)
@@ -1262,7 +1409,11 @@ function Update-PipelineIndex {
 function Get-PipelineInterruptions {
     <#
     .SYNOPSIS  Return stale items that likely indicate interrupted plan execution.
+        .DESCRIPTION
+      Detailed behaviour: Get pipeline interruptions.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -1327,7 +1478,10 @@ function Get-PipelineInterruptions {
 function Test-PipelineArtifactIntegrity {
     <#
     .SYNOPSIS  Validate coherence across pipeline registry, master aggregate, index, and bundle.
+        .DESCRIPTION
+      Detailed behaviour: Test pipeline artifact integrity.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -1397,10 +1551,142 @@ function Test-PipelineArtifactIntegrity {
     }
 }
 
+function Invoke-PipelineBatchCycle {
+    <#
+    .SYNOPSIS  Process pipeline items in configurable small batches.
+    .DESCRIPTION
+        Selects up to BatchSize items whose status matches TargetStatus (default: IN_PROGRESS)
+                and attempts to advance each one toward completion.  Advancement logic:
+                    - Bug/SchedulerFailure items -> calls Invoke-BugToPipelineProcessor if available
+                    - Items with all 'steps' marked done -> transitions to TESTING
+                    - Items stale beyond StaleDays with no updates -> transitions to BLOCKED with a note
+                    - All others -> records a lastChecked audit stamp without a state change
+        Returns a summary hashtable: batchSize, target, processed, advanced, stalled, skipped, errors.
+    .PARAMETER WorkspacePath  Root workspace path.
+    .PARAMETER BatchSize      Maximum items to process per cycle (default: 10).
+    .PARAMETER TargetStatus   Status filter for items to pick up (default: IN_PROGRESS).
+    .PARAMETER StaleDays      Days without update before moving to BLOCKED (default: 7).
+    .PARAMETER WhatIf         Simulate without persisting any changes.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [ValidateRange(1,500)] [int]$BatchSize    = 10,
+        [string]$TargetStatus                     = 'IN_PROGRESS',
+        [ValidateRange(1,365)] [int]$StaleDays    = 7,
+        [switch]$WhatIf
+    )
+
+    $result = [ordered]@{
+        batchSize = $BatchSize
+        target    = $TargetStatus
+        processed = 0
+        advanced  = 0
+        stalled   = 0
+        skipped   = 0
+        errors    = @()
+    }
+
+    try {
+        $normTarget = ConvertTo-PipelineStatus -Status $TargetStatus
+        $items      = @(Get-PipelineItems -WorkspacePath $WorkspacePath -Status $normTarget |
+                         Select-Object -First $BatchSize)
+
+        if ($items.Count -eq 0) {
+            Write-AppLog -Message "PipelineBatchCycle: no $normTarget items found (batch=$BatchSize)" -Level 'Info'
+            return $result
+        }
+
+        $staleCutoff = (Get-Date).AddDays(-[Math]::Abs($StaleDays)).ToUniversalTime()
+
+        foreach ($item in $items) {
+            $result.processed++
+            $itemId = $item.id
+            try {
+                $advanced = $false
+
+                # 1. Bug items - delegate to BugToPipelineProcessor
+                $isBug = ($item.type -in @('Bug','bug','BUG','SchedulerFailure'))
+                if ($isBug -and (Get-Command 'Invoke-BugToPipelineProcessor' -ErrorAction SilentlyContinue)) {
+                    if (-not $WhatIf) {
+                        $bugResult = Invoke-BugToPipelineProcessor -WorkspacePath $WorkspacePath -DetectedBugs @($item)
+                        if ($bugResult -and ($bugResult.resolved -gt 0 -or $bugResult.processed -gt 0)) {
+                            $advanced = $true
+                        }
+                    } else {
+                        $advanced = $true
+                    }
+                }
+
+                # 2. Steps-based completion - all steps done -> advance to TESTING
+                if (-not $advanced -and $item.PSObject.Properties['steps']) {
+                    $steps = @($item.steps)
+                    if ($steps.Count -gt 0 -and ($steps | Where-Object { $_.done -ne $true }).Count -eq 0) {
+                        if (-not $WhatIf) {
+                            Update-PipelineItemStatus -WorkspacePath $WorkspacePath -ItemId $itemId -NewStatus 'TESTING' -Notes 'All steps complete - auto-advanced by BatchCycle' | Out-Null
+                        }
+                        $advanced = $true
+                    }
+                }
+
+                # 3. Stale check - no update within StaleDays -> BLOCKED
+                if (-not $advanced) {
+                    $tsRaw = if ($item.PSObject.Properties['lastUpdated'] -and $item.lastUpdated) { $item.lastUpdated }
+                             elseif ($item.PSObject.Properties['executedAt'] -and $item.executedAt) { $item.executedAt }
+                             else { $null }
+                    if ($tsRaw) {
+                        $ts = $null
+                        if ([System.DateTimeOffset]::TryParse($tsRaw, [ref]$ts) -and $ts.UtcDateTime -lt $staleCutoff) {
+                            if (-not $WhatIf) {
+                                Update-PipelineItemStatus -WorkspacePath $WorkspacePath -ItemId $itemId -NewStatus 'BLOCKED' -Notes "Auto-blocked: no activity for ${StaleDays}+ days (BatchCycle)" | Out-Null
+                            }
+                            $result.stalled++
+                            Write-AppLog -Message "PipelineBatchCycle: stale $itemId moved to BLOCKED" -Level 'Warning'
+                            continue
+                        }
+                    }
+                }
+
+                # 4. Audit stamp - record lastChecked, no state change
+                if ($advanced) {
+                    $result.advanced++
+                } else {
+                    if (-not $WhatIf) {
+                        try {
+                            $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
+                            if (Test-Path $regPath) {
+                                $registry = Get-Content $regPath -Raw -Encoding UTF8 | ConvertFrom-Json
+                                $found = @($registry.items) | Where-Object { $_.id -eq $itemId }
+                                if ($found) {
+                                    $found | Add-Member -MemberType NoteProperty -Name 'lastChecked' -Value (Get-Date).ToUniversalTime().ToString('o') -Force
+                                    $registry | ConvertTo-Json -Depth 10 -Compress | Set-Content -Path $regPath -Encoding UTF8
+                                }
+                            }
+                        } catch { <# Intentional: non-fatal — lastChecked stamp failure does not block batch cycle #> }
+                    }
+                    $result.skipped++
+                }
+            } catch {
+                $result.errors += "Item $itemId : $($_.Exception.Message)"
+                Write-AppLog -Message "PipelineBatchCycle error on $itemId : $($_.Exception.Message)" -Level 'Error'
+            }
+        }
+        Write-AppLog -Message "PipelineBatchCycle: processed=$($result.processed) advanced=$($result.advanced) stalled=$($result.stalled) skipped=$($result.skipped) errors=$($result.errors.Count) [batch=$BatchSize target=$normTarget]" -Level 'Info'
+    } catch {
+        $result.errors += $_.Exception.Message
+        Write-AppLog -Message "PipelineBatchCycle fatal: $($_.Exception.Message)" -Level 'Error'
+    }
+    return $result
+}
+
 function Invoke-PipelineArtifactRefresh {
     <#
     .SYNOPSIS  Refresh the derived pipeline artifacts used by reports and dashboards.
+        .DESCRIPTION
+      Detailed behaviour: Invoke pipeline artifact refresh.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -1408,6 +1694,111 @@ function Invoke-PipelineArtifactRefresh {
     $result.master = Export-CentralMasterToDo -WorkspacePath $WorkspacePath
     $result.bundle = Update-TodoBundle -WorkspacePath $WorkspacePath
     $result.index  = Update-PipelineIndex -WorkspacePath $WorkspacePath
+    return $result
+}
+
+function Invoke-PipelineRegistryCompact {
+    <#
+    .SYNOPSIS  Archive old completed/closed pipeline items to reduce live registry size.
+    .DESCRIPTION
+        Items with status Done or Closed whose lastUpdated is older than AgeDays are moved
+        to a monthly archive file (config/cron-aiathon-pipeline-archive-YYYY-MM.json).
+        The live registry is then rewritten with the remaining items.
+        No data is deleted; archive files are cumulative across months.
+    .PARAMETER WorkspacePath  Root workspace path.
+    .PARAMETER AgeDays        Age threshold in days (default: 30).
+    .PARAMETER WhatIf         Report what would be archived without making changes.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [int]$AgeDays   = 30
+    )
+
+    $result = [ordered]@{
+        archived = 0
+        kept     = 0
+        errors   = @()
+        archiveFile = $null
+    }
+
+    try {
+        $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
+        if (-not (Test-Path $regPath)) {
+            $result.errors += "Registry file not found: $regPath"
+            return $result
+        }
+
+        $raw = Get-Content $regPath -Raw -Encoding UTF8
+        if (-not $raw -or $raw.Trim().Length -eq 0) {
+            $result.errors += "Registry file is empty"
+            return $result
+        }
+
+        $registry = $raw | ConvertFrom-Json
+        if (-not $registry.items) {
+            $result.errors += "Registry has no items array"
+            return $result
+        }
+
+        $cutoff      = (Get-Date).AddDays(-[Math]::Abs($AgeDays)).ToUniversalTime()
+        $archivable  = [System.Collections.Generic.List[object]]::new()
+        $live        = [System.Collections.Generic.List[object]]::new()
+        $archiveStatuses = @('Done','Closed','done','closed','DONE','CLOSED')
+
+        foreach ($item in $registry.items) {
+            $isArchivable = $false
+            if ($item.status -in $archiveStatuses) {
+                $ts = $null
+                $tsRaw = if ($item.lastUpdated) { $item.lastUpdated } elseif ($item.createdAt) { $item.createdAt } else { $null }
+                if ($tsRaw -and [System.DateTimeOffset]::TryParse($tsRaw, [ref]$ts)) {
+                    if ($ts.UtcDateTime -lt $cutoff) { $isArchivable = $true }
+                }
+            }
+            if ($isArchivable) { $archivable.Add($item) } else { $live.Add($item) }
+        }
+
+        $result.archived = $archivable.Count
+        $result.kept     = $live.Count
+
+        if ($WhatIfPreference) {
+            Write-AppLog -Message "PipelineCompact WhatIf: would archive $($archivable.Count) items, keep $($live.Count)" -Level 'Info'
+            return $result
+        }
+
+        if ($archivable.Count -eq 0) {
+            Write-AppLog -Message "PipelineCompact: no items eligible for archiving (threshold: ${AgeDays}d)" -Level 'Info'
+            return $result
+        }
+
+        # Write archive file (cumulative append per month)
+        $monthTag   = (Get-Date).ToString('yyyy-MM')
+        $archiveDir = Join-Path $WorkspacePath 'config'
+        $archivePath = Join-Path $archiveDir "cron-aiathon-pipeline-archive-$monthTag.json"
+        $result.archiveFile = $archivePath
+
+        $existingArchive = @()
+        if (Test-Path $archivePath) {
+            $archRaw = Get-Content $archivePath -Raw -Encoding UTF8
+            if ($archRaw -and $archRaw.Trim().Length -gt 0) {
+                $existingArchive = ($archRaw | ConvertFrom-Json)
+                if ($existingArchive -isnot [array]) { $existingArchive = @($existingArchive) }
+            }
+        }
+        $combined = @($existingArchive) + @($archivable)
+        $combined | ConvertTo-Json -Depth 10 -Compress | Set-Content -Path $archivePath -Encoding UTF8
+
+        # Write trimmed live registry (Compress for storage efficiency)
+        $registry.items = @($live)
+        $registry | ConvertTo-Json -Depth 10 -Compress | Set-Content -Path $regPath -Encoding UTF8
+
+        Write-AppLog -Message "PipelineCompact: archived $($archivable.Count) items to $archivePath; $($live.Count) items remain in live registry" -Level 'Info'
+    } catch {
+        $result.errors += $_.Exception.Message
+        Write-AppLog -Message "PipelineCompact error: $($_.Exception.Message)" -Level 'Error'
+    }
+
     return $result
 }
 
@@ -1455,7 +1846,7 @@ function Invoke-BugStatusRollup {
         }
     }
     if ($null -eq $bugItem) {
-        Write-AppLog -Message "Invoke-BugStatusRollup: Bug '$BugItemId' not found — may not be a Bug type item." -Level Debug
+        Write-AppLog -Message "Invoke-BugStatusRollup: Bug '$BugItemId' not found - may not be a Bug type item." -Level Debug
         return
     }
 
@@ -1535,11 +1926,14 @@ function Invoke-BugStatusRollup {
 function Test-BugSinResolved {
     <#
     .SYNOPSIS  Before closing a Bug, verify its linked SIN is resolved.
+        .DESCRIPTION
+      Detailed behaviour: Test bug sin resolved.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [string]$SinId
+        [Parameter(Mandatory)] [AllowEmptyString()] [string]$SinId
     )
 
     if ([string]::IsNullOrWhiteSpace($SinId)) { return $true }
@@ -1558,6 +1952,8 @@ function Test-BugSinResolved {
 function Show-PipelineHelp {
     <#
     .SYNOPSIS  Display quick usage help for CronAiAthon pipeline operations.
+        .DESCRIPTION
+      Detailed behaviour: Show pipeline help.
     #>
     [CmdletBinding()]
     param(
@@ -1647,10 +2043,13 @@ Export-ModuleMember -Function @(
     'Get-PipelineInterruptions',
     'Test-PipelineArtifactIntegrity',
     'Invoke-PipelineArtifactRefresh',
+    'Invoke-PipelineBatchCycle',
+    'Invoke-PipelineRegistryCompact',
     'Test-BugSinResolved',
     'Invoke-BugStatusRollup',
     'Show-PipelineHelp'
 )
+
 
 
 

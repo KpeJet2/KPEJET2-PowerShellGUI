@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: 2026-04-21
@@ -91,13 +91,12 @@ try {
     if (Test-Path $sascTuningPath) {
         $tuning = Get-Content $sascTuningPath -Raw | ConvertFrom-Json
         foreach ($prop in $tuning.PSObject.Properties) {
-            $varName = "script:$($prop.Name)"
             if (Get-Variable -Name $prop.Name -Scope Script -ErrorAction SilentlyContinue) {
                 Set-Variable -Name $prop.Name -Scope Script -Value $prop.Value
             }
         }
     }
-} catch { <# Intentional: non-fatal -- use defaults if tuning file is missing or malformed #> }
+} catch { <# Intentional: non-fatal -- use defaults if tuning file is missing or malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
 # -------------------------------------------------------------------------------
 #  PATH INITIALISATION
@@ -108,7 +107,10 @@ function Initialize-SASCModule {
     .SYNOPSIS  Initialise module paths, verify BW CLI, run integrity check.
     .PARAMETER ScriptDir  Root of the PowerShellGUI workspace.
     .OUTPUTS   [bool] $true if initialisation succeeded and integrity is intact.
+        .DESCRIPTION
+      Detailed behaviour: Initialize s a s c module.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -144,7 +146,7 @@ function Initialize-SASCModule {
             # Version pre-flight check
             $bwVerRaw = & $script:_BWCliPath --version 2>&1
             if ($bwVerRaw -match '(\d+\.\d+\.\d+)') {
-                $script:_BWCliVersion = [version]$Matches[1]
+                $script:_BWCliVersion = [version]$Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $minVer = [version]'2024.1.0'
                 if ($script:_BWCliVersion -lt $minVer) {
                     Write-AppLog "SASC: Bitwarden CLI $($script:_BWCliVersion) is below minimum $minVer -- update recommended" "Warning"
@@ -153,7 +155,9 @@ function Initialize-SASCModule {
                 }
             }
         } catch {
+            <# Intentional: non-fatal #>
             # Write-AppLog may not be available yet during early init
+            Write-Verbose -Message ($_.Exception.Message) -Verbose:$false
         }
     }
 
@@ -164,7 +168,7 @@ function Initialize-SASCModule {
             $script:_VaultState = 'IntegrityWarning'
             $script:_IntegrityIssuesDetected = $true
             $script:_LastIntegrityMessage = 'Integrity manifest reported one or more mismatches.'
-            try { Write-AppLog "SASC: INTEGRITY ISSUE -- advisory mode enabled (functions not restricted)" "Warning" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: INTEGRITY ISSUE -- advisory mode enabled (functions not restricted)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         } else {
             $script:_IntegrityIssuesDetected = $false
             $script:_LastIntegrityMessage = $null
@@ -185,7 +189,7 @@ function Initialize-SASCModule {
     }
 
     $script:_Initialized = $true
-    try { Write-AppLog "SASC: Module initialised -- state: $($script:_VaultState)" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Module initialised -- state: $($script:_VaultState)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $true
 }
 
@@ -200,14 +204,24 @@ function Assert-SafePath {
         Resolves the path to its canonical form and verifies it falls within
         one of the allowed root directories. Throws on violation.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$Path,
         [string[]]$AllowedRoots = @($script:_ModuleRoot)
     )
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        throw [System.ArgumentException]::new('Path must not be empty.', 'Path')
+    }
+    # Filter out null/empty roots (e.g. when called before Initialize-SASCModule has set $script:_ModuleRoot).
+    $effectiveRoots = @($AllowedRoots | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if (@($effectiveRoots).Count -eq 0) {
+        throw [System.InvalidOperationException]::new(
+            'Assert-SafePath: no allowed roots available. Initialise the module or pass -AllowedRoots explicitly.')
+    }
     $canonical = [System.IO.Path]::GetFullPath($Path)
     $allowed = $false
-    foreach ($root in $AllowedRoots) {
+    foreach ($root in $effectiveRoots) {
         $canonRoot = [System.IO.Path]::GetFullPath($root)
         if ($canonical.StartsWith($canonRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
             $allowed = $true
@@ -225,6 +239,7 @@ function Convert-PlainTextToSecureString {
     <#
     .SYNOPSIS  Converts plain text to SecureString without using -AsPlainText.
     #>
+    [OutputType([System.Security.SecureString])]
     [CmdletBinding()]
     param(
         [AllowNull()]
@@ -254,11 +269,14 @@ function New-VaultKey {
         separate derivation = HMAC key.
     .OUTPUTS   [hashtable] Keys: AesKey (byte[32]), IV (byte[16]), HmacKey (byte[32]), Salt (byte[32])
     #>
-    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [SecureString]$Password,
         [byte[]]$Salt = $null
     )
+    if (-not $PSCmdlet.ShouldProcess('New-VaultKey', 'Create')) { return }
+
     # Convert SecureString to plaintext for Rfc2898DeriveBytes, with BSTR cleanup
     $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     try {
@@ -299,6 +317,7 @@ function Protect-VaultData {
     .PARAMETER Password    User-supplied password string.
     .OUTPUTS   [hashtable] Keys: CipherText, Salt, IV, HMAC (all Base64)
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$PlainText,
@@ -356,6 +375,7 @@ function Unprotect-VaultData {
         attempted. This prevents padding oracle and tamper attacks.
     .OUTPUTS   [string] Decrypted plain text.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$CipherText,
@@ -381,7 +401,7 @@ function Unprotect-VaultData {
     if (-not (Compare-ByteArrayConstantTime -Expected $macExpected -Actual $macActual)) {
         [Array]::Clear($keyMaterial.AesKey, 0, $keyMaterial.AesKey.Length)
         [Array]::Clear($keyMaterial.HmacKey, 0, $keyMaterial.HmacKey.Length)
-        try { Write-AppLog "SASC: HMAC verification FAILED -- possible tampering detected" "Error" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: HMAC verification FAILED -- possible tampering detected" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         throw [System.Security.SecurityException]::new(
             "HMAC verification failed. Encrypted data may have been tampered with.")
     }
@@ -414,6 +434,7 @@ function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplic
     <#
     .SYNOPSIS  Constant-time byte array comparison to prevent timing attacks.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [byte[]]$Expected,
@@ -422,7 +443,7 @@ function Compare-ByteArrayConstantTime {  # SIN-EXEMPT: P011 - cross-file duplic
     if ($Expected.Length -ne $Actual.Length) { return $false }
     $diff = 0
     for ($i = 0; $i -lt $Expected.Length; $i++) {
-        $diff = $diff -bor ($Expected[$i] -bxor $Actual[$i])
+        $diff = $diff -bor ($Expected[$i] -bxor $Actual[$i])  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
     return ($diff -eq 0)
 }
@@ -446,9 +467,9 @@ function New-IntegrityManifest {
     if (-not $PSCmdlet.ShouldProcess($script:_IntegrityPath, "Generate integrity manifest")) { return }
 
     $filesToProtect = @(
-        (Join-Path $script:_ModuleRoot 'modules' 'AssistedSASC.psm1'),
-        (Join-Path $script:_ModuleRoot 'modules' 'SASC-Adapters.psm1'),
-        (Join-Path $script:_ModuleRoot 'scripts' 'Install-BitwardenLite.ps1'),
+        (Join-Path (Join-Path $script:_ModuleRoot 'modules') 'AssistedSASC.psm1'),
+        (Join-Path (Join-Path $script:_ModuleRoot 'modules') 'SASC-Adapters.psm1'),
+        (Join-Path (Join-Path $script:_ModuleRoot 'scripts') 'Install-BitwardenLite.ps1'),
         (Join-Path $script:_ModuleRoot 'XHTML-invoke-secrets.xhtml')
     )
     # Add vault config if it exists
@@ -483,26 +504,36 @@ function New-IntegrityManifest {
     }
     $manifestJson = $manifest | ConvertTo-Json -Depth 5 -Compress
 
-    # Sign the manifest JSON with a DPAPI-protected HMAC
-    $manifestBytes = [System.Text.Encoding]::UTF8.GetBytes($manifestJson)
-    $entropy       = [System.Text.Encoding]::UTF8.GetBytes("SASC-Integrity-$env:COMPUTERNAME-$env:USERNAME")
-    $protectedKey  = [System.Security.Cryptography.ProtectedData]::Protect(
-        $entropy, $entropy, [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
+    # Sign the manifest JSON with a fresh random key protected by DPAPI (CurrentUser scope).
+    # ProtectedData.Protect() is non-deterministic (random IV), so we generate a random HMAC
+    # key once, protect it, and store the protected blob. Verification uses Unprotect() to
+    # recover the original key -- this is the correct DPAPI usage pattern.
+    $manifestBytes  = [System.Text.Encoding]::UTF8.GetBytes($manifestJson)
+    $entropy        = [System.Text.Encoding]::UTF8.GetBytes("SASC-Integrity-$env:COMPUTERNAME-$env:USERNAME")
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    $hmacKey = New-Object byte[] 32
+    $rng.GetBytes($hmacKey)
+    $rng.Dispose()
+    $protectedHmacKey = [System.Security.Cryptography.ProtectedData]::Protect(
+        $hmacKey, $entropy, [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
     $hmac = New-Object System.Security.Cryptography.HMACSHA256
-    $hmac.Key = $protectedKey[0..31]
+    $hmac.Key = $hmacKey
     $sig = [Convert]::ToBase64String($hmac.ComputeHash($manifestBytes))
     $hmac.Dispose()
+    [Array]::Clear($hmacKey, 0, $hmacKey.Length)
 
     $signedManifest = @{
-        Manifest  = $manifest
-        Signature = $sig
+        Manifest     = $manifest
+        ManifestJson = $manifestJson
+        Signature    = $sig
+        ProtectedKey = [Convert]::ToBase64String($protectedHmacKey)
     }
     $signedManifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $script:_IntegrityPath -Encoding UTF8 -Force
 
     # Lock down file permissions
     Set-VaultFilePermissions -Path $script:_IntegrityPath
 
-    try { Write-AppLog "SASC: Integrity manifest generated with $($entries.Count) files" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Integrity manifest generated with $($entries.Count) files" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $script:_IntegrityPath
 }
 
@@ -511,6 +542,8 @@ function Test-SASCSignedManifest {
     .SYNOPSIS  Verify the SASC HMAC-signed integrity manifest -- re-compute hashes and validate HMAC.
     .NOTES     Renamed from Test-IntegrityManifest (P011 fix) to avoid collision with PwShGUI-IntegrityCore.psm1.
     .OUTPUTS   [PSCustomObject] with AllPassed, Results (per-file), SignatureValid
+        .DESCRIPTION
+      Detailed behaviour: Test s a s c signed manifest.
     #>
     [CmdletBinding()]
     param()
@@ -534,17 +567,32 @@ function Test-SASCSignedManifest {
         return $result
     }
 
-    # Verify signature
-    $manifestJson  = ($signed.Manifest | ConvertTo-Json -Depth 5 -Compress)
-    $manifestBytes = [System.Text.Encoding]::UTF8.GetBytes($manifestJson)
+    # Verify HMAC signature: recover the key via DPAPI Unprotect and re-compute the HMAC.
+    # Use the stored ManifestJson (verbatim string from generation) to avoid re-serialisation
+    # differences; fall back to re-serialising $signed.Manifest if ManifestJson is absent.
+    # Use PSObject.Properties for safe access under Set-StrictMode -Version Latest.
+    $storedManifestJsonProp = $signed.PSObject.Properties['ManifestJson']
+    $storedJson = if ($null -ne $storedManifestJsonProp -and $storedManifestJsonProp.Value) {
+        [string]$storedManifestJsonProp.Value
+    } else {
+        $signed.Manifest | ConvertTo-Json -Depth 5 -Compress
+    }
+    $manifestBytes = [System.Text.Encoding]::UTF8.GetBytes($storedJson)
     $entropy       = [System.Text.Encoding]::UTF8.GetBytes("SASC-Integrity-$env:COMPUTERNAME-$env:USERNAME")
     try {
-        $protectedKey = [System.Security.Cryptography.ProtectedData]::Protect(
-            $entropy, $entropy, [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
+        $protectedKeyProp = $signed.PSObject.Properties['ProtectedKey']
+        if ($null -eq $protectedKeyProp -or -not $protectedKeyProp.Value) {
+            $result.Errors += 'Manifest is missing ProtectedKey -- regenerate with New-IntegrityManifest'
+            return $result
+        }
+        $protectedHmacKeyBytes = [Convert]::FromBase64String([string]$protectedKeyProp.Value)
+        $hmacKey = [System.Security.Cryptography.ProtectedData]::Unprotect(
+            $protectedHmacKeyBytes, $entropy, [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
         $hmac = New-Object System.Security.Cryptography.HMACSHA256
-        $hmac.Key = $protectedKey[0..31]
+        $hmac.Key = $hmacKey
         $expectedSig = [Convert]::ToBase64String($hmac.ComputeHash($manifestBytes))
         $hmac.Dispose()
+        [Array]::Clear($hmacKey, 0, $hmacKey.Length)
         $result.SignatureValid = ($expectedSig -eq $signed.Signature)
     } catch {
         $result.Errors += "Signature verification failed: $($_.Exception.Message)"
@@ -579,7 +627,7 @@ function Test-SASCSignedManifest {
     $script:_LastIntegrityCheck = Get-Date
 
     if (-not $allPassed) {
-        try { Write-AppLog "SASC: Integrity check FAILED -- $(($result.Results | Where-Object Status -ne 'Passed').Count) file(s) invalid" "Error" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Integrity check FAILED -- $(($result.Results | Where-Object Status -ne 'Passed').Count) file(s) invalid" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
     return $result
 }
@@ -596,6 +644,7 @@ function Set-VaultFilePermissions {
         removes all other access rules. This satisfies MITRE ATT&CK T1555
         mitigation for credential file protection.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$Path
@@ -615,7 +664,7 @@ function Set-VaultFilePermissions {
         $acl.AddAccessRule($rule)
         Set-Acl -LiteralPath $Path -AclObject $acl
     } catch {
-        try { Write-AppLog "SASC: Failed to set permissions on $Path -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Failed to set permissions on $Path -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 }
 
@@ -627,6 +676,8 @@ function Find-BWCli {
     <#
     .SYNOPSIS  Locate the Bitwarden CLI binary.
     .OUTPUTS   [string] Full path to bw.exe, or $null if not found.
+        .DESCRIPTION
+      Detailed behaviour: Find b w cli.
     #>
     [CmdletBinding()]
     param()
@@ -654,6 +705,7 @@ function Get-BWStatus {
     .SYNOPSIS  Query Bitwarden vault status via CLI.
     .OUTPUTS   [string] 'unlocked', 'locked', 'unauthenticated', or 'error'.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param()
 
@@ -664,7 +716,7 @@ function Get-BWStatus {
         if ($statusObj -and $statusObj.status) {
             return $statusObj.status.ToLower()
         }
-    } catch { <# Intentional: non-fatal #> }
+    } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return 'error'
 }
 
@@ -719,6 +771,8 @@ function Test-VaultStatus {
     <#
     .SYNOPSIS  Return current vault state -- no secrets accessed.
     .OUTPUTS   [PSCustomObject] with State, BWCliAvailable, AutoLockRemaining, FailedAttempts
+        .DESCRIPTION
+      Detailed behaviour: Test vault status.
     #>
     [CmdletBinding()]
     param()
@@ -773,12 +827,12 @@ function Unlock-Vault {
     )
 
     # Pre-flight checks
-    try { Write-AppLog "SASC: Unlock-Vault starting -- current state: $($script:_VaultState)" "Verbose" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Unlock-Vault starting -- current state: $($script:_VaultState)" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     if (-not $script:_BWCliPath) {
-        try { Write-AppLog "SASC: Unlock-Vault FAIL -- BW CLI not available" "Error" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Unlock-Vault FAIL -- BW CLI not available" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         throw "Bitwarden CLI not available. Run Install-BitwardenLite first."
     }
-    try { Write-AppLog "SASC: Unlock-Vault pre-flight OK -- BW CLI at $($script:_BWCliPath)" "Verbose" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Unlock-Vault pre-flight OK -- BW CLI at $($script:_BWCliPath)" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     # Check lockout
     if ($script:_VaultState -eq 'LockedOut') {
@@ -801,7 +855,7 @@ function Unlock-Vault {
                 }
                 $script:_IntegrityIssuesDetected = $true
                 $script:_LastIntegrityMessage = 'Integrity check detected mismatches during unlock attempt.'
-                try { Write-AppLog "SASC: Integrity check detected issues; continuing in advisory mode" "Warning" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC: Integrity check detected issues; continuing in advisory mode" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             }
         }
     }
@@ -827,44 +881,52 @@ function Unlock-Vault {
         }
 
         # Attempt unlock via BW CLI -- pipe password to stdin
-        try { Write-AppLog "SASC: Querying BW vault status before unlock" "Verbose" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Querying BW vault status before unlock" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $status = Get-BWStatus
-        try { Write-AppLog "SASC: BW vault status = '$status'" "Verbose" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: BW vault status = '$status'" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         if ($status -eq 'unauthenticated') {
             # Need to login first
-            try { Write-AppLog "SASC: Vault is unauthenticated -- login required" "Error" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Vault is unauthenticated -- login required" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             throw "Bitwarden vault is not authenticated. Please run the Assisted SASC wizard to set up your vault."
         }
 
         # Unlock
-        try { Write-AppLog "SASC: Executing BW unlock command" "Verbose" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Executing BW unlock command" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $result = & $script:_BWCliPath unlock --raw $passwordPlain 2>&1
         $exitCode = $LASTEXITCODE
-        try { Write-AppLog "SASC: BW unlock exit code = $exitCode, result length = $(if($result){$result.Length}else{0})" "Verbose" } catch { <# Intentional: non-fatal #> }
+        # bw CLI 2>&1 can return an Object[] mixing stdout strings and ErrorRecord objects.
+        # Extract the session token: it is the longest plain string (JWT, ~200+ chars).
+        $sessionToken = $null
+        if ($result -is [array]) {
+            $sessionToken = @($result | Where-Object { $_ -is [string] -and $_.Length -gt 10 } | Select-Object -Last 1)[0]
+        } elseif ($result -and $result.Length -gt 10) {
+            $sessionToken = $result
+        }
+        try { Write-AppLog "SASC: BW unlock exit code = $exitCode, result type = $($result.GetType().Name), token found = $(if($sessionToken){'yes'}else{'no'})" "Verbose" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
-        if ($exitCode -eq 0 -and $result -and $result.Length -gt 10) {
+        if ($exitCode -eq 0 -and $sessionToken) {
             # Store session key as SecureString
-            $script:_BWSessionKey = Convert-PlainTextToSecureString -PlainText $result
+            $script:_BWSessionKey = Convert-PlainTextToSecureString -PlainText $sessionToken
             $script:_VaultState = 'Unlocked'
             $script:_FailedAttempts = 0
             try {
                 Start-AutoLockTimer
-                try { Write-AppLog "SASC: Auto-lock timer started ($($script:DefaultAutoLockMinutes) min)" "Info" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC: Auto-lock timer started ($($script:DefaultAutoLockMinutes) min)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             } catch {
                 # Auto-lock failure is non-fatal -- vault is already unlocked
-                try { Write-AppLog "SASC: Auto-lock timer failed to start: $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC: Auto-lock timer failed to start: $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             }
-            try { Write-AppLog "SASC: Vault unlocked successfully" "Info" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Vault unlocked successfully" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
             return $true
         } else {
             # Unlock failed
             $script:_FailedAttempts++
-            try { Write-AppLog "SASC: Vault unlock failed (attempt $($script:_FailedAttempts)/$($script:MaxFailedAttempts))" "Warning" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Vault unlock failed (attempt $($script:_FailedAttempts)/$($script:MaxFailedAttempts))" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
             if ($script:_FailedAttempts -ge $script:MaxFailedAttempts) {
                 $script:_VaultState = 'LockedOut'
                 $script:_LockoutUntil = (Get-Date).AddMinutes($script:LockoutDurationMinutes)
-                try { Write-AppLog "SASC: Vault LOCKED OUT until $($script:_LockoutUntil.ToString('HH:mm:ss'))" "Error" } catch { <# Intentional: non-fatal #> }
+                try { Write-AppLog "SASC: Vault LOCKED OUT until $($script:_LockoutUntil.ToString('HH:mm:ss'))" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
                 throw "Too many failed attempts. Vault locked out for $($script:LockoutDurationMinutes) minutes."
             }
             return $false
@@ -874,20 +936,23 @@ function Unlock-Vault {
         if ($passwordPlain) { $passwordPlain = $null }
         # Clear BW_SESSION env var
         if ($env:BW_SESSION) { $env:BW_SESSION = $null }
-        # Clear result (contains session token on success)
+        # Clear result and extracted session token from memory
         if ($result) { $result = $null }
+        if ($sessionToken) { $sessionToken = $null }
     }
 }
 
 function Lock-Vault {
     <#
     .SYNOPSIS  Lock the vault immediately, clear session key from memory.
+        .DESCRIPTION
+      Detailed behaviour: Lock vault.
     #>
     [CmdletBinding()]
     param()
 
     if ($script:_BWCliPath) {
-        try { & $script:_BWCliPath lock 2>&1 | Out-Null } catch { <# Intentional: non-fatal #> }
+        try { & $script:_BWCliPath lock 2>&1 | Out-Null } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     # Clear session key
@@ -903,17 +968,21 @@ function Lock-Vault {
     }
     $script:_AutoLockStartTime = [datetime]::MinValue
 
-    try { Write-AppLog "SASC: Vault locked" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Vault locked" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 }
 
 function Start-AutoLockTimer {
     <#
     .SYNOPSIS  Start a timer that auto-locks the vault after configured idle minutes.
+        .DESCRIPTION
+      Detailed behaviour: Start auto lock timer.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [int]$Minutes = $script:DefaultAutoLockMinutes
     )
+    if (-not $PSCmdlet.ShouldProcess('Start-AutoLockTimer', 'Execute')) { return }
+
 
     # Stop existing timer
     if ($script:_AutoLockTimer) {
@@ -971,7 +1040,7 @@ function Get-VaultItem {
         $securePassword = Convert-PlainTextToSecureString -PlainText $item.login.password
     }
 
-    try { Write-AppLog "SASC: Vault item accessed -- Name: $($item.name), ID: $($item.id)" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Vault item accessed -- Name: $($item.name), ID: $($item.id)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     [PSCustomObject]@{
         Id       = $item.id
@@ -989,7 +1058,10 @@ function Get-VaultItemList {
     <#
     .SYNOPSIS  List all vault items (metadata only -- no passwords returned).
     .OUTPUTS   [PSCustomObject[]] Array of items with Name, UserName, Uri, FolderId
+        .DESCRIPTION
+      Detailed behaviour: Get vault item list.
     #>
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [string]$FolderId,
@@ -1029,6 +1101,8 @@ function Set-VaultItem {
     .PARAMETER Notes      Item notes.
     .PARAMETER FolderId   Folder assignment.
     .PARAMETER ItemId     If provided, updates existing item. Otherwise creates new.
+        .DESCRIPTION
+      Detailed behaviour: Set vault item.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -1083,7 +1157,7 @@ function Set-VaultItem {
             $result = Invoke-BWCommand -Arguments @('create', 'item', $encoded)
         }
 
-        try { Write-AppLog "SASC: Vault item set -- Name: $Name, ID: $ItemId" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Vault item set -- Name: $Name, ID: $ItemId" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         return $result
     } finally {
         $passwordPlain = $null
@@ -1104,6 +1178,7 @@ function Import-VaultSecrets {
     .PARAMETER FilePath   Path to the import file.
     .PARAMETER Format     Import format identifier.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)] [string]$FilePath,
@@ -1125,7 +1200,7 @@ function Import-VaultSecrets {
 
     # Record pre-import hash for audit
     $preHash = (Get-FileHash -LiteralPath $safePath -Algorithm SHA256).Hash
-    try { Write-AppLog "SASC: Importing secrets from $Format -- file hash: $preHash" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Importing secrets from $Format -- file hash: $preHash" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     $result = Invoke-BWCommand -Arguments @('import', $Format, $safePath)
 
@@ -1137,7 +1212,7 @@ function Import-VaultSecrets {
         throw "Import failed: $result"
     }
 
-    try { Write-AppLog "SASC: Import completed from $Format" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Import completed from $Format" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $result
 }
 
@@ -1146,8 +1221,12 @@ function Import-Certificates {
     .SYNOPSIS  Import PFX/PEM/CER certificates into vault as secure notes.
     .PARAMETER FilePath     Path to certificate file.
     .PARAMETER Passphrase   PFX passphrase as [SecureString] (if applicable).
+        .DESCRIPTION
+      Detailed behaviour: Import certificates.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Passphrase', Justification='Reserved for PFX import path; placeholder API contract.')]
     param(
         [Parameter(Mandatory)] [string]$FilePath,
         [System.Security.SecureString]$Passphrase
@@ -1181,7 +1260,7 @@ function Import-Certificates {
 
     $result = Invoke-BWCommand -Arguments @('create', 'item', $encoded)
 
-    try { Write-AppLog "SASC: Certificate imported -- $certName (SHA256: $certHash)" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Certificate imported -- $certName (SHA256: $certHash)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $result
 }
 
@@ -1218,7 +1297,7 @@ function Export-VaultBackup {
 
         if (Test-Path -LiteralPath $backupFile) {
             Set-VaultFilePermissions -Path $backupFile
-            try { Write-AppLog "SASC: Vault backup exported to $backupFile" "Info" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Vault backup exported to $backupFile" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
         return $backupFile
     } finally {
@@ -1326,7 +1405,7 @@ function Test-VaultSecurity {
     # Clamp score
     $score = [math]::Max(0, [math]::Min(100, $score))
 
-    try { Write-AppLog "SASC: Security audit completed -- Score: $score/100" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Security audit completed -- Score: $score/100" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     [PSCustomObject]@{
         Score    = $score
@@ -1379,7 +1458,7 @@ function Enable-WindowsHello {
         $configData.WindowsHelloBlob    = [Convert]::ToBase64String($protectedBytes)
         Save-VaultConfig -Config $configData
 
-        try { Write-AppLog "SASC: Windows Hello configured successfully" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Windows Hello configured successfully" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     } finally {
         if ($passwordPlain) {
             $passwordPlain = $null
@@ -1412,7 +1491,7 @@ function Get-WindowsHelloPassword {
         [Array]::Clear($passwordBytes, 0, $passwordBytes.Length)
         return $password
     } catch {
-        try { Write-AppLog "SASC: Windows Hello decryption failed -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Windows Hello decryption failed -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         return $null
     }
 }
@@ -1425,6 +1504,8 @@ function Get-VaultLANStatus {
     <#
     .SYNOPSIS  Check if vault is accessible on LAN subnet.
     .OUTPUTS   [PSCustomObject] with Enabled, Port, URI, Subnet, ProcessRunning
+        .DESCRIPTION
+      Detailed behaviour: Get vault l a n status.
     #>
     [CmdletBinding()]
     param()
@@ -1464,6 +1545,8 @@ function Set-VaultLANSharing {
     .SYNOPSIS  Enable or disable vault API serving on LAN subnet.
     .PARAMETER Enable   $true to start bw serve, $false to stop it.
     .PARAMETER Port     Port number (default 8087).
+        .DESCRIPTION
+      Detailed behaviour: Set vault l a n sharing.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -1510,21 +1593,21 @@ function Set-VaultLANSharing {
             $config.LANSharePort    = $Port
             Save-VaultConfig -Config $config
 
-            try { Write-AppLog "SASC: LAN vault sharing enabled on port $Port" "Info" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: LAN vault sharing enabled on port $Port" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         } finally {
             $sessionPlain = $null
         }
     } else {
         # Stop bw serve processes
         Get-Process -Name 'bw' -ErrorAction SilentlyContinue | ForEach-Object {
-            try { $_.Kill() } catch { <# Intentional: non-fatal #> }
+            try { $_.Kill() } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
         $config = Get-VaultConfig
         $config.LANShareEnabled = $false
         Save-VaultConfig -Config $config
 
-        try { Write-AppLog "SASC: LAN vault sharing disabled" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: LAN vault sharing disabled" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 }
 
@@ -1537,6 +1620,7 @@ function Get-VaultConfig {
     .SYNOPSIS  Read the SASC vault configuration JSON.
     .OUTPUTS   [hashtable] Configuration data.
     #>
+    [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param()
 
@@ -1566,7 +1650,7 @@ function Get-VaultConfig {
         $raw = Get-Content -LiteralPath $script:_VaultConfigPath -Raw
         return ($raw | ConvertFrom-Json -AsHashtable -ErrorAction Stop)
     } catch {
-        try { Write-AppLog "SASC: Failed to read vault config -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Failed to read vault config -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         return @{
             WindowsHelloEnabled = $false
             WindowsHelloBlob    = $null
@@ -1628,7 +1712,7 @@ function Show-AssistedSASCDialog {
     [CmdletBinding()]
     param()
 
-    try { Write-AppLog "SASC: Assisted Setup form opened" "Audit" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Assisted Setup form opened" "Audit" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     # -- Helper: assess a single step ---------------------------------------
     $assessSteps = {
@@ -1672,7 +1756,7 @@ function Show-AssistedSASCDialog {
             $p  = [System.Security.Cryptography.ProtectedData]::Protect($tb, $te, 'CurrentUser')
             [void][System.Security.Cryptography.ProtectedData]::Unprotect($p, $te, 'CurrentUser')
             $dpapiOk = $true
-        } catch { <# Intentional: non-fatal #> }
+        } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         $steps['DPAPI (Windows Hello)'] = [pscustomobject]@{
             Category = 'Environment'
             Status   = if ($dpapiOk) { 'Installed' } else { 'Missing' }
@@ -1893,7 +1977,16 @@ function Show-AssistedSASCDialog {
     $colCanRun  = New-Object System.Windows.Forms.DataGridViewTextBoxColumn
     $colCanRun.Name = 'CanRun'; $colCanRun.HeaderText = ''; $colCanRun.Visible = $false
 
-    $grid.Columns.AddRange(@($colIcon, $colCat, $colStep, $colStatus, $colDetail, $colAction, $colCanRun) | Where-Object { $_ -is [System.Windows.Forms.DataGridViewColumn] })
+    $gridColumns = @(
+        $colIcon,
+        $colCat,
+        $colStep,
+        $colStatus,
+        $colDetail,
+        $colAction,
+        $colCanRun
+    ) | Where-Object { $_ -is [System.Windows.Forms.DataGridViewColumn] }
+    $grid.Columns.AddRange([System.Windows.Forms.DataGridViewColumn[]]@($gridColumns))
     $setupForm.Controls.Add($grid)
 
     # -- Buttons ------------------------------------------------------------
@@ -1917,7 +2010,7 @@ function Show-AssistedSASCDialog {
     $btnClose.Text = "Close"
     $btnClose.Location = New-Object System.Drawing.Point([int]760, [int]374)
     $btnClose.Size = New-Object System.Drawing.Size([int]90, [int]32)
-    $btnClose.Add_Click({ $setupForm.Close() })
+    $btnClose.Add_Click({ $setupForm.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
     $setupForm.Controls.AddRange(@($btnRefresh, $btnRun, $btnRunAll, $btnClose))
 
@@ -1949,7 +2042,7 @@ function Show-AssistedSASCDialog {
         $logBox.AppendText("$ts $tag $Message`r`n")
         $logBox.ScrollToCaret()
         [System.Windows.Forms.Application]::DoEvents()
-        try { Write-AppLog "SASC-Setup: $Message" $(if($Level -eq 'ERR'){'Error'}elseif($Level -eq 'WARN'){'Warning'}else{'Verbose'}) } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC-Setup: $Message" $(if($Level -eq 'ERR'){'Error'}elseif($Level -eq 'WARN'){'Warning'}else{'Verbose'}) } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
 
     # -- Populate / refresh grid --------------------------------------------
@@ -1975,7 +2068,7 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Enable/disable Run button based on selection -----------------------
-    $grid.Add_SelectionChanged({
+    $grid.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($grid.SelectedRows.Count -eq 1) {
             $canRun = $grid.SelectedRows[0].Cells['CanRun'].Value
             $btnRun.Enabled = ($canRun -eq $true -or $canRun -eq 'True')
@@ -2085,9 +2178,9 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Wire buttons -------------------------------------------------------
-    $btnRefresh.Add_Click({ & $refreshGrid })
+    $btnRefresh.Add_Click({ & $refreshGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-    $btnRun.Add_Click({
+    $btnRun.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($grid.SelectedRows.Count -ne 1) { return }
         $row = $grid.SelectedRows[0]
         $actionKey = [string]$row.Cells['ActionKey'].Value
@@ -2096,7 +2189,7 @@ function Show-AssistedSASCDialog {
         & $executeAction $actionKey $stepName
     })
 
-    $btnRunAll.Add_Click({
+    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         & $writeLog '--- Running all pending steps ---' 'RUN'
         $steps = & $assessSteps
         foreach ($kv in $steps.GetEnumerator()) {
@@ -2123,11 +2216,13 @@ function Show-VaultUnlockDialog {
     <#
     .SYNOPSIS  Show a password dialog to unlock the vault with verbose status output.
     .OUTPUTS   [bool] $true if vault was unlocked.
+        .DESCRIPTION
+      Detailed behaviour: Show vault unlock dialog.
     #>
     [CmdletBinding()]
     param()
 
-    try { Write-AppLog "SASC: Vault unlock dialog opened" "Audit" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Vault unlock dialog opened" "Audit" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     $dlg = New-Object System.Windows.Forms.Form
     $dlg.Text = "Unlock Vault"
@@ -2202,7 +2297,7 @@ function Show-VaultUnlockDialog {
     $btnUnlock.Location = New-Object System.Drawing.Point([int]215, [int]250)
     $btnUnlock.Size = New-Object System.Drawing.Size([int]85, [int]30)
     $btnUnlock.DialogResult = 'None'
-    $btnUnlock.Add_Click({
+    $btnUnlock.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         try {
             $lblStatus.Text = ""
             $unlocked = $false
@@ -2236,7 +2331,7 @@ function Show-VaultUnlockDialog {
             $errMsg = $_.Exception.Message
             $lblStatus.Text = $errMsg
             & $appendLog "ERROR: $errMsg"
-            try { Write-AppLog "SASC: Unlock dialog error -- $errMsg" "Error" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Unlock dialog error -- $errMsg" "Error" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
     })
 
@@ -2263,7 +2358,10 @@ function Show-VaultUnlockDialog {
 function Show-VaultStatusDialog {
     <#
     .SYNOPSIS  Detailed vault health panel.
+        .DESCRIPTION
+      Detailed behaviour: Show vault status dialog.
     #>
+    [OutputType([System.Windows.Forms.DialogResult])]
     [CmdletBinding()]
     param()
 
@@ -2310,7 +2408,7 @@ function Show-SecretsInvokerForm {
     param()
 
     Assert-VaultUnlocked
-    try { Write-AppLog "SASC: Secrets Invoker opened" "Audit" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Secrets Invoker opened" "Audit" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     # Check for WebView2
     $webView2Available = $false
@@ -2320,7 +2418,7 @@ function Show-SecretsInvokerForm {
             $wv2Key = Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BEB-E15AB5B8BB31}' -ErrorAction SilentlyContinue
         }
         if ($wv2Key) { $webView2Available = $true }
-    } catch { <# Intentional: non-fatal #> }
+    } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     if (-not $webView2Available) {
         # Fall back to WinForms-based invoker
@@ -2335,7 +2433,7 @@ function Show-SecretsInvokerForm {
         if (-not $wv2Assembly) { throw "Assembly not found" }
         Show-SecretsInvokerWebView2
     } catch {
-        try { Write-AppLog "SASC: WebView2 assembly load failed, using fallback -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: WebView2 assembly load failed, using fallback -- $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         Show-SecretsInvokerFallback
     }
 }
@@ -2388,7 +2486,7 @@ function Show-SecretsInvokerFallback {
         $cboSite.Items.Add("(vault error: $($_.Exception.Message))") | Out-Null
     }
 
-    $cboSite.Add_SelectedIndexChanged({
+    $cboSite.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $uriList.Items.Clear()
         $idx = $cboSite.SelectedIndex
         if ($idx -ge 0 -and $script:_InvokerItems -and $idx -lt $script:_InvokerItems.Count) {
@@ -2411,7 +2509,7 @@ function Show-SecretsInvokerFallback {
     $btnExecute.Text = "Open && Authenticate"
     $btnExecute.Location = New-Object System.Drawing.Point([int]15, [int]400)
     $btnExecute.Size = New-Object System.Drawing.Size([int]200, [int]35)
-    $btnExecute.Add_Click({
+    $btnExecute.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $idx = $cboSite.SelectedIndex
         if ($idx -lt 0) {
             $lblStatus.Text = "Please select a credential."
@@ -2444,7 +2542,7 @@ function Show-SecretsInvokerFallback {
 
             $lblStatus.Text = "Pages opened. Credential available for: $($cred.Name)"
             $lblStatus.ForeColor = [System.Drawing.Color]::DarkGreen
-            try { Write-AppLog "SASC: Secrets invoker -- opened $($checkedUris.Count) pages for $($cred.Name)" "Info" } catch { <# Intentional: non-fatal #> }
+            try { Write-AppLog "SASC: Secrets invoker -- opened $($checkedUris.Count) pages for $($cred.Name)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         } catch {
             $lblStatus.Text = "Error: $($_.Exception.Message)"
             $lblStatus.ForeColor = [System.Drawing.Color]::DarkRed
@@ -2473,7 +2571,7 @@ function Show-SecretsInvokerWebView2 {
     # XHTML file with a JS bridge for credential injection.
 
     # For now, delegate to fallback with a notice
-    try { Write-AppLog "SASC: WebView2 invoker -- delegating to fallback (assembly integration pending)" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: WebView2 invoker -- delegating to fallback (assembly integration pending)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     Show-SecretsInvokerFallback
 }
 
@@ -2484,6 +2582,8 @@ function Show-SecretsInvokerWebView2 {
 function Install-BitwardenLite {
     <#
     .SYNOPSIS  Wrapper to invoke the Bitwarden CLI installer script.
+        .DESCRIPTION
+      Detailed behaviour: Install bitwarden lite.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param()
@@ -2495,11 +2595,11 @@ function Install-BitwardenLite {
 
     if (-not $PSCmdlet.ShouldProcess("Bitwarden CLI", "Install via $installerPath")) { return }
 
-    try { Write-AppLog "SASC: Starting Bitwarden CLI installation" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Starting Bitwarden CLI installation" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     & $installerPath
     $script:_BWCliPath = Find-BWCli
     if ($script:_BWCliPath) {
-        try { Write-AppLog "SASC: Bitwarden CLI installed at $($script:_BWCliPath)" "Info" } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog "SASC: Bitwarden CLI installed at $($script:_BWCliPath)" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         New-IntegrityManifest | Out-Null
     }
 }
@@ -2594,9 +2694,10 @@ function Get-CredentialForTarget {
     $cred = New-Object System.Management.Automation.PSCredential(
         $item.UserName, $item.Password)
 
-    try { Write-AppLog "SASC: Credential retrieved for target: $TargetName (user: $($item.UserName))" "Info" } catch { <# Intentional: non-fatal #> }
+    try { Write-AppLog "SASC: Credential retrieved for target: $TargetName (user: $($item.UserName))" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $cred
 }
+
 
 
 

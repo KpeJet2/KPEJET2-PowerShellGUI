@@ -1,5 +1,5 @@
 @echo off
-REM VersionTag: 2604.B2.V31.1
+REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so all child PowerShell processes find modules
 REM   2604.B2.V31.0  2026-04-04  Added switch parameters (/usepsv:5|7, /scriptsec:1-6, /skipps7, /skippolicy), cleaned echo output
@@ -53,9 +53,10 @@ set "FORCE_PS_VERSION="
 set "FORCE_SCRIPT_SEC="
 set "SKIP_PS7_PROMPT=FALSE"
 set "SKIP_POLICY_PROMPT=FALSE"
+set "SUPPRESS_FOOTER_MODE=ON"
 
 REM --- Parse command-line switches ---
-REM Supported: /TASKTRAY  /usepsv:5  /usepsv7  /scriptsec:1-6  /skipps7  /skippolicy
+REM Supported: /TASKTRAY  /usepsv:5  /usepsv7  /scriptsec:1-6  /skipps7  /skippolicy  /suppressfooter  /nosuppressfooter
 for %%A in (%*) do (
     if /I "%%~A"=="/TASKTRAY" set "PASSTHRU_ARGS=/TASKTRAY"
     if /I "%%~A"=="/usepsv:5" (
@@ -92,6 +93,31 @@ for %%A in (%*) do (
     )
     if /I "%%~A"=="/skipps7" set "SKIP_PS7_PROMPT=TRUE"
     if /I "%%~A"=="/skippolicy" set "SKIP_POLICY_PROMPT=TRUE"
+    if /I "%%~A"=="/suppressfooter" set "SUPPRESS_FOOTER_MODE=ON"
+    if /I "%%~A"=="/nosuppressfooter" set "SUPPRESS_FOOTER_MODE=OFF"
+)
+
+REM ============================================================
+REM  ENHANCEMENT PHASE 0: SASC Integrity Preflight
+REM ============================================================
+if exist "%scriptDir%scripts\Invoke-SASCIntegrityPreflight.ps1" (
+    echo [CHECK] Running SASC integrity preflight...
+    set "SASC_PREFLIGHT_SHELL=powershell"
+    for /f "tokens=*" %%A in ('pwsh -NoProfile -Command "$PSVersionTable.PSVersion.Major" 2^>nul') do set "SASC_PWSH_VERSION=%%A"
+    if defined SASC_PWSH_VERSION set "SASC_PREFLIGHT_SHELL=pwsh"
+    !SASC_PREFLIGHT_SHELL! -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%scripts\Invoke-SASCIntegrityPreflight.ps1" -WorkspacePath "%scriptDir%" -Interactive -Quiet
+    set "SASC_PREFLIGHT_EXIT=!errorlevel!"
+    if "!SASC_PREFLIGHT_EXIT!"=="0" (
+        echo [OK] SASC integrity preflight passed.
+    ) else if "!SASC_PREFLIGHT_EXIT!"=="2" (
+        echo [WARNING] SASC integrity preflight reported unresolved drift. Continuing in advisory mode.
+    ) else (
+        echo [WARNING] SASC integrity preflight returned exit code !SASC_PREFLIGHT_EXIT!. Continuing launch.
+    )
+    echo.
+) else (
+    echo [INFO] SASC preflight script not found. Skipping preflight.
+    echo.
 )
 
 REM ============================================================
@@ -162,7 +188,10 @@ set "DynamicMenuFolder1=%scriptDir%"
 set "DynamicMenuFolder2=%scriptDir%scripts\QUICK-APP\"
 set "DynamicMenuFolderCount=2"
 
+:MainMenu
 cls
+set "SUPPRESS_FOOTER_SWITCH=/SUPPRESSFOOTER"
+if /I "!SUPPRESS_FOOTER_MODE!"=="OFF" set "SUPPRESS_FOOTER_SWITCH=/NOSUPPRESSFOOTER"
 echo ============================================================
 echo  PowerShell GUI Application Loader
 echo ============================================================
@@ -172,6 +201,7 @@ echo.
 echo  1^) Launch-GUI-quik_jnr   ^(fast startup mode^)
 echo  2^) Launch-GUI-slow_snr   ^(full checks mode^)
 echo  3^) Feature Requests       ^(XHTML task pad^)
+echo  4^) Toggle Footer Suppression ^(diagnostics^) [!SUPPRESS_FOOTER_MODE!]
 echo.
 
 REM --- Letter lookup: dynamic item 1=A, 2=B, ... (add more rows for >26 files) ---
@@ -182,7 +212,7 @@ set "_L16=P" & set "_L17=Q" & set "_L18=R" & set "_L19=S" & set "_L20=T"
 set "_L21=U" & set "_L22=V" & set "_L23=W" & set "_L24=X" & set "_L25=Y"
 set "_L26=Z"
 set "dynCount=0"
-set "choices=123"
+set "choices=1234"
 
 REM --- Dynamically list files from each DynamicMenuFolder ---
 for /L %%D in (1,1,%DynamicMenuFolderCount%) do (
@@ -193,25 +223,33 @@ echo.
 echo Default in 7 seconds: 1 ^(quik_jnr^)
 echo.
 
-choice /C !choices! /N /T 7 /D 1 /M "Enter choice [1-3] or letter [A-Z]: "
+choice /C !choices! /N /T 7 /D 1 /M "Enter choice [1-4] or letter [A-Z]: "
 set "userChoice=!errorlevel!"
 
 REM --- Handle fixed selections ---
 if "!userChoice!"=="1" (
-    call "%quickLauncher%" !PASSTHRU_ARGS!
+    call "%quickLauncher%" !PASSTHRU_ARGS! !SUPPRESS_FOOTER_SWITCH!
     goto end
 )
 if "!userChoice!"=="2" (
-    call "%slowLauncher%" !PASSTHRU_ARGS!
+    call "%slowLauncher%" !PASSTHRU_ARGS! !SUPPRESS_FOOTER_SWITCH!
     goto end
 )
 if "!userChoice!"=="3" (
     start "" "%featureRequests%"
     goto end
 )
+if "!userChoice!"=="4" (
+    if /I "!SUPPRESS_FOOTER_MODE!"=="ON" (
+        set "SUPPRESS_FOOTER_MODE=OFF"
+    ) else (
+        set "SUPPRESS_FOOTER_MODE=ON"
+    )
+    goto MainMenu
+)
 
-REM --- Handle dynamic selections (errorlevel 3=A=dynCount 1, 4=B=dynCount 2 ...) ---
-set /a "dIdx=!userChoice!-3"
+REM --- Handle dynamic selections (errorlevel 5=A=dynCount 1, 6=B=dynCount 2 ...) ---
+set /a "dIdx=!userChoice!-4"
 if !dIdx! LSS 1 goto end
 if !dIdx! GTR !dynCount! goto end
 for /f %%I in ("!dIdx!") do (

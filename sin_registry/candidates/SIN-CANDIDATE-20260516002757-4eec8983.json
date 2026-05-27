@@ -1,0 +1,15 @@
+{
+  "id": "SIN-CANDIDATE-20260516002757-4eec8983",
+  "title": "Resurfacing bug pattern: Scheduler task failure: TASK-TabErrorFix",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "BUG-SCHED-0D26B6FF",
+    "BUG-SCHED-DE026586"
+  ],
+  "affected_files": [],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-16",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

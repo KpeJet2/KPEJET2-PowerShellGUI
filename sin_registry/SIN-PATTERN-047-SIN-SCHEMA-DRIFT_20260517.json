@@ -1,0 +1,22 @@
+{
+  "id": "SIN-PATTERN-047-SIN-SCHEMA-DRIFT",
+  "sin_id": "SIN-PATTERN-047-SIN-SCHEMA-DRIFT",
+  "title": "SIN registry entry uses inconsistent identifier or status fields (sin_id vs id, no status)",
+  "description": "Canonical SIN registry entries require both a stable identifier field and a status indicator. Two schemas are in use: legacy v1 (sin_id + status:'pattern-defined' + severity:CRITICAL|HIGH|MEDIUM|LOW) and newer v2 (id + severity:Blocking|Advisory + no status). Consumers (iter41 scoreboard generator, SIN scanner, pipeline feedback) must read both, or rows silently disappear from drilldowns and metrics. Any SIN-PATTERN-*.json that omits BOTH `sin_id` and `id`, or omits `severity`, or has neither `status` nor `is_resolved`, is non-conforming and breaks referential integrity.",
+  "severity": "Blocking",
+  "status": "pattern-defined",
+  "category": "Governance/Schema",
+  "detection_method": "Static scan of sin_registry/*.json: parse JSON; assert presence of (sin_id OR id) AND severity AND (status OR is_resolved).",
+  "scan_regex": "(?s)^\\{(?:(?!\\\"sin_id\\\")(?!\\\"id\\\":).)*\\}$",
+  "context_guard_regex": "SIN-PATTERN-|SEMI-SIN-",
+  "file_exclusion_regex": "REINDEX-|fixes/|candidates/|package\\.json",
+  "remediation": "Adopt dual-key writes: every new SIN-PATTERN-*.json MUST include BOTH `id` and `sin_id` (identical values), explicit `severity`, AND either `status:'pattern-defined'` (preferred) or `is_resolved:false`. Backfill existing entries via scripts/Sync-PipelineRegistryFromDisk.ps1.",
+  "examples": [
+    "# Bad - newer file with only `id`, drops out of legacy index lookups\n{ \"id\": \"SIN-PATTERN-XXX\", \"severity\": \"Blocking\" }",
+    "# Good - dual-key conforming entry\n{ \"id\": \"SIN-PATTERN-XXX\", \"sin_id\": \"SIN-PATTERN-XXX\", \"severity\": \"Blocking\", \"status\": \"pattern-defined\" }"
+  ],
+  "tags": ["governance", "schema", "registry", "referential-integrity"],
+  "occurrences_observed": 14,
+  "first_observed": "2026-05-17",
+  "date_added": "2026-05-17"
+}

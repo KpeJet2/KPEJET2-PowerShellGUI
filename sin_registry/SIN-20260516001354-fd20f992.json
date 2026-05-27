@@ -1,0 +1,17 @@
+{
+  "sin_id": "SIN-20260516001354-fd20f992",
+  "title": "[2026-05-04 21:31:36][BOOT][ERROR] FATAL: HttpListener failed to start on port 8042 — Exception calling \"Start\" with \"0\" argument(s): \"Failed to listen on prefix 'http://127.0.0.1:8042/' because it co",
+  "description": "Error pattern in log engine-bootstrap.log:56",
+  "category": "crash-log",
+  "severity": "CRITICAL",
+  "file_path": "C:\\PowerShellGUI\\logs\\engine-bootstrap.log",
+  "agent_id": "CronAiAthon",
+  "reported_by": "CronAiAthon-BugTracker",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "regression_count": 0,
+  "created_at": "2026-05-15T16:13:54.1491867Z",
+  "last_seen_at": "2026-05-15T16:13:54.1495314Z",
+  "detection_method": "CronAiAthon-BugTracker",
+  "sessionModCount": 1
+}

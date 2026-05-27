@@ -68,7 +68,7 @@
     "scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml": "kpe-CSS_TabsWhite-wLeftMENU",
     "scripts/XHTML-Checker/XHTML-code-analysis.xhtml": "kpe-CSS_TabsBlack-Checklist",
     "scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
-    "scripts/XHTML-Checker/XHTML-DependencyVis.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
+    "scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
     "scripts/XHTML-Checker/_TEMPLATE-XHTMLTool.xhtml": "kpe-CSS_MasterTight-wLeftMENU",
     "UPM/docs/UPM-UserGuide.xhtml": "kpe-CSS_TabsBlack-ModernUI",
     "~README.md/SECURITY-SETUP-GUIDE.xhtml": "kpe-CSS_PageBlack-TechnicalUI",

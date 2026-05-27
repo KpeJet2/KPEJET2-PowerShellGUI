@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260515221955-1ce8b654",
+  "title": "Resurfacing bug pattern: Unexpected token '€â”€ LAN Sharing â”€â”€`n\"' in expression or statement.",
+  "occurrences": 10,
+  "sample_bug_ids": [
+    "Bug-20260412121531-e902390c",
+    "Bug-20260421015016-378b74b1",
+    "Bug-20260421022420-c390e58a",
+    "Bug-20260421023040-dc2341b1",
+    "Bug-20260421023836-3b0fbc81"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\AssistedSASC.psm1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

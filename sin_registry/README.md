@@ -1,3 +1,4 @@
+# VersionTag: 2605.B5.V46.0
 # SIN Registry — README
 
 > **VersionTag:** 2604.B2.V31.0  
@@ -192,3 +193,4 @@ Required JSON fields:
 | `tests/Invoke-SINPatternScanner.ps1` | Full blocking SIN pattern scanner |
 | `tests/Invoke-SemiSinPenanceScanner.ps1` | Advisory penance scanner |
 | `modules/SINGovernance.psm1` | Review, approval, SINeProofed workflow |
+

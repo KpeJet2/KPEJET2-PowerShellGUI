@@ -1,4 +1,4 @@
-REM VersionTag: 2603.B0.v1.0
+REM VersionTag: 2605.B5.V46.0
 REM ============================================================
 REM  Launch-CarGame.bat  |  Slipstream City Launcher
 REM  Author   : GitHub Copilot

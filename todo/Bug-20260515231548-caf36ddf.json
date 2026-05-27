@@ -1,0 +1,51 @@
+{
+  "completedAt": null,
+  "acknowledged": null,
+  "implementedAt": null,
+  "id": "Bug-20260515231548-caf36ddf",
+  "category": "error-handling",
+  "outlinePhase": "assessment",
+  "countermeasures": [],
+  "executionMethod": "",
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psm1"
+  ],
+  "title": "1 functions with no try/catch blocks",
+  "priority": "MEDIUM",
+  "tags": [],
+  "plannedAt": "2026-05-15T16:08:37.2403116Z",
+  "sinId": "SIN-20260328082050-d343681b",
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "filesFixedCount": 0,
+  "outlineVersion": "v0",
+  "reopenedAt": null,
+  "parentId": "",
+  "notes": "Matched existing sin: 1 functions with no try/catch blocks | Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at 2026-05-15T16:08:37.2403116Z",
+  "bugResurfaced": true,
+  "filesRemainingCount": 0,
+  "status": "IN-PROGRESS",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "fixesImplementedCount": 0,
+  "linkedBugs": [],
+  "sessionModCount": 1,
+  "bugReferrals": [],
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "source": "BugTracker",
+  "description": "Script Import-WorkspaceModule.psm1 has 1 functions but zero try/catch blocks",
+  "executedAt": null,
+  "firstSeenAt": "2026-05-15T15:15:48.9239319Z",
+  "type": "Bug",
+  "bugHistory": [
+    {
+      "event": "RESURFACED",
+      "timestamp": "2026-05-15T15:15:49.1923355Z",
+      "by": "CronAiAthon-BugTracker",
+      "prevStatus": "CLOSED"
+    }
+  ],
+  "linkedFeatures": [],
+  "created": "2026-05-15T15:15:48.9237844Z",
+  "result": null,
+  "lastSeenAt": "2026-05-15T15:15:48.923967Z",
+  "modified": "2026-05-15T16:08:37.2403116Z"
+}

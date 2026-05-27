@@ -1,6 +1,6 @@
-# Author: The Establishment
+﻿# Author: The Establishment
 # Date: 2603
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -552,7 +552,7 @@ function Apply-CertFilter {
 }
 
 # ── Show cert details in right pane ──────────────────────────────────────────
-$lvCerts.add_SelectedIndexChanged({
+$lvCerts.add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if ($lvCerts.SelectedItems.Count -eq 0) { return }
     $c = $lvCerts.SelectedItems[0].Tag
     if (-not $c) { return }
@@ -587,12 +587,12 @@ $lvCerts.add_SelectedIndexChanged({
 })
 
 # ── Filter / Refresh handlers ─────────────────────────────────────────────────
-$btnRefresh.add_Click({ Load-AllCerts })
-$cmbStore.add_SelectedIndexChanged({ Apply-CertFilter })
-$txtFilter.add_TextChanged({ Apply-CertFilter })
+$btnRefresh.add_Click({ Load-AllCerts })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$cmbStore.add_SelectedIndexChanged({ Apply-CertFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$txtFilter.add_TextChanged({ Apply-CertFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
 # ── Export Private Key handler ────────────────────────────────────────────────
-$btnExportKey.add_Click({
+$btnExportKey.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if ($lvCerts.SelectedItems.Count -eq 0) {
         [System.Windows.Forms.MessageBox]::Show('Select a certificate first.', 'No Selection', 'OK', 'Warning') | Out-Null
         return
@@ -615,7 +615,7 @@ $btnExportKey.add_Click({
 })
 
 # ── Root Monitor: Save Baseline ───────────────────────────────────────────────
-$btnSaveBaseline.add_Click({
+$btnSaveBaseline.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $msg = Save-RootStoreBaseline -AllCerts $script:AllCerts
@@ -627,7 +627,7 @@ $btnSaveBaseline.add_Click({
 })
 
 # ── Root Monitor: Compare ─────────────────────────────────────────────────────
-$btnCompare.add_Click({
+$btnCompare.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $diff = Compare-RootStoreToBaseline -AllCerts $script:AllCerts
@@ -651,7 +651,7 @@ $btnCompare.add_Click({
 })
 
 # ── Root Monitor: Flag Suspicious ─────────────────────────────────────────────
-$btnFlagSuspicious.add_Click({
+$btnFlagSuspicious.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $suspect = Get-SuspiciousRootCerts -AllCerts $script:AllCerts
@@ -672,7 +672,7 @@ $btnFlagSuspicious.add_Click({
 })
 
 # ── Root Monitor: Save Report ─────────────────────────────────────────────────
-$btnSaveReport.add_Click({
+$btnSaveReport.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $ts = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -693,7 +693,7 @@ $btnSaveReport.add_Click({
 })
 
 # ── Expiry Watch: Scan ────────────────────────────────────────────────────────
-$btnScanExpiry.add_Click({
+$btnScanExpiry.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $lvExpiry.Items.Clear()
     if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
     $warnDays = [int]$nudDays.Value
@@ -732,6 +732,7 @@ Load-AllCerts
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

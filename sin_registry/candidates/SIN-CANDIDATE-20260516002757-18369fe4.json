@@ -1,0 +1,18 @@
+{
+  "id": "SIN-CANDIDATE-20260516002757-18369fe4",
+  "title": "Resurfacing bug pattern: 6 functions with no try/catch blocks",
+  "occurrences": 3,
+  "sample_bug_ids": [
+    "Bug-20260412141110-defc70e9",
+    "Bug-20260504172509-7344e566",
+    "Bug-20260507013520-a3e1748b"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\modules\\SINGovernance.psm1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-16",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

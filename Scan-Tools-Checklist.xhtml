@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan Tools Checklist</title>
+  <style type="text/css">
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 16px; background: #0d1117; color: #c9d1d9; }
+    h1 { margin: 0 0 4px; font-size: 20px; color: #58a6ff; }
+    h2 { margin: 0 0 8px; font-size: 14px; color: #8b949e; border-bottom: 1px solid #30363d; padding-bottom: 4px; }
+    .sub { color: #8b949e; font-size: 12px; margin-bottom: 12px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+    .stat-box { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 10px; text-align: center; }
+    .stat-val { font-size: 22px; font-weight: bold; color: #58a6ff; }
+    .stat-label { font-size: 11px; color: #8b949e; margin-top: 2px; }
+    .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    button { border: 0; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: #238636; color: #fff; }
+    .btn-info    { background: #1f6feb; color: #fff; }
+    .btn-alt     { background: #30363d; color: #c9d1d9; border: 1px solid #484f58; }
+    .btn-copy    { background: #30363d; color: #7ee787; border: 1px solid #484f58; padding: 3px 8px; font-size: 11px; font-family: Consolas, monospace; }
+    .btn-copy:hover { background: #1f6feb; color: #fff; }
+    input[type="text"], select { background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 5px 10px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background: #21262d; color: #8b949e; text-align: left; padding: 6px 8px; border-bottom: 2px solid #30363d; cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; }
+    th:hover { color: #58a6ff; }
+    td { padding: 6px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+    tr:hover { background: #161b22; }
+    .mono { font-family: Consolas, monospace; font-size: 11px; color: #7ee787; background: #0d1117; padding: 1px 5px; border-radius: 3px; }
+    .tag { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .tag-ok      { background: #238636; color: #fff; }
+    .tag-fail    { background: #da3633; color: #fff; }
+    .tag-never   { background: #30363d; color: #8b949e; }
+    .tag-parallel   { background: #1f6feb; color: #fff; }
+    .tag-sequential { background: #d29922; color: #0d1117; }
+    .tag-steerer    { background: #6e40c9; color: #fff; }
+    .tag-discovered { background: #484f58; color: #c9d1d9; }
+    .tag-missing { background: #da3633; color: #fff; margin-left: 4px; font-size: 9px; }
+    .help { color: #58a6ff; cursor: help; border-bottom: 1px dotted #58a6ff; }
+    .snippet-cell { max-width: 360px; }
+    .snippet-text { font-family: Consolas, monospace; font-size: 10px; color: #c9d1d9; background: #0d1117; padding: 3px 6px; border-radius: 3px; word-break: break-all; max-width: 300px; display: inline-block; vertical-align: middle; }
+    .toast { position: fixed; bottom: 16px; right: 16px; background: #238636; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .small { font-size: 10px; color: #8b949e; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
+</head>
+<body>
+  <h1>Scan Tools Checklist</h1>
+  <div class="sub">Pulls live data from <span class="mono">~REPORTS/scan-tools-manifest.json</span> (built by <span class="mono">scripts/Build-ScanToolsManifest.ps1</span>). Aggregates per-script run history from <span class="mono">~REPORTS/FullSystemsScan/scan-*.json</span> and joins to <span class="mono">config/cron-aiathon-schedule.json</span>.</div>
+
+  <div class="card">
+    <h2>Summary</h2>
+    <div class="toolbar">
+      <button class="btn-primary" onclick="loadManifest()">Reload Manifest</button>
+      <button class="btn-info" onclick="rebuildAndReload()">Rebuild via Build-ScanToolsManifest.ps1</button>
+      <button class="btn-alt" onclick="copyText('pwsh -NoProfile -File .\\scripts\\Build-ScanToolsManifest.ps1')">Copy Rebuild Cmd</button>
+      <span class="small">Generated: <span id="genTime">--</span></span>
+    </div>
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-box"><div class="stat-val" id="sTotal">--</div><div class="stat-label">Tools Tracked</div></div>
+      <div class="stat-box"><div class="stat-val" id="sCanonical">--</div><div class="stat-label">FullSystemsScan (9 canonical)</div></div>
+      <div class="stat-box"><div class="stat-val" id="sDiscovered">--</div><div class="stat-label">Discovered Extras</div></div>
+      <div class="stat-box"><div class="stat-val" id="sScheduled">--</div><div class="stat-label">Scheduled Tasks Linked</div></div>
+      <div class="stat-box"><div class="stat-val" id="sRuns">--</div><div class="stat-label">Total Runs Recorded</div></div>
+      <div class="stat-box"><div class="stat-val" id="sSuccess">--</div><div class="stat-label">Success Rate</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Filter</h2>
+    <div class="filter-row">
+      <input type="text" id="fltText" placeholder="Filter by name / script / task" onkeyup="render()" style="min-width:260px" />
+      <select id="fltGroup" title="Filter by group" onchange="render()">
+        <option value="">All groups</option>
+        <option value="Parallel">Parallel</option>
+        <option value="Sequential">Sequential</option>
+        <option value="Steerer">Steerer</option>
+        <option value="Discovered">Discovered</option>
+      </select>
+      <select id="fltStatus" title="Filter by last result status" onchange="render()">
+        <option value="">Any status</option>
+        <option value="SUCCESS">Success</option>
+        <option value="FAILED">Failed</option>
+        <option value="never-run">Never run</option>
+      </select>
+      <label class="small"><input type="checkbox" id="fltMissing" onchange="render()" /> Missing-script only</label>
+      <label class="small"><input type="checkbox" id="fltScheduled" onchange="render()" /> Scheduled only</label>
+    </div>
+  </div>
+
+  <div class="card" style="overflow:auto; max-height: 70vh;">
+    <h2>Scan Tools Inventory</h2>
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th data-key="group" onclick="sortBy('group')">Group</th>
+          <th data-key="name" onclick="sortBy('name')">Tool / Script</th>
+          <th data-key="lastRunUtc" onclick="sortBy('lastRunUtc')">Last Scanned (UTC)</th>
+          <th data-key="runCount" onclick="sortBy('runCount')">Runs</th>
+          <th data-key="successCount" onclick="sortBy('successCount')">OK</th>
+          <th data-key="failCount" onclick="sortBy('failCount')">Fail / Cancel</th>
+          <th data-key="avgDurationSec" onclick="sortBy('avgDurationSec')">Avg Dur (s)</th>
+          <th data-key="scheduledTaskName" onclick="sortBy('scheduledTaskName')">Scheduled Task</th>
+          <th data-key="taskNextRunUtc" onclick="sortBy('taskNextRunUtc')">Next Run (UTC)</th>
+          <th data-key="frequencyMinutes" onclick="sortBy('frequencyMinutes')">Frequency</th>
+          <th>Snippet (copy)</th>
+        </tr>
+      </thead>
+      <tbody id="tblBody"></tbody>
+    </table>
+    <div class="small" id="emptyMsg" style="display:none; padding:12px;">No rows match the current filter.</div>
+  </div>
+
+  <div class="card">
+    <h2>Notes</h2>
+    <ul class="small" style="margin:0 0 0 16px; padding:0; line-height:1.6;">
+      <li>The 9 canonical scripts are taken from <span class="mono">scripts/Invoke-FullSystemsScan.ps1</span> (5 parallel + 3 sequential + 1 steerer module).</li>
+      <li>"Discovered" rows are additional scan/audit/check/preflight scripts found in <span class="mono">scripts/</span> and <span class="mono">tests/</span>.</li>
+      <li>Run history is aggregated from every <span class="mono">~REPORTS/FullSystemsScan/scan-*.json</span> summary; <em>Avg Dur</em> is meaningful only after 2+ runs.</li>
+      <li>Scheduled-task linkage maps each script to a <span class="mono">TASK-*</span> id in <span class="mono">config/cron-aiathon-schedule.json</span>; <em>Next Run</em> = <em>lastRun + frequencyMinutes</em>.</li>
+      <li><em>Failed/Cancelled</em> = scan summary starting with <span class="mono">ERROR:</span>, <span class="mono">script not found</span>, <span class="mono">job receive failed</span>, <span class="mono">DryRun failed:</span>, or <span class="mono">module not found</span>.</li>
+      <li>Snippet copy buttons place the literal command on the clipboard. Hover any tool name for full description tooltip.</li>
+    </ul>
+  </div>
+
+  <div id="toast" class="toast">Copied!</div>
+
+  <script type="text/javascript">
+  /*<![CDATA[*/
+  var DATA = null;
+  var SORT_KEY = 'group';
+  var SORT_DIR = 1;
+
+  function fmtNum(n) { return (n === null || n === undefined) ? '--' : String(n); }
+  function fmtDate(iso) {
+    if (!iso) return '<span class="small">--</span>';
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return '<span class="small">--</span>';
+      var pad = function(x){ return (x<10?'0':'')+x; };
+      return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate())+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes());
+    } catch (e) { return '<span class="small">--</span>'; }
+  }
+  function fmtFreq(min) {
+    if (!min) return '<span class="small">--</span>';
+    if (min >= 10080) return Math.round(min/10080) + 'w';
+    if (min >= 1440)  return Math.round(min/1440) + 'd';
+    if (min >= 60)    return Math.round(min/60) + 'h';
+    return min + 'm';
+  }
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function statusTag(r) {
+    if (!r.runCount) return '<span class="tag tag-never">never-run</span>';
+    if (r.lastResult === 'SUCCESS') return '<span class="tag tag-ok">SUCCESS</span>';
+    if (r.lastResult === 'FAILED')  return '<span class="tag tag-fail">FAILED</span>';
+    return '<span class="tag tag-never">'+escapeHtml(r.lastResult||'?')+'</span>';
+  }
+  function groupTag(g) {
+    var cls = 'tag-discovered';
+    if (g === 'Parallel')   cls = 'tag-parallel';
+    if (g === 'Sequential') cls = 'tag-sequential';
+    if (g === 'Steerer')    cls = 'tag-steerer';
+    return '<span class="tag '+cls+'">'+escapeHtml(g)+'</span>';
+  }
+
+  function copyText(t) {
+    var ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    var toast = document.getElementById('toast');
+    toast.textContent = 'Copied: ' + (t.length > 60 ? t.substr(0,57) + '...' : t);
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 1400);
+  }
+
+  function rebuildAndReload() {
+    copyText('pwsh -NoProfile -File .\\scripts\\Build-ScanToolsManifest.ps1');
+    alert('Rebuild command copied to clipboard.\n\nPaste in a PowerShell terminal at the workspace root, then click "Reload Manifest".');
+  }
+
+  function loadManifest() {
+    var url = '~REPORTS/scan-tools-manifest.json?t=' + Date.now();
+    fetch(url, { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(j){ DATA = j; render(); })
+      .catch(function(err){
+        DATA = null;
+        document.getElementById('genTime').textContent = 'load failed: ' + err.message + ' -- open via local web engine (Start-LocalWebEngine.ps1) or run rebuild.';
+        document.getElementById('tblBody').innerHTML = '';
+        document.getElementById('emptyMsg').style.display = 'block';
+        document.getElementById('emptyMsg').textContent = 'Manifest not loaded. Click Rebuild then Reload, or open this page through the local web engine.';
+      });
+  }
+
+  function sortBy(key) {
+    if (SORT_KEY === key) { SORT_DIR = -SORT_DIR; } else { SORT_KEY = key; SORT_DIR = 1; }
+    render();
+  }
+
+  function getRows() {
+    if (!DATA || !DATA.rows) return [];
+    var txt = (document.getElementById('fltText').value || '').toLowerCase();
+    var grp = document.getElementById('fltGroup').value;
+    var st  = document.getElementById('fltStatus').value;
+    var miss = document.getElementById('fltMissing').checked;
+    var sch  = document.getElementById('fltScheduled').checked;
+    return DATA.rows.filter(function(r){
+      if (grp && r.group !== grp) return false;
+      if (st) {
+        if (st === 'never-run' && r.runCount > 0) return false;
+        if (st === 'SUCCESS' && r.lastResult !== 'SUCCESS') return false;
+        if (st === 'FAILED'  && r.lastResult !== 'FAILED')  return false;
+      }
+      if (miss && r.exists) return false;
+      if (sch && !r.scheduledTaskId) return false;
+      if (txt) {
+        var hay = (r.name+' '+r.script+' '+(r.scheduledTaskName||'')+' '+(r.scheduledTaskId||'')).toLowerCase();
+        if (hay.indexOf(txt) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    var rows = getRows();
+    rows.sort(function(a,b){
+      var av = a[SORT_KEY]; var bv = b[SORT_KEY];
+      if (av === null || av === undefined) av = '';
+      if (bv === null || bv === undefined) bv = '';
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * SORT_DIR;
+      return String(av).localeCompare(String(bv)) * SORT_DIR;
+    });
+    var body = document.getElementById('tblBody');
+    var html = '';
+    rows.forEach(function(r){
+      var missTag = r.exists ? '' : '<span class="tag tag-missing">MISSING</span>';
+      var taskCell = r.scheduledTaskName
+        ? '<span title="'+escapeHtml(r.scheduledTaskId)+(r.taskEnabled?'':' (disabled)')+'">'+escapeHtml(r.scheduledTaskName)+'</span>'
+          + (r.taskLastResult ? ' <span class="small">['+escapeHtml(r.taskLastResult)+']</span>' : '')
+        : '<span class="small">--</span>';
+      html += '<tr>'
+        + '<td>'+groupTag(r.group)+'</td>'
+        + '<td><span class="help" title="'+escapeHtml(r.description)+'">'+escapeHtml(r.name)+'</span>'+missTag
+            +'<br /><span class="mono">'+escapeHtml(r.script)+'</span></td>'
+        + '<td>'+fmtDate(r.lastRunUtc)+' '+statusTag(r)+'</td>'
+        + '<td style="text-align:right">'+fmtNum(r.runCount)+'</td>'
+        + '<td style="text-align:right; color:#7ee787">'+fmtNum(r.successCount)+'</td>'
+        + '<td style="text-align:right; color:#ff7b72">'+fmtNum(r.failCount)+'</td>'
+        + '<td style="text-align:right">'+(r.runCount>=2 ? r.avgDurationSec.toFixed(2) : '<span class="small" title="needs 2+ runs">'+(r.runCount>0?r.avgDurationSec.toFixed(2):'--')+'</span>')+'</td>'
+        + '<td>'+taskCell+'</td>'
+        + '<td>'+fmtDate(r.taskNextRunUtc)+'</td>'
+        + '<td>'+fmtFreq(r.frequencyMinutes)+'</td>'
+        + '<td class="snippet-cell"><span class="snippet-text" title="'+escapeHtml(r.snippet)+'">'+escapeHtml(r.snippet)+'</span> '
+            +'<button class="btn-copy" onclick="copyText(this.getAttribute(\'data-cmd\'))" data-cmd="'+escapeHtml(r.snippet)+'">copy</button></td>'
+        + '</tr>';
+    });
+    body.innerHTML = html;
+    document.getElementById('emptyMsg').style.display = rows.length ? 'none' : 'block';
+
+    if (DATA) {
+      document.getElementById('genTime').textContent = DATA.generatedUtc + '  (rows='+DATA.rowCount+', summaries='+DATA.summarySourceCount+', cronTasks='+DATA.cronTaskCount+')';
+      var totalRuns = 0, totalOk = 0, totalFail = 0, canon = 0, disc = 0, sched = 0;
+      DATA.rows.forEach(function(r){
+        totalRuns += (r.runCount||0);
+        totalOk   += (r.successCount||0);
+        totalFail += (r.failCount||0);
+        if (r.group === 'Discovered') disc++; else canon++;
+        if (r.scheduledTaskId) sched++;
+      });
+      document.getElementById('sTotal').textContent      = DATA.rowCount;
+      document.getElementById('sCanonical').textContent  = canon;
+      document.getElementById('sDiscovered').textContent = disc;
+      document.getElementById('sScheduled').textContent  = sched;
+      document.getElementById('sRuns').textContent       = totalRuns;
+      document.getElementById('sSuccess').textContent    = totalRuns ? Math.round(100*totalOk/totalRuns) + '%' : '--';
+    }
+  }
+
+  loadManifest();
+  /*]]>*/
+  </script>
+  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
+</body>
+</html>

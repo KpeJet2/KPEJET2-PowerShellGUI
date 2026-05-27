@@ -1,0 +1,35 @@
+{
+  "TotalEntries": 143,
+  "PendingReview": 143,
+  "PendingUnresolved": 64,
+  "PendingBySeverity": [
+    {
+      "Severity": "",
+      "Count": 2
+    },
+    {
+      "Severity": "Blocking",
+      "Count": 4
+    },
+    {
+      "Severity": "CRITICAL",
+      "Count": 10
+    },
+    {
+      "Severity": "HIGH",
+      "Count": 70
+    },
+    {
+      "Severity": "low",
+      "Count": 4
+    },
+    {
+      "Severity": "MEDIUM",
+      "Count": 46
+    },
+    {
+      "Severity": "PENANCE",
+      "Count": 7
+    }
+  ]
+}

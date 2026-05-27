@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.0
+# VersionTag: 2605.B5.V46.0
 # ignore log files and temporary data
 .history/ 
 logs/
@@ -18,6 +18,9 @@ __pycache__/
 testResults.xml
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master.zip
+# private key material (generated locally; never commit)
+pki/*.key
+agents/*/pki/*.key
 # ignore PowerShell generated files
 *.ps1xml
 *.psd1

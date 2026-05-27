@@ -1,0 +1,20 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-afc41901",
+  "title": "Resurfacing bug pattern: 7 functions with no try/catch blocks",
+  "occurrences": 3,
+  "sample_bug_ids": [
+    "Bug-20260412140121-89cd2483",
+    "Bug-20260412140318-9ff2fc51",
+    "Bug-20260412140712-b5a8a419"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\.venv\\Scripts\\Activate.ps1",
+    "C:\\PowerShellGUI\\.venv-pygame312\\Scripts\\Activate.ps1",
+    "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

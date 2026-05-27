@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:51:34.809139Z",
+  "title": "[FAIL] PwShGUI-IntegrityCore.psm1 -- 1 parse error(s)",
+  "category": "crash-log",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412135134-37f12252",
+  "description": "Error pattern in log cycle-1.log:9",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:51:34.8091724Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412135134-1ecdaff6",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412135134-1ecdaff6\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:42.7891165+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:44",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

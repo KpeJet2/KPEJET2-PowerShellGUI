@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-da3f419e",
+  "title": "Resurfacing bug pattern: Unexpected token '$(' in expression or statement.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260421020358-59e2cbe5",
+    "Bug-20260502001859-f3baa9d1"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

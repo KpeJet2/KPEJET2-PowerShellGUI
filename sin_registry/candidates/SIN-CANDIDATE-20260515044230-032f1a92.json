@@ -1,0 +1,24 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-032f1a92",
+  "title": "Resurfacing bug pattern: Unexpected token '}' in expression or statement.",
+  "occurrences": 41,
+  "sample_bug_ids": [
+    "Bug-20260412121743-999b7bd6",
+    "Bug-20260412122100-3abb0a62",
+    "Bug-20260412122442-4893185d",
+    "Bug-20260412125523-927fd792",
+    "Bug-20260412125727-113b2e86"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\scripts\\Invoke-PSEnvironmentScanner.ps1",
+    "C:\\PowerShellGUI\\Main-GUI.ps1",
+    "C:\\PowerShellGUI\\scripts\\Setup-ModuleEnvironment.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

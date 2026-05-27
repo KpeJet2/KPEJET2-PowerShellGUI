@@ -1,6 +1,6 @@
 # scripts/ Directory
 
-> VersionTag: 2604.B2.V31.2 | Auto-generated index of all scripts
+> VersionTag: 2605.B5.V46.0 | Auto-generated index of all scripts
 
 ## Pipeline & Automation
 
@@ -12,7 +12,7 @@
 | Register-CyclicRenameTask.ps1 | Registers the cyclic rename check as a scheduled task |
 | Invoke-ErrorHandlingContinuousLoop.ps1 | Iterative error-handling scan/remediation loops |
 | Invoke-ErrorHandlingRemediation.ps1 | Automated batch remediation for error handling violations |
-| Invoke-PipelineIntegrityCheck.ps1 | Validate pipeline artifact coherence and stale checks |
+| Invoke-PipelineIntegrityCheck.ps1 | Validate pipeline artifacts plus recursive discoverability, MIME/filter controls, payload sanitization, and SHA-256 evidence |
 | Invoke-SelfReviewCycle.ps1 | Evaluates workspace health across 8 dimensions |
 | Invoke-PipeGAP.ps1 | Pipeline alignment diagnostics (workplans, todo gaps, relics, parse, stale checks) |
 | Invoke-SINRegistryReindex.ps1 | Reindex SIN registry with timestamped filenames |
@@ -90,7 +90,6 @@
 | Repair-ModulePaths.ps1 | Repairs PSModulePath to include modules directory |
 | Start-BWServe.ps1 | Launch Bitwarden CLI HTTP API service |
 | Start-LocalWebEngine.ps1 | Local HTTP/WebSocket API engine (port 8042) — 11 routes, CSRF protection |
-| Start-LocalWebEngineService.ps1 | Windows service wrapper for Start-LocalWebEngine.ps1 |
 | Test-ModuleDependencies.ps1 | Reports on installed, missing and errored modules |
 | Test-Prerequisites.ps1 | Validates system prerequisites for PowerShellGUI |
 | Invoke-ChecklistActions.ps1 | Automated checklist actions for Getting Started |

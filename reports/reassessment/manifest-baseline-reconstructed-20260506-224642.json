@@ -1,0 +1,618 @@
+{
+  "TakenAt": "2026-05-06T22:46:43",
+  "Modules": {
+    "CronAiAthon-Pipeline": {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "f0d972dc-cdb2-4662-8bfd-1df5eb89cc95",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "New-PipelineItem",
+        "Initialize-PipelineRegistry",
+        "Add-PipelineItem",
+        "Update-PipelineItemStatus",
+        "Test-StatusTransition",
+        "Get-PipelineItems",
+        "Get-PipelineStatistics",
+        "Invoke-SinRegistryFeedback",
+        "ConvertTo-Bugs2FIX",
+        "ConvertTo-Items2ADD",
+        "Get-CentralMasterToDo",
+        "Export-CentralMasterToDo",
+        "Get-PipelineRegistryPath",
+        "Set-PipelineItemBatchStatus",
+        "Get-PipelineHealthMetrics",
+        "Get-ValidCategories",
+        "Resolve-ItemCategory",
+        "Set-OutlinePhase",
+        "Confirm-OutlineVersion",
+        "Update-TodoBundle",
+        "Test-BugSinResolved"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "AssistedSASC": {
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "38f96ff0-33d1-4491-8a59-7a4f4e974279",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-SASCModule",
+        "Install-BitwardenLite",
+        "Test-VaultStatus",
+        "Unlock-Vault",
+        "Lock-Vault",
+        "Start-AutoLockTimer",
+        "Get-VaultItem",
+        "Get-VaultItemList",
+        "Set-VaultItem",
+        "Import-VaultSecrets",
+        "Import-Certificates",
+        "Export-VaultBackup",
+        "Test-VaultSecurity",
+        "New-IntegrityManifest",
+        "Test-SASCSignedManifest",
+        "Set-VaultFilePermissions",
+        "Enable-WindowsHello",
+        "Get-VaultLANStatus",
+        "Set-VaultLANSharing",
+        "Protect-VaultData",
+        "Unprotect-VaultData",
+        "Show-AssistedSASCDialog",
+        "Show-VaultUnlockDialog",
+        "Show-VaultStatusDialog",
+        "Show-SecretsInvokerForm",
+        "Assert-SafePath",
+        "Find-BWCli",
+        "Get-CredentialForTarget"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-Theme": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "a6093ec9-b838-4bb0-832e-a9dec4b9eeb5",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Get-ThemeValue",
+        "Get-ThemeFont",
+        "Set-ModernFormStyle",
+        "Set-ModernMenuStyle",
+        "Set-ModernDgvStyle",
+        "Set-ModernButtonStyle",
+        "Set-ModernTabStyle",
+        "Set-ModernFormTheme",
+        "New-RainbowProgressBar",
+        "New-SpinnerLabel"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-VersionManager": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "544e82ec-c0cb-46d4-a7ce-6aff93e67ca8",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Format-VersionTag",
+        "Get-FileVersion",
+        "Set-FileVersion",
+        "Step-MinorVersion",
+        "Invoke-MajorBuildIncrement",
+        "Get-WorkspaceVersionInventory",
+        "Add-CPSRAction",
+        "Export-CPSRReport",
+        "Export-CPSRAggregation",
+        "Save-PipelineEpoch",
+        "Get-LatestEpoch"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-HistoryZip": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-HistoryZip.psd1",
+      "ModuleVersion": "33.0.0",
+      "Guid": "e1e1e1e1-0000-0000-0000-000000000002",
+      "Author": "PowerShellGUI",
+      "FunctionsToExport": [
+        "Get-HistoryFileFromZip"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-SchemaTranslator": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "7d860167-fafb-4bbf-9152-ded7bfcc9b80",
+      "Author": "The Establishment",
+      "FunctionsToExport": [
+        "Convert-ScanSchema",
+        "Get-ScanSchemaVersion",
+        "Get-SchemaTransformPlan",
+        "Test-ScanSchemaCompatibility"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "_TEMPLATE-Module": {
+      "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "d6627ca3-7afd-43d1-90b2-c5f8be2f228b",
+      "Author": "PwShGUI",
+      "FunctionsToExport": [],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "CronAiAthon-EventLog": {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "5ad78ec4-ceae-42cd-a61d-5561650d2ae2",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Register-EventLogSources",
+        "Test-EventLogSourceReady",
+        "Write-CronEventLog",
+        "Send-SyslogMessage",
+        "Write-SyslogFile",
+        "Write-CronLog",
+        "Get-EventLogConfig",
+        "Get-SyslogEntries",
+        "ConvertTo-SyslogSeverity"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "UserProfileManager": {
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "393ad5a6-e12c-4412-bf7e-e3275d17cabf",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Get-WingetApplications",
+        "Get-PSEnvironment",
+        "Get-UserAppConfigs",
+        "Get-TaskbarLayout",
+        "Get-PrintDrivers",
+        "Get-MimeTypes",
+        "Get-WiFiProfiles",
+        "Get-MRULocations",
+        "Get-CertificateStores",
+        "Get-ISEConfiguration",
+        "Get-TerminalConfiguration",
+        "Get-PSHelpRepositories",
+        "Get-ScreensaverSettings",
+        "Get-PowerConfiguration",
+        "Get-DisplayLayout",
+        "Get-RegionalSettings",
+        "Get-EnvironmentVariables",
+        "Get-MappedDrives",
+        "Get-InstalledFonts",
+        "Get-LanguageAndSpeech",
+        "Get-QuickAccessLinks",
+        "Get-ExplorerFolderView",
+        "Get-SearchProviders",
+        "Get-ProfileSnapshot",
+        "Protect-ProfileData",
+        "Unprotect-ProfileData",
+        "Save-ProfileSnapshot",
+        "Import-ProfileSnapshot",
+        "Compare-ProfileSnapshot",
+        "Restore-ProfileSnapshot",
+        "Get-ProfileList"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "Import-WorkspaceModule": {
+      "File": "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psd1",
+      "ModuleVersion": "33.0.0",
+      "Guid": "0b80c8e5-77d7-4d16-a2da-bddb687370b8",
+      "Author": "PowerShellGUI",
+      "FunctionsToExport": [
+        "Import-WorkspaceModule"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "SINGovernance": {
+      "File": "C:\\PowerShellGUI\\modules\\SINGovernance.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "11aa4010-af41-4329-a2db-7584bfcd19d8",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-SINGovernance",
+        "Get-SINReviewQueue",
+        "Approve-SIN",
+        "Deny-SIN",
+        "Start-SINReview",
+        "Export-SINReviewReport"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwSh-HelpFilesUpdateSource-ReR": {
+      "File": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "5d715dac-8556-4b1e-b2da-126d78367daf",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Show-HelpFilesGUI",
+        "Invoke-SavePowerShellHelp",
+        "Test-HelpFilesExist",
+        "Get-HelpFileInfo"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUICore": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "7284d2c4-a91c-4d02-98fa-0972a73ec1c3",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-CorePaths",
+        "Initialize-ConfigFile",
+        "Get-ProjectPath",
+        "Get-AllProjectPaths",
+        "Write-AppLog",
+        "Write-ErrorReport",
+        "Write-ScriptLog",
+        "Export-LogBuffer",
+        "Wait-KeyOrTimeout",
+        "Request-LocalPath",
+        "Write-SessionLock",
+        "Remove-SessionLock",
+        "Invoke-CrashRecovery",
+        "Invoke-LogRotation",
+        "Get-RainbowColor",
+        "Write-RainbowProgress",
+        "Assert-DirectoryExists"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "AVPN-Tracker": {
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "1d05d2e8-43e3-48a4-8771-29bcb3708644",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Show-AVPNConnectionTracker",
+        "Initialize-AVPNConfigFile",
+        "Get-AVPNConfig",
+        "Save-AVPNConfig"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI_AutoIssueFinder": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "a122fb65-6a73-4e46-9d39-9d77a1ac6217",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Invoke-PwShGUIAutoIssueFinder"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "CronAiAthon-ErrorLinker": {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-ErrorLinker.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "5a792af2-4f4a-4b58-a972-72616974686f",
+      "Author": "The Establishment",
+      "FunctionsToExport": [
+        "New-ErrorBugItem",
+        "New-ErrorBugs2FIXItem",
+        "Add-ErrorToPipeline",
+        "Add-PipelineStepErrorLink"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-VersionTag": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionTag.psd1",
+      "ModuleVersion": "33.0.0",
+      "Guid": "e1e1e1e1-0000-0000-0000-000000000001",
+      "Author": "PowerShellGUI",
+      "FunctionsToExport": [
+        "Get-VersionTag"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-ConvoVault": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "edbd31d7-bd39-455f-9792-56143c062f9a",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-ConvoVaultKey",
+        "Get-ConvoEntries",
+        "Add-ConvoEntry",
+        "Invoke-ConvoExchange",
+        "Export-ConvoBundle"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-PSVersionStandards": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "4d40d796-1417-47c8-ba22-cf1201e026a3",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Get-PSVersionStandard",
+        "Test-PSVersionOptimal",
+        "Test-PSVersionMinimum",
+        "Get-PSVersionTier",
+        "Get-PS5CompatibilityFlag",
+        "Set-PS5CompatibilityFlag",
+        "Show-PSUpgradePrompt",
+        "Write-PSBootstrapLog"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "Get-LaunchTelemetry": {
+      "File": "C:\\PowerShellGUI\\modules\\Get-LaunchTelemetry.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "429d2194-d850-4469-8509-da5f2088a1a3",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Get-LaunchTelemetry"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "CronAiAthon-Scheduler": {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "18eef46a-dc71-4d1b-a72b-3b5b63eefdb9",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-CronSchedule",
+        "Save-CronSchedule",
+        "Invoke-PreRequisiteCheck",
+        "Invoke-CronJob",
+        "Invoke-AllCronJobs",
+        "Add-CronJobHistory",
+        "Get-CronJobHistory",
+        "Get-CronJobSummary",
+        "Set-CronFrequency",
+        "Add-AutopilotSuggestion",
+        "Update-AutopilotSuggestionStatus",
+        "Register-SubagentCall",
+        "Register-Question",
+        "Get-CronSchedulePath",
+        "Get-CronHistoryPath"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-SessionMetrics": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SessionMetrics.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "550e8400-e29b-41d4-a716-446655440001",
+      "Author": "PowerShellGUI Team",
+      "FunctionsToExport": [
+        "Start-SessionMetrics",
+        "Stop-SessionMetrics",
+        "Write-SessionEvent",
+        "Add-SessionObject",
+        "Get-SessionObjectCache",
+        "Add-CrashIndicator",
+        "Get-CrashAnalysis",
+        "Export-SessionMetrics"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-IntegrityCore": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "bb46fffd-5fbe-4cfa-9797-84664bf72b9d",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Invoke-StartupIntegrityCheck",
+        "Invoke-SASCIntegrityPreflight",
+        "Test-IntegrityManifest",
+        "Initialize-EmergencyUnlockKey",
+        "Invoke-EmergencyUnlock"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "CronAiAthon-BugTracker": {
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "3d146af5-1ea3-4db0-9a1a-05ebc4d37aa9",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Invoke-ParseCheck",
+        "Invoke-XhtmlValidation",
+        "Invoke-CrashLogScan",
+        "Invoke-ErrorTrapAudit",
+        "Invoke-DataValidationCheck",
+        "Invoke-DependencyCheck",
+        "Invoke-StyleComplianceCheck",
+        "Invoke-FullBugScan",
+        "Invoke-BugToPipelineProcessor"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "RE-memorAiZ": {
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "668bac64-87f3-4db7-879c-3ed20b1f00b7",
+      "Author": "The Establishment",
+      "FunctionsToExport": [
+        "Invoke-Phase1Inventory",
+        "Invoke-Phase2ReadmeCheck",
+        "Invoke-Phase3VersionBump",
+        "Invoke-Phase4ManifestAlign",
+        "Invoke-Phase5DependencyCalc",
+        "Invoke-Phase6AgentHandback",
+        "Invoke-Phase7Summarize",
+        "Invoke-Phase8MemoryWrite",
+        "Invoke-REmemorAiZ"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "SASC-Adapters": {
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "7fb00fb5-a1af-41e4-8726-d077fb6b05a8",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Invoke-PuTTYSession",
+        "Invoke-MRemoteNGSession",
+        "Connect-AzureWithVault",
+        "Connect-ADDSWithVault",
+        "Open-ISEWithCredential",
+        "Invoke-WindowsHelloAuth",
+        "Set-CredentialDialogFill",
+        "Get-VaultCredentialForScript"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-TrayHost": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "32d8987d-afb0-44a4-b5b3-04be383ad955",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "New-SmileyTrayIcon",
+        "Initialize-TrayAppContext",
+        "Start-TrayApplicationLoop",
+        "Stop-TrayHost",
+        "Start-KeyboardMonitor",
+        "Stop-KeyboardMonitor",
+        "Initialize-BackgroundPool",
+        "Invoke-BackgroundTask",
+        "Get-CompletedBackgroundTasks",
+        "Stop-BackgroundPool",
+        "Set-VerboseLifecycle",
+        "Get-TrayHostStatus"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PwShGUI-NetworkTools": {
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "f5d38a6c-e4f4-41c3-b00d-f054385a585d",
+      "Author": "The Establishment",
+      "FunctionsToExport": [
+        "Get-NetworkSummary",
+        "Get-PublicIPAddress",
+        "Test-DnsResolution",
+        "Test-NetworkConnectivity",
+        "Test-PortOpen"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "PKIChainManager": {
+      "File": "C:\\PowerShellGUI\\modules\\PKIChainManager.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "c6213a0b-0933-41b1-9cb2-f0d013d6ce8c",
+      "Author": "KpeJet2",
+      "FunctionsToExport": [
+        "Initialize-PKIChainManager",
+        "New-RootCACertificate",
+        "New-SubordinateCACertificate",
+        "New-CodeSignCertificate",
+        "Get-PKIChainStatus",
+        "Export-CertToVault",
+        "New-FullPKIChain"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    },
+    "WorkspaceIntentReview": {
+      "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "ModuleVersion": "1.0.0",
+      "Guid": "3fb3d143-afe4-4441-b86b-d1f2c7664563",
+      "Author": "The Establishment",
+      "FunctionsToExport": [
+        "Add-ChangeLogEntry",
+        "Get-ChangeLogEntries",
+        "Get-DevelopmentIntent",
+        "Get-IntentHistory",
+        "Initialize-IntentStore",
+        "Invoke-IntentSeal",
+        "Invoke-IntentUnseal",
+        "New-DevelopmentIntent",
+        "Set-IntentStatus"
+      ],
+      "CmdletsToExport": [],
+      "RequiredModules": [
+        null
+      ]
+    }
+  }
+}

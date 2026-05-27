@@ -1,4 +1,4 @@
-REM VersionTag: 2604.B2.V31.1
+REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so engine scripts find modules by name
 REM   2604.B2.V31.0  2026-04-12  Initial final smoke-chain engine batch orchestrator

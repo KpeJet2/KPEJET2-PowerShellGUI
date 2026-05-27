@@ -1,0 +1,31 @@
+{
+  "sin_id": "SIN-PATTERN-041-JSON-SCHEMA-PROPERTY-DRIFT_20260502",
+  "title": "Unguarded access to drift-prone JSON metadata property under StrictMode",
+  "description": "Todo, bug, feature, and SIN records in this workspace exist in multiple schema generations. Legacy records may use fields like created, reported, affectedFiles, suggestedBy, or sourceId while newer records use created_at, file_refs, suggested_by, and source_id. Under Set-StrictMode -Version Latest, directly reading a missing property on a ConvertFrom-Json result throws 'The property X cannot be found on this object'. Code that processes workspace JSON must normalize aliases or explicitly guard property existence before access.",
+  "severity": "HIGH",
+  "category": "schema-drift",
+  "vector": "strictmode-property-access",
+  "status": "pattern-defined",
+  "created_at": "2026-05-02T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for direct access to drift-prone JSON metadata properties on common deserialized record variables without a nearby property-existence guard.",
+  "is_security_related": false,
+  "is_version_related": true,
+  "is_untrapped_error": true,
+  "preventionRule": "Never assume a ConvertFrom-Json record has a single canonical property set. Before reading drift-prone fields such as source_id, created_at, file_refs, created, or reported, either: 1) check PSObject.Properties.Name -contains '<field>', or 2) resolve through a normalization helper that tries canonical and legacy aliases in order.",
+  "scan_regex": "(?<![#'])(?:\\$item\\.(?:source_id|created_at|file_refs|suggested_by|suggestedBy)|\\$node\\.created|\\$bug\\.reported)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "context_guard_regex": "PSObject\\.Properties\\.Name\\s+-contains|\\bGet-[A-Za-z0-9]+(?:Node|Todo|Record)(?:Value|PropertyValue|StringValue)\\b|\\bTest-[A-Za-z0-9]+(?:Node|Todo|Record)Property\\b",
+  "context_guard_lines": 2,
+  "context_guard_direction": "both",
+  "file_exclusion_regex": "\\.Tests\\.ps1$|CheatSheet|EXAMPLES",
+  "remedy": "Replace direct property access with guarded alias resolution. Example: $createdAt = Get-MyRecordPropertyValue -Record $item -Names @('created_at','createdAt','created','reported') -DefaultValue ''",
+  "tags": [
+    "strictmode",
+    "json",
+    "schema-drift",
+    "todo",
+    "runtime-error",
+    "pipeline-scan"
+  ]
+}

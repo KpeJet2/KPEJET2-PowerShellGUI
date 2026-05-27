@@ -1,3 +1,4 @@
+# VersionTag: 2605.B5.V46.0
 # Generate-Changelog.ps1
 # Generates CHANGELOG.md from VersionTag headers and git log
 
@@ -37,4 +38,5 @@ $changelog | Set-Content "$PSScriptRoot/../CHANGELOG.md" -Encoding UTF8
 <# ToDo:
     Stub: list pending work here.
 #>
+
 

@@ -1,0 +1,31 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-146163bf",
+  "title": "Resurfacing bug pattern: 2 functions with no try/catch blocks",
+  "occurrences": 24,
+  "sample_bug_ids": [
+    "Bug-20260412141713-b8d266bd",
+    "Bug-20260504170747-7fccacca",
+    "Bug-20260504171205-ff16630b",
+    "Bug-20260504172050-dd2d475b",
+    "Bug-20260504173148-dbf59ea3"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ActionPacks-master\\ScriptRunner\\WebSvcConnector\\CallASRWebSvcConnector2.ps1",
+    "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1",
+    "C:\\PowerShellGUI\\modules\\PwShGUI-LegacyEncoding.psm1",
+    "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psm1",
+    "C:\\PowerShellGUI\\scripts\\Invoke-EventLogViewInject.ps1",
+    "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+    "C:\\PowerShellGUI\\tests\\CronAiAthon-BugTracker.Tests.ps1",
+    "C:\\PowerShellGUI\\tests\\iter16-verify.ps1",
+    "C:\\PowerShellGUI\\tests\\iter40-add-description.ps1",
+    "C:\\PowerShellGUI\\tests\\ModuleMaintenance-Targeted.Tests.ps1",
+    "C:\\PowerShellGUI\\tests\\PwShGUI-VersionManager.Tests.ps1",
+    "C:\\PowerShellGUI\\tests\\Show-CronAiAthonTool.Tests.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

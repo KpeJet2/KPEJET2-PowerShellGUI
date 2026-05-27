@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
 <!-- VersionBuildHistory: 2603.B0.v19  2026-03-24 03:28  (deduplicated from 4 entries) -->
 <!-- FileRole: README -->
 
@@ -271,6 +271,7 @@ All logs are written to `logs/` as structured JSONL. Archives are SHA256-signed 
 5. **Deploy to Foundry** — Use the Microsoft Foundry extension "Deploy Hosted Agent" command
 
 > **Note**: Microsoft Agent Framework is in preview. Dependencies are pinned to `1.0.0b260107` to avoid breaking changes. Run `pip install -r requirements.txt --pre` to install all dependencies.
+
 
 
 

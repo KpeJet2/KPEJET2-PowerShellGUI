@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.3
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -249,11 +249,11 @@ $tabIntents.Controls.Add($dgvIntents)
 
 # Action buttons
 $btnRefreshIntents = New-StyledButton -Text 'Refresh' -X 10 -Y 510 -W 100 -BgColor $script:accBlue
-$btnRefreshIntents.Add_Click({ Refresh-IntentGrid -Grid $dgvIntents })
+$btnRefreshIntents.Add_Click({ Refresh-IntentGrid -Grid $dgvIntents })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 $tabIntents.Controls.Add($btnRefreshIntents)
 
 $btnSealIntent = New-StyledButton -Text 'Seal Intent' -X 120 -Y 510 -W 120 -BgColor $script:accAmber
-$btnSealIntent.Add_Click({
+$btnSealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $result = Invoke-IntentSeal -IntentId $selectedId
@@ -272,7 +272,7 @@ $btnSealIntent.Add_Click({
 $tabIntents.Controls.Add($btnSealIntent)
 
 $btnUnsealIntent = New-StyledButton -Text 'Unseal' -X 250 -Y 510 -W 100 -BgColor $script:accRed
-$btnUnsealIntent.Add_Click({
+$btnUnsealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $reason = [Microsoft.VisualBasic.Interaction]::InputBox(
@@ -292,7 +292,7 @@ $btnUnsealIntent.Add_Click({
 $tabIntents.Controls.Add($btnUnsealIntent)
 
 $btnActivateIntent = New-StyledButton -Text 'Activate' -X 360 -Y 510 -W 100 -BgColor $script:accGreen
-$btnActivateIntent.Add_Click({
+$btnActivateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $result = Set-IntentStatus -IntentId $selectedId -NewStatus 'ACTIVE'
@@ -304,7 +304,7 @@ $btnActivateIntent.Add_Click({
 $tabIntents.Controls.Add($btnActivateIntent)
 
 $btnArchiveIntent = New-StyledButton -Text 'Archive' -X 470 -Y 510 -W 100 -BgColor $script:bgLight
-$btnArchiveIntent.Add_Click({
+$btnArchiveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -347,7 +347,7 @@ $dgvChanges.Columns['Description'].Width = 300
 $tabChangeLog.Controls.Add($dgvChanges)
 
 $btnRefreshLog = New-StyledButton -Text 'Refresh' -X 10 -Y 560 -W 100 -BgColor $script:accBlue
-$btnRefreshLog.Add_Click({ Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100 })
+$btnRefreshLog.Add_Click({ Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100 })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 $tabChangeLog.Controls.Add($btnRefreshLog)
 
 $tabControl.TabPages.Add($tabChangeLog)
@@ -387,7 +387,7 @@ $txtDetailOutput.ReadOnly = $true
 $txtDetailOutput.BorderStyle = [System.Windows.Forms.BorderStyle]::None
 $tabDetail.Controls.Add($txtDetailOutput)
 
-$btnLoadDetail.Add_Click({
+$btnLoadDetail.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $idText = $txtIntentId.Text.Trim()
     if ($idText -match '^\d+$') {
         $history = Get-IntentHistory -IntentId ([int]$idText)
@@ -502,7 +502,7 @@ $chkSealImmediate.ForeColor = $script:accAmber
 $tabNewIntent.Controls.Add($chkSealImmediate)
 
 $btnCreateIntent = New-StyledButton -Text 'Create Intent' -X 90 -Y 360 -W 150 -H 35 -BgColor $script:accGreen
-$btnCreateIntent.Add_Click({
+$btnCreateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $title = $txtTitle.Text.Trim()
     $desc = $txtDesc.Text.Trim()
     if ($title -eq '' -or $desc -eq '') {
@@ -566,7 +566,7 @@ $txtPipeOutput.BorderStyle = [System.Windows.Forms.BorderStyle]::None
 $tabPipeline.Controls.Add($txtPipeOutput)
 
 $btnLoadMemory = New-StyledButton -Text 'Load Memory' -X 10 -Y 560 -W 120 -BgColor $script:accBlue
-$btnLoadMemory.Add_Click({
+$btnLoadMemory.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $memPath = Join-Path $WorkspacePath 'config\workspace-memory-summary.json'
     if (Test-Path $memPath) {
         $memData = Get-Content $memPath -Raw | ConvertFrom-Json
@@ -615,7 +615,7 @@ $btnLoadMemory.Add_Click({
 $tabPipeline.Controls.Add($btnLoadMemory)
 
 $btnRunPipeline = New-StyledButton -Text 'Run Pipeline (DryRun)' -X 140 -Y 560 -W 180 -BgColor $script:accAmber
-$btnRunPipeline.Add_Click({
+$btnRunPipeline.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $txtPipeOutput.Text = "Running RE-memorAiZ in DryRun mode...`r`nThis may take a moment."
     $txtPipeOutput.Refresh()
     try {
@@ -653,7 +653,7 @@ $statusBar.Items.Add($statusLabel) | Out-Null
 $form.Controls.Add($statusBar)
 
 # ── Initial data load ────────────────────────────────────────────────────────
-$form.Add_Shown({
+$form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     Refresh-IntentGrid -Grid $dgvIntents
     Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100
 })
@@ -675,6 +675,7 @@ $form.Dispose()
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

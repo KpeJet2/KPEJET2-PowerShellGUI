@@ -1,0 +1,22 @@
+[
+  {
+    "File": "scripts\\R3-StressTest.ps1",
+    "Line": 14,
+    "Snippet": "catch { }"
+  },
+  {
+    "File": "scripts\\R3-StressTest.ps1",
+    "Line": 21,
+    "Snippet": "catch { }"
+  },
+  {
+    "File": "scripts\\R3-StressTest.ps1",
+    "Line": 27,
+    "Snippet": "catch { }"
+  },
+  {
+    "File": "scripts\\Show-CronAiAthonTool.ps1",
+    "Line": 2901,
+    "Snippet": "catch { }"
+  }
+]

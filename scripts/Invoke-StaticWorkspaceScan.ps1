@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V32.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -132,6 +132,17 @@ function Write-PhaseLog {
     $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     Write-Host "[$ts][$Phase][$Level] $Msg"
     Add-ScanActivity -Phase $Phase -Msg $Msg -Level $Level
+}
+
+function Test-MapHasKey {
+    param(
+        [Parameter(Mandatory = $true)]$Map,
+        [Parameter(Mandatory = $true)][string]$Key
+    )
+    if ($null -eq $Map) { return $false }
+    if ($Map -is [System.Collections.Specialized.OrderedDictionary]) { return $Map.Contains($Key) }
+    if ($Map -is [System.Collections.IDictionary]) { return $Map.Contains($Key) }
+    return @($Map.PSObject.Properties.Name | Where-Object { $_ -eq $Key }).Count -gt 0
 }
 
 Write-ScanProgress
@@ -400,7 +411,7 @@ if ($RunPhases -contains 'dns_resolution') {
     $progress.currentPhase = 'dns_resolution'; $progress.phasesStatus['dns_resolution'] = 'running'; Write-ScanProgress
     Write-PhaseLog 'dns_resolution' 'Resolving unique hostnames extracted from URLs'
     try {
-        $urlsFromPhase5 = if ($phaseResults.ContainsKey('urls_ips') -and $phaseResults['urls_ips'].ContainsKey('urlIpByFile')) {
+        $urlsFromPhase5 = if ((Test-MapHasKey -Map $phaseResults -Key 'urls_ips') -and (Test-MapHasKey -Map $phaseResults['urls_ips'] -Key 'urlIpByFile')) {
             @($phaseResults['urls_ips'].urlIpByFile) | ForEach-Object { $_.urls } | Select-Object -Unique
         } else { @() }
         $hosts = @($urlsFromPhase5 | ForEach-Object {
@@ -539,6 +550,7 @@ Write-Host '══════════════════════�
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

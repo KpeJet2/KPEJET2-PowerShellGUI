@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow Status Indicators Demo</title>
+  <style>
+    :root {
+      --bg-a: #0b1021;
+      --bg-b: #121a36;
+      --panel: rgba(13, 20, 40, 0.82);
+      --edge: rgba(255, 255, 255, 0.14);
+      --text: #f7f9ff;
+      --muted: #c7d2ff;
+      --accent: #7de4ff;
+      --radius: 16px;
+      --progress: 68;
+      --barber-shift: 0px;
+      --rainbow: #ff2658, #ff7f11, #ffe63b, #36d275, #26b8ff, #7f6cff, #ff3ac9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Bahnschrift", "Trebuchet MS", "Verdana", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 20%, rgba(125, 228, 255, 0.16) 0, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(255, 71, 212, 0.20) 0, transparent 34%),
+        linear-gradient(155deg, var(--bg-a), var(--bg-b));
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
+    }
+
+    .title {
+      margin: 0 0 6px;
+      letter-spacing: 0.08em;
+      font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .controls {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .slider {
+      width: 100%;
+      accent-color: #26b8ff;
+    }
+
+    .btn {
+      border: 1px solid var(--edge);
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(38, 184, 255, 0.18), rgba(255, 58, 201, 0.12));
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .btn:hover { filter: brightness(1.12); }
+
+    .grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      min-height: 144px;
+      animation: rise-in 500ms ease both;
+    }
+
+    .card-wide {
+      grid-column: 1 / -1;
+    }
+
+    .card:nth-child(1) { animation-delay: 30ms; }
+    .card:nth-child(2) { animation-delay: 80ms; }
+    .card:nth-child(3) { animation-delay: 130ms; }
+    .card:nth-child(4) { animation-delay: 180ms; }
+    .card:nth-child(5) { animation-delay: 230ms; }
+    .card:nth-child(6) { animation-delay: 280ms; }
+
+    @keyframes rise-in {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .value {
+      font-family: "Consolas", "Lucida Console", monospace;
+      font-size: 0.85rem;
+      color: #ffffff;
+      margin-top: 8px;
+    }
+
+    .bar-track {
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rainbow-fill {
+      height: 100%;
+      width: calc(var(--progress) * 1%);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--rainbow));
+      background-size: 220% 100%;
+      animation: gradient-shift 2.6s linear infinite;
+    }
+
+    .barber-fill {
+      height: 100%;
+      width: calc(var(--progress) * 1%);
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(
+          -40deg,
+          #ff2658 0 10px,
+          #ff7f11 10px 20px,
+          #ffe63b 20px 30px,
+          #36d275 30px 40px,
+          #26b8ff 40px 50px,
+          #7f6cff 50px 60px,
+          #ff3ac9 60px 70px
+        );
+      background-position: var(--barber-shift) 0;
+      animation: barber 700ms linear infinite;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0 0; }
+      100% { background-position: 220% 0; }
+    }
+
+    @keyframes barber {
+      0% { background-position: 0 0; }
+      100% { background-position: 70px 0; }
+    }
+
+    .segments {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .segment {
+      height: 20px;
+      border-radius: 4px;
+      opacity: 0.22;
+      transform: translateY(3px);
+      transition: 220ms ease;
+    }
+
+    .segment.on {
+      opacity: 1;
+      transform: translateY(0);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.26);
+    }
+
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .donut {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(from -90deg, #ff2658 0deg, #ff7f11 60deg, #ffe63b 120deg, #36d275 180deg, #26b8ff 240deg, #7f6cff 300deg, #ff3ac9 360deg);
+      mask: radial-gradient(circle, transparent 52%, #000 53%);
+      transform: rotate(0.001deg);
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background: rgba(11, 16, 33, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .donut-meter {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(from -90deg, transparent calc(var(--progress) * 1%), rgba(255, 255, 255, 0.06) 0);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      padding: 8px 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, var(--rainbow));
+      background-size: 300% 100%;
+      animation: gradient-shift 3.6s linear infinite;
+      box-shadow: 0 0 0 rgba(125, 228, 255, 0);
+    }
+
+    .pill.pulse {
+      animation:
+        gradient-shift 3.6s linear infinite,
+        pulse 1.25s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(125, 228, 255, 0.0); }
+      50% { box-shadow: 0 0 16px rgba(125, 228, 255, 0.45); }
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .dot-wave {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      min-height: 32px;
+    }
+
+    .dot-wave span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      opacity: 0.2;
+      transform: scale(0.8);
+      animation: wave 900ms ease-in-out infinite;
+    }
+
+    .dot-wave span.on {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+
+    .dot-wave span:nth-child(1) { animation-delay: 0ms; }
+    .dot-wave span:nth-child(2) { animation-delay: 100ms; }
+    .dot-wave span:nth-child(3) { animation-delay: 200ms; }
+    .dot-wave span:nth-child(4) { animation-delay: 300ms; }
+    .dot-wave span:nth-child(5) { animation-delay: 400ms; }
+    .dot-wave span:nth-child(6) { animation-delay: 500ms; }
+    .dot-wave span:nth-child(7) { animation-delay: 600ms; }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0) scale(0.92); }
+      50% { transform: translateY(-6px) scale(1.02); }
+    }
+
+    .neon-card {
+      padding: 14px;
+      border-radius: 14px;
+      position: relative;
+      background: rgba(5, 8, 18, 0.88);
+    }
+
+    .neon-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 15px;
+      background: linear-gradient(130deg, var(--rainbow));
+      background-size: 220% 100%;
+      animation: gradient-shift 2.8s linear infinite;
+      z-index: -1;
+      filter: drop-shadow(0 0 10px rgba(255, 86, 225, 0.35));
+    }
+
+    .neon-card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .neon-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 720px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1 class="title">Rainbow Status Indicators</h1>
+      <p class="subtitle">Pure HTML + CSS + tiny inline JS. No extra modules. Drag the slider to preview how each indicator behaves at different progress values.</p>
+      <div class="controls">
+        <input id="progressRange" class="slider" type="range" min="0" max="100" value="68" aria-label="Progress value">
+        <button id="randomBtn" class="btn" type="button">Randomize</button>
+        <button id="autoBtn" class="btn" type="button">Auto Play</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <p class="kicker">1. Animated Rainbow Fill</p>
+        <div class="bar-track"><div id="barFill" class="rainbow-fill"></div></div>
+        <p class="value" id="barText">68% complete</p>
+      </article>
+
+      <article class="card">
+        <p class="kicker">2. Rainbow Barber Pole</p>
+        <div class="bar-track"><div id="barberFill" class="barber-fill"></div></div>
+        <p class="value" id="barberText">Processing workload</p>
+      </article>
+
+      <article class="card">
+        <p class="kicker">3. Segmented Milestones</p>
+        <div class="segments" id="segmentWrap"></div>
+        <p class="value" id="segmentText">14 of 20 segments active</p>
+      </article>
+
+      <article class="card">
+        <p class="kicker">4. Conic Donut Gauge</p>
+        <div class="donut-wrap">
+          <div class="donut" aria-hidden="true"><div id="donutMeter" class="donut-meter"></div></div>
+          <p class="value" id="donutText">68% load health</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <p class="kicker">5. Rainbow Pulse Pill</p>
+        <div id="statusPill" class="pill pulse"><span class="dot"></span><span id="pillText">Running</span></div>
+        <p class="value" id="pillMeta">State changes by thresholds</p>
+      </article>
+
+      <article class="card">
+        <p class="kicker">6. Wave Dots Activity</p>
+        <div id="dotWave" class="dot-wave" aria-hidden="true"></div>
+        <p class="value" id="waveText">5 of 7 activity dots</p>
+      </article>
+
+      <article class="card card-wide">
+        <p class="kicker">7. Neon Border Status Card</p>
+        <div class="neon-card">
+          <h3 id="neonTitle">Deployment Stream: Stabilizing</h3>
+          <p id="neonBody">Current flow is steady. Error rate is controlled and throughput remains inside expected guardrails.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var range = document.getElementById("progressRange");
+      var randomBtn = document.getElementById("randomBtn");
+      var autoBtn = document.getElementById("autoBtn");
+      var root = document.documentElement;
+      var barFill = document.getElementById("barFill");
+      var barberFill = document.getElementById("barberFill");
+      var barText = document.getElementById("barText");
+      var barberText = document.getElementById("barberText");
+      var segmentWrap = document.getElementById("segmentWrap");
+      var segmentText = document.getElementById("segmentText");
+      var donutMeter = document.getElementById("donutMeter");
+      var donutText = document.getElementById("donutText");
+      var statusPill = document.getElementById("statusPill");
+      var pillText = document.getElementById("pillText");
+      var pillMeta = document.getElementById("pillMeta");
+      var dotWave = document.getElementById("dotWave");
+      var waveText = document.getElementById("waveText");
+      var neonTitle = document.getElementById("neonTitle");
+      var neonBody = document.getElementById("neonBody");
+      var autoTimer = null;
+      var autoDirection = 1;
+
+      function buildSegments() {
+        var i;
+        for (i = 0; i < 20; i += 1) {
+          var seg = document.createElement("span");
+          seg.className = "segment";
+          seg.style.background = "hsl(" + Math.round((i / 20) * 360) + ", 88%, 58%)";
+          segmentWrap.appendChild(seg);
+        }
+      }
+
+      function buildWave() {
+        var i;
+        for (i = 0; i < 7; i += 1) {
+          var dot = document.createElement("span");
+          dot.style.background = "hsl(" + Math.round((i / 7) * 360) + ", 88%, 62%)";
+          dotWave.appendChild(dot);
+        }
+      }
+
+      function stateForProgress(v) {
+        if (v < 25) {
+          return { name: "Idle", detail: "Queue is light. Waiting for more tasks.", flow: "Standby" };
+        }
+        if (v < 60) {
+          return { name: "Running", detail: "Workstream is active with stable cadence.", flow: "Processing" };
+        }
+        if (v < 90) {
+          return { name: "Stabilizing", detail: "High throughput mode. Monitoring for drift.", flow: "High Load" };
+        }
+        return { name: "Complete", detail: "Cycle closed. Artifacts and logs are synchronized.", flow: "Completed" };
+      }
+
+      function render(v) {
+        var value = Math.max(0, Math.min(100, Number(v) || 0));
+        var segmentCount = Math.round((value / 100) * 20);
+        var waveCount = Math.max(1, Math.round((value / 100) * 7));
+        var state = stateForProgress(value);
+        var segments = segmentWrap.children;
+        var dots = dotWave.children;
+        var i;
+
+        root.style.setProperty("--progress", String(value));
+
+        barFill.style.width = value + "%";
+        barberFill.style.width = value + "%";
+        barText.textContent = value + "% complete";
+        barberText.textContent = state.flow + " at " + value + "%";
+
+        for (i = 0; i < segments.length; i += 1) {
+          if (i < segmentCount) {
+            segments[i].classList.add("on");
+          } else {
+            segments[i].classList.remove("on");
+          }
+        }
+        segmentText.textContent = segmentCount + " of 20 segments active";
+
+        donutMeter.style.background = "conic-gradient(from -90deg, transparent " + value + "%, rgba(255,255,255,0.06) 0)";
+        donutText.textContent = value + "% load health";
+
+        pillText.textContent = state.name;
+        pillMeta.textContent = state.detail;
+        if (state.name === "Idle") {
+          statusPill.classList.remove("pulse");
+        } else {
+          statusPill.classList.add("pulse");
+        }
+
+        for (i = 0; i < dots.length; i += 1) {
+          if (i < waveCount) {
+            dots[i].classList.add("on");
+          } else {
+            dots[i].classList.remove("on");
+          }
+        }
+        waveText.textContent = waveCount + " of 7 activity dots";
+
+        neonTitle.textContent = "Deployment Stream: " + state.name;
+        neonBody.textContent = state.detail;
+      }
+
+      function toggleAutoPlay() {
+        if (autoTimer) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+          autoBtn.textContent = "Auto Play";
+          return;
+        }
+
+        autoBtn.textContent = "Stop";
+        autoTimer = setInterval(function () {
+          var current = Number(range.value);
+          var next = current + (autoDirection * 2);
+          if (next >= 100) {
+            next = 100;
+            autoDirection = -1;
+          } else if (next <= 0) {
+            next = 0;
+            autoDirection = 1;
+          }
+          range.value = String(next);
+          render(next);
+        }, 90);
+      }
+
+      buildSegments();
+      buildWave();
+      render(range.value);
+
+      range.addEventListener("input", function (event) {
+        render(event.target.value);
+      });
+
+      randomBtn.addEventListener("click", function () {
+        var randomValue = Math.floor(Math.random() * 101);
+        range.value = String(randomValue);
+        render(randomValue);
+      });
+
+      autoBtn.addEventListener("click", toggleAutoPlay);
+    }());
+  </script>
+</body>
+</html>

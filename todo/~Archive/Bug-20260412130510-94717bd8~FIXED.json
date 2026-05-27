@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:05:10.9849205Z",
+  "title": "Missing expression after ','.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412130510-94717bd8",
+  "description": "Parse error in Main-GUI.ps1 line 5603: Missing expression after ','.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T05:05:10.9849654Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412130511-e1c997f0",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412130511-e1c997f0\nAuto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\Main-GUI.ps1",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:35.6116278+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:43",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-a6a4657f",
+  "title": "Resurfacing bug pattern: Unexpected token 'does' in expression or statement.",
+  "occurrences": 5,
+  "sample_bug_ids": [
+    "Bug-20260412123322-978b5df1",
+    "Bug-20260421030247-ea220072",
+    "Bug-20260504103213-2c8a89d7",
+    "Bug-20260504160735-c910d8c2",
+    "Bug-20260507013416-d353f16d"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

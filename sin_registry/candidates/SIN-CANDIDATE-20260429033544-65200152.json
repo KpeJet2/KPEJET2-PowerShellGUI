@@ -1,0 +1,18 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-65200152",
+  "title": "Resurfacing bug pattern: Unexpected token ')' in expression or statement.",
+  "occurrences": 3,
+  "sample_bug_ids": [
+    "Bug-20260412131748-99fa95b6",
+    "Bug-20260412132400-05ecf73e",
+    "Bug-20260412133735-58a48829"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "SIN-PATTERN-031-PS-REPLACE-GLOBAL",
+  "title": "PowerShell -replace operator is global by default",
+  "description": "Using `$content -replace $pattern, $replacement` replaces ALL occurrences of $pattern, not just the first. When injecting content into structural files (XHTML, JSON, config), this can multiply the injection at every match site, ballooning file size and breaking syntax.",
+  "severity": "Blocking",
+  "category": "PowerShell/StringOps",
+  "detection": "Scan .ps1/.psm1 for `-replace` used in file-write contexts (Set-Content, Out-File) where the replacement contains structural markers (begin/end comments, JS/JSON braces). Flag if the source pattern is expected to match exactly once.",
+  "remediation": "For deterministic single-occurrence replacement use [regex]::new($pattern).Replace($content, $replacement, 1) with explicit count=1. Always grep-assert single occurrence after sync (pattern from SIN-PATTERN-033).",
+  "examples": [
+    "# Bad — duplicates injection at every anchor match\n$content = $content -replace '/\\* MARK \\*/', $newBlock",
+    "# Good — single-shot replacement\n$content = [regex]::new('/\\* MARK \\*/').Replace($content, $newBlock, 1)"
+  ],
+  "occurrences_observed": 15,
+  "first_observed": "2026-04-28",
+  "date_added": "2026-04-29"
+}

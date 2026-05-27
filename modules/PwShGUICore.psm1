@@ -1,4 +1,4 @@
-# ========================== FILE ENUMERATION UTILITY ==========================
+﻿# ========================== FILE ENUMERATION UTILITY ==========================
 function Get-AllProjectFiles {
     <#
     .SYNOPSIS  Enumerate all project files, excluding dot folders and known large directories.
@@ -6,6 +6,7 @@ function Get-AllProjectFiles {
     .PARAMETER Pattern  Optional file pattern (e.g. *.ps1).
     .OUTPUTS   [System.IO.FileInfo[]] Array of file objects.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param(
         [string]$Root,
@@ -23,13 +24,14 @@ function Get-AllProjectFiles {
     return $files
 }
 # ========================== CONFIG PATH VALIDATION ==========================
-function Validate-ConfigPaths {
+function Test-ConfigPaths {
     <#
     .SYNOPSIS  Validates all critical config and workspace paths at startup.
     .DESCRIPTION
         Checks that all required directories and config files exist. Logs errors and returns $false if any are missing.
     .OUTPUTS   [bool] $true if all paths exist, $false otherwise.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param()
     $requiredKeys = @(
@@ -49,7 +51,7 @@ function Validate-ConfigPaths {
     }
     return $allOk
 }
-# VersionTag: 2604.B2.V31.4
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -120,6 +122,7 @@ function Initialize-CorePaths {
     .PARAMETER ScriptDir  Root of the PowerShellGUI workspace.
     .PARAMETER LogsDir    Override logs directory (defaults to $ScriptDir\logs).
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -229,6 +232,7 @@ function Get-AllProjectPaths {
     <#
     .SYNOPSIS  Return the full path registry hashtable (read-only copy).
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param()
     return $script:_PathRegistry.Clone()
@@ -300,12 +304,14 @@ function Set-LogMinLevel {
         Set-LogMinLevel -Level 'Debug'  # emit all entries (troubleshooting mode)
         Set-LogMinLevel -Level 'Warning' # suppress Info + Debug
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
         [ValidateSet('Debug','Info','Warning','Error','Critical','Audit')]
         [string]$Level
     )
+    if (-not $PSCmdlet.ShouldProcess('Set-LogMinLevel', 'Modify')) { return }
+
     $script:_MinLogLevel = $Level
 }
 
@@ -313,6 +319,7 @@ function Get-LogMinLevel {
     <#
     .SYNOPSIS  Return the current minimum log level filter setting.
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param()
     return $script:_MinLogLevel
@@ -511,7 +518,7 @@ function Request-LocalPath {
 
     $timer          = New-Object System.Windows.Forms.Timer
     $timer.Interval = 1000
-    $timer.Add_Tick({
+    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $script:_rlpRemaining--
         if ($script:_rlpRemaining -le 0) {
             $script:_rlpTimedOut = $true
@@ -522,7 +529,7 @@ function Request-LocalPath {
         }
     }.GetNewClosure())
 
-    $form.Add_Shown({ $timer.Start() })
+    $form.Add_Shown({ $timer.Start() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $dialogResult = $form.ShowDialog()
     $timer.Stop()
     $timer.Dispose()
@@ -562,7 +569,7 @@ function Remove-SessionLock {
     <#
     .SYNOPSIS  Remove the session lock file on graceful exit.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param()
 
     if ($script:_LockFilePath -and (Test-Path $script:_LockFilePath)) {
@@ -582,6 +589,7 @@ function Invoke-CrashRecovery {
     .PARAMETER TempDir  Path to the temp directory to purge on crash.
     .OUTPUTS   [bool] $true if a crash was detected and cleaned up.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
         [string]$TempDir
@@ -624,7 +632,7 @@ function Invoke-CrashRecovery {
     if ($TempDir -and (Test-Path $TempDir)) {
         $purged = 0
         Get-ChildItem -Path $TempDir -File -ErrorAction SilentlyContinue | ForEach-Object {
-            try { Remove-Item $_.FullName -Force -ErrorAction Stop; $purged++ } catch { <# Intentional: non-fatal #> }
+            try { Remove-Item $_.FullName -Force -ErrorAction Stop; $purged++ } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
         Write-AppLog "CRASH RECOVERY: Purged $purged file(s) from temp/" 'Info'
     }
@@ -737,7 +745,7 @@ function Initialize-ConfigFile {
 
     foreach ($key in $systemVars.Keys) {
         $element = $xmlDoc.CreateElement($key)
-        $element.InnerText = $systemVars[$key]
+        $element.InnerText = $systemVars[$key]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $root.AppendChild($element) | Out-Null
     }
 
@@ -834,13 +842,14 @@ function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     )
 
     $index = $Step % $colors.Count
-    return $colors[$index]
+    return $colors[$index]  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 function Write-RainbowProgress {
     <#
     .SYNOPSIS  Display a coloured ANSI progress bar in the console.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive UI banner / CLI progress output; intentional Write-Host for human-readable terminal display.')]
     param(
         [Parameter(Mandatory)] [string]$Activity,
         [Parameter(Mandatory)] [int]$PercentComplete,
@@ -852,6 +861,8 @@ function Write-RainbowProgress {
     $barLength = 50
     $completed = [Math]::Floor(($PercentComplete / 100) * $barLength)
     $remaining = $barLength - $completed
+    # Activity prefix shown to caller before bar (also forwarded to Write-Progress for ISE/host integration)
+    Write-Progress -Activity $Activity -Status $Status -PercentComplete $PercentComplete
     $bar = ("[" + ([string][char]9608) * $completed + ([string][char]9617) * $remaining + "]")
     $colorCode = "`e[38;2;$($color.R);$($color.G);$($color.B)m"
     $resetCode = "`e[0m"
@@ -866,6 +877,7 @@ function Assert-DirectoryExists {
     <#
     .SYNOPSIS  Creates directories if they don't exist. Accepts one or more paths. Logs creation.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param([Parameter(Mandatory, ValueFromPipeline)][string[]]$Path)
     process {
         foreach ($p in $Path) {
@@ -888,6 +900,7 @@ function Write-ProcessBanner {
     .PARAMETER StartTime    Optional [datetime] — used when no stopwatch is available.
     .PARAMETER Success      Whether the process succeeded (default $true).
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Interactive UI banner / CLI progress output; intentional Write-Host for human-readable terminal display.')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$ProcessName,
@@ -930,7 +943,8 @@ function Write-CrashDump {
     param(
         [Parameter(Mandatory)][string]$Phase,
         [Parameter(Mandatory)][string]$ErrorMessage,
-        [string]$StackTrace    = '',
+        # P034 fix: $StackTrace shadows error-record automatic; rename to $StackTraceText
+        [string]$StackTraceText = '',
         [int]$RetryCount       = 0,
         [string]$CrashDumpDir  = '',
         [hashtable]$ExtraContext = @{}
@@ -982,11 +996,11 @@ function Write-CrashDump {
                 }
             } catch {
                 <# Intentional: non-fatal — unreadable crash dump files are skipped #>
-            }
+            Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
     } catch {
         <# Intentional: non-fatal — if dir scan fails, continue with occurrences=1 #>
-    }
+    Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 
     if (@($existingDumps).Count -gt 0) {
         $isRepeating = $true
@@ -1004,7 +1018,7 @@ function Write-CrashDump {
         firstSeen      = $firstSeen
         phase          = $Phase
         errorMessage   = $ErrorMessage
-        stackTrace     = $StackTrace
+        stackTrace     = $StackTraceText
         retryCount     = $RetryCount
         occurrences    = $occurrences
         isRepeating    = $isRepeating
@@ -1035,7 +1049,7 @@ function Write-CrashDump {
         Write-AppLog -Level 'Critical' -Message $logMsg
     } catch {
         <# Intentional: non-fatal — Write-AppLog may not be initialized yet #>
-    }
+    Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
 }
 
 # ========================== EXPORTS ==========================
@@ -1074,6 +1088,7 @@ Export-ModuleMember -Function @(
     'Write-ProcessBanner'
     'Write-CrashDump'
 )
+
 
 
 

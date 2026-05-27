@@ -1,4 +1,4 @@
-# VersionTag: 2604.B1.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -16,7 +16,7 @@
 
     Designed to be launched from the Vault Operations flyout in Main-GUI.ps1.
 .NOTES
-    VersionTag: 2603.B0.v18
+    VersionTag: 2605.B5.V46.0
     Requires:   Bitwarden CLI (bw.exe) installed and logged in.
     Security:   Session key injected via BW_SESSION env var in the child
                 process only; cleared on exit.
@@ -248,6 +248,7 @@ Write-Host "`n  BW-CLI Server launcher finished." -ForegroundColor DarkGray
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

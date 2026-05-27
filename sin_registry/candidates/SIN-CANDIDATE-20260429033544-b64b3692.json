@@ -1,0 +1,24 @@
+{
+  "id": "SIN-CANDIDATE-20260429033544-b64b3692",
+  "title": "Resurfacing bug pattern: Missing closing '}' in statement block or type definition.",
+  "occurrences": 21,
+  "sample_bug_ids": [
+    "Bug-20260412123955-8d4744ce",
+    "Bug-20260412124626-00d78bd3",
+    "Bug-20260412124835-4a6dcd1c",
+    "Bug-20260412125049-8d786872",
+    "Bug-20260412125308-3e75529a"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+    "C:\\PowerShellGUI\\Main-GUI.ps1",
+    "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-04-29",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

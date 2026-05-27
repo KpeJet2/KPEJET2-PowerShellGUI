@@ -1,8 +1,9 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
 # SupportsPS7.6TestedDate: null
+# Show-Objectives: Patch Main-GUI version update logic predictably and keep version metadata governance consistent.
 <#
 .SYNOPSIS
     Patch: rewrites Update-VersionTags in Main-GUI.ps1
@@ -96,16 +97,18 @@ Write-Host 'Update-VersionTags rewritten'
 
 
 <# Outline:
-    Stub: describe module/script purpose here.
+    Rewrites the Update-VersionTags function in Main-GUI.ps1 using a controlled replacement body.
+#>
+
+<# Objectives-Review:
+    Current objective is met for deterministic patching.
+    Improvement recommendation: add a preflight uniqueness check for function boundaries before applying replacement.
 #>
 
 <# Problems:
-    Stub: list known issues here.
+    Boundary discovery relies on exact function names in Main-GUI.ps1.
 #>
 
-<# ToDo:
-    Stub: list pending work here.
-#>
 
 
 

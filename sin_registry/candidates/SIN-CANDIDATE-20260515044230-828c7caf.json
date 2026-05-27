@@ -1,0 +1,24 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-828c7caf",
+  "title": "Resurfacing bug pattern: 3 functions with no try/catch blocks",
+  "occurrences": 12,
+  "sample_bug_ids": [
+    "Bug-20260412143527-f209bc08",
+    "Bug-20260412143758-e04432ce",
+    "Bug-20260504175537-550eeb66",
+    "Bug-20260504175902-3d0a137a",
+    "Bug-20260504180116-91cfdcb1"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\scripts\\fix_check_version.ps1",
+    "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1",
+    "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+    "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1",
+    "C:\\PowerShellGUI\\fix_update_version.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

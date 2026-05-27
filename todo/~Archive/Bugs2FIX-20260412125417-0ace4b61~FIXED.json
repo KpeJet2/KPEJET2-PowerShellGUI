@@ -1,0 +1,42 @@
+﻿{
+  "completedAt": null,
+  "plannedAt": null,
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T04:54:17.6494375Z",
+  "title": "FIX: Missing closing '}' in statement block or type definition.",
+  "category": "parsing",
+  "tags": [],
+  "parentId": "Bug-20260412125308-3e75529a",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412125417-0ace4b61",
+  "description": "Fix for bug Bug-20260412125308-3e75529a: Parse error in PwShGUI-IntegrityCore.psm1 line 44: Missing closing '}' in statement block or type definition.",
+  "executionAgent": "",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-04-12T04:54:17.6494886Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "DONE",
+  "suggestedBy": "CronAiAthon",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "Auto-reconciled: target file currently parses cleanly (or absent). Path=C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1"
+  ],
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-04T23:35:46.6802691+08:00",
+  "archiveMetadata": {
+    "archivedAt": "2026-05-16T00:04:47",
+    "archiveFolder": "~Archive",
+    "archiveReason": "FIXED - all required fix implementations resolved",
+    "hindsightNote": "TODO: Document retrospective approach - what would you do differently if starting again?",
+    "fixImplementations": "TODO: List every fix step that was required to fully resolve this bug item"
+  }
+}

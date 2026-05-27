@@ -1,0 +1,43 @@
+{
+  "id": "SIN-CANDIDATE-20260517021331-f78fc423",
+  "title": "Resurfacing bug pattern: [SIN-SCAN] SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000 :: WinForms event handler without try/catch — PipelineStoppedException crash",
+  "occurrences": 24,
+  "sample_bug_ids": [
+    "Bug-20260516055701-20331a2a",
+    "Bug-20260516055800-db2747fe",
+    "Bug-20260516055859-2cdd85d3",
+    "Bug-20260516055958-03d2f1e4",
+    "Bug-20260516060057-aeb66411"
+  ],
+  "affected_files": [
+    "Main-GUI.ps1",
+    "modules\\AssistedSASC.psm1",
+    "modules\\AVPN-Tracker.psm1",
+    "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "modules\\PwShGUI-Theme.psm1",
+    "modules\\PwShGUI-TrayHost.psm1",
+    "modules\\PwShGUICore.psm1",
+    "reports\\iter17\\HEAD-helpfiles.psm1",
+    "scripts\\Invoke-PSEnvironmentScanner.ps1",
+    "scripts\\Show-AppTemplateManager.ps1",
+    "scripts\\Show-CertificateManager.ps1",
+    "scripts\\Show-CronAiAthonTool.ps1",
+    "scripts\\Show-EventLogViewer.ps1",
+    "scripts\\Show-MCPServiceConfig.ps1",
+    "scripts\\Show-SandboxTestTool.ps1",
+    "scripts\\Show-ScanDashboard.ps1",
+    "scripts\\Show-WorkspaceIntentReview.ps1",
+    "scripts\\Start-LocalWebEngineService.ps1",
+    "scripts\\UserProfile-Manager.ps1",
+    "scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r.ps1",
+    "scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1",
+    "scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1",
+    "scripts\\WinRemote-PSTool.ps1",
+    "tests\\Test-TrayHostLifecycle.ps1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-17",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

@@ -1,0 +1,22 @@
+{
+  "Source": ".\\~REPORTS\\PipelineSteering\\compatibility\\compat-20260506-223336.json",
+  "TotalRows": 435,
+  "PS51False": 39,
+  "PS76False": 6,
+  "SemiSinDirectionOnlyWarning": 39,
+  "PS51FalseSample": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\AssistedSASC.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\H-Ai-Nikr-Agi.psm1"
+  ],
+  "PS76FalseSample": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\AssistedSASC.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\CronAiAthon-Pipeline.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\H-Ai-Nikr-Agi.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwShGUI-IntegrityCore.psm1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\CronAiAthon-Pipeline.psm1"
+  ]
+}

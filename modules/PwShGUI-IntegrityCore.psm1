@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -14,6 +14,7 @@
     inline across Main-GUI.ps1 (Phase 5 block, line-1626 duplicate check, and
     system-check panel references).  Provides:
       - Invoke-StartupIntegrityCheck  : Phase 5 replacement for Main-GUI.ps1
+    - Invoke-SASCIntegrityPreflight : SASC drift detection + optional refresh prompt
       - Test-IntegrityManifest        : File-hash manifest validator
       - Initialize-EmergencyUnlockKey : Seeds emergency-unlock AES-256 key in vault
       - Invoke-EmergencyUnlock        : Unlocks the app after catastrophic integrity failure
@@ -39,8 +40,176 @@ function Write-IntegrityLog {
     try {
         Write-AppLog $Message $Severity
     } catch {
-        try { Write-AppLog -Message "[IntegrityCore] $Message" -Level Warning } catch { <# Intentional: non-fatal #> }
+        try { Write-AppLog -Message "[IntegrityCore] $Message" -Level Warning } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
+}
+
+function Invoke-SASCIntegrityPreflight {
+    <#
+    .SYNOPSIS
+        Detect SASC protected-file hash drift and optionally refresh the signed manifest.
+    .DESCRIPTION
+        Imports AssistedSASC, runs Test-SASCSignedManifest, and when mismatches are
+        detected can prompt the user to regenerate config\sasc-integrity.sha256.json
+        before GUI launch.
+    .PARAMETER WorkspacePath
+        Root of the PowerShellGUI workspace.
+    .PARAMETER Interactive
+        When set, show an interactive Yes/No prompt for manifest regeneration.
+    .PARAMETER AutoRegenerate
+        Regenerate manifest automatically when drift is detected (no prompt).
+    .OUTPUTS
+        [PSCustomObject] with Passed, Checked, Regenerated, InvalidCount, InvalidPaths.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [switch]$Interactive,
+        [switch]$AutoRegenerate
+    )
+
+    $result = [ordered]@{
+        Passed         = $true
+        Checked        = $false
+        Prompted       = $false
+        Regenerated    = $false
+        SignatureValid = $false
+        InvalidCount   = 0
+        InvalidPaths   = @()
+        ManifestPath   = (Join-Path (Join-Path $WorkspacePath 'config') 'sasc-integrity.sha256.json')
+        Notes          = @()
+        Error          = $null
+    }
+
+    $sascManifest = Join-Path (Join-Path $WorkspacePath 'modules') 'AssistedSASC.psd1'
+    if (-not (Test-Path -LiteralPath $sascManifest)) {
+        $result.Notes += "AssistedSASC manifest not found: $sascManifest"
+        return [PSCustomObject]$result
+    }
+
+    # DPAPI APIs may require System.Security assembly load on some PS5.1 hosts.
+    $pdType = 'System.Security.Cryptography.ProtectedData' -as [type]
+    if ($null -eq $pdType) {
+        try { Add-Type -AssemblyName System.Security -ErrorAction Stop } catch { <# Intentional: best effort #> }
+        $pdType = 'System.Security.Cryptography.ProtectedData' -as [type]
+    }
+    if ($null -eq $pdType) {
+        $result.Notes += 'ProtectedData API unavailable; skipping SASC signed-manifest preflight on this host'
+        Write-IntegrityLog 'SASC preflight: ProtectedData type unavailable; check skipped' 'Warning'
+        return [PSCustomObject]$result
+    }
+
+    try {
+        Import-Module -Name $sascManifest -Force -ErrorAction Stop
+    } catch {
+        $result.Passed = $false
+        $result.Error = "Failed to import AssistedSASC: $($_.Exception.Message)"
+        Write-IntegrityLog "SASC preflight: import failed -- $($_.Exception.Message)" 'Warning'
+        return [PSCustomObject]$result
+    }
+
+    if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
+        try {
+            Initialize-SASCModule -ScriptDir $WorkspacePath | Out-Null
+        } catch {
+            $result.Notes += "Initialize-SASCModule warning: $($_.Exception.Message)"
+        }
+    }
+
+    if (-not (Get-Command Test-SASCSignedManifest -ErrorAction SilentlyContinue)) {
+        $result.Passed = $false
+        $result.Error = 'Test-SASCSignedManifest not available after AssistedSASC import'
+        Write-IntegrityLog 'SASC preflight: Test-SASCSignedManifest command missing' 'Warning'
+        return [PSCustomObject]$result
+    }
+
+    $check = $null
+    try {
+        $check = Test-SASCSignedManifest
+    } catch {
+        $result.Passed = $false
+        $result.Error = "SASC integrity test failed: $($_.Exception.Message)"
+        Write-IntegrityLog "SASC preflight: integrity test threw -- $($_.Exception.Message)" 'Warning'
+        return [PSCustomObject]$result
+    }
+
+    $result.Checked = $true
+    $result.SignatureValid = [bool]$check.SignatureValid
+    $invalid = @($check.Results | Where-Object { $_.Status -ne 'Passed' })
+    $result.InvalidCount = @($invalid).Count
+    $result.InvalidPaths = @($invalid | ForEach-Object { [string]$_.Path })
+    $result.Passed = ([bool]$check.AllPassed -and [bool]$check.SignatureValid)
+
+    if ($result.Passed) {
+        return [PSCustomObject]$result
+    }
+
+    Write-IntegrityLog "SASC preflight: integrity drift detected -- invalid=$($result.InvalidCount), signatureValid=$($result.SignatureValid)" 'Warning'
+
+    $shouldRegenerate = $false
+    if ($AutoRegenerate) {
+        $shouldRegenerate = $true
+    } elseif ($Interactive) {
+        $result.Prompted = $true
+        $leafPreview = @($result.InvalidPaths | ForEach-Object { Split-Path $_ -Leaf } | Select-Object -First 4)
+        $previewText = if (@($leafPreview).Count -gt 0) {
+            "Changed file(s):`n - " + ($leafPreview -join "`n - ")
+        } else {
+            'Changed file(s): unavailable'
+        }
+        $promptText = "SASC integrity drift detected before GUI launch.`n`nInvalid entries: $($result.InvalidCount)`nSignature valid: $($result.SignatureValid)`n`n$previewText`n`nRegenerate the signed manifest now?"
+
+        try {
+            $messageBoxType = [type]::GetType('System.Windows.Forms.MessageBox, System.Windows.Forms')
+            if ($null -ne $messageBoxType) {
+                $buttonsType = [type]::GetType('System.Windows.Forms.MessageBoxButtons, System.Windows.Forms')
+                $iconType = [type]::GetType('System.Windows.Forms.MessageBoxIcon, System.Windows.Forms')
+                $dialogType = [type]::GetType('System.Windows.Forms.DialogResult, System.Windows.Forms')
+                $choice = $messageBoxType::Show($promptText, 'SASC Integrity Preflight', $buttonsType::YesNo, $iconType::Warning)
+                if ($choice -eq $dialogType::Yes) {
+                    $shouldRegenerate = $true
+                }
+            } elseif ($Host.Name -match 'ConsoleHost') {
+                $answer = Read-Host 'SASC drift detected. Regenerate signed manifest now? [y/N]'
+                if ($answer -match '^(?i)y(es)?$') {
+                    $shouldRegenerate = $true
+                }
+            }
+        } catch {
+            $result.Notes += "Prompt failed: $($_.Exception.Message)"
+            Write-IntegrityLog "SASC preflight: prompt failed -- $($_.Exception.Message)" 'Warning'
+        }
+    }
+
+    if ($shouldRegenerate) {
+        if (Get-Command New-IntegrityManifest -ErrorAction SilentlyContinue) {
+            try {
+                New-IntegrityManifest -Confirm:$false | Out-Null
+                $result.Regenerated = $true
+                $check2 = Test-SASCSignedManifest
+                $invalid2 = @($check2.Results | Where-Object { $_.Status -ne 'Passed' })
+                $result.SignatureValid = [bool]$check2.SignatureValid
+                $result.InvalidCount = @($invalid2).Count
+                $result.InvalidPaths = @($invalid2 | ForEach-Object { [string]$_.Path })
+                $result.Passed = ([bool]$check2.AllPassed -and [bool]$check2.SignatureValid)
+                if ($result.Passed) {
+                    Write-IntegrityLog 'SASC preflight: manifest regenerated successfully; integrity is clean' 'Info'
+                } else {
+                    Write-IntegrityLog "SASC preflight: manifest regenerated but still invalid ($($result.InvalidCount))" 'Warning'
+                }
+            } catch {
+                $result.Passed = $false
+                $result.Error = "Manifest regeneration failed: $($_.Exception.Message)"
+                Write-IntegrityLog "SASC preflight: manifest regeneration failed -- $($_.Exception.Message)" 'Error'
+            }
+        } else {
+            $result.Passed = $false
+            $result.Error = 'New-IntegrityManifest command not available for regeneration'
+            Write-IntegrityLog 'SASC preflight: New-IntegrityManifest command missing' 'Warning'
+        }
+    }
+
+    return [PSCustomObject]$result
 }
 
 # -------------------------------------------------------------------------------
@@ -281,13 +450,6 @@ function Initialize-EmergencyUnlockKey {
     try { $rng.GetBytes($keyBytes) } finally { $rng.Dispose() }
     $keyB64 = [Convert]::ToBase64String($keyBytes)
 
-    $secKey = $keyB64 | ForEach-Object {
-        $ss = New-Object System.Security.SecureString
-        $_.ToCharArray() | ForEach-Object { $ss.AppendChar($_) }
-        $ss.MakeReadOnly()
-        $ss
-    }
-
     try {
         Set-VaultItem -Name 'system/emergency-unlock-key' -Notes $keyB64 -ErrorAction Stop
         Write-IntegrityLog 'Initialize-EmergencyUnlockKey: emergency unlock key set in vault' 'Audit'
@@ -399,10 +561,12 @@ function Invoke-EmergencyUnlock {
 #>
 Export-ModuleMember -Function @(
     'Invoke-StartupIntegrityCheck'
+    'Invoke-SASCIntegrityPreflight'
     'Test-IntegrityManifest'
     'Initialize-EmergencyUnlockKey'
     'Invoke-EmergencyUnlock'
 )
+
 
 
 

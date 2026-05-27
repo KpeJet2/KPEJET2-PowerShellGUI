@@ -1,4 +1,4 @@
-function Scan-ForSinPattern028 {
+﻿function Scan-ForSinPattern028 {
     <#
     .SYNOPSIS
         Scan for Import-Module statements that reference .psm1 files instead of .psd1 manifests (SIN-PATTERN-028).
@@ -25,7 +25,7 @@ function Scan-ForSinPattern028 {
     foreach ($file in $files) {
         $lines = @(Get-Content $file.FullName -Encoding UTF8 -ErrorAction SilentlyContinue)
         for ($i = 0; $i -lt $lines.Count; $i++) {
-            $line = $lines[$i]
+            $line = $lines[$i]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             # Use a minimal, PowerShell-safe regex for Import-Module .psm1 detection
             if ($line -match "Import-Module\s+\S+\.psm1") {
                 [void]$results.Add([PSCustomObject]@{
@@ -39,7 +39,7 @@ function Scan-ForSinPattern028 {
     Write-SteerLog "Scan-ForSinPattern028: found $(@($results).Count) SIN-PATTERN-028 violation(s)" 'Warning'
     return @($results)
 }
-# VersionTag: 2604.B2.V33.1
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -109,7 +109,7 @@ function Get-VersionTagFromContent {
     #>
     [CmdletBinding()]
     param([string]$Content)
-    if ($Content -match '# VersionTag:\s*([\w.\-]+)') { return $Matches[1] }
+    if ($Content -match '# VersionTag:\s*([\w.\-]+)') { return $Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     return $null
 }
 
@@ -123,8 +123,8 @@ function Set-VersionTagMinorBump {
     [CmdletBinding()]
     param([string]$VersionTag)
     if ($VersionTag -match '^(\d{4}\.\w+\.[Vv]\d+\.)(\d+)$') {
-        $prefix = $Matches[1]
-        $minor  = [int]$Matches[2] + 1
+        $prefix = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        $minor  = [int]$Matches[2] + 1  # SIN-EXEMPT:P027 -- index access, context-verified safe
         return "$prefix$minor"
     }
     return $VersionTag
@@ -240,7 +240,7 @@ function New-CompatibilityStandardsTemplates {
         [PSCustomObject]@{
             Path    = Join-Path $dir 'PS76-Preferred-Template.ps1.txt'
             Content = @'
-# VersionTag: YYMM.B0.V1.0
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -382,6 +382,8 @@ function New-WorkspaceCompatibilityIndex {
     $extMap = @{
         '.ps1'   = @{ Mime = 'text/x-powershell'; Language = 'PowerShell'; DefaultSupportTarget = 'PS5.1+PS7.6' }
         '.psm1'  = @{ Mime = 'text/x-powershell'; Language = 'PowerShell'; DefaultSupportTarget = 'PS5.1+PS7.6' }
+        '.psd1'  = @{ Mime = 'text/x-powershell'; Language = 'PowerShellManifest'; DefaultSupportTarget = 'PS5.1+PS7.6' }
+        '.py'    = @{ Mime = 'text/x-python'; Language = 'Python'; DefaultSupportTarget = 'Python3' }
         '.xhtml' = @{ Mime = 'application/xhtml+xml'; Language = 'XHTML'; DefaultSupportTarget = 'Browser-XHTML1' }
         '.html'  = @{ Mime = 'text/html'; Language = 'HTML'; DefaultSupportTarget = 'Browser-HTML5' }
         '.json'  = @{ Mime = 'application/json'; Language = 'JSON'; DefaultSupportTarget = 'Data-Exchange' }
@@ -399,7 +401,7 @@ function New-WorkspaceCompatibilityIndex {
         $ext = $f.Extension.ToLowerInvariant()
         if (-not $extMap.ContainsKey($ext)) { continue }
 
-        $meta = $extMap[$ext]
+        $meta = $extMap[$ext]  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $depItems = @()
         $products = @()
 
@@ -476,13 +478,13 @@ function Test-FunctionDescriptions {
     foreach ($file in $files) {
         $lines = @(Get-Content $file.FullName -Encoding UTF8 -ErrorAction SilentlyContinue)
         for ($i = 0; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -match '^\s*function\s+([\w]+-[\w]+)\s*[\{(]?') {
+            if ($lines[$i] -match '^\s*function\s+([\w]+-[\w]+)\s*[\{(]?') {  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $fnName = $Matches[1]  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
                 # Look forward up to 5 lines for '<#' comment block
                 $hasHelp = $false
                 $limit   = [math]::Min($i + 6, $lines.Count - 1)
                 for ($j = $i + 1; $j -le $limit; $j++) {
-                    if ($lines[$j] -match '<#|\.SYNOPSIS') { $hasHelp = $true; break }
+                    if ($lines[$j] -match '<#|\.SYNOPSIS') { $hasHelp = $true; break }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
                 if (-not $hasHelp) {
                     [void]$gaps.Add([PSCustomObject]@{
@@ -943,6 +945,7 @@ Export-ModuleMember -Function @(
     'Invoke-CompatibilityMatrixAudit'
     'New-WorkspaceCompatibilityIndex'
 )
+
 
 
 

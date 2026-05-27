@@ -1,24 +1,997 @@
-﻿{
-    "runId":  "testrun-20260412045157",
-    "startedAt":  "2026-04-11T20:51:57.9487484Z",
-    "completedAt":  "2026-04-11T20:57:32.4982936Z",
-    "pester":  {
-                   "message":  "A parameter cannot be found that matches parameter name \u0027Configuration\u0027.",
-                   "status":  "ERROR"
-               },
-    "smoke":  null,
-    "summary":  {
-                    "total":  0,
-                    "passed":  0,
-                    "failed":  0,
-                    "skipped":  0
-                },
-    "sinPatternScan":  {
-                           "message":  "The property \u0027critical\u0027 cannot be found on this object. Verify that the property exists.",
-                           "status":  "ERROR"
-                       },
-    "semiSinPenance":  {
-                           "status":  "SKIPPED",
-                           "reason":  "Prior tests had failures"
-                       }
-}
+﻿[
+    {
+        "runId":  "testrun-20260412045157",
+        "startedAt":  "2026-04-11T20:51:57.9487484Z",
+        "completedAt":  "2026-04-11T20:57:32.4982936Z",
+        "pester":  {
+                       "message":  "A parameter cannot be found that matches parameter name \u0027Configuration\u0027.",
+                       "status":  "ERROR"
+                   },
+        "smoke":  null,
+        "summary":  {
+                        "total":  0,
+                        "passed":  0,
+                        "failed":  0,
+                        "skipped":  0
+                    },
+        "sinPatternScan":  {
+                               "message":  "The property \u0027critical\u0027 cannot be found on this object. Verify that the property exists.",
+                               "status":  "ERROR"
+                           },
+        "semiSinPenance":  {
+                               "status":  "SKIPPED",
+                               "reason":  "Prior tests had failures"
+                           }
+    },
+    {
+        "runId":  "testrun-20260502004701",
+        "startedAt":  "2026-05-01T16:47:01.1672091Z",
+        "completedAt":  "2026-05-01T16:53:53.2544989Z",
+        "pester":  {
+                       "message":  "The variable \u0027$pesterConfig\u0027 cannot be retrieved because it has not been set.",
+                       "status":  "ERROR"
+                   },
+        "smoke":  {
+                      "status":  "FAILED",
+                      "exitCode":  1,
+                      "mode":  "headless-only"
+                  },
+        "fileTypeRoutines":  {
+                                 "status":  "FAILED",
+                                 "failedRoutines":  2,
+                                 "routines":  [
+                                                  {
+                                                      "routineName":  "SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "SCRIPT",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T00:53:40.3466725+08:00",
+                                                      "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  7,
+                                                      "failed":  3,
+                                                      "improvementsYielded":  "7/10 parse-clean script files, 9/10 with VersionTag visibility, .bat files excluded by design.",
+                                                      "logPath":  "logs/SmokeTest-Scripts-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Chat-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8636131+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Start-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8656088+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8738401+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/koe-RumA/core/koe-RumA.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.9054631+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.9124451+08:00",
+                                                                          "errorHref":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "failureDetails":  "Missing VersionTag header in first 3 lines.",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  false,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "config/error-handling-templates.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:06.0637629+08:00",
+                                                                          "errorHref":  "config/error-handling-templates.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_check_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_update_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Main-GUI.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                                          "errorHref":  "Main-GUI.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "modules/_TEMPLATE-Module.psd1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-28T09:57:31.9536657+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  },
+                                                  {
+                                                      "routineName":  "SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "HTML",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T00:53:46.9319529+08:00",
+                                                      "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  8,
+                                                      "failed":  2,
+                                                      "improvementsYielded":  "8/10 HTML/XHTML files passed reference validation, 3 broken reference path(s) surfaced with direct ERROR links.",
+                                                      "logPath":  "logs/SmokeTest-HTML-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "~README.md/Dependency-Visualisation.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/Implementation-Steps.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.0939852+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  26
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1111451+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  8
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists-TEST.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9141102+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  10
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Help-Index.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-12T12:56:40.6924951+08:00",
+                                                                          "errorHref":  "C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md",
+                                                                          "failureDetails":  "Missing referenced data: C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  3,
+                                                                                         "referenceCount":  43
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SECURITY-SETUP-GUIDE.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1152625+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  15
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SURVEY-Viewpoints.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:42.5109145+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  36
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "BW-Vault-Checklist.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.8223912+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  2
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9306875+08:00",
+                                                                          "errorHref":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "failureDetails":  "Invalid reference path \u0027file:///\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\" | Invalid reference path \u0027file://\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\"",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  9
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Report/XPS15-MS-20260301-030448-PScheatsheet-Examples-03.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:38.6041127+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  }
+                                              ]
+                             },
+        "summary":  {
+                        "total":  0,
+                        "passed":  0,
+                        "failed":  0,
+                        "skipped":  0
+                    },
+        "moduleValidation":  {
+                                 "status":  "FAILED",
+                                 "totalModules":  47,
+                                 "failed":  1,
+                                 "warned":  46,
+                                 "outputJson":  "C:\\PowerShellGUI\\temp\\module-validation-20260502004701.json"
+                             },
+        "sinPatternScan":  {
+                               "status":  "FAILED",
+                               "total":  741,
+                               "critical":  432,
+                               "p027":  209,
+                               "high":  250,
+                               "medium":  59
+                           },
+        "semiSinPenance":  {
+                               "status":  "SKIPPED",
+                               "reason":  "Prior tests had failures"
+                           }
+    },
+    {
+        "runId":  "testrun-20260502011156",
+        "startedAt":  "2026-05-01T17:11:56.4667981Z",
+        "completedAt":  "2026-05-01T17:14:50.8632132Z",
+        "pester":  {
+                       "message":  "The variable \u0027$pesterConfig\u0027 cannot be retrieved because it has not been set.",
+                       "status":  "ERROR"
+                   },
+        "smoke":  null,
+        "fileTypeRoutines":  {
+                                 "status":  "FAILED",
+                                 "failedRoutines":  2,
+                                 "routines":  [
+                                                  {
+                                                      "routineName":  "SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "SCRIPT",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T01:14:42.1150522+08:00",
+                                                      "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  7,
+                                                      "failed":  3,
+                                                      "improvementsYielded":  "7/10 parse-clean script files, 9/10 with VersionTag visibility, .bat files excluded by design.",
+                                                      "logPath":  "logs/SmokeTest-Scripts-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Chat-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8636131+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Start-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8656088+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8738401+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/koe-RumA/core/koe-RumA.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.9054631+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.9124451+08:00",
+                                                                          "errorHref":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "failureDetails":  "Missing VersionTag header in first 3 lines.",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  false,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "config/error-handling-templates.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:06.0637629+08:00",
+                                                                          "errorHref":  "config/error-handling-templates.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_check_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_update_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Main-GUI.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                                          "errorHref":  "Main-GUI.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "modules/_TEMPLATE-Module.psd1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-28T09:57:31.9536657+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  },
+                                                  {
+                                                      "routineName":  "SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "HTML",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T01:14:46.9927249+08:00",
+                                                      "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  8,
+                                                      "failed":  2,
+                                                      "improvementsYielded":  "8/10 HTML/XHTML files passed reference validation, 3 broken reference path(s) surfaced with direct ERROR links.",
+                                                      "logPath":  "logs/SmokeTest-HTML-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "~README.md/Dependency-Visualisation.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/Implementation-Steps.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.0939852+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  26
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1111451+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  8
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists-TEST.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9141102+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  10
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Help-Index.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-12T12:56:40.6924951+08:00",
+                                                                          "errorHref":  "C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md",
+                                                                          "failureDetails":  "Missing referenced data: C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  3,
+                                                                                         "referenceCount":  43
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SECURITY-SETUP-GUIDE.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1152625+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  15
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SURVEY-Viewpoints.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:42.5109145+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  36
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "BW-Vault-Checklist.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.8223912+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  2
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9306875+08:00",
+                                                                          "errorHref":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "failureDetails":  "Invalid reference path \u0027file:///\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\" | Invalid reference path \u0027file://\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\"",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  9
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Report/XPS15-MS-20260301-030448-PScheatsheet-Examples-03.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:38.6041127+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  }
+                                              ]
+                             },
+        "summary":  {
+                        "total":  0,
+                        "passed":  0,
+                        "failed":  0,
+                        "skipped":  0
+                    },
+        "moduleValidation":  {
+                                 "status":  "PASSED",
+                                 "totalModules":  47,
+                                 "failed":  0,
+                                 "warned":  47,
+                                 "outputJson":  "C:\\PowerShellGUI\\temp\\module-validation-20260502011156.json"
+                             },
+        "sinPatternScan":  {
+                               "status":  "FAILED",
+                               "total":  741,
+                               "critical":  432,
+                               "p027":  209,
+                               "high":  250,
+                               "medium":  59
+                           },
+        "semiSinPenance":  {
+                               "status":  "SKIPPED",
+                               "reason":  "Prior tests had failures"
+                           }
+    },
+    {
+        "runId":  "testrun-20260502011657",
+        "startedAt":  "2026-05-01T17:16:57.4345242Z",
+        "completedAt":  "2026-05-01T17:20:11.8152616Z",
+        "pester":  {
+                       "status":  "FAILED",
+                       "total":  42,
+                       "passed":  0,
+                       "failed":  42,
+                       "skipped":  0,
+                       "duration":  "00:00:11.2287277"
+                   },
+        "smoke":  null,
+        "fileTypeRoutines":  {
+                                 "status":  "FAILED",
+                                 "failedRoutines":  2,
+                                 "routines":  [
+                                                  {
+                                                      "routineName":  "SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "SCRIPT",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T01:20:04.1943646+08:00",
+                                                      "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  7,
+                                                      "failed":  3,
+                                                      "improvementsYielded":  "7/10 parse-clean script files, 9/10 with VersionTag visibility, .bat files excluded by design.",
+                                                      "logPath":  "logs/SmokeTest-Scripts-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Chat-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8636131+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/focalpoint-null/Start-FocalPoint.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8656088+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.8738401+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/koe-RumA/core/koe-RumA.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.9054631+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T03:13:38.9124451+08:00",
+                                                                          "errorHref":  "agents/PipelineSteering/core/PipelineSteering.psm1",
+                                                                          "failureDetails":  "Missing VersionTag header in first 3 lines.",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  false,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "config/error-handling-templates.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:06.0637629+08:00",
+                                                                          "errorHref":  "config/error-handling-templates.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_check_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "fix_update_version.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-29T00:44:49.0611418+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Main-GUI.ps1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T22:01:49.4954868+08:00",
+                                                                          "errorHref":  "Main-GUI.ps1",
+                                                                          "failureDetails":  "Contains PS7-only operator token(s) (SIN P005).",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  1
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "modules/_TEMPLATE-Module.psd1",
+                                                                          "fileType":  "SCRIPT",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-28T09:57:31.9536657+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "hasVersionTag":  true,
+                                                                                         "parseErrorCount":  0,
+                                                                                         "p005MatchCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  },
+                                                  {
+                                                      "routineName":  "SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose",
+                                                      "fileType":  "HTML",
+                                                      "status":  "FAILED",
+                                                      "lastRunAt":  "2026-05-02T01:20:08.0306428+08:00",
+                                                      "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                      "filesProcessed":  10,
+                                                      "passed":  8,
+                                                      "failed":  2,
+                                                      "improvementsYielded":  "8/10 HTML/XHTML files passed reference validation, 3 broken reference path(s) surfaced with direct ERROR links.",
+                                                      "logPath":  "logs/SmokeTest-HTML-FireUpAllEngines.log",
+                                                      "inventoryPath":  "~REPORTS/smoke-filetype-agent-inventory.json",
+                                                      "records":  [
+                                                                      {
+                                                                          "filePath":  "~README.md/Dependency-Visualisation.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-05-01T22:16:47.2641865+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/Implementation-Steps.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.0939852+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  26
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1111451+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  8
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Checklists-TEST.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9141102+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  10
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/PwShGUI-Help-Index.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-12T12:56:40.6924951+08:00",
+                                                                          "errorHref":  "C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md",
+                                                                          "failureDetails":  "Missing referenced data: C:/PowerShellGUI/~README.md/INSTALLATION-SUMMARY.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md, C:/PowerShellGUI/~README.md/VERSION-UPDATES.md",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  3,
+                                                                                         "referenceCount":  43
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SECURITY-SETUP-GUIDE.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-14T22:54:58.1152625+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  15
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "~README.md/SURVEY-Viewpoints.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:42.5109145+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  36
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "BW-Vault-Checklist.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-27T01:57:05.8223912+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  2
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "FAIL",
+                                                                          "lastFieldRecordAt":  "2026-04-30T00:00:14.9306875+08:00",
+                                                                          "errorHref":  "PwShGUI-Checklists_V1-ROOT.xhtml",
+                                                                          "failureDetails":  "Invalid reference path \u0027file:///\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\" | Invalid reference path \u0027file://\u0027: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The given path\u0027s format is not supported.\"",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  9
+                                                                                     }
+                                                                      },
+                                                                      {
+                                                                          "filePath":  "Report/XPS15-MS-20260301-030448-PScheatsheet-Examples-03.html",
+                                                                          "fileType":  "HTML",
+                                                                          "status":  "PASS",
+                                                                          "lastFieldRecordAt":  "2026-04-03T11:52:38.6041127+08:00",
+                                                                          "errorHref":  null,
+                                                                          "failureDetails":  "",
+                                                                          "checks":  {
+                                                                                         "missingReferenceCount":  0,
+                                                                                         "referenceCount":  0
+                                                                                     }
+                                                                      }
+                                                                  ]
+                                                  }
+                                              ]
+                             },
+        "summary":  {
+                        "total":  42,
+                        "passed":  0,
+                        "failed":  42,
+                        "skipped":  0
+                    },
+        "moduleValidation":  {
+                                 "status":  "PASSED",
+                                 "totalModules":  47,
+                                 "failed":  0,
+                                 "warned":  47,
+                                 "outputJson":  "C:\\PowerShellGUI\\temp\\module-validation-20260502011657.json"
+                             },
+        "sinPatternScan":  {
+                               "status":  "FAILED",
+                               "total":  741,
+                               "critical":  432,
+                               "p027":  209,
+                               "high":  250,
+                               "medium":  59
+                           },
+        "semiSinPenance":  {
+                               "status":  "SKIPPED",
+                               "reason":  "Prior tests had failures"
+                           }
+    }
+]

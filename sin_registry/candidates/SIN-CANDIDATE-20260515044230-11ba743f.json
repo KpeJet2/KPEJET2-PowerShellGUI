@@ -1,0 +1,22 @@
+{
+  "id": "SIN-CANDIDATE-20260515044230-11ba743f",
+  "title": "Resurfacing bug pattern: The string is missing the terminator: \".",
+  "occurrences": 7,
+  "sample_bug_ids": [
+    "Bug-20260412124417-a7cd8f6a",
+    "Bug-20260421021751-314c1349",
+    "Bug-20260421031048-01e5fadb",
+    "Bug-20260504105237-b05e9356",
+    "Bug-20260504151312-03d1f24f"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211451\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+    "C:\\PowerShellGUI\\tests\\Invoke-PreCommitValidation.ps1",
+    "C:\\PowerShellGUI\\~REPORTS\\remediation-backups\\20260404-211835\\PwSh-HelpFilesUpdateSource-ReR.psm1"
+  ],
+  "severity": "Blocking",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-15",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

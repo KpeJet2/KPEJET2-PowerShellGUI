@@ -3,5 +3,20 @@
     "schema": "PwShGUI-ActionLog/1.0",
     "description": "Append-only chronological action history for todo/bug/feature status changes."
   },
-  "actions": []
+  "actions": [
+    {
+      "title": "Test history entry: TEST-08b699c0",
+      "status": "IN_PROGRESS",
+      "id": "TEST-08b699c0",
+      "source": "api-test",
+      "timestamp": "2026-05-15T17:16:09.5469282+08:00"
+    },
+    {
+      "source": "api-test",
+      "timestamp": "2026-05-15T22:27:53.0352859+08:00",
+      "id": "TEST-8dddb462",
+      "title": "Test history entry: TEST-8dddb462",
+      "status": "IN_PROGRESS"
+    }
+  ]
 }

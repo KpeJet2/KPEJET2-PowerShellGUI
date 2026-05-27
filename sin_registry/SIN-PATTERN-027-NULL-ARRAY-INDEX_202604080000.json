@@ -80,7 +80,7 @@
     }
   },
   "preventionRule": "Never index into an array, list, or collection result without verifying it is non-null and contains sufficient elements. Preferred fix order: FIX-D (match guard) > FIX-A (@() force-array) > FIX-B (.Count precondition) > FIX-E (-split bounds) > FIX-C ($null -ne guard) > FIX-F (try/catch last resort). In WinForms handlers, always use @($grid.SelectedRows).Count -gt 0 before [0]. After -match, only use $Matches inside the if-true block. After -split, check element count before accessing indexed elements.",
-  "scan_regex": "(?<![#'])(\\$\\w+)\\[\\d+\\]",
+  "scan_regex": "(?<![#'])(\\$\\w+)\\[(?:-?\\d+|\\$\\w+)\\]",
   "scan_file_pattern": "*.ps1;*.psm1",
   "scan_exclude": ".history;__pycache__;.venv;.venv-pygame312;node_modules;checkpoints",
   "context_guard_regex": "\\.Count\\s*-gt\\s*0|\\.Count\\s*-ge\\s*\\d|@\\(\\$|\\$null\\s*-ne|-ne\\s*\\$null|\\.Length\\s*-gt\\s*0|if\\s*\\(\\$\\w+\\s*-match\\b|if\\s*\\(\\[regex\\]|\\$parts\\.Count|\\$\\w+\\.Success|ForEach-Object|Where-Object",

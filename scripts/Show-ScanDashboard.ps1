@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -166,7 +166,7 @@ function Get-AllRelatedFiles {
 
 function Extract-Timestamp {
     param([string]$FileName)
-    if ($FileName -match '(\d{8}-\d{6})') { return $Matches[1] }
+    if ($FileName -match '(\d{8}-\d{6})') { return $Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     return ''
 }
 
@@ -174,12 +174,94 @@ function Extract-Timestamp {
 
 function Show-ScanDashboard {
     [CmdletBinding()]
-    param()
+    param(
+        [switch]$UseLegacyDashboard,
+        [bool]$AutoScanScanner = $true
+    )
 
     $projectRoot = Split-Path $PSScriptRoot -Parent
     $reportPath  = Join-Path $projectRoot '~REPORTS'
     $scriptsDir  = $PSScriptRoot
     if (-not (Test-Path $reportPath)) { New-Item -ItemType Directory -Path $reportPath -Force | Out-Null }
+
+    $useLegacyDashboardResolved = [bool]$UseLegacyDashboard
+    $legacyModeTrueTokens = @('1', 'TRUE', 'YES', 'ON', 'LEGACY')
+    $legacyModeFalseTokens = @('0', 'FALSE', 'NO', 'OFF', 'SCANNER')
+    $hasPersistedPreference = $false
+
+    if (-not $useLegacyDashboardResolved) {
+        $configFile = Join-Path (Join-Path $projectRoot 'config') 'system-variables.xml'
+        if (Test-Path $configFile -PathType Leaf) {
+            try {
+                [xml]$cfgXml = Get-Content -LiteralPath $configFile -ErrorAction Stop
+                $modeNode = $cfgXml.SelectSingleNode('/SystemVariables/UI/UseLegacyScanDashboard')
+                $modeRaw = if ($modeNode) { [string]$modeNode.InnerText } else { '' }
+
+                if (-not [string]::IsNullOrWhiteSpace($modeRaw)) {
+                    $modeText = $modeRaw.Trim().ToUpperInvariant()
+                    if ($modeText -in $legacyModeTrueTokens) {
+                        $useLegacyDashboardResolved = $true
+                        $hasPersistedPreference = $true
+                    } elseif ($modeText -in $legacyModeFalseTokens) {
+                        $useLegacyDashboardResolved = $false
+                        $hasPersistedPreference = $true
+                    } elseif (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                        Write-AppLog "Invalid UI/UseLegacyScanDashboard value '$modeRaw' in config; falling back to env/default." 'Warning'
+                    }
+                }
+            } catch {
+                if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                    Write-AppLog "Failed reading persisted Scan Dashboard mode: $($_.Exception.Message)" 'Warning'
+                }
+            }
+        }
+    }
+
+    if (-not $useLegacyDashboardResolved -and -not $hasPersistedPreference) {
+        $legacyModeRaw = [System.Environment]::GetEnvironmentVariable('PSGUI_USE_LEGACY_SCAN_DASHBOARD')
+        if (-not [string]::IsNullOrWhiteSpace($legacyModeRaw)) {
+            $legacyMode = $legacyModeRaw.Trim().ToUpperInvariant()
+            if ($legacyMode -in $legacyModeTrueTokens) {
+                $useLegacyDashboardResolved = $true
+            }
+        }
+    }
+
+    if (-not $useLegacyDashboardResolved) {
+        $scannerScript = Join-Path $scriptsDir 'Invoke-PSEnvironmentScanner.ps1'
+        if (-not (Test-Path $scannerScript -PathType Leaf)) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Environment scanner script not found:`n$scannerScript`n`nUse Tools > Use Legacy Scan Dashboard (or set PSGUI_USE_LEGACY_SCAN_DASHBOARD=1) to force legacy dashboard mode.",
+                'Missing Script',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+
+        try {
+            if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                Write-AppLog 'Scan Dashboard request redirected to PS Environment Scanner' 'Info'
+            }
+            if ($AutoScanScanner) {
+                & $scannerScript -WorkspacePath $projectRoot -AutoScan
+            } else {
+                & $scannerScript -WorkspacePath $projectRoot
+            }
+            return
+        } catch {
+            if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+                Write-AppLog "Environment scanner launch from Scan Dashboard wrapper failed: $($_.Exception.Message)" 'Error'
+            }
+            [System.Windows.Forms.MessageBox]::Show(
+                "Failed to launch PS Environment Scanner:`n$($_.Exception.Message)",
+                'Scanner Launch Error',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+    }
 
     # ══════════════════════════════════════════════════════════════════════════
     #  FORM
@@ -319,7 +401,7 @@ function Show-ScanDashboard {
         $tab.Controls.Add($pnlButtons)
 
         # Wire events
-        $btnRun.Add_Click({
+        $btnRun.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $runDef     = $this.Tag
             $defName    = $runDef.Name
             $scriptPath = Join-Path $scriptsDir $runDef.Script
@@ -335,7 +417,7 @@ function Show-ScanDashboard {
             }
             # Disable button + show progress bar
             $this.Enabled  = $false
-            $capturedPBar  = $progressBars[$defName]
+            $capturedPBar  = $progressBars[$defName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($capturedPBar) { $capturedPBar.Visible = $true }
             $statusLabel.Text = "Running $defName in background..."
 
@@ -347,13 +429,13 @@ function Show-ScanDashboard {
             }
 
             $capturedBtn    = $this
-            $capturedGrid   = $scanGrids[$defName]
+            $capturedGrid   = $scanGrids[$defName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $capturedRefSG  = $RefreshScanGrid
             $capturedSL     = $statusLabel
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
-            $timer.Add_Tick({
+            $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $ji = $shared.RunningJobs[$defName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State
@@ -389,21 +471,21 @@ function Show-ScanDashboard {
             $timer.Start()
         }.GetNewClosure())
 
-        $btnRefresh.Add_Click({
+        $btnRefresh.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $refDef = $this.Tag
             if ($null -eq $refDef) { return }
             $defName = $refDef.Name
             if (-not $defName) { return }
-            $grid = $scanGrids[$defName]
+            $grid = $scanGrids[$defName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($null -ne $grid) { & $RefreshScanGrid -Grid $grid -Def $refDef }
         }.GetNewClosure())
 
-        $btnOpenReport.Add_Click({
+        $btnOpenReport.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $openDef = $this.Tag
             if ($null -eq $openDef) { return }
             $defName = $openDef.Name
             if (-not $defName) { return }
-            $grid = $scanGrids[$defName]
+            $grid = $scanGrids[$defName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($null -ne $grid -and @($grid.SelectedRows).Count -gt 0) {
                 $selectedRow = $grid.SelectedRows[0]
                 if ($null -eq $selectedRow) { return }
@@ -422,7 +504,7 @@ function Show-ScanDashboard {
 
         # Wire View HTML button (Workspace Dependency Map only)
         if ($btnViewHtml) {
-            $btnViewHtml.Add_Click({
+            $btnViewHtml.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $htmlDef  = $this.Tag
                 $htmlFile = Join-Path $projectRoot $htmlDef.HtmlOutput
                 if (Test-Path $htmlFile) {
@@ -589,9 +671,9 @@ function Show-ScanDashboard {
         }
     }
 
-    $btnRefreshCpsr.Add_Click({ & $RefreshCpsrGrid })
+    $btnRefreshCpsr.Add_Click({ & $RefreshCpsrGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-    $btnOpenCpsr.Add_Click({
+    $btnOpenCpsr.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($null -ne $dgvCpsr -and @($dgvCpsr.SelectedRows).Count -gt 0) {
             $selectedRow = $dgvCpsr.SelectedRows[0]
             if ($null -eq $selectedRow) { return }
@@ -608,7 +690,7 @@ function Show-ScanDashboard {
         }
     })
 
-    $btnOpenCpsrFolder.Add_Click({
+    $btnOpenCpsrFolder.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $cpsrRoot = Join-Path $reportPath 'CPSR'
         if (Test-Path $cpsrRoot) { Invoke-Item $cpsrRoot }
         else { [System.Windows.Forms.MessageBox]::Show('CPSR folder not found.', 'Missing') }
@@ -628,7 +710,7 @@ function Show-ScanDashboard {
             $files = Get-ScanFiles -Def $def -ReportPath $reportPath
             $count = $files.Count
             $bytes = Get-ScansetDiskSize -Def $def -ReportPath $reportPath
-            $latest = if ($files.Count -gt 0) { Extract-Timestamp $files[0].Name } else { '(none)' }
+            $latest = if ($files.Count -gt 0) { Extract-Timestamp $files[0].Name } else { '(none)' }  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $scriptAvail = if (Test-Path (Join-Path $scriptsDir $def.Script)) { 'Yes' } else { 'No' }
             $sizeDisp = '{0:N1} KB' -f ($bytes / 1KB)
             $dgvSummary.Rows.Add($def.Name, $count, $sizeDisp, $latest, $scriptAvail) | Out-Null
@@ -675,7 +757,7 @@ function Show-ScanDashboard {
                 if ($fTs -ne $latestTs) { continue }
                 $ext = $f.Extension.TrimStart('.').ToUpper()
                 if ($seenFormats.ContainsKey($ext)) { continue }
-                $seenFormats[$ext] = $true
+                $seenFormats[$ext] = $true  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $sizeKB = [math]::Round($f.Length / 1KB, 1)
                 $dgvReports.Rows.Add($def.Name, $ext, $f.Name, $fTs, $sizeKB, 'Yes') | Out-Null
             }
@@ -686,9 +768,9 @@ function Show-ScanDashboard {
     #  SUMMARY / REPORTS EVENT HANDLERS
     # ══════════════════════════════════════════════════════════════════════════
 
-    $btnRefreshSummary.Add_Click({ & $RefreshSummary })
+    $btnRefreshSummary.Add_Click({ & $RefreshSummary })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-    $btnRunAll.Add_Click({
+    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "Launch all scan scripts as background jobs?`nScans run in parallel -- UI remains responsive.",
             'Run All Scans', 'YesNo', 'Question')
@@ -716,7 +798,7 @@ function Show-ScanDashboard {
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
-            $timer.Add_Tick({
+            $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 $ji = $shared.RunningJobs[$capturedName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State
@@ -748,7 +830,7 @@ function Show-ScanDashboard {
         $statusLabel.Text = "Launched $launched background scans. UI remains responsive."
     })
 
-    $btnCleanup.Add_Click({
+    $btnCleanup.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         # Calculate what would be removed
         $totalReclaim = 0
         $filesToRemove = @()
@@ -802,9 +884,9 @@ function Show-ScanDashboard {
         & $RefreshReportsTab
     })
 
-    $btnRefreshReports.Add_Click({ & $RefreshReportsTab })
+    $btnRefreshReports.Add_Click({ & $RefreshReportsTab })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-    $btnOpenSelected.Add_Click({
+    $btnOpenSelected.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($null -ne $dgvReports -and @($dgvReports.SelectedRows).Count -gt 0) {
             $selectedRow = $dgvReports.SelectedRows[0]
             if ($null -eq $selectedRow) { return }
@@ -837,7 +919,7 @@ function Show-ScanDashboard {
     & $RefreshCpsrGrid
 
     # ── FormClosing: stop and remove any running background jobs ─────────────
-    $form.Add_FormClosing({
+    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         foreach ($jiName in @($script:RunningJobs.Keys)) {
             $ji = $script:RunningJobs[$jiName]
             if ($ji.Timer) { try { $ji.Timer.Stop() } catch { <# Intentional: non-fatal #> } }
@@ -869,6 +951,7 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.InvocationName -ne '
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

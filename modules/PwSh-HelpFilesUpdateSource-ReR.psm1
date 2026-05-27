@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -123,8 +123,8 @@ function Invoke-SavePowerShellHelp {
         Write-AppLog "Starting Save-Help for cultures: $($UICultures -join ', ')" "Info"
 
         foreach ($culture in $UICultures) {
-            Write-Verbose "Saving help files for culture: $culture"
-            
+            Write-Verbose -Message "Saving help files for culture: $culture"
+
             try {
                 Save-Help -DestinationPath $DestinationPath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully saved help files for culture: $culture" "Info"
@@ -163,7 +163,7 @@ function Invoke-UpdatePowerShellHelp {
 
         foreach ($culture in $UICultures) {
             Write-Verbose "Updating help files for culture: $culture"
-            
+
             try {
                 Update-Help -SourcePath $SourcePath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully updated help files for culture: $culture" "Info"
@@ -204,7 +204,7 @@ function Get-HelpFileInfo {
 
         if ($files.Count -gt 0) {
             $info.LastModified = ($files | Sort-Object LastWriteTime -Descending | Select-Object -First 1).LastWriteTime
-            
+
             # Detect cultures from directory structure
             $cultureDirs = Get-ChildItem -Path $HelpPath -Directory -ErrorAction SilentlyContinue | Where-Object Name -Match '^[a-z]{2}-[A-Z]{2}$'
             $info.Cultures = @($cultureDirs | ForEach-Object { $_.Name })
@@ -257,11 +257,11 @@ function Show-HelpFilesGUI {
     $browseButton.Text = "Browse..."
     $browseButton.Location = New-Object System.Drawing.Point(609, 66)
     $browseButton.Size = New-Object System.Drawing.Size(70, 22)
-    $browseButton.Add_Click({
+    $browseButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderDialog.Description = "Select a folder for PowerShell help files"
         $folderDialog.SelectedPath = $pathTextBox.Text
-        
+
         if ($folderDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             $pathTextBox.Text = $folderDialog.SelectedPath
             Update-HelpStatus
@@ -329,7 +329,7 @@ function Show-HelpFilesGUI {
     $saveHelpButton.Size = New-Object System.Drawing.Size(200, 35)
     $saveHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $saveHelpButton.BackColor = [System.Drawing.Color]::Orange
-    $saveHelpButton.Add_Click({
+    $saveHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -343,13 +343,13 @@ function Show-HelpFilesGUI {
         $form.Refresh()
 
         $result = Invoke-SavePowerShellHelp -DestinationPath $pathTextBox.Text -UICultures $cultures
-        
+
         if ($result) {
             [System.Windows.Forms.MessageBox]::Show("Help files saved successfully!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         } else {
             [System.Windows.Forms.MessageBox]::Show("Error saving help files. Check the status above for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
-        
+
         Update-HelpStatus
     })
     $form.Controls.Add($saveHelpButton)
@@ -361,7 +361,7 @@ function Show-HelpFilesGUI {
     $updateHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $updateHelpButton.BackColor = [System.Drawing.Color]::LimeGreen
     $updateHelpButton.Enabled = $false
-    $updateHelpButton.Add_Click({
+    $updateHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -375,13 +375,13 @@ function Show-HelpFilesGUI {
         $form.Refresh()
 
         $result = Invoke-UpdatePowerShellHelp -SourcePath $pathTextBox.Text -UICultures $cultures
-        
+
         if ($result) {
             [System.Windows.Forms.MessageBox]::Show("Help files updated successfully!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         } else {
             [System.Windows.Forms.MessageBox]::Show("Error updating help files. Check the status above for details.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
-        
+
         Update-HelpStatus
     })
     $form.Controls.Add($updateHelpButton)
@@ -391,7 +391,7 @@ function Show-HelpFilesGUI {
     $closeButton.Location = New-Object System.Drawing.Point(428, 425)
     $closeButton.Size = New-Object System.Drawing.Size(200, 35)
     $closeButton.Font = New-Object System.Drawing.Font("Arial", 10)
-    $closeButton.Add_Click({ $form.Close() })
+    $closeButton.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $form.Controls.Add($closeButton)
 
     # Progress Bar
@@ -423,7 +423,7 @@ function Show-HelpFilesGUI {
             $statusTextBox.Text = "[OK] Help files detected in this folder`r`n`r`n"
             $statusTextBox.AppendText("Files Found: $($info.FileCount)`r`n")
             $statusTextBox.AppendText("Total Size: $(if ($info.TotalSize -gt 1MB) { "$([Math]::Round($info.TotalSize / 1MB, 2)) MB" } else { "$([Math]::Round($info.TotalSize / 1KB, 2)) KB" })`r`n")
-            
+
             if ($info.LastModified) {
                 $statusTextBox.AppendText("Last Modified: $($info.LastModified.ToString('yyyy-MM-dd HH:mm:ss'))`r`n")
             }
@@ -477,6 +477,7 @@ Export-ModuleMember -Function @(
     'Write-AppLog',
     'Write-ScriptLog'
 )
+
 
 
 

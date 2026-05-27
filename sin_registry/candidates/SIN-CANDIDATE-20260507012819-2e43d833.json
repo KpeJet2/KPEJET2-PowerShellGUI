@@ -1,0 +1,17 @@
+{
+  "id": "SIN-CANDIDATE-20260507012819-2e43d833",
+  "title": "Resurfacing bug pattern: The Try statement is missing its Catch or Finally block.",
+  "occurrences": 2,
+  "sample_bug_ids": [
+    "Bug-20260412131305-385046ff",
+    "Bug-20260412133539-c24df029"
+  ],
+  "affected_files": [
+    "C:\\PowerShellGUI\\Main-GUI.ps1"
+  ],
+  "severity": "Advisory",
+  "category": "Resurfacing/Recurrence",
+  "date_added": "2026-05-07",
+  "promotion_rule": ">=2 distinct bug files share an identical title within active OPEN/IN-PROGRESS pool",
+  "next_step": "Manual review: assign SIN-PATTERN-NNN once root cause confirmed; current registry head=030"
+}

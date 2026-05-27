@@ -1,0 +1,27 @@
+{
+  "pattern_id": "P039",
+  "title": "BOM round-trip via Win-1252 corrupts first character to '?'",
+  "severity": "HIGH",
+  "category": "ENCODING",
+  "status": "OPEN",
+  "registered": "2026-04-30",
+  "description": "Convert-LegacyEncoding (P023 repair path) decoded UTF-8 bytes including the leading BOM (EF BB BF -> U+FEFF) and re-encoded the resulting string as Windows-1252. Win-1252 has no codepoint for U+FEFF, so the encoder substitutes 0x3F ('?'). When the bytes are re-decoded as UTF-8 and re-saved with a fresh BOM, the file ends up with '?' as the first body character, silently corrupting `# VersionTag` or `<#` comment headers and producing parser errors several lines later. Observed: scripts/Build-AgenticManifest.ps1 became unparseable after a 'successful' P023 repair.",
+  "detection_regex": "GetEncoding\\(1252\\)\\.GetBytes\\(",
+  "fix_strategy": [
+    "Strip the UTF-8 BOM (first 3 bytes EF BB BF) BEFORE round-tripping through Windows-1252.",
+    "Re-prepend BOM (or let UTF8Encoding($true) writer add it) only on the final write.",
+    "Add a post-fix parse check: any P023 repair must verify the file still parses with [Parser]::ParseFile and revert from backup on failure."
+  ],
+  "examples_bad": [
+    "$utf8 = [Encoding]::UTF8.GetString($bytes); $win = [Encoding]::GetEncoding(1252).GetBytes($utf8); $text = [Encoding]::UTF8.GetString($win)"
+  ],
+  "examples_good": [
+    "if ($bytes[0..2] -eq @(0xEF,0xBB,0xBF)) { $bytes = $bytes[3..($bytes.Length-1)] }; $utf8 = [Encoding]::UTF8.GetString($bytes); $win = [Encoding]::GetEncoding(1252).GetBytes($utf8); $text = [Encoding]::UTF8.GetString($win)"
+  ],
+  "first_seen": {
+    "session": "Plan4Me iteration 4",
+    "tool": "Convert-LegacyEncoding repairing scripts/Build-AgenticManifest.ps1",
+    "outcome": "Parser errors on line 38 (Unexpected attribute 'CmdletBinding'); root cause was stray '?' after BOM"
+  },
+  "related": ["P006", "P023"]
+}

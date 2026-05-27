@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-05-04T02:50:48.9248582+08:00",
+  "scan_id": "SINSCAN-20260504024923",
+  "workspace": "C:\\PowerShellGUI",
+  "counts": {
+    "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257": 88,
+    "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257": 25,
+    "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257": 2,
+    "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000": 435,
+    "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000": 237,
+    "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504": 60
+  },
+  "note": "Baseline = current accepted SIN debt. Pipeline blocks only on regressions above these counts. Decrease this file (ratchet) when SINs are remediated."
+}

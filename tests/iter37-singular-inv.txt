@@ -1,0 +1,80 @@
+# VersionTag: 2605.B5.V46.0
+Total: 44
+
+[32;1mScriptName                    [0m[32;1m Line[0m[32;1m Message[0m
+[32;1m----------                    [0m [32;1m----[0m [32;1m-------[0m
+AssistedSASC.psm1               601 The cmdlet 'Set-VaultFilePermissions' uses a plural noun. A singular noun should be used
+                                    instead.
+AssistedSASC.psm1              1111 The cmdlet 'Import-VaultSecrets' uses a plural noun. A singular noun should be used
+                                    instead.
+AssistedSASC.psm1              1158 The cmdlet 'Import-Certificates' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-EventLog.psm1        72 The cmdlet 'Register-EventLogSources' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-EventLog.psm1       363 The cmdlet 'Get-SyslogEntries' uses a plural noun. A singular noun should be used instead.
+CronAiAthon-Pipeline.psm1       328 The cmdlet 'Get-PipelineActiveTodoFiles' uses a plural noun. A singular noun should be
+                                    used instead.
+CronAiAthon-Pipeline.psm1       595 The cmdlet 'Get-PipelineItems' uses a plural noun. A singular noun should be used instead.
+CronAiAthon-Pipeline.psm1       641 The cmdlet 'Get-PipelineStatistics' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-Pipeline.psm1       983 The cmdlet 'Get-PipelineHealthMetrics' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-Pipeline.psm1      1067 The cmdlet 'Get-ValidCategories' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-Pipeline.psm1      1279 The cmdlet 'Get-PipelineInterruptions' uses a plural noun. A singular noun should be used
+                                    instead.
+CronAiAthon-Scheduler.psm1     1159 The cmdlet 'Invoke-AllCronJobs' uses a plural noun. A singular noun should be used instead.
+PwShGUI-ConvoVault.psm1         180 The cmdlet 'Get-ConvoEntries' uses a plural noun. A singular noun should be used instead.
+PwShGUI-SinDriftScan.psm1         7 The cmdlet 'Get-ResolvedSinPatterns' uses a plural noun. A singular noun should be used
+                                    instead.
+PwShGUI-TrayHost.psm1           339 The cmdlet 'Get-CompletedBackgroundTasks' uses a plural noun. A singular noun should be
+                                    used instead.
+PwShGUI-XhtmlReportTester.psm1    5 The cmdlet 'Test-XhtmlReports' uses a plural noun. A singular noun should be used instead.
+PwShGUICore.psm1                  2 The cmdlet 'Get-AllProjectFiles' uses a plural noun. A singular noun should be used
+                                    instead.
+PwShGUICore.psm1                 26 The cmdlet 'Test-ConfigPaths' uses a plural noun. A singular noun should be used instead.
+PwShGUICore.psm1                114 The cmdlet 'Initialize-CorePaths' uses a plural noun. A singular noun should be used
+                                    instead.
+PwShGUICore.psm1                229 The cmdlet 'Get-AllProjectPaths' uses a plural noun. A singular noun should be used
+                                    instead.
+PwShGUICore.psm1                872 The cmdlet 'Assert-DirectoryExists' uses a plural noun. A singular noun should be used
+                                    instead.
+RE-memorAiZ.psm1                 73 The cmdlet 'Get-DirectoriesWithChanges' uses a plural noun. A singular noun should be used
+                                    instead.
+RE-memorAiZ.psm1                100 The cmdlet 'Test-ReadmeExists' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         164 The cmdlet 'Get-WingetApplications' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         267 The cmdlet 'Get-UserAppConfigs' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         385 The cmdlet 'Get-PrintDrivers' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         406 The cmdlet 'Get-MimeTypes' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         436 The cmdlet 'Get-WiFiProfiles' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         474 The cmdlet 'Get-MRULocations' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         535 The cmdlet 'Get-CertificateStores' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         686 The cmdlet 'Get-PSHelpRepositories' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         706 The cmdlet 'Get-ScreensaverSettings' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         786 The cmdlet 'Get-RegionalSettings' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         819 The cmdlet 'Get-EnvironmentVariables' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1         841 The cmdlet 'Get-MappedDrives' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1         870 The cmdlet 'Get-InstalledFonts' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1        1012 The cmdlet 'Get-QuickAccessLinks' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1        1107 The cmdlet 'Get-SearchProviders' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1        1455 The cmdlet 'Compare-WingetLists' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1        1473 The cmdlet 'Compare-PSModuleLists' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1        1496 The cmdlet 'Compare-SimpleLists' uses a plural noun. A singular noun should be used
+                                    instead.
+UserProfileManager.psm1        1508 The cmdlet 'Compare-MimeLists' uses a plural noun. A singular noun should be used instead.
+UserProfileManager.psm1        1525 The cmdlet 'Compare-ConfigFileLists' uses a plural noun. A singular noun should be used
+                                    instead.
+WorkspaceIntentReview.psm1      369 The cmdlet 'Get-ChangeLogEntries' uses a plural noun. A singular noun should be used
+                                    instead.
+
+

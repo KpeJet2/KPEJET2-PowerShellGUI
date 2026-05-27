@@ -1,15 +1,15 @@
 {
   "meta": {
-    "lastModified": "2026-04-05T05:37:11.3136306+08:00",
-    "source": "CronProcessor"
+    "source": "CronProcessor",
+    "lastModified": "2026-05-07T01:59:24.0579562+08:00"
   },
   "features": [
     {
+      "description": "Converted from individual FeatureRequests row (ALPHA Testing) | Decomposed into 7 PENDING_APPROVAL items at 2026-04-28T19:35:44.7113721Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-06T17:28:18.8542535Z",
       "id": "F001",
-      "status": "Proposed",
-      "created": "2026-03-27T23:35:26.623Z",
-      "description": "",
-      "title": "Secrets Management"
+      "title": "Secrets Management",
+      "created": "03/27/2026 23:35:26",
+      "status": "ALPHA Testing"
     }
   ]
 }

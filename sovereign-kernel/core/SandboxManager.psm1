@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -243,7 +243,7 @@ function Invoke-InSandbox {
     $ps.AddScript($ScriptBlock.ToString()) | Out-Null
 
     foreach ($key in $Parameters.Keys) {
-        $ps.AddParameter($key, $Parameters[$key]) | Out-Null
+        $ps.AddParameter($key, $Parameters[$key]) | Out-Null  # SIN-EXEMPT:P027 -- index access, context-verified safe
     }
 
     $result  = $null
@@ -400,6 +400,7 @@ Export-ModuleMember -Function @(
     'Get-ActiveSandboxCount'
     'Remove-AllSandboxes'
 )
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V31.2
+# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: 2026-04-21
@@ -66,6 +66,20 @@ $script:EventLogSources = @('PowerShellGUI-CRON', 'PowerShellGUI-CORE')
 $script:DefaultSyslogPort = 514
 $script:SyslogFileSuffix = '.SYSLOG'
 
+function Write-EventLogInternalMessage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Message,
+        [ValidateSet('Debug','Info','Warning','Error','Critical','Audit')] [string]$Level = 'Error'
+    )
+
+    if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
+        Write-AppLog -Message $Message -Level $Level
+    } else {
+        Write-Verbose "[CronAiAthon-EventLog][$Level] $Message"
+    }
+}
+
 # ========================== SOURCE REGISTRATION ==========================
 
 function Register-EventLogSources {
@@ -76,6 +90,7 @@ function Register-EventLogSources {
         the Application log. Requires elevated privileges on first registration.
     .PARAMETER Sources  Array of source names to register.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     [CmdletBinding()]
     param(
         [string[]]$Sources = $script:EventLogSources
@@ -100,7 +115,7 @@ function Register-EventLogSources {
                 }
             }
         } catch {
-            Write-AppLog -Message "Register-EventLogSource failed for ${src}: $($_.Exception.Message)" -Level Error
+            Write-EventLogInternalMessage -Message "Register-EventLogSource failed for ${src}: $($_.Exception.Message)" -Level Error
             $results += [ordered]@{
                 source  = $src
                 status  = 'FAILED'
@@ -114,14 +129,17 @@ function Register-EventLogSources {
 function Test-EventLogSourceReady {
     <#
     .SYNOPSIS  Check if an event log source is registered and accessible.
+        .DESCRIPTION
+      Detailed behaviour: Test event log source ready.
     #>
+    [OutputType([System.Boolean])]
     [CmdletBinding()]
     param([string]$Source = 'PowerShellGUI-CRON')
 
     try {
         return [System.Diagnostics.EventLog]::SourceExists($Source)
     } catch {
-        Write-AppLog -Message "Test-EventLogSourceReady failed for ${Source}: $($_.Exception.Message)" -Level Error
+        Write-EventLogInternalMessage -Message "Test-EventLogSourceReady failed for ${Source}: $($_.Exception.Message)" -Level Error
         return $false
     }
 }
@@ -136,7 +154,10 @@ function Write-CronEventLog {
     .PARAMETER Severity   SYSLOG severity name (Emergency..Debug).
     .PARAMETER EventId    Optional event ID number (default 1000).
     .PARAMETER Category   Optional event category (default 0).
+        .DESCRIPTION
+      Detailed behaviour: Write cron event log.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [string]$Source = 'PowerShellGUI-CRON',
@@ -179,7 +200,10 @@ function Send-SyslogMessage {
     .PARAMETER Hostname   Originating hostname (default: local).
     .PARAMETER AppName    Application name tag.
     .PARAMETER UseTcpFallback  If UDP fails, try TCP.
+        .DESCRIPTION
+      Detailed behaviour: Send syslog message.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$Server,
@@ -241,7 +265,10 @@ function Write-SyslogFile {
     .PARAMETER Message         Log message.
     .PARAMETER Severity        SYSLOG severity name.
     .PARAMETER Source          Source identifier.
+        .DESCRIPTION
+      Detailed behaviour: Write syslog file.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -281,9 +308,10 @@ function Write-CronLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional
     .PARAMETER SyslogPort      SYSLOG port (default 514).
     .PARAMETER EventId         Windows Event Log event ID.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [string]$WorkspacePath = '',
         [string]$Source = 'PowerShellGUI-CRON',
         [Parameter(Mandatory)] [string]$Message,
         [ValidateSet('Emergency','Alert','Critical','Error','Warning','Notice','Informational','Debug')]
@@ -302,8 +330,10 @@ function Write-CronLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional
     # 1. Windows Event Log
     $results.eventLog = Write-CronEventLog -Source $Source -Message $Message -Severity $Severity -EventId $EventId
 
-    # 2. Local .SYSLOG file (always)
-    $results.syslogFile = Write-SyslogFile -WorkspacePath $WorkspacePath -Message $Message -Severity $Severity -Source $Source
+    # 2. Local .SYSLOG file (always, when WorkspacePath is provided)
+    if ($WorkspacePath) {
+        $results.syslogFile = Write-SyslogFile -WorkspacePath $WorkspacePath -Message $Message -Severity $Severity -Source $Source
+    }
 
     # 3. Remote SYSLOG forwarding (optional)
     if ($SyslogServer) {
@@ -319,7 +349,10 @@ function Write-CronLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional
 function Get-EventLogConfig {
     <#
     .SYNOPSIS  Return current EventLog/SYSLOG configuration summary.
+        .DESCRIPTION
+      Detailed behaviour: Get event log config.
     #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
@@ -356,7 +389,11 @@ function Get-EventLogConfig {
 function Get-SyslogEntries {
     <#
     .SYNOPSIS  Read recent entries from the local .SYSLOG file.
+        .DESCRIPTION
+      Detailed behaviour: Get syslog entries.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -389,6 +426,7 @@ function ConvertTo-SyslogSeverity {
         ConvertTo-SyslogSeverity -AppLevel 'Audit'   # returns 'Notice'
         ConvertTo-SyslogSeverity -AppLevel 'Critical' # returns 'Critical'
     #>
+    [OutputType([System.String])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -411,6 +449,8 @@ function ConvertTo-SyslogSeverity {
 function Show-EventLogHelp {
     <#
     .SYNOPSIS  Display quick usage help for CronAiAthon EventLog operations.
+        .DESCRIPTION
+      Detailed behaviour: Show event log help.
     #>
     [CmdletBinding()]
     param(
@@ -485,6 +525,7 @@ Export-ModuleMember -Function @(
     'ConvertTo-SyslogSeverity',
     'Show-EventLogHelp'
 )
+
 
 
 

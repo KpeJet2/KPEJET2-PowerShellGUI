@@ -1,4 +1,4 @@
-# VersionTag: 2604.B0.v1
+# VersionTag: 2605.B5.V46.0
 /* Layout: kpe-CSS_PageBlack-TechnicalUI | v2603.B0.v27.0
    Source: SECURITY-SETUP-GUIDE.xhtml
    Pattern: Single-page document with generous padding, technical headings, tables, code blocks
@@ -61,4 +61,5 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid var(--border,#3C3C3C)
   table{font-size:11px}
   th,td{padding:.4em .5em}
 }
+
 

@@ -1,7 +1,7 @@
 {
   "meta": {
     "schema": "SelfReviewHistory/1.0",
-    "updated": "2026-04-20T17:55:39.4925630Z"
+    "updated": "2026-05-06T17:47:35.6549266Z"
   },
   "runs": [
     {
@@ -747,6 +747,71 @@
       "improvements": [],
       "feedbackItems": [],
       "runtimeSeconds": 2.82,
+      "dryRun": false
+    },
+    {
+      "runId": "SR-20260507014735",
+      "timestamp": "2026-05-06T17:47:35.6499940Z",
+      "mode": "full",
+      "compositeScore": 0.5807,
+      "dimensions": {
+        "SINCompliance": {
+          "score": 0.646,
+          "detail": "64/92 resolved; 1 open CRITICAL"
+        },
+        "PipelineVelocity": {
+          "score": 0.0,
+          "detail": "Velocity 0/day closed vs 1/day created; 0 stale items"
+        },
+        "ErrorRate": {
+          "score": 0.245,
+          "detail": "37 errors in 147 cycles (25.2%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
+        },
+        "CodeStyle": {
+          "score": 0.4,
+          "detail": "Write-Host occurrences in modules: 32; functions missing [CmdletBinding()]: 333/398"
+        },
+        "FormatCongruency": {
+          "score": 0.99,
+          "detail": "1/194 scripts with stale/missing VersionTag (last write >30d)"
+        },
+        "DocFreshness": {
+          "score": 0.957,
+          "detail": "1/35 docs stale (report: freshness_20260504-1948.json)"
+        },
+        "TestCoverage": {
+          "score": 0.8,
+          "detail": "No test reports found -- assuming baseline."
+        },
+        "KernelHealth": {
+          "score": 1.0,
+          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+        }
+      },
+      "drops": [
+        {
+          "drop": 0.063,
+          "previous": 0.308,
+          "dimension": "ErrorRate",
+          "current": 0.245
+        },
+        {
+          "drop": 0.5,
+          "previous": 0.5,
+          "dimension": "PipelineVelocity",
+          "current": 0.0
+        }
+      ],
+      "improvements": [
+        {
+          "previous": 0.7,
+          "dimension": "DocFreshness",
+          "gain": 0.257,
+          "current": 0.957
+        }
+      ],
+      "feedbackItems": [],
+      "runtimeSeconds": 1.86,
       "dryRun": false
     }
   ]

@@ -1,0 +1,26 @@
+{
+  "id": "TODO-PA-20260429033545-f-tests",
+  "todo_id": "TODO-PA-20260429033545-f-tests",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Pester suite for vault unlock + read + rotate paths",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "HIGH",
+  "status": "PENDING_APPROVAL",
+  "source_id": "feature-F001",
+  "source_status": "PLANNED",
+  "parentId": "feature-F001",
+  "created": "2026-04-28T19:35:44.7113721Z",
+  "createdAt": "2026-04-28T19:35:44.7113721Z",
+  "modified": "2026-04-28T19:35:44.7113721Z",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN-PROGRESS",
+  "status_history": [
+    {
+      "status": "PENDING_APPROVAL",
+      "by": "CronAiAthon-Pipeline",
+      "timestamp": "2026-04-28T19:35:44.7113721Z"
+    }
+  ]
+}

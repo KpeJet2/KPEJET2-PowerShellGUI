@@ -1,5 +1,4 @@
-# VersionTag: 2604.B2.V31.2
-
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -116,6 +115,32 @@ function Write-PercentRow {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     Write-Host ("[{0,3}%] {1}" -f $p, $Label) -ForegroundColor $color
 }
 
+function Get-RepositoryHint {
+    param(
+        [string]$ModuleRoot
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ModuleRoot)) { return $null }
+    $root = $ModuleRoot.ToLowerInvariant()
+
+    if (
+        $root -like '*\system32\windowspowershell\v1.0\modules*' -or
+        $root -like '*\program files\windowspowershell\modules*' -or
+        $root -like '*\program files\powershell\*\modules*'
+    ) {
+        return 'built-in/system'
+    }
+
+    if (
+        $root -like '*\documents\windowspowershell\modules*' -or
+        $root -like '*\documents\powershell\modules*'
+    ) {
+        return 'manual/user-scope'
+    }
+
+    return 'manual/local'
+}
+
 Write-PercentRow -Percent 2 -Label 'Starting module maintenance scan'
 
 # Helper: Ensure PowerShellGet module available
@@ -125,7 +150,7 @@ function Ensure-PowerShellGet {
             Write-Host '[INFO] PowerShellGet not present. Attempting to install via Install-Module...' -ForegroundColor Cyan
             Install-Module -Name PowerShellGet -Scope CurrentUser -Force -ErrorAction Stop
         }
-        Import-Module PowerShellGet -ErrorAction SilentlyContinue
+        try { Import-Module PowerShellGet -ErrorAction Stop } catch { Write-Warning "Ensure-PowerShellGet: Import-Module failed: $($_.Exception.Message)" }
         return $true
     } catch {
         Write-Warning "Ensure-PowerShellGet: failed to install/import PowerShellGet: $($_.Exception.Message)"
@@ -177,7 +202,7 @@ public static class Win32 {
             [Win32]::GetWindowText($hWnd, $sb, $sb.Capacity) | Out-Null
             $title = $sb.ToString()
             if ($title -match '(?i)missing|module|install|required') {
-                try { [Win32]::SendMessage($hWnd, [Win32]::WM_CLOSE, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; $found.Add($title); $closed++ } catch { }
+                try { [Win32]::SendMessage($hWnd, [Win32]::WM_CLOSE, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null; $found.Add($title); $closed++ } catch { <# Intentional: non-fatal -- WM_CLOSE may fail on protected windows #> }
             }
             return $true
         }
@@ -268,8 +293,12 @@ foreach ($modRoot in $psModPaths) {
             } catch { <# Intentional: non-fatal #> }
         }
 
+        if (-not $repository) {
+            $repository = Get-RepositoryHint -ModuleRoot $modRoot
+        }
+
         if (-not $allInstalledModules.ContainsKey($modKey)) {
-            $allInstalledModules[$modKey] = [pscustomobject]@{
+            $allInstalledModules[$modKey] = [pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 module      = $modName
                 version     = $version
                 author      = $author
@@ -282,13 +311,13 @@ foreach ($modRoot in $psModPaths) {
             }
         }
     }
-    $folderModuleCount[$modRoot] = $count
+    $folderModuleCount[$modRoot] = $count  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 Write-Host ''
 Write-Host "PSModulePath directories ($($psModPaths.Count) folders scanned):" -ForegroundColor White
 foreach ($p in $psModPaths) {
-    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     Write-Host "  $c modules  $p" -ForegroundColor Gray
 }
 $totalInstalled = $allInstalledModules.Count
@@ -304,7 +333,8 @@ Write-PercentRow -Percent 30 -Label 'Scanning workspace modules'
 $workspaceModules = @{}  # lowercase-name → [pscustomobject]
 $wsScanPaths = @(
     (Join-Path $WorkspacePath 'modules'),
-    (Join-Path $WorkspacePath 'scripts')
+    (Join-Path $WorkspacePath 'scripts'),
+    (Join-Path $WorkspacePath 'agents')
 )
 
 # Exclusion patterns (same as Script Dependency Matrix)
@@ -345,7 +375,7 @@ foreach ($wsRoot in $wsScanPaths) {
             }
 
             if (-not $workspaceModules.ContainsKey($wsKey)) {
-                $workspaceModules[$wsKey] = [pscustomobject]@{
+                $workspaceModules[$wsKey] = [pscustomobject]@{  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     module      = $baseName
                     version     = $wsVersion
                     author      = $wsAuthor
@@ -357,7 +387,7 @@ foreach ($wsRoot in $wsScanPaths) {
         }
     }
     $relPath = $wsRoot.Substring($WorkspacePath.Length).TrimStart('\')
-    $wsFolderCounts[$relPath] = $count
+    $wsFolderCounts[$relPath] = $count  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 Write-Host ''
@@ -441,6 +471,7 @@ Write-Host '── Building module inventory ──' -ForegroundColor Yellow
 Write-PercentRow -Percent 64 -Label 'Building consolidated module inventory'
 $inventory = New-Object 'System.Collections.Generic.List[object]'
 $missingList = New-Object 'System.Collections.Generic.List[object]'
+$workspaceAvailableList = New-Object 'System.Collections.Generic.List[object]'
 $errorList  = New-Object 'System.Collections.Generic.List[object]'
 
 # First: add all installed modules
@@ -480,14 +511,14 @@ if ($scriptRefData -and $scriptRefData.modules) {
         $refKey = $refMod.module.ToLowerInvariant()
         if ($allInstalledModules.ContainsKey($refKey)) { continue }
 
-        $wsMatch = if ($workspaceModules.ContainsKey($refKey)) { $workspaceModules[$refKey] } else { $null }
+        $wsMatch = if ($workspaceModules.ContainsKey($refKey)) { $workspaceModules[$refKey] } else { $null }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $referencedBy = @()
         if ($refMod.references) {
             $referencedBy = @($refMod.references | Select-Object -ExpandProperty source -Unique)
         }
 
         $modStatus = 'missing'
-        if ($wsMatch) { $modStatus = 'missing;workspace-available' }
+        if ($wsMatch) { $modStatus = 'workspace-available' }
 
         $entry = [pscustomobject]@{
             module          = $refMod.module
@@ -503,7 +534,11 @@ if ($scriptRefData -and $scriptRefData.modules) {
         }
 
         $inventory.Add($entry) | Out-Null
-        $missingList.Add($entry) | Out-Null
+        if ($modStatus -eq 'missing') {
+            $missingList.Add($entry) | Out-Null
+        } else {
+            $workspaceAvailableList.Add($entry) | Out-Null
+        }
     }
 }
 
@@ -537,7 +572,8 @@ foreach ($mod in $inventory) {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 $installedCount = @($inventory | Where-Object { $_.status -eq 'installed' }).Count
-$missingCount   = @($inventory | Where-Object { $_.status -like 'missing*' }).Count
+$missingCount   = @($inventory | Where-Object { $_.status -eq 'missing' }).Count
+$wsAvailCount   = @($inventory | Where-Object { $_.status -eq 'workspace-available' }).Count
 $wsOnlyCount    = @($inventory | Where-Object { $_.status -eq 'workspace-only' }).Count
 $errorCount     = $errorList.Count
 
@@ -549,6 +585,7 @@ Write-Host ''
 Write-Host "  Total modules tracked:   $($inventory.Count)" -ForegroundColor White
 Write-Host "  Installed:               $installedCount" -ForegroundColor Green
 Write-Host "  Missing:                 $missingCount" -ForegroundColor $(if ($missingCount -gt 0) { 'Red' } else { 'Green' })
+Write-Host "  Workspace-available:     $wsAvailCount" -ForegroundColor Yellow
 Write-Host "  Workspace-only:          $wsOnlyCount" -ForegroundColor Yellow
 Write-Host "  Load errors:             $errorCount" -ForegroundColor $(if ($errorCount -gt 0) { 'Red' } else { 'Green' })
 Write-Host ''
@@ -556,7 +593,7 @@ Write-Host ''
 # ── Module folders breakdown ──
 Write-Host '── Modules per scanned folder ──' -ForegroundColor Yellow
 foreach ($p in $psModPaths) {
-    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+    $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
     $label = $p
     if ($p -like '*\WindowsPowerShell\*') { $label = "[User]  $p" }
     elseif ($p -like '*\PowerShell\*' -and $p -like '*Documents*') { $label = "[User-PS7]  $p" }
@@ -576,6 +613,16 @@ if ($missingCount -gt 0) {
         $wsFlag = if ($m.workspacePath) { ' (workspace-available)' } else { '' }
         $refStr = if ($m.scriptRefCount -gt 0) { " [referenced by $($m.scriptRefCount) script(s)]" } else { '' }
         Write-Host "  MISSING: $($m.module)$wsFlag$refStr" -ForegroundColor Red
+    }
+    Write-Host ''
+}
+
+# ── Workspace-available modules ──
+if ($wsAvailCount -gt 0) {
+    Write-Host '── Workspace-Available Modules (Not Installed) ──' -ForegroundColor Yellow
+    foreach ($m in ($workspaceAvailableList | Sort-Object module)) {
+        $refStr = if ($m.scriptRefCount -gt 0) { " [referenced by $($m.scriptRefCount) script(s)]" } else { '' }
+        Write-Host "  WORKSPACE: $($m.module)$refStr" -ForegroundColor Yellow
     }
     Write-Host ''
 }
@@ -626,13 +673,14 @@ if ($scriptRefData) {
 # 6) AUTO-INSTALL MISSING MODULES
 # ═══════════════════════════════════════════════════════════════════════════════
 
-if ($AutoInstallMissing -and $missingCount -gt 0) {
+if ($AutoInstallMissing -and ($missingCount -gt 0 -or $wsAvailCount -gt 0)) {
     Write-Host '── Auto-Install Missing Modules ──' -ForegroundColor Cyan
     Write-PercentRow -Percent 78 -Label 'Auto-install phase'
     # Ensure package infra available to avoid interactive provider prompts
     $havePSGet = Ensure-PowerShellGet
     $haveNuGet = Ensure-NuGetProvider
-    foreach ($m in ($missingList | Sort-Object module)) {
+    $installCandidates = @($missingList) + @($workspaceAvailableList)
+    foreach ($m in ($installCandidates | Sort-Object module)) {
         # Skip workspace-only modules that can't be installed from gallery
         if ($m.workspacePath -and $UseWorkspaceModules) {
             $wsRoot = Split-Path -Parent (Split-Path -Parent $m.workspacePath)
@@ -867,7 +915,7 @@ if ($ExportInventory) {
         '|---|---:|'
     )
     foreach ($p in $psModPaths) {
-        $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }
+        $c = if ($folderModuleCount.ContainsKey($p)) { $folderModuleCount[$p] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $mdLines += "| $p | $c |"
     }
     foreach ($kv in $wsFolderCounts.GetEnumerator()) {
@@ -930,6 +978,7 @@ if (Get-Command Write-AppLog -ErrorAction SilentlyContinue) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

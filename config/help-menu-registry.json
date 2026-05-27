@@ -177,10 +177,10 @@
     }
   },
   "scripts": {
-    "Start-LocalWebEngineService": {
+    "Start-LocalWebEngine": {
       "helpFn": "Show-HelpMenu",
-      "actions": ["Start", "Stop", "Restart", "Status", "Help"],
-      "params": { "-Port": "int", "-WorkspacePath": "str", "-SeparateTerminal": "switch", "-PollInterval": "int", "-MaxWait": "int" },
+      "actions": ["Start", "Stop", "Restart", "Status", "LaunchWebpage", "RunAsService", "Help"],
+      "params": { "-Port": "int", "-WorkspacePath": "str", "-NoLaunchBrowser": "switch", "-AsService": "switch", "-Force": "switch", "-PortRetryMax": "int" },
       "logFile": "engine-events",
       "status": "DONE"
     }

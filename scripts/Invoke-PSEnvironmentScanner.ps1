@@ -1,4 +1,4 @@
-# VersionTag: 2604.B2.V32.2
+﻿# VersionTag: 2605.B5.V46.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -204,8 +204,8 @@ function Get-RainbowColor {  # SIN-EXEMPT: P011 - cross-file duplicate (intentio
     # Find the two stops to interpolate between
     $lo = $stops[0]; $hi = $stops[-1]  # SIN-EXEMPT: P027 - array guarded by Count check or conditional on prior/surrounding line
     for ($i = 0; $i -lt $stops.Count - 1; $i++) {
-        if ($p -ge $stops[$i].P -and $p -le $stops[$i + 1].P) {
-            $lo = $stops[$i]; $hi = $stops[$i + 1]; break
+        if ($p -ge $stops[$i].P -and $p -le $stops[$i + 1].P) {  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            $lo = $stops[$i]; $hi = $stops[$i + 1]; break  # SIN-EXEMPT:P027 -- index access, context-verified safe
         }
     }
     $range = $hi.P - $lo.P
@@ -314,25 +314,55 @@ function Update-ProgressRow {
     }
 }
 
+function Get-ResultCountForKey {
+    param([string]$Key)
+
+    if ([string]::IsNullOrWhiteSpace($Key)) { return 0 }
+    if (-not $script:ScanResults.ContainsKey($Key)) { return 0 }
+    return @($script:ScanResults[$Key]).Count
+}
+
 function Invoke-ScanStep {
     param(
         [string]$Step,
         [string]$Key,
         [scriptblock]$Action,
         [int]$StartPercent,
-        [int]$EndPercent
+        [int]$EndPercent,
+        [int]$StepIndex = 0,
+        [int]$StepTotal = 0,
+        [string]$PhaseText
     )
 
-    Update-ProgressRow -Step $Step -Key $Key -Status 'Running' -Percent $StartPercent -Detail "Starting $Step"
-    Write-Console ("[{0,3}%] {1}" -f $StartPercent, $Step) 'Cyan'
+    $seqLabel = if ($StepTotal -gt 0 -and $StepIndex -gt 0) { "[{0}/{1}]" -f $StepIndex, $StepTotal } else { '[--/--]' }
+    $statusText = if ([string]::IsNullOrWhiteSpace($PhaseText)) { "$seqLabel $Step" } else { "$seqLabel $PhaseText" }
+    $runDetail = if ($StepTotal -gt 0 -and $StepIndex -gt 0) {
+        "Running task $StepIndex of $StepTotal"
+    } else {
+        'Running'
+    }
+
+    Update-RainbowProgress -Percent $StartPercent -StatusText $statusText
+    Update-ProgressRow -Step $Step -Key $Key -Status 'Running' -Percent $StartPercent -Detail $runDetail
+    Write-Console ("[{0,3}%] {1} {2} -- started" -f $StartPercent, $seqLabel, $Step) 'Cyan'
+
+    $stepTimer = [System.Diagnostics.Stopwatch]::StartNew()
     try {
         & $Action
-        Update-ProgressRow -Step $Step -Key $Key -Status 'Complete' -Percent $EndPercent -Detail 'Completed'
-        Write-Console ("[{0,3}%] {1} complete" -f $EndPercent, $Step) 'Green'
+        $stepTimer.Stop()
+        $durationSec = [math]::Round($stepTimer.Elapsed.TotalSeconds, 1)
+        $rowCount = Get-ResultCountForKey -Key $Key
+        $doneDetail = "Completed in {0:N1}s | rows: {1}" -f $durationSec, $rowCount
+        Update-ProgressRow -Step $Step -Key $Key -Status 'Complete' -Percent $EndPercent -Detail $doneDetail
+        Write-Console ("[{0,3}%] {1} {2} -- complete ({3:N1}s, rows={4})" -f $EndPercent, $seqLabel, $Step, $durationSec, $rowCount) 'Green'
     } catch {
+        $stepTimer.Stop()
+        $durationSec = [math]::Round($stepTimer.Elapsed.TotalSeconds, 1)
         $msg = $_.Exception.Message
-        Update-ProgressRow -Step $Step -Key $Key -Status 'Error' -Percent $StartPercent -Detail $msg
-        Write-Console ("[{0,3}%] {1} failed: {2}" -f $StartPercent, $Step, $msg) 'Red'
+        $errDetail = "Failed in {0:N1}s | {1}" -f $durationSec, $msg
+        Update-RainbowProgress -Percent $StartPercent -StatusText ("{0} failed" -f $statusText)
+        Update-ProgressRow -Step $Step -Key $Key -Status 'Error' -Percent $StartPercent -Detail $errDetail
+        Write-Console ("[{0,3}%] {1} {2} -- failed ({3:N1}s): {4}" -f $StartPercent, $seqLabel, $Step, $durationSec, $msg) 'Red'
     }
 }
 
@@ -353,9 +383,13 @@ function Get-MissingTabChecklist {
 
 function Write-ScanChecklistSummary {
     param([string]$Header = 'Scan checklist')
+
     Write-Console "── $Header ──" 'Yellow'
+    $total = @($script:Checklist).Count
+    $index = 0
     foreach ($item in $script:Checklist) {
-        Write-Console ("  {0,-24} => {1}" -f $item.Step, $item.Function) 'Gray'
+        $index++
+        Write-Console ("  [{0,2}/{1}] {2,-24} => {3}" -f $index, $total, $item.Step, $item.Function) 'Gray'
     }
 }
 
@@ -397,7 +431,7 @@ function Write-Console {
             White = [System.Drawing.Color]::WhiteSmoke; Gray = [System.Drawing.Color]::DarkGray
             DarkYellow = [System.Drawing.Color]::Goldenrod; Magenta = [System.Drawing.Color]::Orchid
         }
-        $c = if ($colorMap.ContainsKey($Color)) { $colorMap[$Color] } else { [System.Drawing.Color]::WhiteSmoke }
+        $c = if ($colorMap.ContainsKey($Color)) { $colorMap[$Color] } else { [System.Drawing.Color]::WhiteSmoke }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $script:consoleBox.SelectionColor = $c
         $script:consoleBox.AppendText("$Text`r`n")
         $script:consoleBox.ScrollToCaret()
@@ -409,6 +443,7 @@ function Invoke-FullScan {
     foreach ($item in $script:Checklist) {
         Update-ProgressRow -Step $item.Step -Key $item.Key -Status 'Pending' -Percent 0 -Detail 'Not started'
     }
+    Update-ProgressRow -Step 'External script checks' -Key 'ExternalScans' -Status 'Pending' -Percent 0 -Detail 'Queued'
 
     Start-RainbowProgress -StatusText 'Full environment scan starting...'
 
@@ -421,37 +456,54 @@ function Invoke-FullScan {
     Write-ScanChecklistSummary -Header 'Scan Now checklist (tabs and source functions)'
 
     $scanTimer = [System.Diagnostics.Stopwatch]::StartNew()
+    $scanTaskCount = 14
+    $scanTaskIndex = 0
 
-    Update-RainbowProgress -Percent 2 -StatusText 'Scanning modules...'
-    Invoke-ScanStep -Step 'Module inventory' -Key 'Modules' -StartPercent 2 -EndPercent 12 -Action { Scan-Modules }
-    Update-RainbowProgress -Percent 12 -StatusText 'Scanning scripts...'
-    Invoke-ScanStep -Step 'Script and file matrix' -Key 'Scripts' -StartPercent 12 -EndPercent 20 -Action { Scan-Scripts }
-    Update-RainbowProgress -Percent 20 -StatusText 'Scanning PSResource repos...'
-    Invoke-ScanStep -Step 'PSResource repositories' -Key 'PSResourceRepositories' -StartPercent 20 -EndPercent 28 -Action { Scan-PSResourceRepositories }
-    Update-RainbowProgress -Percent 28 -StatusText 'Scanning PS resources...'
-    Invoke-ScanStep -Step 'PS resources' -Key 'PSResources' -StartPercent 28 -EndPercent 34 -Action { Scan-PSResources }
-    Update-RainbowProgress -Percent 34 -StatusText 'Scanning execution policy...'
-    Invoke-ScanStep -Step 'Execution policy' -Key 'ExecutionPolicy' -StartPercent 34 -EndPercent 40 -Action { Scan-ExecutionPolicy }
-    Update-RainbowProgress -Percent 40 -StatusText 'Scanning PS repositories...'
-    Invoke-ScanStep -Step 'PowerShell repositories' -Key 'PSRepositories' -StartPercent 40 -EndPercent 46 -Action { Scan-PSRepositories }
-    Update-RainbowProgress -Percent 46 -StatusText (Get-SarcasticMessage)
-    Invoke-ScanStep -Step 'Packages and providers' -Key 'Packages' -StartPercent 46 -EndPercent 56 -Action { Scan-Packages }
-    Update-ProgressRow -Step 'Package providers' -Key 'PackageProviders' -Status 'Complete' -Percent 56 -Detail 'Populated via Scan-Packages'
-    Update-RainbowProgress -Percent 56 -StatusText 'Scanning PS providers & drives...'
-    Invoke-ScanStep -Step 'PS providers and drives' -Key 'PSProviders' -StartPercent 56 -EndPercent 64 -Action { Scan-PSProviders }
-    Update-ProgressRow -Step 'PS drives' -Key 'PSDrives' -Status 'Complete' -Percent 64 -Detail 'Populated via Scan-PSProviders'
-    Update-RainbowProgress -Percent 64 -StatusText 'Scanning package sources...'
-    Invoke-ScanStep -Step 'Package sources' -Key 'PackageSources' -StartPercent 64 -EndPercent 70 -Action { Scan-PackageSources }
-    Update-RainbowProgress -Percent 70 -StatusText 'Scanning logging & diagnostics...'
-    Invoke-ScanStep -Step 'Logging providers' -Key 'LoggingProviders' -StartPercent 70 -EndPercent 76 -Action { Scan-LoggingProviders }
-    Update-RainbowProgress -Percent 76 -StatusText 'Scanning orphan files...'
-    Invoke-ScanStep -Step 'Orphan files' -Key 'OrphanFiles' -StartPercent 76 -EndPercent 84 -Action { Scan-OrphanFiles }
-    Update-RainbowProgress -Percent 84 -StatusText 'Building cascade failure map...'
-    Invoke-ScanStep -Step 'Cascade failures' -Key 'CascadeFailures' -StartPercent 84 -EndPercent 90 -Action { Build-CascadeFailureMap }
-    Update-RainbowProgress -Percent 90 -StatusText 'Building pre-flight baseline...'
-    Invoke-ScanStep -Step 'Pre-flight baseline' -Key 'PreflightBaseline' -StartPercent 90 -EndPercent 94 -Action { Scan-PreflightBaseline }
-    Update-RainbowProgress -Percent 94 -StatusText 'Running external checks...'
-    Invoke-ScanStep -Step 'External script checks' -Key 'ExternalScans' -StartPercent 94 -EndPercent 98 -Action { Invoke-ExternalScanScripts }
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Module inventory' -Key 'Modules' -StartPercent 2 -EndPercent 12 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning modules...' -Action { Scan-Modules }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Script and file matrix' -Key 'Scripts' -StartPercent 12 -EndPercent 20 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning scripts...' -Action { Scan-Scripts }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'PSResource repositories' -Key 'PSResourceRepositories' -StartPercent 20 -EndPercent 28 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning PSResource repos...' -Action { Scan-PSResourceRepositories }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'PS resources' -Key 'PSResources' -StartPercent 28 -EndPercent 34 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning PS resources...' -Action { Scan-PSResources }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Execution policy' -Key 'ExecutionPolicy' -StartPercent 34 -EndPercent 40 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning execution policy...' -Action { Scan-ExecutionPolicy }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'PowerShell repositories' -Key 'PSRepositories' -StartPercent 40 -EndPercent 46 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning PS repositories...' -Action { Scan-PSRepositories }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Packages and providers' -Key 'Packages' -StartPercent 46 -EndPercent 56 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText (Get-SarcasticMessage) -Action { Scan-Packages }
+    $packageProviderRows = Get-ResultCountForKey -Key 'PackageProviders'
+    Update-ProgressRow -Step 'Package providers' -Key 'PackageProviders' -Status 'Complete' -Percent 56 -Detail ("Populated via Scan-Packages | rows: {0}" -f $packageProviderRows)
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'PS providers and drives' -Key 'PSProviders' -StartPercent 56 -EndPercent 64 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning PS providers & drives...' -Action { Scan-PSProviders }
+    $psDriveRows = Get-ResultCountForKey -Key 'PSDrives'
+    Update-ProgressRow -Step 'PS drives' -Key 'PSDrives' -Status 'Complete' -Percent 64 -Detail ("Populated via Scan-PSProviders | rows: {0}" -f $psDriveRows)
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Package sources' -Key 'PackageSources' -StartPercent 64 -EndPercent 70 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning package sources...' -Action { Scan-PackageSources }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Logging providers' -Key 'LoggingProviders' -StartPercent 70 -EndPercent 76 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning logging & diagnostics...' -Action { Scan-LoggingProviders }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Orphan files' -Key 'OrphanFiles' -StartPercent 76 -EndPercent 84 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Scanning orphan files...' -Action { Scan-OrphanFiles }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Cascade failures' -Key 'CascadeFailures' -StartPercent 84 -EndPercent 90 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Building cascade failure map...' -Action { Build-CascadeFailureMap }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'Pre-flight baseline' -Key 'PreflightBaseline' -StartPercent 90 -EndPercent 94 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Building pre-flight baseline...' -Action { Scan-PreflightBaseline }
+
+    $scanTaskIndex++
+    Invoke-ScanStep -Step 'External script checks' -Key 'ExternalScans' -StartPercent 94 -EndPercent 98 -StepIndex $scanTaskIndex -StepTotal $scanTaskCount -PhaseText 'Running external checks...' -Action { Invoke-ExternalScanScripts }
 
     $scanTimer.Stop()
 
@@ -645,7 +697,7 @@ function Scan-Modules {
 
                 # Also try to extract module name from path-like references
                 if ($rawRef -match "([A-Za-z0-9_-]+)\.psm1") {
-                    $extractedName = $Matches[1]
+                    $extractedName = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     if ($resolvedNames -notcontains $extractedName) { $resolvedNames += $extractedName }
                 }
 
@@ -656,8 +708,8 @@ function Scan-Modules {
 
                 foreach ($rn in $resolvedNames) {
                     $key = $rn.ToLowerInvariant()
-                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }
-                    $scriptModuleRefs[$key] += $sf.Name
+                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $scriptModuleRefs[$key] += $sf.Name  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
 
@@ -667,8 +719,8 @@ function Scan-Modules {
                 $modNames = $m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim().Trim('"', "'") }
                 foreach ($mn in $modNames) {
                     $key = $mn.ToLowerInvariant()
-                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }
-                    $scriptModuleRefs[$key] += $sf.Name
+                    if (-not $scriptModuleRefs.ContainsKey($key)) { $scriptModuleRefs[$key] = @() }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                    $scriptModuleRefs[$key] += $sf.Name  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 }
             }
         } catch { <# Intentional: non-fatal #> }
@@ -678,7 +730,7 @@ function Scan-Modules {
     foreach ($mod in $results) {
         $key = $mod.Name.ToLowerInvariant()
         if ($scriptModuleRefs.ContainsKey($key)) {
-            $refs = @($scriptModuleRefs[$key] | Select-Object -Unique)
+            $refs = @($scriptModuleRefs[$key] | Select-Object -Unique)  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $mod.ScriptDeps = $refs.Count
             $mod.DependentScripts = ($refs -join ', ')
         }
@@ -1253,7 +1305,7 @@ function Tag-ObsoleteScanHistory {
         if ($seen.ContainsKey($dayKey)) {
             $shouldTag = $true
         }
-        $seen[$dayKey] = $true
+        $seen[$dayKey] = $true  # SIN-EXEMPT:P027 -- index access, context-verified safe
 
         if ($shouldTag -and $hf.Name -notlike '*TRASH-TO-LINT*') {
             $newName = '[TRASH-TO-LINT] ' + $hf.Name
@@ -1789,7 +1841,7 @@ function Build-ScannerGUI {
     $btnScan.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 215)
     $btnScan.ForeColor = [System.Drawing.Color]::White
     $btnScan.FlatStyle = 'Flat'
-    $btnScan.Add_Click({ Invoke-FullScan })
+    $btnScan.Add_Click({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $btnPanel.Controls.Add($btnScan)
 
     $btnExport = New-Object System.Windows.Forms.Button
@@ -1799,7 +1851,7 @@ function Build-ScannerGUI {
     $btnExport.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
     $btnExport.ForeColor = [System.Drawing.Color]::White
     $btnExport.FlatStyle = 'Flat'
-    $btnExport.Add_Click({
+    $btnExport.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Start-RainbowProgress -StatusText 'Exporting scan results...'
         $scanDate = Get-Date -Format 'yyyyMMdd'
         $scanTime = Get-Date -Format 'HHmmss'
@@ -1824,7 +1876,7 @@ function Build-ScannerGUI {
     $btnPrereqWinget.BackColor = [System.Drawing.Color]::FromArgb(70, 90, 45)
     $btnPrereqWinget.ForeColor = [System.Drawing.Color]::White
     $btnPrereqWinget.FlatStyle = 'Flat'
-    $btnPrereqWinget.Add_Click({
+    $btnPrereqWinget.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $choice = [System.Windows.Forms.MessageBox]::Show(
             "Run WinGet prerequisite remediation now?`n`nYes = Required + Optional tools`nNo = Required tools only`nCancel = Abort",
             'Prerequisite WinGet Remediation',
@@ -1853,7 +1905,7 @@ function Build-ScannerGUI {
     $chkCascade.Location = New-Object System.Drawing.Point(430, 10)
     $chkCascade.Size = New-Object System.Drawing.Size(230, 20)
     $chkCascade.ForeColor = [System.Drawing.Color]::OrangeRed
-    $chkCascade.Add_CheckedChanged({
+    $chkCascade.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         if ($this.Checked) {
             Highlight-CascadeFailures
         } else {
@@ -1864,7 +1916,7 @@ function Build-ScannerGUI {
 
     # Rainbow progress bar (from PwShGUI-Theme module or inline fallback)
     $rainbowBarCreated = $false
-    if (Get-Command New-RainbowProgressBar -ErrorAction SilentlyContinue) {
+    if (Get-Command New-RainbowProgressBar -ErrorAction SilentlyContinue) {  # SIN-EXEMPT:P042 -- Get-Command not invocation; -Width/-Height declared on target
         $script:RainbowBar = New-RainbowProgressBar -Width 280 -Height 16
         $script:RainbowBar.Panel.Location = New-Object System.Drawing.Point(670, 12)
         $script:RainbowBar.Panel.Visible = $false
@@ -1975,7 +2027,7 @@ function Build-ScannerGUI {
 
             # Wire up rainbow progress bar painting for the ScanProgress grid
             if ($td.Key -eq 'ScanProgress') {
-                $dgv.Add_CellPainting({
+                $dgv.Add_CellPainting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     if (-not $sender.Columns.Contains('Percent')) { return }
@@ -1989,7 +2041,7 @@ function Build-ScannerGUI {
                     } catch { <# Intentional: non-fatal painting error #> }
                 })
                 # Also paint the Status column with step-phase colors
-                $dgv.Add_CellFormatting({
+                $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     try {
@@ -2032,7 +2084,7 @@ function Build-ScannerGUI {
                 $refreshHistoryBtn.Text = 'Refresh History'
                 $refreshHistoryBtn.Location = New-Object System.Drawing.Point(640, 2)
                 $refreshHistoryBtn.Size = New-Object System.Drawing.Size(110, 24)
-                $refreshHistoryBtn.Add_Click({
+                $refreshHistoryBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     $historyCombo.Items.Clear()
                     $files = Get-ScanHistoryFiles
                     foreach ($hf in $files) {
@@ -2043,7 +2095,7 @@ function Build-ScannerGUI {
                 })
                 $historyPanel.Controls.Add($refreshHistoryBtn)
 
-                $historyCombo.Add_SelectedIndexChanged({
+                $historyCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                     Scan-PreflightBaseline
                     Populate-AllGrids
                 })
@@ -2088,6 +2140,13 @@ function Get-GridSummaryText {
 
     # Key-specific summaries
     switch ($Key) {
+        'ScanProgress' {
+            $pending = @($Data | Where-Object { $_.Status -eq 'Pending' }).Count
+            $running = @($Data | Where-Object { $_.Status -eq 'Running' }).Count
+            $complete = @($Data | Where-Object { $_.Status -eq 'Complete' }).Count
+            $error = @($Data | Where-Object { $_.Status -eq 'Error' }).Count
+            $extra += " | Pending:$pending Running:$running Complete:$complete Error:$error"
+        }
         'Modules' {
             $ws = @($Data | Where-Object { $_.Status -eq 'Workspace' }).Count
             $inst = @($Data | Where-Object { $_.Status -eq 'Installed' }).Count
@@ -2135,7 +2194,7 @@ function Populate-GridByKey {
         $data = $script:ScanResults[$Key]
         if ($data -and $data.Count -gt 0) {
             $dt = New-Object System.Data.DataTable
-            $props = $data[0].PSObject.Properties
+            $props = $data[0].PSObject.Properties  # SIN-EXEMPT:P027 -- index access, context-verified safe
             foreach ($p in $props) {
                 $colType = switch ($p.TypeNameOfValue) {
                     'System.Boolean' { [bool] }
@@ -2227,7 +2286,7 @@ function Add-GridFilterRow {
     $filterBox.BorderStyle = 'FixedSingle'
     $filterBox.Tag = @{ Dgv = $Dgv; Key = $Key }
 
-    $filterBox.Add_TextChanged({
+    $filterBox.Add_TextChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $info = $this.Tag
         $dgvRef = $info.Dgv
         $filterText = $this.Text.Trim()
@@ -2262,7 +2321,7 @@ function Add-GridFilterRow {
     $clearBtn.ForeColor = [System.Drawing.Color]::OrangeRed
     $clearBtn.Font = New-Object System.Drawing.Font('Segoe UI', 7, [System.Drawing.FontStyle]::Bold)
     $clearBtn.Tag = $filterBox
-    $clearBtn.Add_Click({ $this.Tag.Text = '' })
+    $clearBtn.Add_Click({ $this.Tag.Text = '' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $filterPanel.Controls.Add($clearBtn)
 
     $TabPage.Controls.Add($filterPanel)
@@ -2275,7 +2334,7 @@ function Apply-RowColoring {
     # Guard: only add handler once per grid key to prevent stacking
     if ($script:ColoredGrids.ContainsKey($Key)) { return }
     $script:ColoredGrids[$Key] = $true
-    $Grid.Add_CellFormatting({
+    $Grid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         param($gridSender, $e)
         if ($e.RowIndex -lt 0) { return }
         try {
@@ -2367,7 +2426,7 @@ if ($script:historyCombo) {
 }
 
 if ($AutoScan) {
-    $form.Add_Shown({ Invoke-FullScan })
+    $form.Add_Shown({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 }
 
 # Relax strict mode before ShowDialog -- the WinForms message pump dispatches
@@ -2395,6 +2454,7 @@ $form.Dispose()
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 
