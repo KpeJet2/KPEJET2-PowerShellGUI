@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 # SupportPS5.1: true
 # SupportsPS7.6: true
@@ -118,4 +118,5 @@ finally {
 }
 
 exit ([int]($result.status -ne 'PASSED'))
+
 

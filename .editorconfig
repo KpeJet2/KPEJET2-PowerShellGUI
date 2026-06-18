@@ -1,6 +1,6 @@
 # .editorconfig — PwShGUI workspace standard
 # https://editorconfig.org
-# VersionTag: 2605.B5.V51.0
+# VersionTag: 2606.B5.V51.4
 root = true
 
 # ── Global defaults ──────────────────────────────────────────────────────────
@@ -48,3 +48,4 @@ indent_size              = 4
 # ── Dotfile markers (.outline, .problems, .todo, .pipeline.*) ─────────────────
 [.{outline,problems,todo,pipeline.entry,pipeline.stage}]
 indent_size              = 2
+

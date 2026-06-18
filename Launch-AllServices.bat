@@ -4,31 +4,24 @@ REM VersionBuildHistory:
 REM   2605.B5.V51.2  2026-05-25  Created: unified all-services launcher (8042, 8099, 2x CronProcessor, tray)
 REM ==============================================================
 REM  Launch-AllServices.bat
-REM  One-click launcher for ALL core services + tray bootstraps:
-REM    1. Port 8099  Service Cluster Dashboard (Python/uvicorn)
-REM    2. Port 8042  Local Web Engine (PS HttpListener) + Tray
-REM    3. 2x         CronAiAthon pipeline processors
-REM    4. (Optional) CronAiAthon WinForms GUI dashboard
+REM  One-click launcher for ALL core services + tray bootstraps.
 REM
-REM  The 8042 tray is preloaded with all service entries
-REM  (8099, EngineBootstrap, EngineMonitor, 2x CronProcessor)
-REM  and polls their live running state every 20 seconds.
+REM  Interactive mode (default):
+REM    - Shows launch elements with checkbox-style toggles
+REM    - Lets user test selected elements one-by-one
+REM    - Lets user launch selected elements
 REM
-REM  Usage: Launch-AllServices.bat [notray] [nocron] [gui] [help]
-REM  Flags (any order, space-separated):
-REM    notray   Skip the tray icon (run engine only, no blocking tray)
-REM    nocron   Skip both CronAiAthon processor instances
-REM    gui      Also open the CronAiAthon WinForms dashboard
-REM    help     Show this help and exit
+REM  Automation mode:
+REM    Launch-AllServices.bat /AUTO [notray] [nocron] [gui]
 REM
-REM  Examples:
-REM    Launch-AllServices.bat                 -- full stack + tray
-REM    Launch-AllServices.bat notray          -- headless, no tray
-REM    Launch-AllServices.bat gui             -- full stack + GUI dashboard
-REM    Launch-AllServices.bat nocron gui      -- skip processors, show GUI
+REM  Legacy flags (still supported in all modes):
+REM    notray   Skip tray icon (start engine headless)
+REM    nocron   Skip both CronAiAthon processors
+REM    gui      Also open CronAiAthon WinForms dashboard
+REM    help     Show help and exit
 REM ==============================================================
 
-setlocal EnableDelayedExpansion
+setlocal EnableExtensions EnableDelayedExpansion
 
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%.") do set "WS=%%~fI"
@@ -39,16 +32,29 @@ if not exist "%WS%\scripts" (
     exit /b 1
 )
 
-REM --- Flag defaults ---
+REM --- Runtime options ---
 set "DO_TRAY=1"
 set "DO_CRON=1"
 set "DO_GUI=0"
+set "MODE=INTERACTIVE"
+set "STEP_MODE=RUN"
+set "MENU_ACTION=RUN"
+
+REM --- Step toggles ---
+set "STEP1=1"
+set "STEP2=1"
+set "STEP3=1"
+set "STEP4=1"
+set "STEP5=1"
+set "STEP6=1"
 
 REM --- Parse args ---
 for %%A in (%*) do (
     if /I "%%A"=="notray" set "DO_TRAY=0"
     if /I "%%A"=="nocron" set "DO_CRON=0"
     if /I "%%A"=="gui"    set "DO_GUI=1"
+    if /I "%%A"=="/AUTO"  set "MODE=AUTO"
+    if /I "%%A"=="/INTERACTIVE" set "MODE=INTERACTIVE"
     if /I "%%A"=="help"   goto :Usage
     if /I "%%A"=="/?"     goto :Usage
 )
@@ -63,139 +69,318 @@ if errorlevel 1 (
     exit /b 1
 )
 
+if /I "%MODE%"=="INTERACTIVE" (
+    call :ShowLoadScreen
+    if /I "!MENU_ACTION!"=="QUIT" (
+        endlocal
+        exit /b 0
+    )
+    if /I "!MENU_ACTION!"=="TEST" (
+        set "STEP_MODE=TEST"
+    ) else (
+        set "STEP_MODE=RUN"
+    )
+)
+
 echo.
 echo  ===================================================
 echo   Launch-AllServices -- PwShGUI Service Stack
 echo  ===================================================
 echo   Workspace  : %WS%
 echo   PS host    : %PS_EXE%
-echo   Tray       : %DO_TRAY%
-echo   CronProc   : %DO_CRON%
-echo   GUI dash   : %DO_GUI%
+echo   Mode       : %MODE%
+echo   Step mode  : !STEP_MODE!
+echo   Tray       : !DO_TRAY!
+echo   CronProc   : !DO_CRON!
+echo   GUI dash   : !DO_GUI!
 echo  ---------------------------------------------------
 echo.
 
-REM --- Step 1: Clean stale session lock (no live PID owns it) ---
+call :RunSelectedSteps
+set "FINAL_EXIT=%ERRORLEVEL%"
+
+if /I "!STEP_MODE!"=="TEST" (
+    echo [INFO] Test sequence complete. ExitCode=!FINAL_EXIT!
+) else (
+    echo [INFO] Launch sequence complete. ExitCode=!FINAL_EXIT!
+)
+
+endlocal
+exit /b %FINAL_EXIT%
+
+:ShowLoadScreen
+:MenuLoop
+cls
+echo ============================================================
+echo  Launch-AllServices CLI Load Screen
+echo  Workspace: %WS%
+echo ============================================================
+echo  Launch elements:
+call :RenderStep 1 "Clean stale session lock" STEP1
+call :RenderStep 2 "Clear engine.stop signal" STEP2
+call :RenderStep 3 "Start Service Cluster Dashboard (8099)" STEP3
+call :RenderStep 4 "Start Cron processors (#1/#2)" STEP4
+call :RenderStep 5 "Open CronAiAthon GUI dashboard" STEP5
+call :RenderStep 6 "Start Local Web Engine service (8042)" STEP6
+echo.
+echo  Runtime options:
+echo    [TRAY] !DO_TRAY!   [CRON] !DO_CRON!   [GUI] !DO_GUI!
+echo.
+echo  Commands:
+echo    1-6 = toggle launch element
+echo    R   = toggle tray option ^(notray^)
+echo    C   = toggle cron option ^(nocron^)
+echo    G   = toggle gui option
+echo    A   = select all elements
+echo    N   = clear all elements
+echo    T   = test selected elements one-by-one
+echo    L   = launch selected elements
+echo    Q   = quit
+echo.
+set /p "MENU_CHOICE=Enter selection: "
+
+if /I "!MENU_CHOICE!"=="1" call :Toggle STEP1 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="2" call :Toggle STEP2 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="3" call :Toggle STEP3 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="4" call :Toggle STEP4 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="5" call :Toggle STEP5 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="6" call :Toggle STEP6 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="R" call :ToggleOption DO_TRAY & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="C" call :ToggleOption DO_CRON & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="G" call :ToggleOption DO_GUI & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="A" call :SetAll 1 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="N" call :SetAll 0 & goto :MenuLoop
+if /I "!MENU_CHOICE!"=="T" set "MENU_ACTION=TEST" & exit /b 0
+if /I "!MENU_CHOICE!"=="L" set "MENU_ACTION=RUN" & exit /b 0
+if /I "!MENU_CHOICE!"=="Q" set "MENU_ACTION=QUIT" & exit /b 0
+goto :MenuLoop
+
+:RenderStep
+set "STEP_STATE=[ ]"
+if /I "!%~3!"=="1" set "STEP_STATE=[X]"
+echo    %~1. !STEP_STATE! %~2
+exit /b 0
+
+:Toggle
+if /I "!%~1!"=="1" (
+    set "%~1=0"
+) else (
+    set "%~1=1"
+)
+exit /b 0
+
+:ToggleOption
+if /I "!%~1!"=="1" (
+    set "%~1=0"
+) else (
+    set "%~1=1"
+)
+exit /b 0
+
+:SetAll
+set "STEP1=%~1"
+set "STEP2=%~1"
+set "STEP3=%~1"
+set "STEP4=%~1"
+set "STEP5=%~1"
+set "STEP6=%~1"
+exit /b 0
+
+:RunSelectedSteps
+if "%STEP1%"=="1" call :ExecuteStep "Clean stale session lock" Step1_CleanSessionLock
+if errorlevel 1 exit /b 1
+
+if "%STEP2%"=="1" call :ExecuteStep "Clear engine.stop signal" Step2_ClearStopSignal
+if errorlevel 1 exit /b 1
+
+if "%STEP3%"=="1" call :ExecuteStep "Start Service Cluster Dashboard (8099)" Step3_StartDashboard
+if errorlevel 1 exit /b 1
+
+if "%STEP4%"=="1" call :ExecuteStep "Start Cron processors" Step4_StartCron
+if errorlevel 1 exit /b 1
+
+if "%STEP5%"=="1" call :ExecuteStep "Open CronAiAthon GUI dashboard" Step5_OpenGui
+if errorlevel 1 exit /b 1
+
+if "%STEP6%"=="1" call :ExecuteStep "Start Local Web Engine service (8042)" Step6_StartEngine
+if errorlevel 1 exit /b 1
+
+exit /b 0
+
+:ExecuteStep
+echo.
+echo ------------------------------------------------------------
+echo [!STEP_MODE!] %~1
+echo ------------------------------------------------------------
+call :%~2
+set "STEP_RC=!ERRORLEVEL!"
+if not "!STEP_RC!"=="0" (
+    echo [ERROR] Step failed: %~1
+    exit /b !STEP_RC!
+)
+if /I "!STEP_MODE!"=="TEST" (
+    echo [PASS] Test passed: %~1
+    set /p "_stepContinue=Press ENTER for next selected step..."
+)
+exit /b 0
+
+:Step1_CleanSessionLock
 set "LOCK_FILE=%WS%\.pwshgui-session.lock"
-if exist "%LOCK_FILE%" (
-    for /f "usebackq tokens=*" %%L in ("%LOCK_FILE%") do set "LOCK_PID=%%L"
-    if defined LOCK_PID (
-        tasklist /FI "PID eq !LOCK_PID!" 2>nul | find "!LOCK_PID!" >nul 2>&1
-        if errorlevel 1 (
-            echo [INFO] Removing stale session lock ^(PID !LOCK_PID! not found^).
-            del /f /q "%LOCK_FILE%" >nul 2>&1
-        ) else (
-            echo [WARN] Session lock held by PID !LOCK_PID! -- Main GUI may already be active.
-        )
-    )
+if not exist "%LOCK_FILE%" (
+    echo [INFO] Session lock file not present.
+    exit /b 0
 )
 
-REM --- Step 2: Clear engine.stop signal if present (allows cron to run) ---
+for /f "usebackq tokens=*" %%L in ("%LOCK_FILE%") do set "LOCK_PID=%%L"
+if not defined LOCK_PID (
+    echo [WARN] Session lock exists but contains no PID.
+    if /I "!STEP_MODE!"=="RUN" del /f /q "%LOCK_FILE%" >nul 2>&1
+    exit /b 0
+)
+
+tasklist /FI "PID eq !LOCK_PID!" 2>nul | find "!LOCK_PID!" >nul 2>&1
+if errorlevel 1 (
+    echo [INFO] Stale session lock detected for PID !LOCK_PID!.
+    if /I "!STEP_MODE!"=="RUN" (
+        del /f /q "%LOCK_FILE%" >nul 2>&1
+        echo [OK] Stale lock removed.
+    )
+) else (
+    echo [WARN] Session lock held by active PID !LOCK_PID!.
+)
+exit /b 0
+
+:Step2_ClearStopSignal
 set "STOP_SIGNAL=%WS%\logs\engine.stop"
-if exist "%STOP_SIGNAL%" (
-    echo [INFO] Removing stale engine.stop signal.
+if not exist "%STOP_SIGNAL%" (
+    echo [INFO] engine.stop signal not present.
+    exit /b 0
+)
+
+echo [INFO] engine.stop signal detected.
+if /I "!STEP_MODE!"=="RUN" (
     del /f /q "%STOP_SIGNAL%" >nul 2>&1
+    echo [OK] engine.stop signal removed.
 )
+exit /b 0
 
-REM --- Step 3: Start Port 8099 Service Cluster Dashboard (Python/uvicorn, hidden) ---
+:Step3_StartDashboard
 set "DASHBOARD_BAT=%WS%\scripts\service-cluster-dashboard\Launch-ServiceClusterDashboard.bat"
-if exist "%DASHBOARD_BAT%" (
-    echo [START] Port 8099 Service Cluster Dashboard...
-    start "SvcDash8099" /min cmd /c ""%DASHBOARD_BAT%""
-    echo [OK]    Dashboard started in background.
-) else (
-    echo [WARN]  Dashboard bat not found: %DASHBOARD_BAT%
-    echo         Port 8099 service will not be started.
+if not exist "%DASHBOARD_BAT%" (
+    echo [WARN] Dashboard launcher not found: %DASHBOARD_BAT%
+    exit /b 0
 )
 
-REM --- Step 4: Start CronAiAthon pipeline processors (background, hidden) ---
+if /I "!STEP_MODE!"=="TEST" (
+    echo [INFO] Dashboard launcher ready: %DASHBOARD_BAT%
+    echo [INFO] Health endpoint expected: http://127.0.0.1:8099/api/ping
+    exit /b 0
+)
+
+echo [START] Port 8099 Service Cluster Dashboard...
+start "SvcDash8099" /min cmd /c ""%DASHBOARD_BAT%" /AUTO"
+echo [OK] Dashboard started in background.
+exit /b 0
+
+:Step4_StartCron
 set "CRON_SCRIPT=%WS%\scripts\Invoke-CronProcessor.ps1"
-if "%DO_CRON%"=="1" (
-    if exist "%CRON_SCRIPT%" (
-        echo [START] CronAiAthon processor ^#1...
-        start "CronProc1" /min %PS_EXE% -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%CRON_SCRIPT%" -WorkspacePath "%WS%"
-        echo [OK]    Processor #1 started.
-
-        REM Small gap so both instances get distinct start timestamps in logs
-        timeout /t 2 /nobreak >nul
-
-        echo [START] CronAiAthon processor ^#2...
-        start "CronProc2" /min %PS_EXE% -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%CRON_SCRIPT%" -WorkspacePath "%WS%"
-        echo [OK]    Processor #2 started.
-    ) else (
-        echo [WARN]  CronProcessor not found: %CRON_SCRIPT%
-        echo         CronAiAthon pipelines will not run.
-    )
-) else (
-    echo [SKIP]  CronAiAthon processors ^(nocron flag set^).
+if "%DO_CRON%"=="0" (
+    echo [SKIP] Cron processors disabled by option.
+    exit /b 0
 )
 
-REM --- Step 5: (Optional) Open CronAiAthon WinForms GUI dashboard ---
+if not exist "%CRON_SCRIPT%" (
+    echo [WARN] CronProcessor not found: %CRON_SCRIPT%
+    exit /b 0
+)
+
+if /I "!STEP_MODE!"=="TEST" (
+    echo [INFO] Cron processor script ready: %CRON_SCRIPT%
+    echo [INFO] Would launch 2 instances with -WorkspacePath "%WS%".
+    exit /b 0
+)
+
+echo [START] CronAiAthon processor #1...
+start "CronProc1" /min %PS_EXE% -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%CRON_SCRIPT%" -WorkspacePath "%WS%"
+echo [OK] Processor #1 started.
+
+timeout /t 2 /nobreak >nul
+
+echo [START] CronAiAthon processor #2...
+start "CronProc2" /min %PS_EXE% -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%CRON_SCRIPT%" -WorkspacePath "%WS%"
+echo [OK] Processor #2 started.
+exit /b 0
+
+:Step5_OpenGui
 set "CRON_GUI=%WS%\scripts\Show-CronAiAthonTool.ps1"
-if "%DO_GUI%"=="1" (
-    if exist "%CRON_GUI%" (
-        echo [START] CronAiAthon GUI dashboard...
-        start "CronAiAthonGUI" %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%CRON_GUI%" -WorkspacePath "%WS%"
-        echo [OK]    CronAiAthon GUI launched.
-    ) else (
-        echo [WARN]  CronAiAthon GUI not found: %CRON_GUI%
-    )
+if "%DO_GUI%"=="0" (
+    echo [SKIP] CronAiAthon GUI disabled by option.
+    exit /b 0
 )
 
-REM --- Step 6: Start Port 8042 Local Web Engine + Tray (foreground -- holds console) ---
-REM  -Action Start  => starts the engine in a hidden background process, then
-REM                    runs Start-ServiceTray (blocking WinForms message pump).
-REM  The tray preloads ALL 5 service entries from Get-TrayServiceDefinitions:
-REM    ServiceClusterDashboard  (8099 Python service)
-REM    EngineBootstrap          (Start-Engines.ps1)
-REM    Start-EngineServiceMonitor
-REM    Invoke-CronProcessor #1
-REM    Invoke-CronProcessor #2
-REM  Each entry is checked live every 20 s and shows a tick when running.
+if not exist "%CRON_GUI%" (
+    echo [WARN] CronAiAthon GUI not found: %CRON_GUI%
+    exit /b 0
+)
+
+if /I "!STEP_MODE!"=="TEST" (
+    echo [INFO] CronAiAthon GUI script ready: %CRON_GUI%
+    exit /b 0
+)
+
+echo [START] CronAiAthon GUI dashboard...
+start "CronAiAthonGUI" %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%CRON_GUI%" -WorkspacePath "%WS%"
+echo [OK] CronAiAthon GUI launched.
+exit /b 0
+
+:Step6_StartEngine
 set "ENGINE_SERVICE=%WS%\scripts\Start-LocalWebEngineService.ps1"
 if not exist "%ENGINE_SERVICE%" (
     echo [ERROR] Engine service script not found: %ENGINE_SERVICE%
     exit /b 1
 )
 
+if /I "!STEP_MODE!"=="TEST" (
+    if "%DO_TRAY%"=="1" (
+        echo [INFO] Would run foreground with tray:
+        echo        %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%ENGINE_SERVICE%" -Action Start -Port 8042 -WorkspacePath "%WS%"
+    ) else (
+        echo [INFO] Would run headless background with -NoTray.
+    )
+    exit /b 0
+)
+
 echo.
 if "%DO_TRAY%"=="1" (
-    echo [START] Port 8042 Local Web Engine + Task Tray ^(this console will block while tray is open^)...
+    echo [START] Port 8042 Local Web Engine + Task Tray ^(foreground^)...
     echo         Close the tray icon or press Ctrl+C here to stop.
-    echo.
     %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%ENGINE_SERVICE%" -Action Start -Port 8042 -WorkspacePath "%WS%"
 ) else (
     echo [START] Port 8042 Local Web Engine ^(no tray, background^)...
     start "WebEngine8042" /min %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%ENGINE_SERVICE%" -Action Start -Port 8042 -WorkspacePath "%WS%" -NoTray
-    echo [OK]    Engine started headless. Use Status action or logs to monitor.
-    echo.
-    echo  All services started. Console can be closed.
+    echo [OK] Engine started headless.
 )
-
-endlocal
 exit /b 0
 
 :Usage
 echo.
-echo  Launch-AllServices.bat [flags]
+echo Launch-AllServices.bat [flags]
 echo.
-echo  Starts the full PwShGUI service stack in the correct order:
-echo    1. Port 8099  Service Cluster Dashboard ^(Python/uvicorn, hidden^)
-echo    2. 2x         CronAiAthon pipeline processor instances ^(hidden^)
-echo    3. Port 8042  Local Web Engine + Task Tray
-echo         Tray preloads all services; polls running state every 20 s.
+echo Modes:
+echo   (default)        Interactive load screen with selectable/testable elements
+echo   /AUTO            Run selected defaults non-interactively
 echo.
-echo  Flags ^(any order^):
-echo    notray   Skip tray; start engine headless in background
-echo    nocron   Skip both CronAiAthon processor instances
-echo    gui      Also open the CronAiAthon WinForms GUI dashboard
-echo    help     Show this help
+echo Flags (any order):
+echo   notray           Skip tray; start engine headless in background
+echo   nocron           Skip both CronAiAthon processor instances
+echo   gui              Also open the CronAiAthon WinForms GUI dashboard
+echo   /INTERACTIVE     Force interactive mode
+echo   help or /?       Show this help
 echo.
-echo  Examples:
-echo    Launch-AllServices.bat
-echo    Launch-AllServices.bat notray
-echo    Launch-AllServices.bat gui
-echo    Launch-AllServices.bat nocron gui
-echo.
+echo Examples:
+echo   Launch-AllServices.bat
+echo   Launch-AllServices.bat /AUTO
+echo   Launch-AllServices.bat /AUTO notray nocron
+echo   Launch-AllServices.bat /AUTO gui
 endlocal
 exit /b 0

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 <#
 .SYNOPSIS
     Pester integration tests for Invoke-SINPatternScanner.ps1
@@ -110,5 +110,6 @@ Describe 'Invoke-SINPatternScanner integration' {
         }
     }
 }
+
 
 

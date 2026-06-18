@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # iter38: bulk-suppress PSAvoidUsingWriteHost — UI/CLI banner code policy-acceptable
 $findings = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSAvoidUsingWriteHost
 Write-Host "Hits: $(@($findings).Count)"
@@ -77,5 +77,6 @@ foreach ($g in $byFile) {
 Write-Host "`nTotal: $totalPatched (fails: $totalFails)"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSAvoidUsingWriteHost
 Write-Host "Remaining: $(@($after).Count)"
+
 
 

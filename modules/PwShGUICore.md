@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # Module Documentation: PwShGUICore.psm1
 
 ## Purpose
@@ -27,5 +27,6 @@ $files = Get-AllProjectFiles
 - PwShGUI-VersionTag.psm1
 - PwShGUI-Theme.psm1
 - PwShGUI-PSVersionStandards.psm1
+
 
 

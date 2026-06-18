@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 $pssa = Get-Content 'C:\PowerShellGUI\reports\iter6\pssa-modules.json' -Raw | ConvertFrom-Json
 $autoVar = @($pssa.Findings | Where-Object { $_.RuleName -eq 'PSAvoidAssignmentToAutomaticVariable' })
@@ -33,5 +33,6 @@ foreach ($f in $autoVar) {
     "  + $name"
 }
 "Created $count instance records"
+
 
 

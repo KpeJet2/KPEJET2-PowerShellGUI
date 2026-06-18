@@ -1,3 +1,4 @@
+# VersionTag: 2606.B5.V51.4
 # SIN Chat Issue Batch (2026-05-23)
 
 This short batch captures the failure modes observed in this chat session and maps each to a scan pattern plus a fast remediation path.
@@ -32,3 +33,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ChatIssueSi
 
 - This batch is intentionally small and targeted for fast triage.
 - Keep these scans in CI for regressions after bulk rewrites, GUI refactors, and codegen edits.
+

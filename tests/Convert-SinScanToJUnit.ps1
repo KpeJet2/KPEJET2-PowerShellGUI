@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 <#
 .SYNOPSIS
     Converts a SIN scanner result JSON into a JUnit-format XML for CI consumption.
@@ -146,5 +146,6 @@ $utf8 = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($OutputXml, $sb.ToString(), $utf8)
 
 Write-Output ("Wrote JUnit XML: {0} ({1} testcases, {2} failures)" -f $OutputXml, $totalFindings, @($regressions).Count)
+
 
 

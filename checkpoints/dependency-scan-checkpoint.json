@@ -1,50 +1,50 @@
 {
-  "currentScanMode": "Full",
-  "currentScanPid": 32392,
+  "version": "2604.B1.V32.0",
   "lastFullScan": "",
+  "currentScanPid": 69404,
+  "currentScanMode": "Full",
   "phases": {
     "folders": {
-      "count": 118,
-      "completedAt": "2026-06-18T01:25:43.3513052+08:00",
-      "durationMs": 2942,
-      "status": "done"
+      "status": "done",
+      "completedAt": "2026-06-18T10:41:18.6879014+08:00",
+      "durationMs": 1874,
+      "count": 118
     },
     "modules": {
-      "count": 119,
-      "completedAt": "2026-06-18T01:26:19.8468626+08:00",
       "status": "done",
-      "durationMs": 36350,
-      "functionCount": 594
+      "functionCount": 594,
+      "completedAt": "2026-06-18T10:41:35.2413885+08:00",
+      "durationMs": 16527,
+      "count": 119
     },
     "scripts": {
-      "count": 349,
-      "completedAt": "2026-06-18T01:26:38.9558868+08:00",
       "status": "done",
-      "durationMs": 19091,
-      "functionCount": 349
+      "functionCount": 349,
+      "completedAt": "2026-06-18T10:41:53.5154031+08:00",
+      "durationMs": 18263,
+      "count": 349
     },
     "configs": {
-      "count": 877,
-      "completedAt": "2026-06-18T01:26:55.9555554+08:00",
-      "durationMs": 16996,
-      "status": "done"
+      "status": "done",
+      "completedAt": "2026-06-18T10:42:04.9814007+08:00",
+      "durationMs": 11463,
+      "count": 886
     },
     "urls_ips": {
       "urlFileCount": 215,
       "uniqueIPs": 36,
-      "status": "done",
-      "completedAt": "2026-06-18T01:27:57.6019939+08:00",
-      "durationMs": 61643
+      "completedAt": "2026-06-18T10:42:38.6535595+08:00",
+      "durationMs": 33670,
+      "status": "done"
     },
     "dns_resolution": {
-      "status": "done",
       "resolved": 120,
+      "completedAt": "2026-06-18T10:43:17.6287062+08:00",
       "hostsChecked": 136,
-      "completedAt": "2026-06-18T01:28:48.8759136+08:00",
-      "durationMs": 51271
+      "durationMs": 38972,
+      "status": "done"
     }
   },
-  "version": "2604.B1.V32.0",
-  "generated": "2026-06-18T01:28:49.1180966+08:00",
+  "generated": "2026-06-18T10:43:17.6626193+08:00",
   "mode": "Static"
 }

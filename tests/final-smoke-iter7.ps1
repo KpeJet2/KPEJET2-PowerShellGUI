@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $mods = @(
     'PwShGUI-LegacyEncoding','PwShGUI-AutoRemediate','PwShGUI-DependencyMap',
     'PwShGUI-BreakingChange','PwShGUI-PSScriptAnalyzerScan'
@@ -10,5 +10,6 @@ foreach ($m in $mods) {
     "$($m): parse-errors=$($e.Count)"
     try { Import-Module $p -Force -DisableNameChecking; "  import OK" } catch { "  import FAIL: $($_.Exception.Message)" }
 }
+
 
 

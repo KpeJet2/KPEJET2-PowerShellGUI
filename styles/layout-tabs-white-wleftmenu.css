@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 /* Layout: kpe-CSS_TabsWhite-wLeftMENU | v2603.B0.v27.0
    Source: XHTML-FeatureRequests.xhtml
    Pattern: Light-themed body + top tab bar (dark) + left sidebar + right content + toolbars
@@ -116,6 +116,7 @@ table.tree-table,table.data-table{width:100%;border-collapse:collapse;font-size:
   #mainLayout{flex-direction:column}
   #leftPane{flex:none;max-height:200px;border-right:none;border-bottom:1px solid #ccc}
 }
+
 
 
 

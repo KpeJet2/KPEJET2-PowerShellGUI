@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 Import-Module C:\PowerShellGUI\modules\PwShGUI-LegacyEncoding.psm1 -Force -DisableNameChecking
 $tgts = @('C:\PowerShellGUI\scripts','C:\PowerShellGUI\sovereign-kernel','C:\PowerShellGUI\agents','C:\PowerShellGUI\UPM')
 $all = foreach ($t in $tgts) {
@@ -12,5 +12,6 @@ $dbl = @($bad | Where-Object { $_.DoubleEncoded })
 "Of which double-encoded (P023, urgent): $($dbl.Count)"
 "Plain P006 (just need BOM): $($bad.Count - $dbl.Count)"
 $dbl | Select-Object -First 10 Path
+
 
 

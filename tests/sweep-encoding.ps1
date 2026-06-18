@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 Import-Module C:\PowerShellGUI\modules\PwShGUI-LegacyEncoding.psm1 -Force -DisableNameChecking
 $tgts = @(
     'C:\PowerShellGUI\scripts',
@@ -15,5 +15,6 @@ foreach ($t in $tgts) {
     "$t : $($bad.Count) needs-fix"
     $bad | Select-Object -First 5 | ForEach-Object { "  - $(Split-Path -Leaf $_.Path)" }
 }
+
 
 

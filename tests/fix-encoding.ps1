@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $mods = 'PwShGUI-DependencyMap','PwShGUI-CoverageReport','PwShGUI-AutoRemediate','PwShGUI-SinFromScan','PwShGUI-BreakingChange','PwShGUI-PSScriptAnalyzerScan'
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 foreach ($m in $mods) {
@@ -16,5 +16,6 @@ foreach ($m in $mods) {
     $bom = if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { 'BOM-OK' } else { 'NO-BOM' }
     "$m  $bom"
 }
+
 
 

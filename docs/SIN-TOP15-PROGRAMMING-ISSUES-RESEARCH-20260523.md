@@ -1,3 +1,4 @@
+# VersionTag: 2606.B5.V51.4
 # SIN Top 15 Programming Issues Research (2026-05-23)
 
 ## Scope
@@ -50,3 +51,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-Top15IssueS
 ## Outcome
 
 All 15 issue classes in this research set now have direct SIN coverage in the workspace pattern registry.
+

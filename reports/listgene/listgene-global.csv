@@ -1,3 +1,4 @@
+# VersionTag: 2606.B5.V51.4
 "seq","category","name","value","unicode"
 "1","mdIcons","Gear",":gear:","U+2699"
 "2","mdIcons","Pushpin",":pushpin:","U+1F4CC"
@@ -153,3 +154,4 @@
 "152","graphicsCards","Intel Arc B580","Intel Arc B580",""
 "153","graphicsCards","Intel Arc A770","Intel Arc A770",""
 "154","graphicsCards","NVIDIA GeForce RTX 4070 Super","NVIDIA GeForce RTX 4070 Super",""
+

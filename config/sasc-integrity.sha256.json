@@ -1,49 +1,49 @@
 {
-  "ManifestJson": "{\"SchemaVersion\":\"1.0\",\"Files\":[{\"LastWritten\":\"2026-05-23T09:32:14.5126610Z\",\"SizeBytes\":119506,\"SHA256\":\"EF4731F2B6DF5EB62E34E3926496CDD1D2A884E0457E2E36C360CE777F8EBCFD\",\"Path\":\"C:\\\\PowerShellGUI\\\\modules\\\\AssistedSASC.psm1\"},{\"LastWritten\":\"2026-05-23T09:32:14.8965401Z\",\"SizeBytes\":25266,\"SHA256\":\"ACF6CEC2009D78FD786F017AD0E7B281DE7DE126051DC69AC94AD3A96CE7F2AC\",\"Path\":\"C:\\\\PowerShellGUI\\\\modules\\\\SASC-Adapters.psm1\"},{\"LastWritten\":\"2026-05-23T09:32:15.1999751Z\",\"SizeBytes\":26257,\"SHA256\":\"0E3ED94661CCE1B64161C0D1827532EA0FD8CEF7480A8C8960DB17C9FBC7A620\",\"Path\":\"C:\\\\PowerShellGUI\\\\scripts\\\\Install-BitwardenLite.ps1\"},{\"LastWritten\":\"2026-05-23T09:32:02.4651892Z\",\"SizeBytes\":21696,\"SHA256\":\"21CF7B0243AD0438447780DE1A1BFCE4D93610D8EA653D45994CDCEA894A1560\",\"Path\":\"C:\\\\PowerShellGUI\\\\XHTML-invoke-secrets.xhtml\"},{\"LastWritten\":\"2026-03-08T23:11:27.3414644Z\",\"SizeBytes\":886,\"SHA256\":\"23AE890E3F993A9570CC673F333B67A0FD150548DC8D2C109CDD1648D80299AF\",\"Path\":\"C:\\\\PowerShellGUI\\\\config\\\\sasc-vault-config.json\"},{\"LastWritten\":\"2026-03-27T11:25:10.0000000Z\",\"SizeBytes\":122901928,\"SHA256\":\"8DCDAF2E9073D20423BE18B290216C54717D686DA5246FAF191FBCB35A299348\",\"Path\":\"C:\\\\Users\\\\msaib\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Packages\\\\Bitwarden.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe\\\\bw.exe\"}],\"MachineName\":\"XPS15-MS\",\"ManifestCreated\":\"2026-05-23T09:34:54.6082122Z\",\"UserName\":\"msaib\"}",
+  "ProtectedKey": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAlFX3B+wmkUW0OAAHIxyo4wAAAAACAAAAAAAQZgAAAAEAACAAAAAIrtb7t7mFqn7csN6zdsCbUXMk1144v47J5jqhuHny3wAAAAAOgAAAAAIAACAAAAD3hEPEa0Za0oBDdC/dEqk4QraIIRoHH+Y/OSG7IK4fkzAAAABhWw7tb8aqiUBJ2or79YkHPpC9gh+GL1LGluiOibJJEocUxe4WHiSjTu2qhnO0wpJAAAAAv0tL+1hCB7JIFs9J9PBYLp9iTzGPQjuYzl7Y6cp2lzIcC+CCo3htmQLSq90Z4IGgyfY1WUVBClqB/YK8tN6W0g==",
+  "Signature": "u7b3kjunIPZqvQvomKXtG0Uvh85tWXwNWNo0ylibwGs=",
+  "ManifestJson": "{\"ManifestCreated\":\"2026-06-18T01:01:41.6866277Z\",\"Files\":[{\"LastWritten\":\"2026-06-18T00:35:24.2540259Z\",\"Path\":\"C:\\\\PowerShellGUI\\\\modules\\\\AssistedSASC.psm1\",\"SHA256\":\"DAEA01936D158B4F81ACD54FE663BB1DB40A3BF1EDE907F4EBC6A5DB0ED05C87\",\"SizeBytes\":119508},{\"LastWritten\":\"2026-06-18T00:35:24.5302977Z\",\"Path\":\"C:\\\\PowerShellGUI\\\\modules\\\\SASC-Adapters.psm1\",\"SHA256\":\"94B227FF70F793CA8729423692AB8D3BA14D44F50FCB76E7C74A8DA3F4BC7E73\",\"SizeBytes\":25268},{\"LastWritten\":\"2026-06-18T00:35:24.7464911Z\",\"Path\":\"C:\\\\PowerShellGUI\\\\scripts\\\\Install-BitwardenLite.ps1\",\"SHA256\":\"B47979CF7205DD8A15071FE01070F6FF973A93D5D32B86B311178FD1466AD2D1\",\"SizeBytes\":26259},{\"LastWritten\":\"2026-06-18T00:35:16.5159400Z\",\"Path\":\"C:\\\\PowerShellGUI\\\\XHTML-invoke-secrets.xhtml\",\"SHA256\":\"709BF4F59B1C5FB3CCB2AE9B8210FC2DC342642638249ADB66772DAFFE23F485\",\"SizeBytes\":21698},{\"LastWritten\":\"2026-03-08T23:11:27.3414644Z\",\"Path\":\"C:\\\\PowerShellGUI\\\\config\\\\sasc-vault-config.json\",\"SHA256\":\"23AE890E3F993A9570CC673F333B67A0FD150548DC8D2C109CDD1648D80299AF\",\"SizeBytes\":886},{\"LastWritten\":\"2026-03-27T11:25:10.0000000Z\",\"Path\":\"C:\\\\Users\\\\msaib\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Packages\\\\Bitwarden.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe\\\\bw.exe\",\"SHA256\":\"8DCDAF2E9073D20423BE18B290216C54717D686DA5246FAF191FBCB35A299348\",\"SizeBytes\":122901928}],\"SchemaVersion\":\"1.0\",\"MachineName\":\"XPS15-MS\",\"UserName\":\"msaib\"}",
   "Manifest": {
-    "SchemaVersion": "1.0",
+    "ManifestCreated": "2026-06-18T01:01:41.6866277Z",
     "Files": [
       {
-        "LastWritten": "2026-05-23T09:32:14.5126610Z",
-        "SizeBytes": 119506,
-        "SHA256": "EF4731F2B6DF5EB62E34E3926496CDD1D2A884E0457E2E36C360CE777F8EBCFD",
-        "Path": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1"
+        "LastWritten": "2026-06-18T00:35:24.2540259Z",
+        "Path": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+        "SHA256": "DAEA01936D158B4F81ACD54FE663BB1DB40A3BF1EDE907F4EBC6A5DB0ED05C87",
+        "SizeBytes": 119508
       },
       {
-        "LastWritten": "2026-05-23T09:32:14.8965401Z",
-        "SizeBytes": 25266,
-        "SHA256": "ACF6CEC2009D78FD786F017AD0E7B281DE7DE126051DC69AC94AD3A96CE7F2AC",
-        "Path": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1"
+        "LastWritten": "2026-06-18T00:35:24.5302977Z",
+        "Path": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+        "SHA256": "94B227FF70F793CA8729423692AB8D3BA14D44F50FCB76E7C74A8DA3F4BC7E73",
+        "SizeBytes": 25268
       },
       {
-        "LastWritten": "2026-05-23T09:32:15.1999751Z",
-        "SizeBytes": 26257,
-        "SHA256": "0E3ED94661CCE1B64161C0D1827532EA0FD8CEF7480A8C8960DB17C9FBC7A620",
-        "Path": "C:\\PowerShellGUI\\scripts\\Install-BitwardenLite.ps1"
+        "LastWritten": "2026-06-18T00:35:24.7464911Z",
+        "Path": "C:\\PowerShellGUI\\scripts\\Install-BitwardenLite.ps1",
+        "SHA256": "B47979CF7205DD8A15071FE01070F6FF973A93D5D32B86B311178FD1466AD2D1",
+        "SizeBytes": 26259
       },
       {
-        "LastWritten": "2026-05-23T09:32:02.4651892Z",
-        "SizeBytes": 21696,
-        "SHA256": "21CF7B0243AD0438447780DE1A1BFCE4D93610D8EA653D45994CDCEA894A1560",
-        "Path": "C:\\PowerShellGUI\\XHTML-invoke-secrets.xhtml"
+        "LastWritten": "2026-06-18T00:35:16.5159400Z",
+        "Path": "C:\\PowerShellGUI\\XHTML-invoke-secrets.xhtml",
+        "SHA256": "709BF4F59B1C5FB3CCB2AE9B8210FC2DC342642638249ADB66772DAFFE23F485",
+        "SizeBytes": 21698
       },
       {
         "LastWritten": "2026-03-08T23:11:27.3414644Z",
-        "SizeBytes": 886,
+        "Path": "C:\\PowerShellGUI\\config\\sasc-vault-config.json",
         "SHA256": "23AE890E3F993A9570CC673F333B67A0FD150548DC8D2C109CDD1648D80299AF",
-        "Path": "C:\\PowerShellGUI\\config\\sasc-vault-config.json"
+        "SizeBytes": 886
       },
       {
         "LastWritten": "2026-03-27T11:25:10.0000000Z",
-        "SizeBytes": 122901928,
+        "Path": "C:\\Users\\msaib\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Bitwarden.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe\\bw.exe",
         "SHA256": "8DCDAF2E9073D20423BE18B290216C54717D686DA5246FAF191FBCB35A299348",
-        "Path": "C:\\Users\\msaib\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Bitwarden.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe\\bw.exe"
+        "SizeBytes": 122901928
       }
     ],
+    "SchemaVersion": "1.0",
     "MachineName": "XPS15-MS",
-    "ManifestCreated": "2026-05-23T09:34:54.6082122Z",
     "UserName": "msaib"
-  },
-  "ProtectedKey": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAlFX3B+wmkUW0OAAHIxyo4wAAAAACAAAAAAAQZgAAAAEAACAAAADGAd9tYSA5CQWtpjAL4+VqDtkLkYRHVbsw5dtahtRHsAAAAAAOgAAAAAIAACAAAAD4zQjfr5JyxJL5wjd7g30wTTpDK8jJCc+9b6eI6jU3djAAAADmcb24rwPgfgPi7HG0zouXAEpyx1H52OhygEwJfd6BdaDTPsHFdza/34lPTrJu9itAAAAAtEvvF2X6TjofJvKOpN0ZGAfEiEqvfr2g2gL1GRfxBQ6+186oNXENoKNjtLMwnYzjk7ZM6ig3UTQslEPNdJISYA==",
-  "Signature": "pLqKDL8VcZMlM+1ZkSxGS3Sl4Fr54P3x94ohdSt/hAY="
+  }
 }

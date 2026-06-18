@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # PowerShellGUI Automated Changelog
 
 This changelog is generated from VersionTag headers and commit history.
@@ -65,5 +65,6 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## How to Regenerate
 Run tools/Generate-Changelog.ps1 to update this file from VersionTag and git log.
+
 
 

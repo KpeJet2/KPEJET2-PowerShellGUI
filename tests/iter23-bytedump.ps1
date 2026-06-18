@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $b = [IO.File]::ReadAllBytes('C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1')
 # Locate "Save-Help operation completed" anchor and dump 200 bytes before it
 $text = [Text.Encoding]::UTF8.GetString($b)
@@ -14,5 +14,6 @@ $slice = $b[$start..$end]
 $sb = New-Object System.Text.StringBuilder
 foreach ($byte in $slice) { [void]$sb.AppendFormat('{0:X2} ', $byte) }
 Write-Host $sb.ToString()
+
 
 

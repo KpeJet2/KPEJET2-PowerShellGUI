@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # PwShGUI-WorkspaceSeed.psm1 — Workspace seeding and initialization module
 
 Set-StrictMode -Version Latest
@@ -318,3 +318,4 @@ Export-ModuleMember -Function @(
     'Register-TrayAutoStart',
     'Test-WorkspaceNeedsSeeding'
 )
+

@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 # Purpose: Normalize backlog data from todo JSON files and inline TODO/FIXME/HACK markers.
 
@@ -258,5 +258,6 @@ Write-Host "[TodoPlanner] JSON: $jsonPath" -ForegroundColor Green
 Write-Host "[TodoPlanner] Markdown: $mdPath" -ForegroundColor Green
 Write-Host "[TodoPlanner] Pointer: $pointerPath" -ForegroundColor Cyan
 Write-Host "[TodoPlanner] Actionable: $(@($actionableItems).Count) | Queue: $(@($executionQueue).Count) / Total: $(@($allItems).Count)" -ForegroundColor Yellow
+
 
 

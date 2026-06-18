@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $c = Get-Content C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml -Raw -Encoding UTF8
 $rx = '(?is)<script[^>]*>(.*?)</script>'
 $ms = [regex]::Matches($c, $rx)
@@ -13,5 +13,6 @@ $names = [regex]::Matches($c, $varRx) | ForEach-Object { $_.Groups[1].Value }
 $dup = $names | Group-Object | Where-Object Count -gt 1
 if ($dup) { Write-Host "P033 DUP: $($dup.Name -join ',')" } else { Write-Host 'P033-OK' }
 Write-Host "Lines: $((Get-Content C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml).Count)"
+
 
 

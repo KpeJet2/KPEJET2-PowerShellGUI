@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 <#
 .SYNOPSIS
@@ -75,4 +75,5 @@ if (@($findings).Count -gt 0) {
 
 Write-Host '[secret-scan] no blocked private key material detected' -ForegroundColor Green
 exit 0
+
 

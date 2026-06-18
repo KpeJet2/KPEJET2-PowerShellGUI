@@ -1,5 +1,5 @@
 <#
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Module
 # SupportPS5.1: YES(As of: 2026-04-30)
 # SupportsPS7.6: YES(As of: 2026-04-30)
@@ -79,5 +79,6 @@ function Invoke-PSScriptAnalyzerScan {
 }
 
 Export-ModuleMember -Function Invoke-PSScriptAnalyzerScan
+
 
 

@@ -1,7 +1,6 @@
 # .dockerignore — PwShGUI workspace
 # Excludes workspace-only artefacts from Docker build context
-# VersionTag: 2605.B5.V51.0
-
+# VersionTag: 2606.B5.V51.4
 # ── Version control ──────────────────────────────────────────────────────────
 .git/
 .githooks/
@@ -40,3 +39,4 @@ agents/*/pki/*.key
 
 # ── Large one-off folders ────────────────────────────────────────────────────
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
+

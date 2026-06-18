@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'
 Import-Module (Join-Path $root 'modules\PwShGUI-XhtmlReportTester.psm1') -Force -DisableNameChecking
@@ -45,5 +45,6 @@ $d = Invoke-SinDriftScan -Root (Join-Path $root 'modules')
 "  Drift findings: $(@($d).Count)"
 
 Write-Host 'FUNCTIONAL-OK'
+
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # iter16 verify
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-VersionManager.psm1 -Force -DisableNameChecking
@@ -23,5 +23,6 @@ $rules = @('PSPossibleIncorrectComparisonWithNull','PSUseApprovedVerbs','PSUseBO
 $findings = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule $rules
 Write-Host ("Remaining (filtered rules): " + @($findings).Count)
 $findings | Format-Table RuleName,@{N='File';E={Split-Path $_.ScriptPath -Leaf}},Line -AutoSize
+
 
 

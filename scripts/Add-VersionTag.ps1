@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 # Insert a VersionTag header into specified files. Encoding-preserving.
 # Skips files that already have a VersionTag.
@@ -144,4 +144,5 @@ $results | Group-Object Action | Sort-Object Count -Descending |
 Write-Host ""
 $results | Format-Table Path,Action,Encoding -AutoSize | Out-String -Width 200 | Write-Host
 Write-Host ("Log: {0}" -f $LogPath)
+
 

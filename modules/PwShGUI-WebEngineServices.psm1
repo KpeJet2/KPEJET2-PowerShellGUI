@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V51.2
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-25
@@ -306,3 +306,4 @@ Export-ModuleMember -Function @(
     'Get-WebEngineServiceDefinitions',
     'Invoke-WebEngineComponentUpgrade'
 )
+

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $path = 'C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml'
 $lines = [System.IO.File]::ReadAllLines($path)
 # Keep through line 869 (index 868)
@@ -116,5 +116,6 @@ $final.Add($tail)
 "Written. Re-validating..."
 $xml = New-Object System.Xml.XmlDocument
 try { $xml.Load($path); 'XHTML-OK' } catch [System.Xml.XmlException] { "XmlException line {0} col {1}: {2}" -f $_.Exception.LineNumber, $_.Exception.LinePosition, $_.Exception.Message }
+
 
 

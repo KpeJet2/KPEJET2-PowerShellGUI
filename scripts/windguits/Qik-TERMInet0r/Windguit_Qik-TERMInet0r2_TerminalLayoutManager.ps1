@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 <# 
     TerminalLayoutManager.ps1
     Single-file WPF, dark mode, tabbed UI, on-demand elevation (simplified but functional core).
@@ -667,6 +667,7 @@ $window.ShowDialog() | Out-Null
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 """
 MultiModelDispatcher — Parallel AI model dispatch for FocalPoint-null
 Author: The Establishment
@@ -348,5 +348,6 @@ class MultiModelDispatcher:
             + ", ".join(ep.endpoint_id for ep in endpoints),
         )
         return cls(endpoints=endpoints, log=log, default_timeout_seconds=default_timeout)
+
 
 

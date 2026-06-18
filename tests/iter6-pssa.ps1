@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-PSScriptAnalyzerScan.psm1 -Force -DisableNameChecking
 $out = 'C:\PowerShellGUI\reports\iter6'
@@ -12,5 +12,6 @@ if ($res.Available -eq $false) {
 "Findings (total): " + ($res.Findings.Count)
 $res.Findings | Group-Object RuleName | Sort-Object Count -Descending | Select-Object -First 15 Count, Name | Format-Table -AutoSize
 $res | ConvertTo-Json -Depth 5 | Set-Content -Path (Join-Path $out 'pssa-modules.json') -Encoding UTF8
+
 
 

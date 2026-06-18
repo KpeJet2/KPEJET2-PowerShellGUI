@@ -1,4 +1,4 @@
-﻿# VersionTag: 2606.B5.V51.2
+# VersionTag: 2606.B5.V51.4
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -50,4 +50,5 @@ if (@($missing).Count -gt 0) {
 
 Write-Host '[UI-EVENT-SAFETY] PASS - tray callback resilience guards detected.' -ForegroundColor Green
 exit 0
+
 

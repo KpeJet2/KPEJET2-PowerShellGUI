@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-DependencyMap.psm1 -Force -DisableNameChecking
 Import-Module C:\PowerShellGUI\modules\PwShGUI-BreakingChange.psm1 -Force -DisableNameChecking
@@ -21,5 +21,6 @@ $found = foreach ($s in $sec9) {
     [PSCustomObject]@{ Module = $name; FunctionCount = $hits.Count }
 }
 $found | Format-Table -AutoSize
+
 
 

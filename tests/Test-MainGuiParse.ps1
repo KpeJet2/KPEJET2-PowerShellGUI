@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 $tokens = $null; $errors = $null
 [System.Management.Automation.Language.Parser]::ParseFile('c:\PowerShellGUI\Main-GUI.ps1', [ref]$tokens, [ref]$errors) | Out-Null
@@ -8,5 +8,6 @@ if ($errors -and $errors.Count -gt 0) {
 } else {
     Write-Host ("Parse OK on PS {0} (Tokens={1})" -f $PSVersionTable.PSVersion, $tokens.Count) -ForegroundColor Green
 }
+
 
 

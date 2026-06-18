@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-SinHeatmap.psm1 -Force -DisableNameChecking
 
@@ -19,5 +19,6 @@ $heat = Get-SinHeatmap -FindingsPath $fJson -SvgPath $svg -Top 20
 $heat | Format-Table -AutoSize
 $heat | ConvertTo-Json -Depth 4 | Set-Content -Path (Join-Path $out 'heatmap-top20.json') -Encoding UTF8
 "SVG written: $svg ($([System.IO.File]::ReadAllBytes($svg).Length) bytes)"
+
 
 

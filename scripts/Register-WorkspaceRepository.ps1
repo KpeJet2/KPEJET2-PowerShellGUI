@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 # Registers a local PowerShell repository in the workspace
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -61,6 +61,7 @@ if (-not (Get-PSRepository -Name WorkspaceRepo -ErrorAction SilentlyContinue)) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

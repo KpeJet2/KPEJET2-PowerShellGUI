@@ -1,7 +1,7 @@
-# VersionTag: 2605.B5.V51.1
-# VersionTag: 2605.B5.V51.1
-# VersionTag: 2605.B5.V51.1
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
+# VersionTag: 2606.B5.V51.4
+# VersionTag: 2606.B5.V51.4
+# VersionTag: 2606.B5.V51.4
 """
 FocalPoint-null Compatibility Shim
 Applies necessary monkey-patches to fix known upstream library incompatibilities.
@@ -55,6 +55,7 @@ def _patch_otel_span_attributes() -> None:
             SpanAttributes.LLM_SYSTEM = "gen_ai.system"
     except ImportError:
         pass
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # Iter43 — P006 BOM burndown helper
 # Reads latest scan JSON, ensures UTF-8 BOM on every flagged file.
 [CmdletBinding()]
@@ -26,5 +26,6 @@ foreach ($rel in $files) {
     $fixed++
 }
 Write-Output "Fixed=$fixed Skipped=$skipped Missing=$missing Total=$($files.Count)"
+
 
 

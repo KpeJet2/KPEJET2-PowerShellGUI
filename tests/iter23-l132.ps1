@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $path = 'C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1'
 $lines = [IO.File]::ReadAllLines($path)
 foreach ($n in @(131,132,133,134,135)) {
@@ -9,5 +9,6 @@ foreach ($n in @(131,132,133,134,135)) {
         if ($code -gt 127) { Write-Host ("  [$i] '$c' U+{0:X4}" -f $code) }
     }
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 $out  = Join-Path -Path 'C:\PowerShellGUI' -ChildPath 'reports\iter3'
 if (-not (Test-Path $out)) { New-Item -ItemType Directory -Path $out -Force | Out-Null }
@@ -37,5 +37,6 @@ $d2 = Invoke-SinDriftScan -Root (Join-Path -Path 'C:\PowerShellGUI' -ChildPath '
 Write-Host '== Done =='
 "Reports written to $out"
 Get-ChildItem $out | Select-Object Name, Length | Format-Table -AutoSize | Out-String
+
 
 

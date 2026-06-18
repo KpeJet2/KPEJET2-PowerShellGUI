@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-AutoRemediate.psm1 -Force -DisableNameChecking
 $ConfirmPreference = 'None'
@@ -12,5 +12,6 @@ try {
     $_.ScriptStackTrace
     if ($_.Exception.InnerException) { "Inner: " + $_.Exception.InnerException.Message }
 }
+
 
 

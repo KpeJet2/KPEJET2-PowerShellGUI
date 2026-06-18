@@ -1,5 +1,5 @@
 # Iter11: Surface diff vs iter5 JSON baseline + Iter12: SIN drift scan
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'
 $outDir = Join-Path $root 'reports\iter11'
@@ -68,5 +68,6 @@ $resolved = @(Get-ResolvedSinPatterns -RegistryPath (Join-Path $root 'sin_regist
 Write-Host "RESOLVED patterns to drift-scan: $($resolved.Count)"
 $drift = @(Invoke-SinDriftScan -Root (Join-Path $root 'modules') -OutputPath $driftPath)
 Write-Host ("[ITER12] drift findings: {0} -> {1}" -f @($drift).Count, $driftPath)
+
 
 

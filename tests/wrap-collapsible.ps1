@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $path = 'C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml'
 $sections = @(
     @{ id='sec1'; h='1. Agent Scoreboard' },
@@ -39,5 +39,6 @@ foreach ($l in $out) {
 [System.IO.File]::WriteAllLines($path, $final, (New-Object System.Text.UTF8Encoding($true)))
 "Lines: $($final.Count)"
 try { [xml](Get-Content $path -Raw -Encoding UTF8) | Out-Null; "XHTML-OK" } catch { "XHTML-FAIL: $_" }
+
 
 

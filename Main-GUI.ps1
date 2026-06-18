@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V51.1
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -2739,14 +2739,151 @@ function New-BuildManifest {
 
     $manifestLines | Out-File -FilePath $manifestPath -Encoding UTF8
 
+    $cacheEntries = @($newCacheEntries.ToArray())
     $cachePayload = @{
         Version = $versionString
         Generated = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
-        Entries = @($newCacheEntries)
+        Entries = $cacheEntries
     }
     $cachePayload | ConvertTo-Json -Depth 6 | Set-Content -Path $manifestCachePath -Encoding UTF8
 
     Write-AppLog "Manifest cache summary: reused=$reusedCount refreshed=$refreshedCount total=$($reusedCount + $refreshedCount)" "Info"
+}
+
+function Get-FriendlyErrorSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$ErrorRecord
+    )
+
+    $parts = @()
+
+    if ($ErrorRecord -and $ErrorRecord.Exception) {
+        $message = [string]$ErrorRecord.Exception.Message
+        if (-not [string]::IsNullOrWhiteSpace($message)) {
+            $parts += $message.Trim()
+        }
+
+        if ($ErrorRecord.Exception.InnerException) {
+            $innerMessage = [string]$ErrorRecord.Exception.InnerException.Message
+            if (-not [string]::IsNullOrWhiteSpace($innerMessage) -and -not ($parts -contains $innerMessage.Trim())) {
+                $parts += $innerMessage.Trim()
+            }
+        }
+    }
+
+    $reason = ''
+    try {
+        $reason = [string]$ErrorRecord.CategoryInfo.Reason
+    } catch {
+        $reason = ''
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($reason) -and -not ($parts -contains $reason.Trim())) {
+        $parts += $reason.Trim()
+    }
+
+    if (@($parts).Count -eq 0) {
+        return [string]$ErrorRecord
+    }
+
+    return ($parts -join ' | ')
+}
+
+function Write-StartupIssueSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [object[]]$Issues,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ExpectedVersion,
+
+        [int]$MaxPerGroup = 8
+    )
+
+    $issueKinds = @(
+        [PSCustomObject]@{ Name = 'tag mismatch'; Label = 'Tag mismatches' },
+        [PSCustomObject]@{ Name = 'missing tag'; Label = 'Missing version tags' },
+        [PSCustomObject]@{ Name = 'not in manifest'; Label = 'Missing from manifest' }
+    )
+
+    Write-Information "Detected issues:" -InformationAction Continue
+    foreach ($issueKind in $issueKinds) {
+        $groupItems = @($Issues | Where-Object { $_.Issue -eq $issueKind.Name })
+        if (@($groupItems).Count -eq 0) { continue }
+
+        Write-Information ("  {0}: {1}" -f $issueKind.Label, @($groupItems).Count) -InformationAction Continue
+        foreach ($groupItem in ($groupItems | Select-Object -First $MaxPerGroup)) {
+            $detail = $groupItem.Path
+            if ($issueKind.Name -eq 'tag mismatch' -and $groupItem.Found) {
+                $detail = "$detail (found: $($groupItem.Found), expected: $ExpectedVersion)"
+            }
+            Write-Information "    - $detail" -InformationAction Continue
+        }
+
+        $remaining = @($groupItems).Count - [Math]::Min(@($groupItems).Count, $MaxPerGroup)
+        if ($remaining -gt 0) {
+            Write-Information "    ... and $remaining more" -InformationAction Continue
+        }
+        Write-Information "" -InformationAction Continue
+    }
+}
+
+function Get-StartupParentProcessId {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$ProcessId,
+
+        [int]$OperationTimeoutSec = 1
+    )
+
+    if ($ProcessId -le 0) { return $null }
+
+    try {
+        $proc = Get-CimInstance Win32_Process -Filter ("ProcessId = " + $ProcessId) -OperationTimeoutSec $OperationTimeoutSec -ErrorAction Stop
+        if ($proc -and $proc.ParentProcessId) {
+            return [int]$proc.ParentProcessId
+        }
+    } catch {
+        return $null
+    }
+
+    return $null
+}
+
+function Get-StartupProcessSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$ProcessId,
+
+        [switch]$IncludeParentProcessId,
+
+        [int]$OperationTimeoutSec = 1
+    )
+
+    if ($ProcessId -le 0) { return $null }
+
+    try {
+        $proc = Get-Process -Id $ProcessId -ErrorAction Stop
+        $summary = [ordered]@{
+            ProcessId = [int]$proc.Id
+            Name = [string]$proc.ProcessName
+            Summary = ("{0} (PID {1})" -f $proc.ProcessName, $proc.Id)
+            ParentProcessId = $null
+        }
+
+        if ($IncludeParentProcessId) {
+            $summary.ParentProcessId = Get-StartupParentProcessId -ProcessId $proc.Id -OperationTimeoutSec $OperationTimeoutSec
+        }
+
+        return [PSCustomObject]$summary
+    } catch {
+        return $null
+    }
 }
 
 function Test-VersionTag {
@@ -2908,6 +3045,7 @@ function Compare-ExcludedFolder {
     )
     $excludes = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
     $reportedIssues = New-Object 'System.Collections.Generic.HashSet[string]'
+    $manifestDriftPaths = New-Object 'System.Collections.Generic.List[string]'
 
     foreach ($ex in $excludes) {
         if ($ex -ieq 'logs') { continue }
@@ -2954,7 +3092,7 @@ function Compare-ExcludedFolder {
                 $issueKey = "$ex|$relname"
                 if (-not $reportedIssues.Add($issueKey)) { return }
 
-                Write-AppLog "$relname exists but not in manifest" "Error"
+                $manifestDriftPaths.Add($relativeFromExcludedFolder) | Out-Null
                 if ($diffs) { $diffs.Value += "$folderPath\$relname - not in manifest" }
                 if ($orphanCandidates) {
                     $orphanCandidates.Value.Add([ordered]@{
@@ -2982,6 +3120,12 @@ function Compare-ExcludedFolder {
                 }
             }
         }
+    }
+
+    if ($manifestDriftPaths.Count -gt 0) {
+        $samplePaths = @($manifestDriftPaths | Select-Object -First 8)
+        Write-AppLog "Manifest inventory drift detected: $($manifestDriftPaths.Count) file(s) missing from manifest entries" "Warning"
+        Write-AppLog ("Manifest drift sample: {0}" -f ([string]::Join('; ', $samplePaths))) "Info"
     }
 }
 
@@ -10715,7 +10859,7 @@ $major = $versionInfo.Major
 $minor = $versionInfo.Minor
 $build = $versionInfo.Build
 $hasIssues = $false
-$issueDetails = @()
+$issueRecords = New-Object 'System.Collections.Generic.List[object]'
 
 if ($StartupMode -eq 'slow_snr') {
     # Phase 1: Check version tags BEFORE any auto-increment
@@ -10730,11 +10874,18 @@ if ($StartupMode -eq 'slow_snr') {
             foreach($folder in $folders) {
                 $files = $folder.SelectNodes('File')
                 foreach($file in $files) {
-                    $issue = "$($file.GetAttribute('name')) - $($file.GetAttribute('issue'))"
-                    if ($file.HasAttribute('found')) {
-                        $issue += " (found: $($file.GetAttribute('found')), expected: $($file.GetAttribute('expected')))"
+                    $issuePath = $file.GetAttribute('name')
+                    $folderPath = $folder.GetAttribute('path')
+                    if (-not [string]::IsNullOrWhiteSpace($folderPath) -and $folderPath -ne '.' -and $issuePath -notmatch '[\\/]') {
+                        $issuePath = Join-Path $folderPath $issuePath
                     }
-                    $issueDetails += $issue
+
+                    $issueRecords.Add([PSCustomObject]@{
+                        Path = $issuePath
+                        Issue = $file.GetAttribute('issue')
+                        Found = if ($file.HasAttribute('found')) { $file.GetAttribute('found') } else { '' }
+                        Expected = if ($file.HasAttribute('expected')) { $file.GetAttribute('expected') } else { '' }
+                    }) | Out-Null
                 }
             }
         }
@@ -10754,10 +10905,7 @@ if ($StartupMode -eq 'slow_snr') {
         Write-Information "VERSION-TAGS FOUND THAT DO NOT MATCH" -InformationAction Continue
         Write-Information "Current Version: $(Get-VersionString)" -InformationAction Continue
         Write-Information "" -InformationAction Continue
-        Write-Information "Mismatches detected:" -InformationAction Continue
-        foreach($detail in $issueDetails) {
-            Write-Information "  - $detail" -InformationAction Continue
-        }
+        Write-StartupIssueSummary -Issues @($issueRecords) -ExpectedVersion (Get-VersionString)
         Write-Information "" -InformationAction Continue
         Write-Information "=====================================================================" -InformationAction Continue
         Write-Information "" -InformationAction Continue
@@ -10873,7 +11021,8 @@ try {
     }
     Write-AppLog "Phase 3: Build manifest generation completed successfully" "Info"
 } catch {
-    Write-AppLog "Phase 3 ERROR: Failed to generate build manifest: $_" "Error"
+    $manifestErrorSummary = Get-FriendlyErrorSummary -ErrorRecord $_
+    Write-AppLog "Phase 3 ERROR: Failed to generate build manifest. $manifestErrorSummary" "Error"
     Write-AppLog "DEBUG: Full exception details:`n$($_.ScriptStackTrace)" "Debug"
     Write-AppLog "Phase 3: Continuing to Phase 4 despite manifest generation failure" "Warning"
 }
@@ -10895,26 +11044,38 @@ try {
     $versionInfo = Get-VersionInfo
     $configVersion = Get-VersionString
     $timezone = (Get-TimeZone).DisplayName
-    $currentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $PID" -ErrorAction Stop
+    $processTreeFallback = $false
+    $currentProcess = Get-StartupProcessSummary -ProcessId $PID -IncludeParentProcessId -OperationTimeoutSec 1
     if ($currentProcess) {
         $parentPid = $currentProcess.ParentProcessId
         if ($parentPid) {
-            $parentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $parentPid" -ErrorAction SilentlyContinue
+            $parentProcess = Get-StartupProcessSummary -ProcessId $parentPid -IncludeParentProcessId -OperationTimeoutSec 1
             if ($parentProcess) {
-                $parentProcessSummary = "$($parentProcess.Name) (PID $($parentProcess.ProcessId))"
+                $parentProcessSummary = [string]$parentProcess.Summary
                 if ($parentProcess.ParentProcessId) {
-                    $grandParentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $($parentProcess.ParentProcessId)" -ErrorAction SilentlyContinue
+                    $grandParentProcess = Get-StartupProcessSummary -ProcessId $parentProcess.ParentProcessId -OperationTimeoutSec 1
                     if ($grandParentProcess) {
-                        $grandParentProcessSummary = "$($grandParentProcess.Name) (PID $($grandParentProcess.ProcessId))"
+                        $grandParentProcessSummary = [string]$grandParentProcess.Summary
                     }
                 }
+            } else {
+                $processTreeFallback = $true
             }
+        } else {
+            $processTreeFallback = $true
         }
+    } else {
+        throw "Current process lookup failed for PID $PID"
+    }
+
+    if ($processTreeFallback) {
+        Write-AppLog "Phase 4: Parent process details unavailable; continuing with partial process tree information" "Warning"
     }
     Write-AppLog "Phase 4: Launch process tree resolved -- MainGUI PID $currentProcessPid | Parent $parentProcessSummary | GrandParent $grandParentProcessSummary" "Info"
     Write-AppLog "Phase 4: System information resolved successfully" "Info"
 } catch {
-    Write-AppLog "Phase 4 ERROR: System information collection failed: $_" "Error"
+    $systemInfoErrorSummary = Get-FriendlyErrorSummary -ErrorRecord $_
+    Write-AppLog "Phase 4 ERROR: System information collection failed. $systemInfoErrorSummary" "Error"
     Write-AppLog "Phase 4: Using fallback values for system information" "Warning"
 }
 
@@ -11064,6 +11225,7 @@ Export-LogBuffer
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

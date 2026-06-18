@@ -1,3 +1,4 @@
+<!-- VersionTag: 2606.B5.V51.4 -->
 <SystemVariables>
   <ProcessorCount>
   </ProcessorCount>
@@ -21,9 +22,11 @@
   <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
   <PowerShellVersion>7</PowerShellVersion>
   <Version>
-    <Major>2605</Major>
-    <Minor>B0</Minor>
-    <Build>0</Build>
+    <Major>2606</Major>
+    <Minor>B5</Minor>
+    <Build>6</Build>
+    <VMajor>51</VMajor>
+    <VMinor>4</VMinor>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>

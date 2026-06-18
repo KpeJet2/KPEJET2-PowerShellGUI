@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $path = 'C:\PowerShellGUI\scripts\Build-AgenticManifest.ps1'
 $bytes = [System.IO.File]::ReadAllBytes($path)
 # bytes 0-2 = BOM, byte 3 = stray '?' (3F) from round-trip damage
@@ -12,5 +12,6 @@ if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF -and $byt
 $tokens=$null;$errs=$null
 [void][System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errs)
 "Parse errors: $($errs.Count)"
+
 
 

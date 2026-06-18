@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # Pester 5.x tests for EventLog standard layer + DiffScheduler.
@@ -101,5 +101,6 @@ Describe 'EventLogStandard -- script registration' {
         }
     }
 }
+
 
 

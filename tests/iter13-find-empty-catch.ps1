@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # iter13: find empty/whitespace/comment-only catch blocks in source
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI'
@@ -29,5 +29,6 @@ if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir -Forc
 $hits | ConvertTo-Json -Depth 4 | Set-Content -Path (Join-Path $outDir 'empty-catch-findings.json') -Encoding UTF8
 Write-Host ("Empty/whitespace/comment-only catches (non-exempt): " + $hits.Count)
 $hits | Select-Object -First 30 | Format-Table -AutoSize
+
 
 

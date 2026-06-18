@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # PwShGUI-TrayServiceRoutes.psm1 — HTTP API routes for tray service config and seeding
 
 Set-StrictMode -Version Latest
@@ -348,3 +348,4 @@ Export-ModuleMember -Function @(
     'Invoke-SeedingRoute',
     'Send-JsonResponse'
 )
+

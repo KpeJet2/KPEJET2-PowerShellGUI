@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ms = 'PwShGUI-DependencyMap','PwShGUI-CoverageReport','PwShGUI-AutoRemediate','PwShGUI-SinFromScan','PwShGUI-BreakingChange','PwShGUI-PSScriptAnalyzerScan'
 foreach ($m in $ms) {
     try {
@@ -8,5 +8,6 @@ foreach ($m in $ms) {
         "FAIL $m -> $_"
     }
 }
+
 
 

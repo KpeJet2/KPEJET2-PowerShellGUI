@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # FileRole: Pipeline
@@ -183,4 +183,5 @@ $json = $manifest | ConvertTo-Json -Depth 8
 
 Write-Host ("Scan tools manifest written: {0}" -f $OutputPath)
 Write-Host ("  rows={0}  summaries={1}  cronTasks={2}" -f @($rows).Count, @($summaries).Count, $cronTasks.Keys.Count)
+
 

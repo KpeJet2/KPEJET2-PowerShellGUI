@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -179,6 +179,7 @@ Write-Host "  Type:      $Type" -ForegroundColor Gray
 Write-Host "  Functions: $(@($Functions).Count)" -ForegroundColor Gray
 Write-Host "  BOM:       Yes (UTF-8)" -ForegroundColor Gray
 Write-Host "  SIN-compliant: VersionTag, CmdletBinding, Write-AppLog, try/catch" -ForegroundColor Gray
+
 
 
 

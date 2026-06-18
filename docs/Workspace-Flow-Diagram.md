@@ -1,3 +1,4 @@
+# VersionTag: 2606.B5.V51.4
 # Workspace Flow Diagram
 
 This diagram maps the complete operational flow for the PowerShellGUI workspace, including launch paths, core runtime services, UI surfaces, governance, testing, and artifact outputs.
@@ -125,3 +126,4 @@ flowchart TD
     G3 --> O5
     O1 --> O2
 ```
+

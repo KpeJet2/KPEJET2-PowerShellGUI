@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 Import-Module C:\PowerShellGUI\modules\PwShGUI-LegacyEncoding.psm1 -Force -DisableNameChecking
 $tgts = @('C:\PowerShellGUI\scripts','C:\PowerShellGUI\sovereign-kernel','C:\PowerShellGUI\agents','C:\PowerShellGUI\UPM')
 $start = Get-Date
@@ -13,5 +13,6 @@ $dbl = @($results | Where-Object { $_.FixedDoubleEncoded })
 "Repaired total: $($results.Count) in $([math]::Round($elapsed.TotalSeconds,1))s"
 "P023 (double-encoded) repaired: $($dbl.Count)"
 $dbl | Select-Object Path
+
 
 

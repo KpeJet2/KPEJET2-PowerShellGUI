@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $path = 'C:\PowerShellGUI\~REPORTS\SIN-Scoreboard.xhtml'
 $xml = New-Object System.Xml.XmlDocument
 try {
@@ -14,5 +14,6 @@ try {
         "Outer: $($_.Exception.Message.Substring(0,[Math]::Min(200,$_.Exception.Message.Length)))"
     }
 }
+
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 # FileRole: ServiceDashboard-Backend
 # service-cluster-dashboard/server.py
 # FastAPI backend for PwShGUI Service Cluster Dashboard
@@ -966,5 +966,6 @@ if __name__ == "__main__":
         )
     except KeyboardInterrupt:
         print("[INFO] Dashboard shutdown requested. Exiting cleanly.")
+
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V51.1
+# VersionTag: 2606.B5.V51.4
 $ErrorActionPreference = 'Stop'
 Import-Module C:\PowerShellGUI\modules\PwShGUI-SinHeatmap.psm1 -Force -DisableNameChecking
 $f = 'C:\PowerShellGUI\reports\iter9\pssa-findings.json'
@@ -15,5 +15,6 @@ try {
     "ERR: $($_.Exception.Message)"
     $_.ScriptStackTrace
 }
+
 
 
