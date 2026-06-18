@@ -202,7 +202,8 @@ if /I "!STEP_MODE!"=="TEST" (
 
 echo [WARN] Local web engine appears offline. Running engine monitor auto recovery...
 if exist "%MONITOR_SCRIPT%" (
-  "%PWSH_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%MONITOR_SCRIPT%" /AUTO
+  start "EngineMonitorAuto" /min "%PWSH_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%MONITOR_SCRIPT%" /AUTO
+  echo [INFO] Engine monitor launched in background; dashboard startup will continue.
 ) else (
   echo [WARN] Engine monitor script not found at "%MONITOR_SCRIPT%".
   exit /b 0
@@ -210,6 +211,7 @@ if exist "%MONITOR_SCRIPT%" (
 
 set /a OFFLINE_STREAK=0
 for /L %%I in (1,1,4) do (
+  timeout /t 2 /nobreak >nul
   call :CheckEngine
   if /I "!ENGINE_STATE!"=="ONLINE" goto :RecoverDone
   set /a OFFLINE_STREAK+=1
@@ -217,7 +219,7 @@ for /L %%I in (1,1,4) do (
 
 :RecoverDone
 if !OFFLINE_STREAK! GEQ 4 (
-  echo [WARN] Engine remained offline for multiple heartbeats.
+  echo [WARN] Engine remained offline for multiple heartbeats; launching dashboard anyway.
 ) else (
   echo [OK] Engine recovered and is online.
 )
@@ -229,6 +231,12 @@ if not exist "%REQ_FILE%" (
   exit /b 1
 )
 
+"%PYTHON%" -c "import fastapi, uvicorn" >nul 2>&1
+if not errorlevel 1 (
+  echo [INFO] Dashboard dependencies already available; skipping pip install.
+  exit /b 0
+)
+
 if /I "!STEP_MODE!"=="TEST" (
   echo [INFO] requirements.txt found: "%REQ_FILE%"
   "%PIP%" --version >nul 2>&1
@@ -237,6 +245,12 @@ if /I "!STEP_MODE!"=="TEST" (
     exit /b 1
   )
   echo [OK] pip is available for dependency install.
+  exit /b 0
+)
+
+if /I "%MODE%"=="AUTO" (
+  echo [WARN] AUTO mode: skipping pip install to avoid blocking startup.
+  echo [WARN] If startup fails due missing modules, run launcher interactively and test/install dependencies.
   exit /b 0
 )
 

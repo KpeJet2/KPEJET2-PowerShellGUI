@@ -1,50 +1,50 @@
 {
-  "version": "2604.B1.V32.0",
-  "lastFullScan": "",
-  "currentScanPid": 69404,
-  "currentScanMode": "Full",
   "phases": {
     "folders": {
+      "completedAt": "2026-06-18T11:13:23.1464934+08:00",
       "status": "done",
-      "completedAt": "2026-06-18T10:41:18.6879014+08:00",
-      "durationMs": 1874,
+      "durationMs": 2454,
       "count": 118
     },
     "modules": {
+      "completedAt": "2026-06-18T11:13:39.9976139+08:00",
       "status": "done",
       "functionCount": 594,
-      "completedAt": "2026-06-18T10:41:35.2413885+08:00",
-      "durationMs": 16527,
-      "count": 119
+      "count": 119,
+      "durationMs": 16821
     },
     "scripts": {
+      "completedAt": "2026-06-18T11:13:50.7526471+08:00",
       "status": "done",
       "functionCount": 349,
-      "completedAt": "2026-06-18T10:41:53.5154031+08:00",
-      "durationMs": 18263,
-      "count": 349
+      "count": 349,
+      "durationMs": 10743
     },
     "configs": {
+      "completedAt": "2026-06-18T11:14:01.0686641+08:00",
       "status": "done",
-      "completedAt": "2026-06-18T10:42:04.9814007+08:00",
-      "durationMs": 11463,
+      "durationMs": 10314,
       "count": 886
     },
     "urls_ips": {
+      "completedAt": "2026-06-18T11:14:31.8177532+08:00",
       "urlFileCount": 215,
+      "durationMs": 30747,
       "uniqueIPs": 36,
-      "completedAt": "2026-06-18T10:42:38.6535595+08:00",
-      "durationMs": 33670,
       "status": "done"
     },
     "dns_resolution": {
+      "completedAt": "2026-06-18T11:15:15.2908470+08:00",
+      "status": "done",
+      "durationMs": 43471,
       "resolved": 120,
-      "completedAt": "2026-06-18T10:43:17.6287062+08:00",
-      "hostsChecked": 136,
-      "durationMs": 38972,
-      "status": "done"
+      "hostsChecked": 136
     }
   },
-  "generated": "2026-06-18T10:43:17.6626193+08:00",
+  "currentScanMode": "Full",
+  "currentScanPid": 54540,
+  "lastFullScan": "",
+  "version": "2604.B1.V32.0",
+  "generated": "2026-06-18T11:15:15.3237968+08:00",
   "mode": "Static"
 }

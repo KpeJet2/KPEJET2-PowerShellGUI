@@ -32,7 +32,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import httpx
-import psutil
 import uvicorn
 from fastapi import (
     Depends,
@@ -48,6 +47,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+try:
+    import psutil  # type: ignore
+    _PSUTIL_IMPORT_ERROR: Optional[str] = None
+except Exception as _psutil_ex:
+    psutil = None  # type: ignore
+    _PSUTIL_IMPORT_ERROR = str(_psutil_ex)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
@@ -168,6 +174,8 @@ def _engine_running() -> bool:
     pid = _get_engine_pid()
     if pid is None:
         return False
+    if psutil is None:
+        return False
     try:
         return psutil.pid_exists(pid) and psutil.Process(pid).is_running()
     except Exception:
@@ -184,6 +192,29 @@ async def _engine_responding() -> bool:
 
 
 def _collect_metrics() -> Dict[str, Any]:
+    if psutil is None:
+        return {
+            "ts": datetime.now(tz=timezone.utc).isoformat(),
+            "cpu_pct": 0,
+            "ram": {
+                "total_gb": 0,
+                "available_gb": 0,
+                "used_gb": 0,
+                "percent": 0,
+            },
+            "disk": {},
+            "top_procs": [],
+            "host": {
+                "node": platform.node(),
+                "system": platform.system(),
+                "release": platform.release(),
+                "machine": platform.machine(),
+                "python": sys.version,
+                "boot_time_utc": None,
+            },
+            "warnings": [f"psutil unavailable: {_PSUTIL_IMPORT_ERROR}"],
+        }
+
     cpu = psutil.cpu_percent(interval=None)
     vm  = psutil.virtual_memory()
     boot_ts = datetime.fromtimestamp(psutil.boot_time(), tz=timezone.utc).isoformat()
