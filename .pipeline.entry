@@ -1,0 +1,22 @@
+{
+  "_type": "pipeline.entry",
+  "_version": "1.0",
+  "_standard": "PwShGUI dotfile standard — marks this directory/script as a PIPELINE ENTRY POINT",
+  "_usage": "Place this file alongside or inside the folder of the entry-point script. Fill in the fields below.",
+
+  "pipeline": "",
+  "entry_script": "",
+  "description": "Gateway or top-level entry point that initiates a pipeline process.",
+
+  "triggers": [],
+  "outputs": [],
+  "downstream_stages": [],
+
+  "flags": {
+    "is_blocking": false,
+    "requires_gui_check": false,
+    "has_dryrun_mode": false
+  },
+
+  "notes": ""
+}

@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
+  "sin_id": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
+  "title": "Legacy IMPLEMENTED status token drift",
+  "description": "Mixed use of IMPLEMENTED alongside DONE/CLOSED creates ambiguous completion semantics and unstable reporting rollups.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "Pipeline/StatusVocabulary",
+  "detection_method": "Regex scan for IMPLEMENTED status token in pipeline code and UI mappings.",
+  "scan_regex": "\\bIMPLEMENTED\\b",
+  "context_guard_regex": "legacy|compat|migration",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.json;*.xhtml;*.html;*.js;*.ts;*.md",
+  "ps_version_scope": "BOTH",
+  "remediation": "Use DONE/CLOSED for canonical terminal states and maintain explicit one-way legacy mapping where needed.",
+  "examples": [
+    "# Bad\nif ($item.status -eq 'IMPLEMENTED') { ... }",
+    "# Good\nif ($item.status -eq 'DONE') { ... }"
+  ],
+  "tags": ["status", "reporting", "consistency"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

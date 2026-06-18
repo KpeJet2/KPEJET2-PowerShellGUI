@@ -1,0 +1,38 @@
+{
+  "id": "SIN-PATTERN-074-FASTAPI-LIFESPAN-TASK-NO-CANCEL_20260524",
+  "sin_id": "SIN-PATTERN-074-FASTAPI-LIFESPAN-TASK-NO-CANCEL_20260524",
+  "title": "FastAPI lifespan creates background tasks without cancel and await on shutdown",
+  "description": "Background tasks started with asyncio.create_task in a FastAPI lifespan function must be cancelled and awaited during shutdown. Missing cancellation frequently surfaces as CancelledError traceback noise and leaves nondeterministic cleanup.",
+  "severity": "HIGH",
+  "category": "reliability",
+  "vector": "fastapi-lifespan-task-no-cancel",
+  "ps_version_scope": "N/A",
+  "status": "pattern-defined",
+  "created_at": "2026-05-24T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for asyncio.create_task usage in lifespan blocks without cancel/gather cleanup",
+  "scan_regex": "asyncio\\.create_task\\(",
+  "scan_file_pattern": "*.py",
+  "file_exclusion_regex": "sin_registry|venv|\\.venv|site-packages|tests",
+  "context_guard_regex": "task\\.cancel\\(|asyncio\\.gather\\(.*return_exceptions\\s*=\\s*True",
+  "context_guard_lines": 40,
+  "context_guard_direction": "both",
+  "preventionRule": "In lifespan finally blocks, cancel all created tasks and await them with asyncio.gather(return_exceptions=True).",
+  "remedy": "Store each created task in a variable, cancel in finally, then await gather with return_exceptions=True before exit.",
+  "tags": [
+    "python",
+    "fastapi",
+    "lifespan",
+    "asyncio",
+    "shutdown"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

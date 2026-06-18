@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # Module: PwShGUI-AgentScorecard
 # Purpose: Aggregate per-agent activity from agents/ + reports/ into a scorecard.
 
@@ -55,4 +56,5 @@ function Get-AgentScorecard {
 }
 
 Export-ModuleMember -Function Get-AgentScorecard
+
 

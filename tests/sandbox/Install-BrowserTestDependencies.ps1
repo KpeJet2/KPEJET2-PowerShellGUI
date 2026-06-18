@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -59,6 +59,11 @@ Write-BTLog '=================================================================='
 Write-BTLog '  Browser Test Dependency Installer'
 Write-BTLog '=================================================================='
 
+# Timeout tiers
+$TimeoutMetadataSec = 30
+$TimeoutBootstrapDownloadSec = 120
+$TimeoutArtifactDownloadSec = 300
+
 # ========================== SELENIUM .NET BINARIES ==========================
 function Install-SeleniumBindings {
     Write-BTLog 'Installing Selenium .NET bindings...'
@@ -70,7 +75,7 @@ function Install-SeleniumBindings {
         $nugetPath = Join-Path $DriverDir 'nuget.exe'
         if (-not (Test-Path $nugetPath)) {
             Write-BTLog 'Downloading nuget.exe...'
-            Invoke-WebRequest -Uri 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile $nugetPath -UseBasicParsing
+            Invoke-WebRequest -Uri 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile $nugetPath -UseBasicParsing -TimeoutSec $TimeoutBootstrapDownloadSec
         }
 
         & $nugetPath install Selenium.WebDriver -OutputDirectory $seleniumDir -NonInteractive -Verbosity quiet 2>&1 | Out-Null
@@ -132,7 +137,7 @@ function Install-EdgeDriver {
             $url = $edgeCfg.driverDownloadUrlTemplate -replace '\{VERSION\}', $version
             $zipPath = Join-Path $DriverDir 'edgedriver.zip'
             Write-BTLog "Downloading Edge driver from: $url"
-            Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
+            Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing -TimeoutSec $TimeoutArtifactDownloadSec
             Expand-Archive -Path $zipPath -DestinationPath $DriverDir -Force
             Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
             # Move driver from subfolder if needed
@@ -173,7 +178,7 @@ function Install-ChromeDriver {
         try {
             # Get matching driver version from Chrome for Testing API
             $cfgUrl = $chromeCfg.driverDownloadUrl
-            $cfgJson = Invoke-WebRequest -Uri $cfgUrl -UseBasicParsing | ConvertFrom-Json
+            $cfgJson = Invoke-WebRequest -Uri $cfgUrl -UseBasicParsing -TimeoutSec $TimeoutMetadataSec | ConvertFrom-Json
             $stableUrl = $null
             if ($cfgJson.channels.Stable.downloads.chromedriver) {
                 $stableUrl = ($cfgJson.channels.Stable.downloads.chromedriver |
@@ -182,7 +187,7 @@ function Install-ChromeDriver {
             if ($stableUrl) {
                 $zipPath = Join-Path $DriverDir 'chromedriver.zip'
                 Write-BTLog "Downloading Chrome driver..."
-                Invoke-WebRequest -Uri $stableUrl -OutFile $zipPath -UseBasicParsing
+                Invoke-WebRequest -Uri $stableUrl -OutFile $zipPath -UseBasicParsing -TimeoutSec $TimeoutArtifactDownloadSec
                 Expand-Archive -Path $zipPath -DestinationPath $DriverDir -Force
                 Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
                 $subDriver = Get-ChildItem $DriverDir -Recurse -Filter $chromeCfg.driverName |
@@ -237,7 +242,7 @@ function Install-Firefox {
             try {
                 $installerUrl = 'https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US'
                 $installerPath = Join-Path $DriverDir 'FirefoxSetup.exe'
-                Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
+                Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing -TimeoutSec $TimeoutArtifactDownloadSec
                 Write-BTLog "Running Firefox installer silently..."
                 $proc = Start-Process $installerPath -ArgumentList '/S' -Wait -PassThru
                 if ($proc.ExitCode -eq 0) {
@@ -268,11 +273,11 @@ function Install-Firefox {
             # Get latest geckodriver release
             Write-BTLog 'Downloading geckodriver...'
             $releasesApi = 'https://api.github.com/repos/mozilla/geckodriver/releases/latest'
-            $releaseData = Invoke-WebRequest -Uri $releasesApi -UseBasicParsing | ConvertFrom-Json
+            $releaseData = Invoke-WebRequest -Uri $releasesApi -UseBasicParsing -TimeoutSec $TimeoutMetadataSec | ConvertFrom-Json
             $asset = $releaseData.assets | Where-Object { $_.name -match 'win64\.zip$' } | Select-Object -First 1
             if ($asset) {
                 $zipPath = Join-Path $DriverDir 'geckodriver.zip'
-                Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -UseBasicParsing
+                Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -UseBasicParsing -TimeoutSec $TimeoutArtifactDownloadSec
                 Expand-Archive -Path $zipPath -DestinationPath $DriverDir -Force
                 Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
             }
@@ -329,6 +334,7 @@ return $manifest
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

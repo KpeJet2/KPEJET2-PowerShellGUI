@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter36: bulk-add [OutputType()] from PSSA findings
 # Each finding tells us "cmdlet '<func>' returns an object of type '<type>'"
 # We aggregate distinct types per (file, func) and inject one [OutputType(...)] attribute.
@@ -105,4 +105,5 @@ foreach ($g in $byFile) {
 Write-Host "`nTotal funcs patched: $totalPatched (parse-fail files: $totalParseFails)"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSUseOutputTypeCorrectly
 Write-Host "Remaining hits: $(@($after).Count)"
+
 

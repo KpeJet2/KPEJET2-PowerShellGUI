@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.1
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-07
@@ -85,6 +85,45 @@ if (-not (Test-Path -LiteralPath $engineScript)) {
     exit 1
 }
 
+$script:webEngineServicesModuleLoaded = $false
+$webEngineServicesModulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-WebEngineServices.psm1'
+if (Test-Path -LiteralPath $webEngineServicesModulePath -PathType Leaf) {
+    try {
+        Import-Module -Name $webEngineServicesModulePath -Force -ErrorAction Stop
+        Initialize-WebEngineServicesModule -WorkspaceRoot $WorkspacePath -ServicePort $Port -WriteLogScript {
+            param($Message, $Level)
+            Write-ServiceLog -Message ([string]$Message) -Level ([string]$Level)
+        }
+        $script:webEngineServicesModuleLoaded = $true
+    } catch {
+        $script:webEngineServicesModuleLoaded = $false
+        Write-Host ("[WARN] WebEngineServices module load failed: {0}" -f $_.Exception.Message) -ForegroundColor Yellow
+    }
+}
+
+function Test-IsPipelineStoppedException {
+    [CmdletBinding()]
+    param([AllowNull()] [object]$ErrorObject)
+
+    $candidate = $ErrorObject
+    if ($candidate -is [System.Management.Automation.ErrorRecord]) {
+        $candidate = $candidate.Exception
+    }
+
+    while ($null -ne $candidate) {
+        if ($candidate -is [System.Management.Automation.PipelineStoppedException]) {
+            return $true
+        }
+        if (-not [string]::IsNullOrWhiteSpace([string]$candidate.Message) -and
+            [string]$candidate.Message -match 'pipeline has been stopped') {
+            return $true
+        }
+        $candidate = $candidate.InnerException
+    }
+
+    return $false
+}
+
 function Write-ServiceLog {
     [CmdletBinding()]
     param(
@@ -101,7 +140,14 @@ function Write-ServiceLog {
         'DEBUG' { 'DarkGray' }
         default { 'Gray' }
     }
-    Write-Host $line -ForegroundColor $color
+    try {
+        Write-Host $line -ForegroundColor $color
+    } catch {
+        if (Test-IsPipelineStoppedException -ErrorObject $_) {
+            return
+        }
+        throw
+    }
 }
 
 function Get-ResolutionHint {
@@ -517,7 +563,15 @@ function Resolve-WorkspaceChildPath {
 
     if ([string]::IsNullOrWhiteSpace($PathValue)) { return $null }
 
-    $candidate = $PathValue -replace '/', '\\'
+    $candidate = [string]$PathValue
+    $candidate = $candidate.Trim().Trim('"',"'")
+    $candidate = $candidate -replace '/', '\\'
+    if ($candidate.StartsWith('.\\')) {
+        $candidate = $candidate.Substring(2)
+    }
+    if ($candidate -match '^\\[^\\]') {
+        $candidate = $candidate.TrimStart('\\')
+    }
     $isRooted = [System.IO.Path]::IsPathRooted($candidate)
     $combined = if ($isRooted) { $candidate } else { Join-Path $WorkspacePath $candidate }
 
@@ -556,38 +610,68 @@ function Get-TrayServiceDefinitions {
     [CmdletBinding()]
     param()
 
-    return @(
+    $fallback = @(
         [PSCustomObject]@{
             Name = 'ServiceClusterDashboard'
-            Path = 'scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat'
+            Path = 'scripts/service-cluster-dashboard/Launch-ServiceClusterDashboard.bat'
             StartArgs = @()
-            StatusHints = @('Launch-ServiceDashboard.bat','uvicorn server:app','--port 8099')
+            StatusHints = @('Launch-ServiceClusterDashboard.bat','uvicorn server:app','--port 8099')
+            ControlMode = 'toggle'
+            ObjectVersion = '1.0.0'
+            UpgradeScript = ''
+            Enabled = $true
         },
         [PSCustomObject]@{
             Name = 'EngineBootstrap'
             Path = 'scripts/Start-Engines.ps1'
             StartArgs = @('-Quiet')
             StatusHints = @('Start-Engines.ps1')
+            ControlMode = 'toggle'
+            ObjectVersion = '1.0.0'
+            UpgradeScript = ''
+            Enabled = $true
         },
         [PSCustomObject]@{
             Name = 'Start-EngineServiceMonitor'
             Path = 'scripts/Invoke-EngineServiceMonitor.ps1'
             StartArgs = @('/AUTO','-Quiet')
             StatusHints = @('Invoke-EngineServiceMonitor.ps1','engine-monitor')
+            ControlMode = 'toggle'
+            ObjectVersion = '1.0.0'
+            UpgradeScript = ''
+            Enabled = $true
         },
         [PSCustomObject]@{
             Name = 'Invoke-CronProcessor.ps1 #1'
             Path = 'scripts/Invoke-CronProcessor.ps1'
             StartArgs = @()
             StatusHints = @('Invoke-CronProcessor.ps1')
+            ControlMode = 'toggle'
+            ObjectVersion = '1.0.0'
+            UpgradeScript = ''
+            Enabled = $true
         },
         [PSCustomObject]@{
             Name = 'Invoke-CronProcessor.ps1 #2'
             Path = 'scripts/Invoke-CronProcessor.ps1'
             StartArgs = @()
             StatusHints = @('Invoke-CronProcessor.ps1')
+            ControlMode = 'toggle'
+            ObjectVersion = '1.0.0'
+            UpgradeScript = ''
+            Enabled = $true
         }
     )
+
+    if ($script:webEngineServicesModuleLoaded -and (Get-Command Get-WebEngineServiceDefinitions -ErrorAction SilentlyContinue)) {
+        try {
+            return @(Get-WebEngineServiceDefinitions -FallbackDefinitions $fallback)
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Component definition load failed: {0}" -f $_.Exception.Message)
+        }
+    }
+
+    return $fallback
 }
 
 function Start-TrayService {
@@ -635,6 +719,100 @@ function Test-TrayServiceRunning {
     return (Get-TargetIsRunning -Target $targetLike -ProcessSnapshot $ProcessSnapshot)
 }
 
+function Invoke-StartAllTrayServicesParallel {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [object[]]$Definitions)
+
+    $started = 0
+    foreach ($svcDef in @($Definitions)) {
+        if ($null -eq $svcDef) { continue }
+        if ($svcDef.PSObject.Properties.Name -contains 'Enabled' -and -not [bool]$svcDef.Enabled) { continue }
+        try {
+            Start-TrayService -Definition $svcDef
+            $started++
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Parallel start failed for {0}: {1}" -f $svcDef.Name, $_.Exception.Message)
+        }
+    }
+
+    Write-ServiceLog -Level 'ACTION' -Message ("Parallel component start requested for {0} services." -f $started)
+}
+
+function Invoke-UpgradeTrayServices {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [object[]]$Definitions)
+
+    if (-not $script:webEngineServicesModuleLoaded -or -not (Get-Command Invoke-WebEngineComponentUpgrade -ErrorAction SilentlyContinue)) {
+        Write-ServiceLog -Level 'WARN' -Message 'Component upgrade helper is unavailable (module not loaded).'
+        return
+    }
+
+    foreach ($svcDef in @($Definitions)) {
+        if ($null -eq $svcDef) { continue }
+        if ($svcDef.PSObject.Properties.Name -contains 'Enabled' -and -not [bool]$svcDef.Enabled) { continue }
+        $upgradeResult = Invoke-WebEngineComponentUpgrade -Definition $svcDef -Quiet
+        if ($upgradeResult.Success) {
+            Write-ServiceLog -Level 'PASS' -Message ("Upgrade completed for component: {0}" -f $upgradeResult.Name)
+        } else {
+            Write-ServiceLog -Level 'WARN' -Message ("Upgrade skipped/failed for {0}: {1}" -f $upgradeResult.Name, $upgradeResult.Message)
+        }
+    }
+}
+
+function Invoke-RollingRestartTrayServices {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object[]]$Definitions,
+        [ValidateRange(2,120)] [int]$HealthTimeoutSec = 12
+    )
+
+    foreach ($svcDef in @($Definitions)) {
+        if ($null -eq $svcDef) { continue }
+        if ($svcDef.PSObject.Properties.Name -contains 'Enabled' -and -not [bool]$svcDef.Enabled) { continue }
+
+        Write-ServiceLog -Level 'ACTION' -Message ("Rolling restart step: {0}" -f $svcDef.Name)
+
+        if ($script:webEngineServicesModuleLoaded -and (Get-Command Invoke-WebEngineComponentUpgrade -ErrorAction SilentlyContinue)) {
+            $upgradeResult = Invoke-WebEngineComponentUpgrade -Definition $svcDef -Quiet
+            if ($upgradeResult.Success) {
+                Write-ServiceLog -Level 'PASS' -Message ("Upgrade succeeded for {0}" -f $svcDef.Name)
+            } else {
+                Write-ServiceLog -Level 'WARN' -Message ("Upgrade skipped/failed for {0}: {1}" -f $svcDef.Name, $upgradeResult.Message)
+            }
+        }
+
+        try {
+            Start-TrayService -Definition $svcDef
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Rolling start failed for {0}: {1}" -f $svcDef.Name, $_.Exception.Message)
+            continue
+        }
+
+        $isHealthy = $false
+        $deadline = (Get-Date).AddSeconds($HealthTimeoutSec)
+        while ((Get-Date) -lt $deadline) {
+            $snapshot = @()
+            try {
+                $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+            } catch {
+                $snapshot = @()
+            }
+
+            if (@($snapshot).Count -gt 0) {
+                $isHealthy = Test-TrayServiceRunning -Definition $svcDef -ProcessSnapshot $snapshot
+            }
+            if ($isHealthy) { break }
+            Start-Sleep -Milliseconds 500
+        }
+
+        if ($isHealthy) {
+            Write-ServiceLog -Level 'PASS' -Message ("Rolling restart healthy: {0}" -f $svcDef.Name)
+        } else {
+            Write-ServiceLog -Level 'WARN' -Message ("Rolling restart health timeout for {0} after {1}s" -f $svcDef.Name, $HealthTimeoutSec)
+        }
+    }
+}
+
 function Resolve-BootstrapTokens {
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$Text)
@@ -672,7 +850,7 @@ function Get-DefaultBootstrapMenuConfig {
             ) },
             [ordered]@{ name = 'Reports'; items = @(
                 [ordered]@{ label = 'Open ~REPORTS Folder'; type = 'folder'; target = '~REPORTS' },
-                [ordered]@{ label = 'Open reports Folder'; type = 'folder'; target = 'reports' },
+                [ordered]@{ label = 'Open ~REPORTS Folder (legacy alias)'; type = 'folder'; target = '~REPORTS' },
                 [ordered]@{ label = 'Engine Events API'; type = 'url'; target = 'http://127.0.0.1:{port}/api/engine/events' }
             ) },
             [ordered]@{ name = 'WebPages-127.0.0.1'; items = @(
@@ -1353,47 +1531,108 @@ function Start-ServiceTray {
     [void]$context.Items.Add($bootstrapRoot)
 
     $serviceFlyoutRoot = New-Object System.Windows.Forms.ToolStripMenuItem('Services Startup + Monitor')
-    $serviceDefs = @(Get-TrayServiceDefinitions)
     $serviceNodes = [System.Collections.ArrayList]@()
-    foreach ($svc in $serviceDefs) {
-        $svcItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$svc.Name)
-        $svcItem.CheckOnClick = $true
-        $svcItem.Tag = $svc
-        $svcItem.ToolTipText = [string]$svc.Path
-        $svcItemClick = {
-            try {
-                $menuItemArg = if (@($args).Count -gt 0) { [System.Windows.Forms.ToolStripMenuItem]$args[0] } else { $null }
-                $svcDef = $menuItemArg.Tag
-                $snapshot = @()
+    $script:TrayServiceDefinitionsCache = @()
+
+    $refreshServiceDefinitions = {
+        try {
+            $serviceFlyoutRoot.DropDownItems.Clear()
+            $serviceNodes.Clear()
+
+            $script:TrayServiceDefinitionsCache = @(Get-TrayServiceDefinitions)
+
+            $startAllParallelItem = New-Object System.Windows.Forms.ToolStripMenuItem('Start all enabled components (parallel)')
+            $startAllParallelClick = {
                 try {
-                    $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+                    Invoke-StartAllTrayServicesParallel -Definitions @($script:TrayServiceDefinitionsCache)
                 } catch {
-                    $snapshot = @()
+                    Write-ServiceLog -Level 'WARN' -Message ("Parallel component startup failed: {0}" -f $_.Exception.Message)
                 }
-
-                $isRunning = $false
-                if (@($snapshot).Count -gt 0) {
-                    $isRunning = Test-TrayServiceRunning -Definition $svcDef -ProcessSnapshot $snapshot
-                }
-
-                if ($isRunning) {
-                    $menuItemArg.Checked = $true
-                    Write-ServiceLog -Level 'INFO' -Message ("Service already running: {0}" -f $svcDef.Name)
-                    return
-                }
-
-                Start-TrayService -Definition $svcDef
-                $menuItemArg.Checked = $true
-                Write-ServiceLog -Level 'ACTION' -Message ("Service start requested: {0}" -f $svcDef.Name)
-            } catch {
-                $menuItemArg.Checked = $false
-                & $showError ("Service start failed: " + $svcDef.Name) $_.Exception.Message
             }
+            $startAllParallelItem.Add_Click($startAllParallelClick)
+            [void]$serviceFlyoutRoot.DropDownItems.Add($startAllParallelItem)
+
+            $upgradeAllItem = New-Object System.Windows.Forms.ToolStripMenuItem('Upgrade enabled components')
+            $upgradeAllClick = {
+                try {
+                    Invoke-UpgradeTrayServices -Definitions @($script:TrayServiceDefinitionsCache)
+                } catch {
+                    Write-ServiceLog -Level 'WARN' -Message ("Component upgrade pass failed: {0}" -f $_.Exception.Message)
+                }
+            }
+            $upgradeAllItem.Add_Click($upgradeAllClick)
+            [void]$serviceFlyoutRoot.DropDownItems.Add($upgradeAllItem)
+
+            $rollingRestartItem = New-Object System.Windows.Forms.ToolStripMenuItem('Rolling restart enabled components')
+            $rollingRestartClick = {
+                try {
+                    Invoke-RollingRestartTrayServices -Definitions @($script:TrayServiceDefinitionsCache) -HealthTimeoutSec 12
+                } catch {
+                    Write-ServiceLog -Level 'WARN' -Message ("Rolling restart failed: {0}" -f $_.Exception.Message)
+                }
+            }
+            $rollingRestartItem.Add_Click($rollingRestartClick)
+            [void]$serviceFlyoutRoot.DropDownItems.Add($rollingRestartItem)
+
+            $reloadComponentsItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload component definitions')
+            $reloadComponentsClick = {
+                try {
+                    & $refreshServiceDefinitions
+                    Write-ServiceLog -Level 'INFO' -Message 'Service component definitions reloaded.'
+                } catch {
+                    Write-ServiceLog -Level 'WARN' -Message ("Component definition reload failed: {0}" -f $_.Exception.Message)
+                }
+            }
+            $reloadComponentsItem.Add_Click($reloadComponentsClick)
+            [void]$serviceFlyoutRoot.DropDownItems.Add($reloadComponentsItem)
+
+            [void]$serviceFlyoutRoot.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator))
+
+            foreach ($svc in @($script:TrayServiceDefinitionsCache)) {
+                $svcItem = New-Object System.Windows.Forms.ToolStripMenuItem([string]$svc.Name)
+                $svcItem.CheckOnClick = $true
+                $svcItem.Tag = $svc
+                $svcItem.ToolTipText = ("{0} | v{1}" -f [string]$svc.Path, [string]$svc.ObjectVersion)
+                $svcItemClick = {
+                    try {
+                        $menuItemArg = if (@($args).Count -gt 0) { [System.Windows.Forms.ToolStripMenuItem]$args[0] } else { $null }
+                        $svcDef = $menuItemArg.Tag
+                        $snapshot = @()
+                        try {
+                            $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
+                        } catch {
+                            $snapshot = @()
+                        }
+
+                        $isRunning = $false
+                        if (@($snapshot).Count -gt 0) {
+                            $isRunning = Test-TrayServiceRunning -Definition $svcDef -ProcessSnapshot $snapshot
+                        }
+
+                        if ($isRunning) {
+                            $menuItemArg.Checked = $true
+                            Write-ServiceLog -Level 'INFO' -Message ("Service already running: {0}" -f $svcDef.Name)
+                            return
+                        }
+
+                        Start-TrayService -Definition $svcDef
+                        $menuItemArg.Checked = $true
+                        Write-ServiceLog -Level 'ACTION' -Message ("Service start requested: {0}" -f $svcDef.Name)
+                    } catch {
+                        $menuItemArg.Checked = $false
+                        & $showError ("Service start failed: " + $svcDef.Name) $_.Exception.Message
+                    }
+                }
+                $svcItem.Add_Click($svcItemClick)
+                [void]$serviceFlyoutRoot.DropDownItems.Add($svcItem)
+                [void]$serviceNodes.Add([PSCustomObject]@{ Item = $svcItem; Definition = $svc })
+            }
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Service flyout build failed: {0}" -f $_.Exception.Message)
         }
-        $svcItem.Add_Click($svcItemClick)
-        [void]$serviceFlyoutRoot.DropDownItems.Add($svcItem)
-        [void]$serviceNodes.Add([PSCustomObject]@{ Item = $svcItem; Definition = $svc })
     }
+
+    & $refreshServiceDefinitions
     [void]$context.Items.Add($serviceFlyoutRoot)
 
     $launchA = New-Object System.Windows.Forms.ToolStripMenuItem('Launch Auto Five (A)')
@@ -1432,6 +1671,18 @@ function Start-ServiceTray {
     $bootstrapConfigItem.Add_Click($bootstrapConfigClick)
     [void]$context.Items.Add($bootstrapConfigItem)
 
+    $componentsConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem('Configure WebEngine Components...')
+    $componentsConfigClick = {
+        try {
+            $url = "http://127.0.0.1:$Port/pages/webengine-components-config"
+            Start-Process $url | Out-Null
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Failed to launch components config page {0}: {1}" -f $url, $_.Exception.Message)
+        }
+    }
+    $componentsConfigItem.Add_Click($componentsConfigClick)
+    [void]$context.Items.Add($componentsConfigItem)
+
     $reloadBootstrapItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload Bootstrap Menu')
     $reloadBootstrapClick = {
         try {
@@ -1442,6 +1693,18 @@ function Start-ServiceTray {
     }
     $reloadBootstrapItem.Add_Click($reloadBootstrapClick)
     [void]$context.Items.Add($reloadBootstrapItem)
+
+    $reloadComponentsRootItem = New-Object System.Windows.Forms.ToolStripMenuItem('Reload Service Components')
+    $reloadComponentsRootClick = {
+        try {
+            & $refreshServiceDefinitions
+            Write-ServiceLog -Level 'INFO' -Message 'Service components reloaded from component registry.'
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Root-level component reload failed: {0}" -f $_.Exception.Message)
+        }
+    }
+    $reloadComponentsRootItem.Add_Click($reloadComponentsRootClick)
+    [void]$context.Items.Add($reloadComponentsRootItem)
 
     [void]$context.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
 
@@ -1460,26 +1723,26 @@ function Start-ServiceTray {
     [void]$context.Items.Add($startItem)
 
     $restartItem = New-Object System.Windows.Forms.ToolStripMenuItem('Restart engine')
-        $svcItemClick = {
-            try {
-                $menuItemArg = if (@($args).Count -gt 0) { [System.Windows.Forms.ToolStripMenuItem]$args[0] } else { $null }
-                $svcDef = $menuItemArg.Tag
-                $snapshot = @()
-                try {
-                    $snapshot = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop | Select-Object ProcessId, Name, CommandLine)
-                } catch {
-                    $snapshot = @()
-                }
-                if ($svcDef -and $svcDef.ControlMode -eq 'manual') {
-                    Invoke-EngineServiceControl -Action 'Start' -Definition $svcDef -Background | Out-Null
-                } else {
-                    Invoke-EngineServiceControl -Action 'Toggle' -Definition $svcDef -Background | Out-Null
-                }
-            } catch {
-                Write-ServiceLog -Level 'WARN' -Message "Service tray action failed: $($_.Exception.Message)"
-            }
+    $restartItemClick = {
+        try {
+            Invoke-EngineAction -EngineAction 'Restart' -Background | Out-Null
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Engine restart failed: {0}" -f $_.Exception.Message)
         }
-        $svcItem.Add_Click($svcItemClick)
+    }
+    $restartItem.Add_Click($restartItemClick)
+    [void]$context.Items.Add($restartItem)
+
+    $stopItem = New-Object System.Windows.Forms.ToolStripMenuItem('Stop engine')
+    $stopItemClick = {
+        try {
+            Invoke-EngineAction -EngineAction 'Stop' -Background | Out-Null
+        } catch {
+            Write-ServiceLog -Level 'WARN' -Message ("Engine stop failed: {0}" -f $_.Exception.Message)
+        }
+    }
+    $stopItem.Add_Click($stopItemClick)
+    [void]$context.Items.Add($stopItem)
 
     $exitItem = New-Object System.Windows.Forms.ToolStripMenuItem('Exit tray')
     $exitItemClick = {
@@ -1499,6 +1762,13 @@ function Start-ServiceTray {
 
     $updateState = {
         try {
+            if ($script:webEngineServicesModuleLoaded -and (Get-Command Test-WebEngineServicesConfigChanged -ErrorAction SilentlyContinue)) {
+                if (Test-WebEngineServicesConfigChanged) {
+                    & $refreshServiceDefinitions
+                    Write-ServiceLog -Level 'INFO' -Message 'Hot reload: service component config changed and was reloaded.'
+                }
+            }
+
             $cfg = Get-MonitorConfigObject
             $health = Get-ServiceHealth -Config $cfg
 
@@ -1534,34 +1804,63 @@ function Start-ServiceTray {
                 }
                 $node.Item.Checked = [bool]$runningNow
             }
-        } catch [System.Management.Automation.PipelineStoppedException] {
-            return   # Expected during shutdown; swallow silently
         } catch {
-            Write-Warning "[LWE-Tray] update-state error: $_"
+            # P029: bare catch required — PipelineStoppedException cannot be caught by type in WinForms event handlers
+            if (Test-IsPipelineStoppedException -ErrorObject $_) {
+                # Shutdown signal: stop the timer and exit the message pump cleanly
+                try { $timer.Stop() } catch { <# Intentional: non-fatal during shutdown #> }
+                try { [System.Windows.Forms.Application]::ExitThread() } catch { <# Intentional: non-fatal during shutdown #> }
+                return
+            }
+            try { Write-Warning "[LWE-Tray] update-state error: $_" } catch { <# Intentional: non-fatal #> }
         }
     }
 
     $timer = New-Object System.Windows.Forms.Timer
-    $timer.Interval = [int]($TrayPollSec * 1000)
+    # P066: clamp interval to [1000ms, 300000ms] to prevent zero/overflow ArgumentOutOfRangeException
+    $rawIntervalMs  = [long]($TrayPollSec * 1000)
+    $safeIntervalMs = [Math]::Max([long]1000, [Math]::Min($rawIntervalMs, [long]300000))
+    $timer.Interval = [int]$safeIntervalMs
     $timer.Add_Tick($updateState)
 
     $refreshItem.Add_Click($updateState)
 
-    $exitItemClick = {
-        try {
-            $timer.Stop()
-            [System.Windows.Forms.Application]::ExitThread()
-        } catch {
-            <# Intentional: non-fatal during shutdown #>
+    $threadExceptionHandler = {
+        param($sender, $eventArgs)
+        if (Test-IsPipelineStoppedException -ErrorObject $eventArgs.Exception) {
+            try { $timer.Stop() } catch { <# Intentional: non-fatal during shutdown #> }
+            try { [System.Windows.Forms.Application]::ExitThread() } catch { <# Intentional: non-fatal during shutdown #> }
+            return
         }
+        try { Write-ServiceLog -Level 'WARN' -Message ("Unhandled tray thread exception: {0}" -f $eventArgs.Exception.Message) } catch { <# Intentional: non-fatal #> }
     }
-    $exitItem.Add_Click($exitItemClick)
+    [System.Windows.Forms.Application]::add_ThreadException($threadExceptionHandler)
 
+    $unhandledExceptionHandler = {
+        param($sender, $eventArgs)
+        if (Test-IsPipelineStoppedException -ErrorObject $eventArgs.ExceptionObject) {
+            try { $timer.Stop() } catch { <# Intentional: non-fatal during shutdown #> }
+            try { [System.Windows.Forms.Application]::ExitThread() } catch { <# Intentional: non-fatal during shutdown #> }
+            return
+        }
+        try { Write-ServiceLog -Level 'WARN' -Message 'Unhandled domain exception observed in tray host.' } catch { <# Intentional: non-fatal #> }
+    }
+    [System.AppDomain]::CurrentDomain.add_UnhandledException($unhandledExceptionHandler)
+
+    # P024: clear StrictMode before entering the WinForms message pump to prevent bleed into event handlers
+    Set-StrictMode -Off
     try {
         & $updateState
         $timer.Start()
         [System.Windows.Forms.Application]::Run()
     } finally {
+        if ($null -ne $threadExceptionHandler) {
+            try { [System.Windows.Forms.Application]::remove_ThreadException($threadExceptionHandler) } catch { <# Intentional: non-fatal #> }
+        }
+        if ($null -ne $unhandledExceptionHandler) {
+            try { [System.AppDomain]::CurrentDomain.remove_UnhandledException($unhandledExceptionHandler) } catch { <# Intentional: non-fatal #> }
+        }
+        Set-StrictMode -Version Latest
         $timer.Stop()
         try { $timer.Dispose() } catch { <# Intentional: non-fatal #> }
         $notify.Visible = $false
@@ -1640,4 +1939,5 @@ switch ($Action) {
         exit 0
     }
 }
+
 

@@ -1,7 +1,7 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 # Author: The Establishment
 # Date: 2604
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -29,6 +29,7 @@ param(
     [string]$ReportPath,
     [switch]$FailOnStale,
     [switch]$FailOnControlViolation,
+    [switch]$EnableContentPolicyChecks,
     [int]$OpenDays = 14,
     [int]$PlannedDays = 7,
     [int]$InProgressDays = 3,
@@ -83,14 +84,52 @@ function Test-SafePayloadString {
     param([AllowNull()][string]$Text)
 
     if ($null -eq $Text) { return $true }
-    if ($Text -match '(?i)<\s*/?script\b') { return $false }
-    if ($Text -match '(?i)javascript\s*:') { return $false }
-    if ($Text -match '(?i)data\s*:\s*text/html') { return $false }
+    # Detect unresolved merge conflicts in generated artifacts.
+    if ($Text -match '(?m)^<<<<<<<\s' -or $Text -match '(?m)^=======\s*$' -or $Text -match '(?m)^>>>>>>>\s') { return $false }
     if ($Text -match '[\x00-\x08\x0B\x0C\x0E-\x1F]') { return $false }
     return $true
 }
 
 function Test-JsonPayloadSafety {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $issues = [System.Collections.Generic.List[object]]::new()
+    if (-not (Test-Path -LiteralPath $Path)) {
+        $issues.Add([pscustomobject]@{
+            path = $Path
+            kind = 'missing'
+            detail = 'File does not exist'
+        }) | Out-Null
+        return [pscustomobject]@{ isSafe = $false; issues = @($issues) }
+    }
+
+    $raw = ''
+    try {
+        $raw = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 -ErrorAction Stop
+    } catch {
+        $issues.Add([pscustomobject]@{
+            path = $Path
+            kind = 'read-error'
+            detail = $_.Exception.Message
+        }) | Out-Null
+        return [pscustomobject]@{ isSafe = $false; issues = @($issues) }
+    }
+
+    try {
+        $null = $raw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        $issues.Add([pscustomobject]@{
+            path = $Path
+            kind = 'invalid-json'
+            detail = $_.Exception.Message
+        }) | Out-Null
+        return [pscustomobject]@{ isSafe = $false; issues = @($issues) }
+    }
+
+    return [pscustomobject]@{ isSafe = (@($issues).Count -eq 0); issues = @($issues) }
+}
+
+function Test-JsonContentPolicy {
     param([Parameter(Mandatory = $true)][string]$Path)
 
     $issues = [System.Collections.Generic.List[object]]::new()
@@ -121,17 +160,6 @@ function Test-JsonPayloadSafety {
             kind = 'unsafe-raw-string'
             detail = 'Raw payload contains blocked patterns or control bytes'
         }) | Out-Null
-    }
-
-    try {
-        $null = $raw | ConvertFrom-Json -ErrorAction Stop
-    } catch {
-        $issues.Add([pscustomobject]@{
-            path = $Path
-            kind = 'invalid-json'
-            detail = $_.Exception.Message
-        }) | Out-Null
-        return [pscustomobject]@{ isSafe = $false; issues = @($issues) }
     }
 
     # Bounded scan keeps validation fast on very large aggregated JSON payloads.
@@ -196,7 +224,8 @@ $coreArtifacts = @(
 
 $mimeAllowList = @('application/json', 'text/javascript')
 $artifactStatus = [System.Collections.Generic.List[object]]::new()
-$payloadIssues = [System.Collections.Generic.List[object]]::new()
+$structuralPayloadIssues = [System.Collections.Generic.List[object]]::new()
+$contentPolicyIssues = [System.Collections.Generic.List[object]]::new()
 foreach ($artifactPath in $coreArtifacts) {
     $exists = Test-Path -LiteralPath $artifactPath
     $expectedMime = Get-ExpectedMimeType -Path $artifactPath
@@ -210,14 +239,14 @@ foreach ($artifactPath in $coreArtifacts) {
         try {
             $sha256 = (Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256 -ErrorAction Stop).Hash
         } catch {
-            $payloadIssues.Add([pscustomobject]@{
+            $structuralPayloadIssues.Add([pscustomobject]@{
                 path = Get-WorkspaceRelativePath -RootPath $WorkspacePath -FullPath $artifactPath
                 kind = 'hash-error'
                 detail = $_.Exception.Message
             }) | Out-Null
         }
     } else {
-        $payloadIssues.Add([pscustomobject]@{
+        $structuralPayloadIssues.Add([pscustomobject]@{
             path = Get-WorkspaceRelativePath -RootPath $WorkspacePath -FullPath $artifactPath
             kind = 'missing-artifact'
             detail = 'Required artifact is missing'
@@ -234,25 +263,43 @@ foreach ($artifactPath in $coreArtifacts) {
     }) | Out-Null
 
     if ($exists -and $expectedMime -eq 'application/json') {
-        $safeResult = Test-JsonPayloadSafety -Path $artifactPath
-        foreach ($issue in @($safeResult.issues)) {
-            $payloadIssues.Add([pscustomobject]@{
+        $structuralResult = Test-JsonPayloadSafety -Path $artifactPath
+        foreach ($issue in @($structuralResult.issues)) {
+            $structuralPayloadIssues.Add([pscustomobject]@{
                 path = Get-WorkspaceRelativePath -RootPath $WorkspacePath -FullPath $issue.path
                 kind = $issue.kind
                 detail = $issue.detail
             }) | Out-Null
         }
+
+        if ($EnableContentPolicyChecks) {
+            $policyResult = Test-JsonContentPolicy -Path $artifactPath
+            foreach ($issue in @($policyResult.issues)) {
+                $contentPolicyIssues.Add([pscustomobject]@{
+                    path = Get-WorkspaceRelativePath -RootPath $WorkspacePath -FullPath $issue.path
+                    kind = $issue.kind
+                    detail = $issue.detail
+                }) | Out-Null
+            }
+        }
     }
 }
 
-$controlChecks = [ordered]@{
+$structuralChecks = [ordered]@{
     recursiveDiscoverability = [bool]$discoverability.countsAligned
     requiredArtifactsPresent = (@($artifactStatus | Where-Object { -not $_.exists }).Count -eq 0)
     mimeAllowListConformant = (@($artifactStatus | Where-Object { -not $_.mimeAllowed }).Count -eq 0)
-    payloadSanitized = (@($payloadIssues).Count -eq 0)
+    payloadStructurallyValid = (@($structuralPayloadIssues).Count -eq 0)
 }
 
-$controlsHealthy = (@($controlChecks.GetEnumerator() | Where-Object { -not $_.Value }).Count -eq 0)
+$contentPolicy = [ordered]@{
+    enabled = [bool]$EnableContentPolicyChecks
+    isHealthy = if ($EnableContentPolicyChecks) { (@($contentPolicyIssues).Count -eq 0) } else { $true }
+    issues = @($contentPolicyIssues)
+}
+
+$structuralHealthy = (@($structuralChecks.GetEnumerator() | Where-Object { -not $_.Value }).Count -eq 0)
+$controlsHealthy = [bool]($structuralHealthy -and $contentPolicy.isHealthy)
 $cryptoChainSource = @($artifactStatus | ForEach-Object { "$($_.path)|$($_.sha256)" }) -join "`n"
 if ([string]::IsNullOrWhiteSpace($cryptoChainSource)) {
     $cryptoChainSource = '[no-artifacts]'
@@ -271,8 +318,10 @@ $controls = [ordered]@{
     }
     discoverability = $discoverability
     artifacts = @($artifactStatus)
-    payloadIssues = @($payloadIssues)
-    checks = $controlChecks
+    payloadIssues = @($structuralPayloadIssues)
+    structuralIssues = @($structuralPayloadIssues)
+    contentPolicy = $contentPolicy
+    checks = $structuralChecks
     cryptographicEvidence = [ordered]@{
         algorithm = 'SHA256'
         invocationHash = $invocationHash
@@ -336,9 +385,16 @@ Write-Host "  discoverability count: $($controls.discoverability.discoveredCount
 Write-Host "  pipeline active count: $($controls.discoverability.pipelineActiveCount)" -ForegroundColor White
 Write-Host "  invocation SHA256:     $($controls.cryptographicEvidence.invocationHash)" -ForegroundColor Gray
 
-if (@($controls.payloadIssues).Count -gt 0) {
-    Write-Host "`nPayload/Sanitization Issues:" -ForegroundColor Yellow
-    foreach ($issue in @($controls.payloadIssues | Select-Object -First 20)) {
+if (@($controls.structuralIssues).Count -gt 0) {
+    Write-Host "`nStructural Payload Issues:" -ForegroundColor Yellow
+    foreach ($issue in @($controls.structuralIssues | Select-Object -First 20)) {
+        Write-Host "  [$($issue.kind)] $($issue.path) :: $($issue.detail)" -ForegroundColor DarkYellow
+    }
+}
+
+if ($controls.contentPolicy.enabled -and @($controls.contentPolicy.issues).Count -gt 0) {
+    Write-Host "`nContent Policy Issues:" -ForegroundColor Yellow
+    foreach ($issue in @($controls.contentPolicy.issues | Select-Object -First 20)) {
         Write-Host "  [$($issue.kind)] $($issue.path) :: $($issue.detail)" -ForegroundColor DarkYellow
     }
 }
@@ -379,6 +435,7 @@ exit 0
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

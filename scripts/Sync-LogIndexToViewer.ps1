@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-29)
 # SupportsPS7.6: YES(As of: 2026-04-29)
 # FileRole: Pipeline
@@ -172,4 +172,5 @@ if ($content -notmatch [regex]::Escape($startMarker)) {
 
 [System.IO.File]::WriteAllText($viewerPath, $content, [System.Text.UTF8Encoding]::new($true))
 Write-Host "LOG_INDEX synced: $(@($entries).Count) entries across Pipeline/ScriptExec/AgentIter/Report categories." -ForegroundColor Green
+
 

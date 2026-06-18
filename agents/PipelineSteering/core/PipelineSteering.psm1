@@ -1,4 +1,6 @@
-﻿function Scan-ForSinPattern028 {
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
+function Scan-ForSinPattern028 {
     <#
     .SYNOPSIS
         Scan for Import-Module statements that reference .psm1 files instead of .psd1 manifests (SIN-PATTERN-028).
@@ -39,7 +41,7 @@
     Write-SteerLog "Scan-ForSinPattern028: found $(@($results).Count) SIN-PATTERN-028 violation(s)" 'Warning'
     return @($results)
 }
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -240,7 +242,7 @@ function New-CompatibilityStandardsTemplates {
         [PSCustomObject]@{
             Path    = Join-Path $dir 'PS76-Preferred-Template.ps1.txt'
             Content = @'
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -945,6 +947,7 @@ Export-ModuleMember -Function @(
     'Invoke-CompatibilityMatrixAudit'
     'New-WorkspaceCompatibilityIndex'
 )
+
 
 
 

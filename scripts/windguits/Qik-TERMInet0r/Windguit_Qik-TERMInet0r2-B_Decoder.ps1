@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 [IO.File]::WriteAllBytes(
     "Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1",
     [Convert]::FromBase64String((Get-Content base64.txt -Raw))
@@ -14,5 +14,6 @@
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 

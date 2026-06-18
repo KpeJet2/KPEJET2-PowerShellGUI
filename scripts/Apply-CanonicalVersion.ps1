@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Script
 # Apply canonical VersionTag bulk rewrite preserving original encoding.
 # Reads workspace-versions.csv, replaces all existing VersionTag values with $TargetVersion.
 # Encoding-safe: detects BOM (UTF-8/UTF-16LE/UTF-16BE) and preserves; defaults to UTF-8 no-BOM.
@@ -95,3 +96,4 @@ Write-Host ("No-change     : {0}" -f $noChange)
 Write-Host ("Skipped       : {0}" -f $skipped)
 Write-Host ("Failed        : {0}" -f $failed)
 Write-Host ("Log           : {0}" -f $LogPath)
+

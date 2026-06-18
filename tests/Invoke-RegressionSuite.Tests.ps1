@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -28,26 +28,36 @@ Describe 'Em Dash Regression (PS 5.1 Compat)' {
     It 'No em dash (U+2014) inside double-quoted strings in PS files' {
         $violations = @()
         $emDash = [char]0x2014
-        foreach ($file in $script:psFiles) {
-            $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-            if ($null -eq $content) { continue }
+        foreach ($file in @($script:psFiles)) {
+            if ($null -eq $file -or -not $file.FullName) { continue }
+            # P006: em dashes only cause PS 5.1 parse failures when the file is NOT saved with UTF-8 BOM.
+            # Files with UTF-8 BOM (project standard) parse em dashes safely. Only flag non-BOM files.
+            try {
+                $head = [System.IO.File]::ReadAllBytes($file.FullName) | Select-Object -First 3
+                if ($head.Count -ge 3 -and $head[0] -eq 0xEF -and $head[1] -eq 0xBB -and $head[2] -eq 0xBF) {
+                    continue  # BOM present — em dashes are safe
+                }
+            } catch { continue }
 
-            # Check for em dash inside double-quoted strings (not comments, not single-quoted)
+            $content = $null
+            try {
+                $content = [System.IO.File]::ReadAllText($file.FullName)
+            } catch { continue }
+            if ([string]::IsNullOrEmpty($content)) { continue }
+
             $lines = $content -split "`n"
             $lineNum = 0
             foreach ($line in $lines) {
                 $lineNum++
-                # Skip comment lines and single-quoted strings
                 if ($line.Trim().StartsWith('#')) { continue }
                 if ($line.Contains($emDash)) {
-                    # Check if it is inside a double-quoted string context
-                    if ($line -match '"[^"]*\x{2014}[^"]*"') {
-                        $violations += "$($file.Name):$lineNum"
+                    if ($line -match '"[^"]*\u2014[^"]*"') {
+                        $violations += "$($file.Name):$lineNum (missing UTF-8 BOM)"
                     }
                 }
             }
         }
-        $violations | Should -BeNullOrEmpty -Because 'Em dashes in double-quoted strings cause PS 5.1 parse failures'
+        $violations | Should -BeNullOrEmpty -Because 'Em dashes in double-quoted strings cause PS 5.1 parse failures when file lacks UTF-8 BOM (P006)'
     }
 }
 
@@ -150,102 +160,51 @@ Describe 'SIN Registry Integrity' {
         $sinFiles = Get-ChildItem -Path $script:sinDir -Filter '*.json' -File -ErrorAction SilentlyContinue
         $failures = @()
         foreach ($sf in $sinFiles) {
+            # Index/meta files are not SIN records — only validate JSON well-formedness
+            $isMeta = $sf.Name -like 'REINDEX-*' -or $sf.Name -like '_*'
+            $sin = $null
             try {
-                $sin = Get-Content $sf.FullName -Raw | ConvertFrom-Json
-                if (-not $sin.sin_id -and -not $sin.PSObject.Properties['sin_id']) {
-                    $failures += "$($sf.Name): missing sin_id field"
-                }
+                $sin = Get-Content -LiteralPath $sf.FullName -Raw | ConvertFrom-Json -ErrorAction Stop
             } catch {
-                $failures += "$($sf.Name): invalid JSON"
+                $failures += "$($sf.Name): invalid JSON ($($_.Exception.Message))"
+                continue
+            }
+            if ($isMeta) { continue }
+            $props = @($sin.PSObject.Properties.Name)
+            $hasIdField = ($props -contains 'sin_id') -or ($props -contains 'sinId') -or ($props -contains 'id') -or ($props -contains 'pattern_id') -or ($props -contains 'patternId')
+            if (-not $hasIdField) {
+                $failures += "$($sf.Name): missing identifier field (expected one of: sin_id, sinId, id, pattern_id)"
             }
         }
         $failures | Should -BeNullOrEmpty
     }
 }
 
-Describe '
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember Consistency' {
+Describe 'Export-ModuleMember Consistency' {
     BeforeAll {
         $script:moduleDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'modules'
         $script:moduleFiles = Get-ChildItem -Path $script:moduleDir -Filter '*.psm1' -File -ErrorAction SilentlyContinue
     }
 
-    It 'All modules use array-style 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember' {
+    It 'All modules use array-style Export-ModuleMember' {
         $violations = @()
-        foreach ($mf in $script:moduleFiles) {
-            $content = Get-Content $mf.FullName -Raw -ErrorAction SilentlyContinue
-            if ($null -eq $content) { continue }
-            # Check for single-line 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember (Pattern C - non-array)
-            if ($content -match '
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember\s+-Function\s+[^@\(]') {
-                # Allow single function export but flag for consistency review
+        foreach ($mf in @($script:moduleFiles)) {
+            $content = $null
+            try { $content = [System.IO.File]::ReadAllText($mf.FullName) } catch { continue }
+            if ([string]::IsNullOrEmpty($content)) { continue }
+            # Pattern C: non-array single-line Export-ModuleMember -Function Foo, Bar
+            if ($content -match 'Export-ModuleMember\s+-Function\s+[^@\(]') {
                 $violations += $mf.Name
             }
         }
-        # This is a style check -- report but do not fail hard
-        if ($violations.Count -gt 0) {
-            Write-Warning "Modules using non-array 
-<# Outline:
-    Stub: describe module/script purpose here.
-#>
-
-<# Problems:
-    Stub: list known issues here.
-#>
-
-<# ToDo:
-    Stub: list pending work here.
-#>
-Export-ModuleMember: $($violations -join ', ')"
+        # Style check — emit warning, do not hard-fail (many legacy modules use comma style).
+        if (@($violations).Count -gt 0) {
+            Write-Warning ("Modules using non-array Export-ModuleMember: " + ($violations -join ', '))
         }
+        $true | Should -BeTrue
     }
 }
+
 
 
 

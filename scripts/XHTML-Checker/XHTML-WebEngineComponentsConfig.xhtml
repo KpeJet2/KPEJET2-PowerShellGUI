@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2605.B5.V51.2 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebEngine Components Config</title>
+  <style>
+    :root {
+      --bg: #0b1324;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #0ea5e9;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(circle at top right, #12274d, #0b1324 60%);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    .wrap {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 14px;
+      font-size: 13px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    button {
+      border: 1px solid #4b5563;
+      background: #1f2937;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    .btn-accent { background: #075985; border-color: #0284c7; }
+    .btn-ok { background: #14532d; border-color: #15803d; }
+    .btn-danger { background: #7f1d1d; border-color: #b91c1c; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.82));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row.spread { justify-content: space-between; }
+    .components {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+      max-height: 560px;
+      overflow: auto;
+      padding-right: 3px;
+    }
+    .component {
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px;
+      background: #0f172a;
+    }
+    .component-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 8px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      background: #0b1220;
+      color: var(--text);
+      padding: 7px;
+      font-size: 12px;
+    }
+    textarea {
+      min-height: 240px;
+      resize: vertical;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .status {
+      margin-top: 10px;
+      min-height: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.err { color: var(--err); }
+    .pill {
+      display: inline-block;
+      border: 1px solid #475569;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+    .badge {
+      display: inline-block;
+      border: 1px solid #475569;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      margin-right: 6px;
+    }
+    .badge-ok {
+      border-color: #166534;
+      color: #86efac;
+      background: rgba(20, 83, 45, 0.45);
+    }
+    .badge-warn {
+      border-color: #92400e;
+      color: #fcd34d;
+      background: rgba(146, 64, 14, 0.40);
+    }
+    .badge-muted {
+      border-color: #475569;
+      color: #94a3b8;
+      background: rgba(30, 41, 59, 0.60);
+    }
+    .full { grid-column: 1 / -1; }
+    .raw-wrap { margin-top: 8px; }
+    @media (max-width: 1120px) {
+      .grid { grid-template-columns: 1fr; }
+      .component-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>WebEngine Components Config</h1>
+    <p class="sub">Edit modular web-engine service components for individual upgrades, parallel startup, and hot-reload behavior.</p>
+
+    <div class="toolbar">
+      <button id="btnLoad">Reload</button>
+      <button id="btnSave" class="btn-ok">Save Config</button>
+      <button id="btnAdd" class="btn-accent">Add Component</button>
+      <button id="btnPretty">Pretty JSON</button>
+      <button id="btnApplyRaw">Apply Raw JSON</button>
+      <button id="btnOpenService" class="btn-accent">Open Service Controller</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="row spread">
+          <strong>Components</strong>
+          <span id="componentCount" class="pill">0</span>
+        </div>
+        <div id="componentsHost" class="components"></div>
+      </section>
+
+      <section class="card">
+        <div class="row spread">
+          <strong>Raw JSON</strong>
+          <span class="pill">config/webengine-services.components.json</span>
+        </div>
+        <div class="full raw-wrap">
+          <label for="rawJson">Raw Component Config JSON</label>
+          <textarea id="rawJson" spellcheck="false"></textarea>
+        </div>
+        <div id="status" class="status"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+  /* <![CDATA[ */
+    (function () {
+      var ENGINE_BASE = window.location.origin || 'http://127.0.0.1:8042';
+      var state = {
+        csrfToken: '',
+        data: {
+          schema: 'WebEngineServicesConfig/1.0',
+          hotReload: { enabled: true, pollSeconds: 20 },
+          components: []
+        }
+      };
+
+      var componentsHost = document.getElementById('componentsHost');
+      var componentCount = document.getElementById('componentCount');
+      var rawJson = document.getElementById('rawJson');
+      var statusEl = document.getElementById('status');
+      var validationTimer = null;
+
+      function setStatus(msg, kind) {
+        statusEl.textContent = msg || '';
+        statusEl.className = 'status ' + (kind || '');
+      }
+
+      function esc(v) {
+        return String(v || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function ensureShape(obj) {
+        if (!obj || typeof obj !== 'object') {
+          obj = {};
+        }
+        if (!obj.schema) {
+          obj.schema = 'WebEngineServicesConfig/1.0';
+        }
+        if (!obj.hotReload || typeof obj.hotReload !== 'object') {
+          obj.hotReload = { enabled: true, pollSeconds: 20 };
+        }
+        if (!Array.isArray(obj.components)) {
+          obj.components = [];
+        }
+        return obj;
+      }
+
+      function makeComponent() {
+        return {
+          componentId: 'new-component-' + Date.now(),
+          name: 'NewComponent',
+          path: 'scripts/NewComponent.ps1',
+          startArgs: [],
+          statusHints: ['NewComponent.ps1'],
+          enabled: true,
+          controlMode: 'toggle',
+          objectVersion: '1.0.0',
+          upgradeScript: ''
+        };
+      }
+
+      function updateRaw() {
+        rawJson.value = JSON.stringify(state.data, null, 2);
+      }
+
+      function fetchCsrf() {
+        return fetch(ENGINE_BASE + '/api/csrf-token')
+          .then(function (res) { return res.json(); })
+          .then(function (obj) {
+            state.csrfToken = obj.csrfToken || '';
+          });
+      }
+
+      function loadConfig() {
+        return fetch(ENGINE_BASE + '/api/config/webengine-components')
+          .then(function (res) {
+            if (!res.ok) {
+              throw new Error('Load failed: ' + res.status);
+            }
+            return res.json();
+          })
+          .then(function (obj) {
+            state.data = ensureShape(obj);
+            render();
+            updateRaw();
+            setStatus('Component config loaded.', 'ok');
+          })
+          .catch(function (err) {
+            setStatus(err.message, 'err');
+          });
+      }
+
+      function applyRaw() {
+        try {
+          var parsed = JSON.parse(rawJson.value || '{}');
+          state.data = ensureShape(parsed);
+          render();
+          setStatus('Raw JSON applied.', 'ok');
+          return true;
+        } catch (err) {
+          setStatus('Invalid JSON: ' + err.message, 'err');
+          return false;
+        }
+      }
+
+      function readCsv(text) {
+        if (!text) { return []; }
+        return text.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+      }
+
+      function bindField(el, onChange) {
+        if (!el) { return; }
+        el.addEventListener('change', onChange);
+        el.addEventListener('input', onChange);
+      }
+
+      function setBadge(el, label, kind) {
+        if (!el) { return; }
+        el.textContent = label;
+        el.className = 'badge ' + (kind || 'badge-muted');
+      }
+
+      function queueValidation() {
+        if (validationTimer) {
+          clearTimeout(validationTimer);
+        }
+        validationTimer = setTimeout(function () {
+          validateComponentsLive();
+        }, 250);
+      }
+
+      function validateComponentsLive() {
+        fetch(ENGINE_BASE + '/api/config/webengine-components/validate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': state.csrfToken
+          },
+          body: JSON.stringify(state.data)
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              return res.json().then(function (obj) {
+                throw new Error((obj && (obj.error || obj.message)) || ('Validation failed: ' + res.status));
+              });
+            }
+            return res.json();
+          })
+          .then(function (report) {
+            var items = (report && report.items) ? report.items : [];
+            items.forEach(function (item) {
+              var pathBadge = document.getElementById('pathBadge_' + item.index);
+              var upgradeBadge = document.getElementById('upgradeBadge_' + item.index);
+
+              if (item.pathInWorkspace && item.pathExists) {
+                setBadge(pathBadge, 'Path OK', 'badge-ok');
+              } else if (item.pathInWorkspace && !item.pathExists) {
+                setBadge(pathBadge, 'Path Missing', 'badge-warn');
+              } else {
+                setBadge(pathBadge, 'Path Out-of-Root', 'badge-warn');
+              }
+
+              if (!item.upgradeConfigured) {
+                setBadge(upgradeBadge, 'Upgrade N/A', 'badge-muted');
+              } else if (item.upgradeInWorkspace && item.upgradeExists) {
+                setBadge(upgradeBadge, 'Upgrade OK', 'badge-ok');
+              } else if (item.upgradeInWorkspace && !item.upgradeExists) {
+                setBadge(upgradeBadge, 'Upgrade Missing', 'badge-warn');
+              } else {
+                setBadge(upgradeBadge, 'Upgrade Out-of-Root', 'badge-warn');
+              }
+            });
+          })
+          .catch(function () {
+            // Keep editor interactive on validation failures.
+          });
+      }
+
+      function render() {
+        componentsHost.innerHTML = '';
+
+        var hotCard = document.createElement('div');
+        hotCard.className = 'component';
+        hotCard.innerHTML = '' +
+          '<div class="row spread"><strong>Hot Reload</strong><span class="pill">Global</span></div>' +
+          '<div class="component-grid">' +
+          '  <div><label>Enabled</label><select id="hrEnabled"><option value="true">true</option><option value="false">false</option></select></div>' +
+          '  <div><label>Poll Seconds</label><input id="hrPoll" type="number" min="5" max="300" /></div>' +
+          '</div>';
+        componentsHost.appendChild(hotCard);
+
+        var hrEnabled = document.getElementById('hrEnabled');
+        var hrPoll = document.getElementById('hrPoll');
+        hrEnabled.value = state.data.hotReload.enabled ? 'true' : 'false';
+        hrPoll.value = String(state.data.hotReload.pollSeconds || 20);
+
+        bindField(hrEnabled, function () {
+          state.data.hotReload.enabled = (hrEnabled.value === 'true');
+          updateRaw();
+        });
+        bindField(hrPoll, function () {
+          var n = parseInt(hrPoll.value, 10);
+          if (isNaN(n) || n < 5) { n = 5; }
+          if (n > 300) { n = 300; }
+          state.data.hotReload.pollSeconds = n;
+          hrPoll.value = String(n);
+          updateRaw();
+        });
+
+        state.data.components.forEach(function (c, idx) {
+          var el = document.createElement('div');
+          el.className = 'component';
+          el.innerHTML = '' +
+            '<div class="row spread"><strong>' + esc(c.name || '(unnamed)') + '</strong><button data-del="' + idx + '" class="btn-danger">Delete</button></div>' +
+            '<div class="row" style="margin-top:6px;">' +
+            '  <span id="pathBadge_' + idx + '" class="badge badge-muted">Path ?</span>' +
+            '  <span id="upgradeBadge_' + idx + '" class="badge badge-muted">Upgrade ?</span>' +
+            '</div>' +
+            '<div class="component-grid">' +
+            '  <div><label>Component Id</label><input data-k="componentId" data-i="' + idx + '" value="' + esc(c.componentId) + '" /></div>' +
+            '  <div><label>Name</label><input data-k="name" data-i="' + idx + '" value="' + esc(c.name) + '" /></div>' +
+            '  <div class="full"><label>Path</label><input data-k="path" data-i="' + idx + '" value="' + esc(c.path) + '" /></div>' +
+            '  <div><label>Enabled</label><select data-k="enabled" data-i="' + idx + '"><option value="true">true</option><option value="false">false</option></select></div>' +
+            '  <div><label>Control Mode</label><select data-k="controlMode" data-i="' + idx + '"><option value="toggle">toggle</option><option value="manual">manual</option></select></div>' +
+            '  <div><label>Object Version</label><input data-k="objectVersion" data-i="' + idx + '" value="' + esc(c.objectVersion) + '" /></div>' +
+            '  <div><label>Upgrade Script</label><input data-k="upgradeScript" data-i="' + idx + '" value="' + esc(c.upgradeScript) + '" /></div>' +
+            '  <div class="full"><label>Start Args (comma separated)</label><input data-k="startArgs" data-i="' + idx + '" value="' + esc((c.startArgs || []).join(', ')) + '" /></div>' +
+            '  <div class="full"><label>Status Hints (comma separated)</label><input data-k="statusHints" data-i="' + idx + '" value="' + esc((c.statusHints || []).join(', ')) + '" /></div>' +
+            '</div>';
+
+          componentsHost.appendChild(el);
+        });
+
+        componentCount.textContent = String(state.data.components.length);
+
+        Array.prototype.slice.call(componentsHost.querySelectorAll('button[data-del]')).forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var i = parseInt(btn.getAttribute('data-del'), 10);
+            state.data.components.splice(i, 1);
+            render();
+            updateRaw();
+          });
+        });
+
+        Array.prototype.slice.call(componentsHost.querySelectorAll('input[data-k],select[data-k]')).forEach(function (ctrl) {
+          bindField(ctrl, function () {
+            var i = parseInt(ctrl.getAttribute('data-i'), 10);
+            var k = ctrl.getAttribute('data-k');
+            if (isNaN(i) || i < 0 || i >= state.data.components.length) {
+              return;
+            }
+            if (k === 'enabled') {
+              state.data.components[i][k] = (ctrl.value === 'true');
+            } else if (k === 'startArgs' || k === 'statusHints') {
+              state.data.components[i][k] = readCsv(ctrl.value);
+            } else {
+              state.data.components[i][k] = ctrl.value;
+            }
+            updateRaw();
+            queueValidation();
+          });
+
+          if (ctrl.tagName.toLowerCase() === 'select') {
+            var i2 = parseInt(ctrl.getAttribute('data-i'), 10);
+            var k2 = ctrl.getAttribute('data-k');
+            if (!isNaN(i2) && i2 >= 0 && i2 < state.data.components.length) {
+              if (k2 === 'enabled') {
+                ctrl.value = state.data.components[i2][k2] ? 'true' : 'false';
+              }
+              if (k2 === 'controlMode') {
+                ctrl.value = state.data.components[i2][k2] || 'toggle';
+              }
+            }
+          }
+        });
+
+        queueValidation();
+      }
+
+      function saveConfig() {
+        if (!applyRaw()) {
+          return;
+        }
+
+        fetch(ENGINE_BASE + '/api/config/webengine-components', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': state.csrfToken
+          },
+          body: JSON.stringify(state.data)
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              return res.json().then(function (err) {
+                throw new Error((err && (err.error || err.message)) || ('Save failed: ' + res.status));
+              });
+            }
+            return res.json();
+          })
+          .then(function (obj) {
+            var msg = 'Saved.';
+            if (obj && obj.componentCount !== undefined) {
+              msg = 'Saved ' + obj.componentCount + ' components.';
+            }
+            setStatus(msg, 'ok');
+          })
+          .catch(function (err) {
+            setStatus(err.message, 'err');
+          });
+      }
+
+      document.getElementById('btnLoad').addEventListener('click', function () {
+        loadConfig();
+      });
+
+      document.getElementById('btnSave').addEventListener('click', function () {
+        saveConfig();
+      });
+
+      document.getElementById('btnAdd').addEventListener('click', function () {
+        state.data.components.push(makeComponent());
+        render();
+        updateRaw();
+        queueValidation();
+      });
+
+      document.getElementById('btnPretty').addEventListener('click', function () {
+        applyRaw();
+        updateRaw();
+        setStatus('Raw JSON formatted.', 'ok');
+      });
+
+      document.getElementById('btnApplyRaw').addEventListener('click', function () {
+        if (applyRaw()) {
+          queueValidation();
+        }
+      });
+
+      document.getElementById('btnOpenService').addEventListener('click', function () {
+        window.location.href = ENGINE_BASE + '/scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml';
+      });
+
+      fetchCsrf().then(function () {
+        return loadConfig();
+      }).catch(function (err) {
+        setStatus(err.message, 'warn');
+        loadConfig();
+      });
+    })();
+  /* ]]> */
+  </script>
+</body>
+</html>

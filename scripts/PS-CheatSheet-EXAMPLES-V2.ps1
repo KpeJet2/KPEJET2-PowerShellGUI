@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -1024,8 +1024,8 @@ Show-Section "22. Miscellaneous Tips"
 
 Show-Example "Null coalescing (??) and null conditional (?.) -- PS7+" {
     if ($PSVersionTable.PSVersion.Major -ge 7) {
-        Invoke-Expression '$val = $null; $result = $val ?? "default value"; Write-Host "Null coalesce: $result"'
-        Invoke-Expression '$obj = [PSCustomObject]@{ Name = "Test" }; $safe = $obj?.Name; Write-Host "Null conditional: $safe"'
+        $val = $null; $result = $val ?? "default value"; Write-Host "Null coalesce: $result"
+        $obj = [PSCustomObject]@{ Name = "Test" }; $safe = $obj?.Name; Write-Host "Null conditional: $safe"
     } else {
         Write-Host "(Skipped -- requires PowerShell 7+)"
     }
@@ -1057,10 +1057,13 @@ Show-Example "Write-Progress -- progress bar" {
 }
 
 Show-Example "Invoke-Expression (use with caution)" {
-    $cmd    = 'Get-Date -Format "yyyy-MM-dd"'
-    $output = Invoke-Expression $cmd
-    Write-Host "Invoke-Expression result: $output"
+    $cmd    = 'Get-Date'
+    $format = '-Format "yyyy-MM-dd"'
+    Write-Host "You can run: $cmd $format"
+    $output = & $cmd $format
+    Write-Host "Result: $output"
     # WARNING: Never pass untrusted user input to Invoke-Expression -- code injection risk!
+    # Use '&' operator for dynamic command execution when possible.
 }
 
 Show-Example "Here-String types (@' ' vs `"` `")" {
@@ -2063,6 +2066,7 @@ if ($script:DoExport) {
     # Remove the temp transcript once all exports are done
     Remove-Item -Path $script:TranscriptPath -Force -ErrorAction SilentlyContinue
 }
+
 
 
 

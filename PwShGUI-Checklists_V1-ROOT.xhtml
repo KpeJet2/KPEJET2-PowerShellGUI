@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- VersionTag: 2605.B5.V51.1 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -281,7 +281,7 @@
   <div class="summary-row" id="todoSummary"></div>
   <div class="fbar">
     <input type="text" id="todoFilter" placeholder="Filter to-dos..." oninput="filterTodo()" />
-    <select id="todoStatusFlt" onchange="filterTodo()"><option value="">All Status</option><option value="open">Open</option><option value="in-progress">In Progress</option><option value="completed">Completed</option><option value="closed">Closed</option></select>
+    <select id="todoStatusFlt" onchange="filterTodo()"><option value="">All Status</option><option value="open">Open</option><option value="IN_PROGRESS">In Progress</option><option value="completed">Completed</option><option value="closed">Closed</option></select>
     <select id="todoPriFlt" onchange="filterTodo()"><option value="">All Priority</option><option value="CRITICAL">Critical</option><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select>
     <span id="todoCount" style="font-size:11px;color:#888"></span>
   </div>
@@ -610,7 +610,7 @@ function statusBadge(s){
   var cls='badge-cat';
   if(sl==='open'||sl==='failed'||sl==='blocked')cls='badge-fail';
   else if(sl==='done'||sl==='completed'||sl==='resolved')cls='badge-done';
-  else if(sl==='in-progress'||sl==='in_progress'||sl==='running')cls='badge-progress';
+  else if(sl==='IN_PROGRESS'||sl==='in_progress'||sl==='running')cls='badge-progress';
   else if(sl==='pass'||sl==='ok')cls='badge-pass';
   return '<span class="badge '+cls+'">'+esc(s||'--')+'</span>';
 }
@@ -1298,7 +1298,7 @@ function renderTodo(items){
   for(var i=0;i<items.length;i++){
     var st=normalizeTodoStatus(items[i].status||'');
     if(st==='completed'||st==='closed'||st==='done')done++;
-    else if(st==='in-progress')prog++;
+    else if(st==='IN_PROGRESS')prog++;
     else open++;
   }
   sum.innerHTML='<div class="sum-card"><div class="sv">'+items.length+'</div><div class="sk">Total ToDos</div></div>'
@@ -1464,4 +1464,6 @@ window.togglePanel=togglePanel;
 <script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+
+
 

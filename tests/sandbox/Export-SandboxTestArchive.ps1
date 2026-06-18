@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -29,6 +29,9 @@ param(
 )
 
 $ErrorActionPreference = 'Continue'
+
+# Timeout tiers
+$TimeoutBootstrapDownloadSec = 120
 
 function Write-ArchLog {
     param([string]$Msg, [string]$Level = 'INFO')
@@ -80,7 +83,7 @@ function Install-7Zip {
     try {
         $installerUrl = 'https://7-zip.org/a/7z2409-x64.exe'
         $installerPath = Join-Path $OutputPath '7z-setup.exe'
-        Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
+        Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing -TimeoutSec $TimeoutBootstrapDownloadSec
         $null = Start-Process $installerPath -ArgumentList '/S' -Wait -PassThru
         Remove-Item $installerPath -Force -ErrorAction SilentlyContinue
         foreach ($p in $exePaths) {
@@ -389,6 +392,7 @@ Remove-Item $stagingDir -Recurse -Force -ErrorAction SilentlyContinue
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # Summary helper for the bat/xhtml SIN scan output.
 param(
     [string]$JsonPath = 'C:\PowerShellGUI\reports\sin-scan-bat-xhtml.json'
@@ -27,4 +27,5 @@ $batXhtml | Group-Object sinId | Sort-Object Count -Descending |
 Write-Host ''
 Write-Host '== Sample (first 20 .bat/.xhtml findings) ==' -ForegroundColor Yellow
 $batXhtml | Select-Object -First 20 sinId, severity, file, line, content | Format-Table -AutoSize -Wrap
+
 

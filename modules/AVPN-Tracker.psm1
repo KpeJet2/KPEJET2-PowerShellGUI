@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -11,6 +11,13 @@
 
 # ── DPAPI credential helpers ────────────────────────────────────────────────
 $script:_DpapiPrefix = 'DPAPI:'
+
+if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog {
+        param([string]$Message, [string]$Level = 'Info')
+        Write-Verbose "[$Level] $Message"
+    }
+}
 
 function Protect-AVPNCredential {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Caller-supplied plaintext is the API contract; immediately wrapped via ConvertFrom-SecureString (DPAPI) for at-rest storage. Removing -AsPlainText is impossible for this conversion direction.')]
@@ -43,19 +50,19 @@ function Invoke-AVPNLog {
         [string]$Message,
         [string]$Level = "Info"
     )
+
+    $appLogLevel = switch ($Level) {
+        'Error' { 'Error' }
+        'Warning' { 'Warning' }
+        'Event' { 'Info' }
+        default { 'Info' }
+    }
+
     if ($LogCallback) {
         & $LogCallback $Message $Level
-    } else {
-        # Use Write-Warning for all non-info levels so errors surface to caller
-        # (the error-swallowing pattern that was previously here silently bypassed callers' -ErrorAction Stop)
-        if ($Level -eq "Error") {
-            Write-AppLog -Message "[AVPN][ERROR] $Message" -Level Warning
-        } elseif ($Level -eq "Warning") {
-            Write-AppLog -Message "[AVPN][$Level] $Message" -Level Warning
-        } else {
-            Write-Verbose "[AVPN][$Level] $Message"
-        }
     }
+
+    Write-AppLog -Message "[AVPN][$Level] $Message" -Level $appLogLevel
 }
 
 function Get-AVPNDefaultTemplateList {
@@ -2066,7 +2073,24 @@ function Show-AVPNConnectionTracker {
 <# ToDo:
     Stub: list pending work here.
 #>
-Export-ModuleMember -Function Show-AVPNConnectionTracker, Initialize-AVPNConfigFile, Get-AVPNConfig, Save-AVPNConfig
+Export-ModuleMember -Function @(
+    'Show-AVPNConnectionTracker',
+    'Initialize-AVPNConfigFile',
+    'Get-AVPNConfig',
+    'Save-AVPNConfig',
+    'Protect-AVPNCredential',
+    'Unprotect-AVPNCredential',
+    'Get-AVPNDefaultTemplateList',
+    'Get-AVPNDeviceTypesPath',
+    'Initialize-AVPNDeviceTypesFile',
+    'Get-AVPNDeviceTypeList',
+    'Save-AVPNDeviceTypeList',
+    'Get-AVPNConnectorCount',
+    'Test-AVPNConnectionValid',
+    'Export-AVPNCsv',
+    'Import-AVPNCsv'
+)
+
 
 
 

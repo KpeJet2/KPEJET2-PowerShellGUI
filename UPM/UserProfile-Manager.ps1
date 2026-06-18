@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -118,7 +118,10 @@ function Write-DiagnosticDump {
     try {
         if ($Context) {
             foreach ($k in ($Context.Keys | Sort-Object)) {
-                Write-UPMLog "CTX.$k = $($Context[$k])" 'ERROR'
+                $contextValue = $null
+                if ($Context.TryGetValue($k, [ref]$contextValue)) {
+                    Write-UPMLog "CTX.$k = $contextValue" 'ERROR'
+                }
             }
         }
         if ($ErrorRecord) {
@@ -2092,6 +2095,8 @@ $tabs.Add_SelectedIndexChanged({
     [System.Windows.Forms.Application]::DoEvents()
 })
 
+# P064: Set-StrictMode -Off before Application::Run() prevents StrictMode scope bleed into all WinForms event handlers
+Set-StrictMode -Off
 try {
     [System.Windows.Forms.Application]::Run($form)
 } catch {
@@ -2099,6 +2104,8 @@ try {
         Operation = 'Application.Run'
         StorePath = $script:ProfileStorePath
     }
+} finally {
+    Set-StrictMode -Version Latest
 }
 
 
@@ -2119,6 +2126,7 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

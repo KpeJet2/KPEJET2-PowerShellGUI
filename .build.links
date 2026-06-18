@@ -1,0 +1,25 @@
+{
+  "schema": "pwshgui.build.links.v1",
+  "versionTag": "2605.B5.V51.3",
+  "status": "active",
+  "tool": "code-analysis",
+  "current": {
+    "path": "scripts/XHTML-Checker/XHTML-code-analysis.xhtml",
+    "runtime": "http://127.0.0.1:8042/scripts/XHTML-Checker/XHTML-code-analysis.xhtml",
+    "file": "file:///C:/PowerShellGUI/scripts/XHTML-Checker/XHTML-code-analysis.xhtml"
+  },
+  "legacy": {
+    "path": "code-analysis.xhtml",
+    "runtime": "http://127.0.0.1:8042/code-analysis.xhtml",
+    "file": "file:///C:/PowerShellGUI/code-analysis.xhtml"
+  },
+  "dotfiles": [
+    ".build.links",
+    ".pipeline.entry",
+    ".pipeline.stage",
+    ".editorconfig",
+    "scripts/XHTML-Checker/.outline",
+    "scripts/XHTML-Checker/.problems",
+    "scripts/XHTML-Checker/.todo"
+  ]
+}

@@ -1,11 +1,11 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.2
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
 # SupportsPS7.6TestedDate: null
 #Requires -Version 5.1
 <#
-.SYNOPSIS  CI pre-commit gate: parse check + critical SIN scan + P027 null-index scan + encoding + version tag alignment.
+.SYNOPSIS  CI pre-commit gate: parse check + critical SIN scan + P027 null-index scan + encoding + version tag alignment + todo artifact guard.
 .DESCRIPTION
     Lightweight gate designed to run before every commit (or as CronProcessor pre-step).
     Catches the most common, high-impact issues without the full SIN scanner runtime:
@@ -14,7 +14,9 @@
       Gate 2 - Critical SIN patterns (P001/P009/P010): hardcoded creds, IEX, path injection
       Gate 3 - P027 null-array-index findings from the SIN scanner
       Gate 4 - Encoding violations: UTF-8 BOM required for .ps1/.psm1 (P006)
-      Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
+    Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
+    Gate 6 - Todo artifact guard: no merge markers in todo/_master-aggregated.json and object-root JSON for active todo files
+    Gate 7 - Pipeline control report verification
 
     Exit codes:
       0 = all gates passed
@@ -49,6 +51,8 @@ param(
     [switch]  $Quiet,
     [switch]  $FailOnWarning,
     [switch]  $SkipPipelineControlGate,
+    [switch]  $SkipPipelineMetricGate,
+    [switch]  $PipelineMetricIncludeGuiCoverage,
     # Gate 3 (P027) performance guards. P027 scanner is O(n) per file but its AST walk
     # is heavy on very large files; skip oversize files and cap the total count to keep
     # pre-commit under ~30s.
@@ -305,7 +309,7 @@ function Invoke-PipelineControlGate {
 
     $reportPath = Join-Path (Join-Path $Root 'temp') ('precommit-pipeline-controls-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
     try {
-        & $scriptPath -WorkspacePath $Root -WriteReport -ReportPath $reportPath -FailOnControlViolation
+        & $scriptPath -WorkspacePath $Root -WriteReport -ReportPath $reportPath -FailOnControlViolation -EnableContentPolicyChecks
     } catch {
         [void]$findings.Add([PSCustomObject]@{
             Gate     = 'PipelineControls'
@@ -353,7 +357,15 @@ function Invoke-PipelineControlGate {
             })
         }
 
-        foreach ($controlIssue in @($report.controls.payloadIssues)) {
+        $controlIssues = @()
+        if ($report.controls.PSObject.Properties.Name -contains 'payloadIssues') {
+            $controlIssues += @($report.controls.payloadIssues)
+        }
+        if ($report.controls.PSObject.Properties.Name -contains 'structuralIssues') {
+            $controlIssues += @($report.controls.structuralIssues)
+        }
+
+        foreach ($controlIssue in @($controlIssues)) {
             [void]$findings.Add([PSCustomObject]@{
                 Gate     = 'PipelineControls'
                 Severity = 'ERROR'
@@ -370,6 +382,196 @@ function Invoke-PipelineControlGate {
             Line     = 0
             Message  = "Could not parse pipeline control report: $($_.Exception.Message)"
         })
+    }
+
+    return @($findings)
+}
+
+function Invoke-PipelineMetricGate {
+    param(
+        [string]$Root,
+        [switch]$IncludeGuiCoverage
+    )
+
+    $findings = [System.Collections.ArrayList]::new()
+    $harnessPath = Join-Path $Root 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
+    if (-not (Test-Path -LiteralPath $harnessPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $harnessPath
+            Line     = 0
+            Message  = 'Pipeline metric increment harness not found'
+        })
+        return @($findings)
+    }
+
+    $reportPath = Join-Path (Join-Path $Root 'temp') ('precommit-pipeline-metric-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
+    $psArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', "`"$harnessPath`"",
+        '-WorkspacePath', "`"$Root`"",
+        '-OutputPath', "`"$reportPath`""
+    )
+    if (-not $IncludeGuiCoverage) {
+        $psArgs += '-SkipGuiCoverage'
+    }
+
+    try {
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $psArgs -Wait -PassThru -NoNewWindow
+        if ($proc.ExitCode -ne 0) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'PipelineMetric'
+                Severity = 'ERROR'
+                File     = $harnessPath
+                Line     = 0
+                Message  = "Metric harness failed with exit code $($proc.ExitCode)"
+            })
+        }
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $harnessPath
+            Line     = 0
+            Message  = "Metric harness invocation failed: $($_.Exception.Message)"
+        })
+        return @($findings)
+    }
+
+    if (-not (Test-Path -LiteralPath $reportPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = 'Metric harness report missing'
+        })
+        return @($findings)
+    }
+
+    try {
+        $report = Get-Content -LiteralPath $reportPath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+        if (-not $report.pass) {
+            foreach ($item in @($report.oneItemResults | Where-Object { -not $_.passed })) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = "Queue '$($item.queueName)' delta validation failed"
+                })
+            }
+            foreach ($gui in @($report.guiCoverage | Where-Object { -not $_.passed })) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = "GUI coverage failed: $($gui.name)"
+                })
+            }
+            if (@($findings).Count -eq 0) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = 'Metric harness reported failure'
+                })
+            }
+        }
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = "Could not parse metric harness report: $($_.Exception.Message)"
+        })
+    }
+
+    return @($findings)
+}
+
+function Invoke-TodoArtifactGuardGate {
+    param([string]$Root)
+
+    $findings = [System.Collections.ArrayList]::new()
+    $todoDir = Join-Path $Root 'todo'
+    $masterPath = Join-Path $todoDir '_master-aggregated.json'
+
+    if (-not (Test-Path -LiteralPath $masterPath -PathType Leaf)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'TodoArtifactGuard'
+            Severity = 'ERROR'
+            File     = $masterPath
+            Line     = 0
+            Message  = 'Missing required artifact: todo/_master-aggregated.json'
+        })
+        return @($findings)
+    }
+
+    try {
+        $masterRaw = Get-Content -LiteralPath $masterPath -Raw -Encoding UTF8 -ErrorAction Stop
+        if ($masterRaw -match '(?m)^<<<<<<<\s' -or $masterRaw -match '(?m)^=======\s*$' -or $masterRaw -match '(?m)^>>>>>>>\s') {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'TodoArtifactGuard'
+                Severity = 'ERROR'
+                File     = $masterPath
+                Line     = 0
+                Message  = 'Merge conflict markers detected in todo/_master-aggregated.json'
+            })
+        }
+        $null = $masterRaw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'TodoArtifactGuard'
+            Severity = 'ERROR'
+            File     = $masterPath
+            Line     = 0
+            Message  = "Invalid master aggregate JSON: $($_.Exception.Message)"
+        })
+    }
+
+    if (-not (Test-Path -LiteralPath $todoDir -PathType Container)) {
+        return @($findings)
+    }
+
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    $activeFiles = @(
+        Get-ChildItem -LiteralPath $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
+        Sort-Object Name
+    )
+
+    foreach ($file in @($activeFiles)) {
+        try {
+            $raw = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 -ErrorAction Stop
+            $parsed = $raw | ConvertFrom-Json -ErrorAction Stop
+            if ($parsed -is [System.Array]) {
+                # Only enforce object-root for item-like files; skip helper datasets.
+                if ($file.Name -match '^(Bug|Bugs2FIX|Feature|ToDo|todo-|NOID-)') {
+                    [void]$findings.Add([PSCustomObject]@{
+                        Gate     = 'TodoArtifactGuard'
+                        Severity = 'ERROR'
+                        File     = $file.FullName
+                        Line     = 1
+                        Message  = 'Active todo item must be object-root JSON (array root is not allowed)'
+                    })
+                }
+            }
+        } catch {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'TodoArtifactGuard'
+                Severity = 'ERROR'
+                File     = $file.FullName
+                Line     = 0
+                Message  = "Invalid active todo JSON: $($_.Exception.Message)"
+            })
+        }
     }
 
     return @($findings)
@@ -426,12 +628,26 @@ $vtHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($vtHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
 else { $vtHits | ForEach-Object { Write-Gate "  WARN $($_.File) - $($_.Message)" 'Warn' } }
 
+Write-Gate '[Gate 6] Todo artifact guard (_master merge markers + object-root active todos)...' 'Info'
+$todoArtifactHits = @(Invoke-TodoArtifactGuardGate -Root $WorkspacePath)
+$todoArtifactHits | ForEach-Object { [void]$allFindings.Add($_) }
+if (@($todoArtifactHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+else { $todoArtifactHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+
 if (-not $SkipPipelineControlGate) {
-    Write-Gate '[Gate 6] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
+    Write-Gate '[Gate 7] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
     $pipelineControlHits = @(Invoke-PipelineControlGate -Root $WorkspacePath)
     $pipelineControlHits | ForEach-Object { [void]$allFindings.Add($_) }
     if (@($pipelineControlHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
     else { $pipelineControlHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+}
+
+if (-not $SkipPipelineMetricGate) {
+    Write-Gate '[Gate 8] Pipeline one-item metric increment harness...' 'Info'
+    $metricHits = @(Invoke-PipelineMetricGate -Root $WorkspacePath -IncludeGuiCoverage:$PipelineMetricIncludeGuiCoverage)
+    $metricHits | ForEach-Object { [void]$allFindings.Add($_) }
+    if (@($metricHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+    else { $metricHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
 }
 
 $errorCount = @($allFindings | Where-Object { $_.Severity -eq 'ERROR' }).Count
@@ -481,4 +697,5 @@ exit 0
 <# ToDo:
     Stub: list pending work here.
 #>
+
 

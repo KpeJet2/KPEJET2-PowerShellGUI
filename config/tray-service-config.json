@@ -1,0 +1,139 @@
+{
+  "_versionTag": "2605.B5.V51.1",
+  "schema": "TrayServiceConfig/1.0",
+  "ui": {
+    "layoutMode": "standard",
+    "themeDark": true,
+    "menuSortOrder": ["Services", "Folders", "Tools", "Utilities"]
+  },
+  "folderShortcuts": {
+    "RUN": {
+      "path": "scripts/RUN*",
+      "enabled": true,
+      "order": 1,
+      "label": "RUN Scripts"
+    },
+    "INVOKE": {
+      "path": "scripts/INVOKE*",
+      "enabled": true,
+      "order": 2,
+      "label": "INVOKE Scripts"
+    },
+    "LAUNCH": {
+      "path": "scripts/LAUNCH*",
+      "enabled": true,
+      "order": 3,
+      "label": "LAUNCH Scripts"
+    },
+    "START": {
+      "path": "scripts/START*",
+      "enabled": true,
+      "order": 4,
+      "label": "START Scripts"
+    }
+  },
+  "documentShortcuts": [
+    {
+      "name": "XHTML Tools",
+      "pattern": "*.xhtml|*.html|*.htm|*.mha",
+      "searchRoot": ["scripts/XHTML-Checker", "~README.md"],
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "name": "Help & Markdown",
+      "pattern": "*.md",
+      "searchRoot": ["~README.md"],
+      "enabled": true,
+      "order": 2
+    }
+  ],
+  "launchPresets": [
+    {
+      "id": "preset-verbose-launch",
+      "script": "scripts/Invoke-PipeGAP.ps1",
+      "args": "-Verbose",
+      "label": "Full Pipeline GAP (Verbose)",
+      "description": "Run comprehensive pipeline health check with verbose output"
+    },
+    {
+      "id": "preset-quick-status",
+      "script": "scripts/Invoke-PipeGAP.ps1",
+      "args": "-ReportOnly",
+      "label": "Pipeline Status (Report Only)",
+      "description": "Quick status check without remediation"
+    }
+  ],
+  "systemToolsFlyout": {
+    "enabled": true,
+    "items": [
+      {
+        "label": "Task Manager",
+        "command": "taskmgr.exe",
+        "type": "exe",
+        "order": 1
+      },
+      {
+        "label": "Event Viewer",
+        "command": "eventvwr.msc",
+        "type": "msc",
+        "order": 2
+      },
+      {
+        "label": "Services",
+        "command": "services.msc",
+        "type": "msc",
+        "order": 3
+      },
+      {
+        "label": "PowerShell ISE",
+        "command": "powershell_ise.exe",
+        "type": "exe",
+        "order": 4
+      },
+      {
+        "label": "Resource Monitor",
+        "command": "resmon.exe",
+        "type": "exe",
+        "order": 5
+      }
+    ]
+  },
+  "seeding": {
+    "fallbackSearchPaths": [
+      "%appdata%\\PowershellGUI",
+      "c:\\PowershellGUI",
+      "C:\\TEMP\\PowershellGUI"
+    ],
+    "preserveOnMerge": [
+      "config/*.json",
+      "config/*.xml",
+      "config/*.yaml",
+      "logs/*",
+      "temp/*",
+      "pki/*",
+      "~REPORTS/*"
+    ],
+    "autoStartEnabled": false,
+    "lastSeedPath": null,
+    "lastSeedDate": null
+  },
+  "healthMonitor": {
+    "enabled": true,
+    "intervalSec": 420,
+    "maxRetries": 1,
+    "escalateAfterFailures": 3
+  },
+  "updateHost": {
+    "enabled": false,
+    "port": 981,
+    "checkIntervalHours": 24,
+    "autoCheckEnabled": false,
+    "preserveOnUpdate": [
+      "config/*.json",
+      "config/*.xml",
+      "config/*.yaml"
+    ],
+    "backupRetention": 5
+  }
+}

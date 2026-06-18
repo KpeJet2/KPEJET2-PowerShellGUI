@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # Module: PwShGUI-SinDriftScan
 # Purpose: Detect SINs that re-appear in code after their registry status was set to RESOLVED.
 # Author: Plan4Me autopilot, iteration 2
@@ -96,4 +97,5 @@ function Invoke-SinDriftScan {
 }
 
 Export-ModuleMember -Function Get-ResolvedSinPatterns, Invoke-SinDriftScan
+
 

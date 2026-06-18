@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -15,6 +15,16 @@
     Version : 2604.B2.V31.0
     Requires: Pester 5.x, PowerShell 7+
 #>
+
+BeforeAll {
+    # Pester 5: variables set in BeforeDiscovery are NOT visible to Run-phase blocks.
+    # Mirror the paths here so It/Describe bodies can resolve $script:* during the Run phase.
+    $script:WS = (Split-Path -Parent $PSScriptRoot)
+    $script:ModDir = Join-Path $script:WS 'modules'
+    $script:ScDir  = Join-Path $script:WS 'scripts'
+    $script:CfgDir = Join-Path $script:WS 'config'
+    $script:TmpDir = Join-Path $script:WS 'temp'
+}
 
 BeforeDiscovery {
     $script:WS = (Split-Path -Parent $PSScriptRoot)
@@ -52,7 +62,8 @@ Describe 'Module Import & Export Verification' -Tag 'ModuleImport' {
             Set-ItResult -Skipped
             return
         }
-        $p = Join-Path $script:ModDir "$_.psm1"
+        $modName = $_
+        $p = Join-Path $script:ModDir "$modName.psm1"
         { Import-Module $p -Force -DisableNameChecking -ErrorAction Stop } | Should -Not -Throw
         Remove-Module $_ -Force -ErrorAction SilentlyContinue
     }
@@ -1472,6 +1483,7 @@ Describe 'All Menu Items Covered by Smoke Check' -Tag 'MenuSmoke','Coverage' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

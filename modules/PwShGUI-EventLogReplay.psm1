@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # Module: PwShGUI-EventLogReplay
 # Purpose: Replay captured event JSON envelopes for regression diffing.
 
@@ -45,4 +46,5 @@ function Invoke-EventLogReplay {
 }
 
 Export-ModuleMember -Function Invoke-EventLogReplay
+
 

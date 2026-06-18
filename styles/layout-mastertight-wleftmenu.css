@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 /* Layout: kpe-CSS_MasterTight-wLeftMENU | v2603.B0.v27.0
    Source: XHTML-MasterToDo.xhtml  (GLOBAL DEFAULT)
    Pattern: Gradient top-bar + left sidebar nav + right content area + tight card layout
@@ -69,5 +69,6 @@ body{display:flex;flex-direction:column;height:100vh;margin:0}
   #main{flex-direction:column}
   #leftPane{width:100%;border-right:none;border-bottom:1px solid var(--border);max-height:180px}
 }
+
 
 

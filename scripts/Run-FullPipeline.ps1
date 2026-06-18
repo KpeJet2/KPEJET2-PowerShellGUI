@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2605.B5.V51.1
+# FileRole: Script
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -17,7 +18,8 @@ param(
     [string]$ExcludeRegex = '^(~|\.)',
     [switch]$SkipLaunchBatches,
     [switch]$AutoInstallPester,
-    [switch]$NoModuleValidation
+    [switch]$NoModuleValidation,
+    [switch]$SkipPipelineMetricHarness
 )
 
 Set-StrictMode -Version Latest
@@ -128,6 +130,12 @@ if ($NoModuleValidation) {
 }
 if (-not (Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required)) { exit 1 }
 
+# 5.1) One-item metric increment gate
+if (-not $SkipPipelineMetricHarness) {
+    $metricHarness = Join-Path $RepoRoot 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
+    if (-not (Invoke-IfExists -Path $metricHarness -ScriptArgs @('-WorkspacePath', $RepoRoot, '-SkipGuiCoverage'))) { exit 1 }
+}
+
 # 6) Optional launch batch runs
 if (-not $SkipLaunchBatches) {
     Write-Log 'Searching for Launch-*.bat files to run (excluding hidden/system roots).'
@@ -152,4 +160,5 @@ if (-not $SkipLaunchBatches) {
 
 Write-Log 'Pipeline run complete. All gates passed.'
 exit 0
+
 

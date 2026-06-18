@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -127,13 +127,19 @@ Describe 'Write-ErrorReport' {
 }
 
 Describe 'PwShGUICore Utility Functions' {
+    BeforeAll {
+        # These helpers validate the real workspace; reinitialise away from
+        # TestDrive so config/, modules/, scripts/, etc. resolve correctly.
+        $wsRoot = Resolve-Path (Join-Path $PSScriptRoot '..') | Select-Object -ExpandProperty Path
+        Initialize-CorePaths -ScriptDir $wsRoot
+    }
     It 'Validates config paths successfully' {
         $result = Test-ConfigPaths
         $result | Should -Be $true
     }
     It 'Enumerates project files' {
-        $files = Get-AllProjectFiles
-        $files | Should -Not -BeNullOrEmpty
+        $files = Get-AllProjectFiles -Pattern '*.ps1'
+        @($files).Count | Should -BeGreaterThan 0
     }
 }
 
@@ -149,6 +155,7 @@ Describe 'PwShGUICore Utility Functions' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

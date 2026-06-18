@@ -90,7 +90,7 @@ Set-StrictMode -Version Latest
 function Get-Something { ... }
 
 AFTER:
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-27)
 # SupportsPS7.6: YES(As of: 2026-04-27)
 # FileRole: Module
@@ -431,5 +431,6 @@ Store in `todo/standards-migration-checklist.json`:
 **Approval**: PwShGUI Project Leadership  
 **Effective Date**: 2026-04-27  
 **Next Review**: 2026-05-31
+
 
 

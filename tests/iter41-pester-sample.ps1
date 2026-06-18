@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $ErrorActionPreference = 'Stop'
 Import-Module Pester -MinimumVersion 5.0 -Force
 
@@ -18,4 +18,5 @@ $res = Invoke-Pester -Configuration $cfg
 "Skipped: $($res.SkippedCount)"
 "Total:   $($res.TotalCount)"
 if ($res.FailedCount -gt 0) { exit 1 } else { exit 0 }
+
 

@@ -1,43 +1,127 @@
-{
-  "$schema": "PwShGUI-IntentRegistry/1.0",
-  "lastUpdated": "2026-04-15T02:20:52",
-  "nextIntentId": 2,
-  "intents": [
-    {
-      "intentId": 1,
-      "title": "Refine and improve pipeline whilst maintaining and managing controls",
-      "description": "Operate with ongoing intent of, Refine and improve pipeline process whilst maintaining and managing controls with all given setup standards and practices. Impove all ongoing in line with this. Self reflect on improvements and integration that optimizes ongoing efforts. Add and maintain all dependancies in the addition of of content, maintain agent prompting and tools memory integration optimize within own improving pipeline cron jobs and iterate evolutionarily.",
-      "status": "ACTIVE",
-      "priority": "HIGH",
-      "author": "msaib",
-      "createdAt": "2026-04-12T11:48:35",
-      "updatedAt": "2026-04-15T02:20:52",
-      "sealedAt": null,
-      "sealedBy": null,
-      "unsealedAt": null,
-      "tags": [
-        "CI",
-        "Managiement",
-        "Controls",
-        "Agentic",
-        "Intent-HIGH"
-      ],
-      "affectedModules": [],
-      "affectedScripts": [],
-      "history": [
-        {
-          "action": "Created",
-          "timestamp": "2026-04-12T11:48:35",
-          "by": "msaib",
-          "detail": "Intent #1 created: Refine and improve pipeline whilst maintaining and managing controls"
-        },
-        {
-          "action": "StatusChange: DRAFT -> ACTIVE",
-          "timestamp": "2026-04-15T02:20:52",
-          "by": "msaib",
-          "detail": "Status changed from DRAFT to ACTIVE"
-        }
-      ]
-    }
-  ]
+﻿{
+    "$schema":  "PwShGUI-IntentRegistry/1.0",
+    "lastUpdated":  "2026-05-18T16:46:15",
+    "nextIntentId":  4,
+    "intents":  [
+                    {
+                        "intentId":  1,
+                        "title":  "Refine and improve pipeline whilst maintaining and managing controls",
+                        "description":  "Operate with ongoing intent of, Refine and improve pipeline process whilst maintaining and managing controls with all given setup standards and practices. Impove all ongoing in line with this. Self reflect on improvements and integration that optimizes ongoing efforts. Add and maintain all dependancies in the addition of of content, maintain agent prompting and tools memory integration optimize within own improving pipeline cron jobs and iterate evolutionarily.",
+                        "status":  "ACTIVE",
+                        "priority":  "HIGH",
+                        "author":  "msaib",
+                        "createdAt":  "2026-04-12T11:48:35",
+                        "updatedAt":  "2026-04-15T02:20:52",
+                        "sealedAt":  null,
+                        "sealedBy":  null,
+                        "unsealedAt":  null,
+                        "tags":  [
+                                     "CI",
+                                     "Managiement",
+                                     "Controls",
+                                     "Agentic",
+                                     "Intent-HIGH"
+                                 ],
+                        "affectedModules":  [
+
+                                            ],
+                        "affectedScripts":  [
+
+                                            ],
+                        "history":  [
+                                        {
+                                            "action":  "Created",
+                                            "timestamp":  "2026-04-12T11:48:35",
+                                            "by":  "msaib",
+                                            "detail":  "Intent #1 created: Refine and improve pipeline whilst maintaining and managing controls"
+                                        },
+                                        {
+                                            "action":  "StatusChange: DRAFT -\u003e ACTIVE",
+                                            "timestamp":  "2026-04-15T02:20:52",
+                                            "by":  "msaib",
+                                            "detail":  "Status changed from DRAFT to ACTIVE"
+                                        }
+                                    ]
+                    },
+                    {
+                        "intentId":  2,
+                        "title":  "Security by Design",
+                        "description":  "Implement security at every potenial point possible",
+                        "status":  "ACTIVE",
+                        "priority":  "HIGH",
+                        "author":  "msaib",
+                        "createdAt":  "2026-05-18T16:42:26",
+                        "updatedAt":  "2026-05-18T16:46:15",
+                        "sealedAt":  null,
+                        "sealedBy":  null,
+                        "unsealedAt":  null,
+                        "tags":  [
+                                     "Security",
+                                     "patch",
+                                     "vulnerability",
+                                     "bypass",
+                                     "dataloss",
+                                     "authorization",
+                                     "pen test",
+                                     "encryption",
+                                     "sanitize",
+                                     "memory management",
+                                     "exfiuktration"
+                                 ],
+                        "affectedModules":  [
+
+                                            ],
+                        "affectedScripts":  [
+
+                                            ],
+                        "history":  [
+                                        {
+                                            "action":  "Created",
+                                            "timestamp":  "2026-05-18T16:42:26",
+                                            "by":  "msaib",
+                                            "detail":  "Intent #2 created: Security by Design"
+                                        },
+                                        {
+                                            "action":  "StatusChange: DRAFT -\u003e ACTIVE",
+                                            "timestamp":  "2026-05-18T16:46:15",
+                                            "by":  "msaib",
+                                            "detail":  "Status changed from DRAFT to ACTIVE"
+                                        }
+                                    ]
+                    },
+                    {
+                        "intentId":  3,
+                        "title":  "Maintain ciode structure framework and template standards for reuse or uplift",
+                        "description":  "Modularity will become easy with systematic use of schema structure and configurations. Improve the style standards an maintain schema versioning through chages to ensure cross compatibility",
+                        "status":  "DRAFT",
+                        "priority":  "HIGH",
+                        "author":  "msaib",
+                        "createdAt":  "2026-05-18T16:45:31",
+                        "updatedAt":  "2026-05-18T16:45:31",
+                        "sealedAt":  null,
+                        "sealedBy":  null,
+                        "unsealedAt":  null,
+                        "tags":  [
+                                     "schema",
+                                     "template",
+                                     "style",
+                                     "format",
+                                     "framework"
+                                 ],
+                        "affectedModules":  [
+
+                                            ],
+                        "affectedScripts":  [
+
+                                            ],
+                        "history":  [
+                                        {
+                                            "action":  "Created",
+                                            "timestamp":  "2026-05-18T16:45:31",
+                                            "by":  "msaib",
+                                            "detail":  "Intent #3 created: Maintain ciode structure framework and template standards for reuse or uplift"
+                                        }
+                                    ]
+                    }
+                ]
 }

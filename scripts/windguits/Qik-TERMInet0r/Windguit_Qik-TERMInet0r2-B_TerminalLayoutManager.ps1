@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -184,7 +184,10 @@ $arp | Set-Content -LiteralPath $OutPath -Encoding UTF8
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("ARP elevation timed out after 120 seconds.")
+        }
     } catch {
         [System.Windows.MessageBox]::Show("ARP elevation cancelled or failed: $_")
     } finally {
@@ -336,7 +339,10 @@ Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("Restore operation timed out after 120 seconds.")
+        }
         [System.Windows.MessageBox]::Show("Restore complete. Restart Windows Terminal to apply.")
     } catch {
         [System.Windows.MessageBox]::Show("Restore cancelled or failed: $_")
@@ -640,6 +646,7 @@ $window.ShowDialog() | Out-Null
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

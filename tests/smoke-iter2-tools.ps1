@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $mods = @(
     @{ M = 'PwShGUI-SinDriftScan';        F = @('Get-ResolvedSinPatterns', 'Invoke-SinDriftScan') },
     @{ M = 'PwShGUI-XhtmlReportTester';   F = @('Test-XhtmlReports') },
@@ -28,4 +28,5 @@ foreach ($m in $mods) {
     }
 }
 if ($fail -gt 0) { exit 1 } else { Write-Host "ALL OK" }
+
 

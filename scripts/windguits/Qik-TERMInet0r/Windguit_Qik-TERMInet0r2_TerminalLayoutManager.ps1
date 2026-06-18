@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 <# 
     TerminalLayoutManager.ps1
     Single-file WPF, dark mode, tabbed UI, on-demand elevation (simplified but functional core).
@@ -183,7 +183,10 @@ param([string]`$OutPath)
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("ARP elevation timed out after 120 seconds.")
+        }
     } catch {
         [System.Windows.MessageBox]::Show("ARP elevation cancelled or failed.")
     } finally {
@@ -331,7 +334,10 @@ Remove-Item `$tempDir -Recurse -Force -ErrorAction SilentlyContinue
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("Restore operation timed out after 120 seconds.")
+        }
         [System.Windows.MessageBox]::Show("Restore complete. You may need to restart Windows Terminal.")
     } catch {
         [System.Windows.MessageBox]::Show("Restore cancelled or failed.")
@@ -661,5 +667,6 @@ $window.ShowDialog() | Out-Null
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 

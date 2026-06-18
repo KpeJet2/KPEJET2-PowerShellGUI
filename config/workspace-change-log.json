@@ -1,18 +1,46 @@
-{
-  "$schema": "PwShGUI-ChangeLog/1.0",
-  "lastUpdated": "2026-04-12T11:48:35",
-  "nextIndex": 2,
-  "entries": [
-    {
-      "index": 1,
-      "timestamp": "2026-04-12T11:48:35",
-      "changeType": "Created",
-      "description": "Created intent: Refine and improve pipeline whilst maintaining and managing controls",
-      "agent": "msaib",
-      "affectedFiles": [],
-      "governingIntentId": 1,
-      "versionBefore": "",
-      "versionAfter": ""
-    }
-  ]
+﻿{
+    "$schema":  "PwShGUI-ChangeLog/1.0",
+    "lastUpdated":  "2026-05-18T16:45:31",
+    "nextIndex":  4,
+    "entries":  [
+                    {
+                        "index":  1,
+                        "timestamp":  "2026-04-12T11:48:35",
+                        "changeType":  "Created",
+                        "description":  "Created intent: Refine and improve pipeline whilst maintaining and managing controls",
+                        "agent":  "msaib",
+                        "affectedFiles":  [
+
+                                          ],
+                        "governingIntentId":  1,
+                        "versionBefore":  "",
+                        "versionAfter":  ""
+                    },
+                    {
+                        "index":  2,
+                        "timestamp":  "2026-05-18T16:42:26",
+                        "changeType":  "Created",
+                        "description":  "Created intent: Security by Design",
+                        "agent":  "msaib",
+                        "affectedFiles":  [
+
+                                          ],
+                        "governingIntentId":  2,
+                        "versionBefore":  "",
+                        "versionAfter":  ""
+                    },
+                    {
+                        "index":  3,
+                        "timestamp":  "2026-05-18T16:45:31",
+                        "changeType":  "Created",
+                        "description":  "Created intent: Maintain ciode structure framework and template standards for reuse or uplift",
+                        "agent":  "msaib",
+                        "affectedFiles":  [
+
+                                          ],
+                        "governingIntentId":  3,
+                        "versionBefore":  "",
+                        "versionAfter":  ""
+                    }
+                ]
 }

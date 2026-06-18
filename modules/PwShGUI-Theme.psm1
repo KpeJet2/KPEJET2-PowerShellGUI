@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -66,6 +66,34 @@ function Get-ThemeValue {
     param([string]$Key)
     if ($script:Theme.ContainsKey($Key)) { return $script:Theme[$Key] }
     return $null
+}
+
+<#
+.SYNOPSIS
+  Get a named theme colour. Wrapper around Get-ThemeValue with -Name parameter
+  for backward-compatible API and clarity when querying colour palette entries.
+#>
+function Get-ThemeColour {
+    [CmdletBinding()]
+    [Alias('Get-ThemeColor')]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+    # Friendly-name to internal palette-key mapping for callers that use the
+    # more conversational colour vocabulary (Background, Foreground, Accent...).
+    $alias = @{
+        Background  = 'FormBack'
+        Foreground  = 'ControlFore'
+        Panel       = 'PanelBack'
+        Accent      = 'AccentBlue'
+        Heading     = 'HeadingFore'
+        Subtle      = 'SubtleFore'
+        Border      = 'BorderColor'
+        Button      = 'ButtonBack'
+    }
+    $key = if ($alias.ContainsKey($Name)) { $alias[$Name] } else { $Name }
+    return Get-ThemeValue -Key $key
 }
 
 <#
@@ -568,6 +596,7 @@ function Set-ControlBackColor {
 #>
 Export-ModuleMember -Function @(
     'Get-ThemeValue',
+    'Get-ThemeColour',
     'Get-ThemeFont',
     'Set-ControlProperty',
     'Set-ControlForeColor',
@@ -580,7 +609,8 @@ Export-ModuleMember -Function @(
     'Set-ModernFormTheme',
     'New-RainbowProgressBar',
     'New-SpinnerLabel'
-)
+) -Alias 'Get-ThemeColor'
+
 
 
 

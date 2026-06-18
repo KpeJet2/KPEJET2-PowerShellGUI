@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
+# FileRole: Script
 <#
 .SYNOPSIS
   Sync pipeline registry item statuses from on-disk todo/<id>.json files.
@@ -14,7 +15,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$WorkspacePath = 'C:\PowerShellGUI',
+    [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent),
     [switch]$Apply
 )
 
@@ -25,6 +26,15 @@ $regPath = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-pipeline.
 $todoDir = Join-Path $WorkspacePath 'todo'
 if (-not (Test-Path -LiteralPath $regPath)) { throw "Registry not found: $regPath" }
 if (-not (Test-Path -LiteralPath $todoDir)) { throw "Todo dir not found: $todoDir" }
+
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    try {
+        Import-Module -Name $pipelineModulePath -Force -ErrorAction Stop
+    } catch {
+        Write-Warning ("[Sync-PipelineRegistryFromDisk] Failed to import pipeline module: {0}" -f $_.Exception.Message)
+    }
+}
 
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $raw       = [System.IO.File]::ReadAllText($regPath, [System.Text.UTF8Encoding]::new($false))
@@ -44,6 +54,20 @@ $summary = [ordered]@{
 }
 $changes = [System.Collections.Generic.List[object]]::new()
 
+function Resolve-RegistryTodoDiskPath {
+    param(
+        [Parameter(Mandatory)] [string]$Workspace,
+        [Parameter(Mandatory)] [string]$ItemId
+    )
+
+    $fileName = $ItemId + '.json'
+    if (Get-Command -Name Resolve-PipelineTodoItemPath -ErrorAction SilentlyContinue) {
+        return (Resolve-PipelineTodoItemPath -WorkspacePath $Workspace -FileName $fileName)
+    }
+
+    return (Join-Path (Join-Path $Workspace 'todo') $fileName)
+}
+
 foreach ($bucket in $buckets) {
     if (-not ($reg.PSObject.Properties.Name -contains $bucket)) { continue }
     $list = @($reg.$bucket)
@@ -59,7 +83,7 @@ foreach ($bucket in $buckets) {
             continue
         }
         $regStatus = if ($itemProps -contains 'status') { [string]$item.status } else { 'OPEN' }
-        $diskFile  = Join-Path $todoDir ($item.id + '.json')
+        $diskFile  = Resolve-RegistryTodoDiskPath -Workspace $WorkspacePath -ItemId ([string]$item.id)
 
         if (-not (Test-Path -LiteralPath $diskFile)) {
             if ($regStatus -in $closedSet) { $summary.unchanged++; continue }
@@ -69,7 +93,7 @@ foreach ($bucket in $buckets) {
             }) | Out-Null
             if ($Apply) {
                 $item.status = 'CLOSED'
-                $note = "Auto-closed by Sync-PipelineRegistryFromDisk: todo/<id>.json no longer exists"
+                $note = "Auto-closed by Sync-PipelineRegistryFromDisk: active todo item file no longer exists"
                 if ($itemProps -contains 'notes' -and $item.notes) {
                     $item.notes = ($item.notes + "`n" + $note).Trim()
                 } elseif ($itemProps -contains 'notes') {
@@ -187,3 +211,4 @@ if ($Apply) {
         }
     }
 }
+

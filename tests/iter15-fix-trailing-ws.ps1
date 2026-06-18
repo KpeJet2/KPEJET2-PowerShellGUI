@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # Iter15: trailing whitespace mass-fix in modules/, preserves UTF-8 BOM if present
 $ErrorActionPreference = 'Stop'
 $root = 'C:\PowerShellGUI\modules'
@@ -32,4 +32,5 @@ Write-Host ("Files fixed: " + $fixed)
 Write-Host ("Approx chars removed: " + $linesFixed)
 $after = Invoke-ScriptAnalyzer -Path $root -Recurse -IncludeRule PSAvoidTrailingWhitespace
 Write-Host ("PSSA PSAvoidTrailingWhitespace remaining: " + @($after).Count)
+
 

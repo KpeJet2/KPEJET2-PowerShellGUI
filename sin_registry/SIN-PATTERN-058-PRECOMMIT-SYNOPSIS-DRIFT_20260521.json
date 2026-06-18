@@ -1,0 +1,23 @@
+{
+  "id": "SIN-PATTERN-058-PRECOMMIT-SYNOPSIS-DRIFT",
+  "sin_id": "SIN-PATTERN-058-PRECOMMIT-SYNOPSIS-DRIFT",
+  "title": "Pre-commit installer synopsis drift from implemented gate flow",
+  "description": "Install-PreCommitHook synopsis/description text references only SIN scanning while generated hook executes additional gates, causing operator confusion and repeat rework.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "Docs/BehaviorDrift",
+  "detection_method": "Targeted regex scan for stale synopsis phrase in Install-PreCommitHook script.",
+  "scan_regex": "Install a git pre-commit hook that runs the SIN scanner against staged PS files",
+  "context_guard_regex": "",
+  "file_exclusion_regex": "",
+  "scan_file_pattern": "Install-PreCommitHook.ps1",
+  "ps_version_scope": "BOTH",
+  "remediation": "Keep synopsis and description aligned with generated hook behavior (secret scan, UI event scan, pre-commit gates).",
+  "examples": [
+    "# Stale phrase in comment help\nInstall a git pre-commit hook that runs the SIN scanner against staged PS files."
+  ],
+  "tags": ["pre-commit", "documentation", "drift"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

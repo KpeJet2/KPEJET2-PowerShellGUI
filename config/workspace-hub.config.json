@@ -1,0 +1,60 @@
+{
+  "schema": "WorkspaceHubConfig/1.0",
+  "lastUpdated": "2026-05-20T00:00:00",
+  "sections": [
+    { "key": "tools", "label": "Tools", "visible": true, "order": 1 },
+    { "key": "sinscans", "label": "SINscans", "visible": true, "order": 2 },
+    { "key": "monitor", "label": "Local Web Engine", "visible": true, "order": 3 },
+    { "key": "sources", "label": "Data Sources", "visible": true, "order": 4 },
+    { "key": "reports", "label": "Reports", "visible": true, "order": 5 },
+    { "key": "timeline", "label": "Timeline", "visible": true, "order": 6 },
+    { "key": "approvals", "label": "Approvals", "visible": true, "order": 7 },
+    { "key": "crashes", "label": "Crashes", "visible": true, "order": 8 },
+    { "key": "eventlogs", "label": "Event Logs", "visible": true, "order": 9 },
+    { "key": "codecopycats", "label": "Code Copy-Cats", "visible": true, "order": 10 }
+  ],
+  "serviceMonitors": [
+    { "key": "engineStatus", "label": "Engine Status", "enabled": true, "target": "/api/engine/status" },
+    { "key": "engineLog", "label": "Engine Log Tail", "enabled": true, "target": "/api/engine/log?tail=40" },
+    { "key": "scanStatus", "label": "Scan Status", "enabled": true, "target": "/api/scan/status" }
+  ],
+  "objectCounters": [
+    { "key": "requestsTotal", "label": "Requests Total", "enabled": true },
+    { "key": "requestsServed", "label": "Requests Served", "enabled": true },
+    { "key": "requestsClientError", "label": "Requests 4xx", "enabled": true },
+    { "key": "requestsServerError", "label": "Requests 5xx", "enabled": true },
+    { "key": "queueLength", "label": "Request Queue", "enabled": true }
+  ],
+  "testButtons": [
+    { "id": "scan-full", "label": "Full Scan", "method": "POST", "target": "/api/scan/full", "enabled": true },
+    { "id": "scan-incremental", "label": "Get Missing Data", "method": "POST", "target": "/api/scan/incremental", "enabled": true },
+    { "id": "validate-sources", "label": "Validate Sources", "method": "GET", "target": "/api/config/menus", "enabled": true }
+  ],
+  "helpBlocks": [
+    {
+      "id": "mode-help",
+      "title": "Data Modes",
+      "visible": true,
+      "content": "Auto selects runtime mode. Force Online requires token + running engine. Force Offline uses cached data and blocks mutation actions."
+    },
+    {
+      "id": "security-help",
+      "title": "Security Access",
+      "visible": true,
+      "content": "Saving Workspace Hub maintenance config requires SASC checks and vault secret gating."
+    }
+  ],
+  "extraPages": [
+    {
+      "title": "Workspace Hub Section Maintenance",
+      "href": "scripts/XHTML-Checker/XHTML-WorkspaceHubSectionMaintenance.xhtml",
+      "enabled": true
+    }
+  ],
+  "security": {
+    "enforceSASC": true,
+    "requireVaultUnlocked": true,
+    "requireAdmin": false,
+    "requiredSecretName": "workspace-hub-config-write"
+  }
+}

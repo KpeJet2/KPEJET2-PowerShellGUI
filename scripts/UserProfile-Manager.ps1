@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -1688,6 +1688,8 @@ $tabs.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch
     [System.Windows.Forms.Application]::DoEvents()
 })
 
+# P064: Set-StrictMode -Off before Application::Run() prevents StrictMode scope bleed into all WinForms event handlers
+Set-StrictMode -Off
 try {
     [System.Windows.Forms.Application]::Run($form)
 } catch {
@@ -1695,6 +1697,8 @@ try {
         Operation = 'Application.Run'
         StorePath = $script:ProfileStorePath
     }
+} finally {
+    Set-StrictMode -Version Latest
 }
 
 
@@ -1715,6 +1719,7 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

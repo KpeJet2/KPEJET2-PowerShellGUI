@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $ms = @(
     'PwShGUI-DependencyMap','PwShGUI-CoverageReport','PwShGUI-AutoRemediate',
     'PwShGUI-SinFromScan','PwShGUI-BreakingChange','PwShGUI-PSScriptAnalyzerScan',
@@ -21,4 +21,5 @@ foreach ($m in $ms) {
 }
 "---"
 "Total OK:$ok FAIL:$fail"
+
 

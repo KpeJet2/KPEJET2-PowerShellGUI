@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2605.B5.V51.1
+# FileRole: Script
 <#
 .SYNOPSIS
     Convert SIN scanner findings into pipeline Bug-*.json items.
@@ -60,8 +61,25 @@ if (-not (Test-Path -LiteralPath $pipelineMod)) {
 Import-Module $pipelineMod -Force -DisableNameChecking
 
 $scan = Get-Content -LiteralPath $ScanResultsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$findings = @($scan.findings)
-Write-Host ("Loaded {0} raw findings from scanner output ({1})." -f $findings.Count, $scan.generatedAt) -ForegroundColor Cyan
+$scanProps = @($scan.PSObject.Properties.Name)
+$scanGeneratedAt = if ($scanProps -contains 'generatedAt' -and [string]$scan.generatedAt) {
+    [string]$scan.generatedAt
+} elseif ($scanProps -contains 'timestamp' -and [string]$scan.timestamp) {
+    [string]$scan.timestamp
+} elseif ($scanProps -contains 'generated' -and [string]$scan.generated) {
+    [string]$scan.generated
+} elseif ($scanProps -contains 'scanId' -and [string]$scan.scanId) {
+    [string]$scan.scanId
+} else {
+    'unknown-timestamp'
+}
+
+$findings = if ($scanProps -contains 'findings' -and $null -ne $scan.findings) {
+    @($scan.findings)
+} else {
+    @()
+}
+Write-Host ("Loaded {0} raw findings from scanner output ({1})." -f $findings.Count, $scanGeneratedAt) -ForegroundColor Cyan
 
 # Severity filter (case-insensitive). Accept canonical aliases.
 $sevSet = @{}
@@ -138,12 +156,20 @@ foreach ($g in $toCreate) {
                 -AffectedFiles @($file) -SuggestedBy 'SIN-Scanner' `
                 -SinPattern $sinId
             $bug.notes = "Created by Convert-SinScanToBugs from $sinId hotspot ($($g.Count) line hits)."
-            Add-PipelineItem -WorkspacePath $WorkspacePath -Item $bug | Out-Null
+            Add-PipelineItem -WorkspacePath $WorkspacePath -Item $bug -SkipArtifactRefresh | Out-Null
             $created++
             $results.Add([pscustomobject]@{ action='created'; id=$bug.id; sinPattern=$sinId; file=$file; lines=$g.Count; priority=$priority }) | Out-Null
         } else {
             $results.Add([pscustomobject]@{ action='dry-run'; sinPattern=$sinId; file=$file; lines=$g.Count; priority=$priority }) | Out-Null
         }
+    }
+}
+
+if ($Apply -and $created -gt 0) {
+    try {
+        $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
+    } catch {
+        Write-Warning ("Deferred artifact refresh failed after SIN ingest: {0}" -f $_.Exception.Message)
     }
 }
 
@@ -171,3 +197,4 @@ Write-Host ''
 Write-Host ("Audit: {0}" -f $reportPath) -ForegroundColor Gray
 Write-Host ('  raw={0} filtered={1} hotspots={2} considered={3} skippedDup={4} created={5}' -f $findings.Count, $keep.Count, $grouped.Count, $toCreate.Count, $skippedDup, $created) -ForegroundColor Cyan
 if (-not $Apply) { Write-Host 'DRY-RUN: pass -Apply to actually create Bug items.' -ForegroundColor Yellow }
+

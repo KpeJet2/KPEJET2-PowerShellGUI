@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2605.B5.V51.1 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qik-GU-ide Cheat Sheet</title>
+  <style type="text/css">
+    body { font-family: Consolas, "Courier New", monospace; margin: 18px; background: #111722; color: #e8eef7; }
+    h1 { margin: 0 0 8px 0; font-size: 24px; }
+    .sub { color: #9fb3cc; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { border: 1px solid #29405b; border-radius: 6px; background: #152235; padding: 10px; }
+    .card h2 { margin: 0 0 6px 0; font-size: 14px; color: #7cc7ff; }
+    .card p { margin: 0 0 6px 0; font-size: 12px; color: #bfd3ea; }
+    pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; background: #0b1320; border: 1px solid #2b3f59; border-radius: 4px; padding: 8px; color: #d6e5f7; font-size: 11px; }
+    .footer { margin-top: 10px; border-top: 1px solid #29405b; padding-top: 8px; font-size: 12px; color: #9fb3cc; }
+    @media print {
+      body { background: #ffffff; color: #111111; margin: 12px; }
+      .card { break-inside: avoid; border-color: #999999; background: #ffffff; }
+      pre { border-color: #bbbbbb; background: #f8f8f8; color: #111111; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Qik-GU-ide Cheat Sheet</h1>
+  <div class="sub">Single-page quick reference with copyable snippets across nine metric-integrity iterations.</div>
+
+  <div class="grid">
+    <div class="card"><h2>1) Metric Note Placeholders</h2><pre>&lt;div class="metric-note" id="td-metric-note"&gt;Metric validation pending...&lt;/div&gt;
+&lt;div class="metric-note" id="bg-metric-note"&gt;Metric validation pending...&lt;/div&gt;
+&lt;div class="metric-note" id="ft-metric-note"&gt;Metric validation pending...&lt;/div&gt;</pre></div>
+
+    <div class="card"><h2>2) Expected Pipeline Counts</h2><pre>function getPipelineExpectedForType(type) {
+  if (!pipeData) return null;
+  if (type === 'bug') return (pipeData.bugs||[]).length + (pipeData.bugs2FIX||[]).length;
+  if (type === 'feature') return (pipeData.featureRequests||[]).length;
+  if (type === 'todo') return (pipeData.todos||[]).length + (pipeData.items2ADD||[]).length;
+  return null;
+}</pre></div>
+
+    <div class="card"><h2>3) Dynamic Parity Note</h2><pre>var expected = getPipelineExpectedForType(type);
+var delta = total - expected;
+noteEl.innerHTML = 'Metric Validation: dynamic total=' + total +
+  ', pipeline expected=' + expected + ', delta=' + delta;</pre></div>
+
+    <div class="card"><h2>4) Re-render After Load</h2><pre>if (dynLoaded) {
+  renderDynamic('todo');
+  renderDynamic('bug');
+  renderDynamic('feature');
+}</pre></div>
+
+    <div class="card"><h2>5) Delta Parser Helper</h2><pre>function metricDeltaFromNote(noteId) {
+  var txt = String(document.getElementById(noteId).textContent || '');
+  var m = txt.match(/delta\s*=\s*([+-]?\d+)/i);
+  return m ? Number(m[1]) : null;
+}</pre></div>
+
+    <div class="card"><h2>6) Integrity Panel Markup</h2><pre>&lt;div class="dd-section-title"&gt;Tab Metric Integrity&lt;/div&gt;
+&lt;div class="dd-grid" id="dd-integrity"&gt;
+  &lt;div class="empty-msg"&gt;Loading integrity checks...&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+
+    <div class="card"><h2>7) Integrity Summary Renderer</h2><pre>var checks = [
+  { label:'Pipeline', delta:pipelineDelta },
+  { label:'Scripts', delta:metricDeltaFromNote('ws-metric-note') },
+  { label:'Agents', delta:metricDeltaFromNote('ag-metric-note') },
+  { label:'Scan Tools', delta:metricDeltaFromNote('sc-metric-note') }
+];
+// render cards pass/warn/pending
+</pre></div>
+
+    <div class="card"><h2>8) Startup Validation Hook</h2><pre>try { loadScriptVersions(); } catch (e) { }
+try { renderScanToolsValidation(); } catch (e) { }</pre></div>
+
+    <div class="card"><h2>9) CI Metric Harness Gate</h2><pre>pwsh -NoProfile -File .\tests\Invoke-PipelineMetricHarness.ps1
+if ($LASTEXITCODE -ne 0) {
+  throw 'Pipeline metric harness failed.'
+}</pre></div>
+
+    <div class="card"><h2>CLI Quick Open</h2><pre>@echo off
+set ROOT=%~dp0..
+start "" "%ROOT%\docs\Qik-GU-ide-CheatSheet.xhtml"</pre></div>
+  </div>
+
+  <div class="footer">
+    Verify: delta values are visible on each tab, integrity panel shows pass/warn/pending, and harness exits 0.
+  </div>
+</body>
+</html>
+

@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # Module: PwShGUI-ManifestDiff
 # Purpose: Detect silent metadata drift between .psd1 manifest snapshots.
 
@@ -70,4 +71,5 @@ function Compare-ModuleManifest {
 }
 
 Export-ModuleMember -Function Get-ManifestSnapshot, Compare-ModuleManifest
+
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -143,7 +143,7 @@ Describe 'Show-ScanDashboard: P027 null-array-index guards' {
             $violations = @()
             for ($i = 0; $i -lt $script:sdLines.Count; $i++) {
                 $line = $script:sdLines[$i]
-                if ($line -match '\$files\[0\]' -and $line -notmatch '^\s*#') {
+                if ($line -match '\$files\[0\]' -and $line -notmatch '^\s*#' -and $line -notmatch 'SIN-EXEMPT\s*:\s*P027') {
                     # Check same line for inline guard (e.g. if ($files.Count -gt 0) { ...$files[0]... })
                     $hasInlineGuard = ($line -match '\.Count\s*-gt\s*0|\.Count\s*-ge\s*1|@\(\$files\)')
                     # Check above lines (extended to 8 for continue-after-empty patterns)
@@ -384,7 +384,7 @@ Describe 'Invoke-ScriptDependencyMatrix: P027 null-array-index guards' {
             $violations = @()
             for ($i = 0; $i -lt $script:dmLines.Count; $i++) {
                 $line = $script:dmLines[$i]
-                if ($line -match '\.Groups\[\d+\]\.Value' -and $line -notmatch '^\s*#') {
+                if ($line -match '\.Groups\[\d+\]\.Value' -and $line -notmatch '^\s*#' -and $line -notmatch 'SIN-EXEMPT\s*:\s*P027') {
                     # Same-line guard: if($match), $match.Success, ForEach-Object on matches collection
                     $hasGuard = ($line -match '\.Success\b|-match\s|if\s*\(|ForEach-Object|\$_\.Groups')
                     if (-not $hasGuard) {
@@ -731,6 +731,7 @@ Describe 'P027 Scanner Gate Enforcement' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

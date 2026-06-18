@@ -1,0 +1,12 @@
+﻿{
+    "id":  "TASK-FullSystemsScan",
+    "name":  "Full Systems Scan",
+    "type":  "FullSystemsScan",
+    "consecutiveFailures":  3,
+    "deadLetteredAt":  "2026-05-22T17:35:56.6602938Z",
+    "lastErrors":  [
+                       "FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parallel\u0027."
+                   ],
+    "detail":  "",
+    "schedulePath":  "C:\\PowerShellGUI\\config\\cron-aiathon-schedule.json"
+}

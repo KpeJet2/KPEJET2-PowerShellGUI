@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter26b: byte-level trailing-ws strip on the fragile file
 $path = 'C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1'
 $bytes = [IO.File]::ReadAllBytes($path)
@@ -35,4 +35,5 @@ $errors | Select-Object -First 3 | ForEach-Object { Write-Host ("  L" + $_.Exten
 # Re-scan
 $f = Invoke-ScriptAnalyzer -Path $path -IncludeRule PSAvoidTrailingWhitespace
 Write-Host ("Remaining trailing-ws: " + @($f).Count)
+
 

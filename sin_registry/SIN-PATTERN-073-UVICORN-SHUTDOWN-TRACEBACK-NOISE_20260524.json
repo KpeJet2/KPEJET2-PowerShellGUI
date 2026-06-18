@@ -1,0 +1,38 @@
+{
+  "id": "SIN-PATTERN-073-UVICORN-SHUTDOWN-TRACEBACK-NOISE_20260524",
+  "sin_id": "SIN-PATTERN-073-UVICORN-SHUTDOWN-TRACEBACK-NOISE_20260524",
+  "title": "Uvicorn close path emits KeyboardInterrupt and CancelledError traceback noise",
+  "description": "Running uvicorn directly without graceful shutdown handling can print noisy stack traces on Ctrl+C or terminal close. The app exits, but operators interpret this as a crash.",
+  "severity": "MEDIUM",
+  "category": "observability",
+  "vector": "uvicorn-shutdown-traceback-noise",
+  "ps_version_scope": "N/A",
+  "status": "pattern-defined",
+  "created_at": "2026-05-24T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for uvicorn.run usage in Python entrypoints without nearby KeyboardInterrupt handling",
+  "scan_regex": "uvicorn\\.run\\(",
+  "scan_file_pattern": "*.py",
+  "file_exclusion_regex": "sin_registry|venv|\\.venv|site-packages|tests",
+  "context_guard_regex": "except\\s+KeyboardInterrupt|graceful shutdown requested",
+  "context_guard_lines": 25,
+  "context_guard_direction": "both",
+  "preventionRule": "Wrap uvicorn.run in try/except KeyboardInterrupt and emit a clean shutdown info message.",
+  "remedy": "Use a guarded entrypoint: try uvicorn.run(...); except KeyboardInterrupt: print clean shutdown message. Keep lifecycle cleanup idempotent.",
+  "tags": [
+    "python",
+    "uvicorn",
+    "shutdown",
+    "traceback",
+    "observability"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

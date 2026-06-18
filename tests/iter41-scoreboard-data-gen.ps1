@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # Phase 2 - Scoreboard data layer generator.
 # Emits per-metric JSON manifests under ~REPORTS/scoreboard-data/ for the
 # SIN-Scoreboard.xhtml drilldown pane to consume via XHR.
@@ -266,4 +266,5 @@ try {
 "  bugs-open:     $($bugsOpen.Count)"
 "  bugs2fix-open: $($bugs2fixOpen.Count)"
 "  parseErrors:   $($parseErrors.Count)"
+
 

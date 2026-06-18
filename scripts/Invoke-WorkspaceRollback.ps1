@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -208,7 +208,8 @@ function Get-RollbackPoints {
         try {
             $index = Get-Content $indexPath -Raw -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
             $index.PSObject.Properties | ForEach-Object {
-                $epochFile = Join-Path $WorkspacePath ($_.Value -replace '/', '\')
+                $safePath = $_.Value -replace '/', '\'
+                $epochFile = Join-Path $WorkspacePath $safePath
                 $epochData = $null
                 if (Test-Path $epochFile) {
                     try { $epochData = Get-Content $epochFile -Raw -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop } catch { <# Intentional: epoch file may be corrupt/invalid #> }
@@ -674,6 +675,7 @@ switch ($Action) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

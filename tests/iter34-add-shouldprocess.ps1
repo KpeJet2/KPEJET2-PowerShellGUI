@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter34: AST-targeted SupportsShouldProcess injection
 # For each PSSA-flagged function: find its [CmdletBinding(...)] attribute and
 # add SupportsShouldProcess. If no CmdletBinding present, insert one.
@@ -115,4 +115,5 @@ Write-Host "`nTotal patched: $totalPatched (parse-fail files: $totalParseFails)"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSUseShouldProcessForStateChangingFunctions
 Write-Host "Remaining: $(@($after).Count)"
 $after | Format-Table ScriptName, Line -AutoSize
+
 

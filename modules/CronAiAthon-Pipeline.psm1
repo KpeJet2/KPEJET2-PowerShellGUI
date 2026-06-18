@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -374,6 +374,188 @@ function ConvertTo-PipelineStatus {
     }
 }
 
+function Get-PipelineTodoRootPath {
+    <#
+    .SYNOPSIS  Return the canonical todo root folder path.
+    #>
+    [OutputType([System.String])]
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$WorkspacePath)
+
+    return (Join-Path $WorkspacePath 'todo')
+}
+
+function Get-PipelineTodoQueueRootPath {
+    <#
+    .SYNOPSIS  Return the canonical queue root folder: todo/QUEUES-ToDo.
+    #>
+    [OutputType([System.String])]
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$WorkspacePath)
+
+    return (Join-Path (Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath) 'QUEUES-ToDo')
+}
+
+function Get-PipelineTodoQueueKeyFromFileName {
+    <#
+    .SYNOPSIS  Derive queue folder key from a todo item file name prefix.
+    #>
+    [OutputType([System.String])]
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$FileName)
+
+    $leaf = [System.IO.Path]::GetFileName([string]$FileName)
+    if ([string]::IsNullOrWhiteSpace($leaf)) { return 'MISC-' }
+
+    $upper = $leaf.ToUpperInvariant()
+    $known = [ordered]@{
+        'TODO-PA-'       = 'TODO-PA-'
+        'TODO-ENG-'      = 'TODO-ENG-'
+        'TODO-RENAME-'   = 'todo-rename-'
+        'BUGS2FIX-'      = 'Bugs2FIX-'
+        'ITEMS2ADD-'     = 'Items2ADD-'
+        'FEATUREREQUEST-'= 'FeatureRequest-'
+        'FEATURE-'       = 'FEATURE-'
+        'BUG-SCHED-'     = 'BUG-SCHED-'
+        'BUG-PARSE-'     = 'bug-parse-'
+        'BUG-'           = 'Bug-'
+        'TODO-'          = 'todo-'
+        'IMPR-'          = 'IMPR-'
+        'CRASH-'         = 'Crash-'
+        'FIX-'           = 'FIX-'
+    }
+
+    foreach ($k in @($known.Keys)) {
+        if ($upper.StartsWith($k, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return [string]$known[$k]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+        }
+    }
+
+    if ($upper -match '^([A-Z0-9]+)-') {
+        return ($Matches[1] + '-')  # SIN-EXEMPT:P027 -- index access, context-verified safe
+    }
+
+    return 'MISC-'
+}
+
+function Resolve-PipelineTodoItemPath {
+    <#
+    .SYNOPSIS  Resolve a todo file path under queue folders by file prefix.
+    #>
+    [OutputType([System.String])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [string]$FileName,
+        [switch]$CreateDirectory
+    )
+
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
+    if (-not (Test-Path -LiteralPath $todoDir) -and $CreateDirectory) {
+        New-Item -ItemType Directory -Path $todoDir -Force | Out-Null
+    }
+
+    $queueRoot = Get-PipelineTodoQueueRootPath -WorkspacePath $WorkspacePath
+    if (-not (Test-Path -LiteralPath $queueRoot) -and $CreateDirectory) {
+        New-Item -ItemType Directory -Path $queueRoot -Force | Out-Null
+    }
+
+    $leaf = [System.IO.Path]::GetFileName([string]$FileName)
+    $queueKey = Get-PipelineTodoQueueKeyFromFileName -FileName $leaf
+    $queueDir = Join-Path $queueRoot $queueKey
+    if (-not (Test-Path -LiteralPath $queueDir) -and $CreateDirectory) {
+        New-Item -ItemType Directory -Path $queueDir -Force | Out-Null
+    }
+
+    return (Join-Path $queueDir $leaf)
+}
+
+function Get-PipelineTodoJsonFiles {
+    <#
+    .SYNOPSIS  Return todo JSON files from root + QUEUES-ToDo subfolders.
+    #>
+    [OutputType([System.Object[]])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [string]$Filter = '*.json'
+    )
+
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
+    if (-not (Test-Path -LiteralPath $todoDir)) { return @() }
+
+    $all = @()
+    $all += @(Get-ChildItem -Path $todoDir -Filter $Filter -File -ErrorAction SilentlyContinue)
+
+    $queueRoot = Get-PipelineTodoQueueRootPath -WorkspacePath $WorkspacePath
+    if (Test-Path -LiteralPath $queueRoot) {
+        $all += @(Get-ChildItem -Path $queueRoot -Filter $Filter -File -Recurse -ErrorAction SilentlyContinue)
+    }
+
+    $seen = @{}
+    $deduped = @()
+    foreach ($file in @($all)) {
+        if ($null -eq $file) { continue }
+        $key = [string]$file.FullName
+        if ($seen.ContainsKey($key)) { continue }
+        $seen[$key] = $true
+        $deduped += $file
+    }
+
+    return @($deduped | Sort-Object -Property FullName)
+}
+
+function Move-PipelineTodoFilesToQueues {
+    <#
+    .SYNOPSIS  Move root todo JSON item files into QUEUES-ToDo/<prefix>/ folders.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess)]
+    param([Parameter(Mandatory)] [string]$WorkspacePath)
+
+    $result = [ordered]@{
+        moved      = 0
+        skipped    = 0
+        errors     = 0
+        movedFiles = @()
+        errorFiles = @()
+    }
+
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
+    if (-not (Test-Path -LiteralPath $todoDir)) { return $result }
+
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    $rootFiles = @(
+        Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike '*\~*\*' }
+    )
+
+    foreach ($file in @($rootFiles)) {
+        try {
+            $target = Resolve-PipelineTodoItemPath -WorkspacePath $WorkspacePath -FileName $file.Name -CreateDirectory
+            if ([string]::Equals([string]$file.FullName, [string]$target, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $result.skipped++
+                continue
+            }
+            if (Test-Path -LiteralPath $target) {
+                $result.skipped++
+                continue
+            }
+            if ($PSCmdlet.ShouldProcess($file.FullName, "Move to queue path $target")) {
+                Move-Item -LiteralPath $file.FullName -Destination $target -Force -ErrorAction Stop
+            }
+            $result.moved++
+            $result.movedFiles += $target
+        } catch {
+            $result.errors++
+            $result.errorFiles += $file.FullName
+            Write-AppLog -Message "Move-PipelineTodoFilesToQueues failed for $($file.FullName): $_" -Level Warning
+        }
+    }
+
+    return $result
+}
+
 function Get-PipelineActiveTodoFiles {
     <#
     .SYNOPSIS  Return active todo JSON item files excluding generated and archived content.
@@ -383,15 +565,28 @@ function Get-PipelineActiveTodoFiles {
     [CmdletBinding()]
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
-    $todoDir = Join-Path $WorkspacePath 'todo'
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
     if (-not (Test-Path $todoDir)) { return @() }
 
     $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
-    $files = @(
-        Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+    $candidateFiles = @(
+        Get-PipelineTodoJsonFiles -WorkspacePath $WorkspacePath -Filter '*.json' |
         Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
         Sort-Object Name
     )
+
+    $files = @()
+    foreach ($file in @($candidateFiles)) {
+        try {
+            $raw = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 -ErrorAction Stop
+            $parsed = $raw | ConvertFrom-Json -ErrorAction Stop
+            if ($parsed -is [System.Array]) { continue }
+            $files += $file
+        } catch {
+            continue
+        }
+    }
+
     return $files
 }
 
@@ -405,9 +600,9 @@ function Write-PipelineItemFile {
         [Parameter(Mandatory)] $Item
     )
 
-    $todoDir = Join-Path $WorkspacePath 'todo'
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
     if (-not (Test-Path $todoDir)) { New-Item -ItemType Directory -Path $todoDir -Force | Out-Null }
-    $todoFile = Join-Path $todoDir "$($Item.id).json"
+    $todoFile = Resolve-PipelineTodoItemPath -WorkspacePath $WorkspacePath -FileName "$($Item.id).json" -CreateDirectory
     $Item | ConvertTo-Json -Depth 10 | Set-Content -Path $todoFile -Encoding UTF8
     return $todoFile
 }
@@ -422,7 +617,8 @@ function Add-PipelineItem {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [hashtable]$Item
+        [Parameter(Mandatory)] [hashtable]$Item,
+        [switch]$SkipArtifactRefresh
     )
 
     # Normalize description so strict-mode property access remains safe downstream.
@@ -468,10 +664,12 @@ function Add-PipelineItem {
     # Also create individual todo JSON for backward compatibility
     $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $Item
 
-    try {
-        $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
-    } catch {
-        Write-AppLog -Message "Pipeline artifact refresh failed after Add-PipelineItem for $($Item.id): $_" -Level Warning
+    if (-not $SkipArtifactRefresh) {
+        try {
+            $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath
+        } catch {
+            Write-AppLog -Message "Pipeline artifact refresh failed after Add-PipelineItem for $($Item.id): $_" -Level Warning
+        }
     }
 
     return $Item
@@ -881,6 +1079,7 @@ function Get-CentralMasterToDo {
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
     $master = @()
+    $seenIds = @{}
 
     # 1. Pipeline registry items
     $pipelineItems = Get-PipelineItems -WorkspacePath $WorkspacePath
@@ -904,12 +1103,15 @@ function Get-CentralMasterToDo {
             sessionModCount = if ($piProps.Name -contains 'sessionModCount' -and $null -ne $pi.sessionModCount) { $pi.sessionModCount } else { 0 }
             origin          = 'pipeline'
         }
+        if (-not [string]::IsNullOrWhiteSpace([string]$pi.id)) {
+            $seenIds[[string]$pi.id] = $true
+        }
     }
 
     # 2. Existing todo/ folder JSON files (backward compat)
-    $todoDir = Join-Path $WorkspacePath 'todo'
+    $todoDir = Get-PipelineTodoRootPath -WorkspacePath $WorkspacePath
     if (Test-Path $todoDir) {
-        $todoFiles = Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        $todoFiles = Get-PipelineTodoJsonFiles -WorkspacePath $WorkspacePath -Filter '*.json' |
             Where-Object { $_.Name -notlike '_*' -and $_.Name -notlike 'action-log*' -and $_.FullName -notlike "*\~*\*" }
 
         foreach ($tf in $todoFiles) {
@@ -919,7 +1121,7 @@ function Get-CentralMasterToDo {
                 $tdId = if ($tdProps['id']) { $td.id } elseif ($tdProps['todo_id']) { $td.todo_id } else { $tf.BaseName }
 
                 # Skip if already in pipeline
-                if ($master | Where-Object { $_.id -eq $tdId }) { continue }
+                if ($seenIds.ContainsKey([string]$tdId)) { continue }
 
                 $master += [ordered]@{
                     id              = $tdId
@@ -935,6 +1137,9 @@ function Get-CentralMasterToDo {
                     sessionModCount = if ($tdProps['sessionModCount']) { $td.sessionModCount } else { 1 }
                     origin          = 'todo-folder'
                 }
+                if (-not [string]::IsNullOrWhiteSpace([string]$tdId)) {
+                    $seenIds[[string]$tdId] = $true
+                }
             } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
     }
@@ -948,7 +1153,7 @@ function Get-CentralMasterToDo {
                 if ($null -eq $feat) { continue }
                 $fp = $feat.PSObject.Properties
                 $featId = if ($fp['id']) { $feat.id } else { "FR-$(Get-Random)" }
-                if ($master | Where-Object { $_.id -eq $featId }) { continue }
+                if ($seenIds.ContainsKey([string]$featId)) { continue }
                 $master += [ordered]@{
                     id              = $featId
                     type            = 'FeatureRequest'
@@ -963,6 +1168,9 @@ function Get-CentralMasterToDo {
                     sessionModCount = 1
                     origin          = 'feature-requests-json'
                 }
+                if (-not [string]::IsNullOrWhiteSpace([string]$featId)) {
+                    $seenIds[[string]$featId] = $true
+                }
             }
         } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     }
@@ -976,7 +1184,7 @@ function Get-CentralMasterToDo {
                 if ($null -eq $bug) { continue }
                 $bp = $bug.PSObject.Properties
                 $bugId = if ($bp['id']) { $bug.id } else { "BUG-$(Get-Random)" }
-                if ($master | Where-Object { $_.id -eq $bugId }) { continue }
+                if ($seenIds.ContainsKey([string]$bugId)) { continue }
                 $master += [ordered]@{
                     id              = $bugId
                     type            = 'Bug'
@@ -990,6 +1198,9 @@ function Get-CentralMasterToDo {
                     modified        = if ($bp['fixed']) { [string]$bp['fixed'].Value } else { '' }
                     sessionModCount = 1
                     origin          = 'bug-tracker-json'
+                }
+                if (-not [string]::IsNullOrWhiteSpace([string]$bugId)) {
+                    $seenIds[[string]$bugId] = $true
                 }
             }
         } catch { <# skip malformed #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
@@ -1509,8 +1720,17 @@ function Test-PipelineArtifactIntegrity {
             $end = $bundleRaw.LastIndexOf(']')
             if ($start -ge 0 -and $end -gt $start) {
                 $bundleJson = $bundleRaw.Substring($start, ($end - $start + 1))
-                $bundleItems = @($bundleJson | ConvertFrom-Json)
-                $bundleCount = @($bundleItems).Count
+                # PS 5.1 quirk: ConvertFrom-Json on a JSON array writes the array as one
+                # pipeline item, so @($json | ConvertFrom-Json) yields Count=1 (array of array).
+                # Use -InputObject and conditionally wrap to get a true element count.
+                $bundleItems = ConvertFrom-Json -InputObject $bundleJson
+                if ($null -eq $bundleItems) {
+                    $bundleCount = 0
+                } elseif ($bundleItems -is [System.Collections.IList]) {
+                    $bundleCount = $bundleItems.Count
+                } else {
+                    $bundleCount = 1
+                }
             }
         } catch {
             $bundleCount = -1
@@ -1691,6 +1911,12 @@ function Invoke-PipelineArtifactRefresh {
     param([Parameter(Mandatory)] [string]$WorkspacePath)
 
     $result = [ordered]@{}
+    try {
+        $result.queueSync = Move-PipelineTodoFilesToQueues -WorkspacePath $WorkspacePath
+    } catch {
+        Write-AppLog -Message "Pipeline queue sync failed during artifact refresh: $_" -Level Warning
+        $result.queueSync = [ordered]@{ moved = 0; skipped = 0; errors = 1 }
+    }
     $result.master = Export-CentralMasterToDo -WorkspacePath $WorkspacePath
     $result.bundle = Update-TodoBundle -WorkspacePath $WorkspacePath
     $result.index  = Update-PipelineIndex -WorkspacePath $WorkspacePath
@@ -2038,6 +2264,10 @@ Export-ModuleMember -Function @(
     'Resolve-ItemCategory',
     'Set-OutlinePhase',
     'Confirm-OutlineVersion',
+    'Get-PipelineTodoQueueKeyFromFileName',
+    'Resolve-PipelineTodoItemPath',
+    'Get-PipelineTodoJsonFiles',
+    'Move-PipelineTodoFilesToQueues',
     'Update-TodoBundle',
     'Update-PipelineIndex',
     'Get-PipelineInterruptions',
@@ -2049,6 +2279,7 @@ Export-ModuleMember -Function @(
     'Invoke-BugStatusRollup',
     'Show-PipelineHelp'
 )
+
 
 
 

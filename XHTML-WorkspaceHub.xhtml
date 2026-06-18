@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- VersionTag: 2605.B5.V51.2 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Workspace Hub - PwShGUI</title>
   <link rel="stylesheet" type="text/css" href="styles/pwshgui-hub.css" />
@@ -35,6 +35,11 @@
     .ws-dot.warn{background:var(--warn)}
     .ws-dot.err{background:var(--fail)}
     .eng-status-lbl{font-size:10px;color:rgba(255,255,255,0.6);margin-left:4px}
+    .hdr-source-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:8px}
+    .hdr-source-label{font-size:10px;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:.4px}
+    .hdr-source-select{font-family:var(--font);font-size:10px;min-width:190px;max-width:280px;padding:2px 4px;border-radius:4px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.12);color:#fff}
+    .hdr-source-select option{color:#111}
+    .hdr-source-status{font-size:10px;color:rgba(255,255,255,0.82);padding:2px 6px;border:1px solid rgba(255,255,255,0.18);border-radius:999px;background:rgba(0,0,0,0.12)}
     .eng-btn{font-size:10px;padding:2px 8px;color:#fff;border-radius:4px;cursor:pointer;font-family:var(--font)}
     .eng-btn-start{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);margin-left:8px}
     .eng-btn-stop{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#ccc;margin-left:4px}
@@ -223,6 +228,45 @@
     .hub-sidebar-links{border-top:1px solid var(--border);padding:8px 10px;margin-top:auto;flex-shrink:0}
     .hub-sidebar-link{display:block;font-size:11px;color:var(--info);text-decoration:none;padding:4px 6px;border-radius:var(--radius);margin-bottom:2px}
     .hub-sidebar-link:hover{background:var(--control);color:#9cdcfe}
+    .hub-layout-main{flex:1;overflow:hidden}
+    .hub-section-hidden{display:none}
+    .tool-loading-note{color:var(--fg-sub);font-size:11px}
+    .select-all-label{font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:4px;cursor:pointer}
+    .chk-accent{accent-color:var(--accent)}
+    .history-table-wrap{max-height:75vh;overflow:auto}
+    .sin-links-note{font-size:12px;color:var(--fg);margin-bottom:8px}
+    .label-small-muted{font-size:10px;color:var(--fg-sub)}
+    .msg-small-muted{font-size:10px;color:var(--fg-sub)}
+    .msg-small-muted-left{font-size:10px;color:var(--fg-sub);margin-left:6px}
+    .evt-filter-bar-top4{margin-top:4px}
+    .approval-table-wrap{max-height:380px}
+    .evt-count-msg{font-size:10px;color:var(--fg-sub);margin-left:4px}
+    .evt-presets-row{padding:4px var(--pad) 6px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .evt-presets-title{font-size:9px;color:var(--fg-sub);text-transform:uppercase}
+    .evt-table-empty-cell{text-align:center;color:var(--fg-sub);padding:20px}
+    .evt-canonical-wrap{display:none;margin-top:10px}
+    .sec-loading-note{color:var(--fg-sub);font-size:11px}
+    .mon-filter-top10{margin-top:10px}
+    .mon-field-picker{min-width:320px}
+    .mon-picker-summary{display:inline-block;list-style:none;cursor:pointer}
+    .mon-field-checks{margin-top:6px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 10px}
+    .mon-toolbar-dynamic{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .mon-actions-wrap{margin-top:12px}
+    .mon-pages-top8{margin-top:8px}
+    .mon-page-select{min-width:320px;max-width:420px;height:84px}
+    .mon-mode-note{margin-top:6px;font-size:10px;color:var(--fg-sub)}
+    .src-filter-bottom8{margin-bottom:8px}
+    .src-default-label{font-size:11px;color:var(--fg-sub)}
+    .src-default-value{font-size:11px;color:var(--info);font-weight:600}
+    .src-status-msg{font-size:10px;color:var(--fg-sub)}
+    .src-table-wrap{max-height:260px}
+    .src-add-top10{margin-top:10px}
+    .src-input-name{width:180px}
+    .src-input-url{width:260px}
+    .ccc-field-min200{min-width:200px}
+    .ccc-field-min220{min-width:220px}
+    .ccc-field-min240{min-width:240px}
+    .ft-hidden{display:none}
     /* ── Tool toolbar (view modes, sort, bulk actions) ── */
     .tool-toolbar{
       display:flex;align-items:center;gap:8px;padding:6px 0 10px;
@@ -262,7 +306,7 @@
     .hub-cards.view-list{display:flex;flex-direction:column;gap:3px}
     .hub-cards.view-list .hub-card{
       flex-direction:row;align-items:center;gap:10px;
-      padding:6px 10px;min-height:auto;
+      padding:6px 10px;
     }
     .hub-cards.view-list .hub-card-icon{font-size:16px;min-width:24px;text-align:center}
     .hub-cards.view-list .hub-card-title{flex:1;font-size:12px}
@@ -272,7 +316,7 @@
     .hub-cards.view-detail{display:flex;flex-direction:column;gap:6px}
     .hub-cards.view-detail .hub-card{
       flex-direction:row;align-items:flex-start;gap:12px;
-      padding:10px 14px;min-height:auto;
+      padding:10px 14px;
     }
     .hub-cards.view-detail .hub-card-icon{font-size:22px;min-width:32px;text-align:center;margin-top:2px}
     .hub-cards.view-detail .hub-card-title{font-size:13px;font-weight:600}
@@ -291,7 +335,7 @@
       position:absolute;top:6px;right:6px;z-index:4;
       width:18px;height:18px;line-height:16px;text-align:center;
       border:1px solid #3a3a42;border-radius:999px;background:#1a1a1f;
-      color:#6f6f7a;font-size:12px;cursor:pointer;user-select:none;
+      color:#6f6f7a;font-size:12px;cursor:pointer;-webkit-user-select:none;user-select:none;
     }
     .hub-card-star:hover{border-color:#b59f3b;color:#e5d27a}
     .hub-card-star.pinned{border-color:#b59f3b;color:#e5d27a;background:#2a250f}
@@ -363,6 +407,11 @@
     <span class="hdr-ver pwshgui-version" id="hdrVer" data-pwshgui-version="2605.B5.V46.0">v2605.B5.V46.0</span>
     <div class="ws-dot" id="wsDot" data-tip="LocalWebEngine status: green=running, red=offline, yellow=degraded"></div>
     <a id="engStatusLink" class="eng-status-lbl" href="#" target="_blank" rel="noopener" data-tip="LocalWebEngine runtime status. When engine is up this becomes a live link to Service Hub with PID and PORT details.">&#x2014;</a>
+    <div class="hdr-source-wrap" data-tip="Active data source selection and runtime status">
+      <span class="hdr-source-label">Data Source</span>
+      <select id="srcHeaderSelect" class="hdr-source-select" title="Select the active data source" aria-label="Select the active data source" onchange="setHeaderDataSource(this.value)"></select>
+      <span class="hdr-source-status" id="srcHeaderStatus">loading...</span>
+    </div>
     <button class="eng-btn eng-btn-start" onclick="startEngine()" data-tip="Live mode: verify/start via API route. File mode: shows local launch guidance and opens launcher when possible.">&#x25B6; Start Engine</button>
     <button class="eng-btn eng-btn-stop" onclick="stopEngine()" data-tip="Live mode: stop confirmation + API stop. File mode: graceful fallback guidance if remote control is unavailable.">&#x25A0; Stop</button>
   </div>
@@ -412,22 +461,24 @@
   </div>
 
   <!-- ── Hub body: sidebar + main ── -->
-  <div class="hub-layout" style="flex:1;overflow:hidden">
+  <div class="hub-layout hub-layout-main">
     <!-- Sidebar -->
     <div class="hub-sidebar">
       <div class="hub-sidebar-title">Sections</div>
       <button class="hub-section-btn hub-nav-item active" id="navTools"     onclick="showSection('tools')"     data-tip="XHTML tool card launcher"><span class="hub-nav-icon">&#x1F6E0;</span>Tools</button>
+      <button class="hub-section-btn hub-nav-item"        id="navSinScans" onclick="showSection('sinscans')" data-tip="SIN scan scoreboards, manifests and remediation entry points"><span class="hub-nav-icon">&#x26A0;</span>SINscans</button>
+      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="Local Web Engine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Local Web Engine</button>
+      <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
       <button class="hub-section-btn hub-nav-item"        id="navReports"   onclick="showSection('reports')"   data-tip="Generated scan and audit reports"><span class="hub-nav-icon">&#x1F4CA;</span>Reports</button>
       <button class="hub-section-btn hub-nav-item"        id="navTimeline"  onclick="showSection('timeline')"  data-tip="Phase completion history from last scan"><span class="hub-nav-icon">&#x1F554;</span>History</button>
       <button class="hub-section-btn hub-nav-item"        id="navApprovals" onclick="showSection('approvals')" data-tip="Pending approval queue for feature, bug-fix and work-item todos"><span class="hub-nav-icon">&#x2705;</span>Pipeline Approvals</button>
       <button class="hub-section-btn hub-nav-item"        id="navCrashes"   onclick="showSection('crashes')"   data-tip="Scan crash dump viewer"><span class="hub-nav-icon">&#x1F4A5;</span>Crash Dumps</button>
       <button class="hub-section-btn hub-nav-item"        id="navEventLogs" onclick="showSection('eventlogs')" data-tip="Aggregated engine event logs from bootstrap, stdout, service and crash files. Filter, search, save presets."><span class="hub-nav-icon">&#x1F514;</span>Event Logs</button>
-      <button class="hub-section-btn hub-nav-item"        id="navMonitor"   onclick="showSection('monitor')"   data-tip="Local Web Engine health monitor with live stats, uptime, and recent log tail"><span class="hub-nav-icon">&#x2699;</span>Local Web Engine</button>
-      <button class="hub-section-btn hub-nav-item"        id="navSources"   onclick="showSection('sources')"   data-tip="Manage live and offline data sources with schema-aware validation"><span class="hub-nav-icon">&#x1F5A7;</span>Data Sources</button>
       <button class="hub-section-btn hub-nav-item"        id="navCodeCopyCats" onclick="showSection('codecopycats')" data-tip="Copy-ready snippets with switch/help details and compound filters"><span class="hub-nav-icon">&#x1F98B;</span>Code Copy-Cats</button>
       <div class="hub-sidebar-links">
         <a class="hub-sidebar-link" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help Index in a new window">&#x1F4D6; Help Index (local file)</a>
         <a class="hub-sidebar-link" id="helpHostedLink" href="http://127.0.0.1:8042/~README.md/PwShGUI-Help-Index.html" target="_blank" rel="noopener" title="Open Help via WebEngine (requires engine running)">&#x1F310; Help Index (engine hosted)</a>
+        <a class="hub-sidebar-link" href="XHTML-ListGeneHub.xhtml" target="_blank" rel="noopener" title="Open ListGene Hub in a new window">&#x1F9EC; ListGene Hub</a>
         <a class="hub-sidebar-link" href="XHTML-WorkspaceHub.xhtml?section=codecopycats" target="_blank" rel="noopener" title="Open Code Copy-Cats in a new window">&#x1F98B; Code Copy-Cats</a>
       </div>
     </div>
@@ -456,7 +507,7 @@
           <div class="tt-sep"></div>
           <div class="tool-toolbar-group">
             <span class="tt-label">Sort:</span>
-            <select class="tt-select" id="sortMode" onchange="applySort(this.value)" data-tip="Change tool card sort order">
+            <select class="tt-select" id="sortMode" onchange="applySort(this.value)" data-tip="Change tool card sort order" title="Tool sort mode">
               <option value="default">Default</option>
               <option value="alpha">A&#x2192;Z</option>
               <option value="alpha-desc">Z&#x2192;A</option>
@@ -465,8 +516,8 @@
           </div>
           <div class="tt-sep"></div>
           <div class="tool-toolbar-group">
-            <label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:4px;cursor:pointer" data-tip="Select/deselect all tool cards">
-              <input type="checkbox" id="selectAllChk" onclick="toggleSelectAll(this.checked)" style="accent-color:var(--accent)" />
+            <label class="select-all-label" data-tip="Select/deselect all tool cards">
+              <input type="checkbox" id="selectAllChk" onclick="toggleSelectAll(this.checked)" class="chk-accent" />
               Select All
             </label>
           </div>
@@ -480,32 +531,47 @@
         </div>
         <div class="hub-cards" id="toolCards">
           <!-- populated by renderToolCards() -->
-          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+          <div class="tool-loading-note">Loading&#x2026;</div>
+        </div>
+      </div>
+
+      <!-- ── SIN scans section ── -->
+      <div id="secSinScans" class="hub-section-hidden">
+        <div class="hub-section-title">SINscans</div>
+        <div class="runtime-note" id="runtimeNoteSinScans">Live SIN metrics and drilldown sources.</div>
+        <div class="section-box">
+          <div class="sin-links-note">Use these entry points to validate ongoing SIN processing stats and open detail drilldowns.</div>
+          <div class="evt-filter-bar">
+            <a class="hub-sidebar-link" href="~REPORTS/SIN-Scoreboard.xhtml" target="_blank" rel="noopener" title="Open SIN scoreboard with top KPI cards and drilldown">&#x1F4CA; Open SIN Scoreboard</a>
+            <a class="hub-sidebar-link" href="XHTML-SIN-Scoreboard-LIVE.xhtml" target="_blank" rel="noopener" title="Open standard-framework SIN scoreboard hub with live and cached data modes">&#x1F4BB; Open SIN Scoreboard LIVE Hub</a>
+            <a class="hub-sidebar-link" href="~REPORTS/scoreboard-data/index.json" target="_blank" rel="noopener" title="Open canonical aggregated SIN counts manifest">&#x1F4C4; Open scoreboard-data/index.json</a>
+            <a class="hub-sidebar-link" href="XHTML-PipelineManager.xhtml" target="_blank" rel="noopener" title="Open Pipeline Manager SINscans tab and kickoff snippets">&#x2699; Open Pipeline Manager</a>
+          </div>
         </div>
       </div>
 
       <!-- ── Reports section ── -->
-      <div id="secReports" style="display:none">
+      <div id="secReports" class="hub-section-hidden">
         <div class="hub-section-title">Generated Reports</div>
         <div id="reportCards" class="hub-cards">
-          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+          <div class="tool-loading-note">Loading&#x2026;</div>
         </div>
       </div>
 
       <!-- ── Timeline section ── -->
-      <div id="secTimeline" style="display:none">
+      <div id="secTimeline" class="hub-section-hidden">
         <div class="hub-section-title">History</div>
         <div class="runtime-note" id="runtimeNoteHistory">Loading runtime guidance...</div>
-        <div id="historyTableWrap" class="eng-log-pre" style="max-height:75vh;overflow:auto">Loading history operations...</div>
+        <div id="historyTableWrap" class="eng-log-pre history-table-wrap">Loading history operations...</div>
       </div>
 
-      <div id="secApprovals" style="display:none">
+      <div id="secApprovals" class="hub-section-hidden">
         <div class="hub-section-title">Pipeline Approval Queue</div>
         <div class="runtime-note" id="runtimeNoteApprovals">Loading runtime guidance...</div>
         <div class="evt-filter-bar">
           <button class="scan-btn" onclick="runPipelineProcess()" data-tip="Process outstanding Bugs2FIX, Items2Do/Items2ADD and Feature Requests into pending-approval todos">&#x1F680; Run Pipeline Process</button>
           <button class="scan-btn" onclick="loadPipelineApprovals()" data-tip="Refresh the pending approval list">&#x21BB; Refresh Queue</button>
-          <label style="font-size:10px;color:var(--fg-sub)">Sort:
+          <label class="label-small-muted">Sort:
             <select id="approvalSort" onchange="setApprovalSort(this.value)">
               <option value="priority-desc">Priority (High to Low)</option>
               <option value="priority-asc">Priority (Low to High)</option>
@@ -513,32 +579,32 @@
               <option value="created-desc">Newest First</option>
             </select>
           </label>
-          <span id="approvalCount" style="font-size:10px;color:var(--fg-sub);margin-left:6px">0 pending</span>
+          <span id="approvalCount" class="msg-small-muted-left">0 pending</span>
         </div>
-        <div class="evt-filter-bar" style="margin-top:4px">
-          <label style="font-size:10px;color:var(--fg-sub);display:flex;align-items:center;gap:4px;cursor:pointer">
-            <input type="checkbox" id="approvalSelectAll" onclick="toggleApprovalSelectAll(this.checked)" style="accent-color:var(--accent)" />
+        <div class="evt-filter-bar evt-filter-bar-top4">
+          <label class="select-all-label">
+            <input type="checkbox" id="approvalSelectAll" onclick="toggleApprovalSelectAll(this.checked)" class="chk-accent" />
             Select All
           </label>
           <button class="scan-btn" onclick="applyApprovalAction('APPROVE')" data-tip="Approve selected items and move to PLANNED">Approve</button>
           <button class="scan-btn" onclick="applyApprovalAction('DEFER_FOR_LATER')" data-tip="Defer selected items for later review">Defer for Later</button>
           <button class="scan-btn" onclick="applyApprovalAction('BACKLOG_UFN')" data-tip="Backlog selected items until further notice">Backlog UFN</button>
-          <span id="approvalMsg" style="font-size:10px;color:var(--fg-sub)"></span>
+          <span id="approvalMsg" class="msg-small-muted"></span>
         </div>
-        <div id="approvalTableWrap" class="eng-log-pre" style="max-height:380px">Loading pending approvals...</div>
+        <div id="approvalTableWrap" class="eng-log-pre approval-table-wrap">Loading pending approvals...</div>
       </div>
 
       <!-- ── Crash dumps section ── -->
-      <div id="secCrashes" style="display:none">
+      <div id="secCrashes" class="hub-section-hidden">
         <div class="hub-section-title">Crash Dumps</div>
         <div class="runtime-note" id="runtimeNoteCrashes">Loading runtime guidance...</div>
         <div id="crashTable">
-          <div style="color:var(--fg-sub);font-size:11px">Loading&#x2026;</div>
+          <div class="sec-loading-note">Loading&#x2026;</div>
         </div>
       </div>
 
       <!-- ── Event Logs section ── -->
-      <div id="secEventLogs" style="display:none">
+      <div id="secEventLogs" class="hub-section-hidden">
         <div class="hub-section-title">Event Logs</div>
         <!-- Filter bar -->
         <div class="evt-filter-bar">
@@ -569,11 +635,11 @@
           <button class="scan-btn" onclick="setEventLogsView('canonical')" data-tip="Use canonical adapter Event Logs view">&#x21C4; Adapter View</button>
           <button class="scan-btn" onclick="setEventLogsView('hub')" data-tip="Use WorkspaceHub Event Logs table view">&#x1F4CA; Hub View</button>
           <button class="scan-btn" onclick="saveEvtPreset()" data-tip="Save current filter as a reusable preset">+ Save Preset</button>
-          <span id="evtCount" style="font-size:10px;color:var(--fg-sub);margin-left:4px"></span>
+          <span id="evtCount" class="evt-count-msg"></span>
         </div>
         <!-- Saved presets -->
-        <div style="padding:4px var(--pad) 6px;display:flex;align-items:center;gap:6px;flex-shrink:0;">
-          <span style="font-size:9px;color:var(--fg-sub);text-transform:uppercase" data-tip="Click a preset to instantly apply saved filter">Saved Presets:</span>
+        <div class="evt-presets-row">
+          <span class="evt-presets-title" data-tip="Click a preset to instantly apply saved filter">Saved Presets:</span>
           <span class="evt-preset-wrap" id="evtPresetList"></span>
         </div>
         <!-- Log table -->
@@ -586,33 +652,33 @@
               <th data-tip="Log message content">Message</th>
             </tr></thead>
             <tbody id="evtTableBody">
-              <tr><td colspan="4" style="text-align:center;color:var(--fg-sub);padding:20px">
+              <tr><td colspan="4" class="evt-table-empty-cell">
                 Click &#x21BB; Refresh to load event logs
               </td></tr>
             </tbody>
           </table>
         </div>
-        <div id="evtCanonicalWrap" style="display:none;margin-top:10px">
+        <div id="evtCanonicalWrap" class="evt-canonical-wrap">
           <div class="evlv-mount" id="hubEvlvMount" data-scope="root" data-title="Workspace Event Logs" data-tail="500"></div>
         </div>
       </div>
 
       <!-- ── Local Web Engine section ── -->
-      <div id="secMonitor" style="display:none">
+      <div id="secMonitor" class="hub-section-hidden">
         <div class="hub-section-title">Local Web Engine</div>
         <div class="runtime-note" id="runtimeNoteMonitor">Loading runtime guidance...</div>
 
-        <div class="evt-filter-bar" style="margin-top:10px">
-          <details id="monFieldPicker" style="min-width:320px">
-            <summary class="scan-btn" style="display:inline-block;list-style:none;cursor:pointer">&#x1F5C3; Monitor Fields</summary>
-            <div id="monFieldChecks" style="margin-top:6px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 10px"></div>
+        <div class="evt-filter-bar mon-filter-top10">
+          <details id="monFieldPicker" class="mon-field-picker">
+            <summary class="scan-btn mon-picker-summary">&#x1F5C3; Monitor Fields</summary>
+            <div id="monFieldChecks" class="mon-field-checks"></div>
           </details>
-          <span id="monToolbarDynamic" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"></span>
+          <span id="monToolbarDynamic" class="mon-toolbar-dynamic"></span>
         </div>
 
         <div class="eng-monitor-grid" id="monGrid"></div>
-        <div style="margin-top:12px">
-          <label style="font-size:10px;color:var(--fg-sub);margin-right:6px">Data Mode:
+        <div class="mon-actions-wrap">
+          <label class="label-small-muted">Data Mode:
             <select id="monDataMode" onchange="setMonitorDataMode(this.value)">
               <option value="auto">Auto</option>
               <option value="live">Force Online</option>
@@ -622,46 +688,46 @@
           <button class="scan-btn" onclick="refreshMonitor()" data-tip="Refresh local web engine stats">&#x21BB; Refresh Monitor</button>
           <button class="scan-btn" onclick="loadMonitorLog()" data-tip="Fetch recent engine log tail">&#x1F4DC; Recent Logs</button>
         </div>
-        <div class="evt-filter-bar" style="margin-top:8px">
-          <label style="font-size:10px;color:var(--fg-sub)">WebEngine Pages:</label>
-          <select id="monPageSelect" multiple="multiple" style="min-width:320px;max-width:420px;height:84px"></select>
+        <div class="evt-filter-bar mon-pages-top8">
+          <label class="label-small-muted">WebEngine Pages:</label>
+          <select id="monPageSelect" multiple="multiple" class="mon-page-select"></select>
           <button class="scan-btn" onclick="launchSelectedMonitorPages('service')" data-tip="Open selected pages via running web service base URL">Launch via Service</button>
           <button class="scan-btn" onclick="launchSelectedMonitorPages('disk')" data-tip="Open selected static file:// pages from disk">Launch Static</button>
           <button class="scan-btn" onclick="saveMonitorPageBundle()" data-tip="Save selected page paths and URLs as a bundle file">Save Bundle</button>
           <button class="scan-btn" onclick="copyMonitorPagePaths()" data-tip="Copy selected page paths (or all if none selected)">Copy Paths</button>
         </div>
-        <div style="margin-top:6px;font-size:10px;color:var(--fg-sub)" id="monModeNote">Mode: auto</div>
+        <div class="mon-mode-note" id="monModeNote">Mode: auto</div>
         <pre class="eng-log-pre" id="monLogTail">Click 'Recent Logs' to load engine log tail</pre>
       </div>
 
       <!-- ── Data Sources section ── -->
-      <div id="secSources" style="display:none">
+      <div id="secSources" class="hub-section-hidden">
         <div class="hub-section-title">Data Sources</div>
-        <div class="evt-filter-bar" style="margin-bottom:8px">
-          <span style="font-size:11px;color:var(--fg-sub)">Default source:</span>
-          <span id="srcDefaultLbl" style="font-size:11px;color:var(--info);font-weight:600">loading...</span>
+        <div class="evt-filter-bar src-filter-bottom8">
+          <span class="src-default-label">Default source:</span>
+          <span id="srcDefaultLbl" class="src-default-value">loading...</span>
           <button class="scan-btn" onclick="refreshDataSourceHealth()" data-tip="Re-validate all configured live sources">&#x21BB; Validate Sources</button>
           <button class="scan-btn" onclick="syncLiveDataToOfflineCache()" data-tip="Fetch all key sections from live source and refresh offline cache">&#x1F4BE; Sync Cache</button>
-          <span id="srcStatusMsg" style="font-size:10px;color:var(--fg-sub)"></span>
+          <span id="srcStatusMsg" class="src-status-msg"></span>
         </div>
 
-        <div class="eng-log-pre" id="srcTableWrap" style="max-height:260px">Loading data sources...</div>
+        <div class="eng-log-pre src-table-wrap" id="srcTableWrap">Loading data sources...</div>
 
-        <div class="evt-filter-bar" style="margin-top:10px">
-          <label style="font-size:10px;color:var(--fg-sub)">Name:
-            <input type="text" id="srcNameInput" placeholder="My Live Source" style="width:180px" />
+        <div class="evt-filter-bar src-add-top10">
+          <label class="label-small-muted">Name:
+            <input type="text" id="srcNameInput" placeholder="My Live Source" class="src-input-name" />
           </label>
-          <label style="font-size:10px;color:var(--fg-sub)">Base URL:
-            <input type="text" id="srcUrlInput" placeholder="http://127.0.0.1:8042" style="width:260px" />
+          <label class="label-small-muted">Base URL:
+            <input type="text" id="srcUrlInput" placeholder="http://127.0.0.1:8042" class="src-input-url" />
           </label>
           <button class="scan-btn" onclick="addLiveSource()" data-tip="Connection is tested before the source is added">&#x2795; Add Source</button>
         </div>
       </div>
 
-      <div id="secCodeCopyCats" style="display:none">
+      <div id="secCodeCopyCats" class="hub-section-hidden">
         <div class="hub-section-title">Code Copy-Cats</div>
         <div class="ccc-toolbar">
-          <div class="ccc-field" style="min-width:200px">
+          <div class="ccc-field ccc-field-min200">
             <label for="cccSearch">Search</label>
             <input type="text" id="cccSearch" placeholder="script, switch, purpose, dependency" />
           </div>
@@ -672,7 +738,7 @@
               <option value="or">OR</option>
             </select>
           </div>
-          <div class="ccc-field" style="min-width:240px">
+          <div class="ccc-field ccc-field-min240">
             <label for="cccNotTokens">NOT Tokens (comma separated)</label>
             <input type="text" id="cccNotTokens" placeholder="deprecated,legacy" />
           </div>
@@ -692,7 +758,7 @@
             <label for="cccDependencyFilter">Dependency Relations</label>
             <select id="cccDependencyFilter" multiple="multiple"></select>
           </div>
-          <div class="ccc-field" style="min-width:220px">
+          <div class="ccc-field ccc-field-min220">
             <label for="cccScriptFilter">Script Files</label>
             <select id="cccScriptFilter" multiple="multiple"></select>
           </div>
@@ -738,7 +804,11 @@
         <span class="ft-ref ft-xhtml" id="ftModeSummary">mode: loading...</span>
       </div>
     </div>
-    <div class="ft-version">WorkspaceHub Footer Format aligned to PwShGUI-Checklists-TEST.xhtml</div>
+    <div class="ft-section ft-hidden" id="ftHelpSection">
+      <div class="ft-section-hdr">Help Blocks</div>
+      <div class="ft-row" id="ftHelpBlocks"></div>
+    </div>
+    <div class="ft-version">WorkspaceHub Footer Format aligned to PwShGUI-Checklists-V1-[LEGACY]-TEST.xhtml</div>
   </div>
 
   <div class="sbar">
@@ -799,6 +869,13 @@
   var _engineLastUptimeSec = 0;
   var _engineLastUptimeSampleIso = null;
   var _engineUiState = { current: 'unknown', pending: null, pendingSince: 0 };
+  var _engineLiveStreak = 0;
+  var _engineLiveStreakPid = '';
+  var _engineLiveStreakPort = '';
+  var _autoMissingDataPending = false;
+  var _autoMissingDataLastScanKey = '';
+  var _workspaceHubConfig = null;
+  var _workspaceHubCustomPages = [];
   var MONITOR_FIELDS = [
     { key:'status', label:'Status', type:'state', group:'controls' },
     { key:'uptime', label:'Uptime', type:'state', group:'info' },
@@ -929,6 +1006,8 @@
   /* ── Built-in tool registry ── */
   var TOOLS = [
     { title:'Workspace Hub',          icon:'&#x1F3E0;', desc:'Navigation hub for all PwShGUI tools',                        href:'XHTML-WorkspaceHub.xhtml',                              section:'tools', groups:['Core'] },
+    { title:'ListGene Hub',           icon:'&#x1F9EC;', desc:'XHTML list-set explorer with indexed/observed/global/query areas and scheduler command builder', href:'XHTML-ListGeneHub.xhtml', section:'tools', groups:['Data','Reporting','Core'] },
+    { title:'Workspace Hub Maintenance', icon:'&#x1F527;', desc:'Configure section menu order, monitor counters, test buttons and help blocks', href:'scripts/XHTML-Checker/XHTML-WorkspaceHubSectionMaintenance.xhtml', section:'tools', groups:['Config','Core'] },
     { title:'Code Copy-Cats',         icon:'&#x1F98B;', desc:'Copy-ready snippets with switch/help details and compound filters', href:'XHTML-WorkspaceHub.xhtml?section=codecopycats',       section:'tools', groups:['Core','Reporting'] },
     { title:'Dependency Visualizer',  icon:'&#x1F578;', desc:'Interactive graph of workspace modules, scripts, URLs and IPs', href:'~README.md/Dependency-Visualisation.html',              section:'tools', groups:['Scanning','Reporting'] },
     { title:'Menu Builder',           icon:'&#x1F4CB;', desc:'Visual drag-and-drop editor for navigation menus',             href:'scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml',         section:'tools', groups:['Core','Config'] },
@@ -936,13 +1015,14 @@
     { title:'Feature Requests',       icon:'&#x1F4A1;', desc:'Track and vote on feature ideas for the project',             href:'scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml',    section:'tools', groups:['DevOps'] },
     { title:'Code Analysis',          icon:'&#x1F4C8;', desc:'Code quality analysis and metrics viewer',                    href:'scripts/XHTML-Checker/XHTML-code-analysis.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
     { title:'Dependency Report',      icon:'&#x1F50E;', desc:'Tabular dependency cross-reference viewer',                   href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',      section:'tools', groups:['Scanning','Reporting'] },
-    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'~README.md/PwShGUI-Checklists.xhtml',                  section:'tools', groups:['Checklists'] },
+    { title:'Checklist Runner',       icon:'&#x1F4DD;', desc:'Structured pre-flight and release checklists',                href:'~README.md/PwShGUI-Checklists-V1-[LEGACY].xhtml',      section:'tools', groups:['Checklists'] },
     { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
     { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
     { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools', groups:['Security','Checklists'] },
     { title:'Shop Listed Items',      icon:'&#x1F6D2;', desc:'Compare and track item prices across online stores',          href:'Shop-ListedItems-Entry.xhtml',                          section:'tools', groups:['Shopping'] },
     { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools', groups:['Security'] },
     { title:'Data Relational Viz',    icon:'&#x1F578;', desc:'Interrelational data visualization with AI wizard and foresight modelling', href:'XHTML-DataRelationalViz.xhtml', section:'tools', badge:'NEW', groups:['Data','Reporting'] },
+    { title:'CORTIX Dependency Map R2', icon:'&#x1F578;', desc:'Modular release-2 relational service for capture, jobs, UML and media cipher export', href:'XHTML-DependencyMapR2-CORTIX.xhtml', section:'tools', badge:'R2', groups:['Data','Scanning','Reporting'] },
     { title:'Changelog Viewer',       icon:'&#x1F4DD;', desc:'Browse workspace changelog entries with filtering and search',href:'XHTML-ChangelogViewer.xhtml',                            section:'tools', groups:['Reporting','DevOps'] },
     { title:'Dependency Viz (Root)',   icon:'&#x1F50D;', desc:'Root-level dependency visualization for cross-module analysis', href:'scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml',                            section:'tools', groups:['Scanning','Reporting'] },
     { title:'Checklists V1 Root',      icon:'&#x2611;',  desc:'Version 1 root checklist with structured pre-flight gates', href:'PwShGUI-Checklists_V1-ROOT.xhtml',                       section:'tools', groups:['Checklists'] },
@@ -951,30 +1031,169 @@
     { title:'Survey Viewpoints',       icon:'&#x1F4CA;', desc:'User survey results and viewpoint analysis dashboard',      href:'~README.md/SURVEY-Viewpoints.html',                     section:'tools', groups:['Reporting','Data'] },
     { title:'SIN Scoreboard',          icon:'&#x26A0;',  desc:'SIN pattern scan scoreboard with pass/fail trend tracking', href:'~REPORTS/SIN-Scoreboard.xhtml',                         section:'tools', groups:['Scanning','Reporting'] },
     { title:'UPM User Guide',          icon:'&#x1F4D6;', desc:'Unified Package Manager user guide and reference',          href:'UPM/docs/UPM-UserGuide.xhtml',                          section:'tools', groups:['Config'] },
-    { title:'Checklists (Test Copy)',   icon:'&#x1F9EA;', desc:'Test copy of PwShGUI checklists for validation',            href:'~README.md/PwShGUI-Checklists-TEST.xhtml',              section:'tools', groups:['Checklists','Testing'] },
-    { title:'Checklists (README)',      icon:'&#x2705;',  desc:'README-bundled checklists for quick reference',             href:'~README.md/PwShGUI-Checklists.xhtml',                   section:'tools', groups:['Checklists'] }
+    { title:'Checklists (Test Copy)',   icon:'&#x1F9EA;', desc:'Test copy of PwShGUI checklists for validation',            href:'~README.md/PwShGUI-Checklists-V1-[LEGACY]-TEST.xhtml', section:'tools', groups:['Checklists','Testing'] },
+    { title:'Checklists (Editable)',    icon:'&#x270D;',  desc:'Customisable checklist and link manager',                    href:'~README.md/PwShGUI-Checklists.xhtml',                  section:'tools', groups:['Checklists'] },
+    { title:'Checklists (V2 Online)',   icon:'&#x1F310;', desc:'Online-rendered checklist view from README bundle',         href:'~README.md/PwShGUI-Checklists-V2-[ONLINE].xhtml',       section:'tools', groups:['Checklists'] },
+    { title:'Checklists (Legacy)',      icon:'&#x2705;',  desc:'Archived V1 checklist dashboard',                            href:'~README.md/PwShGUI-Checklists-V1-[LEGACY].xhtml',       section:'tools', groups:['Checklists'] }
   ];
 
   /* ── Section navigation ── */
-  var _sections = ['Tools','Reports','Timeline','Approvals','Crashes','EventLogs','Monitor','Sources','CodeCopyCats'];
+  var DEFAULT_SECTIONS = ['Tools','SinScans','Monitor','Sources','Reports','Timeline','Approvals','Crashes','EventLogs','CodeCopyCats'];
+  var _sections = DEFAULT_SECTIONS.slice(0);
+
+  function _sectionKeyToName(key) {
+    var k = String(key || '').toLowerCase();
+    if (k === 'tools') { return 'Tools'; }
+    if (k === 'sinscans') { return 'SinScans'; }
+    if (k === 'reports') { return 'Reports'; }
+    if (k === 'timeline') { return 'Timeline'; }
+    if (k === 'approvals') { return 'Approvals'; }
+    if (k === 'crashes') { return 'Crashes'; }
+    if (k === 'eventlogs') { return 'EventLogs'; }
+    if (k === 'monitor') { return 'Monitor'; }
+    if (k === 'sources') { return 'Sources'; }
+    if (k === 'codecopycats') { return 'CodeCopyCats'; }
+    return '';
+  }
+
+  function _renderHelpBlocksFooter() {
+    var section = document.getElementById('ftHelpSection');
+    var host = document.getElementById('ftHelpBlocks');
+    if (!section || !host) { return; }
+    var cfg = _workspaceHubConfig;
+    if (!cfg || !Array.isArray(cfg.helpBlocks) || cfg.helpBlocks.length === 0) {
+      section.style.display = 'none';
+      host.innerHTML = '';
+      return;
+    }
+
+    var html = '';
+    var shown = 0;
+    for (var i = 0; i < cfg.helpBlocks.length; i++) {
+      var hb = cfg.helpBlocks[i] || {};
+      if (hb.visible === false) { continue; }
+      shown++;
+      html += '<span class="ft-ref ft-json" title="' + escAttr(String(hb.content || '')) + '">' + escHtml(String(hb.title || hb.id || 'Help')) + '</span>';
+    }
+    host.innerHTML = html;
+    section.style.display = shown > 0 ? '' : 'none';
+  }
+
+  function applyWorkspaceHubMaintenanceConfig() {
+    var cfg = _workspaceHubConfig;
+    if (!cfg) { return; }
+
+    _workspaceHubCustomPages = [];
+    if (Array.isArray(cfg.extraPages)) {
+      for (var ep = 0; ep < cfg.extraPages.length; ep++) {
+        var p = cfg.extraPages[ep] || {};
+        if (p.enabled === false) { continue; }
+        if (!p.href) { continue; }
+        _workspaceHubCustomPages.push({ title: String(p.title || p.href), href: String(p.href) });
+      }
+    }
+
+    if (Array.isArray(cfg.objectCounters) && cfg.objectCounters.length > 0) {
+      for (var m = 0; m < MONITOR_FIELDS.length; m++) {
+        var mk = String(MONITOR_FIELDS[m].key || '');
+        for (var c = 0; c < cfg.objectCounters.length; c++) {
+          var oc = cfg.objectCounters[c] || {};
+          if (String(oc.key || '') === mk) {
+            _monitorSelected[mk] = (oc.enabled !== false);
+          }
+        }
+      }
+    }
+
+    if (Array.isArray(cfg.sections) && cfg.sections.length > 0) {
+      var visible = [];
+      var seen = {};
+      var ordered = cfg.sections.slice(0).sort(function(a, b){ return Number(a.order || 0) - Number(b.order || 0); });
+      var sidebar = document.querySelector('.hub-sidebar');
+      var linkBlock = document.querySelector('.hub-sidebar-links');
+
+      for (var i = 0; i < ordered.length; i++) {
+        var s = ordered[i] || {};
+        var secName = _sectionKeyToName(s.key);
+        if (!secName) { continue; }
+        seen[secName] = true;
+        var nav = document.getElementById('nav' + secName);
+        var sec = document.getElementById('sec' + secName);
+        var isVisible = (s.visible !== false);
+        if (nav) { nav.style.display = isVisible ? '' : 'none'; }
+        if (!isVisible && sec) { sec.style.display = 'none'; }
+        if (isVisible) {
+          visible.push(secName);
+          if (sidebar && nav && linkBlock) {
+            sidebar.insertBefore(nav, linkBlock);
+          }
+        }
+      }
+
+      /* Preserve sections that are not explicitly configured to avoid blank routing on partial configs. */
+      for (var d = 0; d < DEFAULT_SECTIONS.length; d++) {
+        var defSec = DEFAULT_SECTIONS[d];
+        if (seen[defSec]) { continue; }
+        var defNav = document.getElementById('nav' + defSec);
+        var defEl = document.getElementById('sec' + defSec);
+        if (defNav) { defNav.style.display = ''; }
+        if (defEl) { defEl.style.display = 'none'; }
+        visible.push(defSec);
+      }
+
+      if (visible.length > 0) {
+        _sections = visible;
+      }
+    }
+
+    _renderHelpBlocksFooter();
+    renderMonitorToolbar();
+    renderMonitorGrid(_lastMonitorTelemetry);
+    initMonitorPageLaunchControls();
+  }
+
+  function _loadWorkspaceHubConfig() {
+    if (_isFileProtocol()) { return Promise.resolve(null); }
+    return _safeFetchJson(ENGINE_BASE + '/api/config/workspace-hub', { method: 'GET' }, 4000).then(function(cfg){
+      _workspaceHubConfig = cfg || null;
+      applyWorkspaceHubMaintenanceConfig();
+      return _workspaceHubConfig;
+    }).catch(function(){
+      _workspaceHubConfig = null;
+      return null;
+    });
+  }
 
   function showSection(name) {
+    var requested = String(name || '').toLowerCase();
+    var hasMatch = false;
+    for (var h = 0; h < _sections.length; h++) {
+      if (String(_sections[h] || '').toLowerCase() === requested) { hasMatch = true; break; }
+    }
+    if (!hasMatch) { requested = 'tools'; }
+
     for (var i = 0; i < _sections.length; i++) {
       var sec = _sections[i];
       var el  = document.getElementById('sec'  + sec);
       var nav = document.getElementById('nav'  + sec);
-      var match = sec.toLowerCase() === name;
-      if (el)  { el.style.display = match ? '' : 'none'; }
+      var match = sec.toLowerCase() === requested;
+      if (el)  {
+        el.style.display = match ? 'block' : 'none';
+        if (el.classList) {
+          if (match) { el.classList.remove('hub-section-hidden'); }
+          else { el.classList.add('hub-section-hidden'); }
+        }
+      }
       if (nav) { nav.className = nav.className.replace(' active','') + (match ? ' active' : ''); }
     }
-    if (name === 'timeline')   { loadTimeline(); }
-    if (name === 'approvals')  { loadPipelineApprovals(); }
-    if (name === 'crashes')    { loadCrashes(); }
-    if (name === 'eventlogs')  { loadEventLogs(); }
-    if (name === 'monitor')    { refreshMonitor(); }
-    if (name === 'reports')    { loadReports(); }
-    if (name === 'sources')    { renderDataSources(); }
-    if (name === 'codecopycats') { ensureCodeCopyCatsLoaded(); }
+    if (requested === 'timeline')   { loadTimeline(); }
+    if (requested === 'approvals')  { loadPipelineApprovals(); }
+    if (requested === 'crashes')    { loadCrashes(); }
+    if (requested === 'eventlogs')  { loadEventLogs(); }
+    if (requested === 'monitor')    { refreshMonitor(); }
+    if (requested === 'reports')    { loadReports(); }
+    if (requested === 'sources')    { renderDataSources(); }
+    if (requested === 'codecopycats') { ensureCodeCopyCatsLoaded(); }
   }
   window.showSection = showSection;
 
@@ -1106,7 +1325,129 @@
     ENGINE_BASE = d ? _normalizeBaseUrl(d.baseUrl) : 'http://127.0.0.1:8042';
     var lbl = document.getElementById('srcDefaultLbl');
     if (lbl && d) { lbl.textContent = d.name + ' (' + d.baseUrl + ')'; }
+    _renderHeaderSourceController();
     _updateHubFooter();
+  }
+
+  function _renderHeaderSourceController() {
+    var sel = document.getElementById('srcHeaderSelect');
+    var status = document.getElementById('srcHeaderStatus');
+    if (!sel) { return; }
+    _ensureValidSources();
+    var def = _getDefaultSource();
+    var mode = String(_dataMode || 'auto').toLowerCase();
+    var html = '';
+    /* Static mode entries always available */
+    html += '<optgroup label="Data Mode">';
+    html += '<option value="mode:offline"' + (mode === 'offline' ? ' selected="selected"' : '') + '>OFFLINE (cache only)</option>';
+    html += '<option value="mode:auto"' + (mode === 'auto' ? ' selected="selected"' : '') + '>AUTOMATIC (cache + promote live)</option>';
+    html += '<option value="mode:live"' + (mode === 'live' ? ' selected="selected"' : '') + '>LIVE (force online)</option>';
+    html += '</optgroup>';
+    /* Detected/configured sources */
+    var seen = {};
+    var anyDetected = false;
+    var detectedHtml = '';
+    for (var i = 0; i < _dataSources.length; i++) {
+      var src = _dataSources[i] || {};
+      var url = String(src.baseUrl || '');
+      if (!url || seen[url]) { continue; }
+      seen[url] = true;
+      anyDetected = true;
+      var port = '';
+      var m = url.match(/:(\d+)(?:\/|$)/);
+      if (m) { port = ' :' + m[1]; }
+      var health = (src.healthy ? 'live' : (src.lastChecked ? 'offline' : 'unverified'));
+      var label = (src.isDefault ? '\u2605 ' : '') + String(src.name || url) + port + ' | ' + health;
+      var selAttr = (mode !== 'offline' && def && src.id === def.id) ? ' selected="selected"' : '';
+      detectedHtml += '<option value="src:' + escAttr(String(src.id || '')) + '"' + selAttr + '>' + escHtml(label) + '</option>';
+    }
+    if (anyDetected) {
+      html += '<optgroup label="Detected Sources">' + detectedHtml + '</optgroup>';
+    }
+    sel.innerHTML = html;
+    sel.setAttribute('title', 'Select data mode or active source');
+    sel.setAttribute('aria-label', 'Data mode or active source');
+    if (status) {
+      var summary = (mode === 'offline') ? 'OFFLINE cache' : (mode === 'live') ? 'LIVE forced' : 'AUTO';
+      var srcCount = _dataSources.length;
+      var srcSummary = srcCount + ' source' + (srcCount === 1 ? '' : 's');
+      status.textContent = summary + ' | ' + srcSummary + (def ? ' | default: ' + (def.healthy ? 'live' : 'cache') : '');
+    }
+  }
+
+  function setHeaderDataSource(value) {
+    var raw = String(value || '');
+    if (raw.indexOf('mode:') === 0) {
+      setMonitorDataMode(raw.substring(5));
+      _renderHeaderSourceController();
+      return;
+    }
+    var id = (raw.indexOf('src:') === 0) ? raw.substring(4) : raw;
+    if (!id) { _renderHeaderSourceController(); return; }
+    setDefaultDataSource(id);
+  }
+  window.setHeaderDataSource = setHeaderDataSource;
+
+  function _markEngineLiveStreak(tel, fromCache) {
+    var good = !!(tel && !fromCache && tel.running && tel.responding && tel.heartbeat !== false && tel.pid !== null && tel.pid !== undefined && tel.port !== null && tel.port !== undefined);
+    var pidKey = good ? String(tel.pid || '') : '';
+    var portKey = good ? String(tel.port || '') : '';
+    if (good && pidKey && portKey) {
+      if (_engineLiveStreakPid === pidKey && _engineLiveStreakPort === portKey) {
+        _engineLiveStreak++;
+      } else {
+        _engineLiveStreak = 1;
+        _engineLiveStreakPid = pidKey;
+        _engineLiveStreakPort = portKey;
+      }
+    } else {
+      _engineLiveStreak = 0;
+      _engineLiveStreakPid = '';
+      _engineLiveStreakPort = '';
+    }
+    var status = document.getElementById('srcHeaderStatus');
+    if (status) {
+      status.textContent = good ? ('engine live ' + _engineLiveStreak + '/3') : (_effectiveDataMode() === 'offline' ? 'offline cache' : 'live check pending');
+    }
+    if (_dataMode === 'auto' && _engineLiveStreak >= 3 && !_isFileProtocol()) {
+      setMonitorDataMode('live');
+    }
+  }
+
+  function _maybeAutoGetMissingData(data) {
+    if (_autoMissingDataPending) { return; }
+    var phaseData = data && data.phases ? data.phases : (data && data.checkpoint ? data.checkpoint.phases : null);
+    if (!phaseData) { _autoMissingDataPending = false; return; }
+    var maxAgeMin = 0;
+    var latestIso = '';
+    var hasData = false;
+    var pIds = PHASE_IDS;
+    for (var p = 0; p < pIds.length; p++) {
+      var ph = phaseData[pIds[p]];
+      var ts = ph ? (ph.completedAt || ph.timestamp || null) : null;
+      if (ph && ts) {
+        hasData = true;
+        var tsMs = new Date(ts).getTime();
+        if (!isNaN(tsMs)) {
+          if (!latestIso || tsMs > new Date(latestIso).getTime()) { latestIso = ts; }
+          var ageMin = Math.floor((Date.now() - tsMs) / 60000);
+          if (ageMin > maxAgeMin) { maxAgeMin = ageMin; }
+        }
+      }
+    }
+    if (!hasData || maxAgeMin < 31) {
+      _autoMissingDataPending = false;
+      _autoMissingDataLastScanKey = latestIso || _autoMissingDataLastScanKey;
+      return;
+    }
+    var key = latestIso || ('age-' + maxAgeMin);
+    if (key && key === _autoMissingDataLastScanKey) { return; }
+    _autoMissingDataLastScanKey = key;
+    _autoMissingDataPending = true;
+    var msgEl = document.getElementById('scanMsgHub');
+    var pgEl = document.getElementById('scanPgHub');
+    if (msgEl) { msgEl.style.color = '#dcdcaa'; msgEl.textContent = 'Auto Get Missing Data triggered after ' + maxAgeMin + ' minutes'; }
+    _startScanWithCascade('incremental', msgEl, pgEl, null);
   }
 
   function _fetchWithTimeout(url, options, timeoutMs) {
@@ -1433,6 +1774,7 @@
       var eff = _effectiveDataMode();
       note.textContent = 'Mode: ' + _dataMode + ' (effective: ' + eff + ')';
     }
+    try { _renderHeaderSourceController(); } catch(e) { }
   }
 
   function setMonitorDataMode(mode) {
@@ -1481,6 +1823,7 @@
     html += '</tbody></table>';
     wrap.innerHTML = html;
     _setEngineBaseFromDefault();
+    _renderHeaderSourceController();
     _updateHubFooter();
   }
   window.renderDataSources = renderDataSources;
@@ -2386,6 +2729,7 @@
     fetchSectionData('scanStatus', '/api/scan/status', { method: 'GET' }, false).then(function(res){
       var data = res.data;
       updatePhasePills(data);
+      _maybeAutoGetMissingData(data);
       /* Use max phase age for card badges (good enough proxy) */
       var badgeCls = 'badge-grey';
       var badgeTxt = 'no scan data';
@@ -3140,6 +3484,7 @@
           } else {
             if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan completed successfully'; }
           }
+          _autoMissingDataPending = false;
           renderToolCards(null);
           loadTimeline();
         } else if (done >= total && total > 0) {
@@ -3150,6 +3495,7 @@
           } else {
             if (msgEl) { msgEl.style.color = '#4ec9b0'; msgEl.textContent = 'Scan completed successfully'; }
           }
+          _autoMissingDataPending = false;
           renderToolCards(null);
           loadTimeline();
         } else {
@@ -3158,6 +3504,7 @@
       }).catch(function(){
         /* engine went offline during scan */
         _stopScanPolling();
+        _autoMissingDataPending = false;
         if (msgEl) { msgEl.style.color = '#f44747'; msgEl.textContent = 'Lost connection during scan'; }
       });
     }, 3000);
@@ -3442,6 +3789,13 @@
 
   function fetchCsrfLocalFirst(cb, forceRefresh) {
     if (_csrfToken && !forceRefresh) { cb(_csrfToken); return; }
+    
+    var eff = _effectiveDataMode();
+    if (eff === 'offline') {
+      cb(_csrfToken || '');
+      return;
+    }
+    
     _safeFetchJson(LOCAL_ENGINE_BASE + '/api/csrf-token', { method: 'GET' }, 2500)
       .then(function(d) {
         _csrfToken = d.csrfToken || d.token || '';
@@ -3461,15 +3815,28 @@
 
   function postJsonWithCsrf(path, payloadObj) {
     return new Promise(function(resolve, reject) {
+      var eff = _effectiveDataMode();
+      if (eff === 'offline') {
+        reject(new Error('Offline mode active — POST operations not available. Switch Data Mode to Auto or Force Online to enable live operations.'));
+        return;
+      }
+      
       function send(forceRefresh, hasRetried) {
         fetchCsrfLocalFirst(function(tok) {
-          if (!tok) { reject(new Error('Engine offline (token unavailable from configured sources)')); return; }
+          if (!tok) {
+            var msg = (_dataMode === 'live') 
+              ? 'Force Online mode active but engine unreachable (http://127.0.0.1:8042 not responding). Ensure Local Web Engine is running or switch to Auto mode.'
+              : 'Engine offline (token unavailable from configured sources).';
+            reject(new Error(msg));
+            return;
+          }
           var targetBase = _normalizeBaseUrl(_csrfBase || ENGINE_BASE || LOCAL_ENGINE_BASE);
-          fetch(targetBase + path, {
+          // P067: use _fetchWithTimeout to prevent indefinite hang when engine is offline
+          _fetchWithTimeout(targetBase + path, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
             body: JSON.stringify(payloadObj || {})
-          }).then(function(r) {
+          }, 10000).then(function(r) {
             if (r.status === 403 && !hasRetried) {
               _csrfToken = '';
               _csrfBase = '';
@@ -3623,6 +3990,26 @@
     var responding = !!_readMetric(d, ['responding','isResponding','health.responding'], running);
     var uptimeRaw = parseInt(_readMetric(d, ['uptime','uptimeSec','heartbeat.uptime','heartbeat.uptimeSec','stats.uptimeSec','metrics.uptimeSec'], 0), 10) || 0;
     var pid = _readMetric(d, ['pid','processId','enginePid','runtime.pid'], null);
+    // Multi-PID support: accept arrays from any of these shapes; fall back to scalar pid.
+    var pidsRaw = _readMetric(d, ['pids','processIds','enginePids','runtime.pids'], null);
+    var pids = [];
+    if (pidsRaw && typeof pidsRaw === 'object' && typeof pidsRaw.length === 'number') {
+      for (var pi = 0; pi < pidsRaw.length; pi++) {
+        var pv = pidsRaw[pi];
+        if (pv === null || pv === undefined) { continue; }
+        if (typeof pv === 'object') {
+          if (pv.pid !== undefined && pv.pid !== null) { pids.push(parseInt(pv.pid, 10)); }
+          else if (pv.processId !== undefined && pv.processId !== null) { pids.push(parseInt(pv.processId, 10)); }
+        } else {
+          var pn = parseInt(pv, 10);
+          if (!isNaN(pn) && pn > 0) { pids.push(pn); }
+        }
+      }
+    }
+    if (!pids.length && pid !== null && pid !== undefined && pid !== '') {
+      var pidScalar = parseInt(pid, 10);
+      if (!isNaN(pidScalar) && pidScalar > 0) { pids.push(pidScalar); }
+    }
     var processName = _readMetric(d, ['processName','runtime.processName'], 'pwsh');
     var port = _readMetric(d, ['port','listenPort','httpPort','runtime.port'], null);
     var serverTime = _readMetric(d, ['serverTime','timestamp','now','heartbeat.serverTime','runtime.serverTime'], null);
@@ -3667,20 +4054,28 @@
     }
 
     var uptime = uptimeRaw;
-    if (uptimeRaw < _engineLastUptimeSec) {
-      var elapsed = _secondsSinceIso(_engineLastUptimeSampleIso);
-      if (elapsed === null || elapsed < 0) { elapsed = 0; }
-      var projected = _engineLastUptimeSec + elapsed;
-      if (projected > uptimeRaw) { uptime = projected; }
-    }
-    var sampleIso = _toIsoStringOrNull(serverTime) || new Date().toISOString();
-    if (uptime >= _engineLastUptimeSec) {
-      _engineLastUptimeSec = uptime;
-      _engineLastUptimeSampleIso = sampleIso;
+    if (running && responding) {
+      if (uptimeRaw < _engineLastUptimeSec) {
+        var elapsed = _secondsSinceIso(_engineLastUptimeSampleIso);
+        if (elapsed === null || elapsed < 0) { elapsed = 0; }
+        var projected = _engineLastUptimeSec + elapsed;
+        if (projected > uptimeRaw) { uptime = projected; }
+      }
+      var sampleIso = _toIsoStringOrNull(serverTime) || new Date().toISOString();
+      if (uptime >= _engineLastUptimeSec) {
+        _engineLastUptimeSec = uptime;
+        _engineLastUptimeSampleIso = sampleIso;
+      }
+    } else {
+      // Engine is not running/responding: flush retained uptime so the UI
+      // does not keep climbing after the PID is gone.
+      uptime = 0;
+      _engineLastUptimeSec = 0;
+      _engineLastUptimeSampleIso = null;
     }
 
     return {
-      running: running, responding: responding, uptime: uptime, pid: pid, port: port, serverTime: serverTime,
+      running: running, responding: responding, uptime: uptime, pid: pid, pids: pids, port: port, serverTime: serverTime,
       processName: processName,
       heartbeat: heartbeat, clients: clients, queueLength: queueLength,
       requestsTotal: requestsTotal, requestsServed: requestsServed, requestsFailed: requestsFailed,
@@ -3707,15 +4102,24 @@
     var state = _resolveEngineDisplayState(t, meta);
     var desired = _desiredEngineState(t, state);
     var visual = _commitEngineUiState(desired);
+    _markEngineLiveStreak(t, !!(meta && meta.fromCache));
     if (visual === 'offline' || visual === 'unknown') {
       dot.className = 'ws-dot err';
-      link.textContent = (visual === 'unknown') ? 'Engine status unknown' : 'Engine offline';
+      var deadLabel = (visual === 'unknown') ? 'Engine status unknown' : 'Engine offline';
+      if (_lastLivePids && _lastLivePids.length) {
+        deadLabel += ' | PID:' + _formatPidList(_lastLivePids) + ' (terminated)';
+      }
+      link.textContent = deadLabel;
       link.href = '#';
       link.removeAttribute('target');
+      _engineLiveStreak = 0;
+      _engineLiveStreakPid = '';
+      _engineLiveStreakPort = '';
       return;
     }
 
-    var info = 'Engine up ' + _formatUptime(t.uptime) + ' | PID:' + (t.pid || '—') + ' | PORT:' + (t.port || '—');
+    var pidLabel = (t.pids && t.pids.length) ? _formatPidList(t.pids) : (t.pid || '—');
+    var info = 'Engine up ' + _formatUptime(t.uptime) + ' | PID:' + pidLabel + ' | PORT:' + (t.port || '—');
     if (t.heartbeatAgeSec >= 0) {
       info += ' | HB age:' + t.heartbeatAgeSec + 's';
     }
@@ -3803,12 +4207,13 @@
     if (msg) { msg.textContent = 'Sending stop request\u2026'; }
     fetchCsrf(function(tok) {
       if (!tok) { if (msg) { msg.textContent = 'Cannot stop: control token unavailable (offline page mode or engine offline)'; } return; }
-      fetch(ENGINE_BASE + '/api/engine/stop', {
+      // P067: timeout so UI doesn't hang when engine stops mid-request
+      _fetchWithTimeout(ENGINE_BASE + '/api/engine/stop', {
         method: 'POST',
         headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
         body: '{}'
-      }).then(function(){ _monitorShutdown(msg); })
-        .catch(function(){ _monitorShutdown(msg); /* might already be stopping */ });
+      }, 8000).then(function(){ _monitorShutdown(msg); })
+        .catch(function(){ _monitorShutdown(msg); /* might already be stopping, or timed out */ });
     });
   }
   window.confirmStop = confirmStop;
@@ -3818,11 +4223,12 @@
     if (msg) { msg.textContent = 'Sending stop request for restart\u2026'; }
     fetchCsrf(function(tok) {
       if (!tok) { if (msg) { msg.textContent = 'Engine control token unavailable; restart from terminal or Launch-GUI.bat'; } return; }
-      fetch(ENGINE_BASE + '/api/engine/stop', {
+      // P067: timeout so UI doesn't hang when engine stops mid-request
+      _fetchWithTimeout(ENGINE_BASE + '/api/engine/stop', {
         method: 'POST',
         headers: { 'X-CSRF-Token': tok, 'Content-Type': 'application/json' },
         body: '{}'
-      }).then(function(){ _monitorForRestart(msg); })
+      }, 8000).then(function(){ _monitorForRestart(msg); })
         .catch(function(){ _monitorForRestart(msg); });
     });
   }
@@ -3844,7 +4250,7 @@
         setStatus('Engine offline', 'warn', 'right');
         /* Open fallback file:// link after 1s delay */
         setTimeout(function(){
-          window.open('file:///C:/PowerShellGUI/~README.md/PwShGUI-Checklists.xhtml', '_blank');
+          window.open('file:///C:/PowerShellGUI/~README.md/PwShGUI-Checklists-V1-[LEGACY].xhtml', '_blank');
           cancelStop();
         }, 1000);
       });
@@ -3934,9 +4340,12 @@
         } catch(e) { /* non-JSON */ }
       };
       ws.onclose = function() {
-        setWsDot('warn');
-        if (_wsRetries < WS_MAX_RETRY) { _wsRetries++; setTimeout(connectWs, 3000); }
-        else { setWsDot('err'); setStatus('&#x1F534; Engine offline','warn','right'); }
+        /* WebSocket push is optional. When it is unavailable the engine still
+           serves everything over HTTP and the page falls back to polling, so do
+           NOT report a false "Engine offline" here — real liveness is driven by
+           the /api/engine/status poll below. */
+        if (_wsRetries < WS_MAX_RETRY) { _wsRetries++; setWsDot('warn'); setTimeout(connectWs, 3000); }
+        else { setWsDot('off'); }
       };
       ws.onerror = function(){ ws.close(); };
     } catch(e) { setWsDot('err'); }
@@ -4079,26 +4488,89 @@
     if (groups.info > 0) {
       html += '<span class="scan-btn" title="Informational field group">Info (' + groups.info + ')</span>';
     }
+
+    if (_workspaceHubConfig && Array.isArray(_workspaceHubConfig.testButtons)) {
+      for (var b = 0; b < _workspaceHubConfig.testButtons.length; b++) {
+        var tb = _workspaceHubConfig.testButtons[b] || {};
+        if (tb.enabled === false) { continue; }
+        var target = String(tb.target || '');
+        var method = String(tb.method || 'GET').toUpperCase();
+        if (!target) { continue; }
+        html += '<button class="scan-btn" onclick="runConfiguredTestButton(\'' + escAttr(target) + '\', \'' + escAttr(method) + '\')">' + escHtml(String(tb.label || target)) + '</button>';
+      }
+    }
     host.innerHTML = html;
   }
+
+  function runConfiguredTestButton(target, method) {
+    var m = String(method || 'GET').toUpperCase();
+    var t = String(target || '');
+    if (!t) { return; }
+    if (_effectiveDataMode() === 'offline') {
+      setStatus('Offline mode active: configured test actions require live mode.', 'warn', 'right');
+      return;
+    }
+    if (m === 'POST') {
+      postJsonWithCsrf(t, {}).then(function(){
+        setStatus('Configured test button succeeded: ' + t, 'ok', 'right');
+      }).catch(function(err){
+        setStatus('Configured test button failed: ' + err.message, 'warn', 'right');
+      });
+      return;
+    }
+    fetchSectionData('configuredButton:' + t, t, { method: 'GET' }, false).then(function(){
+      setStatus('Configured test button succeeded: ' + t, 'ok', 'right');
+    }).catch(function(err){
+      setStatus('Configured test button failed: ' + err.message, 'warn', 'right');
+    });
+  }
+  window.runConfiguredTestButton = runConfiguredTestButton;
 
   var _lastMonitorTelemetry = null;
   var _lastMonitorFromCache = false;
   var _monitorConfigStatus = '—';
   var _monitorConfigStatusClass = '';
+  // Last PID(s) seen while the engine was healthy — retained so we can show
+  // "<pid> (terminated)" once the process goes away.
+  var _lastLivePids = [];
+  var _lastLivePidIso = null;
+
+  function _formatPidList(pids) {
+    if (!pids || !pids.length) { return '—'; }
+    if (pids.length === 1) { return String(pids[0]); }
+    return pids.join(', ');
+  }
 
   function renderMonitorGrid(tel) {
     var grid = document.getElementById('monGrid');
     if (!grid) { return; }
     var state = tel ? _resolveEngineDisplayState(tel, { fromCache: _lastMonitorFromCache }) : null;
+    var engineAlive = !!(state && state.running);
+    var currentPids = (tel && tel.pids && tel.pids.length) ? tel.pids.slice() : [];
+    if (engineAlive && currentPids.length) {
+      _lastLivePids = currentPids.slice();
+      _lastLivePidIso = new Date().toISOString();
+    }
+    var pidTerminated = false;
+    var pidDisplay = '—';
+    if (engineAlive && currentPids.length) {
+      pidDisplay = _formatPidList(currentPids);
+    } else if (!engineAlive && _lastLivePids.length) {
+      pidDisplay = _formatPidList(_lastLivePids) + ' (terminated)';
+      pidTerminated = true;
+    } else if (!engineAlive && currentPids.length) {
+      // We have a stale telemetry-reported PID but engine is not alive.
+      pidDisplay = _formatPidList(currentPids) + ' (terminated)';
+      pidTerminated = true;
+    }
     var valueMap = {
       status: tel ? (state.running ? '✅ Running' : (state.stale ? '⚠ Stale/Unknown' : '❌ Stopped')) : '—',
-      uptime: tel ? _formatUptime(tel.uptime) : '—',
+      uptime: (tel && engineAlive) ? _formatUptime(tel.uptime) : '—',
       lastScanTime: _monitorLastScanIso ? _formatLocalTimestamp(_monitorLastScanIso) : '—',
-      startupTime: tel && tel.startupTime ? _formatLocalTimestamp(tel.startupTime) : '—',
-      pid: tel && tel.pid ? String(tel.pid) : '—',
-      processName: tel && tel.processName ? String(tel.processName) : '—',
-      port: tel && tel.port ? String(tel.port) : '—',
+      startupTime: tel && tel.startupTime && engineAlive ? _formatLocalTimestamp(tel.startupTime) : '—',
+      pid: pidDisplay,
+      processName: tel && tel.processName && engineAlive ? String(tel.processName) : '—',
+      port: tel && tel.port && engineAlive ? String(tel.port) : '—',
       serverTime: tel && tel.serverTime ? new Date(tel.serverTime).toLocaleString() : '—',
       memoryWorkingSetMB: tel ? String(tel.memoryWorkingSetMB) : '—',
       memoryPeakWorkingSetMB: tel ? String(tel.memoryPeakWorkingSetMB) : '—',
@@ -4133,6 +4605,8 @@
       if (f.key === 'requestsFailed' && tel && tel.requestsFailed > 0) { valCls += ' err'; }
       if (f.key === 'lastErrorMessage' && tel && tel.lastErrorMessage) { valCls += ' warn'; }
       if (f.key === 'config' && _monitorConfigStatusClass) { valCls += ' ' + _monitorConfigStatusClass; }
+      if (f.key === 'pid' && pidTerminated) { valCls += ' err'; }
+      if (f.key === 'uptime' && !engineAlive) { valCls += ' err'; }
       html += '<div class="eng-stat-card"><div class="eng-stat-label">' + escHtml(f.label) + '</div><div class="' + valCls + '">' + escHtml(val) + '</div></div>';
     }
     if (!html) {
@@ -4198,6 +4672,13 @@
       if (href.indexOf('://') !== -1) { continue; }
       if (!/\.(xhtml|html)$/i.test(href)) { continue; }
       out.push({ title: String(t.title || href), href: href });
+    }
+    for (var j = 0; j < _workspaceHubCustomPages.length; j++) {
+      var cp = _workspaceHubCustomPages[j] || {};
+      var ch = String(cp.href || '');
+      if (!ch || ch.indexOf('://') !== -1) { continue; }
+      if (!/\.(xhtml|html)$/i.test(ch)) { continue; }
+      out.push({ title: String(cp.title || ch), href: ch });
     }
     return out;
   }
@@ -4369,6 +4850,7 @@
         var blob = new Blob([payload], { type: 'application/json' });
         navigator.sendBeacon(ENGINE_BASE + '/api/runtime/tool-exit', blob);
       } else {
+        // P067-EXEMPT: fire-and-forget keepalive beacon; browser manages connection lifecycle
         fetch(ENGINE_BASE + '/api/runtime/tool-exit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': _csrfToken },
@@ -4384,6 +4866,7 @@
     _loadDataModePreference();
     _loadOfflineCacheBootstrap()
       .then(function(){ return _loadDataSourceBootstrap(); })
+      .then(function(){ return _loadWorkspaceHubConfig(); })
       .then(function(){
         connectWs();
         startPoll();
@@ -4738,7 +5221,8 @@
         if (step.method === 'OPTIONS') {
           fetchOpts.headers = { 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'X-CSRF-Token, Content-Type' };
         }
-        fetch(url, fetchOpts).then(function(r) {
+        // P067: 10s timeout per deep-test step — prevents hang when a step endpoint is offline
+        _fetchWithTimeout(url, fetchOpts, 10000).then(function(r) {
           stepState.durationMs = Date.now() - t0;
           stepState.httpStatus = r.status;
           if (step.method === 'OPTIONS') {
@@ -5047,4 +5531,5 @@
 <script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -203,6 +203,93 @@ function Get-DevelopmentIntent {
     return $intents
 }
 
+function Update-DevelopmentIntent {
+    <#
+    .SYNOPSIS  Update an existing DRAFT intent before activation or sealing.
+    .OUTPUTS   The updated intent object.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)][int]$IntentId,
+        [string]$Title,
+        [string]$Description,
+        [string]$By = $env:USERNAME,
+        [ValidateSet('HIGH','MEDIUM','LOW')]
+        [string]$Priority,
+        [string[]]$Tags,
+        [string[]]$AffectedModules,
+        [string[]]$AffectedScripts,
+        [string]$Reason = 'Draft intent edited prior to sealing'
+    )
+
+    if ($null -eq $script:IntentStore) {
+        Write-Warning 'Intent store not initialized.'
+        return $null
+    }
+
+    $intent = $null
+    $intents = @($script:IntentStore.intents)
+    for ($i = 0; $i -lt @($intents).Count; $i++) {
+        if ($intents[$i].intentId -eq $IntentId) {
+            $intent = $intents[$i]
+            break
+        }
+    }
+
+    if ($null -eq $intent) {
+        Write-Warning "Intent #$IntentId not found."
+        return $null
+    }
+
+    if ($intent.status -ne 'DRAFT') {
+        Write-Warning "Only DRAFT intents can be edited (current: $($intent.status))."
+        return $null
+    }
+
+    $changes = New-Object System.Collections.Generic.List[string]
+
+    if ($PSBoundParameters.ContainsKey('Title') -and -not [string]::IsNullOrWhiteSpace($Title) -and $intent.title -ne $Title) {
+        $intent.title = $Title
+        $changes.Add('Title') | Out-Null
+    }
+    if ($PSBoundParameters.ContainsKey('Description') -and -not [string]::IsNullOrWhiteSpace($Description) -and $intent.description -ne $Description) {
+        $intent.description = $Description
+        $changes.Add('Description') | Out-Null
+    }
+    if ($PSBoundParameters.ContainsKey('Priority') -and -not [string]::IsNullOrWhiteSpace($Priority) -and $intent.priority -ne $Priority) {
+        $intent.priority = $Priority
+        $changes.Add('Priority') | Out-Null
+    }
+    if ($PSBoundParameters.ContainsKey('Tags')) {
+        $intent.tags = @($Tags)
+        $changes.Add('Tags') | Out-Null
+    }
+    if ($PSBoundParameters.ContainsKey('AffectedModules')) {
+        $intent.affectedModules = @($AffectedModules)
+        $changes.Add('AffectedModules') | Out-Null
+    }
+    if ($PSBoundParameters.ContainsKey('AffectedScripts')) {
+        $intent.affectedScripts = @($AffectedScripts)
+        $changes.Add('AffectedScripts') | Out-Null
+    }
+
+    if (@($changes).Count -eq 0) {
+        return $intent
+    }
+
+    $intent.updatedAt = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+    $intent.history += [ordered]@{
+        action    = 'Edited'
+        timestamp = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+        by        = $By
+        detail    = "Edited fields: $($changes -join ', '). $Reason"
+    }
+
+    Save-IntentStore
+    return $intent
+}
+
 function Set-IntentStatus {
     <#
     .SYNOPSIS  Transition an intent to a new status.
@@ -331,6 +418,62 @@ function Invoke-IntentUnseal {
     return $intent
 }
 
+function Invoke-AIImproveIntent {
+    <#
+    .SYNOPSIS  Expand and refine a DRAFT intent using a local AI-style enrichment pass.
+    .OUTPUTS   The updated intent object.
+    #>
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)][int]$IntentId,
+        [string]$By = $env:USERNAME,
+        [string]$Reason = 'AI refined draft intent for clarity and implementation readiness'
+    )
+
+    $intent = Get-DevelopmentIntent -IntentId $IntentId
+    if (@($intent).Count -eq 0) {
+        Write-Warning "Intent #$IntentId not found."
+        return $null
+    }
+
+    $current = $intent[0]
+    if ($current.status -ne 'DRAFT') {
+        Write-Warning "Only DRAFT intents can be AI-improved (current: $($current.status))."
+        return $null
+    }
+
+    $tagList = if (@($current.tags).Count -gt 0) { @($current.tags) -join ', ' } else { 'none specified' }
+    $moduleList = if (@($current.affectedModules).Count -gt 0) { @($current.affectedModules) -join ', ' } else { 'none specified' }
+    $scriptList = if ($current.PSObject.Properties.Name -contains 'affectedScripts' -and @($current.affectedScripts).Count -gt 0) { @($current.affectedScripts) -join ', ' } else { 'none specified' }
+
+    $improvedDescription = @(
+        $current.description,
+        '',
+        'AI refinement:',
+        '- Clarify the exact user-facing objective and intended outcome before implementation.',
+        '- Break the work into small reversible changes that preserve existing behaviour where possible.',
+        '- Ensure DRAFT review covers UI flow, history/audit visibility, and validation paths.',
+        '',
+        'Working scope:',
+        ('- Tags: ' + $tagList),
+        ('- Affected modules: ' + $moduleList),
+        ('- Affected scripts: ' + $scriptList),
+        '',
+        'Acceptance cues:',
+        '- The intent is specific enough to implement without guessing hidden requirements.',
+        '- Status transitions and user actions are audit-visible in intent history and change log.',
+        '- Validation and rollback considerations are explicit for the impacted workflow.'
+    ) -join "`r`n"
+
+    $newTags = @($current.tags)
+    if ($newTags -notcontains 'ai-refined') {
+        $newTags += 'ai-refined'
+    }
+
+    return Update-DevelopmentIntent -IntentId $IntentId -Description $improvedDescription -Tags $newTags -By $By -Reason $Reason
+}
+
 #  INDEXED CHANGE LOGGING
 
 function Add-ChangeLogEntry {
@@ -344,7 +487,7 @@ function Add-ChangeLogEntry {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Description,
-        [Parameter(Mandatory)][ValidateSet('Created','Modified','Deleted','Refactored','Fixed','Enhanced','Sealed','Unsealed','Handback','PipelineRun')]
+        [Parameter(Mandatory)][ValidateSet('Created','Modified','Deleted','Refactored','Fixed','Enhanced','Sealed','Unsealed','Handback','PipelineRun','Activated','Archived','Edited','Improved')]
         [string]$ChangeType,
         [string]$Agent = $env:USERNAME,
         [string[]]$AffectedFiles = @(),
@@ -470,13 +613,16 @@ Export-ModuleMember -Function @(
     'Initialize-IntentStore',
     'New-DevelopmentIntent',
     'Get-DevelopmentIntent',
+    'Update-DevelopmentIntent',
     'Set-IntentStatus',
     'Invoke-IntentSeal',
     'Invoke-IntentUnseal',
+    'Invoke-AIImproveIntent',
     'Add-ChangeLogEntry',
     'Get-ChangeLogEntries',
     'Get-IntentHistory'
 )
+
 
 
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # Analyse untagged files for taggability candidacy.
 
 [CmdletBinding()]
@@ -59,3 +59,4 @@ $candidates | Sort-Object Path | Select-Object -First 30 |
 
 Write-Host ""
 Write-Host ("Full report: {0}" -f $OutPath)
+

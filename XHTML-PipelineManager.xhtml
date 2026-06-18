@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- VersionTag: 2605.B5.V51.1 -->
 <!-- FileRole: XhtmlTool -->
 <!-- SchemaVersion: PipelineMgmt/1.0 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -184,7 +184,7 @@
     }
 
     .status-open { background: var(--info); color: #fff; }
-    .status-in-progress { background: var(--accent); color: #fff; }
+    .status-IN_PROGRESS { background: var(--accent); color: #fff; }
     .status-done { background: var(--pass); color: #000; }
     .status-failed { background: var(--fail); color: #fff; }
     .status-blocked { background: var(--warn); color: #000; }
@@ -354,6 +354,52 @@
     .badge-success { background: var(--pass); color: #000; }
     .badge-info { background: var(--info); color: #fff; }
 
+        .snippet-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px;
+            margin-bottom: var(--gap);
+        }
+
+        .snippet-box h4 {
+            color: var(--accent-green);
+            font-size: var(--fs);
+            margin-bottom: 8px;
+        }
+
+        .snippet-box pre {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px;
+            overflow: auto;
+            font-family: var(--font-mono);
+            font-size: var(--fs-sm);
+            color: var(--fg);
+        }
+
+        .svc-strip {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 8px 0 12px 0;
+        }
+
+        .svc-pill {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 2px 9px;
+            font-size: 11px;
+            background: var(--control);
+            color: var(--fg-sub);
+        }
+
+        .svc-pill.ok { border-color: #1f7a45; color: #9be7bf; background: #123325; }
+        .svc-pill.warn { border-color: #8a6d1f; color: #f5dc9d; background: #3a3117; }
+        .svc-pill.err { border-color: #8a1f1f; color: #ffc3c3; background: #3a1717; }
+
         .section-title {
             color: var(--accent);
             margin: 0 0 12px 0;
@@ -406,6 +452,7 @@
         <button class="tab-btn" onclick="switchTab('agents')">Agents</button>
         <button class="tab-btn" onclick="switchTab('items')">Pipeline Items</button>
         <button class="tab-btn" onclick="switchTab('metrics')">Metrics</button>
+        <button class="tab-btn" onclick="switchTab('sinscans')" title="Open SIN scoreboard and verify processing metrics">SINscans</button>
     </div>
 
     <div class="app-container">
@@ -516,11 +563,56 @@
                 <tbody id="metricsBody"></tbody>
             </table>
         </div>
+
+        <!-- ── TAB: SINSCANS ── -->
+        <div id="sinscans" class="tab-content">
+            <h3 class="section-title">SINscans</h3>
+            <div class="svc-strip" id="sinSvcStrip">
+                <span class="svc-pill" id="svcPipeline" title="Pipeline registry data source status">Pipeline: --</span>
+                <span class="svc-pill" id="svcManifest" title="Agent manifest source status">Agent Manifest: --</span>
+                <span class="svc-pill" id="svcScoreboard" title="SIN scoreboard data source status">SIN Scoreboard: --</span>
+            </div>
+
+            <div class="snippet-box">
+                <h4>SIN Scoreboard</h4>
+                <p class="muted-note">Open current SIN KPIs and drilldown tables.</p>
+                <p><a href="~REPORTS/SIN-Scoreboard.xhtml" target="_blank" rel="noopener" title="Open SIN scoreboard">&#x1F517; Open ~REPORTS/SIN-Scoreboard.xhtml</a></p>
+            </div>
+
+            <div class="snippet-box">
+                <h4>Pipeline Process Kickoff (PowerShell)</h4>
+                <pre title="Kick off full pipeline processing and refresh queues">pwsh -NoProfile -Command "
+Import-Module .\modules\CronAiAthon-Pipeline.psm1 -Force;
+Initialize-PipelineRegistry;
+Invoke-PipelineProcess;
+Get-PipelineItems -Status PENDING_APPROVAL
+"</pre>
+            </div>
+
+            <div class="snippet-box">
+                <h4>Queue + Gate Validation (PowerShell)</h4>
+                <pre title="Invoke queue/gate checks and summarize queue health">pwsh -NoProfile -Command "
+Import-Module .\modules\CronAiAthon-BugTracker.psm1 -Force;
+Invoke-FullBugScan;
+Import-Module .\modules\CronAiAthon-Pipeline.psm1 -Force;
+$q = Get-PipelineItems;
+@($q).Count
+"</pre>
+            </div>
+
+            <div class="snippet-box">
+                <h4>Batch Launchers</h4>
+                <pre title="Use batch launchers for smoke and multi-engine validation">Launch-GUI-SmokeTest.bat
+SmokeTest-Scripts-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat
+SmokeTest-Batch-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat</pre>
+            </div>
+        </div>
     </div>
 
     <div class="status-bar">
         <span id="statusText">Ready</span>
         <span id="countText">0 items</span>
+        <span id="statusServices" title="Pipeline, manifest and SIN scoreboard source status">services: --</span>
     </div>
 
     <script type="text/javascript">
@@ -530,8 +622,10 @@
     const API_BASE = IS_FILE_PROTO ? '' : '/api';
     const PIPELINE_URL = IS_FILE_PROTO ? './config/cron-aiathon-pipeline.json' : (API_BASE + '/pipeline/registry');
     const MANIFEST_URL = IS_FILE_PROTO ? './config/agentic-manifest.json'      : (API_BASE + '/config/agentic-manifest');
+    const SCOREBOARD_INDEX_URL = IS_FILE_PROTO ? './~REPORTS/scoreboard-data/index.json' : './~REPORTS/scoreboard-data/index.json';
     let pipelineData = null;
     let agentManifest = null;
+    let sinScoreboardIndex = null;
 
     function switchTab(tabName) {
         const tabs = document.querySelectorAll('.tab-content');
@@ -577,10 +671,12 @@
             setStatus('Loading pipeline data...', 'info');
             pipelineData = await loadJsonAny(PIPELINE_URL);
             renderPipelineUI();
+            renderServiceIndicators();
             setStatus('Pipeline data loaded' + (IS_FILE_PROTO ? ' (file://)' : ''), 'ok');
         } catch (error) {
             console.error('Load failed:', error);
             setStatus('Error loading data: ' + error.message, 'err');
+            renderServiceIndicators();
             var s = document.getElementById('summaryMetrics');
             if (s) { s.innerHTML = '<div class="metric-box" style="grid-column:1/-1"><div class="metric-label" style="color:#e74c3c">Pipeline data unavailable. ' + (IS_FILE_PROTO ? 'Browser blocked file:// access — launch via Launch-GUI.bat to start the local engine.' : 'Engine offline — start scripts/Start-LocalWebEngine.ps1.') + '</div></div>'; }
         }
@@ -591,12 +687,45 @@
             setStatus('Loading agent manifest...', 'info');
             agentManifest = await loadJsonAny(MANIFEST_URL);
             renderAgentList();
+            renderServiceIndicators();
             setStatus('Agent manifest loaded' + (IS_FILE_PROTO ? ' (file://)' : ''), 'ok');
         } catch (error) {
             console.error('Load failed:', error);
             setStatus('Error loading agents: ' + error.message, 'err');
+            renderServiceIndicators();
             var a = document.getElementById('agentsList');
             if (a) { a.innerHTML = '<p style="color:#e74c3c">Agent manifest unavailable. ' + (IS_FILE_PROTO ? 'Browser blocked file:// access — launch via Launch-GUI.bat.' : 'Engine offline.') + '</p>'; }
+        }
+    }
+
+    async function loadSinScoreboardIndex() {
+        try {
+            sinScoreboardIndex = await loadJsonAny(SCOREBOARD_INDEX_URL);
+        } catch (error) {
+            sinScoreboardIndex = null;
+        }
+        renderServiceIndicators();
+    }
+
+    function setPill(id, text, level) {
+        var el = document.getElementById(id);
+        if (!el) { return; }
+        el.textContent = text;
+        el.className = 'svc-pill ' + level;
+    }
+
+    function renderServiceIndicators() {
+        var pipelineOk = !!pipelineData;
+        var manifestOk = !!(agentManifest && agentManifest.agents);
+        var scoreOk = !!(sinScoreboardIndex && sinScoreboardIndex.counts);
+
+        setPill('svcPipeline', 'Pipeline: ' + (pipelineOk ? 'online' : 'offline'), pipelineOk ? 'ok' : 'err');
+        setPill('svcManifest', 'Agent Manifest: ' + (manifestOk ? 'online' : 'offline'), manifestOk ? 'ok' : 'warn');
+        setPill('svcScoreboard', 'SIN Scoreboard: ' + (scoreOk ? 'online' : 'offline'), scoreOk ? 'ok' : 'warn');
+
+        var svcSummary = document.getElementById('statusServices');
+        if (svcSummary) {
+            svcSummary.textContent = 'services: P=' + (pipelineOk ? 'up' : 'down') + ', A=' + (manifestOk ? 'up' : 'down') + ', S=' + (scoreOk ? 'up' : 'down');
         }
     }
 
@@ -806,6 +935,7 @@
     window.onload = function() {
         loadPipelineData();
         loadAgentManifest();
+        loadSinScoreboardIndex();
     };
     //]]>
     </script>
@@ -816,4 +946,6 @@
 <script>document.addEventListener('DOMContentLoaded',function(){if(window.EvLV){EvLV.mountAll();}});</script>
 </body>
 </html>
+
+
 

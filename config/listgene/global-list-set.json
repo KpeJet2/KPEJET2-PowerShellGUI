@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "generatedAtUtc": "2026-05-24T00:00:00Z",
+  "categories": {
+    "mdIcons": [
+      { "seq": 1, "name": "Gear", "value": ":gear:", "unicode": "U+2699" },
+      { "seq": 2, "name": "Pushpin", "value": ":pushpin:", "unicode": "U+1F4CC" },
+      { "seq": 3, "name": "Page Facing Up", "value": ":page_facing_up:", "unicode": "U+1F4C4" },
+      { "seq": 4, "name": "Clipboard", "value": ":clipboard:", "unicode": "U+1F4CB" },
+      { "seq": 5, "name": "Test Tube", "value": ":test_tube:", "unicode": "U+1F9EA" },
+      { "seq": 6, "name": "Repeat", "value": ":repeat:", "unicode": "U+1F501" },
+      { "seq": 7, "name": "Shield", "value": ":shield:", "unicode": "U+1F6E1" },
+      { "seq": 8, "name": "Bug", "value": ":bug:", "unicode": "U+1F41B" },
+      { "seq": 9, "name": "Wrench", "value": ":wrench:", "unicode": "U+1F527" },
+      { "seq": 10, "name": "Rocket", "value": ":rocket:", "unicode": "U+1F680" },
+      { "seq": 11, "name": "Warning", "value": ":warning:", "unicode": "U+26A0" },
+      { "seq": 12, "name": "Check Mark", "value": ":white_check_mark:", "unicode": "U+2705" }
+    ],
+    "emoji": [
+      { "seq": 1, "name": "rocket", "value": "\\uD83D\\uDE80", "unicode": "U+1F680" },
+      { "seq": 2, "name": "brain", "value": "\\uD83E\\uDDE0", "unicode": "U+1F9E0" },
+      { "seq": 3, "name": "gear", "value": "\\u2699", "unicode": "U+2699" },
+      { "seq": 4, "name": "bar_chart", "value": "\\uD83D\\uDCCA", "unicode": "U+1F4CA" },
+      { "seq": 5, "name": "satellite", "value": "\\uD83D\\uDEF0", "unicode": "U+1F6F0" },
+      { "seq": 6, "name": "desktop", "value": "\\uD83D\\uDDA5", "unicode": "U+1F5A5" },
+      { "seq": 7, "name": "test_tube", "value": "\\uD83E\\uDDEA", "unicode": "U+1F9EA" },
+      { "seq": 8, "name": "books", "value": "\\uD83D\\uDCDA", "unicode": "U+1F4DA" },
+      { "seq": 9, "name": "shield", "value": "\\uD83D\\uDEE1", "unicode": "U+1F6E1" },
+      { "seq": 10, "name": "hourglass", "value": "\\u23F3", "unicode": "U+23F3" }
+    ],
+    "altCharacters": [
+      { "seq": 1, "name": "Section", "value": "\\u00A7", "unicode": "U+00A7" },
+      { "seq": 2, "name": "Pilcrow", "value": "\\u00B6", "unicode": "U+00B6" },
+      { "seq": 3, "name": "Dagger", "value": "\\u2020", "unicode": "U+2020" },
+      { "seq": 4, "name": "Pitchfork", "value": "\\u2E38", "unicode": "U+2E38" },
+      { "seq": 5, "name": "White Flag", "value": "\\u2691", "unicode": "U+2691" },
+      { "seq": 6, "name": "Almost Equal", "value": "\\u2248", "unicode": "U+2248" },
+      { "seq": 7, "name": "Not Equal", "value": "\\u2260", "unicode": "U+2260" },
+      { "seq": 8, "name": "Arrow Right", "value": "\\u2192", "unicode": "U+2192" },
+      { "seq": 9, "name": "Arrow Left Right", "value": "\\u2194", "unicode": "U+2194" },
+      { "seq": 10, "name": "Infinity", "value": "\\u221E", "unicode": "U+221E" }
+    ],
+    "hieroglyphics": [
+      { "seq": 1, "name": "A001 Vulture", "value": "\\uD80C\\uDC00", "unicode": "U+13000" },
+      { "seq": 2, "name": "A002 Man", "value": "\\uD80C\\uDC01", "unicode": "U+13001" },
+      { "seq": 3, "name": "A017 Child", "value": "\\uD80C\\uDC10", "unicode": "U+13010" },
+      { "seq": 4, "name": "D036 Arm", "value": "\\uD80C\\uDCE8", "unicode": "U+130E8" },
+      { "seq": 5, "name": "G017 Owl", "value": "\\uD80C\\uDD8D", "unicode": "U+1318D" },
+      { "seq": 6, "name": "M017 Reed", "value": "\\uD80C\\uDDF0", "unicode": "U+131F0" },
+      { "seq": 7, "name": "N035 Water", "value": "\\uD80C\\uDE2A", "unicode": "U+1322A" },
+      { "seq": 8, "name": "R004 Sun", "value": "\\uD80C\\uDE8A", "unicode": "U+1328A" }
+    ],
+    "runes": [
+      { "seq": 1, "name": "Fehu", "value": "\\u16A0", "unicode": "U+16A0" },
+      { "seq": 2, "name": "Uruz", "value": "\\u16A2", "unicode": "U+16A2" },
+      { "seq": 3, "name": "Thurisaz", "value": "\\u16A6", "unicode": "U+16A6" },
+      { "seq": 4, "name": "Ansuz", "value": "\\u16A8", "unicode": "U+16A8" },
+      { "seq": 5, "name": "Raidho", "value": "\\u16B1", "unicode": "U+16B1" },
+      { "seq": 6, "name": "Kenaz", "value": "\\u16B2", "unicode": "U+16B2" },
+      { "seq": 7, "name": "Gebo", "value": "\\u16B7", "unicode": "U+16B7" },
+      { "seq": 8, "name": "Wunjo", "value": "\\u16B9", "unicode": "U+16B9" }
+    ],
+    "musicGenres": [
+      "Rock", "Pop", "Jazz", "Blues", "Classical", "Hip-Hop", "R&B", "Electronic", "Techno", "House", "Trance", "Drum and Bass", "Metal", "Punk", "Reggae", "Ska", "Folk", "Country", "Gospel", "Soul"
+    ],
+    "atomicElements": [
+      "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon", "Sodium", "Magnesium", "Aluminum", "Silicon", "Phosphorus", "Sulfur", "Chlorine", "Argon", "Potassium", "Calcium"
+    ],
+    "religions": [
+      "Christianity", "Islam", "Hinduism", "Buddhism", "Judaism", "Sikhism", "Jainism", "Shinto", "Taoism", "Baha'i"
+    ],
+    "hormones": [
+      "Insulin", "Glucagon", "Cortisol", "Adrenaline", "Noradrenaline", "Thyroxine", "Triiodothyronine", "Melatonin", "Serotonin", "Dopamine", "Oxytocin", "Vasopressin"
+    ],
+    "medications": [
+      "Acetaminophen", "Ibuprofen", "Amoxicillin", "Azithromycin", "Metformin", "Atorvastatin", "Lisinopril", "Amlodipine", "Omeprazole", "Levothyroxine", "Sertraline", "Albuterol"
+    ],
+    "cryptoCurrencies": [
+      "Bitcoin", "Ethereum", "Tether", "BNB", "Solana", "XRP", "USDC", "Cardano", "Dogecoin", "TRON", "Polkadot", "Chainlink"
+    ],
+    "aiModels": [
+      "GPT-5.3-Codex", "GPT-4.1", "o3", "Claude Sonnet 4", "Claude Opus 4", "Gemini 2.5 Pro", "Llama 3.1 405B", "Mistral Large", "Command R+", "Phi-4"
+    ],
+    "graphicsCards": [
+      "NVIDIA GeForce RTX 5090", "NVIDIA GeForce RTX 5080", "NVIDIA GeForce RTX 4090", "NVIDIA RTX 6000 Ada", "AMD Radeon RX 9070 XT", "AMD Radeon RX 7900 XTX", "AMD Radeon PRO W7900", "Intel Arc B580", "Intel Arc A770", "NVIDIA GeForce RTX 4070 Super"
+    ]
+  }
+}

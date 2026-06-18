@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # Module: PwShGUI-SinHeatmap
 # Purpose: Build a per-file SIN density heatmap (returns data + optional inline SVG).
 
@@ -60,4 +61,5 @@ function Get-SinHeatmap {
 }
 
 Export-ModuleMember -Function Get-SinHeatmap
+
 

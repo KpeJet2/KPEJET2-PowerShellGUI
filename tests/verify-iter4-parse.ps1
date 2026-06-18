@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 Add-Type -AssemblyName System.Management.Automation
 $dbl = Get-ChildItem 'C:\PowerShellGUI\scripts\Build-Agentic*' -ErrorAction SilentlyContinue
 $sample = @()
@@ -16,4 +16,5 @@ foreach ($f in $sample) {
 }
 "Sampled: $($sample.Count); parse failures: $($bad.Count)"
 $bad | Format-Table -AutoSize
+
 

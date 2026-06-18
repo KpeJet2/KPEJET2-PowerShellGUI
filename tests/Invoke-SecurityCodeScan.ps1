@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -79,7 +79,7 @@ $securityPatterns = @(
        Exclude='\.md$' }
 
     @{ Id='SEC-010'; Severity='HIGH'; Name='Net.WebClient DownloadString/File';
-       Regex='Net\.WebClient.*Download(String|File)|Invoke-WebRequest.*\|\s*iex';
+         Regex='Net\.WebClient.*Download(String|File)|Invoke-WebRequest.*\|\s*iex'; # SIN-EXEMPT:P070 -- regex pattern text, not executable web request
        Exclude='\.md$|\.tests?\.ps1$' }
 )
 
@@ -231,6 +231,7 @@ return $summary
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

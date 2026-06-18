@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $ErrorActionPreference = 'Stop'
 $RegistryPath = 'C:\PowerShellGUI\sin_registry'
 $all = New-Object System.Collections.Generic.List[object]
@@ -26,4 +26,5 @@ foreach ($f in Get-ChildItem -Path $RegistryPath -Filter '*.json' -File) {
 "loaded: $($all.Count)"
 $json = $all | ConvertTo-Json -Depth 6
 "json bytes: $($json.Length)"
+
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # AI-REReFineFine22 — Iterative Refinement Pipeline Process
 
 > Version: 2604.B1.V32.5
@@ -25,7 +25,7 @@ workspace from any state to a fully clean, tested, and documented baseline.
 
 ### Phase 2 — Fix Incomplete References and Calls
 1. For every route referenced in XHTML UI (/api/*): confirm handler function exists in engine
-2. For every agent card in PwShGUI-Checklists.xhtml (Agents tab): confirm backing script exists
+2. For every agent card in PwShGUI-Checklists-V1-[LEGACY].xhtml (Agents tab): confirm backing script exists
 3. For every Import-Module in scripts: confirm module file exists in modules/
 4. Fix gaps found in Phase 1: create missing scripts, add missing routes, add missing modules
 5. Deliverable: all references resolved, no dead links
@@ -97,3 +97,4 @@ The pipeline terminates when ALL of the following are true:
 ---
 
 *This process is the canonical AI improvement loop for the PowerShellGUI workspace.*
+

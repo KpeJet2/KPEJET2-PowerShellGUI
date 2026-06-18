@@ -1,0 +1,34 @@
+{
+  "completedAt": null,
+  "plannedAt": "2026-05-15T14:36:41.1388049Z",
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T06:53:20.9267087Z",
+  "title": "FIX: 1 functions with no try/catch blocks",
+  "category": "error-handling",
+  "tags": [],
+  "parentId": "Bug-20260412145205-a7e0302a",
+  "type": "Bugs2FIX",
+  "linkedBugs": [],
+  "id": "Bugs2FIX-20260412145320-148ef4a0",
+  "description": "Fix for bug Bug-20260412145205-a7e0302a: Script Script-D.ps1 has 1 functions but zero try/catch blocks",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-05-15T14:36:41.1388049Z",
+  "acknowledged": null,
+  "sinId": "",
+  "result": null,
+  "status": "IN_PROGRESS",
+  "suggestedBy": "CronAiAthon",
+  "priority": "MEDIUM",
+  "outlineVersion": "v0",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\scripts\\Script-D.ps1"
+  ],
+  "notes": "Auto-transitioned to IN_PROGRESS by Drain-Bugs2FIX at 2026-05-15T14:36:41.1388049Z"
+}
+

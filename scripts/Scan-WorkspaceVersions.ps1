@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $ws = 'C:\PowerShellGUI'
 $exts = @('.ps1','.psm1','.psd1','.bat','.cmd','.json','.yaml','.yml','.md','.xhtml','.html','.js','.ts','.css','.py','.txt','.xml','.csv')
 # Permanent exclusions: vendored deps, VCS internals, virtualenvs, runtime artefacts,
@@ -27,3 +27,4 @@ $tagged = ($out | Where-Object Version).Count
 $grp = $out | Where-Object Version | Group-Object Version | Sort-Object Count -Descending
 Write-Output ("TOTAL=$total TAGGED=$tagged UNTAGGED=$($total-$tagged)")
 $grp | ForEach-Object { "  {0,-25} {1,5} files" -f $_.Name, $_.Count }
+

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V49.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 
@@ -130,7 +130,7 @@ if (-not $xmlLoaded) {
     if ($EmitJson) {
         [pscustomobject]@{
             harness     = 'Invoke-ShowOnlineDomHarness'
-            versionTag  = '2605.B5.V49.0'
+            versionTag  = '2605.B5.V50.1'
             engine      = $PSVersionTable.PSVersion.ToString()
             pagePath    = $resolvedPagePath
             checkCount  = @($script:Checks).Count
@@ -149,7 +149,11 @@ $requiredIds = @(
     'dd-blade-health',
     'dd-health-overview',
     'dd-health-tree',
-    'dd-health-remedies'
+    'dd-health-remedies',
+    'ftModeSummary',
+    'ftLiveSummary',
+    'ftLiveWebCluster8099',
+    'ftLiveTrayMonitor'
 )
 
 foreach ($id in $requiredIds) {
@@ -178,6 +182,35 @@ Test-FunctionFragments -Source $content -FunctionName 'setupTabHoverTooltips' -R
     "addEventListener('blur'"
 )
 
+Test-FunctionFragments -Source $content -FunctionName '_so_getValidationPolicy' -RequiredFragments @(
+    'ignoreLiveChecks',
+    'preferCachedState',
+    'suppressTransientErrors',
+    'OFFLINE_CACHED',
+    'STATIC',
+    'TESTING'
+)
+
+Test-FunctionFragments -Source $content -FunctionName '_so_refreshFooterRefTooltips' -RequiredFragments @(
+    'Ctrl+Alt+Click: open folder/location',
+    'ignoreLiveChecks',
+    "querySelectorAll('footer .ft-state')",
+    "setAttribute('title'"
+)
+
+Test-FunctionFragments -Source $content -FunctionName '_so_probeWebCluster8099' -RequiredFragments @(
+    'http://127.0.0.1:8099/health',
+    'ftLiveWebCluster8099',
+    '_so_setServiceState('
+)
+
+Test-FunctionFragments -Source $content -FunctionName 'refreshAllShowOnline' -RequiredFragments @(
+    'ftLiveSummary',
+    'ftLiveTrayMonitor',
+    '_so_probeWebCluster8099(',
+    '_so_updateDataSourceMode('
+)
+
 Test-FunctionFragments -Source $content -FunctionName '_so_showTooltipForTab' -RequiredFragments @(
     "_so_buildTooltipHtml(",
     "classList.remove('hidden')",
@@ -195,11 +228,45 @@ Test-FunctionFragments -Source $content -FunctionName '_so_renderHealthPanel' -R
     "Recommended Remediation Commands"
 )
 
+Test-FunctionFragments -Source $content -FunctionName '_so_refreshFooterLegendMetrics' -RequiredFragments @(
+    '_so_getValidationPolicy()',
+    'policy.ignoreLiveChecks',
+    'rows[r].isLiveOnly',
+    'live ignored'
+)
+
+Test-FunctionFragments -Source $content -FunctionName '_wsManifestEntries' -RequiredFragments @(
+    'arr[i].file || arr[i].path || arr[i].name',
+    'arr[i].versionTag || arr[i].VersionTag || arr[i].version || arr[i].Version'
+)
+
+Test-FunctionFragments -Source $content -FunctionName 'loadScriptVersions' -RequiredFragments @(
+    'e.file || e.path || e.name',
+    'e.versionTag || e.VersionTag || e.version || e.Version',
+    "_wsStaticRowsHtml = ''"
+)
+
+Test-FunctionFragments -Source $content -FunctionName 'showTab' -RequiredFragments @(
+    "id === 'workspace-scripts'",
+    'loadScriptVersions()'
+)
+
 Test-FunctionFragments -Source $content -FunctionName '_metricSaveBaseline' -RequiredFragments @(
     "localStorage.setItem("
 )
 
+Test-FunctionFragments -Source $content -FunctionName '_metricBuildChecks' -RequiredFragments @(
+    "label: 'Pipeline'",
+    "label: 'Scripts'",
+    "label: 'Agents'",
+    "label: 'Scan Tools'",
+    "label: 'Items2Do'",
+    "label: 'Bugs2FIX'",
+    "label: 'Feature2ADD'"
+)
+
 Test-FunctionFragments -Source $content -FunctionName 'setMetricBaseline' -RequiredFragments @(
+    '_metricBuildChecks(',
     "_metricSaveBaseline(",
     "renderDataDashboard("
 )
@@ -207,6 +274,13 @@ Test-FunctionFragments -Source $content -FunctionName 'setMetricBaseline' -Requi
 Test-FunctionFragments -Source $content -FunctionName 'clearMetricBaseline' -RequiredFragments @(
     "localStorage.removeItem(",
     "renderDataDashboard("
+)
+
+Test-FunctionFragments -Source $content -FunctionName '_renderMetricIntegrity' -RequiredFragments @(
+    '_metricBuildChecks(',
+    'title="',
+    'Integrity Totals',
+    'Baseline'
 )
 
 Test-FunctionFragments -Source $content -FunctionName 'toggleDDBlade' -RequiredFragments @(
@@ -224,7 +298,7 @@ Test-FunctionFragments -Source $content -FunctionName 'showBladeTab' -RequiredFr
 $failed = @($script:Checks | Where-Object { -not $_.Pass })
 $summary = [pscustomobject]@{
     harness      = 'Invoke-ShowOnlineDomHarness'
-    versionTag   = '2605.B5.V49.0'
+    versionTag   = '2605.B5.V50.1'
     timestampUtc = (Get-Date).ToUniversalTime().ToString('o')
     engine       = $PSVersionTable.PSVersion.ToString()
     pagePath     = $resolvedPagePath
@@ -248,3 +322,4 @@ if ($EmitJson) {
 if (-not $summary.passed) {
     exit 1
 }
+

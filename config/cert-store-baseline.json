@@ -1,0 +1,1165 @@
+{
+  "Certs": [
+    {
+      "Thumbprint": "204AB556A97D08C33AD34AF0650D6CA4B0DD678C",
+      "Subject": "CN=Fiddler Root Certificate Authority, O=Progress Telerik Fiddler, OU=Created by http://www.fiddler2.com",
+      "Issuer": "CN=Fiddler Root Certificate Authority, O=Progress Telerik Fiddler, OU=Created by http://www.fiddler2.com",
+      "NotBefore": "2026-04-21T00:00:00+08:00",
+      "NotAfter": "2036-04-28T11:11:51+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D47605FC0736802CEE4153DDA032D276CF2C81C7",
+      "Subject": "CN=NextDNS Root CA, O=NextDNS Inc.",
+      "Issuer": "CN=NextDNS Root CA, O=NextDNS Inc.",
+      "NotBefore": "2020-01-01T08:00:00+08:00",
+      "NotAfter": "2040-01-01T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "CDD4EEAE6000AC7F40C3802C171E30148030C072",
+      "Subject": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com",
+      "Issuer": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com",
+      "NotBefore": "2001-05-10T07:19:22+08:00",
+      "NotAfter": "2021-05-10T07:28:13+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "BE36A4562FB2EE05DBB3D32323ADF445084ED656",
+      "Subject": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA",
+      "Issuer": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA",
+      "NotBefore": "1997-01-01T08:00:00+08:00",
+      "NotAfter": "2021-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "A43489159A520F0D93D032CCAF37E7FE20A8B419",
+      "Subject": "CN=Microsoft Root Authority, OU=Microsoft Corporation, OU=Copyright (c) 1997 Microsoft Corp.",
+      "Issuer": "CN=Microsoft Root Authority, OU=Microsoft Corporation, OU=Copyright (c) 1997 Microsoft Corp.",
+      "NotBefore": "1997-01-10T15:00:00+08:00",
+      "NotAfter": "2020-12-31T15:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "92B46C76E13054E104F230517E6E504D43AB10B5",
+      "Subject": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US",
+      "Issuer": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US",
+      "NotBefore": "2012-03-15T08:00:00+08:00",
+      "NotAfter": "2032-03-15T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "8F43288AD272F3103B6FB1428485EA3014C0BCFE",
+      "Subject": "CN=Microsoft Root Certificate Authority 2011, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Root Certificate Authority 2011, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2011-03-23T06:05:28+08:00",
+      "NotAfter": "2036-03-23T06:13:04+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "7F88CD7223F3C813818C994614A89C99FA3B5247",
+      "Subject": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US",
+      "Issuer": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US",
+      "NotBefore": "1995-01-01T16:00:01+08:00",
+      "NotAfter": "2000-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "74775BBCFAAF2BD62BD07931ADB390E37A78F1F2",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2026-01-20T09:52:43+08:00",
+      "NotAfter": "3025-05-23T09:52:43+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "71F5907CF6FBB90A816B942770192E7E12F452D8",
+      "Subject": "CN=127.0.0.1, O=XPS15-MS",
+      "Issuer": "CN=127.0.0.1, O=XPS15-MS",
+      "NotBefore": "2024-03-23T10:11:32+08:00",
+      "NotAfter": "2034-03-24T10:11:32+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "6EDD8A01F3BC7BD4DBAC23D9B6DF3F84CBDD2C12",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2023-09-15T11:30:56+08:00",
+      "NotAfter": "3023-01-16T11:30:56+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "6319DF307DC37FFFDE9A36494CE45F8D27EC9FF0",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2024-06-26T00:21:49+08:00",
+      "NotAfter": "3023-10-28T00:21:49+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "5970748B17D930AF24DECBF52CEAA9D10161DB00",
+      "Subject": "CN=127.0.0.1, O=XPS15-MS",
+      "Issuer": "CN=127.0.0.1, O=XPS15-MS",
+      "NotBefore": "2026-02-14T10:44:19+08:00",
+      "NotAfter": "2036-02-15T10:44:19+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "3CA78E4FFF9C4F207D5A299404CE04567084B7F5",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2025-07-03T03:19:47+08:00",
+      "NotAfter": "3024-11-03T03:19:47+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "3B1EFD3A66EA28B16697394703A72CA340A05BD5",
+      "Subject": "CN=Microsoft Root Certificate Authority 2010, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Root Certificate Authority 2010, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2010-06-24T05:57:24+08:00",
+      "NotAfter": "2035-06-24T06:04:01+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "31F9FC8BA3805986B721EA7295C65B3A44534274",
+      "Subject": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2018-02-28T04:51:34+08:00",
+      "NotAfter": "2043-02-28T05:00:12+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "245C97DF7514E7CF2DF8BE72AE957B9E04741E85",
+      "Subject": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network",
+      "Issuer": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network",
+      "NotBefore": "1997-05-14T00:12:59+08:00",
+      "NotAfter": "1999-12-31T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "18F7C1FCC3090203FD5BAA2F861A754976C8DD25",
+      "Subject": "OU=\"NO LIABILITY ACCEPTED, (c)97 VeriSign, Inc.\", OU=VeriSign Time Stamping Service Root, OU=\"VeriSign, Inc.\", O=VeriSign Trust Network",
+      "Issuer": "OU=\"NO LIABILITY ACCEPTED, (c)97 VeriSign, Inc.\", OU=VeriSign Time Stamping Service Root, OU=\"VeriSign, Inc.\", O=VeriSign Trust Network",
+      "NotBefore": "1997-05-12T08:00:00+08:00",
+      "NotAfter": "2004-01-08T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "06F1AA330B927B753A40E68CDF22E34BCBEF3352",
+      "Subject": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2018-02-28T04:42:08+08:00",
+      "NotAfter": "2043-02-28T04:50:46+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "0119E81BE9A14CD8E22F40AC118C687ECBA3F4D8",
+      "Subject": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2014-10-23T06:08:57+08:00",
+      "NotAfter": "2039-10-23T06:15:19+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "F40042E2E5F7E8EF8189FED15519AECE42C3BFA2",
+      "Subject": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US",
+      "Issuer": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US",
+      "NotBefore": "2020-04-17T02:36:16+08:00",
+      "NotAfter": "2045-04-17T02:44:40+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "E12DFB4B41D7D9C32B30514BAC1D81D8385E2D46",
+      "Subject": "CN=UTN-USERFirst-Object, OU=http://www.usertrust.com, O=The USERTRUST Network, L=Salt Lake City, S=UT, C=US",
+      "Issuer": "CN=UTN-USERFirst-Object, OU=http://www.usertrust.com, O=The USERTRUST Network, L=Salt Lake City, S=UT, C=US",
+      "NotBefore": "1999-07-10T02:31:20+08:00",
+      "NotAfter": "2019-07-10T02:40:36+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "DF717EAA4AD94EC9558499602D48DE5FBCF03A25",
+      "Subject": "CN=IdenTrust Commercial Root CA 1, O=IdenTrust, C=US",
+      "Issuer": "CN=IdenTrust Commercial Root CA 1, O=IdenTrust, C=US",
+      "NotBefore": "2014-01-17T02:12:23+08:00",
+      "NotAfter": "2034-01-17T02:12:23+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "DF3C24F9BFD666761B268073FE06D1CC8D4F82A4",
+      "Subject": "CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "DE3F40BD5093D39B6C60F6DABC076201008976C9",
+      "Subject": "CN=QuoVadis Root Certification Authority, OU=Root Certification Authority, O=QuoVadis Limited, C=BM",
+      "Issuer": "CN=QuoVadis Root Certification Authority, OU=Root Certification Authority, O=QuoVadis Limited, C=BM",
+      "NotBefore": "2001-03-20T02:33:33+08:00",
+      "NotAfter": "2021-03-18T02:33:33+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "DDFB16CD4931C973A2037D3FC83A4D7D775D05E4",
+      "Subject": "CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "DAC9024F54D8F6DF94935FB1732638CA6AD77C13",
+      "Subject": "CN=DST Root CA X3, O=Digital Signature Trust Co.",
+      "Issuer": "CN=DST Root CA X3, O=Digital Signature Trust Co.",
+      "NotBefore": "2000-10-01T05:12:19+08:00",
+      "NotAfter": "2021-09-30T22:01:15+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D69B561148F01C77C54578C10926DF5B856976AD",
+      "Subject": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R3",
+      "Issuer": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R3",
+      "NotBefore": "2009-03-18T19:00:00+09:00",
+      "NotAfter": "2029-03-18T18:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D4DE20D05E66FC53FE1A50882C78DB2852CAE474",
+      "Subject": "CN=Baltimore CyberTrust Root, OU=CyberTrust, O=Baltimore, C=IE",
+      "Issuer": "CN=Baltimore CyberTrust Root, OU=CyberTrust, O=Baltimore, C=IE",
+      "NotBefore": "2000-05-13T02:46:00+08:00",
+      "NotAfter": "2025-05-13T07:59:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D3DD483E2BBF4C05E8AF10F5FA7626CFD3DC3092",
+      "Subject": "CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "Issuer": "CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "NotBefore": "2011-10-06T16:39:56+08:00",
+      "NotAfter": "2046-10-06T16:39:56+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D1EB23A46D17D68FD92564C2F1F1601764D8E349",
+      "Subject": "CN=AAA Certificate Services, O=Comodo CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=AAA Certificate Services, O=Comodo CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2004-01-01T08:00:00+08:00",
+      "NotAfter": "2029-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D1CBCA5DB2D52A7F693B674DE5F05A1D0C957DF0",
+      "Subject": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "Issuer": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "NotBefore": "2010-02-01T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "CCBBF9E1485AF63CE47ABF8E9E648C2504FC319D",
+      "Subject": "CN=Sectigo Public Code Signing Root R46, O=Sectigo Limited, C=GB",
+      "Issuer": "CN=Sectigo Public Code Signing Root R46, O=Sectigo Limited, C=GB",
+      "NotBefore": "2021-03-22T08:00:00+08:00",
+      "NotAfter": "2046-03-22T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "CABD2A79A1076A31F21D253635CB039D4329A5E8",
+      "Subject": "CN=ISRG Root X1, O=Internet Security Research Group, C=US",
+      "Issuer": "CN=ISRG Root X1, O=Internet Security Research Group, C=US",
+      "NotBefore": "2015-06-04T19:04:38+08:00",
+      "NotAfter": "2035-06-04T19:04:38+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "B94294BF91EA8FB64BE61097C7FB001359B676CB",
+      "Subject": "CN=Certification Authority of WoSign, O=WoSign CA Limited, C=CN",
+      "Issuer": "CN=Certification Authority of WoSign, O=WoSign CA Limited, C=CN",
+      "NotBefore": "2009-08-08T09:00:01+08:00",
+      "NotAfter": "2039-08-08T09:00:01+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "B7AB3308D1EA4477BA1480125A6FBDA936490CBB",
+      "Subject": "CN=SSL.com Root Certification Authority RSA, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "Issuer": "CN=SSL.com Root Certification Authority RSA, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "NotBefore": "2016-02-13T01:39:39+08:00",
+      "NotAfter": "2041-02-13T01:39:39+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "B51C067CEE2B0C3DF855AB2D92F4FE39D4E70F0E",
+      "Subject": "CN=Starfield Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Starfield Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "B31EB1B740E36C8402DADC37D44DF5D4674952F9",
+      "Subject": "CN=Entrust Root Certification Authority, OU=\"(c) 2006 Entrust, Inc.\", OU=www.entrust.net/CPS is incorporated by reference, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority, OU=\"(c) 2006 Entrust, Inc.\", OU=www.entrust.net/CPS is incorporated by reference, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2006-11-28T04:23:42+08:00",
+      "NotAfter": "2026-11-28T04:53:42+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "B1BC968BD4F49D622AA89A81F2150152A41D829C",
+      "Subject": "CN=GlobalSign Root CA, OU=Root CA, O=GlobalSign nv-sa, C=BE",
+      "Issuer": "CN=GlobalSign Root CA, OU=Root CA, O=GlobalSign nv-sa, C=BE",
+      "NotBefore": "1998-09-01T20:00:00+08:00",
+      "NotAfter": "2028-01-28T20:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "AFE5D244A8D1194230FF479FE2F897BBCD7A8CB4",
+      "Subject": "CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2010-01-19T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "AD98F9F3E47D753B65D482B3A45217BB6EF5E438",
+      "Subject": "CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB",
+      "Issuer": "CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB",
+      "NotBefore": "2021-03-22T08:00:00+08:00",
+      "NotAfter": "2046-03-22T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "AD7E1C28B064EF8F6003402014C3D0E3370EB58A",
+      "Subject": "OU=Starfield Class 2 Certification Authority, O=\"Starfield Technologies, Inc.\", C=US",
+      "Issuer": "OU=Starfield Class 2 Certification Authority, O=\"Starfield Technologies, Inc.\", C=US",
+      "NotBefore": "2004-06-30T01:39:16+08:00",
+      "NotAfter": "2034-06-30T01:39:16+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "A8985D3A65E5E5C4B2D7D66D40C6DD2FB19C5436",
+      "Subject": "CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "9F744E9F2B4DBAEC0F312C50B6563B8E2D93C311",
+      "Subject": "CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2008-03-06T09:00:00+09:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "9CBB4853F6A4F6D352A4E83252556013F5ADAF65",
+      "Subject": "CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW",
+      "Issuer": "CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW",
+      "NotBefore": "2012-06-27T14:28:33+08:00",
+      "NotAfter": "2030-12-31T23:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "97817950D81C9670CC34D809CF794431367EF474",
+      "Subject": "CN=GTE CyberTrust Global Root, OU=\"GTE CyberTrust Solutions, Inc.\", O=GTE Corporation, C=US",
+      "Issuer": "CN=GTE CyberTrust Global Root, OU=\"GTE CyberTrust Solutions, Inc.\", O=GTE Corporation, C=US",
+      "NotBefore": "1998-08-13T08:29:00+08:00",
+      "NotAfter": "2018-08-14T07:59:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "925A8F8D2C6D04E0665F596AFF22D863E8256F3F",
+      "Subject": "CN=Starfield Services Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Starfield Services Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "8CF427FD790C3AD166068DE81E57EFBB932272D4",
+      "Subject": "CN=Entrust Root Certification Authority - G2, OU=\"(c) 2009 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority - G2, OU=\"(c) 2009 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2009-07-08T01:25:54+08:00",
+      "NotAfter": "2030-12-08T01:55:54+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "843573112A3B319344E5E4ECABC9F26C7CD54D07",
+      "Subject": "CN=DigiCert CS ECC P384 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "Issuer": "CN=DigiCert CS ECC P384 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "NotBefore": "2021-01-15T08:00:00+08:00",
+      "NotAfter": "2046-01-15T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "8094640EB5A7A1CA119C1FDDD59F810263A7FBD1",
+      "Subject": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R6",
+      "Issuer": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R6",
+      "NotBefore": "2014-12-10T08:00:00+08:00",
+      "NotAfter": "2034-12-10T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "7E04DE896A3E666D00E687D33FFAD93BE83D349E",
+      "Subject": "CN=DigiCert Global Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "743AF0529BD032A0F44A83CDD4BAA97B7C2EC49A",
+      "Subject": "CN=SSL.com EV Root Certification Authority RSA R2, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "Issuer": "CN=SSL.com EV Root Certification Authority RSA R2, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "NotBefore": "2017-06-01T02:14:37+08:00",
+      "NotAfter": "2042-05-31T02:14:37+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "742C3192E607E424EB4549542BE1BBC53E6174E2",
+      "Subject": "OU=Class 3 Public Primary Certification Authority, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "OU=Class 3 Public Primary Certification Authority, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "1996-01-29T08:00:00+08:00",
+      "NotAfter": "2028-08-02T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "73A5E64A3BFF8316FF0EDCCC618A906E4EAE4D74",
+      "Subject": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US",
+      "Issuer": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US",
+      "NotBefore": "2019-12-19T06:51:22+08:00",
+      "NotAfter": "2042-07-19T07:00:23+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "5FB7EE0633E259DBAD0C4C9AE6D38F1A61C7DC25",
+      "Subject": "CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "5F3B8CF2F810B37D78B4CEEC1919C37334B9C774",
+      "Subject": "OU=Security Communication RootCA2, O=\"SECOM Trust Systems CO.,LTD.\", C=JP",
+      "Issuer": "OU=Security Communication RootCA2, O=\"SECOM Trust Systems CO.,LTD.\", C=JP",
+      "NotBefore": "2009-05-29T13:00:39+08:00",
+      "NotAfter": "2029-05-29T13:00:39+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "5EEED86FA37C675230642F55C84DDBF67CD33C80",
+      "Subject": "CN=DigiCert CS RSA4096 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "Issuer": "CN=DigiCert CS RSA4096 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "NotBefore": "2021-01-15T08:00:00+08:00",
+      "NotAfter": "2046-01-15T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "51501FBFCE69189D609CFAF140C576755DCC1FDF",
+      "Subject": "CN=Hotspot 2.0 Trust Root CA - 03, O=WFA Hotspot 2.0, C=US",
+      "Issuer": "CN=Hotspot 2.0 Trust Root CA - 03, O=WFA Hotspot 2.0, C=US",
+      "NotBefore": "2013-12-08T20:00:00+08:00",
+      "NotAfter": "2043-12-08T20:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "503006091D97D4F5AE39F7CBE7927D7D652D3431",
+      "Subject": "CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net",
+      "Issuer": "CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net",
+      "NotBefore": "1999-12-25T01:50:51+08:00",
+      "NotAfter": "2029-07-24T22:15:12+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "4EFC31460C619ECAE59C1BCE2C008036D94C84B8",
+      "Subject": "CN=GlobalSign Code Signing Root R45, O=GlobalSign nv-sa, C=BE",
+      "Issuer": "CN=GlobalSign Code Signing Root R45, O=GlobalSign nv-sa, C=BE",
+      "NotBefore": "2020-03-18T08:00:00+08:00",
+      "NotAfter": "2045-03-18T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "4EB6D578499B1CCF5F581EAD56BE3D9B6744A5E5",
+      "Subject": "CN=VeriSign Class 3 Public Primary Certification Authority - G5, OU=\"(c) 2006 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "CN=VeriSign Class 3 Public Primary Certification Authority - G5, OU=\"(c) 2006 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "2006-11-08T08:00:00+08:00",
+      "NotAfter": "2036-07-17T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "490A7574DE870A47FE58EEF6C76BEBC60B124099",
+      "Subject": "CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO",
+      "Issuer": "CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO",
+      "NotBefore": "2010-10-26T16:38:03+08:00",
+      "NotAfter": "2040-10-26T16:38:03+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "47BEABC922EAE80E78783462A79F45C254FDE68B",
+      "Subject": "CN=Go Daddy Root Certificate Authority - G2, O=\"GoDaddy.com, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Go Daddy Root Certificate Authority - G2, O=\"GoDaddy.com, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "3E2BF7F2031B96F38CE6C4D8A85D3E2D58476A0F",
+      "Subject": "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL",
+      "Issuer": "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL",
+      "NotBefore": "2006-09-18T03:46:36+08:00",
+      "NotAfter": "2036-09-18T03:46:36+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "3679CA35668772304D30A5FB873B0FA77BB70D54",
+      "Subject": "CN=VeriSign Universal Root Certification Authority, OU=\"(c) 2008 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "CN=VeriSign Universal Root Certification Authority, OU=\"(c) 2008 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "2008-04-02T08:00:00+08:00",
+      "NotAfter": "2037-12-02T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "2F8F364FE1589744215987A52A9AD06995267FB5",
+      "Subject": "CN=Trustwave Global Certification Authority, O=\"Trustwave Holdings, Inc.\", L=Chicago, S=Illinois, C=US",
+      "Issuer": "CN=Trustwave Global Certification Authority, O=\"Trustwave Holdings, Inc.\", L=Chicago, S=Illinois, C=US",
+      "NotBefore": "2017-08-24T03:34:12+08:00",
+      "NotAfter": "2042-08-24T03:34:12+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "2B8F1B57330DBBA2D07A6C51F70EE90DDAB9AD8E",
+      "Subject": "CN=USERTrust RSA Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "Issuer": "CN=USERTrust RSA Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "NotBefore": "2010-02-01T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "2796BAE63F1801E277261BA0D77770028F20EEE4",
+      "Subject": "OU=Go Daddy Class 2 Certification Authority, O=\"The Go Daddy Group, Inc.\", C=US",
+      "Issuer": "OU=Go Daddy Class 2 Certification Authority, O=\"The Go Daddy Group, Inc.\", C=US",
+      "NotBefore": "2004-06-30T01:06:20+08:00",
+      "NotAfter": "2034-06-30T01:06:20+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "20D80640DF9B25F512253A11EAF7598AEB14B547",
+      "Subject": "CN=Entrust Root Certification Authority - EC1, OU=\"(c) 2012 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority - EC1, OU=\"(c) 2012 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2012-12-18T23:25:36+08:00",
+      "NotAfter": "2037-12-18T23:55:36+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "1B8EEA5796291AC939EAB80A811A7373C0937967",
+      "Subject": "CN=QuoVadis Root CA 1 G3, O=QuoVadis Limited, C=BM",
+      "Issuer": "CN=QuoVadis Root CA 1 G3, O=QuoVadis Limited, C=BM",
+      "NotBefore": "2012-01-13T01:27:44+08:00",
+      "NotAfter": "2042-01-13T01:27:44+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "07E032E020B72C3F192F0628A2593A19A70F069E",
+      "Subject": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "Issuer": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "NotBefore": "2008-10-22T20:07:37+08:00",
+      "NotAfter": "2029-12-31T20:07:37+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "0563B8630D62D75ABBC8AB1E4BDFB5A899B24D43",
+      "Subject": "CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "02FAF3E291435468607857694DF5E45B68851868",
+      "Subject": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE",
+      "Issuer": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE",
+      "NotBefore": "2000-05-30T18:48:38+08:00",
+      "NotAfter": "2020-05-30T18:48:38+08:00",
+      "StoreLocation": "CurrentUser"
+    },
+    {
+      "Thumbprint": "D47605FC0736802CEE4153DDA032D276CF2C81C7",
+      "Subject": "CN=NextDNS Root CA, O=NextDNS Inc.",
+      "Issuer": "CN=NextDNS Root CA, O=NextDNS Inc.",
+      "NotBefore": "2020-01-01T08:00:00+08:00",
+      "NotAfter": "2040-01-01T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "CDD4EEAE6000AC7F40C3802C171E30148030C072",
+      "Subject": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com",
+      "Issuer": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com",
+      "NotBefore": "2001-05-10T07:19:22+08:00",
+      "NotAfter": "2021-05-10T07:28:13+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "BE36A4562FB2EE05DBB3D32323ADF445084ED656",
+      "Subject": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA",
+      "Issuer": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA",
+      "NotBefore": "1997-01-01T08:00:00+08:00",
+      "NotAfter": "2021-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "A43489159A520F0D93D032CCAF37E7FE20A8B419",
+      "Subject": "CN=Microsoft Root Authority, OU=Microsoft Corporation, OU=Copyright (c) 1997 Microsoft Corp.",
+      "Issuer": "CN=Microsoft Root Authority, OU=Microsoft Corporation, OU=Copyright (c) 1997 Microsoft Corp.",
+      "NotBefore": "1997-01-10T15:00:00+08:00",
+      "NotAfter": "2020-12-31T15:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "92B46C76E13054E104F230517E6E504D43AB10B5",
+      "Subject": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US",
+      "Issuer": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US",
+      "NotBefore": "2012-03-15T08:00:00+08:00",
+      "NotAfter": "2032-03-15T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "8F43288AD272F3103B6FB1428485EA3014C0BCFE",
+      "Subject": "CN=Microsoft Root Certificate Authority 2011, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Root Certificate Authority 2011, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2011-03-23T06:05:28+08:00",
+      "NotAfter": "2036-03-23T06:13:04+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "7F88CD7223F3C813818C994614A89C99FA3B5247",
+      "Subject": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US",
+      "Issuer": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US",
+      "NotBefore": "1995-01-01T16:00:01+08:00",
+      "NotAfter": "2000-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "74775BBCFAAF2BD62BD07931ADB390E37A78F1F2",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2026-01-20T09:52:43+08:00",
+      "NotAfter": "3025-05-23T09:52:43+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "71F5907CF6FBB90A816B942770192E7E12F452D8",
+      "Subject": "CN=127.0.0.1, O=XPS15-MS",
+      "Issuer": "CN=127.0.0.1, O=XPS15-MS",
+      "NotBefore": "2024-03-23T10:11:32+08:00",
+      "NotAfter": "2034-03-24T10:11:32+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "6EDD8A01F3BC7BD4DBAC23D9B6DF3F84CBDD2C12",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2023-09-15T11:30:56+08:00",
+      "NotAfter": "3023-01-16T11:30:56+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "6319DF307DC37FFFDE9A36494CE45F8D27EC9FF0",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2024-06-26T00:21:49+08:00",
+      "NotAfter": "3023-10-28T00:21:49+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "5970748B17D930AF24DECBF52CEAA9D10161DB00",
+      "Subject": "CN=127.0.0.1, O=XPS15-MS",
+      "Issuer": "CN=127.0.0.1, O=XPS15-MS",
+      "NotBefore": "2026-02-14T10:44:19+08:00",
+      "NotAfter": "2036-02-15T10:44:19+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "3CA78E4FFF9C4F207D5A299404CE04567084B7F5",
+      "Subject": "CN=XPS15-MS",
+      "Issuer": "CN=XPS15-MS",
+      "NotBefore": "2025-07-03T03:19:47+08:00",
+      "NotAfter": "3024-11-03T03:19:47+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "3B1EFD3A66EA28B16697394703A72CA340A05BD5",
+      "Subject": "CN=Microsoft Root Certificate Authority 2010, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Root Certificate Authority 2010, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2010-06-24T05:57:24+08:00",
+      "NotAfter": "2035-06-24T06:04:01+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "31F9FC8BA3805986B721EA7295C65B3A44534274",
+      "Subject": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2018-02-28T04:51:34+08:00",
+      "NotAfter": "2043-02-28T05:00:12+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "245C97DF7514E7CF2DF8BE72AE957B9E04741E85",
+      "Subject": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network",
+      "Issuer": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network",
+      "NotBefore": "1997-05-14T00:12:59+08:00",
+      "NotAfter": "1999-12-31T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "18F7C1FCC3090203FD5BAA2F861A754976C8DD25",
+      "Subject": "OU=\"NO LIABILITY ACCEPTED, (c)97 VeriSign, Inc.\", OU=VeriSign Time Stamping Service Root, OU=\"VeriSign, Inc.\", O=VeriSign Trust Network",
+      "Issuer": "OU=\"NO LIABILITY ACCEPTED, (c)97 VeriSign, Inc.\", OU=VeriSign Time Stamping Service Root, OU=\"VeriSign, Inc.\", O=VeriSign Trust Network",
+      "NotBefore": "1997-05-12T08:00:00+08:00",
+      "NotAfter": "2004-01-08T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "06F1AA330B927B753A40E68CDF22E34BCBEF3352",
+      "Subject": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2018-02-28T04:42:08+08:00",
+      "NotAfter": "2043-02-28T04:50:46+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "0119E81BE9A14CD8E22F40AC118C687ECBA3F4D8",
+      "Subject": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "Issuer": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "NotBefore": "2014-10-23T06:08:57+08:00",
+      "NotAfter": "2039-10-23T06:15:19+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "F40042E2E5F7E8EF8189FED15519AECE42C3BFA2",
+      "Subject": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US",
+      "Issuer": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US",
+      "NotBefore": "2020-04-17T02:36:16+08:00",
+      "NotAfter": "2045-04-17T02:44:40+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "E12DFB4B41D7D9C32B30514BAC1D81D8385E2D46",
+      "Subject": "CN=UTN-USERFirst-Object, OU=http://www.usertrust.com, O=The USERTRUST Network, L=Salt Lake City, S=UT, C=US",
+      "Issuer": "CN=UTN-USERFirst-Object, OU=http://www.usertrust.com, O=The USERTRUST Network, L=Salt Lake City, S=UT, C=US",
+      "NotBefore": "1999-07-10T02:31:20+08:00",
+      "NotAfter": "2019-07-10T02:40:36+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "DF717EAA4AD94EC9558499602D48DE5FBCF03A25",
+      "Subject": "CN=IdenTrust Commercial Root CA 1, O=IdenTrust, C=US",
+      "Issuer": "CN=IdenTrust Commercial Root CA 1, O=IdenTrust, C=US",
+      "NotBefore": "2014-01-17T02:12:23+08:00",
+      "NotAfter": "2034-01-17T02:12:23+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "DF3C24F9BFD666761B268073FE06D1CC8D4F82A4",
+      "Subject": "CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "DE3F40BD5093D39B6C60F6DABC076201008976C9",
+      "Subject": "CN=QuoVadis Root Certification Authority, OU=Root Certification Authority, O=QuoVadis Limited, C=BM",
+      "Issuer": "CN=QuoVadis Root Certification Authority, OU=Root Certification Authority, O=QuoVadis Limited, C=BM",
+      "NotBefore": "2001-03-20T02:33:33+08:00",
+      "NotAfter": "2021-03-18T02:33:33+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "DDFB16CD4931C973A2037D3FC83A4D7D775D05E4",
+      "Subject": "CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "DAC9024F54D8F6DF94935FB1732638CA6AD77C13",
+      "Subject": "CN=DST Root CA X3, O=Digital Signature Trust Co.",
+      "Issuer": "CN=DST Root CA X3, O=Digital Signature Trust Co.",
+      "NotBefore": "2000-10-01T05:12:19+08:00",
+      "NotAfter": "2021-09-30T22:01:15+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "D69B561148F01C77C54578C10926DF5B856976AD",
+      "Subject": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R3",
+      "Issuer": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R3",
+      "NotBefore": "2009-03-18T19:00:00+09:00",
+      "NotAfter": "2029-03-18T18:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "D4DE20D05E66FC53FE1A50882C78DB2852CAE474",
+      "Subject": "CN=Baltimore CyberTrust Root, OU=CyberTrust, O=Baltimore, C=IE",
+      "Issuer": "CN=Baltimore CyberTrust Root, OU=CyberTrust, O=Baltimore, C=IE",
+      "NotBefore": "2000-05-13T02:46:00+08:00",
+      "NotAfter": "2025-05-13T07:59:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "D3DD483E2BBF4C05E8AF10F5FA7626CFD3DC3092",
+      "Subject": "CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "Issuer": "CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "NotBefore": "2011-10-06T16:39:56+08:00",
+      "NotAfter": "2046-10-06T16:39:56+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "D1EB23A46D17D68FD92564C2F1F1601764D8E349",
+      "Subject": "CN=AAA Certificate Services, O=Comodo CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=AAA Certificate Services, O=Comodo CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2004-01-01T08:00:00+08:00",
+      "NotAfter": "2029-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "D1CBCA5DB2D52A7F693B674DE5F05A1D0C957DF0",
+      "Subject": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "Issuer": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "NotBefore": "2010-02-01T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "CCBBF9E1485AF63CE47ABF8E9E648C2504FC319D",
+      "Subject": "CN=Sectigo Public Code Signing Root R46, O=Sectigo Limited, C=GB",
+      "Issuer": "CN=Sectigo Public Code Signing Root R46, O=Sectigo Limited, C=GB",
+      "NotBefore": "2021-03-22T08:00:00+08:00",
+      "NotAfter": "2046-03-22T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "CABD2A79A1076A31F21D253635CB039D4329A5E8",
+      "Subject": "CN=ISRG Root X1, O=Internet Security Research Group, C=US",
+      "Issuer": "CN=ISRG Root X1, O=Internet Security Research Group, C=US",
+      "NotBefore": "2015-06-04T19:04:38+08:00",
+      "NotAfter": "2035-06-04T19:04:38+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "B94294BF91EA8FB64BE61097C7FB001359B676CB",
+      "Subject": "CN=Certification Authority of WoSign, O=WoSign CA Limited, C=CN",
+      "Issuer": "CN=Certification Authority of WoSign, O=WoSign CA Limited, C=CN",
+      "NotBefore": "2009-08-08T09:00:01+08:00",
+      "NotAfter": "2039-08-08T09:00:01+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "B7AB3308D1EA4477BA1480125A6FBDA936490CBB",
+      "Subject": "CN=SSL.com Root Certification Authority RSA, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "Issuer": "CN=SSL.com Root Certification Authority RSA, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "NotBefore": "2016-02-13T01:39:39+08:00",
+      "NotAfter": "2041-02-13T01:39:39+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "B51C067CEE2B0C3DF855AB2D92F4FE39D4E70F0E",
+      "Subject": "CN=Starfield Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Starfield Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "B31EB1B740E36C8402DADC37D44DF5D4674952F9",
+      "Subject": "CN=Entrust Root Certification Authority, OU=\"(c) 2006 Entrust, Inc.\", OU=www.entrust.net/CPS is incorporated by reference, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority, OU=\"(c) 2006 Entrust, Inc.\", OU=www.entrust.net/CPS is incorporated by reference, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2006-11-28T04:23:42+08:00",
+      "NotAfter": "2026-11-28T04:53:42+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "B1BC968BD4F49D622AA89A81F2150152A41D829C",
+      "Subject": "CN=GlobalSign Root CA, OU=Root CA, O=GlobalSign nv-sa, C=BE",
+      "Issuer": "CN=GlobalSign Root CA, OU=Root CA, O=GlobalSign nv-sa, C=BE",
+      "NotBefore": "1998-09-01T20:00:00+08:00",
+      "NotAfter": "2028-01-28T20:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "AFE5D244A8D1194230FF479FE2F897BBCD7A8CB4",
+      "Subject": "CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2010-01-19T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "AD98F9F3E47D753B65D482B3A45217BB6EF5E438",
+      "Subject": "CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB",
+      "Issuer": "CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB",
+      "NotBefore": "2021-03-22T08:00:00+08:00",
+      "NotAfter": "2046-03-22T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "AD7E1C28B064EF8F6003402014C3D0E3370EB58A",
+      "Subject": "OU=Starfield Class 2 Certification Authority, O=\"Starfield Technologies, Inc.\", C=US",
+      "Issuer": "OU=Starfield Class 2 Certification Authority, O=\"Starfield Technologies, Inc.\", C=US",
+      "NotBefore": "2004-06-30T01:39:16+08:00",
+      "NotAfter": "2034-06-30T01:39:16+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "A8985D3A65E5E5C4B2D7D66D40C6DD2FB19C5436",
+      "Subject": "CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "9F744E9F2B4DBAEC0F312C50B6563B8E2D93C311",
+      "Subject": "CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "Issuer": "CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, S=Greater Manchester, C=GB",
+      "NotBefore": "2008-03-06T09:00:00+09:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "9CBB4853F6A4F6D352A4E83252556013F5ADAF65",
+      "Subject": "CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW",
+      "Issuer": "CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW",
+      "NotBefore": "2012-06-27T14:28:33+08:00",
+      "NotAfter": "2030-12-31T23:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "97817950D81C9670CC34D809CF794431367EF474",
+      "Subject": "CN=GTE CyberTrust Global Root, OU=\"GTE CyberTrust Solutions, Inc.\", O=GTE Corporation, C=US",
+      "Issuer": "CN=GTE CyberTrust Global Root, OU=\"GTE CyberTrust Solutions, Inc.\", O=GTE Corporation, C=US",
+      "NotBefore": "1998-08-13T08:29:00+08:00",
+      "NotAfter": "2018-08-14T07:59:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "925A8F8D2C6D04E0665F596AFF22D863E8256F3F",
+      "Subject": "CN=Starfield Services Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Starfield Services Root Certificate Authority - G2, O=\"Starfield Technologies, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "8CF427FD790C3AD166068DE81E57EFBB932272D4",
+      "Subject": "CN=Entrust Root Certification Authority - G2, OU=\"(c) 2009 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority - G2, OU=\"(c) 2009 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2009-07-08T01:25:54+08:00",
+      "NotAfter": "2030-12-08T01:55:54+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "843573112A3B319344E5E4ECABC9F26C7CD54D07",
+      "Subject": "CN=DigiCert CS ECC P384 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "Issuer": "CN=DigiCert CS ECC P384 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "NotBefore": "2021-01-15T08:00:00+08:00",
+      "NotAfter": "2046-01-15T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "8094640EB5A7A1CA119C1FDDD59F810263A7FBD1",
+      "Subject": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R6",
+      "Issuer": "CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R6",
+      "NotBefore": "2014-12-10T08:00:00+08:00",
+      "NotAfter": "2034-12-10T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "7E04DE896A3E666D00E687D33FFAD93BE83D349E",
+      "Subject": "CN=DigiCert Global Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Global Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2013-08-01T20:00:00+08:00",
+      "NotAfter": "2038-01-15T20:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "743AF0529BD032A0F44A83CDD4BAA97B7C2EC49A",
+      "Subject": "CN=SSL.com EV Root Certification Authority RSA R2, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "Issuer": "CN=SSL.com EV Root Certification Authority RSA R2, O=SSL Corporation, L=Houston, S=Texas, C=US",
+      "NotBefore": "2017-06-01T02:14:37+08:00",
+      "NotAfter": "2042-05-31T02:14:37+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "742C3192E607E424EB4549542BE1BBC53E6174E2",
+      "Subject": "OU=Class 3 Public Primary Certification Authority, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "OU=Class 3 Public Primary Certification Authority, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "1996-01-29T08:00:00+08:00",
+      "NotAfter": "2028-08-02T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "73A5E64A3BFF8316FF0EDCCC618A906E4EAE4D74",
+      "Subject": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US",
+      "Issuer": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US",
+      "NotBefore": "2019-12-19T06:51:22+08:00",
+      "NotAfter": "2042-07-19T07:00:23+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "5FB7EE0633E259DBAD0C4C9AE6D38F1A61C7DC25",
+      "Subject": "CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "5F3B8CF2F810B37D78B4CEEC1919C37334B9C774",
+      "Subject": "OU=Security Communication RootCA2, O=\"SECOM Trust Systems CO.,LTD.\", C=JP",
+      "Issuer": "OU=Security Communication RootCA2, O=\"SECOM Trust Systems CO.,LTD.\", C=JP",
+      "NotBefore": "2009-05-29T13:00:39+08:00",
+      "NotAfter": "2029-05-29T13:00:39+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "5EEED86FA37C675230642F55C84DDBF67CD33C80",
+      "Subject": "CN=DigiCert CS RSA4096 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "Issuer": "CN=DigiCert CS RSA4096 Root G5, O=\"DigiCert, Inc.\", C=US",
+      "NotBefore": "2021-01-15T08:00:00+08:00",
+      "NotAfter": "2046-01-15T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "51501FBFCE69189D609CFAF140C576755DCC1FDF",
+      "Subject": "CN=Hotspot 2.0 Trust Root CA - 03, O=WFA Hotspot 2.0, C=US",
+      "Issuer": "CN=Hotspot 2.0 Trust Root CA - 03, O=WFA Hotspot 2.0, C=US",
+      "NotBefore": "2013-12-08T20:00:00+08:00",
+      "NotAfter": "2043-12-08T20:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "503006091D97D4F5AE39F7CBE7927D7D652D3431",
+      "Subject": "CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net",
+      "Issuer": "CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net",
+      "NotBefore": "1999-12-25T01:50:51+08:00",
+      "NotAfter": "2029-07-24T22:15:12+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "4EFC31460C619ECAE59C1BCE2C008036D94C84B8",
+      "Subject": "CN=GlobalSign Code Signing Root R45, O=GlobalSign nv-sa, C=BE",
+      "Issuer": "CN=GlobalSign Code Signing Root R45, O=GlobalSign nv-sa, C=BE",
+      "NotBefore": "2020-03-18T08:00:00+08:00",
+      "NotAfter": "2045-03-18T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "4EB6D578499B1CCF5F581EAD56BE3D9B6744A5E5",
+      "Subject": "CN=VeriSign Class 3 Public Primary Certification Authority - G5, OU=\"(c) 2006 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "CN=VeriSign Class 3 Public Primary Certification Authority - G5, OU=\"(c) 2006 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "2006-11-08T08:00:00+08:00",
+      "NotAfter": "2036-07-17T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "490A7574DE870A47FE58EEF6C76BEBC60B124099",
+      "Subject": "CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO",
+      "Issuer": "CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO",
+      "NotBefore": "2010-10-26T16:38:03+08:00",
+      "NotAfter": "2040-10-26T16:38:03+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "47BEABC922EAE80E78783462A79F45C254FDE68B",
+      "Subject": "CN=Go Daddy Root Certificate Authority - G2, O=\"GoDaddy.com, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "Issuer": "CN=Go Daddy Root Certificate Authority - G2, O=\"GoDaddy.com, Inc.\", L=Scottsdale, S=Arizona, C=US",
+      "NotBefore": "2009-09-01T08:00:00+08:00",
+      "NotAfter": "2038-01-01T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "3E2BF7F2031B96F38CE6C4D8A85D3E2D58476A0F",
+      "Subject": "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL",
+      "Issuer": "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL",
+      "NotBefore": "2006-09-18T03:46:36+08:00",
+      "NotAfter": "2036-09-18T03:46:36+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "3679CA35668772304D30A5FB873B0FA77BB70D54",
+      "Subject": "CN=VeriSign Universal Root Certification Authority, OU=\"(c) 2008 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "Issuer": "CN=VeriSign Universal Root Certification Authority, OU=\"(c) 2008 VeriSign, Inc. - For authorized use only\", OU=VeriSign Trust Network, O=\"VeriSign, Inc.\", C=US",
+      "NotBefore": "2008-04-02T08:00:00+08:00",
+      "NotAfter": "2037-12-02T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "2F8F364FE1589744215987A52A9AD06995267FB5",
+      "Subject": "CN=Trustwave Global Certification Authority, O=\"Trustwave Holdings, Inc.\", L=Chicago, S=Illinois, C=US",
+      "Issuer": "CN=Trustwave Global Certification Authority, O=\"Trustwave Holdings, Inc.\", L=Chicago, S=Illinois, C=US",
+      "NotBefore": "2017-08-24T03:34:12+08:00",
+      "NotAfter": "2042-08-24T03:34:12+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "2B8F1B57330DBBA2D07A6C51F70EE90DDAB9AD8E",
+      "Subject": "CN=USERTrust RSA Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "Issuer": "CN=USERTrust RSA Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+      "NotBefore": "2010-02-01T08:00:00+08:00",
+      "NotAfter": "2038-01-19T07:59:59+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "2796BAE63F1801E277261BA0D77770028F20EEE4",
+      "Subject": "OU=Go Daddy Class 2 Certification Authority, O=\"The Go Daddy Group, Inc.\", C=US",
+      "Issuer": "OU=Go Daddy Class 2 Certification Authority, O=\"The Go Daddy Group, Inc.\", C=US",
+      "NotBefore": "2004-06-30T01:06:20+08:00",
+      "NotAfter": "2034-06-30T01:06:20+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "20D80640DF9B25F512253A11EAF7598AEB14B547",
+      "Subject": "CN=Entrust Root Certification Authority - EC1, OU=\"(c) 2012 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "Issuer": "CN=Entrust Root Certification Authority - EC1, OU=\"(c) 2012 Entrust, Inc. - for authorized use only\", OU=See www.entrust.net/legal-terms, O=\"Entrust, Inc.\", C=US",
+      "NotBefore": "2012-12-18T23:25:36+08:00",
+      "NotAfter": "2037-12-18T23:55:36+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "1B8EEA5796291AC939EAB80A811A7373C0937967",
+      "Subject": "CN=QuoVadis Root CA 1 G3, O=QuoVadis Limited, C=BM",
+      "Issuer": "CN=QuoVadis Root CA 1 G3, O=QuoVadis Limited, C=BM",
+      "NotBefore": "2012-01-13T01:27:44+08:00",
+      "NotAfter": "2042-01-13T01:27:44+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "07E032E020B72C3F192F0628A2593A19A70F069E",
+      "Subject": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "Issuer": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
+      "NotBefore": "2008-10-22T20:07:37+08:00",
+      "NotAfter": "2029-12-31T20:07:37+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "0563B8630D62D75ABBC8AB1E4BDFB5A899B24D43",
+      "Subject": "CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "Issuer": "CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US",
+      "NotBefore": "2006-11-10T08:00:00+08:00",
+      "NotAfter": "2031-11-10T08:00:00+08:00",
+      "StoreLocation": "LocalMachine"
+    },
+    {
+      "Thumbprint": "02FAF3E291435468607857694DF5E45B68851868",
+      "Subject": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE",
+      "Issuer": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE",
+      "NotBefore": "2000-05-30T18:48:38+08:00",
+      "NotAfter": "2020-05-30T18:48:38+08:00",
+      "StoreLocation": "LocalMachine"
+    }
+  ],
+  "CapturedAt": "2026-05-22T12:11:14.9241150Z"
+}

@@ -1,6 +1,6 @@
 # scripts/ Directory
 
-> VersionTag: 2605.B5.V46.0 | Auto-generated index of all scripts
+> VersionTag: 2605.B5.V50.2 | Auto-generated index of all scripts
 
 ## Pipeline & Automation
 
@@ -24,8 +24,10 @@
 | Script | Description |
 |--------|-------------|
 | Build-AgenticManifest.ps1 | Machine-readable JSON agentic API manifest for workspace |
+| Build-ScanToolsManifest.ps1 | Generates/refreshes scan tools manifest and scan coverage metadata |
 | Build-DirectoryTree.ps1 | Generates canonical DIRECTORY-TREE.md from filesystem |
 | Build-ToolsInventory.ps1 | Build/update widget tools inventory JSON |
+| Invoke-UniversalListGene.ps1 | Builds and queries 4-area list outputs, global catalogs, and scheduled ListRun exports |
 | Invoke-TodoBundleRebuild.ps1 | Rebuilds todo/_bundle.js aggregate |
 | Invoke-ReleasePreFlight.ps1 | Pre-release validation for PowerShellGUI |
 | Invoke-VersionAlignmentTool.ps1 | Version validation and minor cleanup across workspace |
@@ -38,6 +40,7 @@
 | Invoke-DataMigration.ps1 | One-time migration of Feature/Bug JSON into unified todo/ |
 | Invoke-TodoArchiver.ps1 | Archives completed/rejected/blocked todo items to subfolders |
 | Invoke-TodoManager.ps1 | Manages todo/: reindex, validate, report, add items |
+| Invoke-TodoQueueGateway.ps1 | Queue gateway for Items/Bugs/Features status transitions and lock-safe updates |
 
 ## Scanning & Auditing
 
@@ -48,13 +51,17 @@
 | Invoke-DependencyScanManager.ps1 | Orchestrates dependency scans across modules and scripts |
 | Invoke-EngineCrashCleanup.ps1 | Quarantines crashed engine artefacts and generates cleanup report |
 | Invoke-FullSystemsScan.ps1 | Multithreaded workspace integrity orchestrator |
+| Invoke-SecretLeakScanner.ps1 | Detects credential/token leaks in workspace code and artifacts |
 | Invoke-OrphanAudit.ps1 | Scans for orphaned files not referenced by any script |
+| Invoke-OrphanedFileAudit.ps1 | Deep orphaned-file coverage scan with report exports |
 | Invoke-OrphanCleanup.ps1 | Removes/archives orphaned files from audit |
 | Invoke-ReferenceIntegrityCheck.ps1 | Validates canonical docs/XHTML/link integrity |
 | Invoke-ScriptDependencyMatrix.ps1 | Builds cross-reference dependency matrix |
 | Invoke-StaticWorkspaceScan.ps1 | Multi-phase static analysis scan: folder index, module validation, DNS check, bug reporting |
 | Invoke-WorkspaceDependencyMap.ps1 | Scans folders, modules, functions, variables, config keys |
 | Invoke-XhtmlReportTriage.ps1 | Triages XHTML report files by validating structure |
+| ../tests/Invoke-SecurityCodeScan.ps1 | Test-scope security scan entry point used in hardening runs |
+| ../tests/Invoke-UIEventSafetyScan.ps1 | Test-scope UI event safety scan used for handler protection checks |
 | Find-ModuleReferences.ps1 | Finds module import references across workspace |
 
 ## Reporting
@@ -132,4 +139,4 @@
 | PS-CheatSheet-EXAMPLES-V2.ps1 | PowerShell Cheat Sheet V2 -- Expanded Reference |
 
 ---
-*86 scripts total. Generated for CronProcessor pipeline step 7b.*
+*Manifest currently reports >160 script entries (including generated and test-entry surfaces); this README remains a curated operator index and should be reconciled with config/agentic-manifest.json for exact counts.*

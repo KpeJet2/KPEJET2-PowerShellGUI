@@ -1,0 +1,57 @@
+﻿{
+    "id":  "Bug-20260523035247-224bbf33",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Scanner-detected violations of SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS in scripts\\Invoke-PipelineProcess20.ps1 (11 hits).\nTitle: Hyphenated IN-PROGRESS status token drift\nSeverity: HIGH\n\nSample matches:\nline 105: Write-PipeLog \"Selected $($selected.Count) bugs for IN-PROGRESS transition\"\nline 106: Emit-PipeEvent -Severity \u0027Info\u0027 -Message (\"Selected {0} bug(s) for IN-PROGRESS transition\" -f $selected.Count)\nline 112: $b.status = \u0027IN-PROGRESS\u0027\nline 116: $note = \"Auto-transitioned to IN-PROGRESS by Invoke-PipelineProcess20 at $nowIso\"\nline 122: Emit-PipeEvent -Severity \u0027Audit\u0027 -Message (\"Bug {0} moved to IN-PROGRESS\" -f $eventBugId) -Corr $eventBugId -ItemId $eventBugId -ItemType \u0027Bug\u0027",
+    "lastSeenAt":  "2026-05-22T19:52:47.4203685Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "[SIN-SCAN] SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS :: Hyphenated IN-PROGRESS status token drift",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-22T19:52:47.4203685Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "SIN-Scanner",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "scripts\\Invoke-PipelineProcess20.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "executionAgent":  "",
+    "implementedAt":  null,
+    "notes":  "Created by Convert-SinScanToBugs from SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS hotspot (11 line hits).",
+    "bugReferrals":  [
+
+                     ],
+    "category":  "sin-scan",
+    "reopenedAt":  null,
+    "created":  "2026-05-22T19:52:47.4203685Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "sinPattern":  "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+    "modified":  "2026-05-22T19:52:47.4203685Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

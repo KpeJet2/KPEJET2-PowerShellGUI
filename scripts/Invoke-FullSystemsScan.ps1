@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -34,7 +34,14 @@ param(
     [switch]$NoParallel,
     [switch]$CreatePipeItems,
     [switch]$ProgressQuiet,
-    [switch]$ProgressDetailed
+    [switch]$ProgressDetailed,
+    [ValidateRange(30, 1800)]
+    [int]$ParallelJobTimeoutSec = 120
+    ,
+    [ValidateRange(15, 900)]
+    [int]$PerScanTimeoutSec = 45,
+    [ValidateRange(15, 600)]
+    [int]$SteeringTimeoutSec = 30
 )
 
 Set-StrictMode -Off
@@ -133,33 +140,79 @@ Write-ScanLog "FullSystemsScan started: $runId"
 
 #region ─── HELPER: run a script, return PSObject { ScriptName, Issues, Summary, ErrorMsg } ─
 function Invoke-ScanScript {
-    param([string]$ScriptPath, [string]$Name, [hashtable]$ExtraArgs = @{})
+    param(
+        [string]$ScriptPath,
+        [string]$Name,
+        [hashtable]$ExtraArgs = @{},
+        [int]$TimeoutSec = 45
+    )
+
     $result = [PSCustomObject]@{ Name = $Name; Issues = 0; Summary = 'not run'; ErrorMsg = ''; Elapsed = 0 }
     if (-not (Test-Path $ScriptPath)) {
         $result.Summary  = 'script not found'
         $result.ErrorMsg = $ScriptPath
         return $result
     }
+
+    $job = Start-Job -ScriptBlock {
+        param($sp, $wp, $nm, $ea)
+        $r = [PSCustomObject]@{ Name = $nm; Issues = 0; Summary = 'not run'; ErrorMsg = ''; Elapsed = 0 }
+        $swInner = [System.Diagnostics.Stopwatch]::StartNew()
+        try {
+            $out = & $sp -WorkspacePath $wp @ea 2>&1
+            if ($out -is [System.Collections.IEnumerable] -and -not ($out -is [string])) {
+                $arr = @($out)
+                $r.Issues  = @($arr).Count
+                $r.Summary = "returned $(@($arr).Count) item(s)"
+            } elseif ($out -and $out.PSObject.Properties.Name -contains 'TotalFindings') {
+                $r.Issues  = [int]($out.TotalFindings)
+                $r.Summary = "TotalFindings=$($out.TotalFindings)"
+            } else {
+                $r.Summary = [string]$out | Select-Object -First 1
+            }
+        } catch {
+            $r.ErrorMsg = $_.Exception.Message
+            $r.Summary  = "ERROR: $($_.Exception.Message)"
+        }
+        $swInner.Stop()
+        $r.Elapsed = $swInner.Elapsed.TotalSeconds
+        return $r
+    } -ArgumentList $ScriptPath, $WorkspacePath, $Name, $ExtraArgs
+
+    if ($null -eq $job) {
+        $result.Summary = 'failed to start scan job'
+        $result.ErrorMsg = 'Start-Job returned null'
+        return $result
+    }
+
+    $done = Wait-Job -Job $job -Timeout $TimeoutSec
+    if ($null -eq $done) {
+        Stop-Job -Job $job -ErrorAction SilentlyContinue | Out-Null
+        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+        $result.Summary = "scan timed out after $TimeoutSec sec"
+        $result.ErrorMsg = 'scan timeout'
+        $result.Elapsed = [double]$TimeoutSec
+        return $result
+    }
+
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     try {
-        $out = & $ScriptPath -WorkspacePath $WorkspacePath @ExtraArgs 2>&1
-        # Attempt to extract meaningful count from any PSCustomObject output
-        if ($out -is [System.Collections.IEnumerable] -and -not ($out -is [string])) {
-            $arr = @($out)
-            $result.Issues  = $arr.Count
-            $result.Summary = "returned $($arr.Count) item(s)"
-        } elseif ($out -and $out.PSObject.Properties.Name -contains 'TotalFindings') {
-            $result.Issues  = [int]($out.TotalFindings)
-            $result.Summary = "TotalFindings=$($out.TotalFindings)"
+        $received = Receive-Job -Job $job -ErrorAction SilentlyContinue
+        if ($null -ne $received) {
+            $result = $received
         } else {
-            $result.Summary = [string]$out | Select-Object -First 1
+            $result.Summary = 'scan completed with no output'
         }
     } catch {
         $result.ErrorMsg = $_.Exception.Message
         $result.Summary  = "ERROR: $($_.Exception.Message)"
+    } finally {
+        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
     }
     $sw.Stop()
-    $result.Elapsed = $sw.Elapsed.TotalSeconds
+    if ([double]$result.Elapsed -le 0) {
+        $result.Elapsed = $sw.Elapsed.TotalSeconds
+    }
     return $result
 }
 #endregion
@@ -217,13 +270,31 @@ if ($NoParallel) {
 
     Write-ScanLog "Waiting for $(@($jobs).Count) parallel jobs..."
     if (@($jobs).Count -gt 0) {
-        Wait-Job -Job @($jobs | ForEach-Object { $_.Job }) -Timeout 300 | Out-Null
+        Wait-Job -Job @($jobs | ForEach-Object { $_.Job }) -Timeout $ParallelJobTimeoutSec | Out-Null
         foreach ($jb in $jobs) {
             try {
-                $r = Receive-Job -Job $jb.Job -ErrorAction SilentlyContinue
-                $parallelResults[$jb.Name] = $r
-                Write-ProcessingLog ("Processed content scan: {0} => {1}" -f $jb.Name, $parallelResults[$jb.Name].Summary)
-            } catch { $parallelResults[$jb.Name] = [PSCustomObject]@{ Name=$jb.Name; Issues=0; Summary='job receive failed'; ErrorMsg=$_.Exception.Message; Elapsed=0 } }
+                if ($jb.Job.State -eq 'Running') {
+                    Stop-Job -Job $jb.Job -ErrorAction SilentlyContinue | Out-Null
+                    $parallelResults[$jb.Name] = [PSCustomObject]@{
+                        Name = $jb.Name
+                        Issues = 0
+                        Summary = "job timed out after $ParallelJobTimeoutSec sec"
+                        ErrorMsg = 'parallel job timeout'
+                        Elapsed = [double]$ParallelJobTimeoutSec
+                    }
+                    Write-ProcessingLog ("Processed content scan: {0} => timed out after {1} sec" -f $jb.Name, $ParallelJobTimeoutSec)
+                } else {
+                    $r = Receive-Job -Job $jb.Job -ErrorAction SilentlyContinue
+                    if ($null -eq $r) {
+                        $parallelResults[$jb.Name] = [PSCustomObject]@{ Name=$jb.Name; Issues=0; Summary='job produced no output'; ErrorMsg=''; Elapsed=0 }
+                    } else {
+                        $parallelResults[$jb.Name] = $r
+                    }
+                    Write-ProcessingLog ("Processed content scan: {0} => {1}" -f $jb.Name, $parallelResults[$jb.Name].Summary)
+                }
+            } catch {
+                $parallelResults[$jb.Name] = [PSCustomObject]@{ Name=$jb.Name; Issues=0; Summary='job receive failed'; ErrorMsg=$_.Exception.Message; Elapsed=0 }
+            }
             Write-RainbowProgress -Status ("Completed {0}" -f $jb.Name) -Advance
             Remove-Job -Job $jb.Job -Force -ErrorAction SilentlyContinue
         }
@@ -241,7 +312,7 @@ $seqScripts  = @(
 )
 foreach ($spec in $seqScripts) {
     Write-ProcessingLog ("Processing content scan: {0} ({1})" -f $spec.Name, $spec.Path)
-    [void]$seqResults.Add((Invoke-ScanScript -ScriptPath $spec.Path -Name $spec.Name))
+    [void]$seqResults.Add((Invoke-ScanScript -ScriptPath $spec.Path -Name $spec.Name -TimeoutSec $PerScanTimeoutSec))
     Write-RainbowProgress -Status ("Completed {0}" -f $spec.Name) -Advance
 }
 #endregion
@@ -255,15 +326,47 @@ if (-not (Test-Path $steerPath)) {
 if (Test-Path $steerPath) {
     try {
         Write-ProcessingLog ("Processing content scan: PipelineSteering ({0})" -f $steerPath)
-        Import-Module $steerPath -Force -ErrorAction Stop
-        if (Get-Command Invoke-PipelineSteer -ErrorAction SilentlyContinue) {
-            $steerOutRaw = Invoke-PipelineSteer -WorkspacePath $WorkspacePath -DryRun -ErrorAction SilentlyContinue
-            $steerResult = [PSCustomObject]@{ Name = 'PipelineSteering'; Issues = 0; Summary = "DryRun OK"; Elapsed = 0 }
-            if ($steerOutRaw -and $steerOutRaw.Recommendations) {
-                $steerResult.Issues  = @($steerOutRaw.Recommendations).Count
-                $steerResult.Summary = "DryRun: $($steerResult.Issues) recommendation(s)"
+        $steerJob = Start-Job -ScriptBlock {
+            param($sp, $wp)
+            $r = [PSCustomObject]@{ Name = 'PipelineSteering'; Issues = 0; Summary = 'DryRun OK'; Elapsed = 0 }
+            $swInner = [System.Diagnostics.Stopwatch]::StartNew()
+            try {
+                Import-Module $sp -Force -ErrorAction Stop
+                if (Get-Command Invoke-PipelineSteer -ErrorAction SilentlyContinue) {
+                    $steerOutRaw = Invoke-PipelineSteer -WorkspacePath $wp -DryRun -ErrorAction SilentlyContinue
+                    if ($steerOutRaw -and $steerOutRaw.Recommendations) {
+                        $r.Issues = @($steerOutRaw.Recommendations).Count
+                        $r.Summary = "DryRun: $($r.Issues) recommendation(s)"
+                    }
+                } else {
+                    $r.Summary = 'Invoke-PipelineSteer not found after import'
+                }
+            } catch {
+                $r.Summary = "DryRun failed: $($_.Exception.Message)"
+            }
+            $swInner.Stop()
+            $r.Elapsed = $swInner.Elapsed.TotalSeconds
+            return $r
+        } -ArgumentList $steerPath, $WorkspacePath
+
+        $steerDone = Wait-Job -Job $steerJob -Timeout $SteeringTimeoutSec
+        if ($null -eq $steerDone) {
+            Stop-Job -Job $steerJob -ErrorAction SilentlyContinue | Out-Null
+            $steerResult = [PSCustomObject]@{
+                Name = 'PipelineSteering'
+                Issues = 0
+                Summary = "DryRun timed out after $SteeringTimeoutSec sec"
+                Elapsed = [double]$SteeringTimeoutSec
+            }
+        } else {
+            $steerOut = Receive-Job -Job $steerJob -ErrorAction SilentlyContinue
+            if ($null -ne $steerOut) {
+                $steerResult = $steerOut
+            } else {
+                $steerResult = [PSCustomObject]@{ Name = 'PipelineSteering'; Issues = 0; Summary = 'DryRun completed with no output'; Elapsed = 0 }
             }
         }
+        Remove-Job -Job $steerJob -Force -ErrorAction SilentlyContinue
     } catch {
         $steerResult = [PSCustomObject]@{ Name = 'PipelineSteering'; Issues = 0; Summary = "DryRun failed: $($_.Exception.Message)"; Elapsed = 0 }
     }
@@ -393,6 +496,7 @@ return [PSCustomObject]$summary
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

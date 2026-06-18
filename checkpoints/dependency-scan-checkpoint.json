@@ -1,51 +1,50 @@
 {
-  "dataFile": "workspace-dependency-map-20260516-103505.json",
-  "currentScanPid": 18852,
-  "version": "2604.B1.V32.0",
   "currentScanMode": "Full",
+  "currentScanPid": 32392,
+  "lastFullScan": "",
   "phases": {
     "folders": {
-      "status": "done",
-      "count": 113,
-      "durationMs": 998,
-      "completedAt": "2026-05-16T23:34:10.6910001+08:00"
+      "count": 118,
+      "completedAt": "2026-06-18T01:25:43.3513052+08:00",
+      "durationMs": 2942,
+      "status": "done"
     },
     "modules": {
+      "count": 119,
+      "completedAt": "2026-06-18T01:26:19.8468626+08:00",
       "status": "done",
-      "count": 95,
-      "durationMs": 12388,
-      "functionCount": 552,
-      "completedAt": "2026-05-16T23:34:23.0935959+08:00"
+      "durationMs": 36350,
+      "functionCount": 594
     },
     "scripts": {
+      "count": 349,
+      "completedAt": "2026-06-18T01:26:38.9558868+08:00",
       "status": "done",
-      "count": 333,
-      "durationMs": 12722,
-      "functionCount": 333,
-      "completedAt": "2026-05-16T23:34:35.8240804+08:00"
+      "durationMs": 19091,
+      "functionCount": 349
     },
     "configs": {
-      "status": "done",
-      "count": 516,
-      "durationMs": 10966,
-      "completedAt": "2026-05-16T23:34:46.7927485+08:00"
+      "count": 877,
+      "completedAt": "2026-06-18T01:26:55.9555554+08:00",
+      "durationMs": 16996,
+      "status": "done"
     },
     "urls_ips": {
-      "durationMs": 19142,
+      "urlFileCount": 215,
+      "uniqueIPs": 36,
       "status": "done",
-      "uniqueIPs": 37,
-      "completedAt": "2026-05-16T23:35:05.9370038+08:00",
-      "urlFileCount": 130
+      "completedAt": "2026-06-18T01:27:57.6019939+08:00",
+      "durationMs": 61643
     },
     "dns_resolution": {
-      "hostsChecked": 93,
-      "resolved": 82,
-      "durationMs": 31298,
       "status": "done",
-      "completedAt": "2026-05-16T23:35:37.2401431+08:00"
+      "resolved": 120,
+      "hostsChecked": 136,
+      "completedAt": "2026-06-18T01:28:48.8759136+08:00",
+      "durationMs": 51271
     }
   },
-  "lastFullScan": "2026-05-16T10:35:19",
-  "generated": "2026-05-16T23:35:37.3011047+08:00",
+  "version": "2604.B1.V32.0",
+  "generated": "2026-06-18T01:28:49.1180966+08:00",
   "mode": "Static"
 }

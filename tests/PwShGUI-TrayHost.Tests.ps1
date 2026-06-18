@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,7 +57,10 @@ Describe 'Background pool lifecycle' {
     It 'Get-CompletedBackgroundTasks returns array' {
         Start-Sleep -Milliseconds 200
         $completed = Get-CompletedBackgroundTasks
-        $completed | Should -BeOfType [System.Array]
+        # Wrap with comma to test the collection itself (not each element after
+        # pipeline unrolling) -- Should -BeOfType on an enumerable target
+        # otherwise checks individual element types, not the container.
+        ,$completed | Should -BeOfType [System.Array]
     }
 
     It 'Stop-BackgroundPool does not throw' {
@@ -92,6 +95,7 @@ Describe 'Keyboard monitor start/stop' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

@@ -1,818 +1,1148 @@
-{
-  "meta": {
-    "schema": "SelfReviewHistory/1.0",
-    "updated": "2026-05-06T17:47:35.6549266Z"
-  },
-  "runs": [
-    {
-      "runId": "SR-20260404232439",
-      "timestamp": "2026-04-04T15:24:39.8500074Z",
-      "mode": "full",
-      "compositeScore": 0.5165,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.0,
-          "detail": "0/39 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The running command stopped because the preference variable \"ErrorActionPreference\" or common parameter is set to Stop: At C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:207 char:5\r\n+     }\r\n+     ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:222 char:1\r\n+ }\r\n+ ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:405 char:1\r\n+ }\r\n+ ~\r\nUnexpected token '}' in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:428 char:8\r\n+     try {\r\n+        ~\r\nMissing '=' operator after key in hash literal."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.4,
-          "detail": "Write-Host occurrences in modules: 36; functions missing [CmdletBinding()]: 188/278"
-        },
-        "FormatCongruency": {
-          "score": 0.982,
-          "detail": "1/114 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 0.26,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260412124553",
-      "timestamp": "2026-04-12T04:45:53.0747261Z",
-      "mode": "full",
-      "compositeScore": 0.6122,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.45,
-          "detail": "26/52 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.68,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260412124555",
-      "timestamp": "2026-04-12T04:45:55.6859338Z",
-      "mode": "full",
-      "compositeScore": 0.6122,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.45,
-          "detail": "26/52 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "gain": 0.225,
-          "dimension": "SINCompliance",
-          "current": 0.45,
-          "previous": 0.225
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.25,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260412124557",
-      "timestamp": "2026-04-12T04:45:57.9517346Z",
-      "mode": "full",
-      "compositeScore": 0.6122,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.45,
-          "detail": "26/52 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "gain": 0.15,
-          "dimension": "SINCompliance",
-          "current": 0.45,
-          "previous": 0.3
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 1.94,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260412124600",
-      "timestamp": "2026-04-12T04:46:00.3203182Z",
-      "mode": "full",
-      "compositeScore": 0.6122,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.45,
-          "detail": "26/52 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "gain": 0.112,
-          "dimension": "SINCompliance",
-          "current": 0.45,
-          "previous": 0.338
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.0,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260412124602",
-      "timestamp": "2026-04-12T04:46:02.8574054Z",
-      "mode": "full",
-      "compositeScore": 0.6122,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.45,
-          "detail": "26/52 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.355,
-          "detail": "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter 'WorkspacePath' because it "
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2240 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "gain": 0.09,
-          "dimension": "SINCompliance",
-          "current": 0.45,
-          "previous": 0.36
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.2,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260418154312",
-      "timestamp": "2026-04-18T07:43:12.2291298Z",
-      "mode": "full",
-      "compositeScore": 0.5836,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.332,
-          "detail": "26/68 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.322,
-          "detail": "26 errors in 115 cycles (22.6%); last: PipelineSteer: The property 'FunctionGapCount' cannot be found on this object. V"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [
-        {
-          "current": 0.332,
-          "previous": 0.45,
-          "drop": 0.118,
-          "dimension": "SINCompliance"
-        }
-      ],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 1.89,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015436",
-      "timestamp": "2026-04-20T17:54:36.0503315Z",
-      "mode": "full",
-      "compositeScore": 0.6385,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [
-        {
-          "previous": 0.348,
-          "current": 0.308,
-          "dimension": "ErrorRate",
-          "drop": 0.04
-        }
-      ],
-      "improvements": [
-        {
-          "previous": 0.426,
-          "current": 0.617,
-          "dimension": "SINCompliance",
-          "gain": 0.191
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.77,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015442",
-      "timestamp": "2026-04-20T17:54:42.4663218Z",
-      "mode": "full",
-      "compositeScore": 0.6385,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "previous": 0.46,
-          "current": 0.617,
-          "dimension": "SINCompliance",
-          "gain": 0.157
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.6,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015455",
-      "timestamp": "2026-04-20T17:54:55.4176378Z",
-      "mode": "full",
-      "compositeScore": 0.6385,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "previous": 0.493,
-          "current": 0.617,
-          "dimension": "SINCompliance",
-          "gain": 0.124
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.58,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015503",
-      "timestamp": "2026-04-20T17:55:03.6147737Z",
-      "mode": "full",
-      "compositeScore": 0.6386,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 1,
-          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [
-        {
-          "current": 0.617,
-          "gain": 0.09,
-          "dimension": "SINCompliance",
-          "previous": 0.527
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.63,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015512",
-      "timestamp": "2026-04-20T17:55:12.5987202Z",
-      "mode": "full",
-      "compositeScore": 0.6386,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 1,
-          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.94,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015525",
-      "timestamp": "2026-04-20T17:55:25.5648553Z",
-      "mode": "full",
-      "compositeScore": 0.6386,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 1,
-          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.62,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015535",
-      "timestamp": "2026-04-20T17:55:35.7819792Z",
-      "mode": "full",
-      "compositeScore": 0.6386,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 1,
-          "detail": "0/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 3.2,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260421015539",
-      "timestamp": "2026-04-20T17:55:39.4831878Z",
-      "mode": "full",
-      "compositeScore": 0.6385,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.617,
-          "detail": "46/69 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.5,
-          "detail": "Pipeline metrics unavailable: The property 'created' cannot be found on this object. Verify that the property exists."
-        },
-        "ErrorRate": {
-          "score": 0.308,
-          "detail": "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.44,
-          "detail": "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
-        },
-        "FormatCongruency": {
-          "score": 0.999,
-          "detail": "1/2244 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.7,
-          "detail": "No DocFreshness reports found -- assuming OK."
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [],
-      "improvements": [],
-      "feedbackItems": [],
-      "runtimeSeconds": 2.82,
-      "dryRun": false
-    },
-    {
-      "runId": "SR-20260507014735",
-      "timestamp": "2026-05-06T17:47:35.6499940Z",
-      "mode": "full",
-      "compositeScore": 0.5807,
-      "dimensions": {
-        "SINCompliance": {
-          "score": 0.646,
-          "detail": "64/92 resolved; 1 open CRITICAL"
-        },
-        "PipelineVelocity": {
-          "score": 0.0,
-          "detail": "Velocity 0/day closed vs 1/day created; 0 stale items"
-        },
-        "ErrorRate": {
-          "score": 0.245,
-          "detail": "37 errors in 147 cycles (25.2%); last: FullSystemsScan: A parameter cannot be found that matches parameter name 'Parall"
-        },
-        "CodeStyle": {
-          "score": 0.4,
-          "detail": "Write-Host occurrences in modules: 32; functions missing [CmdletBinding()]: 333/398"
-        },
-        "FormatCongruency": {
-          "score": 0.99,
-          "detail": "1/194 scripts with stale/missing VersionTag (last write >30d)"
-        },
-        "DocFreshness": {
-          "score": 0.957,
-          "detail": "1/35 docs stale (report: freshness_20260504-1948.json)"
-        },
-        "TestCoverage": {
-          "score": 0.8,
-          "detail": "No test reports found -- assuming baseline."
-        },
-        "KernelHealth": {
-          "score": 1.0,
-          "detail": "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
-        }
-      },
-      "drops": [
-        {
-          "drop": 0.063,
-          "previous": 0.308,
-          "dimension": "ErrorRate",
-          "current": 0.245
-        },
-        {
-          "drop": 0.5,
-          "previous": 0.5,
-          "dimension": "PipelineVelocity",
-          "current": 0.0
-        }
-      ],
-      "improvements": [
-        {
-          "previous": 0.7,
-          "dimension": "DocFreshness",
-          "gain": 0.257,
-          "current": 0.957
-        }
-      ],
-      "feedbackItems": [],
-      "runtimeSeconds": 1.86,
-      "dryRun": false
-    }
-  ]
+﻿{
+    "meta":  {
+                 "schema":  "SelfReviewHistory/1.0",
+                 "updated":  "2026-05-22T21:08:24.0143612Z"
+             },
+    "runs":  [
+                 {
+                     "runId":  "SR-20260404232439",
+                     "timestamp":  "2026-04-04T15:24:39.8500074Z",
+                     "mode":  "full",
+                     "compositeScore":  0.5165,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.0,
+                                                              "detail":  "0/39 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The running command stopped because the preference variable \"ErrorActionPreference\" or common parameter is set to Stop: At C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:207 char:5\r\n+     }\r\n+     ~\r\nUnexpected token \u0027}\u0027 in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:222 char:1\r\n+ }\r\n+ ~\r\nUnexpected token \u0027}\u0027 in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:405 char:1\r\n+ }\r\n+ ~\r\nUnexpected token \u0027}\u0027 in expression or statement.\r\n\r\nAt C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1:428 char:8\r\n+     try {\r\n+        ~\r\nMissing \u0027=\u0027 operator after key in hash literal."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "Write-Host occurrences in modules: 36; functions missing [CmdletBinding()]: 188/278"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.982,
+                                                                 "detail":  "1/114 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  0.26,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260412124553",
+                     "timestamp":  "2026-04-12T04:45:53.0747261Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6122,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.45,
+                                                              "detail":  "26/52 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2240 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.68,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260412124555",
+                     "timestamp":  "2026-04-12T04:45:55.6859338Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6122,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.45,
+                                                              "detail":  "26/52 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2240 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "gain":  0.225,
+                                              "dimension":  "SINCompliance",
+                                              "current":  0.45,
+                                              "previous":  0.225
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.25,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260412124557",
+                     "timestamp":  "2026-04-12T04:45:57.9517346Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6122,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.45,
+                                                              "detail":  "26/52 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2240 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "gain":  0.15,
+                                              "dimension":  "SINCompliance",
+                                              "current":  0.45,
+                                              "previous":  0.3
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  1.94,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260412124600",
+                     "timestamp":  "2026-04-12T04:46:00.3203182Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6122,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.45,
+                                                              "detail":  "26/52 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2240 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "gain":  0.112,
+                                              "dimension":  "SINCompliance",
+                                              "current":  0.45,
+                                              "previous":  0.338
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.0,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260412124602",
+                     "timestamp":  "2026-04-12T04:46:02.8574054Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6122,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.45,
+                                                              "detail":  "26/52 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.355,
+                                                          "detail":  "23 errors in 107 cycles (21.5%); last: ErrorHandlingLoop: Cannot bind argument to parameter \u0027WorkspacePath\u0027 because it "
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 198/318"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2240 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "gain":  0.09,
+                                              "dimension":  "SINCompliance",
+                                              "current":  0.45,
+                                              "previous":  0.36
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.2,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260418154312",
+                     "timestamp":  "2026-04-18T07:43:12.2291298Z",
+                     "mode":  "full",
+                     "compositeScore":  0.5836,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.332,
+                                                              "detail":  "26/68 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.322,
+                                                          "detail":  "26 errors in 115 cycles (22.6%); last: PipelineSteer: The property \u0027FunctionGapCount\u0027 cannot be found on this object. V"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "current":  0.332,
+                                       "previous":  0.45,
+                                       "drop":  0.118,
+                                       "dimension":  "SINCompliance"
+                                   }
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  1.89,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015436",
+                     "timestamp":  "2026-04-20T17:54:36.0503315Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6385,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "previous":  0.348,
+                                       "current":  0.308,
+                                       "dimension":  "ErrorRate",
+                                       "drop":  0.04
+                                   }
+                               ],
+                     "improvements":  [
+                                          {
+                                              "previous":  0.426,
+                                              "current":  0.617,
+                                              "dimension":  "SINCompliance",
+                                              "gain":  0.191
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.77,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015442",
+                     "timestamp":  "2026-04-20T17:54:42.4663218Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6385,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "previous":  0.46,
+                                              "current":  0.617,
+                                              "dimension":  "SINCompliance",
+                                              "gain":  0.157
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.6,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015455",
+                     "timestamp":  "2026-04-20T17:54:55.4176378Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6385,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "previous":  0.493,
+                                              "current":  0.617,
+                                              "dimension":  "SINCompliance",
+                                              "gain":  0.124
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.58,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015503",
+                     "timestamp":  "2026-04-20T17:55:03.6147737Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6386,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "0/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+                                          {
+                                              "current":  0.617,
+                                              "gain":  0.09,
+                                              "dimension":  "SINCompliance",
+                                              "previous":  0.527
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.63,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015512",
+                     "timestamp":  "2026-04-20T17:55:12.5987202Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6386,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "0/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.94,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015525",
+                     "timestamp":  "2026-04-20T17:55:25.5648553Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6386,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "0/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.62,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015535",
+                     "timestamp":  "2026-04-20T17:55:35.7819792Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6386,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "0/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  3.2,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260421015539",
+                     "timestamp":  "2026-04-20T17:55:39.4831878Z",
+                     "mode":  "full",
+                     "compositeScore":  0.6385,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.617,
+                                                              "detail":  "46/69 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.5,
+                                                                 "detail":  "Pipeline metrics unavailable: The property \u0027created\u0027 cannot be found on this object. Verify that the property exists."
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.308,
+                                                          "detail":  "27 errors in 117 cycles (23.1%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.44,
+                                                          "detail":  "Write-Host occurrences in modules: 26; functions missing [CmdletBinding()]: 201/319"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.999,
+                                                                 "detail":  "1/2244 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.7,
+                                                             "detail":  "No DocFreshness reports found -- assuming OK."
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.82,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260507014735",
+                     "timestamp":  "2026-05-06T17:47:35.649994Z",
+                     "mode":  "full",
+                     "compositeScore":  0.5807,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.646,
+                                                              "detail":  "64/92 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.0,
+                                                                 "detail":  "Velocity 0/day closed vs 1/day created; 0 stale items"
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.245,
+                                                          "detail":  "37 errors in 147 cycles (25.2%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "Write-Host occurrences in modules: 32; functions missing [CmdletBinding()]: 333/398"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.99,
+                                                                 "detail":  "1/194 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.957,
+                                                             "detail":  "1/35 docs stale (report: freshness_20260504-1948.json)"
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "drop":  0.063,
+                                       "previous":  0.308,
+                                       "dimension":  "ErrorRate",
+                                       "current":  0.245
+                                   },
+                                   {
+                                       "drop":  0.5,
+                                       "previous":  0.5,
+                                       "dimension":  "PipelineVelocity",
+                                       "current":  0.0
+                                   }
+                               ],
+                     "improvements":  [
+                                          {
+                                              "previous":  0.7,
+                                              "dimension":  "DocFreshness",
+                                              "gain":  0.257,
+                                              "current":  0.957
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  1.86,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260522205754",
+                     "timestamp":  "2026-05-22T12:57:54.4483438Z",
+                     "mode":  "quick",
+                     "compositeScore":  0.593,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.7,
+                                                              "detail":  "78/104 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0.0,
+                                                                 "detail":  "Velocity 0/day closed vs 1/day created; 0 stale items"
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.255,
+                                                          "detail":  "38 errors in 153 cycles (24.8%); last: Unknown task type: HelpMenuCompliance"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "(carried from last run)"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  0.99,
+                                                                 "detail":  "(carried from last run)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.957,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1.0,
+                                                             "detail":  "(carried from last run)"
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "current":  0.0,
+                                       "previous":  0.4,
+                                       "drop":  0.4,
+                                       "dimension":  "PipelineVelocity"
+                                   },
+                                   {
+                                       "current":  0.255,
+                                       "previous":  0.295,
+                                       "drop":  0.04,
+                                       "dimension":  "ErrorRate"
+                                   }
+                               ],
+                     "improvements":  [
+                                          {
+                                              "current":  0.957,
+                                              "previous":  0.751,
+                                              "gain":  0.206,
+                                              "dimension":  "DocFreshness"
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  1.5,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260523013850",
+                     "timestamp":  "2026-05-22T17:38:50.2884554Z",
+                     "mode":  "full",
+                     "compositeScore":  0.5886,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.7,
+                                                              "detail":  "78/104 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0,
+                                                                 "detail":  "Velocity 0/day closed vs 1/day created; 0 stale items"
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.219,
+                                                          "detail":  "44 errors in 169 cycles (26%); last: FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parall"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "Write-Host occurrences in modules: 32; functions missing [CmdletBinding()]: 338/408"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "0/209 scripts with stale/missing VersionTag (last write \u003e30d)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.958,
+                                                             "detail":  "1/36 docs stale (report: freshness_20260504-1948.json)"
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "No test reports found -- assuming baseline."
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "Kernel healthy -- no rollbacks, degraded mode, or recent HALT events."
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "current":  0.219,
+                                       "drop":  0.066,
+                                       "dimension":  "ErrorRate",
+                                       "previous":  0.285
+                                   },
+                                   {
+                                       "current":  0,
+                                       "drop":  0.3,
+                                       "dimension":  "PipelineVelocity",
+                                       "previous":  0.3
+                                   }
+                               ],
+                     "improvements":  [
+                                          {
+                                              "current":  0.958,
+                                              "gain":  0.155,
+                                              "dimension":  "DocFreshness",
+                                              "previous":  0.803
+                                          }
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  2.67,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260523015953",
+                     "timestamp":  "2026-05-22T17:59:53.8607384Z",
+                     "mode":  "quick",
+                     "compositeScore":  0.5881,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.7,
+                                                              "detail":  "78/104 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0,
+                                                                 "detail":  "Velocity 0/day closed vs 1/day created; 0 stale items"
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.215,
+                                                          "detail":  "45 errors in 172 cycles (26.2%); last: Unknown task type: HelpMenuCompliance"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "(carried from last run)"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "(carried from last run)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.958,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "(carried from last run)"
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "current":  0.215,
+                                       "drop":  0.052,
+                                       "dimension":  "ErrorRate",
+                                       "previous":  0.267
+                                   },
+                                   {
+                                       "current":  0,
+                                       "drop":  0.2,
+                                       "dimension":  "PipelineVelocity",
+                                       "previous":  0.2
+                                   }
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  4.17,
+                     "dryRun":  false
+                 },
+                 {
+                     "runId":  "SR-20260523050823",
+                     "timestamp":  "2026-05-22T21:08:23.9784313Z",
+                     "mode":  "quick",
+                     "compositeScore":  0.587,
+                     "dimensions":  {
+                                        "SINCompliance":  {
+                                                              "score":  0.7,
+                                                              "detail":  "78/104 resolved; 1 open CRITICAL"
+                                                          },
+                                        "PipelineVelocity":  {
+                                                                 "score":  0,
+                                                                 "detail":  "Velocity 0/day closed vs 1/day created; 0 stale items"
+                                                             },
+                                        "ErrorRate":  {
+                                                          "score":  0.208,
+                                                          "detail":  "47 errors in 178 cycles (26.4%); last: TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the"
+                                                      },
+                                        "CodeStyle":  {
+                                                          "score":  0.4,
+                                                          "detail":  "(carried from last run)"
+                                                      },
+                                        "FormatCongruency":  {
+                                                                 "score":  1,
+                                                                 "detail":  "(carried from last run)"
+                                                             },
+                                        "DocFreshness":  {
+                                                             "score":  0.958,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "TestCoverage":  {
+                                                             "score":  0.8,
+                                                             "detail":  "(carried from last run)"
+                                                         },
+                                        "KernelHealth":  {
+                                                             "score":  1,
+                                                             "detail":  "(carried from last run)"
+                                                         }
+                                    },
+                     "drops":  [
+                                   {
+                                       "current":  0.208,
+                                       "drop":  0.04,
+                                       "dimension":  "ErrorRate",
+                                       "previous":  0.248
+                                   },
+                                   {
+                                       "current":  0,
+                                       "drop":  0.1,
+                                       "dimension":  "PipelineVelocity",
+                                       "previous":  0.1
+                                   }
+                               ],
+                     "improvements":  [
+
+                                      ],
+                     "feedbackItems":  [
+
+                                       ],
+                     "runtimeSeconds":  9.96,
+                     "dryRun":  false
+                 }
+             ]
 }

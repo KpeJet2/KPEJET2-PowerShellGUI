@@ -1,0 +1,23 @@
+{
+  "id": "SIN-PATTERN-056-TODO-DESCRIPTION-PLACEHOLDER",
+  "sin_id": "SIN-PATTERN-056-TODO-DESCRIPTION-PLACEHOLDER",
+  "title": "TODO Add description placeholder persisted",
+  "description": "Generated inventory content still includes TODO: Add description placeholders, reducing utility and requiring repeated manual cleanup.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "Quality/Hygiene",
+  "detection_method": "Regex scan for TODO Add description literal placeholders.",
+  "scan_regex": "TODO:\\s*Add description",
+  "context_guard_regex": "example|test",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.md;*.json",
+  "ps_version_scope": "BOTH",
+  "remediation": "Populate generated descriptions from source metadata or fail generation when description is blank.",
+  "examples": [
+    "# Bad\ndescription = 'TODO: Add description'"
+  ],
+  "tags": ["todo", "hygiene", "inventory"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

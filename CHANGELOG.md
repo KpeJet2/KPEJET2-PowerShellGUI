@@ -1,9 +1,14 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # PowerShellGUI Automated Changelog
 
 This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
+
+- **2605.B5.V46.2** — CORTIX R2 dependency-map refactor.
+  1. **⚙ New viewer** — `XHTML-DependencyMapR2-CORTIX.xhtml` adds a modular capture surface for folders, files, metadata, hyperlinks, websites, APIs, network/Wi-Fi, NetSecOps, geo/weather, automation, UML, and media cipher export.
+  2. **⚙ Launch integration** — `Main-GUI.ps1`, `XHTML-WorkspaceHub.xhtml`, `scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml`, and `modules/PwShGUI-TrayHost.psd1` now expose the new CORTIX tool entry.
+  3. **📄 Pipeline visibility** — `~README.md/FILES-MANIFEST.md` documents the new R2 asset for manifest and validation workflows.
 
 - **2605.B5.V46.1** — Changelog and AI-actions reliability pass: live indexed AI ledger + stale-version fixes.
   1. **⚙ Live AI summary API** — `scripts/Start-LocalWebEngine.ps1`: new `GET /api/ai-actions/summary` route computes `Get-AiActionLogSummary` on demand (no stale prebuilt summary dependency when running under LocalWebEngine).
@@ -60,4 +65,5 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## How to Regenerate
 Run tools/Generate-Changelog.ps1 to update this file from VersionTag and git log.
+
 

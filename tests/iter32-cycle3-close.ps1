@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # cycle 3 close: smoke import all modules + PSSA tally
 $ws = 'C:\PowerShellGUI'
 $modules = Get-ChildItem -Path "$ws\modules" -Filter '*.psm1' | Where-Object {
@@ -18,4 +18,5 @@ $pssa = Invoke-ScriptAnalyzer -Path "$ws\modules" -Recurse
 $total = @($pssa).Count
 Write-Host "PSSA total (modules): $total"
 $pssa | Group-Object RuleName | Sort-Object Count -Descending | Select-Object -First 12 | Format-Table Count, Name -AutoSize
+
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter40: PSProvideCommentHelp default config requires BOTH .SYNOPSIS and .DESCRIPTION.
 # Most flagged funcs have .SYNOPSIS but not .DESCRIPTION — inject the missing block.
 # For funcs with no help comment at all, prepend a full skeleton.
@@ -124,4 +124,5 @@ foreach ($g in $byFile) {
 Write-Host "`nAppended .DESCRIPTION: $totalAppended  Prepended new help: $totalAdded  fails: $totalFails"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSProvideCommentHelp
 Write-Host "Remaining: $(@($after).Count)"
+
 

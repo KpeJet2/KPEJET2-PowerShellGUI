@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-29
@@ -114,4 +114,5 @@ Write-Host "MD:   $mdOut"
 Write-Host "Findings: $($envelope.totalFindings) across $($envelope.scannedFiles) files"
 Emit-Event 'Info' "Sweep complete: $($envelope.totalFindings) findings across $($envelope.scannedFiles) files"
 exit 0
+
 

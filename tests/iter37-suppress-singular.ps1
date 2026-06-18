@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter37: bulk-add SuppressMessage('PSUseSingularNouns') to all 44 flagged funcs.
 # Reason: most return collections; rename+alias would touch too many call sites.
 $findings = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSUseSingularNouns
@@ -89,4 +89,5 @@ foreach ($g in $byFile) {
 Write-Host "`nTotal patched: $totalPatched (parse-fail: $totalParseFails)"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSUseSingularNouns
 Write-Host "Remaining: $(@($after).Count)"
+
 

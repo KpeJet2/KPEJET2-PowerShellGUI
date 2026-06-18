@@ -1,0 +1,23 @@
+{
+  "name": "global-symbolic-tech",
+  "query": "icon|emoji|rune|hieroglyph|model|GPU",
+  "useRegex": true,
+  "searchRoots": [
+    "docs",
+    "config",
+    "modules",
+    "scripts",
+    "tests"
+  ],
+  "includePatterns": [
+    "*.md",
+    "*.json",
+    "*.ps1",
+    "*.txt",
+    "*.xhtml"
+  ],
+  "maxResults": 500,
+  "outputFormat": "Markdown",
+  "outputPath": "C:\\PowerShellGUI\\docs\\LISTS-UNIVERSAL-LIST-GENE.md",
+  "updatedUtc": "2026-05-24T12:21:50.2374420Z"
+}

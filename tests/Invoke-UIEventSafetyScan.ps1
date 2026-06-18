@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2606.B5.V51.2
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -26,7 +26,7 @@ $content = Get-Content -LiteralPath $targetFile -Raw -Encoding UTF8
 
 $requiredPatterns = @(
     @{ Name = 'Safe wrapper function exists'; Pattern = '(?m)^\s*function\s+New-SafeWinFormsHandler\b' },
-    @{ Name = 'Wrapper catches PipelineStoppedException'; Pattern = 'catch\s+\[System\.Management\.Automation\.PipelineStoppedException\]' },
+    @{ Name = 'Wrapper handles PipelineStoppedException'; Pattern = '(catch\s+\[System\.Management\.Automation\.PipelineStoppedException\])|(\$_\s+-is\s+\[System\.Management\.Automation\.PipelineStoppedException\])' },
     @{ Name = 'Tray restore reentrancy guard exists'; Pattern = 'if\s*\(\$script:_RestoreInFlight\)\s*\{\s*return\s*\}' },
     @{ Name = 'NotifyIcon double-click uses safe wrapper'; Pattern = '\$script:_TrayIcon\.Add_DoubleClick\(\(New-SafeWinFormsHandler\s+-Handler\s+\$script:_RestoreFromTray\b' },
     @{ Name = 'Tray restore menu uses safe wrapper'; Pattern = '\$trayRestore\.Add_Click\(\(New-SafeWinFormsHandler\s+-Handler\s+\$script:_RestoreFromTray\b' },
@@ -50,3 +50,4 @@ if (@($missing).Count -gt 0) {
 
 Write-Host '[UI-EVENT-SAFETY] PASS - tray callback resilience guards detected.' -ForegroundColor Green
 exit 0
+

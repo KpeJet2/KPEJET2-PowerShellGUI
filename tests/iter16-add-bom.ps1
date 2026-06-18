@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $targets = @(
     'C:\PowerShellGUI\modules\CronAiAthon-Scheduler.psm1',
     'C:\PowerShellGUI\modules\UserProfileManager.psd1'
@@ -13,4 +13,5 @@ foreach ($t in $targets) {
         Write-Host "$t : BOM added"
     }
 }
+
 

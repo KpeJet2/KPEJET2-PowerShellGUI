@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -73,6 +73,15 @@ if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
     }
 }
 
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    try {
+        Import-Module -Name $pipelineModulePath -Force -ErrorAction Stop
+    } catch {
+        Write-Warning ("[PipeGAP] Failed to import pipeline module: {0}" -f $_.Exception.Message)
+    }
+}
+
 # -- Helpers -------------------------------------------------------------------
 
 function Write-PipeLog {
@@ -89,9 +98,20 @@ function Write-PipeLog {
 
 function Get-TodoFiles {
     param([string]$TodoPath)
-    Get-ChildItem -Path $TodoPath -Filter 'todo-*.json' -ErrorAction SilentlyContinue |
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    if (Get-Command -Name Get-PipelineTodoJsonFiles -ErrorAction SilentlyContinue) {
+        return @(
+            Get-PipelineTodoJsonFiles -WorkspacePath $WorkspacePath -Filter '*.json' |
+            Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike '*\~*\*' } |
+            Sort-Object Name
+        )
+    }
+
+    return @(
+        Get-ChildItem -Path $TodoPath -Filter 'todo-*.json' -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -notmatch '^_|action-log\.json' } |
         Sort-Object Name
+    )
 }
 
 # -------------------------------------------------------------------------------
@@ -823,6 +843,7 @@ return $_finalReport
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

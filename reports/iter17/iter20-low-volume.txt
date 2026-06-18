@@ -1,5 +1,4 @@
-# VersionTag: 2605.B2.V31.7
-
+# VersionTag: 2605.B5.V51.1
 RuleName                             ScriptName                          Line Message
 --------                             ----------                          ---- -------
 PSAvoidUsingPositionalParameters     AssistedSASC.psm1                    450 Cmdlet 'Join-Path' has positional parameter. Plea…
@@ -78,5 +77,6 @@ PSUseToExportFieldsInManifest        PwShGUI-NetworkTools.psd1             76 Do
 PSUseToExportFieldsInManifest        PwShGUI-SchemaTranslator.psd1         76 Do not use wildcard or $null in this field. Expli…
 PSUseToExportFieldsInManifest        RE-memorAiZ.psd1                      76 Do not use wildcard or $null in this field. Expli…
 PSUseToExportFieldsInManifest        WorkspaceIntentReview.psd1            76 Do not use wildcard or $null in this field. Expli…
+
 
 

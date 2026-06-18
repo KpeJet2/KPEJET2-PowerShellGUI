@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # =============================================================================
 # FileInspector.ps1  –  Expanded Edition
 # Reads query parameters from .dat files and inspects every Path × Filter combo.
@@ -296,4 +296,5 @@ if ($choice -in 'G', 'B') {
 if ($choice -notin 'L', 'G', 'B', 'S') {
     Write-Host "${ansiYellow}Unrecognised choice – export skipped.${ansiReset}"
 }
+
 

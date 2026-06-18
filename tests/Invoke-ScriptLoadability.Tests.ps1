@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -80,7 +80,9 @@ Describe "Invoke-Script loadability — <_>" -ForEach $invokeScripts {
 
     It 'First line contains VersionTag (SIN P007)' {
         @($script:Lines).Count | Should -BeGreaterThan 0
-        $script:Lines[0].Trim() | Should -Match 'VersionTag'
+        # P007 spec: VersionTag must appear within first 5 lines (allows leading #Requires)
+        $head = @($script:Lines | Select-Object -First 5) -join "`n"
+        $head | Should -Match 'VersionTag'
     }
 
     It 'Parses with zero AST errors' {
@@ -97,12 +99,15 @@ Describe "Invoke-Script loadability — <_>" -ForEach $invokeScripts {
 
     It 'Contains no PS7-only null-coalescing operator ?? (SIN P005)' {
         if ($null -eq $script:Content) { Set-ItResult -Pending -Because 'File missing'; return }
-        $script:Content | Should -Not -Match '(?<!\?)\?\?(?!\?)' -Because 'SIN P005: ?? not valid in PS 5.1'  # SIN-EXEMPT: P005 - false positive: regex/glob literal, not PS7 operator
+        # Strip lines that explicitly opt out via SIN-EXEMPT: P005 marker (regex/glob literals etc.)
+        $filtered = (@($script:Lines | Where-Object { $_ -notmatch 'SIN-EXEMPT[^\r\n]*P005' })) -join "`n"
+        $filtered | Should -Not -Match '(?<!\?)\?\?(?!\?)' -Because 'SIN P005: ?? not valid in PS 5.1'  # SIN-EXEMPT: P005 - false positive: regex/glob literal, not PS7 operator
     }
 
     It 'Contains no PS7-only null-conditional accessor ?. (SIN P005)' {
         if ($null -eq $script:Content) { Set-ItResult -Pending -Because 'File missing'; return }
-        $script:Content | Should -Not -Match '\?\.' -Because 'SIN P005: ?. not valid in PS 5.1'  # SIN-EXEMPT: P005 - false positive: regex/glob literal, not PS7 operator
+        $filtered = (@($script:Lines | Where-Object { $_ -notmatch 'SIN-EXEMPT[^\r\n]*P005' })) -join "`n"
+        $filtered | Should -Not -Match '\?\.' -Because 'SIN P005: ?. not valid in PS 5.1'  # SIN-EXEMPT: P005 - false positive: regex/glob literal, not PS7 operator
     }
 }
 
@@ -117,6 +122,7 @@ Describe "Invoke-Script loadability — <_>" -ForEach $invokeScripts {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

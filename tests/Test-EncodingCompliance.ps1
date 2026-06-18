@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -35,9 +35,16 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $script:Findings = @()
+$script:SkippedLargeFiles = 0
+$script:MaxScanBytes = 25MB
 
 function Test-FileEncoding {
     param([System.IO.FileInfo]$File)
+
+    if ($File.Length -gt $script:MaxScanBytes) {
+        $script:SkippedLargeFiles++
+        return
+    }
 
     $bytes = $null
     try {
@@ -121,7 +128,7 @@ if (-not $Quiet) {
 }
 
 $extensions = @('*.ps1', '*.psm1', '*.psd1', '*.xhtml', '*.md', '*.json')
-$excludeDirs = @('.history', 'node_modules', '__pycache__', 'temp', '.venv', '.venv-pygame312', 'checkpoints')
+$excludeDirs = @('.history', 'node_modules', '__pycache__', 'temp', '.venv', '.venv-pygame312', 'checkpoints', '~REPORTS', 'reports', 'Report')
 
 $allFiles = @()
 foreach ($ext in $extensions) {
@@ -162,6 +169,7 @@ if (-not $Quiet) {
     critical      = @($critical).Count
     high          = @($high).Count
     medium        = @($medium).Count
+    skippedLargeFiles = $script:SkippedLargeFiles
     findings      = $script:Findings
 }
 
@@ -176,6 +184,7 @@ if (-not $Quiet) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

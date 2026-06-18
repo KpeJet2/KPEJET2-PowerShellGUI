@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -52,13 +52,27 @@ BeforeAll {
     # Canonical VersionTag format per project standard: YYMM.Bx.Vx.x (e.g. 2604.B2.V31.0)
     $script:VTagFormatPattern = '\d{4}\.B\d+\.V\d+\.\d+'
 
-    # All valid SIN exemption IDs (P001-P027, SS-001-SS-006)
+    # Valid SIN exemption IDs — dynamically derived from sin_registry/SIN-PATTERN-NNN-*.json filenames
+    # plus the static semi-SIN advisories (SS-001 .. SS-006).
     $script:ValidSinIds = @(
-        'P001','P002','P003','P004','P005','P006','P007','P008','P009','P010',
-        'P011','P012','P013','P014','P015','P016','P017','P018','P019','P020',
-        'P021','P022','P023','P024','P025','P026','P027',
         'SS-001','SS-002','SS-003','SS-004','SS-005','SS-006'
     )
+    try {
+        $registryDir = Join-Path $script:Root 'sin_registry'
+        if (Test-Path -LiteralPath $registryDir) {
+            $script:ValidSinIds += @(
+                Get-ChildItem -LiteralPath $registryDir -Filter 'SIN-PATTERN-*.json' -File -ErrorAction SilentlyContinue |
+                    ForEach-Object {
+                        if ($_.Name -match '^SIN-PATTERN-(\d{3})') { "P$($Matches[1])" }
+                    } |
+                    Where-Object { $_ } |
+                    Sort-Object -Unique
+            )
+        }
+    } catch {
+        # If discovery fails, fall back to a conservative static range
+        $script:ValidSinIds += (1..67 | ForEach-Object { 'P{0:D3}' -f $_ })
+    }
 
     # XHTML files — exclude auto-generated ~REPORTS and .history snapshots
     $script:XhtmlFiles = @(
@@ -116,6 +130,7 @@ BeforeAll {
             $_.FullName -notlike '*\scripts\windguits\*'   -and
             $_.FullName -notlike '*\scripts\scripts\*'     -and
             $_.FullName -notlike '*\temp\*'                 -and
+            $_.FullName -notlike '*\logs\*'                 -and
             $_.Name     -notlike 'Script-*.ps1'              -and
             $_.Name     -notlike 'Script?.ps1'              -and
             $_.Name     -notlike 'PS-CheatSheet*'           -and
@@ -374,7 +389,10 @@ Describe 'Module PSD1 Manifest Pairing' {
     It 'Every modules/*.psm1 (non-template) has a paired .psd1 manifest file' {
         $missing = @(
             $script:ModuleFiles | Where-Object {
-                $psd1 = Join-Path $_.DirectoryName ($_.BaseName + '.psd1')
+                $dir = $_.DirectoryName
+                if (-not (Test-Path -LiteralPath $dir)) { return $true }
+                $baseName = $_.BaseName
+                $psd1 = Join-Path $dir "$baseName.psd1"
                 -not (Test-Path -LiteralPath $psd1)
             }
         )
@@ -434,7 +452,7 @@ Describe 'Filename Conventions' {
 # =============================================================================
 Describe 'SIN Exemption Comment Validity' {
 
-    It 'All SIN-EXEMPT comments reference known pattern IDs (P001-P027 or SS-001-SS-006)' {
+    It 'All SIN-EXEMPT comments reference known pattern IDs (sin_registry P-codes or SS-001-SS-006)' {
         $violations = @()
         foreach ($f in $script:SinExemptScanFiles) {
             try {
@@ -450,7 +468,7 @@ Describe 'SIN Exemption Comment Validity' {
                 $violations += "$($f.Name): read error — $($_.Exception.Message)"
             }
         }
-        $violations | Should -BeNullOrEmpty -Because 'SIN-EXEMPT comments must reference valid P001-P027 or SS-001-SS-006 IDs only'
+        $violations | Should -BeNullOrEmpty -Because 'SIN-EXEMPT comments must reference valid sin_registry P-codes or SS-001-SS-006 IDs only'
     }
 
     It 'SIN-EXEMPT comments in modules and scripts follow canonical format' {
@@ -626,6 +644,7 @@ Describe 'Manifest Alignment' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

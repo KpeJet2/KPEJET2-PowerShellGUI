@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-29
@@ -230,4 +230,5 @@ Export-ModuleMember -Function @(
     'Get-EventLogNormalizedDir',
     'Test-EventLogStandardCompliance'
 )
+
 

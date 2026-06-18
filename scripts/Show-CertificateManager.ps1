@@ -1,6 +1,6 @@
-﻿# Author: The Establishment
+# Author: The Establishment
 # Date: 2603
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -718,7 +718,13 @@ $btnScanExpiry.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 Load-AllCerts
 
 # ── Show form ────────────────────────────────────────────────────────────────
-[System.Windows.Forms.Application]::Run($form)
+# P064: Set-StrictMode -Off before Application::Run() prevents StrictMode scope bleed into event handlers
+Set-StrictMode -Off
+try {
+    [System.Windows.Forms.Application]::Run($form)
+} finally {
+    Set-StrictMode -Version 2.0
+}
 
 
 <# Outline:
@@ -732,6 +738,7 @@ Load-AllCerts
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

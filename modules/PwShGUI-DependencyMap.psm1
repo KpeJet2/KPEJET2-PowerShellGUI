@@ -1,5 +1,6 @@
 <#
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
 # SupportPS5.1: YES(As of: 2026-04-30)
 # SupportsPS7.6: YES(As of: 2026-04-30)
 .SYNOPSIS
@@ -127,4 +128,5 @@ function Invoke-DependencyGraph {
 }
 
 Export-ModuleMember -Function Get-DependencyMap, Invoke-DependencyGraph
+
 

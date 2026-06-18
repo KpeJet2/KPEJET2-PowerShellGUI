@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $f = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSAvoidUsingPositionalParameters
 Write-Host ("Remaining PSAvoidUsingPositionalParameters: " + @($f).Count)
 $f | Format-Table ScriptName, Line, Message -AutoSize
@@ -8,4 +8,5 @@ foreach ($m in $mods) {
     try { Import-Module $m.FullName -Force -DisableNameChecking -ErrorAction Stop; $ok++ } catch { $fail++; Write-Host ("FAIL " + $m.Name + " :: " + $_.Exception.Message) }
 }
 Write-Host ("Imports OK=" + $ok + " FAIL=" + $fail)
+
 

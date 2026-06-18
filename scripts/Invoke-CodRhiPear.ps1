@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-29
@@ -68,6 +68,7 @@ $ErrorActionPreference = 'Stop'
 
 # --- Paths ---------------------------------------------------------------
 $todoDir   = Join-Path $WorkspacePath 'todo'
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
 $logDir    = Join-Path $WorkspacePath 'logs'
 $reportDir = Join-Path $WorkspacePath '~REPORTS'
 foreach ($d in @($logDir, $reportDir)) {
@@ -92,6 +93,14 @@ Write-CrpLog "Objective: aim to complete any incomplete todo items before adding
 if (-not (Test-Path $todoDir)) {
     Write-CrpLog "Todo dir not found: $todoDir" 'ERROR'
     exit 1
+}
+
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    try {
+        Import-Module -Name $pipelineModulePath -Force -ErrorAction Stop
+    } catch {
+        Write-CrpLog ("Pipeline module import failed; using flat todo scan fallback: {0}" -f $_.Exception.Message) 'WARN'
+    }
 }
 
 # --- Helpers -------------------------------------------------------------
@@ -130,9 +139,54 @@ function Resolve-RefAbsolute {
     return (Join-Path $WorkspacePath $Ref)
 }
 
+function ConvertTo-CrpDateTime {
+    [OutputType([Nullable[datetime]])]
+    [CmdletBinding()]
+    param([string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) { return $null }
+
+    $culture = [System.Globalization.CultureInfo]::InvariantCulture
+
+    foreach ($format in @('MM/dd/yyyy HH:mm:ss', 'M/d/yyyy H:mm:ss', 'yyyy-MM-ddTHH:mm:ssZ', 'yyyy-MM-ddTHH:mm:ss.fffffffZ', 'yyyy-MM-ddTHH:mm:ss', 'yyyy-MM-dd HH:mm:ss')) {
+        try {
+            $parsed = [System.DateTime]::ParseExact($Value, $format, $culture)
+            return [datetime]::SpecifyKind($parsed, [System.DateTimeKind]::Utc)
+        } catch {
+            continue
+        }
+    }
+
+    try {
+        $fallback = [System.DateTime]::Parse($Value, $culture)
+        return [datetime]::SpecifyKind($fallback, [System.DateTimeKind]::Utc)
+    } catch {
+        return $null
+    }
+}
+
+function Get-CrpTodoFiles {
+    [OutputType([System.Object[]])]
+    [CmdletBinding()]
+    param()
+
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    if (Get-Command -Name Get-PipelineTodoJsonFiles -ErrorAction SilentlyContinue) {
+        return @(
+            Get-PipelineTodoJsonFiles -WorkspacePath $WorkspacePath -Filter '*.json' |
+            Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike '*\~*\*' }
+        )
+    }
+
+    return @(
+        Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $excludeNames -notcontains $_.Name }
+    )
+}
+
 # --- Scan ----------------------------------------------------------------
-$todoFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
-Write-CrpLog "Loaded $(@($todoFiles).Count) todo files from $todoDir"
+$todoFiles = @(Get-CrpTodoFiles)
+Write-CrpLog "Loaded $(@($todoFiles).Count) active todo files from $todoDir"
 
 $now      = [DateTime]::UtcNow
 $findings = @()
@@ -153,9 +207,9 @@ foreach ($tf in $todoFiles) {
     $created  = [string](Get-PropOrDefault -Object $item -Name 'created'  -Default '')
     $modified = [string](Get-PropOrDefault -Object $item -Name 'modified' -Default $created)
     $ageDays  = $null
-    $createdDt = $null
-    if ($created) {
-        try { $createdDt = [DateTime]::Parse($created); $ageDays = [Math]::Round(($now - $createdDt).TotalDays, 1) } catch { <# Intentional: non-fatal -- malformed date leaves ageDays null #> }
+    $createdDt = ConvertTo-CrpDateTime -Value $created
+    if ($null -ne $createdDt) {
+        $ageDays = [Math]::Round(($now - $createdDt).TotalDays, 1)
     }
 
     $refs        = Get-TodoFileRefs -Item $item
@@ -310,4 +364,5 @@ if ($Block -and -not $ReportOnly -and $report.summary.stillPending -gt 0) {
 
 Write-CrpLog "GATE PASS"
 exit 0
+
 

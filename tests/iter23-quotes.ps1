@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 $path = 'C:\PowerShellGUI\modules\PwSh-HelpFilesUpdateSource-ReR.psm1'
 $lines = [IO.File]::ReadAllLines($path)
 # Count quotes in each line up to find the unbalanced one
@@ -13,4 +13,5 @@ for ($i=0; $i -lt $lines.Count; $i++) {
     }
 }
 Write-Host "Total DQ count: $totalDQ"
+
 

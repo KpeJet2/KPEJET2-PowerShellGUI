@@ -1,0 +1,23 @@
+{
+  "id": "SIN-PATTERN-061-CHECKLIST-COPY-DRIFT",
+  "sin_id": "SIN-PATTERN-061-CHECKLIST-COPY-DRIFT",
+  "title": "Checklist copy/test variant reference drift",
+  "description": "Multiple checklist copies (TEST/COPY variants) create inconsistent behavior and repeated fixes that do not land in the canonical surface.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "UI/SurfaceDrift",
+  "detection_method": "Regex scan for references to known non-canonical checklist copy files.",
+  "scan_regex": "PwShGUI-Checklists_COPY_XHTML-Checker\\.xhtml|PwShGUI-Checklists-TEST\\.xhtml",
+  "context_guard_regex": "archive|history|migration",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.json;*.xhtml;*.html;*.md",
+  "ps_version_scope": "BOTH",
+  "remediation": "Point consumers to one canonical checklist surface and archive test/copy variants outside runtime paths.",
+  "examples": [
+    "# Drift reference\nPwShGUI-Checklists-TEST.xhtml"
+  ],
+  "tags": ["checklist", "duplication", "drift"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

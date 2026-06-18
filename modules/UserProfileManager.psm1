@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -28,6 +28,15 @@
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+# Write-AppLog fallback shim for standalone-import scenarios (tests, REPL).
+# When loaded by Main-GUI.ps1, PwShGUICore provides the real Write-AppLog first.
+if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog {
+        param([string]$Message, [string]$Level = 'Info')
+        Write-Verbose "[$Level] $Message"
+    }
+}
 
 #  CONSTANTS
 $script:ProfileSchemaVersion = '1.0'
@@ -1025,7 +1034,8 @@ function Get-LanguageAndSpeech {
         if (Test-Path $srKey) {
             Get-ChildItem $srKey -EA SilentlyContinue | ForEach-Object {
                 $sp   = Get-ItemProperty $_.PSPath -EA SilentlyContinue
-                $attr = Get-ItemProperty (Join-Path $_.PSPath 'Attributes') -EA SilentlyContinue
+                $regPath = $_.PSPath
+                $attr = Get-ItemProperty (Join-Path $regPath 'Attributes') -EA SilentlyContinue
                 $lang = if ($attr -and $null -ne $attr.PSObject.Properties['Language']) { [string]$attr.Language }
                         elseif ($sp -and $null -ne $sp.PSObject.Properties['Language']) { [string]$sp.Language }
                         else { '' }
@@ -1044,7 +1054,8 @@ function Get-LanguageAndSpeech {
         if (Test-Path $ttsKey) {
             Get-ChildItem $ttsKey -EA SilentlyContinue | ForEach-Object {
                 $vp   = Get-ItemProperty $_.PSPath -EA SilentlyContinue
-                $attr = Get-ItemProperty (Join-Path $_.PSPath 'Attributes') -EA SilentlyContinue
+                $regPath = $_.PSPath
+                $attr = Get-ItemProperty (Join-Path $regPath 'Attributes') -EA SilentlyContinue
                 $lang = if ($attr -and $null -ne $attr.PSObject.Properties['Language']) { [string]$attr.Language }
                         elseif ($vp -and $null -ne $vp.PSObject.Properties['Language'])  { [string]$vp.Language }
                         else { '' }
@@ -1903,6 +1914,12 @@ Export-ModuleMember -Function @(
     'Restore-ProfileSnapshot',
     'Get-ProfileList'
 )
+
+# Backward-compatible alias: legacy callers/tests use `Get-UserProfile` for
+# what is now `Get-ProfileSnapshot`. Keep both names valid.
+Set-Alias -Name 'Get-UserProfile' -Value 'Get-ProfileSnapshot' -Scope Script -Force
+Export-ModuleMember -Alias 'Get-UserProfile'
+
 
 
 

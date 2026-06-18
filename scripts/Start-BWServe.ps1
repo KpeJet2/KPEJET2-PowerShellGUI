@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -191,7 +191,7 @@ Write-Host "  Process ID   : " -NoNewline; Write-Host $proc.Id -ForegroundColor 
 Write-Host "  Shell        : " -NoNewline; Write-Host $shellExe -ForegroundColor White
 Write-Host ''
 Write-Host '  The BW-CLI HTTP API is now available for REST calls.' -ForegroundColor Cyan
-Write-Host '  Example: Invoke-RestMethod http://localhost:8087/api/status' -ForegroundColor DarkGray
+Write-Host '  Example: Invoke-RestMethod http://localhost:8087/api/status -TimeoutSec 3' -ForegroundColor DarkGray
 Write-Host ''
 
 # ── Checklist ────────────────────────────────────────────────────────────────
@@ -248,6 +248,7 @@ Write-Host "`n  BW-CLI Server launcher finished." -ForegroundColor DarkGray
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

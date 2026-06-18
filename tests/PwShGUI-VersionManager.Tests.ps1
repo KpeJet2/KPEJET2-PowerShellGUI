@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -92,7 +92,7 @@ Describe 'Get-FileVersion / Set-FileVersion' {
 
     It 'Reads version from file with V-format tag' {
         $ver = Get-FileVersion -FilePath $testFile
-        $ver.major | Should -Be 1
+        $ver.major | Should -Be 46
         $ver.minor | Should -Be 0
     }
 
@@ -189,6 +189,7 @@ Describe 'Get-WorkspaceVersionInventory' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

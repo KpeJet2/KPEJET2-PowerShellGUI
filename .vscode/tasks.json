@@ -1,0 +1,93 @@
+{
+    // .vscode/tasks.json — PwShGUI shared workspace tasks
+    // VersionTag: 2606.B5.V51.2
+    "version": "2.0.0",
+    "tasks": [
+        // ── Launch & Service ─────────────────────────────────────────────────
+        {
+            "label": "Launch: All Services (full stack)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-AllServices.bat",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch: All Services (no tray)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-AllServices.bat notray",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch: Service Cluster Tabs (full)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-ServiceClusterTabs.bat full",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        // ── CronAiAthon ──────────────────────────────────────────────────────
+        {
+            "label": "Cron: Run Processor (dry-run)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-CronProcessor.ps1 -WorkspacePath ${workspaceFolder} -DryRun",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Cron: Stop Engine",
+            "type": "shell",
+            "command": "Set-Content -LiteralPath '${workspaceFolder}\\logs\\engine.stop' -Value '1' -Encoding UTF8 -Force",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ── Tests ────────────────────────────────────────────────────────────
+        {
+            "label": "Test: Run All Pester (pwsh)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Invoke-Pester -Path '${workspaceFolder}\\tests' -Output Detailed\"",
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Run All Pester (powershell 5.1)",
+            "type": "shell",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Invoke-Pester -Path '${workspaceFolder}\\tests' -Output Detailed\"",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ── SIN Scan ─────────────────────────────────────────────────────────
+        {
+            "label": "SIN: Pattern Scan",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SINPatternScanner.ps1 -WorkspacePath ${workspaceFolder} -Runtime Both",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "SIN: Launcher Lint (.bat/.cmd)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SINPatternScanner.ps1 -WorkspacePath ${workspaceFolder} -Runtime Both -ExtraExtensions .bat,.cmd",
+            "detail": "Opt-in lint of .bat/.cmd launchers; activates P081 (WorkspacePath not forwarded) and other batch-aware patterns.",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ── GUI ──────────────────────────────────────────────────────────────
+        {
+            "label": "GUI: Launch Main",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-GUI.bat",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        }
+    ]
+}

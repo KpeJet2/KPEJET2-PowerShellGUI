@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -77,7 +77,6 @@ function New-RootCACertificate {
         -KeyUsageProperty All `
         -TextExtension @(
             '2.5.29.19={critical}{text}ca=TRUE'
-            '2.5.29.14={text}'
         ) `
         -FriendlyName 'PwShGUI Root CA'
 
@@ -338,24 +337,27 @@ function New-FullPKIChain {
     <#
     .SYNOPSIS  Create the complete 3-tier PKI chain in one operation.
     .PARAMETER PfxPassword  SecureString password for all PFX exports.
+    .PARAMETER KeyLength    RSA key size applied to every tier (default 4096).
+                            Use 2048 for fast test runs.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
-        [System.Security.SecureString]$PfxPassword
+        [System.Security.SecureString]$PfxPassword,
+        [int]$KeyLength = 4096
     )
     if (-not $script:_PKIInitialized) { throw '[PKIChainManager] Not initialized.' }
 
     Write-Verbose "`n=== Creating Full PKI Chain ==="
 
     Write-Verbose "`n[1/3] Root CA..."
-    $root = New-RootCACertificate -PfxPassword $PfxPassword
+    $root = New-RootCACertificate -PfxPassword $PfxPassword -KeyLength $KeyLength
 
     Write-Verbose "`n[2/3] Subordinate CA..."
-    $sub = New-SubordinateCACertificate -SignerThumbprint $root.Thumbprint -PfxPassword $PfxPassword
+    $sub = New-SubordinateCACertificate -SignerThumbprint $root.Thumbprint -PfxPassword $PfxPassword -KeyLength $KeyLength
 
     Write-Verbose "`n[3/3] Code Signing Certificate..."
-    $cs = New-CodeSignCertificate -SignerThumbprint $sub.Thumbprint -PfxPassword $PfxPassword
+    $cs = New-CodeSignCertificate -SignerThumbprint $sub.Thumbprint -PfxPassword $PfxPassword -KeyLength $KeyLength
 
     Write-Verbose "`n=== PKI Chain Complete ==="
     Write-Verbose "Root CA:   $($root.Thumbprint)"
@@ -391,6 +393,7 @@ Export-ModuleMember -Function @(
     'Export-CertToVault'
     'New-FullPKIChain'
 )
+
 
 
 

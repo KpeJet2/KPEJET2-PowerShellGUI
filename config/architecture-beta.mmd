@@ -1,0 +1,64 @@
+architecture-beta
+    group workspace(cloud)[PowerShellGUI Workspace]
+
+    group entries(server)[Entry Points] in workspace
+    service launcher1(internet)[GUI.bat] in entries
+    service launcher2(internet)[CarGame.bat] in entries
+    service launcher3(internet)[SmokeTest.bat] in entries
+
+    group core(server)[Core Runtime] in workspace
+    service mainscript(server)[Main-GUI.ps1] in core
+    service cronengine(server)[CronAiAthon] in core
+
+    group modules(database)[Module Layer] in workspace
+    service core_mod(database)[PwShGUICore] in modules
+    service avpn_mod(database)[AVPN-Tracker] in modules
+    service aif_mod(database)[AutoIssueFinder] in modules
+    service sasc_mod(database)[AssistedSASC] in modules
+    service log_mod(database)[AiActionLog] in modules
+
+    group pipeline(disk)[Pipeline & Orchestration] in workspace
+    service pipeline_mod(disk)[CronAiAthon-Pipeline] in pipeline
+    service sync_script(disk)[Sync-PipelineRegistry] in pipeline
+    service reconcile_script(disk)[Invoke-BacklogReconcile] in pipeline
+    service crp_script(disk)[Invoke-CodRhiPear] in pipeline
+
+    group data(disk)[Data & Artifacts] in workspace
+    service todo_queue(disk)[todo/QUEUES-ToDo] in data
+    service registry(disk)[config/cron-aiathon-pipeline.json] in data
+    service reports(disk)[~REPORTS/] in data
+    service logs(disk)[logs/] in data
+
+    group security(database)[Security & Validation] in workspace
+    service vault_util(database)[Vault Utilities] in security
+    service encryption(database)[DPAPI/Encryption] in security
+
+    launcher1:R --> L:mainscript
+    launcher2:R --> L:mainscript
+    launcher3:R --> L:mainscript
+
+    mainscript:R --> L:core_mod
+    mainscript:R --> L:avpn_mod
+    mainscript:R --> L:aif_mod
+    mainscript:R --> L:sasc_mod
+    mainscript:R --> L:log_mod
+
+    cronengine:R --> L:pipeline_mod
+    cronengine:R --> L:sync_script
+    cronengine:R --> L:reconcile_script
+    cronengine:R --> L:crp_script
+
+    pipeline_mod:B --> T:todo_queue
+    pipeline_mod:B --> T:registry
+
+    sync_script:B --> T:registry
+    reconcile_script:B --> T:todo_queue
+    crp_script:B --> T:reports
+
+    core_mod:B --> T:logs
+    log_mod:B --> T:logs
+
+    aif_mod:B --> T:reports
+    crp_script:B --> T:logs
+
+    vault_util:R --> L:encryption

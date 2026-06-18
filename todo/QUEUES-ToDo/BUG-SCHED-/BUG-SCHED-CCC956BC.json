@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parallel\u0027.",
+    "description":  "FullSystemsScan: A parameter cannot be found that matches parameter name \u0027Parallel\u0027.",
+    "title":  "Scheduler task failure: TASK-FullSystemsScan",
+    "id":  "BUG-SCHED-CCC956BC",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-FullSystemsScan",
+    "lastUpdated":  "2026-05-22T17:35:56.6602938Z",
+    "createdAt":  "2026-05-22T17:35:56.6602938Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

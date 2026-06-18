@@ -1,4 +1,6 @@
-﻿# ========================== FILE ENUMERATION UTILITY ==========================
+# VersionTag: 2605.B5.V51.1
+# FileRole: Module
+# ========================== FILE ENUMERATION UTILITY ==========================
 function Get-AllProjectFiles {
     <#
     .SYNOPSIS  Enumerate all project files, excluding dot folders and known large directories.
@@ -17,7 +19,14 @@ function Get-AllProjectFiles {
     $files = @()
     try {
         $files = Get-ChildItem -Path $Root -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue |
-            Where-Object { $path = $_.FullName; -not ($excludeDirs | ForEach-Object { $path -like "*$_*" }) }
+            Where-Object {
+                $path = $_.FullName
+                $excluded = $false
+                foreach ($d in $excludeDirs) {
+                    if ($path -like "*\$d\*" -or $path -like "*\$d") { $excluded = $true; break }
+                }
+                -not $excluded
+            }
     } catch {
         Write-AppLog -Message "[FileEnum] Error enumerating files: $($_.Exception.Message)" -Level Error
     }
@@ -51,7 +60,7 @@ function Test-ConfigPaths {
     }
     return $allOk
 }
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -1070,6 +1079,8 @@ Export-ModuleMember -Function @(
     'Initialize-ConfigFile'
     'Get-ProjectPath'
     'Get-AllProjectPaths'
+    'Get-AllProjectFiles'
+    'Test-ConfigPaths'
     'Write-AppLog'
     'Set-LogMinLevel'
     'Get-LogMinLevel'
@@ -1088,6 +1099,7 @@ Export-ModuleMember -Function @(
     'Write-ProcessBanner'
     'Write-CrashDump'
 )
+
 
 
 

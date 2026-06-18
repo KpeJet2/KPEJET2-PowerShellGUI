@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: 2026-04-21
@@ -2697,6 +2697,7 @@ function Get-CredentialForTarget {
     try { Write-AppLog "SASC: Credential retrieved for target: $TargetName (user: $($item.UserName))" "Info" } catch { <# Intentional: non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
     return $cred
 }
+
 
 
 

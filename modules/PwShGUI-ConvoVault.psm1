@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -40,17 +40,39 @@
 
 Set-StrictMode -Off
 
+# Fallback shim: tests may import this module standalone without PwShGUICore loaded.
+if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog { param([string]$Message,[string]$Level='Info') Write-Verbose -Message "[$Level] $Message" }
+}
+
 $script:ConvoVaultKeyEntry = 'agents/convo-vault-key'
 $script:ConvoVaultLogName  = 'convo-vault.enc'
 $script:ConvoBundleName    = 'convo-bundle.json'
 $script:MaxConvoEntries    = 200   # rolling cap; oldest are dropped when exceeded
+$script:_ConvoSessionKey   = $null # lazy-init, used when caller omits -Key for crypto helpers
+
+function Get-ConvoSessionKey {
+    # Internal: returns a stable per-session AES-256 key for crypto helpers when no
+    # -Key is supplied. Tests rely on round-trip encrypt/decrypt without managing keys.
+    if ($null -eq $script:_ConvoSessionKey) {
+        $k = New-Object byte[] 32
+        [System.Security.Cryptography.RNGCryptoServiceProvider]::new().GetBytes($k)
+        $script:_ConvoSessionKey = $k
+    }
+    return $script:_ConvoSessionKey
+}
 
 #   CRYPTO (PS 5.1 compatible AES-256-CBC + GZip, mirrors H-Ai-Nikr-Agi pattern)
 
 function Protect-ConvoData {
     [CmdletBinding()]
-    param([string]$PlainText, [byte[]]$Key)
+    param(
+        [Alias('Data')]
+        [string]$PlainText,
+        [byte[]]$Key
+    )
     try {
+        if (-not $Key -or $Key.Length -eq 0) { $Key = Get-ConvoSessionKey }
         $raw = [System.Text.Encoding]::UTF8.GetBytes($PlainText)
         $ms  = New-Object System.IO.MemoryStream
         $gz  = New-Object System.IO.Compression.GZipStream($ms, [System.IO.Compression.CompressionMode]::Compress)
@@ -82,8 +104,13 @@ function Protect-ConvoData {
 
 function Unprotect-ConvoData {
     [CmdletBinding()]
-    param([byte[]]$EncData, [byte[]]$Key)
+    param(
+        [Alias('EncryptedData')]
+        [byte[]]$EncData,
+        [byte[]]$Key
+    )
     try {
+        if (-not $Key -or $Key.Length -eq 0) { $Key = Get-ConvoSessionKey }
         if (@($EncData).Count -lt 17) { return $null }
         $iv     = $EncData[0..15]
         $cipher = $EncData[16..($EncData.Length - 1)]
@@ -117,8 +144,13 @@ function Unprotect-ConvoData {
 function Protect-ConvoEntry {
     [OutputType([System.String])]
     [CmdletBinding()]
-    param([string]$PlainText, [byte[]]$Key)
+    param(
+        [Alias('Entry')]
+        [string]$PlainText,
+        [byte[]]$Key
+    )
     try {
+        if (-not $Key -or $Key.Length -eq 0) { $Key = Get-ConvoSessionKey }
         $raw           = [System.Text.Encoding]::UTF8.GetBytes($PlainText)
         $aes           = [System.Security.Cryptography.Aes]::Create()
         $aes.KeySize   = 256; $aes.BlockSize = 128
@@ -150,7 +182,10 @@ function Initialize-ConvoVaultKey {
     #>
     [OutputType([System.Byte[]])]
     [CmdletBinding()]
-    param([string]$WorkspacePath)
+    param(
+        [Alias('VaultPath')]
+        [string]$WorkspacePath
+    )
     try {
         $vaultMod = Join-Path (Join-Path $WorkspacePath 'modules') 'AssistedSASC.psm1'
         if (Test-Path $vaultMod) { Import-Module $vaultMod -Force -ErrorAction Stop }
@@ -162,9 +197,9 @@ function Initialize-ConvoVaultKey {
             } catch { <# Intentional: vault locked -- generate ephemeral key #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
         }
 
-        # Generate + store new key
-        $newKey = New-Object byte[] 32
-        [System.Security.Cryptography.RNGCryptoServiceProvider]::new().GetBytes($newKey)
+        # Vault unavailable: reuse the per-session ephemeral key so subsequent
+        # Add/Get calls within the same module instance can round-trip data.
+        $newKey = Get-ConvoSessionKey
         $newB64 = [Convert]::ToBase64String($newKey)
         if (Get-Command Set-VaultItem -ErrorAction SilentlyContinue) {
             try { Set-VaultItem -Key $script:ConvoVaultKeyEntry -Value $newB64 -ErrorAction SilentlyContinue } catch { <# vault locked -- non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false }
@@ -189,7 +224,7 @@ function Get-ConvoEntries {
     [OutputType([System.Object[]])]
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [Alias('VaultPath')] [string]$WorkspacePath,
         [byte[]]$KeyOverride = $null
     )
     try {
@@ -218,13 +253,21 @@ function Add-ConvoEntry {
       Detailed behaviour: Add convo entry.
     #>
     [OutputType([System.Boolean])]
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='Entry')]
     param(
-        [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [hashtable]$Entry,
+        [Parameter(Mandatory)] [Alias('VaultPath')] [string]$WorkspacePath,
+        [Parameter(Mandatory, ParameterSetName='Entry')] [hashtable]$Entry,
+        [Parameter(Mandatory, ParameterSetName='Message')] [string]$Message,
         [byte[]]$KeyOverride = $null
     )
     try {
+        if ($PSCmdlet.ParameterSetName -eq 'Message') {
+            $Entry = @{
+                id        = [guid]::NewGuid().ToString()
+                timestamp = (Get-Date).ToUniversalTime().ToString('o')
+                message   = $Message
+            }
+        }
         $key = if ($KeyOverride) { $KeyOverride } else { Initialize-ConvoVaultKey -WorkspacePath $WorkspacePath }
         if (-not $key) {
             Write-AppLog -Message "Add-ConvoEntry: vault key unavailable -- entry not persisted" -Level Warning
@@ -280,8 +323,8 @@ function Invoke-ConvoExchange {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)] [string]$WorkspacePath,
-        [string]$Topic      = 'General',
+        [Parameter(Mandatory)] [Alias('VaultPath')] [string]$WorkspacePath,
+        [Alias('Prompt')] [string]$Topic      = 'General',
         [string]$SessionTag = '',
         [switch]$NoSave
     )
@@ -374,7 +417,8 @@ function Export-ConvoBundle {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [Alias('VaultPath')] [string]$WorkspacePath,
+        [string]$Destination,
         [byte[]]$KeyOverride = $null
     )
     try {
@@ -415,7 +459,9 @@ function Export-ConvoBundle {
 
         $outDir = Join-Path (Join-Path $WorkspacePath '~REPORTS') 'ConvoVault'
         if (-not (Test-Path $outDir)) { New-Item -Path $outDir -ItemType Directory -Force | Out-Null }
-        $bundlePath = Join-Path $outDir $script:ConvoBundleName
+        $bundlePath = if ($Destination) { $Destination } else { Join-Path $outDir $script:ConvoBundleName }
+        $bundleParent = Split-Path -Parent $bundlePath
+        if ($bundleParent -and -not (Test-Path $bundleParent)) { New-Item -Path $bundleParent -ItemType Directory -Force | Out-Null }
         $bundle | ConvertTo-Json -Depth 8 | Set-Content -Path $bundlePath -Encoding UTF8
 
         Write-Verbose "Export-ConvoBundle: $($bundleEntries.Count) entries -> $bundlePath"
@@ -437,8 +483,12 @@ Export-ModuleMember -Function @(
     'Get-ConvoEntries',
     'Add-ConvoEntry',
     'Invoke-ConvoExchange',
-    'Export-ConvoBundle'
+    'Export-ConvoBundle',
+    'Protect-ConvoData',
+    'Unprotect-ConvoData',
+    'Protect-ConvoEntry'
 )
+
 
 
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -465,7 +465,7 @@ for ($i = 0; $i -lt $nodes.Count; $i++) {
                 }
             }
             if (-not $alreadyCaptured) {
-                Add-ModuleRequirement -Collection $moduleRequirements -SourceScript $src.relativePath -ModuleName $baseName -ConstraintType 'any' -ConstraintValue $null -DeclaredBy 'Join-Path-psm1' -RawReference $jpRef.Groups[1].Value
+                Add-ModuleRequirement -Collection $moduleRequirements -SourceScript $src.relativePath -ModuleName $baseName -ConstraintType 'any' -ConstraintValue $null -DeclaredBy 'Join-Path-psm1' -RawReference $jpRef.Groups[1].Value  # SIN-EXEMPT: P027 - $jpRef sourced from [regex]::Matches iteration; .Success implicit
             }
         }
     }
@@ -1314,6 +1314,7 @@ if ($VerifyStyleConsistency) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

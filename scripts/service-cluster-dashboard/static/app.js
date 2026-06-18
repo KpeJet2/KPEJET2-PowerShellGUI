@@ -1,5 +1,5 @@
 /* PwShGUI Service Cluster Dashboard frontend
-   VersionTag: 2605.B5.V46.0 */
+  VersionTag: 2605.B5.V46.1 */
 
 (() => {
   'use strict';
@@ -22,12 +22,14 @@
     pipeline: [],
     tools: [],
     sins: null,
-    engineHealth: { current: 'unknown', pending: null, pendingSince: 0, misses: 0 },
+    engineHealth: { current: 'unknown', pending: null, pendingSince: 0, misses: 0, recoverInFlight: false, lastRecoverAt: 0 },
   };
 
   const ENGINE_STALE_SEC = 45;
   const ENGINE_MISS_THRESHOLD = 2;
   const ENGINE_DOWNGRADE_HOLD_MS = 12000;
+  const ENGINE_RECOVER_MISS_THRESHOLD = 3;
+  const ENGINE_RECOVER_COOLDOWN_MS = 60000;
 
   const $ = (id) => document.getElementById(id);
   const fmt = {
@@ -187,7 +189,18 @@
       return;
     }
     if (item.action === 'open_folder') {
-      showFlyout('Open Folder', `<p>Requested: ${item.path}</p><p>Use workspace explorer for local folder access.</p>`);
+      try {
+        await api('/api/system/open-folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: item.path || '' }),
+        });
+        toast(`Opened folder: ${item.path || ''}`);
+        appendLive(`Open folder: ${item.path || ''}`);
+      } catch (e) {
+        toast(`Open folder failed: ${item.path || ''}`, true);
+        appendLive(`Open folder failed: ${item.path || ''} :: ${e.message}`);
+      }
       return;
     }
     if (item.action === 'links_category') {
@@ -255,12 +268,14 @@
       state.engineHealth.misses = 0;
     } catch (err) {
       state.engineHealth.misses += 1;
+      await maybeAutoRecoverEngine('offline', 'status-miss');
       throw err;
     }
     $('engineInfo').textContent = JSON.stringify(e, null, 2);
 
     const desired = desiredEngineHealth(e);
     const visual = commitEngineHealth(desired);
+    await maybeAutoRecoverEngine(visual, 'status');
     const pid = e && e.pid ? ` | PID ${e.pid}` : '';
     const age = Number(e?.statusAgeSec ?? e?.heartbeat?.ageSec ?? -1);
     const ageTxt = (Number.isFinite(age) && age >= 0) ? ` | age ${age}s` : '';
@@ -280,6 +295,36 @@
     toast(`Engine ${action} submitted (pid ${r.pid || '-'})`);
     appendLive(`Engine action: ${action} submitted`);
     await refreshEngine();
+  }
+
+  async function triggerEngineAutoRecover(reason) {
+    if (state.engineHealth.recoverInFlight) return;
+    const now = Date.now();
+    if ((now - Number(state.engineHealth.lastRecoverAt || 0)) < ENGINE_RECOVER_COOLDOWN_MS) return;
+
+    state.engineHealth.recoverInFlight = true;
+    state.engineHealth.lastRecoverAt = now;
+    try {
+      const r = await api('/api/engine/autorecover', { method: 'POST' });
+      if (r && r.submitted) {
+        toast(`Engine ${r.action || 'recovery'} submitted`);
+        appendLive(`Engine auto-recover submitted (${reason}) action=${r.action || 'unknown'} pid=${r.pid || '-'}`);
+      } else {
+        appendLive(`Engine auto-recover skipped (${reason}): ${r?.reason || 'no-op'}`);
+      }
+    } catch (e) {
+      appendLive(`Engine auto-recover failed (${reason}): ${e.message}`);
+      toast('Engine auto-recover failed', true);
+    } finally {
+      state.engineHealth.recoverInFlight = false;
+    }
+  }
+
+  async function maybeAutoRecoverEngine(visualState, reason) {
+    const visual = String(visualState || '').toLowerCase();
+    if (state.engineHealth.misses < ENGINE_RECOVER_MISS_THRESHOLD) return;
+    if (visual !== 'offline' && visual !== 'stale') return;
+    await triggerEngineAutoRecover(reason);
   }
 
   async function loadEngineLog() {
@@ -559,6 +604,10 @@
       btn.addEventListener('click', () => engineAction(btn.dataset.engineAction));
     });
     $('engineRefresh').addEventListener('click', refreshEngine);
+    $('engineAutoRecover').addEventListener('click', async () => {
+      await triggerEngineAutoRecover('manual');
+      await refreshEngine();
+    });
     $('engineLogLoad').addEventListener('click', loadEngineLog);
 
     $('clusterRefresh').addEventListener('click', refreshCluster);

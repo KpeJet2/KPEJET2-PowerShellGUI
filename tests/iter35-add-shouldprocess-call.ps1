@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # iter35: Insert $PSCmdlet.ShouldProcess() guard at start of body for all
 # functions PSSA flags with PSShouldProcess (i.e. SupportsShouldProcess
 # declared but ShouldProcess never called). Insertion goes immediately
@@ -97,4 +97,5 @@ Write-Host "`nTotal patched: $totalPatched (parse-fail: $totalParseFails)"
 $after = Invoke-ScriptAnalyzer -Path C:\PowerShellGUI\modules -Recurse -IncludeRule PSShouldProcess
 Write-Host "Remaining: $(@($after).Count)"
 $after | Format-Table ScriptName, Line -AutoSize
+
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # PowerShell Pre-commit UTF-8 BOM Checker
 # Scans all .ps1/.psm1/.psd1/.xhtml/.xml/.md files for UTF-8 BOM compliance
 # Usage: .\tools\Check-BOM.ps1 or add to pre-commit hook/CI pipeline
@@ -42,5 +42,6 @@ if ($nonBom.Count -gt 0) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 

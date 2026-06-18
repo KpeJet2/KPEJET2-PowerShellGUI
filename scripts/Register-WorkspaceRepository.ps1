@@ -1,43 +1,43 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2605.B5.V51.1
+# FileRole: Script
 # Registers a local PowerShell repository in the workspace
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $repoPath = Join-Path $workspaceRoot 'gallery'
-if (-not (Test-Path $repoPath)) { New-Item -ItemType Directory -Path $repoPath | Out-Null }
+if (-not (Test-Path -LiteralPath $repoPath)) { New-Item -ItemType Directory -Path $repoPath -Force | Out-Null }
 
-# Ensure PowerShellGet is available before using Get-PSRepository
-if (-not (Get-Module -ListAvailable -Name PowerShellGet)) {
-    Write-Host "[WARN] PowerShellGet module not found. Skipping repository registration."
+# Resolve the PowerShellGet repository commands via auto-loading (Get-Command) instead of an
+# explicit Import-Module. A partially-broken PackageManagement install (common under PowerShell 7)
+# makes 'Import-Module PowerShellGet -ErrorAction Stop' surface an alarming module-load error during
+# launch bootstrap even though Register-PSRepository remains usable. Probing quietly avoids the noise.
+if (-not (Get-Command -Name Register-PSRepository -ErrorAction SilentlyContinue) -or
+    -not (Get-Command -Name Get-PSRepository -ErrorAction SilentlyContinue)) {
+    Write-Host "[INFO] PowerShell repository commands are unavailable in this host. Skipping repository registration."
     return
 }
-$canUsePsRepository = $false
-try {
-    Import-Module PowerShellGet -ErrorAction Stop
-    $canUsePsRepository = $true
-} catch {
-    # Some environments expose Register-PSRepository without a clean Import-Module path.
-    if (Get-Command Register-PSRepository -ErrorAction SilentlyContinue) {
-        $canUsePsRepository = $true
-        Write-Host "[WARN] PowerShellGet import failed: $($_.Exception.Message). Continuing with existing repository commands."
-    } else {
-        Write-Host "[WARN] Failed to import PowerShellGet and no repository commands are available. Skipping repository registration."
-        return
-    }
-}
-if (-not $canUsePsRepository) {
-    Write-Host "[WARN] PowerShell repository commands are unavailable. Skipping repository registration."
-    return
-}
-# Ensure NuGet provider is available without prompting interactively
-try {
-    $nuget = Get-PackageProvider -Name NuGet -ErrorAction Stop
-    if ($nuget.Version -lt [Version]'2.8.5.201') { throw "NuGet provider version too old" }
-} catch {
+
+# Ensure the NuGet package provider is available (Register-PSRepository depends on it). The legacy
+# PackageManagement provider is frequently missing or broken under PowerShell 7; only attempt a
+# non-interactive bootstrap when its cmdlets actually exist, and skip quietly otherwise so launch
+# output stays clean instead of emitting "term not recognized" warnings.
+$nugetReady = $false
+if (Get-Command -Name Get-PackageProvider -ErrorAction SilentlyContinue) {
     try {
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Confirm:$false -ErrorAction Stop | Out-Null
+        $nuget = Get-PackageProvider -Name NuGet -ErrorAction Stop
+        if ($null -ne $nuget -and $nuget.Version -ge [Version]'2.8.5.201') { $nugetReady = $true }
     } catch {
-        Write-Host "[WARN] NuGet provider unavailable: $_. Skipping repository registration."
-        return
+        if (Get-Command -Name Install-PackageProvider -ErrorAction SilentlyContinue) {
+            try {
+                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Confirm:$false -ErrorAction Stop | Out-Null
+                $nugetReady = $true
+            } catch {
+                $nugetReady = $false  # bootstrap unavailable in this host; handled below
+            }
+        }
     }
+}
+if (-not $nugetReady) {
+    Write-Host "[INFO] NuGet package provider unavailable in this host. Skipping WorkspaceRepo registration (local module gallery features remain optional)."
+    return
 }
 if (-not (Get-PSRepository -Name WorkspaceRepo -ErrorAction SilentlyContinue)) {
     try {
@@ -61,5 +61,6 @@ if (-not (Get-PSRepository -Name WorkspaceRepo -ErrorAction SilentlyContinue)) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 

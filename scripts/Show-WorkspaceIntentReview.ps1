@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -67,6 +67,7 @@ Initialize-IntentStore -WorkspacePath $WorkspacePath
 # ── Assemblies ────────────────────────────────────────────────────────────────
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName Microsoft.VisualBasic
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  THEME & FONTS
@@ -86,6 +87,7 @@ $script:fontNorm = New-Object System.Drawing.Font('Segoe UI', 9.5)
 $script:fontBold = New-Object System.Drawing.Font('Segoe UI', 9.5, [System.Drawing.FontStyle]::Bold)
 $script:fontHead = New-Object System.Drawing.Font('Segoe UI', 12, [System.Drawing.FontStyle]::Bold)
 $script:fontMono = New-Object System.Drawing.Font('Consolas', 9.5)
+$script:EditingIntentId = 0
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  HELPER FUNCTIONS
@@ -203,6 +205,179 @@ function Refresh-ChangeLogGrid {
     }
 }
 
+function Get-SelectedIntentId {
+    param([System.Windows.Forms.DataGridView]$Grid)
+
+    if ($null -eq $Grid -or @($Grid.SelectedRows).Count -eq 0) {
+        return 0
+    }
+
+    $cellValue = $Grid.SelectedRows[0].Cells['ID'].Value
+    if ($null -eq $cellValue -or $cellValue.ToString().Trim() -eq '') {
+        return 0
+    }
+
+    return [int]$cellValue
+}
+
+function Get-IntentRecord {
+    param([int]$IntentId)
+
+    if ($IntentId -le 0) {
+        return $null
+    }
+
+    $intent = Get-DevelopmentIntent -IntentId $IntentId
+    if (@($intent).Count -eq 0) {
+        return $null
+    }
+
+    return $intent[0]
+}
+
+function Select-IntentGridRow {
+    param(
+        [System.Windows.Forms.DataGridView]$Grid,
+        [int]$IntentId
+    )
+
+    if ($null -eq $Grid -or $IntentId -le 0) {
+        return
+    }
+
+    foreach ($row in @($Grid.Rows)) {
+        if ($null -ne $row.Cells['ID'] -and [int]$row.Cells['ID'].Value -eq $IntentId) {
+            $row.Selected = $true
+            if ($null -ne $row.Cells[0]) {
+                $Grid.CurrentCell = $row.Cells[0]
+            }
+            break
+        }
+    }
+}
+
+function Load-IntentHistoryView {
+    param(
+        [int]$IntentId,
+        [switch]$SelectHistoryTab
+    )
+
+    if ($IntentId -le 0) {
+        return
+    }
+
+    if ($null -ne $txtIntentId) {
+        $txtIntentId.Text = $IntentId.ToString()
+    }
+
+    $history = Get-IntentHistory -IntentId $IntentId
+    if ($null -eq $history) {
+        if ($null -ne $txtDetailOutput) {
+            $txtDetailOutput.Text = "Intent #$IntentId not found."
+        }
+        return
+    }
+
+    $sb = [System.Text.StringBuilder]::new()
+    $intent = $history.intent
+    [void]$sb.AppendLine("=== Intent #$($intent.intentId): $($intent.title) ===")
+    [void]$sb.AppendLine("Status     : $($intent.status)")
+    [void]$sb.AppendLine("Priority   : $($intent.priority)")
+    [void]$sb.AppendLine("Author     : $($intent.author)")
+    [void]$sb.AppendLine("Created    : $($intent.createdAt)")
+    [void]$sb.AppendLine("Updated    : $($intent.updatedAt)")
+    if ($null -ne $intent.sealedAt -and $intent.sealedAt -ne '') {
+        [void]$sb.AppendLine("Sealed At  : $($intent.sealedAt)")
+        [void]$sb.AppendLine("Sealed By  : $($intent.sealedBy)")
+    }
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('--- Description ---')
+    [void]$sb.AppendLine($intent.description)
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('--- Intent History ---')
+    foreach ($entry in @($history.intentHistory)) {
+        [void]$sb.AppendLine("  [$($entry.timestamp)] $($entry.action) by $($entry.by)")
+        [void]$sb.AppendLine("    $($entry.detail)")
+    }
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine("--- Related Changes ($(@($history.relatedChanges).Count) entries) ---")
+    foreach ($change in @($history.relatedChanges)) {
+        [void]$sb.AppendLine("  #$($change.index) [$($change.timestamp)] $($change.changeType): $($change.description)")
+    }
+
+    if ($null -ne $txtDetailOutput) {
+        $txtDetailOutput.Text = $sb.ToString()
+    }
+
+    if ($SelectHistoryTab -and $null -ne $tabControl -and $null -ne $tabDetail) {
+        $tabControl.SelectedTab = $tabDetail
+    }
+}
+
+function Reset-IntentEditorForm {
+    $script:EditingIntentId = 0
+
+    if ($null -ne $txtTitle) { $txtTitle.Text = '' }
+    if ($null -ne $txtDesc) { $txtDesc.Text = '' }
+    if ($null -ne $txtTags) { $txtTags.Text = '' }
+    if ($null -ne $txtModules) { $txtModules.Text = '' }
+    if ($null -ne $cmbPriority) { $cmbPriority.SelectedIndex = 1 }
+    if ($null -ne $chkSealImmediate) {
+        $chkSealImmediate.Checked = $false
+        $chkSealImmediate.Enabled = $true
+    }
+    if ($null -ne $btnCreateIntent) {
+        $btnCreateIntent.Text = 'Create Intent'
+    }
+    if ($null -ne $lblEditorMode) {
+        $lblEditorMode.Text = 'Mode: Create a new DRAFT intent'
+    }
+}
+
+function Load-DraftIntoEditor {
+    param([int]$IntentId)
+
+    $intent = Get-IntentRecord -IntentId $IntentId
+    if ($null -eq $intent) {
+        [System.Windows.Forms.MessageBox]::Show("Intent #$IntentId was not found.", 'Draft Editor', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
+        return
+    }
+
+    if ($intent.status -ne 'DRAFT') {
+        [System.Windows.Forms.MessageBox]::Show("Only DRAFT intents can be edited. Current status: $($intent.status)", 'Draft Editor', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        return
+    }
+
+    $script:EditingIntentId = $intent.intentId
+    $txtTitle.Text = $intent.title
+    $txtDesc.Text = $intent.description
+    $txtTags.Text = @($intent.tags) -join ', '
+    $txtModules.Text = @($intent.affectedModules) -join ', '
+
+    $priorityIndex = $cmbPriority.Items.IndexOf($intent.priority)
+    if ($priorityIndex -ge 0) {
+        $cmbPriority.SelectedIndex = $priorityIndex
+    }
+
+    $chkSealImmediate.Checked = $false
+    $chkSealImmediate.Enabled = $false
+    $btnCreateIntent.Text = 'Save Draft Changes'
+    $lblEditorMode.Text = "Mode: Editing DRAFT #$($intent.intentId) before sealing"
+    $tabControl.SelectedTab = $tabNewIntent
+}
+
+function Refresh-IntentViews {
+    param([int]$FocusIntentId = 0)
+
+    Refresh-IntentGrid -Grid $dgvIntents
+    Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100
+
+    if ($FocusIntentId -gt 0) {
+        Select-IntentGridRow -Grid $dgvIntents -IntentId $FocusIntentId
+        Load-IntentHistoryView -IntentId $FocusIntentId
+    }
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  BUILD FORM
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -248,11 +423,44 @@ $dgvIntents.Columns['Status'].Width = 120
 $tabIntents.Controls.Add($dgvIntents)
 
 # Action buttons
-$btnRefreshIntents = New-StyledButton -Text 'Refresh' -X 10 -Y 510 -W 100 -BgColor $script:accBlue
-$btnRefreshIntents.Add_Click({ Refresh-IntentGrid -Grid $dgvIntents })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRefreshIntents = New-StyledButton -Text 'Refresh' -X 10 -Y 510 -W 90 -BgColor $script:accBlue
+$btnRefreshIntents.Add_Click({ Refresh-IntentViews -FocusIntentId (Get-SelectedIntentId -Grid $dgvIntents) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 $tabIntents.Controls.Add($btnRefreshIntents)
 
-$btnSealIntent = New-StyledButton -Text 'Seal Intent' -X 120 -Y 510 -W 120 -BgColor $script:accAmber
+$btnViewHistory = New-StyledButton -Text 'History' -X 110 -Y 510 -W 90 -BgColor $script:bgLight
+$btnViewHistory.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $selectedId = Get-SelectedIntentId -Grid $dgvIntents
+    if ($selectedId -gt 0) {
+        Load-IntentHistoryView -IntentId $selectedId -SelectHistoryTab
+    }
+})
+$tabIntents.Controls.Add($btnViewHistory)
+
+$btnEditDraft = New-StyledButton -Text 'Edit Draft' -X 210 -Y 510 -W 100 -BgColor $script:accBlue
+$btnEditDraft.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $selectedId = Get-SelectedIntentId -Grid $dgvIntents
+    if ($selectedId -gt 0) {
+        Load-DraftIntoEditor -IntentId $selectedId
+    }
+})
+$tabIntents.Controls.Add($btnEditDraft)
+
+$btnImproveIntent = New-StyledButton -Text 'AI Improve' -X 320 -Y 510 -W 100 -BgColor $script:accGreen
+$btnImproveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $selectedId = Get-SelectedIntentId -Grid $dgvIntents
+    if ($selectedId -gt 0) {
+        $result = Invoke-AIImproveIntent -IntentId $selectedId -By $env:USERNAME
+        if ($null -ne $result) {
+            Add-ChangeLogEntry -Description "AI improved draft intent #$selectedId" -ChangeType 'Improved' -Agent $env:USERNAME -GoverningIntentId $selectedId | Out-Null
+            Refresh-IntentViews -FocusIntentId $selectedId
+            Load-IntentHistoryView -IntentId $selectedId -SelectHistoryTab
+            [System.Windows.Forms.MessageBox]::Show("Draft intent #$selectedId was expanded and refined.", 'AI Improve Intent', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        }
+    }
+})
+$tabIntents.Controls.Add($btnImproveIntent)
+
+$btnSealIntent = New-StyledButton -Text 'Seal Intent' -X 430 -Y 510 -W 110 -BgColor $script:accAmber
 $btnSealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
@@ -264,14 +472,14 @@ $btnSealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Information
             )
-            Add-ChangeLogEntry -Description "Intent #$selectedId sealed" -ChangeType 'Sealed' -Agent $env:USERNAME -GoverningIntentId $selectedId
-            Refresh-IntentGrid -Grid $dgvIntents
+            Add-ChangeLogEntry -Description "Intent #$selectedId sealed" -ChangeType 'Sealed' -Agent $env:USERNAME -GoverningIntentId $selectedId | Out-Null
+            Refresh-IntentViews -FocusIntentId $selectedId
         }
     }
 })
 $tabIntents.Controls.Add($btnSealIntent)
 
-$btnUnsealIntent = New-StyledButton -Text 'Unseal' -X 250 -Y 510 -W 100 -BgColor $script:accRed
+$btnUnsealIntent = New-StyledButton -Text 'Unseal' -X 550 -Y 510 -W 90 -BgColor $script:accRed
 $btnUnsealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
@@ -283,27 +491,28 @@ $btnUnsealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
         if ($reason -ne '') {
             $result = Invoke-IntentUnseal -IntentId $selectedId -Reason $reason
             if ($null -ne $result) {
-                Add-ChangeLogEntry -Description "Intent #$selectedId unsealed: $reason" -ChangeType 'Unsealed' -Agent $env:USERNAME -GoverningIntentId $selectedId
-                Refresh-IntentGrid -Grid $dgvIntents
+                Add-ChangeLogEntry -Description "Intent #$selectedId unsealed: $reason" -ChangeType 'Unsealed' -Agent $env:USERNAME -GoverningIntentId $selectedId | Out-Null
+                Refresh-IntentViews -FocusIntentId $selectedId
             }
         }
     }
 })
 $tabIntents.Controls.Add($btnUnsealIntent)
 
-$btnActivateIntent = New-StyledButton -Text 'Activate' -X 360 -Y 510 -W 100 -BgColor $script:accGreen
+$btnActivateIntent = New-StyledButton -Text 'Activate' -X 650 -Y 510 -W 90 -BgColor $script:accGreen
 $btnActivateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
-        $result = Set-IntentStatus -IntentId $selectedId -NewStatus 'ACTIVE'
+        $result = Set-IntentStatus -IntentId $selectedId -NewStatus 'ACTIVE' -Reason 'Activated via GUI'
         if ($null -ne $result) {
-            Refresh-IntentGrid -Grid $dgvIntents
+            Add-ChangeLogEntry -Description "Intent #$selectedId activated" -ChangeType 'Activated' -Agent $env:USERNAME -GoverningIntentId $selectedId | Out-Null
+            Refresh-IntentViews -FocusIntentId $selectedId
         }
     }
 })
 $tabIntents.Controls.Add($btnActivateIntent)
 
-$btnArchiveIntent = New-StyledButton -Text 'Archive' -X 470 -Y 510 -W 100 -BgColor $script:bgLight
+$btnArchiveIntent = New-StyledButton -Text 'Archive' -X 750 -Y 510 -W 90 -BgColor $script:bgLight
 $btnArchiveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
@@ -314,8 +523,11 @@ $btnArchiveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wr
             [System.Windows.Forms.MessageBoxIcon]::Question
         )
         if ($confirm -eq [System.Windows.Forms.DialogResult]::Yes) {
-            Set-IntentStatus -IntentId $selectedId -NewStatus 'ARCHIVED' -Reason 'Archived via GUI'
-            Refresh-IntentGrid -Grid $dgvIntents
+            $result = Set-IntentStatus -IntentId $selectedId -NewStatus 'ARCHIVED' -Reason 'Archived via GUI'
+            if ($null -ne $result) {
+                Add-ChangeLogEntry -Description "Intent #$selectedId archived" -ChangeType 'Archived' -Agent $env:USERNAME -GoverningIntentId $selectedId | Out-Null
+                Refresh-IntentViews -FocusIntentId $selectedId
+            }
         }
     }
 })
@@ -357,10 +569,10 @@ $tabControl.TabPages.Add($tabChangeLog)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 $tabDetail = New-Object System.Windows.Forms.TabPage
-$tabDetail.Text = 'Intent Detail'
+$tabDetail.Text = 'Intent History'
 $tabDetail.BackColor = $script:bgDark
 
-$lblDetailTitle = New-StyledLabel -Text 'Intent Audit Trail' -X 10 -Y 10 -W 400 -H 30 -Font $script:fontHead
+$lblDetailTitle = New-StyledLabel -Text 'Intent Action History' -X 10 -Y 10 -W 400 -H 30 -Font $script:fontHead
 $tabDetail.Controls.Add($lblDetailTitle)
 
 $lblSelectIntent = New-StyledLabel -Text 'Intent ID:' -X 10 -Y 50 -W 80 -H 25
@@ -390,38 +602,7 @@ $tabDetail.Controls.Add($txtDetailOutput)
 $btnLoadDetail.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $idText = $txtIntentId.Text.Trim()
     if ($idText -match '^\d+$') {
-        $history = Get-IntentHistory -IntentId ([int]$idText)
-        if ($null -ne $history) {
-            $sb = [System.Text.StringBuilder]::new()
-            $i = $history.intent
-            [void]$sb.AppendLine("=== Intent #$($i.intentId): $($i.title) ===")
-            [void]$sb.AppendLine("Status     : $($i.status)")
-            [void]$sb.AppendLine("Priority   : $($i.priority)")
-            [void]$sb.AppendLine("Author     : $($i.author)")
-            [void]$sb.AppendLine("Created    : $($i.createdAt)")
-            [void]$sb.AppendLine("Updated    : $($i.updatedAt)")
-            if ($null -ne $i.sealedAt -and $i.sealedAt -ne '') {
-                [void]$sb.AppendLine("Sealed At  : $($i.sealedAt)")
-                [void]$sb.AppendLine("Sealed By  : $($i.sealedBy)")
-            }
-            [void]$sb.AppendLine('')
-            [void]$sb.AppendLine("--- Description ---")
-            [void]$sb.AppendLine($i.description)
-            [void]$sb.AppendLine('')
-            [void]$sb.AppendLine("--- Intent History ---")
-            foreach ($h in @($history.intentHistory)) {
-                [void]$sb.AppendLine("  [$($h.timestamp)] $($h.action) by $($h.by)")
-                [void]$sb.AppendLine("    $($h.detail)")
-            }
-            [void]$sb.AppendLine('')
-            [void]$sb.AppendLine("--- Related Changes ($(@($history.relatedChanges).Count) entries) ---")
-            foreach ($c in @($history.relatedChanges)) {
-                [void]$sb.AppendLine("  #$($c.index) [$($c.timestamp)] $($c.changeType): $($c.description)")
-            }
-            $txtDetailOutput.Text = $sb.ToString()
-        } else {
-            $txtDetailOutput.Text = "Intent #$idText not found."
-        }
+        Load-IntentHistoryView -IntentId ([int]$idText)
     }
 })
 
@@ -432,11 +613,15 @@ $tabControl.TabPages.Add($tabDetail)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 $tabNewIntent = New-Object System.Windows.Forms.TabPage
-$tabNewIntent.Text = 'New Intent'
+$tabNewIntent.Text = 'New / Edit Intent'
 $tabNewIntent.BackColor = $script:bgDark
 
-$lblNewTitle = New-StyledLabel -Text 'Create Development Intent' -X 10 -Y 10 -W 400 -H 30 -Font $script:fontHead
+$lblNewTitle = New-StyledLabel -Text 'Create or Edit Draft Intent' -X 10 -Y 10 -W 400 -H 30 -Font $script:fontHead
 $tabNewIntent.Controls.Add($lblNewTitle)
+
+$lblEditorMode = New-StyledLabel -Text 'Mode: Create a new DRAFT intent' -X 430 -Y 15 -W 320 -H 20
+$lblEditorMode.ForeColor = $script:fgGray
+$tabNewIntent.Controls.Add($lblEditorMode)
 
 $lblTitle = New-StyledLabel -Text 'Title:' -X 10 -Y 55 -W 80
 $tabNewIntent.Controls.Add($lblTitle)
@@ -501,7 +686,11 @@ $chkSealImmediate.Font = $script:fontNorm
 $chkSealImmediate.ForeColor = $script:accAmber
 $tabNewIntent.Controls.Add($chkSealImmediate)
 
-$btnCreateIntent = New-StyledButton -Text 'Create Intent' -X 90 -Y 360 -W 150 -H 35 -BgColor $script:accGreen
+$lblDraftNote = New-StyledLabel -Text 'DRAFT intents can be edited here before sealing. Use the Overview tab to seal after review.' -X 90 -Y 350 -W 650 -H 20
+$lblDraftNote.ForeColor = $script:fgGray
+$tabNewIntent.Controls.Add($lblDraftNote)
+
+$btnCreateIntent = New-StyledButton -Text 'Create Intent' -X 90 -Y 380 -W 150 -H 35 -BgColor $script:accGreen
 $btnCreateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $title = $txtTitle.Text.Trim()
     $desc = $txtDesc.Text.Trim()
@@ -513,34 +702,47 @@ $btnCreateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
     $modules = @($txtModules.Text.Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
     $priority = $cmbPriority.SelectedItem.ToString()
 
-    $intent = New-DevelopmentIntent -Title $title -Description $desc -Priority $priority -Tags $tags -AffectedModules $modules
-    if ($null -ne $intent) {
-        Add-ChangeLogEntry -Description "Created intent: $title" -ChangeType 'Created' -Agent $env:USERNAME -GoverningIntentId $intent.intentId
-
-        if ($chkSealImmediate.Checked) {
-            Invoke-IntentSeal -IntentId $intent.intentId
-            Add-ChangeLogEntry -Description "Intent #$($intent.intentId) sealed on creation" -ChangeType 'Sealed' -Agent $env:USERNAME -GoverningIntentId $intent.intentId
+    if ($script:EditingIntentId -gt 0) {
+        $intent = Update-DevelopmentIntent -IntentId $script:EditingIntentId -Title $title -Description $desc -Priority $priority -Tags $tags -AffectedModules $modules -By $env:USERNAME -Reason 'Draft updated via GUI editor'
+        if ($null -ne $intent) {
+            Add-ChangeLogEntry -Description "Edited draft intent #$($intent.intentId): $title" -ChangeType 'Edited' -Agent $env:USERNAME -GoverningIntentId $intent.intentId | Out-Null
+            [System.Windows.Forms.MessageBox]::Show(
+                "Draft intent #$($intent.intentId) updated.",
+                'Draft Updated',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            ) | Out-Null
+            Reset-IntentEditorForm
+            Refresh-IntentViews -FocusIntentId $intent.intentId
+            Load-IntentHistoryView -IntentId $intent.intentId -SelectHistoryTab
         }
+    } else {
+        $intent = New-DevelopmentIntent -Title $title -Description $desc -Priority $priority -Tags $tags -AffectedModules $modules
+        if ($null -ne $intent) {
+            Add-ChangeLogEntry -Description "Created intent: $title" -ChangeType 'Created' -Agent $env:USERNAME -GoverningIntentId $intent.intentId | Out-Null
 
-        [System.Windows.Forms.MessageBox]::Show(
-            "Intent #$($intent.intentId) created$(if ($chkSealImmediate.Checked) { ' and sealed' }).",
-            'Intent Created',
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        )
+            if ($chkSealImmediate.Checked) {
+                Invoke-IntentSeal -IntentId $intent.intentId | Out-Null
+                Add-ChangeLogEntry -Description "Intent #$($intent.intentId) sealed on creation" -ChangeType 'Sealed' -Agent $env:USERNAME -GoverningIntentId $intent.intentId | Out-Null
+            }
 
-        # Clear form
-        $txtTitle.Text = ''
-        $txtDesc.Text = ''
-        $txtTags.Text = ''
-        $txtModules.Text = ''
-        $chkSealImmediate.Checked = $false
+            [System.Windows.Forms.MessageBox]::Show(
+                "Intent #$($intent.intentId) created$(if ($chkSealImmediate.Checked) { ' and sealed' }).",
+                'Intent Created',
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            ) | Out-Null
 
-        # Refresh overview
-        Refresh-IntentGrid -Grid $dgvIntents
+            Reset-IntentEditorForm
+            Refresh-IntentViews -FocusIntentId $intent.intentId
+        }
     }
 })
 $tabNewIntent.Controls.Add($btnCreateIntent)
+
+$btnResetIntentForm = New-StyledButton -Text 'Reset Form' -X 250 -Y 380 -W 120 -H 35 -BgColor $script:bgLight
+$btnResetIntentForm.Add_Click({ Reset-IntentEditorForm })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$tabNewIntent.Controls.Add($btnResetIntentForm)
 
 $tabControl.TabPages.Add($tabNewIntent)
 
@@ -648,14 +850,21 @@ $statusBar = New-Object System.Windows.Forms.StatusStrip
 $statusBar.BackColor = $script:bgDark
 $statusLabel = New-Object System.Windows.Forms.ToolStripStatusLabel
 $statusLabel.ForeColor = $script:fgGray
-$statusLabel.Text = "Workspace: $WorkspacePath | v2604.B2.V31.1 | Session: $(Get-Date -Format 'HH:mm:ss')"
+$statusLabel.Text = "Workspace: $WorkspacePath | v2605.B5.V46.0 | Session: $(Get-Date -Format 'HH:mm:ss')"
 $statusBar.Items.Add($statusLabel) | Out-Null
 $form.Controls.Add($statusBar)
 
 # ── Initial data load ────────────────────────────────────────────────────────
 $form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    Refresh-IntentGrid -Grid $dgvIntents
-    Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100
+    Reset-IntentEditorForm
+    Refresh-IntentViews
+})
+
+$dgvIntents.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $selectedId = Get-SelectedIntentId -Grid $dgvIntents
+    if ($selectedId -gt 0) {
+        Load-IntentHistoryView -IntentId $selectedId
+    }
 })
 
 # ── Show Form ─────────────────────────────────────────────────────────────────
@@ -675,6 +884,7 @@ $form.Dispose()
 <# ToDo:
     Stub: list pending work here.
 #>
+
 
 
 

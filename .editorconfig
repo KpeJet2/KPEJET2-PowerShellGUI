@@ -1,0 +1,50 @@
+# .editorconfig — PwShGUI workspace standard
+# https://editorconfig.org
+# VersionTag: 2605.B5.V51.0
+root = true
+
+# ── Global defaults ──────────────────────────────────────────────────────────
+[*]
+charset                  = utf-8
+end_of_line              = crlf
+indent_style             = space
+indent_size              = 4
+trim_trailing_whitespace = true
+insert_final_newline     = true
+
+# ── PowerShell (UTF-8 WITH BOM per SIN-P006) ─────────────────────────────────
+[*.{ps1,psm1,psd1,ps1xml}]
+charset                  = utf-8-bom
+end_of_line              = crlf
+indent_size              = 4
+
+# ── Batch / CMD ──────────────────────────────────────────────────────────────
+[*.{bat,cmd}]
+end_of_line              = crlf
+indent_size              = 4
+
+# ── Data / Config ────────────────────────────────────────────────────────────
+[*.{json,jsonc}]
+indent_size              = 4
+
+[*.{yaml,yml}]
+indent_size              = 2
+
+# ── Markup ───────────────────────────────────────────────────────────────────
+[*.{xhtml,html,htm}]
+charset                  = utf-8-bom
+indent_size              = 4
+trim_trailing_whitespace = false
+
+[*.md]
+trim_trailing_whitespace = false
+indent_size              = 2
+
+# ── Python ───────────────────────────────────────────────────────────────────
+[*.py]
+end_of_line              = lf
+indent_size              = 4
+
+# ── Dotfile markers (.outline, .problems, .todo, .pipeline.*) ─────────────────
+[.{outline,problems,todo,pipeline.entry,pipeline.stage}]
+indent_size              = 2

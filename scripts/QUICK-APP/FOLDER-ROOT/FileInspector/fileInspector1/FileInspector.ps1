@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # =============================================================================
 # FileInspector.ps1
 # Reads query parameters from .dat files (comma- or newline-separated values)
@@ -98,4 +98,5 @@ if ($allResults) {
 } else {
     Write-Host "No matching files found across any combination of paths and filters."
 }
+
 

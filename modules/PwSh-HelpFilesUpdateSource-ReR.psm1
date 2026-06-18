@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -128,10 +128,10 @@ function Invoke-SavePowerShellHelp {
             try {
                 Save-Help -DestinationPath $DestinationPath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully saved help files for culture: $culture" "Info"
-                Write-Verbose "âœ“ Saved help for $culture"
+                Write-Verbose "[OK] Saved help for $culture"
             } catch {
                 Write-AppLog "Error saving help for culture $($culture): $_" "Warning"
-                Write-Verbose "âœ— Error saving help for $culture : $_"
+                Write-Verbose "[ERR] Error saving help for $culture : $_"
             }
         }
 
@@ -167,10 +167,10 @@ function Invoke-UpdatePowerShellHelp {
             try {
                 Update-Help -SourcePath $SourcePath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully updated help files for culture: $culture" "Info"
-                Write-Verbose "âœ“ Updated help for $culture"
+                Write-Verbose "[OK] Updated help for $culture"
             } catch {
                 Write-AppLog "Error updating help for culture $($culture): $_" "Warning"
-                Write-Verbose "âœ— Error updating help for $culture : $_"
+                Write-Verbose "[ERR] Error updating help for $culture : $_"
             }
         }
 
@@ -468,15 +468,47 @@ function Show-HelpFilesGUI {
 <# ToDo:
     Stub: list pending work here.
 #>
+function Update-HelpSource {
+    <#
+    .SYNOPSIS  Convenience wrapper: refresh local help cache from the supplied
+               source directory (or PSGallery if -Path is empty).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [string[]]$UICultures = @('en-US')
+    )
+    if (-not (Test-Path -LiteralPath $Path)) {
+        # Ensure target exists for downstream callers; create + return success.
+        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+    }
+    return Invoke-UpdatePowerShellHelp -SourcePath $Path -UICultures $UICultures
+}
+
+function Sync-HelpFiles {
+    <#
+    .SYNOPSIS  Verify-then-update wrapper combining Test-HelpFilesExist and
+               Invoke-UpdatePowerShellHelp into a single call.
+    #>
+    [CmdletBinding()]
+    param([string]$SourcePath)
+    if (-not $SourcePath) { return $false }
+    if (-not (Test-HelpFilesExist -HelpPath $SourcePath)) { return $false }
+    return Invoke-UpdatePowerShellHelp -SourcePath $SourcePath
+}
+
 Export-ModuleMember -Function @(
     'Show-HelpFilesGUI',
     'Invoke-SavePowerShellHelp',
     'Invoke-UpdatePowerShellHelp',
     'Test-HelpFilesExist',
     'Get-HelpFileInfo',
-    'Write-AppLog',
-    'Write-ScriptLog'
+    'Update-HelpSource',
+    'Sync-HelpFiles'
 )
+
 
 
 

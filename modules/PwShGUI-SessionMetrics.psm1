@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V51.1
 # Module: PwShGUI-SessionMetrics
 # Purpose: Boot/exit metrics, session object caching, crash detection
 # ================================================================
@@ -284,4 +284,5 @@ try {
 } catch {
     <# Intentional: alias setup is non-fatal #>
 }
+
 
