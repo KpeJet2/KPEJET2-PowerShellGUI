@@ -268,7 +268,7 @@ for ($ti = 0; $ti -lt @($typeOrder).Count; $ti++) {
             $statusMap[$status] = 1  # SIN-EXEMPT:P027 -- first-time initialization in else branch
         }
 
-        if ($allNormalizedStatuses.ContainsKey($status)) { 
+        if ($allNormalizedStatuses.ContainsKey($status)) {
             $allNormalizedStatuses[$status] = [int]$allNormalizedStatuses[$status] + 1  # SIN-EXEMPT:P027 -- guarded by ContainsKey check
         } else {
             $allNormalizedStatuses[$status] = 1  # SIN-EXEMPT:P027 -- first-time initialization in else branch

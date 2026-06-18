@@ -909,7 +909,7 @@ Carol,Engineering,105000
 
 ###################################################
 # 20. MODULE AUTHORING SKELETON
-#   Commands: 
+#   Commands:
 <# Outline:
     Stub: describe module/script purpose here.
 #>
