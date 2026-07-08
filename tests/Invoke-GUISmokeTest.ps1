@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B1.V52.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -70,37 +70,74 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
 if ($RunShellMatrix) {
+    # Resolve workspace root for the PS5 stamp file (paths not yet set up at this stage)
+    $wsRoot4Stamp = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+    $ps5StampFile = Join-Path (Join-Path $wsRoot4Stamp 'logs') 'ps5-last-tested.json'
+
     $shellTargets = @()
+
+    # PS7 (pwsh): always run automatically when available
     if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
         try {
             $pwshVersion = & pwsh.exe -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString()' 2>$null
             if ($pwshVersion -and [version]$pwshVersion -ge [version]'7.6.0') {
                 $shellTargets += 'pwsh'
             } else {
-                Write-Host "[ShellMatrix] pwsh is available but below 7.6 ($pwshVersion). Running as fallback host." -ForegroundColor Yellow
+                Write-Host "[ShellMatrix] pwsh available (v$pwshVersion) -- scheduling PS7 run." -ForegroundColor Gray
                 $shellTargets += 'pwsh'
             }
         } catch {
             $shellTargets += 'pwsh'
         }
     }
-    if (Get-Command powershell.exe -ErrorAction SilentlyContinue) { $shellTargets += 'powershell' }
 
-    if ($shellTargets.Count -eq 0) {
+    # PS5 (powershell.exe): only run if available AND not tested within the past 24 hours
+    if (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+        $needsPS5 = $true
+        if (Test-Path -LiteralPath $ps5StampFile) {
+            try {
+                $stamp4  = Get-Content -LiteralPath $ps5StampFile -Raw -Encoding UTF8 | ConvertFrom-Json
+                if ($null -ne $stamp4 -and $stamp4.PSObject.Properties.Name -contains 'lastTestedUtc') {
+                    $elapsed4 = (Get-Date).ToUniversalTime() - [datetime]::Parse($stamp4.lastTestedUtc).ToUniversalTime()
+                    if ($elapsed4.TotalHours -lt 24) {
+                        $needsPS5 = $false
+                        Write-Host ("[ShellMatrix] PS5 last tested {0}m ago -- skipping (< 24 h gate)." -f [int]$elapsed4.TotalMinutes) -ForegroundColor DarkYellow
+                    }
+                }
+            } catch { <# Intentional: malformed stamp treated as stale #> }
+        }
+        if ($needsPS5) { $shellTargets += 'powershell' }
+    }
+
+    if (@($shellTargets).Count -eq 0) {
         throw 'No supported PowerShell host found for shell-matrix execution.'
     }
 
     $failed = $false
     foreach ($s in $shellTargets) {
-        $hostExe = if ($s -eq 'pwsh') { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe    = if ($s -eq 'pwsh') { 'pwsh.exe' } else { 'powershell.exe' }
         $invokeArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',"`"$($MyInvocation.MyCommand.Path)`"",'-Shell',$s)
         if ($HeadlessOnly) { $invokeArgs += '-HeadlessOnly' }
-        if ($SkipPhase.Count -gt 0) { $invokeArgs += '-SkipPhase'; $invokeArgs += ($SkipPhase -join ',') }
+        if (@($SkipPhase).Count -gt 0) { $invokeArgs += '-SkipPhase'; $invokeArgs += ($SkipPhase -join ',') }
         if ($Timeout -ne 45) { $invokeArgs += '-Timeout'; $invokeArgs += [string]$Timeout }
 
         Write-Host "[ShellMatrix] Running smoke test with: $hostExe" -ForegroundColor Cyan
         $proc = Start-Process -FilePath $hostExe -ArgumentList ($invokeArgs -join ' ') -Wait -PassThru
         if ($proc.ExitCode -ne 0) { $failed = $true }
+        if ($proc.ExitCode -eq 0 -and $s -eq 'powershell') {
+            # Record the successful PS5 run so the 24h gate suppresses the next run
+            try {
+                $ps5Ver4 = & powershell.exe -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString()' 2>$null
+                $logsDir4 = Split-Path -Parent $ps5StampFile
+                if (-not (Test-Path -LiteralPath $logsDir4)) { New-Item -ItemType Directory -Path $logsDir4 -Force | Out-Null }
+                @{
+                    lastTestedUtc = (Get-Date).ToUniversalTime().ToString('o')
+                    testedBy      = 'Invoke-GUISmokeTest.ps1 RunShellMatrix'
+                    ps5Version    = [string]$ps5Ver4
+                } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $ps5StampFile -Encoding UTF8 -Force
+                Write-Host "[ShellMatrix] PS5 tested stamp written: $ps5StampFile" -ForegroundColor Gray
+            } catch { <# Intentional: stamp write failure is non-fatal #> }
+        }
     }
 
     if ($failed) { exit 1 } else { exit 0 }

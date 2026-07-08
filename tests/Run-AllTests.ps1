@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B1.V52.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -15,11 +15,15 @@
     Run only the smoke test (skip Pester).
 .PARAMETER IncludeShellMatrix
     Also run smoke test shell-matrix (both PS 5.1 and pwsh).
+.PARAMETER SkipPS5Gate
+    Internal flag -- prevents recursive PS5 subprocess from re-spawning another PS5 run.
+    Set automatically when Run-AllTests.ps1 is invoked under powershell.exe for the PS5 pass.
 #>
 param(
     [switch]$PesterOnly,
     [switch]$SmokeOnly,
     [switch]$IncludeShellMatrix,
+    [switch]$SkipPS5Gate,
     [switch]$AutoInstallPester,
     [bool]$RequirePester = $true,
     [bool]$IncludeModuleValidation = $true
@@ -77,6 +81,39 @@ function Invoke-FileTypeRoutineSet {
         failedRoutines = $failedRoutines
         routines = $routineResults
     }
+}
+
+# ── Dual-Engine Gate Helpers ──────────────────────────────────────────────────
+function Test-PS5NeedsRun {
+    <# Returns $true when powershell.exe exists and has not been tested within 24 hours. #>
+    param([string]$WorkspacePath)
+    if (-not (Get-Command powershell.exe -ErrorAction SilentlyContinue)) { return $false }
+    $stampFile = Join-Path (Join-Path $WorkspacePath 'logs') 'ps5-last-tested.json'
+    if (-not (Test-Path -LiteralPath $stampFile)) { return $true }
+    try {
+        $stamp = Get-Content -LiteralPath $stampFile -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($null -ne $stamp -and $stamp.PSObject.Properties.Name -contains 'lastTestedUtc') {
+            $elapsed = (Get-Date).ToUniversalTime() - [datetime]::Parse($stamp.lastTestedUtc).ToUniversalTime()
+            return $elapsed.TotalHours -ge 24
+        }
+    } catch { <# Intentional: malformed stamp treated as stale -- run PS5 #> }
+    return $true
+}
+
+function Write-PS5TestedStamp {
+    <# Writes logs\ps5-last-tested.json to record a successful PS5 test run. #>
+    param([string]$WorkspacePath, [string]$TestedBy)
+    $logsDir = Join-Path $WorkspacePath 'logs'
+    if (-not (Test-Path -LiteralPath $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
+    $stampFile = Join-Path $logsDir 'ps5-last-tested.json'
+    try {
+        $ps5Ver = & powershell.exe -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString()' 2>$null
+        @{
+            lastTestedUtc = (Get-Date).ToUniversalTime().ToString('o')
+            testedBy      = $TestedBy
+            ps5Version    = [string]$ps5Ver
+        } | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $stampFile -Encoding UTF8 -Force
+    } catch { <# Intentional: stamp write failure is non-fatal #> }
 }
 
 # ── Pester Tests ──────────────────────────────────────────────────────────────
@@ -161,6 +198,40 @@ if (-not $SmokeOnly) {
             }
         }
     }
+
+    # ── PS5 Pester Run (24 h gate) ────────────────────────────────────────────
+    # Only triggered when: (a) current shell is PS7+, (b) powershell.exe exists,
+    # (c) PS5 has not been tested in the past 24 hours, (d) -SkipPS5Gate not set.
+    if (-not $SkipPS5Gate -and $PSVersionTable.PSVersion.Major -ge 6) {
+        if (Test-PS5NeedsRun -WorkspacePath $scriptRoot) {
+            Write-Host "`n========== PESTER TEST SUITES (PS5 -- powershell.exe) ==========" -ForegroundColor Cyan
+            $ps5HostCmd = Get-Command powershell.exe -ErrorAction SilentlyContinue
+            if ($null -ne $ps5HostCmd) {
+                try {
+                    $ps5ScriptPath = $MyInvocation.MyCommand.Path
+                    $ps5PesterProc = Start-Process -FilePath $ps5HostCmd.Source `
+                        -ArgumentList ('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ("`"" + $ps5ScriptPath + "`""), '-PesterOnly', '-SkipPS5Gate') `
+                        -Wait -PassThru -NoNewWindow
+                    $results['pesterPS5'] = [ordered]@{
+                        status   = if ($ps5PesterProc.ExitCode -eq 0) { 'PASSED' } else { 'FAILED' }
+                        exitCode = $ps5PesterProc.ExitCode
+                        engine   = 'powershell.exe (PS5)'
+                    }
+                    if ($ps5PesterProc.ExitCode -eq 0) {
+                        Write-PS5TestedStamp -WorkspacePath $scriptRoot -TestedBy 'Run-AllTests.ps1 Pester-PS5'
+                        Write-Host "[PS5-Pester] Stamp updated." -ForegroundColor Gray
+                    } else {
+                        $results.summary.failed += 1
+                    }
+                } catch {
+                    $results['pesterPS5'] = @{ status = 'ERROR'; message = $_.ToString() }
+                }
+            }
+        } else {
+            Write-Host "`n[PS5-Gate] Skipping PS5 Pester run -- tested within the past 24 hours." -ForegroundColor DarkYellow
+            $results['pesterPS5'] = @{ status = 'SKIPPED'; reason = 'PS5 tested within 24h' }
+        }
+    }
 }
 
 # ── Module Accessibility Validation ─────────────────────────────────────────
@@ -222,20 +293,20 @@ if (-not $PesterOnly) {
 
     if (Test-Path $smokeScript) {
         try {
-            if ($IncludeShellMatrix) {
-                $smokeArgs = @('-HeadlessOnly', '-RunShellMatrix')
-            } else {
-                $smokeArgs = @('-HeadlessOnly')
-            }
+            # Dual-engine: always pass -RunShellMatrix so Invoke-GUISmokeTest handles the PS5
+            # 24 h gate internally. Prefer pwsh.exe as the host for the smoke script itself.
+            $smokeArgs    = @('-HeadlessOnly', '-RunShellMatrix')
+            $smokeHostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
 
-            $smokeProc = Start-Process -FilePath 'powershell.exe' `
+            $smokeProc = Start-Process -FilePath $smokeHostExe `
                 -ArgumentList (@('-NoProfile','-ExecutionPolicy','Bypass','-File', "`"$smokeScript`"") + $smokeArgs) `
                 -Wait -PassThru -NoNewWindow
 
             $results.smoke = [ordered]@{
                 status   = if ($smokeProc.ExitCode -eq 0) { 'PASSED' } else { 'FAILED' }
                 exitCode = $smokeProc.ExitCode
-                mode     = if ($IncludeShellMatrix) { 'shell-matrix' } else { 'headless-only' }
+                mode     = 'dual-engine-matrix'
+                host     = $smokeHostExe
             }
         } catch {
             $results.smoke = @{ status = 'ERROR'; message = $_.ToString() }
@@ -247,8 +318,9 @@ if (-not $PesterOnly) {
 
 # ── SemiSin Penance Scan (ONLY if all tests passed) ──────────────────────────
 $allTestsPassed = ($results.summary.failed -eq 0) -and
-                  (-not $results.pester -or $results.pester.status -ne 'ERROR') -and
-                  (-not $results.smoke  -or $results.smoke.status  -ne 'ERROR')
+                  (-not $results.pester    -or $results.pester.status    -ne 'ERROR') -and
+                  (-not $results.pesterPS5 -or $results.pesterPS5.status -ne 'ERROR') -and
+                  (-not $results.smoke     -or $results.smoke.status     -ne 'ERROR')
 
 if ($allTestsPassed) {
     Write-Host "`n========== SEMI-SIN PENANCE SCAN ==========" -ForegroundColor DarkYellow
@@ -306,6 +378,10 @@ Write-Host "Passed:   $($results.summary.passed)" -ForegroundColor Green
 Write-Host "Failed:   $($results.summary.failed)" -ForegroundColor $(if ($results.summary.failed -gt 0) { 'Red' } else { 'Green' })
 Write-Host "Skipped:  $($results.summary.skipped)" -ForegroundColor Yellow
 if ($results.pester)         { Write-Host "Pester:   $($results.pester.status)" -ForegroundColor $(if ($results.pester.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
+if ($results['pesterPS5'])   {
+    $p5Color = switch ($results.pesterPS5.status) { 'PASSED' { 'Green' }; 'SKIPPED' { 'DarkYellow' }; default { 'Red' } }
+    Write-Host "Pester5:  $($results.pesterPS5.status)" -ForegroundColor $p5Color
+}
 if ($results.sinPatternScan) { Write-Host "SIN Scan: $($results.sinPatternScan.status) (C:$($results.sinPatternScan.critical) P027:$($results.sinPatternScan.p027) H:$($results.sinPatternScan.high) M:$($results.sinPatternScan.medium))" -ForegroundColor $(if ($results.sinPatternScan.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
 if ($results.smoke)          { Write-Host "Smoke:    $($results.smoke.status)" -ForegroundColor $(if ($results.smoke.status -eq 'PASSED') { 'Green' } else { 'Red' }) }
 if ($results.semiSinPenance) {

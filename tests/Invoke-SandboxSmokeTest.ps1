@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B1.V52.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -94,12 +94,25 @@ $bsLines = @(
     'Set-ExecutionPolicy Bypass -Scope Process -Force'
 )
 
-# Smoke test command
+# Smoke test command -- dual-engine: PS7 (if available after optional install) then PS5
+if (-not $SkipPS7Install) {
+    $bsLines += 'Write-Log "Installing PowerShell 7 via winget (network required)..."'
+    $bsLines += 'try {'
+    $bsLines += '    $wg = Start-Process winget -ArgumentList "install --id Microsoft.PowerShell --exact --source winget --accept-package-agreements --accept-source-agreements --silent" -Wait -PassThru -NoNewWindow'
+    $bsLines += '    Write-Log "winget exit: $($wg.ExitCode)"'
+    $bsLines += '} catch { Write-Log "PS7 install via winget failed: $_" }'
+}
+$bsLines += '$sbPwshExe = if (Test-Path "$env:ProgramFiles\PowerShell\7\pwsh.exe") { "$env:ProgramFiles\PowerShell\7\pwsh.exe" } elseif (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { (Get-Command pwsh.exe).Source } else { $null }'
 $bsLines += '$smokeScript = "C:\PwShGUI-Test\tests\Invoke-GUISmokeTest.ps1"'
 $bsLines += 'if (Test-Path $smokeScript) {'
-$bsLines += '    Write-Log "Running smoke test (HeadlessOnly)..."'
-$bsLines += '    $p = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$smokeScript`" -HeadlessOnly" -Wait -PassThru -NoNewWindow'
-$bsLines += '    Write-Log "Smoke test exit code: $($p.ExitCode)"'
+$bsLines += '    if ($null -ne $sbPwshExe -and (Test-Path $sbPwshExe)) {'
+$bsLines += '        Write-Log "[PS7] Running smoke test: $sbPwshExe"'
+$bsLines += '        $p7 = Start-Process $sbPwshExe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$smokeScript`" -HeadlessOnly" -Wait -PassThru -NoNewWindow'
+$bsLines += '        Write-Log "Smoke PS7 exit: $($p7.ExitCode)"'
+$bsLines += '    } else { Write-Log "[SKIP] PS7 not available in sandbox -- skipping PS7 smoke run." }'
+$bsLines += '    Write-Log "[PS5] Running smoke test: powershell.exe"'
+$bsLines += '    $p5 = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$smokeScript`" -HeadlessOnly" -Wait -PassThru -NoNewWindow'
+$bsLines += '    Write-Log "Smoke PS5 exit: $($p5.ExitCode)"'
 $bsLines += '    $logDir = "C:\PwShGUI-Test\logs"'
 $bsLines += '    if (Test-Path $logDir) { Copy-Item "$logDir\*" "C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Output" -Force -EA SilentlyContinue }'
 $bsLines += '} else { Write-Log "ERROR: Smoke test script not found!" }'
@@ -108,7 +121,7 @@ $bsLines += '} else { Write-Log "ERROR: Smoke test script not found!" }'
 if ($ChaosMode) {
     $bsLines += '$chaosScript = "C:\PwShGUI-Test\tests\Invoke-ChaosTestConditions.ps1"'
     $bsLines += 'if (Test-Path $chaosScript) {'
-    $bsLines += '    Write-Log "Running chaos conditions..."'
+    $bsLines += '    Write-Log "Running chaos conditions (PS5)..."'
     $bsLines += '    $cp = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$chaosScript`" -WorkspacePath C:\PwShGUI-Test -RunSmokeTest -HeadlessOnly" -Wait -PassThru -NoNewWindow'
     $bsLines += '    Write-Log "Chaos test exit code: $($cp.ExitCode)"'
     $bsLines += '    Copy-Item "C:\PwShGUI-Test\logs\*Chaos*" "C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Output" -Force -EA SilentlyContinue'
