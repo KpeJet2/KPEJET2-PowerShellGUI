@@ -32,3 +32,10 @@ pwsh -NoProfile -File .\scripts\Invoke-UniversalListGene.ps1 -RunQuery -Query "i
 ```powershell
 pwsh -NoProfile -File .\scripts\Invoke-UniversalListGene.ps1 -RegisterSchedule -TaskName "PwShGUI-ListRun-Scheduler" -DailyAt "02:00" -ScheduledOutputFormat Markdown -ScheduledOutputPath reports/listgene/listgene-nightly.md
 ```
+
+## Log Layout
+
+- Runtime script-execution logs are written under logs/script-exec/.
+- Historical root-level logs are migrated into logs/script-exec/legacy-root/.
+- Pipeline and engine logs remain under logs/ subfolders such as logs/archive/, logs/engine-instances/, and logs/automated-pipe/.
+- The pre-commit pipeline includes a log-drift guard that blocks new root-level .log files and stale viewer log references.

@@ -85,7 +85,7 @@
                                            "calls7d":  0,
                                            "callsTotal":  5,
                                            "lastCall":  "2026-04-05T05:39:53Z",
-                                           "logSource":  "logs/cron-processor.log"
+                                           "logSource":  "logs/pipeline/cron-processor.log"
                                        },
                   "ConvoVault":  {
                                      "calls24h":  0,

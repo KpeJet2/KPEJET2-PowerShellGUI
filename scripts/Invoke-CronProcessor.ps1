@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -46,7 +46,7 @@ $ErrorActionPreference = 'Continue'
 
 $script:Root      = Split-Path -Parent $PSScriptRoot   # c:\PowerShellGUI
 $script:TodoDir   = Join-Path $script:Root 'todo'
-$script:LogDir    = Join-Path $script:Root 'logs'
+$script:LogDir    = Join-Path (Join-Path $script:Root 'logs') 'pipeline'
 $script:LogFile   = Join-Path $script:LogDir 'cron-processor.log'
 $script:Results   = @{ Started = (Get-Date -Format 'o'); Steps = @{} }
 

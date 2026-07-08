@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-28
@@ -144,7 +144,8 @@ function Get-ModuleTargetRoot {
 }
 
 function Invoke-Diagnose {
-    $logFile = Join-Path $logsDir ("module-environment-diag-" + (Get-Date -Format 'yyyyMMdd-HHmm') + '.log')
+    if (-not (Test-Path (Join-Path $logsDir 'diagnostics'))) { New-Item -ItemType Directory -Path (Join-Path $logsDir 'diagnostics') -Force | Out-Null }
+    $logFile = Join-Path (Join-Path $logsDir 'diagnostics') ("module-environment-diag-" + (Get-Date -Format 'yyyyMMdd-HHmm') + '.log')
     $out = [System.Collections.Generic.List[string]]::new()
 
     $out.Add((Write-DiagLog -Message "Engine: PowerShell $($PSVersionTable.PSVersion)" -Level INFO))

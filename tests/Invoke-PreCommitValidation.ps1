@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -62,6 +62,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$WorkspacePath = (Resolve-Path -LiteralPath $WorkspacePath).Path
 
 function Write-Gate {
     param([string]$Msg, [string]$Level = 'Info')
@@ -577,6 +578,81 @@ function Invoke-TodoArtifactGuardGate {
     return @($findings)
 }
 
+function Invoke-LogDriftGate {
+    param([string]$Root)
+
+    $findings = [System.Collections.ArrayList]::new()
+
+    $rootLogs = @()
+    try {
+        $rootLogs = @(Get-ChildItem -LiteralPath $Root -File -Filter '*.log' -ErrorAction SilentlyContinue)
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'LogDrift'
+            Severity = 'ERROR'
+            File     = $Root
+            Line     = 0
+            Message  = "Failed to enumerate root log files: $($_.Exception.Message)"
+        })
+        return @($findings)
+    }
+
+    foreach ($logFile in @($rootLogs)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'LogDrift'
+            Severity = 'ERROR'
+            File     = $logFile.FullName
+            Line     = 0
+            Message  = 'Root-level log drift detected; move log under logs\\<subfolder>'
+        })
+    }
+
+    $logsDir = Join-Path $Root 'logs'
+    if (Test-Path -LiteralPath $logsDir -PathType Container) {
+        $topLevelLogs = @(Get-ChildItem -LiteralPath $logsDir -File -Filter '*.log' -ErrorAction SilentlyContinue)
+        foreach ($logFile in @($topLevelLogs)) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'LogDrift'
+                Severity = 'ERROR'
+                File     = $logFile.FullName
+                Line     = 0
+                Message  = 'Top-level logs\\*.log drift detected; move file under logs\\<subfolder>'
+            })
+        }
+    }
+
+    $viewerPath = Join-Path $Root 'XHTML-ChangelogViewer.xhtml'
+    if (Test-Path -LiteralPath $viewerPath -PathType Leaf) {
+        try {
+            $viewerContent = Get-Content -LiteralPath $viewerPath -Raw -Encoding UTF8 -ErrorAction Stop
+            $regex = [regex]"path:\s*'(?<path>logs\\[^']+\.log)'"
+            foreach ($match in $regex.Matches($viewerContent)) {
+                $relPath = $match.Groups['path'].Value
+                $resolvedPath = Join-Path $Root ($relPath -replace '/', '\\')
+                if (-not (Test-Path -LiteralPath $resolvedPath -PathType Leaf)) {
+                    [void]$findings.Add([PSCustomObject]@{
+                        Gate     = 'LogDrift'
+                        Severity = 'ERROR'
+                        File     = $viewerPath
+                        Line     = 0
+                        Message  = "Viewer log reference does not resolve after cleanup: $relPath"
+                    })
+                }
+            }
+        } catch {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'LogDrift'
+                Severity = 'ERROR'
+                File     = $viewerPath
+                Line     = 0
+                Message  = "Could not validate viewer log references: $($_.Exception.Message)"
+            })
+        }
+    }
+
+    return @($findings)
+}
+
 $timestamp = (Get-Date).ToUniversalTime().ToString('o')
 if (-not $OutputJson) {
     $OutputJson = Join-Path $WorkspacePath ("temp\precommit-{0}.json" -f (Get-Date -Format 'yyMMddHHmmss'))
@@ -649,6 +725,12 @@ if (-not $SkipPipelineMetricGate) {
     if (@($metricHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
     else { $metricHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
 }
+
+Write-Gate '[Gate 9] Log drift and viewer log-reference guard...' 'Info'
+$logDriftHits = @(Invoke-LogDriftGate -Root $WorkspacePath)
+$logDriftHits | ForEach-Object { [void]$allFindings.Add($_) }
+if (@($logDriftHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+else { $logDriftHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
 
 $errorCount = @($allFindings | Where-Object { $_.Severity -eq 'ERROR' }).Count
 $warnCount = @($allFindings | Where-Object { $_.Severity -eq 'WARN' }).Count

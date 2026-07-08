@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -115,7 +115,7 @@ function Load-ConfigFile {
 
 function Get-ConfigValue {
     param([string]$Path)
-    
+
     $config = Load-ConfigFile
     if ($config) {
         try {
@@ -133,14 +133,14 @@ function Save-ConfigValue {
         [string]$Path,
         [string]$Value
     )
-    
+
     $config = Load-ConfigFile
     if (-not $config) {
         $config = New-Object Xml
         $root = $config.CreateElement("SystemVariables")
         $config.AppendChild($root) | Out-Null
     }
-    
+
     try {
         $node = $config.SelectSingleNode("/SystemVariables/$Path")
         if ($node) {
@@ -151,7 +151,7 @@ function Save-ConfigValue {
             $newNode.InnerText = $Value
             $parent.AppendChild($newNode) | Out-Null
         }
-        
+
         $config.Save($configFile)
         Write-AppLog "Config saved: $Path = $Value" "Info"
     } catch {
@@ -201,21 +201,22 @@ function Get-SelectedRepairSteps {
     param([array]$Steps)
 
     while ($true) {
-        Write-Host "" 
+        Write-Host ""
         Write-Host "REPAIR-STEPS (all selected by default - requires Admin):" -ForegroundColor Cyan
         $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
         $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
         $isAdmin = $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-        
+
         if (-not $isAdmin) {
             Write-Host "WARNING: Not running as Administrator. Repair steps will fail." -ForegroundColor Red
         }
-        
-        for ($i = 0; $i -lt $Steps.Count; $i++) {
-            $step = $Steps[$i]
-            Write-Host ("  [{0}] {1}. {2}" -f "X", ($i + 1), $step.Name)
+
+        $displayIndex = 1
+        foreach ($step in @($Steps)) {
+            Write-Host ("  [{0}] {1}. {2}" -f "X", $displayIndex, $step.Name)
+            $displayIndex++
         }
-        Write-Host "" 
+        Write-Host ""
         $input = Read-Host "Press Enter to run all, or list numbers (e.g. 1,3)"
 
         if ([string]::IsNullOrWhiteSpace($input)) {
@@ -228,7 +229,10 @@ function Get-SelectedRepairSteps {
             foreach ($idx in $indices) {
                 $i = [int]$idx - 1
                 if ($i -ge 0 -and $i -lt $Steps.Count) {
-                    $selected += $Steps[$i]
+                    $candidate = @($Steps) | Select-Object -Skip $i -First 1
+                    if ($null -ne $candidate) {
+                        $selected += $candidate
+                    }
                 }
             }
             if ($selected.Count -gt 0) {
@@ -337,7 +341,7 @@ foreach ($step in $selectedSteps) {
         $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
         $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
         $isAdmin = $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-        
+
         if (-not $isAdmin) {
             $output = @("This repair step requires elevated administrator rights.")
             $exitCode = 5

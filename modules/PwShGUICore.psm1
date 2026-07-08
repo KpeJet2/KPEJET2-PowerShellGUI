@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # FileRole: Module
 # ========================== FILE ENUMERATION UTILITY ==========================
 function Get-AllProjectFiles {
@@ -114,6 +114,36 @@ $script:_LockFilePath  = $null       # set by Initialize-CorePaths or caller
 # Levels: Debug(0) < Info(1) < Warning(2) < Error(3) < Critical(4) < Audit(5)
 $script:_LogLevelOrder = @{ Debug=0; Info=1; Warning=2; Error=3; Critical=4; Audit=5 }
 $script:_MinLogLevel   = 'Debug'  # verbose mode: emit all log levels including Debug
+
+function Resolve-CoreLogOutputPath {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$LeafName,
+
+        [string]$Subdirectory = 'script-exec'
+    )
+
+    $workspaceRoot = $null
+    if ($script:_PathRegistry.Count -gt 0 -and $script:_PathRegistry.ContainsKey('Root')) {
+        $workspaceRoot = [string]$script:_PathRegistry['Root']
+    }
+    if ([string]::IsNullOrWhiteSpace($workspaceRoot)) {
+        $workspaceRoot = Split-Path $PSScriptRoot -Parent
+    }
+
+    $logsRoot = $script:_CoreLogsDir
+    if ([string]::IsNullOrWhiteSpace($logsRoot)) {
+        $logsRoot = Join-Path $workspaceRoot 'logs'
+    }
+
+    $targetDir = if ([string]::IsNullOrWhiteSpace($Subdirectory)) { $logsRoot } else { Join-Path $logsRoot $Subdirectory }
+    if (-not (Test-Path -LiteralPath $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    }
+
+    return (Join-Path $targetDir $LeafName)
+}
 
 # ========================== CENTRALISED PATH REGISTRY ==========================
 # Single lookup table for all project directories and key files.
@@ -274,12 +304,7 @@ function Write-AppLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional 
     $hostname      = $env:COMPUTERNAME
 
     if (-not $LogPath) {
-        if ($script:_CoreLogsDir) {
-            $LogPath = Join-Path $script:_CoreLogsDir "$hostname-$timestampDate.log"
-        } else {
-            # Fallback -- write next to calling script
-            $LogPath = Join-Path (Get-Location).Path "$hostname-$timestampDate.log"
-        }
+        $LogPath = Resolve-CoreLogOutputPath -LeafName "$hostname-$timestampDate.log" -Subdirectory 'script-exec'
     }
 
     $logEntry = "[$timestamp] [$Level] $Message"
@@ -392,11 +417,7 @@ function Write-ScriptLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intention
     $hostname      = $env:COMPUTERNAME
 
     if (-not $LogPath) {
-        if ($script:_CoreLogsDir) {
-            $LogPath = Join-Path $script:_CoreLogsDir "${hostname}-${timestampDate}_PwShGui-SCRIPTS.log"
-        } else {
-            $LogPath = Join-Path (Get-Location).Path "${hostname}-${timestampDate}_PwShGui-SCRIPTS.log"
-        }
+        $LogPath = Resolve-CoreLogOutputPath -LeafName "${hostname}-${timestampDate}_PwShGui-SCRIPTS.log" -Subdirectory 'script-exec'
     }
 
     $logEntry = "[$timestamp] [$ScriptName] [$Level] $Message"

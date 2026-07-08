@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -48,7 +48,7 @@ if (-not $WorkspacePath) { $WorkspacePath = Split-Path -Parent $PSScriptRoot }
 $script:Root      = $WorkspacePath
 $script:CfgPath   = Join-Path (Join-Path $script:Root 'config') 'self-review-config.json'
 $script:HistPath  = Join-Path (Join-Path $script:Root 'config') 'self-review-history.json'
-$script:LogDir    = Join-Path $script:Root 'logs'
+$script:LogDir    = Join-Path (Join-Path $script:Root 'logs') 'pipeline'
 $script:LogFile   = Join-Path $script:LogDir 'self-review.log'
 $script:ReportDir = Join-Path (Join-Path $script:Root '~REPORTS') 'SelfReview'
 $script:RunStart  = Get-Date

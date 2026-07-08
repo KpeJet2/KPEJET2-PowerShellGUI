@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-07
@@ -168,9 +168,9 @@ function Get-ResolutionHint {
         return 'Permission issue. Re-run elevated if required and verify antivirus/app-control is not blocking the script.'
     }
     if ($text -match '(?i)timed out|timeout') {
-        return 'Operation timed out. Check whether the engine/service is already starting and review logs/engine-service.log.'
+        return 'Operation timed out. Check whether the engine/service is already starting and review logs/engine/engine-service.log.'
     }
-    return 'Review logs/engine-service.log and logs/engine-bootstrap.log, then retry with -Action Status for quick diagnostics.'
+    return 'Review logs/engine/engine-service.log and logs/engine/engine-bootstrap.log, then retry with -Action Status for quick diagnostics.'
 }
 
 function Write-ServiceWarningWithHint {

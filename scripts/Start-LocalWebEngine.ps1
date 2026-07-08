@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -290,9 +290,11 @@ $ConfigFile = Join-Path $WorkspacePath 'config'
 $ConfigFile = Join-Path $ConfigFile 'dependency-scan-config.json'
 
 # ─── Log file paths ───────────────────────────────────────────────────────────
-$script:EngineLogFile      = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
-$script:BootstrapLogFile   = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
-$script:CrashLogFile       = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
+$script:EngineLogsDir      = Join-Path (Join-Path $WorkspacePath 'logs') 'engine'
+if (-not (Test-Path $script:EngineLogsDir)) { New-Item -ItemType Directory -Path $script:EngineLogsDir -Force | Out-Null }
+$script:EngineLogFile      = Join-Path $script:EngineLogsDir 'engine-stdout.log'
+$script:BootstrapLogFile   = Join-Path $script:EngineLogsDir 'engine-bootstrap.log'
+$script:CrashLogFile       = Join-Path $script:EngineLogsDir 'engine-crash.log'
 $script:EngineInstanceFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-instance-current.json'
 $script:StopSignalFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.stop'
 $script:_ExitClean         = $false   # set $true on graceful stop; $false = dirty exit
@@ -1133,7 +1135,7 @@ function Get-EngineLog {
     $logKey = if ($null -ne $nameParam -and $allowedNames.ContainsKey($nameParam)) { $nameParam } else { 'stdout' }
     $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 50 }
     if ($tail -gt 5000) { $tail = 5000 }  # cap max tail
-    $logFile = Join-Path $WorkspacePath (Join-Path 'logs' $allowedNames[$logKey])
+    $logFile = Join-Path $WorkspacePath (Join-Path 'logs\engine' $allowedNames[$logKey])
     $lines = @()
     if (Test-Path -LiteralPath $logFile) {
         $lines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -Tail $tail -ErrorAction SilentlyContinue)
@@ -1170,7 +1172,7 @@ function Get-EngineEvents {
     }
     $events = [System.Collections.ArrayList]@()
     foreach ($kv in $logMap.GetEnumerator()) {
-        $logFile = Join-Path (Join-Path $WorkspacePath 'logs') $kv.Value
+        $logFile = Join-Path (Join-Path $WorkspacePath 'logs\engine') $kv.Value
         if (-not (Test-Path -LiteralPath $logFile)) { continue }
         try {
             $fileLines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -ErrorAction SilentlyContinue)
@@ -1217,7 +1219,7 @@ The HttpListenerContext for the request.
 function Get-EngineLogsList {
     [CmdletBinding()]
     param($Context)
-    $logsDir = Join-Path $WorkspacePath 'logs'
+    $logsDir = Join-Path $WorkspacePath 'logs\engine'
     $knownNames = @{ stdout='engine-stdout.log'; stderr='engine-stderr.log'; service='engine-service.log'; bootstrap='engine-bootstrap.log'; crash='engine-crash.log' }
     $result = [System.Collections.ArrayList]@()
     foreach ($kv in $knownNames.GetEnumerator()) {

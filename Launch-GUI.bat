@@ -541,15 +541,16 @@ REM ============================================================
 :LogLaunch
 REM Ensure logs directory exists
 if not exist "%scriptDir%logs\" mkdir "%scriptDir%logs\" 2>nul
+if not exist "%scriptDir%logs\script-exec\" mkdir "%scriptDir%logs\script-exec\" 2>nul
 
 REM Check if this is first launch (log file doesn't exist)
-if not exist "%scriptDir%logs\Main-GUI_BATCH-LOG.log" (
+if not exist "%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log" (
     set "FIRST_LAUNCH=TRUE"
     REM Create CSV header
-    echo Timestamp,BatchName,VersionTag,MachineName,Username,IPAddress,BatchPath,SystemVolume,SystemVolFreeSpace,MemoryUsedOfTotal,CPULoad,GPULoad,TotalProcesses,IsAdmin > "%scriptDir%logs\Main-GUI_BATCH-LOG.log"
+    echo Timestamp,BatchName,VersionTag,MachineName,Username,IPAddress,BatchPath,SystemVolume,SystemVolFreeSpace,MemoryUsedOfTotal,CPULoad,GPULoad,TotalProcesses,IsAdmin > "%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log"
 )
 
 REM Collect and append telemetry
-powershell -ExecutionPolicy Bypass -NoProfile -Command "Import-Module '%scriptDir%modules\Get-LaunchTelemetry.psm1' -Force; Get-LaunchTelemetry -BatchName 'Launch-GUI.bat' -VersionTag '2604.B2.V31.0' -BatchPath '%~f0' | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Out-File '%scriptDir%logs\Main-GUI_BATCH-LOG.log' -Append -Encoding UTF8"
+powershell -ExecutionPolicy Bypass -NoProfile -Command "Import-Module '%scriptDir%modules\Get-LaunchTelemetry.psm1' -Force; Get-LaunchTelemetry -BatchName 'Launch-GUI.bat' -VersionTag '2604.B2.V31.0' -BatchPath '%~f0' | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Out-File '%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log' -Append -Encoding UTF8"
 
 goto :eof

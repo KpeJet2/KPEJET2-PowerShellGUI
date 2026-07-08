@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
@@ -25,7 +25,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot  = $PSScriptRoot
 $projectRoot = Split-Path $scriptRoot -Parent
 $configDir   = Join-Path $projectRoot 'config'
-$logsDir     = Join-Path $projectRoot 'logs'
+$logsDir     = Join-Path (Join-Path $projectRoot 'logs') 'pipeline'
 $logFile     = Join-Path $logsDir 'cyclic-rename-check.log'
 $stateFile   = Join-Path $configDir 'cyclic-tasks.json'
 $renameScript = Join-Path $scriptRoot 'Invoke-RenameProposal.ps1'
