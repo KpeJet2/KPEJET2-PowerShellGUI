@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-REM VersionTag: 2605.B5.V51.3
+REM VersionTag: 2607.B1.V51.8
 REM ==============================================================
 REM  Launch-ServiceClusterTabs.bat
 REM  Opens Windows Terminal (wt.exe) with one tab per service.
@@ -219,21 +219,27 @@ exit /b 0
 set "WT_ROOT_CREATED=0"
 
 if "%STEP1%"=="1" call :ExecuteStep "Verify Windows Terminal availability" Step1_CheckWt
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 if "%STEP2%"=="1" call :ExecuteStep "Open core service tabs" Step2_OpenCoreTabs
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 if "%STEP3%"=="1" call :ExecuteStep "Wait for core services to converge" Step3_WaitCore
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 if "%STEP4%"=="1" call :ExecuteStep "Open heavy scan tabs" Step4_OpenHeavyTabs
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 if "%STEP5%"=="1" call :ExecuteStep "Open engine-ops tabs" Step5_OpenEngineOps
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 if "%STEP6%"=="1" call :ExecuteStep "Open UI-tools tabs" Step6_OpenUiTabs
+if errorlevel 90 exit /b 0
 if errorlevel 1 exit /b 1
 
 exit /b 0
@@ -243,6 +249,20 @@ echo.
 echo ------------------------------------------------------------
 echo [!STEP_MODE!] %~1
 echo ------------------------------------------------------------
+
+if /I "!STEP_MODE!"=="RUN" if /I "%MODE%"=="INTERACTIVE" (
+  echo [PROMPT] Select action for: %~1
+  choice /C RBC /N /T 30 /D B /M "Run [R], Bypass [B], Close launcher [C]? (auto-bypass in 30s) "
+  if errorlevel 3 (
+    echo [INFO] Launcher closed by user before step execution.
+    exit /b 90
+  )
+  if errorlevel 2 (
+    echo [SKIP] Bypassed by user: %~1
+    exit /b 0
+  )
+)
+
 call :%~2
 set "STEP_RC=!ERRORLEVEL!"
 if not "!STEP_RC!"=="0" (
@@ -274,13 +294,10 @@ if /I "!STEP_MODE!"=="TEST" (
   echo   - EngineMonitor
   echo   - AiActionLog
   echo   - DepScanMgr
-  echo   - StaticScan
   echo   - WebEngine
   echo   - TaskTrayStatus
-  echo   - AgentCallStats
   echo   - CronAiAthon
   echo   - CronProc1
-  echo   - CronProc2
   echo   - SvcDashboard
   exit /b 0
 )
@@ -289,14 +306,28 @@ call :AddTab "VersionScan" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -
 call :AddTab "EngineMonitor" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -File %WS%\scripts\Invoke-EngineServiceMonitor.ps1 -WorkspacePath %WS%"
 call :AddTab "AiActionLog" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-AiActionLogReport.ps1 -WorkspacePath %WS%"
 call :AddTab "DepScanMgr" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-DependencyScanManager.ps1 -WorkspacePath %WS%"
-call :AddTab "StaticScan" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-StaticWorkspaceScan.ps1 -WorkspacePath %WS%"
 call :AddTab "WebEngine" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -File %WS%\scripts\Start-LocalWebEngineService.ps1 -Action Start -WorkspacePath %WS%"
 call :AddTab "TaskTrayStatus" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -Command Import-Module '%WS%\modules\PwShGUI-TrayHost.psm1' -Force; $status = Get-TrayHostStatus; $status"
-call :AddTab "AgentCallStats" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-AgentCallStats.ps1 -WorkspacePath %WS%"
-call :AddTab "CronAiAthon" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Show-CronAiAthonTool.ps1 -WorkspacePath %WS%"
-call :AddTab "CronProc1" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-CronProcessor.ps1 -WorkspacePath %WS%"
-call :AddTab "CronProc2" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-CronProcessor.ps1 -WorkspacePath %WS%"
-call :AddTab "SvcDashboard" "%WS%\scripts\service-cluster-dashboard" "cmd /k \"%WS%\scripts\service-cluster-dashboard\Launch-ServiceClusterDashboard.bat /AUTO\""
+call :CanParseScript "%WS%\scripts\Show-CronAiAthonTool.ps1"
+if errorlevel 1 (
+  echo [WARN] Skipping CronAiAthon tab: parse check failed for Show-CronAiAthonTool.ps1
+) else (
+  call :AddTab "CronAiAthon" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Show-CronAiAthonTool.ps1 -WorkspacePath %WS%"
+)
+
+call :CanParseScript "%WS%\scripts\Invoke-CronProcessor.ps1"
+if errorlevel 1 (
+  echo [WARN] Skipping CronProc1 tab: parse check failed for Invoke-CronProcessor.ps1
+) else (
+  call :AddTab "CronProc1" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-CronProcessor.ps1 -WorkspacePath %WS% -BatchSize 25 -SkipPesterGate"
+)
+
+call :ProbeUrl "http://127.0.0.1:8099/api/ping" 2
+if errorlevel 1 (
+  call :AddTab "SvcDashboard" "%WS%\scripts\service-cluster-dashboard" "cmd /k \"%WS%\scripts\service-cluster-dashboard\Launch-ServiceClusterDashboard.bat /AUTO\""
+) else (
+  echo [INFO] SvcDashboard already online at http://127.0.0.1:8099/api/ping; skipping duplicate launch.
+)
 exit /b 0
 
 :Step3_WaitCore
@@ -319,10 +350,23 @@ if "%INCLUDE_HEAVY_SCANS%"=="0" (
   exit /b 0
 )
 if /I "!STEP_MODE!"=="TEST" (
-  echo [INFO] Heavy scan tabs enabled: FullSysScan, PSEnvScan
+  echo [INFO] Heavy scan tabs enabled: FullSysScan (user-confirmed), PSEnvScan
   exit /b 0
 )
-call :AddTab "FullSysScan" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-FullSystemsScan.ps1 -WorkspacePath %WS%"
+
+echo [PROMPT] FullSystemsScan is heavy.
+choice /C YN /N /T 30 /D N /M "Launch FullSystemsScan now? [Y/N] (auto-skip in 30s) "
+if errorlevel 2 (
+  echo [SKIP] FullSystemsScan skipped by user/timeout.
+) else (
+  call :CanParseScript "%WS%\scripts\Invoke-FullSystemsScan.ps1"
+  if errorlevel 1 (
+    echo [WARN] Skipping FullSysScan tab: parse check failed for Invoke-FullSystemsScan.ps1
+  ) else (
+    call :AddTab "FullSysScan" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-FullSystemsScan.ps1 -WorkspacePath %WS%"
+  )
+)
+
 call :AddTab "PSEnvScan" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-PSEnvironmentScanner.ps1 -WorkspacePath %WS%"
 exit /b 0
 
@@ -336,12 +380,33 @@ if /I "!STEP_MODE!"=="TEST" (
   if "%INCLUDE_CRASH_CLEANUP%"=="1" echo [INFO] CrashCleanupDry tab also enabled.
   exit /b 0
 )
-call :AddTab "EngineBootstrap" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Start-Engines.ps1"
+
+call :ProbeUrl "http://127.0.0.1:8042/api/engine/status" 2
+if errorlevel 1 (
+  call :CanParseScript "%WS%\scripts\Start-Engines.ps1"
+  if errorlevel 1 (
+    echo [WARN] Skipping EngineBootstrap tab: parse check failed for Start-Engines.ps1
+  ) else (
+    call :AddTab "EngineBootstrap" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Start-Engines.ps1"
+  )
+) else (
+  echo [INFO] LocalWebEngine already online; skipping EngineBootstrap launch.
+)
+
 call :AddTab "WebStatus" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Start-LocalWebEngine.ps1 -Action Status -Port 8042 -WorkspacePath %WS%"
 if "%INCLUDE_CRASH_CLEANUP%"=="1" (
   call :AddTab "CrashCleanupDry" "%WS%" "%PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -File %WS%\scripts\Invoke-EngineCrashCleanup.ps1 -DryRun -WorkspacePath %WS%"
 )
 exit /b 0
+
+:CanParseScript
+setlocal
+set "PARSE_PATH=%~1"
+if not exist "%PARSE_PATH%" endlocal & exit /b 1
+
+%PS_EXE% -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$p='%PARSE_PATH%'; $t=$null; $e=$null; [void][System.Management.Automation.Language.Parser]::ParseFile($p,[ref]$t,[ref]$e); if(@($e).Count -gt 0){ exit 1 } else { exit 0 }" >nul 2>&1
+set "PARSE_CODE=%ERRORLEVEL%"
+endlocal & exit /b %PARSE_CODE%
 
 :Step6_OpenUiTabs
 if "%INCLUDE_UI_TOOLS%"=="0" (
