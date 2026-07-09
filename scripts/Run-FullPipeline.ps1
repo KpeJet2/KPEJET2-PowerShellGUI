@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # FileRole: Script
 # SupportPS5.1: null
 # SupportsPS7.6: null
@@ -34,6 +34,7 @@ function Invoke-IfExists {
     param(
         [string]$Path,
         [array]$ScriptArgs = @(),
+        [hashtable]$ScriptParams = @{},
         [switch]$Required
     )
 
@@ -47,7 +48,11 @@ function Invoke-IfExists {
 
     try {
         Write-Log "Executing: $Path"
-        & $Path @ScriptArgs
+        if ($ScriptParams.Count -gt 0) {
+            & $Path @ScriptParams
+        } else {
+            & $Path @ScriptArgs
+        }
         if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
             throw "Non-zero exit code $LASTEXITCODE from $Path"
         }
@@ -91,17 +96,28 @@ if (-not (Invoke-IfExists -Path $fixCheck)) { exit 1 }
 
 # 1.1) Viewer/changelog sync + AI action summary refresh
 $syncViewer = Join-Path $RepoRoot 'scripts\Sync-ChangelogViewerData.ps1'
-if (-not (Invoke-IfExists -Path $syncViewer -ScriptArgs @('-WorkspacePath', $RepoRoot, '-RefreshAiActionSummary:$true', '-IncludeTestAiActions'))) { exit 1 }
+if (-not (Invoke-IfExists -Path $syncViewer -ScriptParams @{ WorkspacePath = $RepoRoot; RefreshAiActionSummary = $true; IncludeTestAiActions = $true })) { exit 1 }
 
 # 2) Module environment diagnostics
 $validateImports = Join-Path $RepoRoot 'scripts\Validate-ModuleImports.ps1'
 $setupModuleEnv = Join-Path $RepoRoot 'scripts\Setup-ModuleEnvironment.ps1'
-if (-not (Invoke-IfExists -Path $validateImports -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-IfExists -Path $validateImports -ScriptParams @{ WorkspacePath = $RepoRoot })) { exit 1 }
 if (-not (Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot)) { exit 1 }
 
 # 3) Manifest refresh
 $buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
-if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
+if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptParams @{ OutputPath = Join-Path $RepoRoot 'config\agentic-manifest.json' })) { exit 1 }
+
+# 3.1) DynaManifest generation (unified dynamic manifest with drift guards, security, versioning)
+$buildDynaManifest = Join-Path $RepoRoot 'scripts\Build-DynaManifest.ps1'
+if (-not (Invoke-IfExists -Path $buildDynaManifest -ScriptParams @{ WorkspacePath = $RepoRoot })) { exit 1 }
+
+# 3.2) DynaManifest drift-guard validation (pre-test blocker gate)
+$validateDynaManifest = Join-Path $RepoRoot 'scripts\Invoke-DynaManifestValidation.ps1'
+if (-not (Invoke-IfExists -Path $validateDynaManifest -ScriptParams @{ ManifestPath = Join-Path $RepoRoot 'config\dynamic-manifest.json'; WorkspacePath = $RepoRoot } -Required)) {
+    Write-Log "DynaManifest validation failed - drift guards detected blocker issues"
+    exit 1
+}
 
 # 4) Optional local engine + SIN script helpers
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
@@ -115,25 +131,25 @@ if (-not (Invoke-IfExists -Path $sinScript)) {
 
 # 4.1) Proactive UI event safety scan
 $uiEventSafetyScan = Join-Path $RepoRoot 'tests\Invoke-UIEventSafetyScan.ps1'
-if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptParams @{ WorkspacePath = $RepoRoot })) { exit 1 }
 
 # 5) Full test gate (Pester + SIN + smoke + module accessibility)
 $runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
-$testArgs = @('-RequirePester', $true)
+$testParams = @{ RequirePester = $true }
 if ($AutoInstallPester) {
-    $testArgs += @('-AutoInstallPester')
+    $testParams['AutoInstallPester'] = $true
 }
 if ($NoModuleValidation) {
-    $testArgs += @('-IncludeModuleValidation', $false)
+    $testParams['IncludeModuleValidation'] = $false
 } else {
-    $testArgs += @('-IncludeModuleValidation', $true)
+    $testParams['IncludeModuleValidation'] = $true
 }
-if (-not (Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required)) { exit 1 }
+if (-not (Invoke-IfExists -Path $runAllTests -ScriptParams $testParams -Required)) { exit 1 }
 
 # 5.1) One-item metric increment gate
 if (-not $SkipPipelineMetricHarness) {
     $metricHarness = Join-Path $RepoRoot 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
-    if (-not (Invoke-IfExists -Path $metricHarness -ScriptArgs @('-WorkspacePath', $RepoRoot, '-SkipGuiCoverage'))) { exit 1 }
+    if (-not (Invoke-IfExists -Path $metricHarness -ScriptParams @{ WorkspacePath = $RepoRoot; SkipGuiCoverage = $true })) { exit 1 }
 }
 
 # 6) Optional launch batch runs

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- VersionTag: 2606.B5.V51.4 -->
 <!-- FileRole: XhtmlTool -->
@@ -542,7 +542,7 @@ function loadAiActionSummary(forceRefresh) {
 // CHANGELOG PARSING
 // ═══════════════════════════════════════════════════════════
 var CHANGELOG_CONTENT = [
-'# VersionTag: 2605.B5.V51.1',
+'# VersionTag: 2606.B5.V51.4',
 '# PowerShellGUI Automated Changelog',
 '',
 'This changelog is generated from VersionTag headers and commit history.',
@@ -610,10 +610,11 @@ var CHANGELOG_CONTENT = [
 '## How to Regenerate',
 'Run tools/Generate-Changelog.ps1 to update this file from VersionTag and git log.',
 '',
+'',
 ''
 ].join('\\n');
 var ENHANCEMENTS_CONTENT = [
-'# VersionTag: 2605.B5.V51.1',
+'# VersionTag: 2606.B5.V51.4',
 '<!-- VersionBuildHistory: 2604.B1.v1.0  2026-04-04  Launch enhancements: PS7 detection, exec policy menu, telemetry logging, CFRMenu  |  2603.B1.v28.0  2026-04-03  Dep-map v2.0 URL/IP/DNS/XHTML/ZIP  |  2603.B0.v27.0  2026-03-28 00:00  |  2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 10 entries) -->',
 '<!-- FileRole: Changelog -->',
 '',
@@ -837,7 +838,7 @@ var ENHANCEMENTS_CONTENT = [
 '  - Solution menu includes: risk level, scope, admin requirement, use case description',
 '  - If bypass selected, all PowerShell calls use `-ExecutionPolicy Bypass` flag via `%USE_BYPASS_FLAG%` variable',
 '- **Comprehensive Launch Logging:**',
-'  - Logs every launch to `logs/script-exec/Main-GUI_BATCH-LOG.log` (CSV format, UTF-8)',
+'  - Logs every launch to `logs/Main-GUI_BATCH-LOG.log` (CSV format, UTF-8)',
 '  - 14 telemetry fields collected via Get-LaunchTelemetry.psm1:',
 '    1. Timestamp (YYYYMMDD-HHMMSS)',
 '    2. BatchName (Launch-GUI.bat)',
@@ -856,7 +857,7 @@ var ENHANCEMENTS_CONTENT = [
 '  - CSV header auto-created on first launch',
 '  - Each subsequent launch appends one CSV line',
 '- **First Launch Detection & CFRMenu Trigger:**',
-'  - Detects first launch when `logs/script-exec/Main-GUI_BATCH-LOG.log` doesn\'t exist',
+'  - Detects first launch when `logs/Main-GUI_BATCH-LOG.log` doesn\'t exist',
 '  - Sets `FIRST_LAUNCH=TRUE` flag',
 '  - Auto-launches `Launch-CFRMenu.bat` (First Run Configuration Menu) with 3-second countdown message',
 '  - After CFRMenu exits, proceeds to normal Launch-GUI.bat menu',
@@ -2257,6 +2258,7 @@ var ENHANCEMENTS_CONTENT = [
 '',
 '',
 '',
+'',
 ''
 ].join('\\n');
 
@@ -2958,6 +2960,7 @@ function viewSchedulerDiff(name) {
   <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.1" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.1</div>
 </body>
 </html>
+
 
 
 
