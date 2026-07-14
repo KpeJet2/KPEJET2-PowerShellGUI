@@ -1841,7 +1841,13 @@ function Build-ScannerGUI {
     $btnScan.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 215)
     $btnScan.ForeColor = [System.Drawing.Color]::White
     $btnScan.FlatStyle = 'Flat'
-    $btnScan.Add_Click({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnScan.Add_Click({
+        try {
+            Invoke-FullScan
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $btnPanel.Controls.Add($btnScan)
 
     $btnExport = New-Object System.Windows.Forms.Button
@@ -1851,7 +1857,8 @@ function Build-ScannerGUI {
     $btnExport.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
     $btnExport.ForeColor = [System.Drawing.Color]::White
     $btnExport.FlatStyle = 'Flat'
-    $btnExport.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExport.Add_Click({
+        try {
         Start-RainbowProgress -StatusText 'Exporting scan results...'
         $scanDate = Get-Date -Format 'yyyyMMdd'
         $scanTime = Get-Date -Format 'HHmmss'
@@ -1866,6 +1873,9 @@ function Build-ScannerGUI {
         Write-Console "Exported to: $outPath" "Green"
         [System.Windows.Forms.MessageBox]::Show("Exported to:`n$outPath", "Export Complete",
             [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $btnPanel.Controls.Add($btnExport)
 
@@ -1876,7 +1886,8 @@ function Build-ScannerGUI {
     $btnPrereqWinget.BackColor = [System.Drawing.Color]::FromArgb(70, 90, 45)
     $btnPrereqWinget.ForeColor = [System.Drawing.Color]::White
     $btnPrereqWinget.FlatStyle = 'Flat'
-    $btnPrereqWinget.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPrereqWinget.Add_Click({
+        try {
         $choice = [System.Windows.Forms.MessageBox]::Show(
             "Run WinGet prerequisite remediation now?`n`nYes = Required + Optional tools`nNo = Required tools only`nCancel = Abort",
             'Prerequisite WinGet Remediation',
@@ -1896,6 +1907,9 @@ function Build-ScannerGUI {
         Scan-PreflightBaseline
         Populate-AllGrids
         Complete-RainbowProgress -StatusText 'WinGet remediation complete'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $btnPanel.Controls.Add($btnPrereqWinget)
 
@@ -1905,11 +1919,15 @@ function Build-ScannerGUI {
     $chkCascade.Location = New-Object System.Drawing.Point(430, 10)
     $chkCascade.Size = New-Object System.Drawing.Size(230, 20)
     $chkCascade.ForeColor = [System.Drawing.Color]::OrangeRed
-    $chkCascade.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $chkCascade.Add_CheckedChanged({
+        try {
         if ($this.Checked) {
             Highlight-CascadeFailures
         } else {
             Populate-AllGrids  # Reset to normal
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $btnPanel.Controls.Add($chkCascade)
@@ -2027,7 +2045,8 @@ function Build-ScannerGUI {
 
             # Wire up rainbow progress bar painting for the ScanProgress grid
             if ($td.Key -eq 'ScanProgress') {
-                $dgv.Add_CellPainting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $dgv.Add_CellPainting({
+                    try {
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     if (-not $sender.Columns.Contains('Percent')) { return }
@@ -2039,9 +2058,13 @@ function Build-ScannerGUI {
                             Paint-RainbowProgressBar -Grid $sender -e $e -Percent $pVal
                         }
                     } catch { <# Intentional: non-fatal painting error #> }
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
                 })
                 # Also paint the Status column with step-phase colors
-                $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $dgv.Add_CellFormatting({
+                    try {
                     param($sender, $e)
                     if ($e.RowIndex -lt 0) { return }
                     try {
@@ -2056,6 +2079,9 @@ function Build-ScannerGUI {
                             }
                         }
                     } catch { <# Intentional: non-fatal #> }
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
                 })
             }
 
@@ -2084,7 +2110,8 @@ function Build-ScannerGUI {
                 $refreshHistoryBtn.Text = 'Refresh History'
                 $refreshHistoryBtn.Location = New-Object System.Drawing.Point(640, 2)
                 $refreshHistoryBtn.Size = New-Object System.Drawing.Size(110, 24)
-                $refreshHistoryBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $refreshHistoryBtn.Add_Click({
+                    try {
                     $historyCombo.Items.Clear()
                     $files = Get-ScanHistoryFiles
                     foreach ($hf in $files) {
@@ -2092,12 +2119,19 @@ function Build-ScannerGUI {
                         [void]$historyCombo.Items.Add($comboItem)
                     }
                     if ($historyCombo.Items.Count -gt 0) { $historyCombo.SelectedIndex = 0 }
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
                 })
                 $historyPanel.Controls.Add($refreshHistoryBtn)
 
-                $historyCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $historyCombo.Add_SelectedIndexChanged({
+                    try {
                     Scan-PreflightBaseline
                     Populate-AllGrids
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
                 })
 
                 $tab.Controls.Add($historyPanel)
@@ -2286,7 +2320,8 @@ function Add-GridFilterRow {
     $filterBox.BorderStyle = 'FixedSingle'
     $filterBox.Tag = @{ Dgv = $Dgv; Key = $Key }
 
-    $filterBox.Add_TextChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $filterBox.Add_TextChanged({
+        try {
         $info = $this.Tag
         $dgvRef = $info.Dgv
         $filterText = $this.Text.Trim()
@@ -2308,6 +2343,9 @@ function Add-GridFilterRow {
         if ($parts.Count -gt 0) {
             try { $ds.DefaultView.RowFilter = ($parts -join ' OR ') } catch { $ds.DefaultView.RowFilter = '' }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $filterPanel.Controls.Add($filterBox)
@@ -2321,7 +2359,13 @@ function Add-GridFilterRow {
     $clearBtn.ForeColor = [System.Drawing.Color]::OrangeRed
     $clearBtn.Font = New-Object System.Drawing.Font('Segoe UI', 7, [System.Drawing.FontStyle]::Bold)
     $clearBtn.Tag = $filterBox
-    $clearBtn.Add_Click({ $this.Tag.Text = '' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $clearBtn.Add_Click({
+        try {
+            $this.Tag.Text = ''
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $filterPanel.Controls.Add($clearBtn)
 
     $TabPage.Controls.Add($filterPanel)
@@ -2334,7 +2378,8 @@ function Apply-RowColoring {
     # Guard: only add handler once per grid key to prevent stacking
     if ($script:ColoredGrids.ContainsKey($Key)) { return }
     $script:ColoredGrids[$Key] = $true
-    $Grid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $Grid.Add_CellFormatting({
+        try {
         param($gridSender, $e)
         if ($e.RowIndex -lt 0) { return }
         try {
@@ -2382,6 +2427,9 @@ function Apply-RowColoring {
                 $row.Cells['Status'].ToolTipText = "Impact: $impact`nFix: $guide"
             }
         } catch { <# Intentional: non-fatal #> }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 }
 
@@ -2426,7 +2474,13 @@ if ($script:historyCombo) {
 }
 
 if ($AutoScan) {
-    $form.Add_Shown({ Invoke-FullScan })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
+            Invoke-FullScan
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 }
 
 # Relax strict mode before ShowDialog -- the WinForms message pump dispatches

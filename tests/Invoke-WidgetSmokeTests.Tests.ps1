@@ -777,7 +777,13 @@ Describe 'Form Rendering (Headless WinForms)' -Tag 'FormRendering' {
         $btn = [System.Windows.Forms.Button]::new()
         $btn.Text = 'Test'
         $script:_btnClicked = $false
-        $btn.Add_Click({ $script:_btnClicked = $true })
+        $btn.Add_Click({
+            try {
+                $script:_btnClicked = $true
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $script:_btnClicked | Should -BeTrue
         $btn.Dispose()
@@ -913,7 +919,13 @@ Describe 'Button Handler Simulation' -Tag 'ButtonHandlers' {
     It 'wires and fires click handler' {
         $btn = [System.Windows.Forms.Button]::new()
         $result = [ref]$null
-        $btn.Add_Click({ $result.Value = 'clicked' })
+        $btn.Add_Click({
+            try {
+                $result.Value = 'clicked'
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $result.Value | Should -Be 'clicked'
         $btn.Dispose()
@@ -922,8 +934,20 @@ Describe 'Button Handler Simulation' -Tag 'ButtonHandlers' {
     It 'chains multiple button handlers' {
         $counter = [ref]0
         $btn = [System.Windows.Forms.Button]::new()
-        $btn.Add_Click({ $counter.Value++ })
-        $btn.Add_Click({ $counter.Value++ })
+        $btn.Add_Click({
+            try {
+                $counter.Value++
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
+        $btn.Add_Click({
+            try {
+                $counter.Value++
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $counter.Value | Should -Be 2
         $btn.Dispose()

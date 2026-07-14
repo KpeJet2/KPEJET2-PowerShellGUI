@@ -832,7 +832,8 @@ function Show-WinRemotePSTool {
     }
 
     # Color-code status cells
-    $dgvHosts.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgvHosts.Add_CellFormatting({
+        try {
         param($s, $e)
         if ($e.ColumnIndex -eq 4 -and $null -ne $e.Value) {
             switch ($e.Value.ToString()) {
@@ -841,6 +842,9 @@ function Show-WinRemotePSTool {
                 'Offline'   { $e.CellStyle.ForeColor = [System.Drawing.Color]::FromArgb(255, 80, 80) }
                 'Untested'  { $e.CellStyle.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 180) }
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -865,24 +869,33 @@ function Show-WinRemotePSTool {
     }
 
     # ── Port/SSL sync ─────────────────────────────────────────────────────────
-    $cboPort.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cboPort.Add_SelectedIndexChanged({
+        try {
         switch ($cboPort.SelectedIndex) {
             0 { $chkSSL.Checked = $false; $txtCustomPort.Visible = $false }
             1 { $chkSSL.Checked = $true;  $txtCustomPort.Visible = $false }
             2 { $txtCustomPort.Visible = $true }
         }
         & $updateWinRMLED
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $chkSSL.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $chkSSL.Add_CheckedChanged({
+        try {
         if ($chkSSL.Checked -and $cboPort.SelectedIndex -ne 1) {
             $cboPort.SelectedIndex = 1
         } elseif (-not $chkSSL.Checked -and $cboPort.SelectedIndex -eq 1) {
             $cboPort.SelectedIndex = 0
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnDetectSubnet.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnDetectSubnet.Add_Click({
+        try {
         $det = Get-LocalSubnet
         if ($det) {
             $octets = $det.IP -split '\.'
@@ -892,10 +905,14 @@ function Show-WinRemotePSTool {
             [System.Windows.Forms.MessageBox]::Show('Cannot detect local subnet.', 'Auto-Detect',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── ARP Scan ──────────────────────────────────────────────────────────────
-    $btnARPScan.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnARPScan.Add_Click({
+        try {
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
         $statusLabel.Text = 'ARP scan: pinging subnet to populate cache, please wait...'
         $form.Refresh()
@@ -919,10 +936,14 @@ function Show-WinRemotePSTool {
             $statusLabel.Text = "ARP scan error: $($_.Exception.Message)"
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Ping Scan ─────────────────────────────────────────────────────────────
-    $btnPingScan.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPingScan.Add_Click({
+        try {
         $subnetBase = $txtSubnet.Text.Trim()
         if (-not $subnetBase) {
             $subnet = Get-LocalSubnet
@@ -955,10 +976,14 @@ function Show-WinRemotePSTool {
             $statusLabel.Text = "Ping scan error: $($_.Exception.Message)"
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Test WinRM on selected hosts ──────────────────────────────────────────
-    $btnTestWinRM.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestWinRM.Add_Click({
+        try {
         if ($dgvHosts.SelectedRows.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show('Select one or more hosts to test.', 'WinRM Test',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -987,10 +1012,14 @@ function Show-WinRemotePSTool {
         & $updateWinRMLED
         $statusLabel.Text = 'WinRM test complete'
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Connect (PS Session) ──────────────────────────────────────────────────
-    $btnConnect.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnConnect.Add_Click({
+        try {
         if ($dgvHosts.SelectedRows.Count -ne 1) {
             [System.Windows.Forms.MessageBox]::Show('Select exactly one host to connect.', 'Connect',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -1014,10 +1043,14 @@ function Show-WinRemotePSTool {
         $cmd = "Enter-PSSession -ComputerName '$target'$sslFlag$portFlag"
         Start-Process $shellExe -ArgumentList "-NoProfile -NoExit -Command `"$cmd`""
         $statusLabel.Text = "Session opened to $target"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Add Manual Host ───────────────────────────────────────────────────────
-    $btnAddManual.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnAddManual.Add_Click({
+        try {
         $hostInput = $txtManualHost.Text.Trim()
         if (-not $hostInput) {
             [System.Windows.Forms.MessageBox]::Show('Enter a hostname or IP address.', 'Add Host',
@@ -1061,19 +1094,27 @@ function Show-WinRemotePSTool {
         $txtManualHost.Text = ''
         & $refreshHostGrid
         $statusLabel.Text = "Added host: $hn"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Save / Restore / Remove ───────────────────────────────────────────────
-    $btnSaveHosts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSaveHosts.Add_Click({
+        try {
         Save-RemoteHosts -Hosts $script:hosts
         $statusLabel.Text = "Saved $($script:hosts.Count) host(s) to config"
         [System.Windows.Forms.MessageBox]::Show(
             "Saved $($script:hosts.Count) host(s) to:`n$($script:HostsFile)",
             'Hosts Saved', [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRestoreHosts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRestoreHosts.Add_Click({
+        try {
         $loaded = @(Load-RemoteHosts)
         if ($loaded.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show('No saved hosts found.', 'Restore',
@@ -1083,9 +1124,13 @@ function Show-WinRemotePSTool {
         $script:hosts = $loaded
         & $refreshHostGrid
         $statusLabel.Text = "Restored $($loaded.Count) host(s) from config"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRemoveHost.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRemoveHost.Add_Click({
+        try {
         if ($dgvHosts.SelectedRows.Count -eq 0) { return }
         $indices = @($dgvHosts.SelectedRows | ForEach-Object { $_.Index }) | Sort-Object -Descending
         foreach ($idx in $indices) {
@@ -1094,6 +1139,9 @@ function Show-WinRemotePSTool {
             }
         }
         & $refreshHostGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -1162,7 +1210,8 @@ function Show-WinRemotePSTool {
     }
 
     # Color code status column
-    $dgvWinRM.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgvWinRM.Add_CellFormatting({
+        try {
         param($s, $e)
         if ($e.ColumnIndex -eq 2 -and $null -ne $e.Value) {
             $val = $e.Value.ToString()
@@ -1173,6 +1222,9 @@ function Show-WinRemotePSTool {
             } else {
                 $e.CellStyle.ForeColor = [System.Drawing.Color]::FromArgb(255, 200, 80)
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -1191,9 +1243,16 @@ function Show-WinRemotePSTool {
     $tabWinRM.Controls.Add($pnlWinRMTop)
 
     # ── WinRM Button Events ───────────────────────────────────────────────────
-    $btnRefreshWinRM.Add_Click({ & $refreshWinRM })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshWinRM.Add_Click({
+        try {
+            & $refreshWinRM
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnEnableRemoting.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnEnableRemoting.Add_Click({
+        try {
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "This will run Enable-PSRemoting -Force which:`n`n" +
             "  - Starts WinRM service (set to Automatic)`n  - Creates HTTP listener on 5985`n" +
@@ -1206,9 +1265,13 @@ function Show-WinRemotePSTool {
         $shellExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
         Start-Process $shellExe -Verb RunAs -ArgumentList "-NoProfile -Command `"Enable-PSRemoting -Force; Write-Host 'Done - press Enter'; Read-Host`""
         $statusLabel.Text = 'Enable-PSRemoting launched (elevated)'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnSetTrusted.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSetTrusted.Add_Click({
+        try {
         $currentHosts = ($script:hosts | Where-Object { $_.Hostname -and $_.Hostname -ne '' } |
             ForEach-Object { $_.Hostname }) -join ','
         if (-not $currentHosts) { $currentHosts = '' }
@@ -1264,9 +1327,13 @@ function Show-WinRemotePSTool {
             }
         }
         $dlg.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnHardenAuth.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnHardenAuth.Add_Click({
+        try {
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "This will harden WinRM authentication:`n`n" +
             "  [+] Enable Kerberos`n  [+] Enable Negotiate`n" +
@@ -1286,9 +1353,13 @@ function Show-WinRemotePSTool {
         $joinedCmds = $cmds -join '; '
         Start-Process $shellExe -Verb RunAs -ArgumentList "-NoProfile -Command `"$joinedCmds; Write-Host 'Auth hardened - press Enter'; Read-Host`""
         $statusLabel.Text = 'Auth hardening launched (elevated)'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnStartWinRMSvc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnStartWinRMSvc.Add_Click({
+        try {
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "This will (as Administrator):`n`n" +
             "  [1] Set WinRM service StartupType to Automatic`n" +
@@ -1306,6 +1377,9 @@ function Show-WinRemotePSTool {
             "Set-Service WinRM -StartupType Automatic; Start-Service WinRM; Write-Host 'WinRM service started - press Enter'; Read-Host"
         )
         $statusLabel.Text = 'WinRM service start launched (elevated) — click Refresh Status to update'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -1361,7 +1435,8 @@ function Show-WinRemotePSTool {
         $dgvChecklist.Columns.Add($col) | Out-Null
     }
 
-    $dgvChecklist.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgvChecklist.Add_CellFormatting({
+        try {
         param($s, $e)
         if ($e.ColumnIndex -eq 2 -and $null -ne $e.Value) {
             switch ($e.Value.ToString()) {
@@ -1371,6 +1446,9 @@ function Show-WinRemotePSTool {
                 'INFO' { $e.CellStyle.ForeColor = [System.Drawing.Color]::FromArgb(130, 180, 255) }
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $tabChecklist.Controls.Add($dgvChecklist)
@@ -1378,7 +1456,8 @@ function Show-WinRemotePSTool {
 
     $script:checklistItems = @()
 
-    $btnRunChecklist.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunChecklist.Add_Click({
+        try {
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
         $statusLabel.Text = 'Running remoting checklist...'
         $form.Refresh()
@@ -1391,9 +1470,13 @@ function Show-WinRemotePSTool {
         $total = $script:checklistItems.Count
         $statusLabel.Text = "Checklist complete: $pass/$total PASS"
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnCopyFix.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCopyFix.Add_Click({
+        try {
         if ($dgvChecklist.SelectedRows.Count -ne 1) {
             [System.Windows.Forms.MessageBox]::Show('Select a checklist item to copy its fix command.', 'Copy Fix',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -1404,9 +1487,13 @@ function Show-WinRemotePSTool {
         $fix = $script:checklistItems[$idx].Fix
         [System.Windows.Forms.Clipboard]::SetText($fix)
         $statusLabel.Text = "Copied: $fix"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnExportChecklist.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExportChecklist.Add_Click({
+        try {
         if ($script:checklistItems.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show('Run the checklist first.', 'Export',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -1419,6 +1506,9 @@ function Show-WinRemotePSTool {
         $statusLabel.Text = "Exported to $reportPath"
         [System.Windows.Forms.MessageBox]::Show("Report saved:`n$reportPath", 'Exported',
             [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -1518,9 +1608,16 @@ function Show-WinRemotePSTool {
     $tabBaseline.Controls.Add($dgvBaseline)
     $tabBaseline.Controls.Add($pnlBaseTop)
 
-    $btnLoadBaseline.Add_Click({ & $loadBaselineGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadBaseline.Add_Click({
+        try {
+            & $loadBaselineGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnApplyBaseline.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnApplyBaseline.Add_Click({
+        try {
         if (-not $script:currentBaseline) {
             [System.Windows.Forms.MessageBox]::Show('Load a baseline first.', 'Apply',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -1563,9 +1660,13 @@ function Show-WinRemotePSTool {
         $joinedCmds = $cmds -join '; '
         Start-Process $shellExe -Verb RunAs -ArgumentList "-NoProfile -Command `"$joinedCmds; Write-Host 'Baseline applied - press Enter'; Read-Host`""
         $statusLabel.Text = "$dtype baseline applied (elevated)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnExportBaseline.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExportBaseline.Add_Click({
+        try {
         if (-not $script:currentBaseline) {
             [System.Windows.Forms.MessageBox]::Show('Load a baseline first.', 'Export',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
@@ -1579,6 +1680,9 @@ function Show-WinRemotePSTool {
         $statusLabel.Text = "Exported to $exportPath"
         [System.Windows.Forms.MessageBox]::Show("Baseline saved:`n$exportPath", 'Exported',
             [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -1835,7 +1939,8 @@ function Show-WinRemotePSTool {
     }
 
     # ── Vault Store button ─────────────────────────────────────────────────────
-    $btnVaultStore.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnVaultStore.Add_Click({
+        try {
         $vh = $txtVaultHost.Text.Trim()
         $vu = $txtVaultUser.Text.Trim()
         $vp = $txtVaultPass.Text
@@ -1857,10 +1962,14 @@ function Show-WinRemotePSTool {
         $txtVaultHost.Text = ''; $txtVaultUser.Text = ''; $txtVaultPass.Text = ''
         & $refreshVaultUI
         $statusLabel.Text = "Stored credential for $vh [$vu]"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Vault Remove button ────────────────────────────────────────────────────
-    $btnVaultRemove.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnVaultRemove.Add_Click({
+        try {
         if ($dgvVault.SelectedRows.Count -ne 1) { return }
         $idx = $dgvVault.SelectedRows[0].Index
         if ($idx -lt @($script:vault).Count) {
@@ -1870,15 +1979,22 @@ function Show-WinRemotePSTool {
             & $refreshVaultUI
             $statusLabel.Text = "Removed credential for $($removed.Host)"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── File browse ────────────────────────────────────────────────────────────
-    $btnBrowseSrc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBrowseSrc.Add_Click({
+        try {
         $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
         $dlg.Description = 'Select local workspace folder to publish'
         $dlg.SelectedPath = $txtSrcLocal.Text
         if ($dlg.ShowDialog() -eq 'OK') { $txtSrcLocal.Text = $dlg.SelectedPath }
         $dlg.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Retrieve selected credential as PSCredential ───────────────────────────
@@ -1894,7 +2010,8 @@ function Show-WinRemotePSTool {
     }
 
     # ── Test Connection (source) ───────────────────────────────────────────────
-    $btnTestSrcConn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestSrcConn.Add_Click({
+        try {
         $tgt = $cboSrcTarget.Text.Trim()
         # Extract IP/hostname from "hostname (ip)" format
         if ($tgt -match '\((\d[\d.]+)\)$') { $tgt = $Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
@@ -1914,10 +2031,14 @@ function Show-WinRemotePSTool {
         } catch {
             $txtSrcOutput.AppendText("FAILED: $($_.Exception.Message)`r`n")
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Publish Workspace ──────────────────────────────────────────────────────
-    $btnPublishWS.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPublishWS.Add_Click({
+        try {
         $srcPath = $txtSrcLocal.Text.Trim()
         $dstPath = $txtSrcRemote.Text.Trim()
         $tgt     = $cboSrcTarget.Text.Trim()
@@ -1964,10 +2085,14 @@ function Show-WinRemotePSTool {
             $statusLabel.Text = "Publish failed: $($_.Exception.Message)"
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Pull Preview ───────────────────────────────────────────────────────────
-    $btnPullPreview.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPullPreview.Add_Click({
+        try {
         $tgt  = $cboPullTarget.Text.Trim()
         if ($tgt -match '\((\d[\d.]+)\)$') { $tgt = $Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $src  = $txtPullSrc.Text.Trim()
@@ -1983,10 +2108,14 @@ Copy-Item -Path '$src' -Destination '$dst' -FromSession `$sess -Recurse -Force
 Remove-PSSession `$sess
 "@
         $txtPullOutput.Text = "-- PREVIEW COMMAND --`r`n$cmd"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Pull Execute ───────────────────────────────────────────────────────────
-    $btnPullExecute.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPullExecute.Add_Click({
+        try {
         $tgt = $cboPullTarget.Text.Trim()
         if ($tgt -match '\((\d[\d.]+)\)$') { $tgt = $Matches[1] }  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $src = $txtPullSrc.Text.Trim()
@@ -2022,6 +2151,9 @@ Remove-PSSession `$sess
             $statusLabel.Text = "Pull failed: $($_.Exception.Message)"
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Initial populate ───────────────────────────────────────────────────────
@@ -2035,15 +2167,23 @@ Remove-PSSession `$sess
     $form.Controls.Add($tabControl)
 
     # Auto-load WinRM status when switching to Tab 2; refresh workspace host combos on Tab 5
-    $tabControl.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $tabControl.Add_SelectedIndexChanged({
+        try {
         if ($tabControl.SelectedIndex -eq 1) { & $refreshWinRM }
         if ($tabControl.SelectedIndex -eq 4) { & $refreshWSHostCombos }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # On load: refresh host grid, update WinRM LED, auto-load baseline
-    $form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
         & $refreshHostGrid
         & $updateWinRMLED
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     [void]$form.ShowDialog()

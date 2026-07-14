@@ -257,7 +257,8 @@ function Show-HelpFilesGUI {
     $browseButton.Text = "Browse..."
     $browseButton.Location = New-Object System.Drawing.Point(609, 66)
     $browseButton.Size = New-Object System.Drawing.Size(70, 22)
-    $browseButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $browseButton.Add_Click({
+        try {
         $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderDialog.Description = "Select a folder for PowerShell help files"
         $folderDialog.SelectedPath = $pathTextBox.Text
@@ -265,6 +266,9 @@ function Show-HelpFilesGUI {
         if ($folderDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             $pathTextBox.Text = $folderDialog.SelectedPath
             Update-HelpStatus
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $form.Controls.Add($browseButton)
@@ -329,7 +333,8 @@ function Show-HelpFilesGUI {
     $saveHelpButton.Size = New-Object System.Drawing.Size(200, 35)
     $saveHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $saveHelpButton.BackColor = [System.Drawing.Color]::Orange
-    $saveHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveHelpButton.Add_Click({
+        try {
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -351,6 +356,9 @@ function Show-HelpFilesGUI {
         }
 
         Update-HelpStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($saveHelpButton)
 
@@ -361,7 +369,8 @@ function Show-HelpFilesGUI {
     $updateHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $updateHelpButton.BackColor = [System.Drawing.Color]::LimeGreen
     $updateHelpButton.Enabled = $false
-    $updateHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $updateHelpButton.Add_Click({
+        try {
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -383,6 +392,9 @@ function Show-HelpFilesGUI {
         }
 
         Update-HelpStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($updateHelpButton)
 
@@ -391,7 +403,13 @@ function Show-HelpFilesGUI {
     $closeButton.Location = New-Object System.Drawing.Point(428, 425)
     $closeButton.Size = New-Object System.Drawing.Size(200, 35)
     $closeButton.Font = New-Object System.Drawing.Font("Arial", 10)
-    $closeButton.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $closeButton.Add_Click({
+        try {
+            $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $form.Controls.Add($closeButton)
 
     # Progress Bar

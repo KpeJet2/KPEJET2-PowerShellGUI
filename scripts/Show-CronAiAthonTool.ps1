@@ -263,28 +263,32 @@ function Show-CronAiAthonTool {
     $miNikrAgi      = & $mkItem 'Ask Nikr-Agi...'        ([System.Drawing.Color]::FromArgb(200,140,80))
     [void]$menuTools.DropDownItems.AddRange(@($miRunBugScan,$miRunDocRebuild,$miRunCoverage,$miSep1,$miNikrAgi))
 
-    $miRunBugScan.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miRunBugScan.Add_Click({
         try { & (Join-Path (Join-Path $WorkspacePath 'tests') 'Invoke-FullBugScan.ps1') -WorkspacePath $WorkspacePath | Out-Null } catch {
             [System.Windows.Forms.MessageBox]::Show("Bug scan error: $($_.Exception.Message)",'Error','OK','Error') | Out-Null
         }
     })
-    $miRunDocRebuild.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miRunDocRebuild.Add_Click({
         try { & (Join-Path (Join-Path $WorkspacePath 'scripts') 'Build-AgenticManifest.ps1') -WorkspacePath $WorkspacePath | Out-Null } catch {
             [System.Windows.Forms.MessageBox]::Show("Doc rebuild error: $($_.Exception.Message)",'Error','OK','Error') | Out-Null
         }
     })
-    $miRunCoverage.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miRunCoverage.Add_Click({
         try { & (Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-ConfigCoverageAudit.ps1') -WorkspacePath $WorkspacePath -PipelineItems | Out-Null } catch {
             [System.Windows.Forms.MessageBox]::Show("Coverage audit error: $($_.Exception.Message)",'Error','OK','Error') | Out-Null
         }
     })
-    $miNikrAgi.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miNikrAgi.Add_Click({
+        try {
         $topic = [Microsoft.VisualBasic.Interaction]::InputBox('What topic shall I critique today?', 'Ask Nikr-Agi', 'General')
         if ([string]::IsNullOrWhiteSpace($topic)) { $topic = 'General' }
         if (Get-Command Invoke-NikrAgiSquabble -ErrorAction SilentlyContinue) {
             $sq = Invoke-NikrAgiSquabble -WorkspacePath $WorkspacePath -Topic $topic -RetortAgents 2
             if ($script:_lblNikrAgi) { $script:_lblNikrAgi.Text = "  $($sq.display)" }
             [System.Windows.Forms.MessageBox]::Show($sq.display,'Nikr-Agi says...','OK','Information') | Out-Null
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -300,20 +304,48 @@ function Show-CronAiAthonTool {
     # Helper: open file in default browser/editor
     $openDoc = { param([string]$Rel) $p = Join-Path (Join-Path $WorkspacePath '~README.md') $Rel; if (Test-Path $p) { Start-Process $p } }
 
-    $miQuickStart.Add_Click({ & $openDoc 'QUICK-START.md' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $miModuleIndex.Add_Click({ & $openDoc 'MODULE-FUNCTION-INDEX.md' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $miImplGuide.Add_Click({  & $openDoc 'Implementation-Steps.xhtml' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $miAboutNikr.Add_Click({  & $openDoc '..\agents\H-Ai-Nikr-Agi\README.md' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miQuickStart.Add_Click({
+        try {
+            & $openDoc 'QUICK-START.md'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $miModuleIndex.Add_Click({
+        try {
+            & $openDoc 'MODULE-FUNCTION-INDEX.md'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $miImplGuide.Add_Click({
+        try {
+            & $openDoc 'Implementation-Steps.xhtml'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $miAboutNikr.Add_Click({
+        try {
+            & $openDoc '..\agents\H-Ai-Nikr-Agi\README.md'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ── Secret page: Shift+Ctrl+Click any Help drop-down item ─────
     function Register-SecretHelpTrigger {
         param([System.Windows.Forms.ToolStripMenuItem]$Item)
-        $Item.Add_MouseDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $Item.Add_MouseDown({
+            try {
             param($s,$e)
             if ($e.Button -eq [System.Windows.Forms.MouseButtons]::Left -and
                 ([System.Windows.Forms.Control]::ModifierKeys -band [System.Windows.Forms.Keys]::Control) -and
                 ([System.Windows.Forms.Control]::ModifierKeys -band [System.Windows.Forms.Keys]::Shift)) {
                 Show-SecretHelpPage -WorkspacePath $WorkspacePath
+            }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
             }
         })
     }
@@ -460,7 +492,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnRefreshDash, "Reload all dashboard metrics from schedule config.")
     $tabDash.Controls.Add($btnRefreshDash)
 
-    $btnRefreshDash.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshDash.Add_Click({
         try {
             $summary = Get-CronJobSummary -WorkspacePath $WorkspacePath
             $rtbDash.Clear()
@@ -538,7 +570,7 @@ function Show-CronAiAthonTool {
     $tabDash.Controls.Add($nikrBanner)
     $script:_lblNikrAgi = $nikrBanner
 
-    $btnRefreshAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshAll.Add_Click({
         try {
             $btnRefreshAll.Enabled = $false
             $btnRefreshAll.Text    = "Refreshing..."
@@ -570,7 +602,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnHighlightErrors.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnHighlightErrors.Add_Click({
         try {
             $btnHighlightErrors.Enabled = $false
             $script:_tabErrors = @{}
@@ -636,7 +668,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnCreateBugTasks.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCreateBugTasks.Add_Click({
         try {
             $created = 0
             $grpTag  = "TabScan-$(Get-Date -Format 'yyyyMMdd-HHmm')"
@@ -711,7 +743,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnSaveFreq, "Save the global frequency setting and recalculate next run time.")
     $tabSched.Controls.Add($btnSaveFreq)
 
-    $btnLoadSched.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadSched.Add_Click({
         try {
             $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
             $nudFreq.Value = [Math]::Max(5, [Math]::Min(1440, $sched.frequencyMinutes))
@@ -732,7 +764,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnSaveFreq.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSaveFreq.Add_Click({
         try {
             Set-CronFrequency -WorkspacePath $WorkspacePath -FrequencyMinutes ([int]$nudFreq.Value)
             [System.Windows.Forms.MessageBox]::Show("Frequency updated to $([int]$nudFreq.Value) minutes.", "Saved", 'OK', 'Information')
@@ -763,7 +795,7 @@ function Show-CronAiAthonTool {
     $lblPreReqSummary = New-StyledLabel "" 170 415 500 20 $fontBold
     $tabPreReq.Controls.Add($lblPreReqSummary)
 
-    $btnRunPreReq.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunPreReq.Add_Click({
         try {
             $result = Invoke-PreRequisiteCheck -WorkspacePath $WorkspacePath
             $dt = New-Object System.Data.DataTable
@@ -820,7 +852,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnRunAll, "Execute all enabled tasks sequentially and show results for each.")
     $tabManual.Controls.Add($btnRunAll)
 
-    $btnLoadTasks.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadTasks.Add_Click({
         try {
             $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
             $lbTasks.Items.Clear()
@@ -835,7 +867,8 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnRunSelected.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunSelected.Add_Click({
+        try {
         if ($lbTasks.SelectedIndex -lt 0) {
             [System.Windows.Forms.MessageBox]::Show("Select a task first.", "Info")
             return
@@ -913,9 +946,13 @@ function Show-CronAiAthonTool {
             }
             $form.Cursor = [System.Windows.Forms.Cursors]::Default
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunAll.Add_Click({
+        try {
         $rtbManResult.Clear()
         $rtbManResult.AppendText("=== Running All Enabled Tasks ===`r`n`r`n")
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
@@ -930,6 +967,9 @@ function Show-CronAiAthonTool {
             $rtbManResult.AppendText("EXCEPTION: $($_.Exception.Message)`r`n")
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════
@@ -969,7 +1009,7 @@ function Show-CronAiAthonTool {
     $dgvPipe = New-StyledGrid 15 80 850 370
     $tabPipeline.Controls.Add($dgvPipe)
 
-    $btnPipeLoad.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnPipeLoad.Add_Click({
         try {
             $typeFilter = if ($cmbPipeType.SelectedItem -eq '(All Types)') { $null } else { $cmbPipeType.SelectedItem }
             $statusFilter = if ($cmbPipeStatus.SelectedItem -eq '(All Status)') { $null } else { $cmbPipeStatus.SelectedItem }
@@ -1022,7 +1062,8 @@ function Show-CronAiAthonTool {
 
     $script:_lastBugResults = @()
 
-    $btnRunBugScan.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunBugScan.Add_Click({
+        try {
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
         try {
             $bugs = Invoke-FullBugScan -WorkspacePath $WorkspacePath
@@ -1044,9 +1085,13 @@ function Show-CronAiAthonTool {
             [System.Windows.Forms.MessageBox]::Show("Error: $($_.Exception.Message)", "Error")
         }
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnProcessBugs.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnProcessBugs.Add_Click({
+        try {
         if (@($script:_lastBugResults).Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show("Run a bug scan first.", "Info")
             return
@@ -1056,6 +1101,9 @@ function Show-CronAiAthonTool {
             [System.Windows.Forms.MessageBox]::Show("$(@($processed).Count) bugs pushed to pipeline.", "Done", 'OK', 'Information')
         } catch {
             [System.Windows.Forms.MessageBox]::Show("Error: $($_.Exception.Message)", "Error")
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -1161,11 +1209,41 @@ function Show-CronAiAthonTool {
         }
     }
 
-    $vbtnRefresh.Add_Click({ Load-ViewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $vcmbType.Add_SelectedIndexChanged({ Load-ViewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $vcmbStatus.Add_SelectedIndexChanged({ Load-ViewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $vcmbPri.Add_SelectedIndexChanged({ Load-ViewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $vtxtSearch.Add_TextChanged({ Load-ViewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vbtnRefresh.Add_Click({
+        try {
+            Load-ViewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $vcmbType.Add_SelectedIndexChanged({
+        try {
+            Load-ViewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $vcmbStatus.Add_SelectedIndexChanged({
+        try {
+            Load-ViewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $vcmbPri.Add_SelectedIndexChanged({
+        try {
+            Load-ViewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $vtxtSearch.Add_TextChanged({
+        try {
+            Load-ViewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ──────────────────────────────────────────────────────────────
     #  SUB-TAB B: ADD & MODIFY
@@ -1245,10 +1323,23 @@ function Show-CronAiAthonTool {
         $dgvAM.DataSource = $dt
     }
 
-    $ambtnLoad.Add_Click({ Load-AMGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $amtxtFilter.Add_TextChanged({ Load-AMGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $ambtnLoad.Add_Click({
+        try {
+            Load-AMGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $amtxtFilter.Add_TextChanged({
+        try {
+            Load-AMGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $dgvAM.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgvAM.Add_SelectionChanged({
+        try {
         if ($dgvAM.SelectedRows.Count -eq 0) { return }
         $row = $dgvAM.SelectedRows[0]
         $id = $row.Cells['ID'].Value
@@ -1262,18 +1353,26 @@ function Show-CronAiAthonTool {
                 $ctrl.SelectedIndex = if ($idx -ge 0) { $idx } else { 0 }
             } else { $ctrl.Text = "$val" }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $ambtnNew.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $ambtnNew.Add_Click({
+        try {
         foreach ($f in $edFields.Keys) {
             $ctrl = $edFields[$f]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($ctrl -is [System.Windows.Forms.ComboBox]) { $ctrl.SelectedIndex = 0 } else { $ctrl.Text = '' }
         }
         $edFields['ID'].Text = "todo-$(Get-Date -Format 'yyyyMMddHHmmss')-$(([System.Guid]::NewGuid().ToString('N')).Substring(0,6))"
         $edFields['Type'].SelectedIndex = 0; $edFields['Priority'].SelectedIndex = 1; $edFields['Status'].SelectedIndex = 0
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $ambtnSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $ambtnSave.Add_Click({
+        try {
         $id = $edFields['ID'].Text.Trim()
         if ([string]::IsNullOrEmpty($id)) { $amLblMsg.Text = 'ID required'; $amLblMsg.ForeColor = $accRed; return }
         $todoDir = Join-Path $WorkspacePath 'todo'
@@ -1300,6 +1399,9 @@ function Show-CronAiAthonTool {
             }
         } catch {
             $amLblMsg.Text = "Error: $_"; $amLblMsg.ForeColor = $accRed
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -1373,10 +1475,34 @@ function Show-CronAiAthonTool {
         }
     }
 
-    $rvbtnRefresh.Add_Click({ Load-ReviewGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $btnApprove.Add_Click({ Update-ReviewItem 'IN_PROGRESS' })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $btnReject.Add_Click({  Update-ReviewItem 'CLOSED'      })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $btnMarkDone.Add_Click({ Update-ReviewItem 'DONE'       })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $rvbtnRefresh.Add_Click({
+        try {
+            Load-ReviewGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $btnApprove.Add_Click({
+        try {
+            Update-ReviewItem 'IN_PROGRESS'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $btnReject.Add_Click({
+        try {
+            Update-ReviewItem 'CLOSED'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $btnMarkDone.Add_Click({
+        try {
+            Update-ReviewItem 'DONE'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ──────────────────────────────────────────────────────────────
     #  SUB-TAB D: EVENT LOG
@@ -1445,8 +1571,20 @@ function Show-CronAiAthonTool {
         $dgvEventLog.DataSource = $dt
     }
 
-    $elbtnRefresh.Add_Click({ Load-EventLogGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $elcmbSeverity.Add_SelectedIndexChanged({ Load-EventLogGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $elbtnRefresh.Add_Click({
+        try {
+            Load-EventLogGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $elcmbSeverity.Add_SelectedIndexChanged({
+        try {
+            Load-EventLogGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ──────────────────────────────────────────────────────────────
     #  SUB-TAB E: PIPELINE SUMMARY STATUS
@@ -1534,10 +1672,17 @@ function Show-CronAiAthonTool {
         }
     }
 
-    $psbtnRefresh.Add_Click({ Load-PipelineSummary })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $psbtnRefresh.Add_Click({
+        try {
+            Load-PipelineSummary
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ── Auto-load sub-tabs when Checklists tab is selected ────────
-    $tabCtrl.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $tabCtrl.Add_SelectedIndexChanged({
+        try {
         if ($tabCtrl.SelectedTab -eq $tabChecklists) {
             if ($innerTabs.SelectedTab -eq $stView)     { Load-ViewGrid }
             elseif ($innerTabs.SelectedTab -eq $stAddMod)  { Load-AMGrid }
@@ -1546,14 +1691,21 @@ function Show-CronAiAthonTool {
             elseif ($innerTabs.SelectedTab -eq $stPipeSumm){ Load-PipelineSummary }
         }
         if ($tabCtrl.SelectedTab -eq $tabMaster)      { Invoke-MasterRefresh }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
-    $innerTabs.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $innerTabs.Add_SelectedIndexChanged({
+        try {
         switch ($innerTabs.SelectedTab) {
             $stView     { Load-ViewGrid }
             $stAddMod   { Load-AMGrid  }
             $stReview   { Load-ReviewGrid }
             $stEventLog { Load-EventLogGrid }
             $stPipeSumm { Load-PipelineSummary }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -1656,11 +1808,41 @@ function Show-CronAiAthonTool {
         $form.Cursor = [System.Windows.Forms.Cursors]::Default
     }
 
-    $mcmbType.Add_SelectedIndexChanged({   Apply-MasterFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $mcmbStatus.Add_SelectedIndexChanged({ Apply-MasterFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $mcmbPri.Add_SelectedIndexChanged({    Apply-MasterFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $mcmbSrc.Add_SelectedIndexChanged({    Apply-MasterFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-    $mTxtSearch.Add_TextChanged({          Apply-MasterFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $mcmbType.Add_SelectedIndexChanged({
+        try {
+            Apply-MasterFilter
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $mcmbStatus.Add_SelectedIndexChanged({
+        try {
+            Apply-MasterFilter
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $mcmbPri.Add_SelectedIndexChanged({
+        try {
+            Apply-MasterFilter
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $mcmbSrc.Add_SelectedIndexChanged({
+        try {
+            Apply-MasterFilter
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $mTxtSearch.Add_TextChanged({
+        try {
+            Apply-MasterFilter
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ══════════════════════════════════════════════════════════════
     #  TAB 8: STATISTICS
@@ -1687,7 +1869,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnLoadStats, "Reload statistics from schedule config and show last 50 job history entries.")
     $tabStats.Controls.Add($btnLoadStats)
 
-    $btnLoadStats.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadStats.Add_Click({
         try {
             $summary = Get-CronJobSummary -WorkspacePath $WorkspacePath
             $dt = New-Object System.Data.DataTable
@@ -1739,7 +1921,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnLoadAgents, "Reload subagent call tallies from the schedule config.")
     $tabAgents.Controls.Add($btnLoadAgents)
 
-    $btnLoadAgents.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadAgents.Add_Click({
         try {
             $summary = Get-CronJobSummary -WorkspacePath $WorkspacePath
             $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
@@ -1796,7 +1978,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnRegQ, "Add +1 to the selected question category tally.")
     $tabQuestions.Controls.Add($btnRegQ)
 
-    $btnLoadQ.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadQ.Add_Click({
         try {
             $summary = Get-CronJobSummary -WorkspacePath $WorkspacePath
             $dt = New-Object System.Data.DataTable
@@ -1812,7 +1994,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnRegQ.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRegQ.Add_Click({
         try {
             Register-Question -WorkspacePath $WorkspacePath -AnsweredBy $cmbQType.SelectedItem
             $btnLoadQ.PerformClick()
@@ -1856,7 +2038,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnAddSug, "Create a new autopilot suggestion with 'pending' status.")
     $tabAuto.Controls.Add($btnAddSug)
 
-    $btnLoadAuto.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadAuto.Add_Click({
         try {
             $sched = Initialize-CronSchedule -WorkspacePath $WorkspacePath
             $ap = $sched.autopilotSuggestions
@@ -1876,7 +2058,8 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnAddSug.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnAddSug.Add_Click({
+        try {
         $title = $txtNewSug.Text.Trim()
         if (-not $title) {
             [System.Windows.Forms.MessageBox]::Show("Enter a suggestion title.", "Info")
@@ -1888,6 +2071,9 @@ function Show-CronAiAthonTool {
             $btnLoadAuto.PerformClick()
         } catch {
             [System.Windows.Forms.MessageBox]::Show("Error: $($_.Exception.Message)", "Error")
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -1965,7 +2151,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnEvtConfig, "Show current EventLog/SYSLOG configuration details in the viewer.")
     $tabEvt.Controls.Add($btnEvtConfig)
 
-    $btnRegSources.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRegSources.Add_Click({
         try {
             $results = Register-EventLogSources
             $msgs = @()
@@ -1979,7 +2165,8 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnTestSyslog.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestSyslog.Add_Click({
+        try {
         $server = $txtSysServer.Text.Trim()
         if (-not $server) {
             $lblTestResult.Text = "Enter a SYSLOG server address"
@@ -1996,9 +2183,12 @@ function Show-CronAiAthonTool {
             $lblTestResult.Text = "Error: $($_.Exception.Message)"
             $lblTestResult.ForeColor = $accRed
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnTestEvent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestEvent.Add_Click({
         try {
             $res = Write-CronLog -WorkspacePath $WorkspacePath -Source 'PowerShellGUI-CRON' `
                 -Message "Cron-Ai-Athon test event at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -Severity 'Informational'
@@ -2013,7 +2203,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnLoadSyslog.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoadSyslog.Add_Click({
         try {
             $entries = @(Get-SyslogEntries -WorkspacePath $WorkspacePath -Last 100)
             $rtbSyslog.Clear()
@@ -2028,7 +2218,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnEvtConfig.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnEvtConfig.Add_Click({
         try {
             $cfg = Get-EventLogConfig -WorkspacePath $WorkspacePath
             $rtbSyslog.Clear()
@@ -2295,20 +2485,36 @@ function Show-CronAiAthonTool {
         Update-StatusBar
     }
 
-    $btnMonRefresh.Add_Click({ Refresh-PipelineMonitor })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnMonRefresh.Add_Click({
+        try {
+            Refresh-PipelineMonitor
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ── Auto-refresh timer with 20s +-3s jitter ───────────────────
     $script:_monTimer = New-Object System.Windows.Forms.Timer
     $script:_monTimer.Interval = 20000
-    $script:_monTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_monTimer.Add_Tick({
+        try {
         if ($chkMonAuto.Checked) {
             Refresh-PipelineMonitor
             # Re-randomise interval 17000 - 23000 ms (20s +- 3s)
             $script:_monTimer.Interval = 17000 + (Get-Random -Minimum 0 -Maximum 6001)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     # Start timer when form is shown (avoids premature ticks)
-    $tabMon.Add_Enter({ Refresh-PipelineMonitor })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $tabMon.Add_Enter({
+        try {
+            Refresh-PipelineMonitor
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ══════════════════════════════════════════════════════════════
     #  TAB 14 : SECURITY ACCOUNTS
@@ -2411,7 +2617,7 @@ function Show-CronAiAthonTool {
     $tabSvcAcc.Controls.Add($btnScheduleSecMaint)
 
     # ── Event handlers ────────────────────────────────────────────
-    $btnProvisionAgent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnProvisionAgent.Add_Click({
         try {
             Write-SvcLog 'Provisioning PSGUIAgentSvc...'
             $acctName = 'PSGUIAgentSvc'
@@ -2444,7 +2650,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnTestAgentAcct.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestAgentAcct.Add_Click({
         try {
             $acctName = 'PSGUIAgentSvc'
             $u = Get-LocalUser -Name $acctName -ErrorAction Stop
@@ -2467,7 +2673,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnCheckUserAdmin.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCheckUserAdmin.Add_Click({
         try {
             $identity  = [Security.Principal.WindowsIdentity]::GetCurrent()
             $principal = [Security.Principal.WindowsPrincipal]$identity
@@ -2482,7 +2688,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnCreateCertAdmin.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCreateCertAdmin.Add_Click({
         try {
             $pfxPwd = $txtPfxPwd.Text.Trim()
             if ($pfxPwd.Length -lt 10) {
@@ -2531,7 +2737,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnExportDangerous.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExportDangerous.Add_Click({
         try {
             if ($null -eq $script:_pfxBytes) { Write-SvcLog 'No PFX in memory — create one first.' 'Error'; return }
             $dlPath = Join-Path $env:USERPROFILE 'Downloads'
@@ -2552,7 +2758,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnProvisionSvc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnProvisionSvc.Add_Click({
         try {
             Write-SvcLog 'Provisioning PSGUIPipelineSvc (least-priv service account)...'
             $acctName = 'PSGUIPipelineSvc'
@@ -2581,7 +2787,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnSecuritySelfTest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSecuritySelfTest.Add_Click({
         try {
             Write-SvcLog '=== Security Self-Test ==='
             # 1. Vault reachable?
@@ -2612,7 +2818,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnScheduleSecMaint.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnScheduleSecMaint.Add_Click({
         try {
             $schedPath = Join-Path (Join-Path $WorkspacePath 'config') 'cron-aiathon-schedule.json'
             $sched     = Get-Content $schedPath -Raw | ConvertFrom-Json
@@ -2665,7 +2871,7 @@ function Show-CronAiAthonTool {
     $toolTip.SetToolTip($btnOpenImplGuide, 'Open the full XHTML step-by-step implementation guide in your default browser.')
     $tabAgentGuide.Controls.Add($btnOpenImplGuide)
 
-    $btnOpenImplGuide.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenImplGuide.Add_Click({
         try {
             $xhtmlPath = Join-Path (Join-Path $WorkspacePath '~README.md') 'Implementation-Steps.xhtml'
             if (Test-Path $xhtmlPath) {
@@ -2678,7 +2884,8 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $tabAgentGuide.Add_Enter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $tabAgentGuide.Add_Enter({
+        try {
         $rtbGuide.Clear()
         $accent = [char]9654   # right-pointing black triangle
 
@@ -2746,6 +2953,9 @@ function Show-CronAiAthonTool {
         }
         $rtbGuide.SelectionColor = [System.Drawing.Color]::FromArgb(100,100,100)
         $rtbGuide.AppendText("`r`n  [Open Implementation-Steps.xhtml for full guide with copy-paste code snippets]`r`n")
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════
@@ -2797,7 +3007,7 @@ function Show-CronAiAthonTool {
     $tabStandards.Controls.Add($lblStdMsg)
 
     # Button click handlers
-    $btnOpenErrorTemplates.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenErrorTemplates.Add_Click({
         try {
             $errorTemplatesPath = Join-Path (Join-Path $WorkspacePath '~README.md') 'ERROR-HANDLING-TEMPLATES.md'
             if (Test-Path $errorTemplatesPath) {
@@ -2816,7 +3026,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnOpenRefStd.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenRefStd.Add_Click({
         try {
             $refStdPath = Join-Path (Join-Path $WorkspacePath '~README.md') 'REFERENCE-CONSISTENCY-STANDARD.md'
             if (Test-Path $refStdPath) {
@@ -2835,7 +3045,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnOpenSinRegistry.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenSinRegistry.Add_Click({
         try {
             $sinPath = Join-Path $WorkspacePath 'sin_registry'
             if (Test-Path $sinPath) {
@@ -2854,7 +3064,7 @@ function Show-CronAiAthonTool {
         }
     })
 
-    $btnRunSinScanner.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunSinScanner.Add_Click({
         try {
             $lblStdMsg.Text = 'Running scan...'
             $lblStdMsg.ForeColor = $accBlueRun
@@ -2881,7 +3091,8 @@ function Show-CronAiAthonTool {
     })
 
     # Populate standards reference text on tab enter
-    $tabStandards.Add_Enter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $tabStandards.Add_Enter({
+        try {
         $rtbStandards.Clear()
 
         # Title
@@ -3009,15 +3220,22 @@ function Show-CronAiAthonTool {
   Standards compliance checked automatically via cron 'SinRegistryReview' task.
 
 "@)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════
     #  AUTO-REFRESH DASHBOARD ON LOAD
     # ══════════════════════════════════════════════════════════════
-    $form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
         $btnRefreshDash.PerformClick()
         Update-StatusBar
         $script:_monTimer.Start()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Show Form ────────────────────────────────────────────────

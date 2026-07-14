@@ -1150,7 +1150,13 @@ $btn = [System.Windows.Forms.Button]@{
     Location = [System.Drawing.Point]::new(10, 10)
     Size     = [System.Drawing.Size]::new(120, 28)
 }
-$btn.Add_Click({ [Windows.Forms.MessageBox]::Show('Clicked!') })
+$btn.Add_Click({
+    try {
+        [Windows.Forms.MessageBox]::Show('Clicked!')
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 $form.Controls.Add($btn)
 '@
         'RadioButton' = @'
@@ -1456,6 +1462,7 @@ $form.Controls.Add($gb)
         }
         $b.FlatAppearance.BorderColor = [System.Drawing.Color]::LightSteelBlue
         $b.Add_Click({
+            try {
             $key = $this.Tag
             if ($snippets.ContainsKey($key)) {
                 if ($codePanel.Visible -and $script:activeSnippetBtn -eq $this) {
@@ -1470,6 +1477,9 @@ $form.Controls.Add($gb)
                 $codePanel.Visible = $true
                 $this.Text = [string][char]0x2212
                 $script:activeSnippetBtn = $this
+            }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
             }
         })
         return $b
@@ -1561,7 +1571,13 @@ $form.Controls.Add($gb)
         Location = [System.Drawing.Point]::new($cx, $y)
         Size     = [System.Drawing.Size]::new(160, 28)
     }
-    $btn.Add_Click({ $statusBar.Text = "Button clicked  --  $(Get-Date -f HH:mm:ss)" })
+    $btn.Add_Click({
+        try {
+            $statusBar.Text = "Button clicked  --  $(Get-Date -f HH:mm:ss)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $panel1.Controls.Add($btn)
     $panel1.Controls.Add((New-SnippetBtn 'Button' 640 $y))
     $y += 36 + $gap
@@ -1893,19 +1909,59 @@ $form.Controls.Add($gb)
     $form.ContextMenuStrip = $cms
 
     # ---- Wire-up live status updates for key controls --------------------
-    $track.Add_ValueChanged({ $statusBar.Text = "TrackBar = $($track.Value)" })
-    $combo.Add_SelectedIndexChanged({ $statusBar.Text = "ComboBox = $($combo.SelectedItem)" })
-    $cb.Add_CheckedChanged({ $statusBar.Text = "CheckBox 'alpha' = $($cb.Checked)" })
-    $nud.Add_ValueChanged({ $statusBar.Text = "NumericUpDown = $($nud.Value)" })
-    $dtp.Add_ValueChanged({ $statusBar.Text = "DateTimePicker = $($dtp.Value.ToString('yyyy-MM-dd'))" })
+    $track.Add_ValueChanged({
+        try {
+            $statusBar.Text = "TrackBar = $($track.Value)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $combo.Add_SelectedIndexChanged({
+        try {
+            $statusBar.Text = "ComboBox = $($combo.SelectedItem)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $cb.Add_CheckedChanged({
+        try {
+            $statusBar.Text = "CheckBox 'alpha' = $($cb.Checked)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $nud.Add_ValueChanged({
+        try {
+            $statusBar.Text = "NumericUpDown = $($nud.Value)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $dtp.Add_ValueChanged({
+        try {
+            $statusBar.Text = "DateTimePicker = $($dtp.Value.ToString('yyyy-MM-dd'))"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     # ---- Code panel button handlers --------------------------------------
-    $copyBtn.Add_Click({ [System.Windows.Forms.Clipboard]::SetText($codeBox.Text) })
+    $copyBtn.Add_Click({
+        try {
+            [System.Windows.Forms.Clipboard]::SetText($codeBox.Text)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $closeCodeBtn.Add_Click({
+        try {
         $codePanel.Visible = $false
         if ($script:activeSnippetBtn) {
             $script:activeSnippetBtn.Text = '+'
             $script:activeSnippetBtn = $null
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 

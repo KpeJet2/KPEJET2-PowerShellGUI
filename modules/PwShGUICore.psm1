@@ -548,7 +548,8 @@ function Request-LocalPath {
 
     $timer          = New-Object System.Windows.Forms.Timer
     $timer.Interval = 1000
-    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $timer.Add_Tick({
+        try {
         $script:_rlpRemaining--
         if ($script:_rlpRemaining -le 0) {
             $script:_rlpTimedOut = $true
@@ -557,9 +558,18 @@ function Request-LocalPath {
         } else {
             $countdownLabel.Text = "Auto-continue in $script:_rlpRemaining s"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $form.Add_Shown({ $timer.Start() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
+            $timer.Start()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $dialogResult = $form.ShowDialog()
     $timer.Stop()
     $timer.Dispose()
