@@ -2010,7 +2010,13 @@ function Show-AssistedSASCDialog {
     $btnClose.Text = "Close"
     $btnClose.Location = New-Object System.Drawing.Point([int]760, [int]374)
     $btnClose.Size = New-Object System.Drawing.Size([int]90, [int]32)
-    $btnClose.Add_Click({ $setupForm.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnClose.Add_Click({
+        try {
+            $setupForm.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     $setupForm.Controls.AddRange(@($btnRefresh, $btnRun, $btnRunAll, $btnClose))
 
@@ -2068,12 +2074,16 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Enable/disable Run button based on selection -----------------------
-    $grid.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $grid.Add_SelectionChanged({
+        try {
         if ($grid.SelectedRows.Count -eq 1) {
             $canRun = $grid.SelectedRows[0].Cells['CanRun'].Value
             $btnRun.Enabled = ($canRun -eq $true -or $canRun -eq 'True')
         } else {
             $btnRun.Enabled = $false
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -2178,18 +2188,29 @@ function Show-AssistedSASCDialog {
     }
 
     # -- Wire buttons -------------------------------------------------------
-    $btnRefresh.Add_Click({ & $refreshGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefresh.Add_Click({
+        try {
+            & $refreshGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnRun.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRun.Add_Click({
+        try {
         if ($grid.SelectedRows.Count -ne 1) { return }
         $row = $grid.SelectedRows[0]
         $actionKey = [string]$row.Cells['ActionKey'].Value
         $stepName  = [string]$row.Cells['Step'].Value
         if ([string]::IsNullOrEmpty($actionKey)) { return }
         & $executeAction $actionKey $stepName
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunAll.Add_Click({
+        try {
         & $writeLog '--- Running all pending steps ---' 'RUN'
         $steps = & $assessSteps
         foreach ($kv in $steps.GetEnumerator()) {
@@ -2199,6 +2220,9 @@ function Show-AssistedSASCDialog {
             }
         }
         & $writeLog '--- All pending steps processed ---' 'OK'
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # -- Initial populate ---------------------------------------------------
@@ -2297,7 +2321,7 @@ function Show-VaultUnlockDialog {
     $btnUnlock.Location = New-Object System.Drawing.Point([int]215, [int]250)
     $btnUnlock.Size = New-Object System.Drawing.Size([int]85, [int]30)
     $btnUnlock.DialogResult = 'None'
-    $btnUnlock.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnUnlock.Add_Click({
         try {
             $lblStatus.Text = ""
             $unlocked = $false
@@ -2486,7 +2510,8 @@ function Show-SecretsInvokerFallback {
         $cboSite.Items.Add("(vault error: $($_.Exception.Message))") | Out-Null
     }
 
-    $cboSite.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cboSite.Add_SelectedIndexChanged({
+        try {
         $uriList.Items.Clear()
         $idx = $cboSite.SelectedIndex
         if ($idx -ge 0 -and $script:_InvokerItems -and $idx -lt $script:_InvokerItems.Count) {
@@ -2494,6 +2519,9 @@ function Show-SecretsInvokerFallback {
             foreach ($u in $selected.Uri) {
                 $uriList.Items.Add($u, $true) | Out-Null
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -2509,7 +2537,8 @@ function Show-SecretsInvokerFallback {
     $btnExecute.Text = "Open && Authenticate"
     $btnExecute.Location = New-Object System.Drawing.Point([int]15, [int]400)
     $btnExecute.Size = New-Object System.Drawing.Size([int]200, [int]35)
-    $btnExecute.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExecute.Add_Click({
+        try {
         $idx = $cboSite.SelectedIndex
         if ($idx -lt 0) {
             $lblStatus.Text = "Please select a credential."
@@ -2546,6 +2575,9 @@ function Show-SecretsInvokerFallback {
         } catch {
             $lblStatus.Text = "Error: $($_.Exception.Message)"
             $lblStatus.ForeColor = [System.Drawing.Color]::DarkRed
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 

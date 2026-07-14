@@ -222,7 +222,7 @@ function Start-KeyboardMonitor {
 
     $script:_KeyboardTimer = New-Object System.Windows.Forms.Timer
     $script:_KeyboardTimer.Interval = $IntervalMs
-    $script:_KeyboardTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_KeyboardTimer.Add_Tick({
         try {
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)
