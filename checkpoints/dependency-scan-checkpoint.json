@@ -1,59 +1,59 @@
 {
+  "generated": "2026-07-08T01:09:10.7560807+08:00",
+  "lastFullScan": "2026-07-09T19:14:33",
+  "dataFile": "workspace-dependency-map-20260709-191347.json",
   "phases": {
     "folders": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     },
     "modules": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     },
     "scripts": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     },
     "configs": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     },
     "urls_ips": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     },
     "dns_resolution": {
       "status": "done",
-      "timestamp": "2026-07-09T14:18:33",
+      "timestamp": "2026-07-09T19:14:33",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 32877
+      "durationMs": 47065
     }
   },
-  "currentScanPid": 7124,
   "currentScanMode": "Full",
   "mode": "Static",
-  "generated": "2026-07-08T01:09:10.7560807+08:00",
-  "dataFile": "workspace-dependency-map-20260709-141800.json",
-  "version": "2604.B1.V32.0",
-  "lastFullScan": "2026-07-09T14:18:33"
+  "currentScanPid": 35876,
+  "version": "2604.B1.V32.0"
 }
