@@ -303,7 +303,8 @@ function Show-SandboxTestTool {
     }
 
     # ── Launch sandbox button ──────────────────────────────────
-    $btnLaunch.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLaunch.Add_Click({
+        try {
         Write-ActivityLog 'Launching new sandbox session...' 'Cyan'
         $btnLaunch.Enabled = $false
         $form.Refresh()
@@ -319,7 +320,6 @@ function Show-SandboxTestTool {
             if ($script:statusTimer) { $script:statusTimer.Stop(); $script:statusTimer.Dispose() }
             $script:statusTimer = New-Object System.Windows.Forms.Timer
             $script:statusTimer.Interval = 5000  # 5 sec
-            $script:statusTimer.Add_Tick({ Update-SessionStatus })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             $script:statusTimer.Start()
 
         } catch {
@@ -327,24 +327,36 @@ function Show-SandboxTestTool {
         } finally {
             $btnLaunch.Enabled = $true
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Refresh status button ──────────────────────────────────
-    $btnRefreshStatus.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshStatus.Add_Click({
+        try {
         Write-ActivityLog 'Refreshing status...' 'Gray'
         Update-SessionStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Open output folder button ──────────────────────────────
-    $btnOpenOutputDir.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenOutputDir.Add_Click({
+        try {
         if ($script:currentSession -and (Test-Path $script:currentSession.OutputDir)) {
             Write-ActivityLog "Opening output: $($script:currentSession.OutputDir)" 'Gray'
             Invoke-Item $script:currentSession.OutputDir
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Iterate button ─────────────────────────────────────────
-    $btnIterate.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnIterate.Add_Click({
+        try {
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Sending Iterate command (Sync+Test+GUI)...' 'Cyan'
         $btnIterate.Enabled = $false
@@ -358,38 +370,54 @@ function Show-SandboxTestTool {
         } finally {
             $btnIterate.Enabled = $true
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Sync, Test, GUI buttons ────────────────────────────────
-    $btnSync.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSync.Add_Click({
+        try {
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Syncing code to sandbox...' 'Cyan'
         try {
             & $sendScript -SessionDir $script:currentSession.SessionDir -Action Sync -NoWait
             Write-ActivityLog 'Sync command sent' 'Green'
         } catch { Write-ActivityLog "Sync failed: $_" 'Red' }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnTest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTest.Add_Click({
+        try {
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Running tests in sandbox...' 'Cyan'
         try {
             & $sendScript -SessionDir $script:currentSession.SessionDir -Action Test -Headless -NoWait
             Write-ActivityLog 'Test command sent' 'Green'
         } catch { Write-ActivityLog "Test failed: $_" 'Red' }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnGUI.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnGUI.Add_Click({
+        try {
         if (-not $script:currentSession) { return }
         Write-ActivityLog 'Launching GUI in sandbox...' 'Cyan'
         try {
             & $sendScript -SessionDir $script:currentSession.SessionDir -Action GUI -NoWait
             Write-ActivityLog 'GUI launch sent. Check sandbox window.' 'Green'
         } catch { Write-ActivityLog "GUI launch failed: $_" 'Red' }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Shutdown button ────────────────────────────────────────
-    $btnShutdown.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnShutdown.Add_Click({
+        try {
         if (-not $script:currentSession) { return }
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "Shutdown the active sandbox session?`n`nAll sandbox state will be lost.",
@@ -408,6 +436,9 @@ function Show-SandboxTestTool {
                 Update-SessionStatus
             } catch { Write-ActivityLog "Shutdown failed: $_" 'Red' }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── TAB 2: Results Viewer (placeholder) ───────────────────
@@ -424,8 +455,12 @@ function Show-SandboxTestTool {
     $tab2.Controls.Add($lblResults)
 
     # ── Form cleanup ───────────────────────────────────────────
-    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_FormClosing({
+        try {
         if ($script:statusTimer) { $script:statusTimer.Stop(); $script:statusTimer.Dispose() }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Initial status ─────────────────────────────────────────
@@ -453,7 +488,13 @@ function Show-SandboxTestTool {
                 # Start polling
                 $script:statusTimer = New-Object System.Windows.Forms.Timer
                 $script:statusTimer.Interval = 5000
-                $script:statusTimer.Add_Tick({ Update-SessionStatus })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $script:statusTimer.Add_Tick({
+                    try {
+                        Update-SessionStatus
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
+                })
                 $script:statusTimer.Start()
             } catch {
                 Write-ActivityLog "Could not load existing session metadata" 'Yellow'

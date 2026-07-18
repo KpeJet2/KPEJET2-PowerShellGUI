@@ -424,29 +424,44 @@ $tabIntents.Controls.Add($dgvIntents)
 
 # Action buttons
 $btnRefreshIntents = New-StyledButton -Text 'Refresh' -X 10 -Y 510 -W 90 -BgColor $script:accBlue
-$btnRefreshIntents.Add_Click({ Refresh-IntentViews -FocusIntentId (Get-SelectedIntentId -Grid $dgvIntents) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRefreshIntents.Add_Click({
+    try {
+        Refresh-IntentViews -FocusIntentId (Get-SelectedIntentId -Grid $dgvIntents)
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 $tabIntents.Controls.Add($btnRefreshIntents)
 
 $btnViewHistory = New-StyledButton -Text 'History' -X 110 -Y 510 -W 90 -BgColor $script:bgLight
-$btnViewHistory.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnViewHistory.Add_Click({
+    try {
     $selectedId = Get-SelectedIntentId -Grid $dgvIntents
     if ($selectedId -gt 0) {
         Load-IntentHistoryView -IntentId $selectedId -SelectHistoryTab
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 $tabIntents.Controls.Add($btnViewHistory)
 
 $btnEditDraft = New-StyledButton -Text 'Edit Draft' -X 210 -Y 510 -W 100 -BgColor $script:accBlue
-$btnEditDraft.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnEditDraft.Add_Click({
+    try {
     $selectedId = Get-SelectedIntentId -Grid $dgvIntents
     if ($selectedId -gt 0) {
         Load-DraftIntoEditor -IntentId $selectedId
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 $tabIntents.Controls.Add($btnEditDraft)
 
 $btnImproveIntent = New-StyledButton -Text 'AI Improve' -X 320 -Y 510 -W 100 -BgColor $script:accGreen
-$btnImproveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnImproveIntent.Add_Click({
+    try {
     $selectedId = Get-SelectedIntentId -Grid $dgvIntents
     if ($selectedId -gt 0) {
         $result = Invoke-AIImproveIntent -IntentId $selectedId -By $env:USERNAME
@@ -457,11 +472,15 @@ $btnImproveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wr
             [System.Windows.Forms.MessageBox]::Show("Draft intent #$selectedId was expanded and refined.", 'AI Improve Intent', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabIntents.Controls.Add($btnImproveIntent)
 
 $btnSealIntent = New-StyledButton -Text 'Seal Intent' -X 430 -Y 510 -W 110 -BgColor $script:accAmber
-$btnSealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnSealIntent.Add_Click({
+    try {
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $result = Invoke-IntentSeal -IntentId $selectedId
@@ -476,11 +495,15 @@ $btnSealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             Refresh-IntentViews -FocusIntentId $selectedId
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabIntents.Controls.Add($btnSealIntent)
 
 $btnUnsealIntent = New-StyledButton -Text 'Unseal' -X 550 -Y 510 -W 90 -BgColor $script:accRed
-$btnUnsealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnUnsealIntent.Add_Click({
+    try {
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $reason = [Microsoft.VisualBasic.Interaction]::InputBox(
@@ -496,11 +519,15 @@ $btnUnsealIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
             }
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabIntents.Controls.Add($btnUnsealIntent)
 
 $btnActivateIntent = New-StyledButton -Text 'Activate' -X 650 -Y 510 -W 90 -BgColor $script:accGreen
-$btnActivateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnActivateIntent.Add_Click({
+    try {
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $result = Set-IntentStatus -IntentId $selectedId -NewStatus 'ACTIVE' -Reason 'Activated via GUI'
@@ -509,11 +536,15 @@ $btnActivateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch w
             Refresh-IntentViews -FocusIntentId $selectedId
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabIntents.Controls.Add($btnActivateIntent)
 
 $btnArchiveIntent = New-StyledButton -Text 'Archive' -X 750 -Y 510 -W 90 -BgColor $script:bgLight
-$btnArchiveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnArchiveIntent.Add_Click({
+    try {
     if (@($dgvIntents.SelectedRows).Count -gt 0) {
         $selectedId = [int]$dgvIntents.SelectedRows[0].Cells['ID'].Value
         $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -529,6 +560,9 @@ $btnArchiveIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wr
                 Refresh-IntentViews -FocusIntentId $selectedId
             }
         }
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 $tabIntents.Controls.Add($btnArchiveIntent)
@@ -559,7 +593,13 @@ $dgvChanges.Columns['Description'].Width = 300
 $tabChangeLog.Controls.Add($dgvChanges)
 
 $btnRefreshLog = New-StyledButton -Text 'Refresh' -X 10 -Y 560 -W 100 -BgColor $script:accBlue
-$btnRefreshLog.Add_Click({ Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100 })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRefreshLog.Add_Click({
+    try {
+        Refresh-ChangeLogGrid -Grid $dgvChanges -Last 100
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 $tabChangeLog.Controls.Add($btnRefreshLog)
 
 $tabControl.TabPages.Add($tabChangeLog)
@@ -599,10 +639,14 @@ $txtDetailOutput.ReadOnly = $true
 $txtDetailOutput.BorderStyle = [System.Windows.Forms.BorderStyle]::None
 $tabDetail.Controls.Add($txtDetailOutput)
 
-$btnLoadDetail.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnLoadDetail.Add_Click({
+    try {
     $idText = $txtIntentId.Text.Trim()
     if ($idText -match '^\d+$') {
         Load-IntentHistoryView -IntentId ([int]$idText)
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -691,7 +735,8 @@ $lblDraftNote.ForeColor = $script:fgGray
 $tabNewIntent.Controls.Add($lblDraftNote)
 
 $btnCreateIntent = New-StyledButton -Text 'Create Intent' -X 90 -Y 380 -W 150 -H 35 -BgColor $script:accGreen
-$btnCreateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnCreateIntent.Add_Click({
+    try {
     $title = $txtTitle.Text.Trim()
     $desc = $txtDesc.Text.Trim()
     if ($title -eq '' -or $desc -eq '') {
@@ -737,11 +782,20 @@ $btnCreateIntent.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
             Refresh-IntentViews -FocusIntentId $intent.intentId
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabNewIntent.Controls.Add($btnCreateIntent)
 
 $btnResetIntentForm = New-StyledButton -Text 'Reset Form' -X 250 -Y 380 -W 120 -H 35 -BgColor $script:bgLight
-$btnResetIntentForm.Add_Click({ Reset-IntentEditorForm })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnResetIntentForm.Add_Click({
+    try {
+        Reset-IntentEditorForm
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 $tabNewIntent.Controls.Add($btnResetIntentForm)
 
 $tabControl.TabPages.Add($tabNewIntent)
@@ -768,7 +822,8 @@ $txtPipeOutput.BorderStyle = [System.Windows.Forms.BorderStyle]::None
 $tabPipeline.Controls.Add($txtPipeOutput)
 
 $btnLoadMemory = New-StyledButton -Text 'Load Memory' -X 10 -Y 560 -W 120 -BgColor $script:accBlue
-$btnLoadMemory.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnLoadMemory.Add_Click({
+    try {
     $memPath = Join-Path $WorkspacePath 'config\workspace-memory-summary.json'
     if (Test-Path $memPath) {
         $memData = Get-Content $memPath -Raw | ConvertFrom-Json
@@ -813,11 +868,15 @@ $btnLoadMemory.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     } else {
         $txtPipeOutput.Text = "Memory file not found. Run Invoke-REmemorAiZ to generate."
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabPipeline.Controls.Add($btnLoadMemory)
 
 $btnRunPipeline = New-StyledButton -Text 'Run Pipeline (DryRun)' -X 140 -Y 560 -W 180 -BgColor $script:accAmber
-$btnRunPipeline.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRunPipeline.Add_Click({
+    try {
     $txtPipeOutput.Text = "Running RE-memorAiZ in DryRun mode...`r`nThis may take a moment."
     $txtPipeOutput.Refresh()
     try {
@@ -837,6 +896,9 @@ $btnRunPipeline.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     } catch {
         $txtPipeOutput.Text = "Pipeline error: $($_.Exception.Message)"
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $tabPipeline.Controls.Add($btnRunPipeline)
 
@@ -855,15 +917,23 @@ $statusBar.Items.Add($statusLabel) | Out-Null
 $form.Controls.Add($statusBar)
 
 # ── Initial data load ────────────────────────────────────────────────────────
-$form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$form.Add_Shown({
+    try {
     Reset-IntentEditorForm
     Refresh-IntentViews
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$dgvIntents.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$dgvIntents.Add_SelectionChanged({
+    try {
     $selectedId = Get-SelectedIntentId -Grid $dgvIntents
     if ($selectedId -gt 0) {
         Load-IntentHistoryView -IntentId $selectedId
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 

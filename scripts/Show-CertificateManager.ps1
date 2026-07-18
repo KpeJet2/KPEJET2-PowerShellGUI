@@ -552,7 +552,8 @@ function Apply-CertFilter {
 }
 
 # ── Show cert details in right pane ──────────────────────────────────────────
-$lvCerts.add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$lvCerts.add_SelectedIndexChanged({
+    try {
     if ($lvCerts.SelectedItems.Count -eq 0) { return }
     $c = $lvCerts.SelectedItems[0].Tag
     if (-not $c) { return }
@@ -584,15 +585,37 @@ $lvCerts.add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/ca
         [void]$sb.AppendLine("Key Usages   : $($c.Purposes)")
     }
     $rtbDetails.Text = $sb.ToString()
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # ── Filter / Refresh handlers ─────────────────────────────────────────────────
-$btnRefresh.add_Click({ Load-AllCerts })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-$cmbStore.add_SelectedIndexChanged({ Apply-CertFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-$txtFilter.add_TextChanged({ Apply-CertFilter })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRefresh.add_Click({
+    try {
+        Load-AllCerts
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
+$cmbStore.add_SelectedIndexChanged({
+    try {
+        Apply-CertFilter
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
+$txtFilter.add_TextChanged({
+    try {
+        Apply-CertFilter
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
 # ── Export Private Key handler ────────────────────────────────────────────────
-$btnExportKey.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnExportKey.add_Click({
+    try {
     if ($lvCerts.SelectedItems.Count -eq 0) {
         [System.Windows.Forms.MessageBox]::Show('Select a certificate first.', 'No Selection', 'OK', 'Warning') | Out-Null
         return
@@ -612,10 +635,13 @@ $btnExportKey.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     } catch {
         [System.Windows.Forms.MessageBox]::Show("Export failed:`n$_", 'Export Error', 'OK', 'Error') | Out-Null
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # ── Root Monitor: Save Baseline ───────────────────────────────────────────────
-$btnSaveBaseline.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnSaveBaseline.add_Click({
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $msg = Save-RootStoreBaseline -AllCerts $script:AllCerts
@@ -627,7 +653,7 @@ $btnSaveBaseline.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
 })
 
 # ── Root Monitor: Compare ─────────────────────────────────────────────────────
-$btnCompare.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnCompare.add_Click({
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $diff = Compare-RootStoreToBaseline -AllCerts $script:AllCerts
@@ -651,7 +677,7 @@ $btnCompare.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 })
 
 # ── Root Monitor: Flag Suspicious ─────────────────────────────────────────────
-$btnFlagSuspicious.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnFlagSuspicious.add_Click({
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $suspect = Get-SuspiciousRootCerts -AllCerts $script:AllCerts
@@ -672,7 +698,7 @@ $btnFlagSuspicious.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch w
 })
 
 # ── Root Monitor: Save Report ─────────────────────────────────────────────────
-$btnSaveReport.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnSaveReport.add_Click({
     try {
         if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
         $ts = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -693,7 +719,8 @@ $btnSaveReport.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 })
 
 # ── Expiry Watch: Scan ────────────────────────────────────────────────────────
-$btnScanExpiry.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnScanExpiry.add_Click({
+    try {
     $lvExpiry.Items.Clear()
     if (@($script:AllCerts).Count -eq 0) { Load-AllCerts }
     $warnDays = [int]$nudDays.Value
@@ -711,6 +738,9 @@ $btnScanExpiry.add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $item.ForeColor = $(if ($status -eq 'EXPIRED') { $accentR } elseif ($status -eq 'CRITICAL') { $accentY } else { $fgMain })
         $item.Tag = $c
         [void]$lvExpiry.Items.Add($item)
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 

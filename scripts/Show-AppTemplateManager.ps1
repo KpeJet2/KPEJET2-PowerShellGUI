@@ -361,7 +361,8 @@ function Show-AppTemplateManager {
     #  EVENT HANDLERS
     # ══════════════════════════════════════════════════════════════════════════
 
-    $btnLoad.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnLoad.Add_Click({
+        try {
         $selected = $cboTemplates.SelectedItem
         if (-not $selected) {
             [System.Windows.Forms.MessageBox]::Show('Select a template from the dropdown first.', 'No Template')
@@ -369,9 +370,13 @@ function Show-AppTemplateManager {
         }
         $filePath = Join-Path $templateDir $selected
         Load-TemplateFile -FilePath $filePath
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnBrowse.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBrowse.Add_Click({
+        try {
         $ofd = New-Object System.Windows.Forms.OpenFileDialog
         $ofd.Filter = 'JSON Templates (*.json)|*.json|All Files (*.*)|*.*'
         $ofd.InitialDirectory = $templateDir
@@ -380,9 +385,13 @@ function Show-AppTemplateManager {
             Load-TemplateFile -FilePath $ofd.FileName
         }
         $ofd.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnSaveTemplate.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSaveTemplate.Add_Click({
+        try {
         $sfd = New-Object System.Windows.Forms.SaveFileDialog
         $sfd.Filter = 'JSON Templates (*.json)|*.json'
         $sfd.InitialDirectory = $templateDir
@@ -415,17 +424,29 @@ function Show-AppTemplateManager {
             Refresh-TemplateDropdown
         }
         $sfd.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnSelectAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSelectAll.Add_Click({
+        try {
         for ($i = 0; $i -lt $clbApps.Items.Count; $i++) { $clbApps.SetItemChecked($i, $true) }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnSelectNone.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSelectNone.Add_Click({
+        try {
         for ($i = 0; $i -lt $clbApps.Items.Count; $i++) { $clbApps.SetItemChecked($i, $false) }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRefreshGap.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshGap.Add_Click({
+        try {
         $statusLabel.Text = 'Scanning installed applications...'
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
         try {
@@ -435,9 +456,13 @@ function Show-AppTemplateManager {
         } finally {
             $form.Cursor = [System.Windows.Forms.Cursors]::Default
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnInstallSelected.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnInstallSelected.Add_Click({
+        try {
         $selectedRows = @($dgvMissing.SelectedRows)
         if ($selectedRows.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show('Select one or more rows in the Missing/Outdated grid.', 'No Selection')
@@ -469,9 +494,13 @@ function Show-AppTemplateManager {
         $script:installedApps = Get-WingetInstalledApps
         Refresh-InstalledGrid
         Refresh-GapAnalysis
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnSaveInstalled.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSaveInstalled.Add_Click({
+        try {
         if ($script:installedApps.Count -eq 0) {
             [System.Windows.Forms.MessageBox]::Show('No installed apps loaded. Click "Check for Updates" first.', 'No Data')
             return
@@ -519,9 +548,13 @@ function Show-AppTemplateManager {
             Refresh-TemplateDropdown
         }
         $sfd.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnCheckUpdates.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCheckUpdates.Add_Click({
+        try {
         $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
         $statusLabel.Text = 'Querying winget for installed apps and available updates...'
         $form.Refresh()
@@ -545,10 +578,17 @@ function Show-AppTemplateManager {
         } finally {
             $form.Cursor = [System.Windows.Forms.Cursors]::Default
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $txtSearch.Add_TextChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $txtSearch.Add_TextChanged({
+        try {
         Refresh-InstalledGrid -Filter $txtSearch.Text
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Initialization ────────────────────────────────────────────────────────

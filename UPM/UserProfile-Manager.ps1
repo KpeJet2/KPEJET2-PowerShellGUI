@@ -501,6 +501,7 @@ $tabs.Font         = $fontBold
 $tabs.Padding      = New-Object System.Drawing.Point(12, 6)
 $tabs.BackColor    = $clrBg
 $tabs.Add_DrawItem({
+    try {
     param($sender, $e)
     $tab   = $sender.TabPages[$e.Index]
     $rect  = $e.Bounds
@@ -512,6 +513,9 @@ $tabs.Add_DrawItem({
     $tf.LineAlignment = [System.Drawing.StringAlignment]::Center
     $e.Graphics.DrawString($tab.Text, $fontBold, [System.Drawing.Brushes]::White, [System.Drawing.RectangleF]$rect, $tf)
     $brush.Dispose()
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $form.Controls.Add($tabs)
 
@@ -808,6 +812,7 @@ function Populate-ViewTree {
 }
 
 $viewTree.Add_AfterSelect({
+    try {
     $viewDetail.Columns.Clear()
     $viewDetail.Rows.Clear()
     if ($null -eq $script:LiveSnapshot -or $null -eq $this.SelectedNode) { return }
@@ -1106,9 +1111,13 @@ $viewTree.Add_AfterSelect({
             }
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 $btnCapture.Add_Click({
+    try {
     $btnCapture.Enabled = $false
     $viewStatusLbl.Text = 'Capturing...'
     Write-UPMLog 'Capture initiated by user'
@@ -1135,6 +1144,9 @@ $btnCapture.Add_Click({
         }
     } finally {
         $btnCapture.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1173,10 +1185,14 @@ $btnBrowseSave = New-StyledButton '...' 392 128 60 24
 $btnBrowseSave.Font = $fontMain
 $savePanel.Controls.Add($btnBrowseSave)
 $btnBrowseSave.Add_Click({
+    try {
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
     $dlg.SelectedPath = $savePathCtl.TextBox.Text
     $dlg.Description  = 'Select folder for profile snapshots'
     if ($dlg.ShowDialog() -eq 'OK') { $savePathCtl.TextBox.Text = $dlg.SelectedPath }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Encryption section
@@ -1205,9 +1221,13 @@ $encBox.Controls.AddRange(@($encPw1Ctl.Label, $encPw1Ctl.TextBox, $encPw2Ctl.Lab
 $encPw1Ctl.TextBox.Enabled = $false
 $encPw2Ctl.TextBox.Enabled = $false
 $chkEncrypt.Add_CheckedChanged({
+    try {
     $encPw1Ctl.TextBox.Enabled = $chkEncrypt.Checked
     $encPw2Ctl.TextBox.Enabled = $chkEncrypt.Checked
     if (-not $chkEncrypt.Checked) { $encPw1Ctl.TextBox.Clear(); $encPw2Ctl.TextBox.Clear() }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Capture Options groupbox
@@ -1257,6 +1277,7 @@ $btnSaveProfile = New-StyledButton 'Capture & Save Profile' 16 480 200 34
 $savePanel.Controls.Add($btnSaveProfile)
 
 $btnSaveProfile.Add_Click({
+    try {
     $profileName = $saveNameCtl.TextBox.Text.Trim()
     $savePath    = $savePathCtl.TextBox.Text.Trim()
 
@@ -1320,6 +1341,9 @@ $btnSaveProfile.Add_Click({
         }
     } finally {
         $btnSaveProfile.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1486,7 +1510,13 @@ function Load-ProfileList {
     }
 }
 
-$btnCmpRefresh.Add_Click({ Load-ProfileList })
+$btnCmpRefresh.Add_Click({
+    try {
+        Load-ProfileList
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
 $cmpProgress = New-Object System.Windows.Forms.ProgressBar
 $cmpProgress.Location = New-Object System.Drawing.Point(8, 730)
@@ -1495,6 +1525,7 @@ $cmpProgress.Visible  = $false
 $tabCompare.Controls.Add($cmpProgress)
 
 $btnCmpLoad.Add_Click({
+    try {
     if ($cmpCombo.SelectedIndex -lt 0) {
         [System.Windows.Forms.MessageBox]::Show('Please select a profile.','Select Profile',[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
         return
@@ -1602,6 +1633,9 @@ $btnCmpLoad.Add_Click({
         }
     } finally {
         $btnCmpLoad.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1755,9 +1789,16 @@ function Load-RestoreList {
     }
 }
 
-$btnRestRefresh.Add_Click({ Load-RestoreList })
+$btnRestRefresh.Add_Click({
+    try {
+        Load-RestoreList
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
 $btnLoadRest.Add_Click({
+    try {
     if ($restCombo.SelectedIndex -lt 0) { return }
     $profiles = $restCombo.Tag
     if (-not $profiles -or $restCombo.SelectedIndex -ge $profiles.Count) { return }
@@ -1793,9 +1834,13 @@ $btnLoadRest.Add_Click({
             }
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 $btnStartRestore.Add_Click({
+    try {
     if ($null -eq $script:LoadedProfile) { return }
 
     $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -1849,6 +1894,9 @@ $btnStartRestore.Add_Click({
         }
     } finally {
         $btnStartRestore.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1958,9 +2006,16 @@ function Show-WhatIfDialog {
 
     $wiBtnClose = New-StyledButton 'Close' 592 566 90 30 ([System.Drawing.Color]::FromArgb(70,30,30))
     $wi.Controls.Add($wiBtnClose)
-    $wiBtnClose.Add_Click({ $wi.Close() })
+    $wiBtnClose.Add_Click({
+        try {
+            $wi.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     $wiBtnRun.Add_Click({
+        try {
         $selectedRows = @(0..($wiGrid.Rows.Count-1) | Where-Object {
             $cell = $wiGrid.Rows[$_].Cells[0].Value
             $cell -eq $true
@@ -2054,6 +2109,9 @@ function Show-WhatIfDialog {
         } catch {
             Start-Process $tmpHtml
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $wi.ShowDialog() | Out-Null
@@ -2063,6 +2121,7 @@ function Show-WhatIfDialog {
 #  STARTUP & SHOW
 # ════════════════════════════════════════════════════════════════════════════
 $form.Add_Load({
+    try {
     Write-UPMLog "UPM started. User=$($script:UPNDisplay) Computer=$($env:COMPUTERNAME) Admin=$($script:IsAdmin) Store=$($script:ProfileStorePath)"
     $statusLabel.Text = "Loading profile list from: $($script:ProfileStorePath)"
     try {
@@ -2076,9 +2135,13 @@ $form.Add_Load({
             StorePath = $script:ProfileStorePath
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 $form.Add_FormClosing({
+    try {
     param($sender, $e)
     $activeTab = if ($tabs -and $tabs.SelectedTab) { $tabs.SelectedTab.Text } else { '(none)' }
     Write-UPMLog "UPM closing. Reason=$($e.CloseReason) ActiveTab=$activeTab Status='$($statusLabel.Text)'"
@@ -2088,11 +2151,18 @@ $form.Add_FormClosing({
         Status      = $statusLabel.Text
         StorePath   = $script:ProfileStorePath
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Auto-size grid columns when tabs switch
 $tabs.Add_SelectedIndexChanged({
+    try {
     [System.Windows.Forms.Application]::DoEvents()
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # P064: Set-StrictMode -Off before Application::Run() prevents StrictMode scope bleed into all WinForms event handlers
