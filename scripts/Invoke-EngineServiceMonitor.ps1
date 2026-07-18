@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-06
@@ -61,6 +61,8 @@ $script:TerminalWindowId = ''
 $script:TerminalWindowOpened = $false
 $script:UserTerminalTabsLaunched = $false
 $script:TerminalUnavailableWarned = $false
+$script:TerminalLaunchLogPath = ''
+$script:TerminalSummaryTabsCreated = $false
 $script:MonitorConfigPath = ''
 $script:MonitorOptions = $null
 $script:LauncherSets = $null

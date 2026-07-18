@@ -578,6 +578,8 @@ $script:_EngineBytesIn = [long]0
 $script:_EngineBytesOut = [long]0
 $script:_EngineLastErrorMessage = ''
 $script:_EngineStatusFreshnessSec = 45
+$script:_SiblingPidsCache = @()
+$script:_SiblingPidsCacheAt = [long]0
 
 <#
 .SYNOPSIS
@@ -701,20 +703,53 @@ function Send-Response {
     $resp.Headers.Set('Access-Control-Max-Age', '600')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
-    [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
+    # HEAD responses MUST carry the same entity headers (including Content-Length)
+    # that the equivalent GET would return, but MUST NOT contain a body. HttpListener
+    # rejects any body byte written to a HEAD response with
+    #   "Bytes to be written to the stream exceed the Content-Length bytes size specified."
+    # Page/static routes dispatch on URL only (not method), so a HEAD probe reaches a
+    # body-producing handler. Detect HEAD and suppress the body write while keeping the
+    # correct Content-Length header. Also skip writing a zero-length body.
+    $isHead = $false
+    try { $isHead = ([string]$Context.Request.HttpMethod -eq 'HEAD') } catch { $isHead = $false }
     $resp.ContentLength64 = $bytes.Length
+    if (-not $isHead) {
+        [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
+    }
+    if ($StatusCode -ge 500) {
+        try {
+            $errUrl = try { [string]$Context.Request.Url.AbsolutePath } catch { '?' }
+            $errMethod = try { [string]$Context.Request.HttpMethod } catch { '?' }
+            Write-EngineLog "Server error $StatusCode returned for $errMethod $errUrl" -Level 'WARN'
+        } catch { <# Intentional: 5xx logging is best-effort and must never re-throw into the response path #> }
+    }
     try {
-        $resp.OutputStream.Write($bytes, 0, $bytes.Length)
+        if (-not $isHead -and $bytes.Length -gt 0) {
+            $resp.OutputStream.Write($bytes, 0, $bytes.Length)
+        }
         $resp.OutputStream.Close()
+    } catch [System.Net.HttpListenerException] {
+        $script:_EngineLastErrorMessage = "Client disconnected before response flush: $($_.Exception.Message)"
+        <# Intentional: benign client abort — remote closed the connection mid-write #>
+    } catch [System.IO.IOException] {
+        $script:_EngineLastErrorMessage = "Client disconnected before response flush: $($_.Exception.Message)"
+        <# Intentional: benign client abort — broken pipe / half-open socket #>
+    } catch [System.ObjectDisposedException] {
+        $script:_EngineLastErrorMessage = "Response stream already closed: $($_.Exception.Message)"
+        <# Intentional: benign — stream already disposed by an earlier send on this context #>
     } catch {
+        # Genuine, unexpected write fault — surface via status endpoint AND engine log.
         $script:_EngineLastErrorMessage = "Response write failure: $($_.Exception.Message)"
-        <# client disconnected #>
+        try { Write-EngineLog "Response write failure [$StatusCode]: $($_.Exception.Message)" -Level 'WARN' } catch { <# Intentional: best-effort logging #> }
     }
 }
 
 function Get-PublicKeyFingerprint {
     [CmdletBinding()]
     param()
+    if (-not [string]::IsNullOrWhiteSpace([string]$script:_PublicKeyFingerprintCache)) {
+        return [string]$script:_PublicKeyFingerprintCache
+    }
     $pkiDir = Join-Path $WorkspacePath 'pki'
     if (-not (Test-Path -LiteralPath $pkiDir -PathType Container)) {
         return 'Unavailable'
@@ -737,7 +772,8 @@ function Get-PublicKeyFingerprint {
             $hex = [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant()
             if ($hex.Length -gt 24) { $hex = $hex.Substring(0, 24) }
             $label = [System.IO.Path]::GetFileName($candidate)
-            return "${label}:$hex"
+            $script:_PublicKeyFingerprintCache = "${label}:$hex"
+            return [string]$script:_PublicKeyFingerprintCache
         } finally {
             $sha.Dispose()
         }
@@ -822,6 +858,20 @@ can list every PID currently linked to the engine. Returns an array of
 function Get-EngineSiblingPids {
     [CmdletBinding()]
     param()
+    # Reliability: GET /api/engine/status is polled every ~3s. Enumerating sibling
+    # PIDs runs a Get-CimInstance Win32_Process WMI query that costs 100s of ms and,
+    # because the engine is single-threaded, BLOCKS every other request for that
+    # duration -> status "misses" -> false Offline cascade. Cache the result with a
+    # short TTL so hot-path polls return instantly and the CIM query runs at most
+    # once per TTL window.
+    $nowTicks = [System.Diagnostics.Stopwatch]::GetTimestamp()
+    $ttlSec   = 8
+    if ($null -ne $script:_SiblingPidsCache -and $script:_SiblingPidsCacheAt -gt 0) {
+        $ageSec = ($nowTicks - $script:_SiblingPidsCacheAt) / [System.Diagnostics.Stopwatch]::Frequency
+        if ($ageSec -ge 0 -and $ageSec -lt $ttlSec) {
+            return ,@($script:_SiblingPidsCache)
+        }
+    }
     $results = New-Object System.Collections.Generic.List[object]
     $seen = @{}
 
@@ -859,7 +909,10 @@ function Get-EngineSiblingPids {
         }
     } catch { <# Intentional: CIM unavailable, return self only #> }
 
-    return ,@($results.ToArray())
+    $resolved = @($results.ToArray())
+    $script:_SiblingPidsCache = $resolved
+    $script:_SiblingPidsCacheAt = $nowTicks
+    return ,@($resolved)
 }
 
 <#
@@ -3229,16 +3282,20 @@ try {
                     $script:_ExitClean = $true
                     break
                 }
-                # Idle tick — broadcast any new scan-progress data to WebSocket clients
-                try {
-                    if (Test-Path -LiteralPath $pgPath) {
-                        $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
-                        if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
-                            $script:lastProgressContent = $raw
-                            Send-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                # Idle tick — only poll/broadcast progress when a WS client is connected.
+                # WS is currently disabled by design and /ws returns 501, so this avoids
+                # unnecessary 500ms file I/O work in the hot idle path.
+                if ($WsClients.Count -gt 0) {
+                    try {
+                        if (Test-Path -LiteralPath $pgPath) {
+                            $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
+                            if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
+                                $script:lastProgressContent = $raw
+                                Send-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                            }
                         }
-                    }
-                } catch { <# non-fatal — progress file may not exist yet #> }
+                    } catch { <# non-fatal — progress file may not exist yet #> }
+                }
                 continue
             }
             $context = $pendingTask.Result

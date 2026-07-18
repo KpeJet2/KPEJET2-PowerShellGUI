@@ -38,6 +38,9 @@ set "MODE=INTERACTIVE"
 set "PROFILE=standard"
 set "STEP_MODE=RUN"
 set "MENU_ACTION=RUN"
+set "WT_LOG_FILE=%WS%\logs\terminal-tab-launch-live.log"
+set "WT_SUMMARY_TITLE=[SUMMARY] ServiceCluster Launch"
+set "WT_LOG_TITLE=[LOG] ServiceCluster Actions"
 
 REM --- profile toggles ---
 set "INCLUDE_HEAVY_SCANS=0"
@@ -86,6 +89,7 @@ echo [INFO] Launch profile: %PROFILE%
 echo [INFO] Mode=%MODE% StepMode=!STEP_MODE!
 echo [INFO] HeavyScans=%INCLUDE_HEAVY_SCANS% EngineOps=%INCLUDE_ENGINE_OPS% UiTools=%INCLUDE_UI_TOOLS%
 echo [INFO] CrashCleanup=%INCLUDE_CRASH_CLEANUP% EventLogViewer=%INCLUDE_EVENTLOG_VIEWER%
+call :InitLaunchTelemetry
 
 call :RunSelectedSteps
 set "FINAL_EXIT=%ERRORLEVEL%"
@@ -217,6 +221,7 @@ exit /b 0
 
 :RunSelectedSteps
 set "WT_ROOT_CREATED=0"
+set "WT_LOG_TAB_CREATED=0"
 
 if "%STEP1%"=="1" call :ExecuteStep "Verify Windows Terminal availability" Step1_CheckWt
 if errorlevel 90 exit /b 0
@@ -452,13 +457,119 @@ exit /b 0
 set "TAB_TITLE=%~1"
 set "TAB_DIR=%~2"
 set "TAB_CMD=%~3"
+call :ResolveTabColor "%TAB_TITLE%"
+set "TAB_DECORATED_TITLE=[!TAB_COLOR_TAG!] %TAB_TITLE%"
+
+set "TS=%date% %time%"
+>> "%WT_LOG_FILE%" echo [!TS!][QUEUE][!TAB_COLOR!] title=%TAB_TITLE% dir=%TAB_DIR%
+>> "%WT_LOG_FILE%" echo [!TS!][QUEUE-CMD] %TAB_CMD%
 
 if "%WT_ROOT_CREATED%"=="0" (
-  start "" wt -w new nt --title "%TAB_TITLE%" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  call :OpenSummaryAndLogTabs
+  timeout /t 1 /nobreak >nul
+  start "" wt -w 0 nt --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  set "TS=%date% %time%"
+  >> "%WT_LOG_FILE%" echo [!TS!][LAUNCH][!TAB_COLOR!] !TAB_DECORATED_TITLE!
   set "WT_ROOT_CREATED=1"
   timeout /t 1 /nobreak >nul
 ) else (
-  start "" wt -w 0 nt --title "%TAB_TITLE%" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  start "" wt -w 0 nt --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  set "TS=%date% %time%"
+  >> "%WT_LOG_FILE%" echo [!TS!][LAUNCH][!TAB_COLOR!] !TAB_DECORATED_TITLE!
+)
+exit /b 0
+
+:InitLaunchTelemetry
+if not exist "%WS%\logs" mkdir "%WS%\logs" >nul 2>&1
+set "TS=%date% %time%"
+> "%WT_LOG_FILE%" echo [!TS!][SESSION] Launch-ServiceClusterTabs start profile=%PROFILE% mode=%MODE% stepMode=!STEP_MODE!
+>> "%WT_LOG_FILE%" echo [!TS!][SESSION] Workspace=%WS%
+>> "%WT_LOG_FILE%" echo [!TS!][SESSION] Steps S1=%STEP1% S2=%STEP2% S3=%STEP3% S4=%STEP4% S5=%STEP5% S6=%STEP6%
+exit /b 0
+
+:OpenSummaryAndLogTabs
+set "SUMMARY_CMD=%PS_EXE% -NoProfile -NoExit -Command Write-Host 'Service Cluster Launch Summary' -ForegroundColor Black -BackgroundColor Cyan; Write-Host 'Workspace: %WS%'; Write-Host 'Profile: %PROFILE%'; Write-Host 'Mode: %MODE%  StepMode: !STEP_MODE!'; Write-Host 'Selected steps: S1=%STEP1% S2=%STEP2% S3=%STEP3% S4=%STEP4% S5=%STEP5% S6=%STEP6%'; Write-Host ''; Write-Host 'This summary tab remains open.' -ForegroundColor Yellow; Write-Host 'Live launch log file:' -ForegroundColor DarkGray; Write-Host '%WT_LOG_FILE%' -ForegroundColor Gray"
+start "" wt -w new nt --title "%WT_SUMMARY_TITLE%" --tabColor "#0369A1" --startingDirectory "%WS%" -- %SUMMARY_CMD%
+set "TS=%date% %time%"
+>> "%WT_LOG_FILE%" echo [!TS!][TAB] Summary tab opened
+
+set "LOG_CMD=%PS_EXE% -NoProfile -NoExit -Command Write-Host 'Service Cluster Launch Action Log' -ForegroundColor Black -BackgroundColor DarkGreen; Write-Host 'Live tail:' -ForegroundColor Gray; Write-Host '%WT_LOG_FILE%' -ForegroundColor Gray; Write-Host ''; if(Test-Path -LiteralPath '%WT_LOG_FILE%'){ Get-Content -LiteralPath '%WT_LOG_FILE%' -Wait -Tail 120 } else { Write-Host 'Log file not found.' -ForegroundColor Red }"
+start "" wt -w 0 nt --title "%WT_LOG_TITLE%" --tabColor "#0F766E" --startingDirectory "%WS%" -- %LOG_CMD%
+set "TS=%date% %time%"
+>> "%WT_LOG_FILE%" echo [!TS!][TAB] Log tab opened
+set "WT_LOG_TAB_CREATED=1"
+exit /b 0
+
+:ResolveTabColor
+set "TAB_COLOR=#374151"
+set "TAB_COLOR_TAG=GRAY"
+if /I "%~1"=="VersionScan" (
+  set "TAB_COLOR=#2563EB"
+  set "TAB_COLOR_TAG=BLUE"
+)
+if /I "%~1"=="EngineMonitor" (
+  set "TAB_COLOR=#7C3AED"
+  set "TAB_COLOR_TAG=PURP"
+)
+if /I "%~1"=="AiActionLog" (
+  set "TAB_COLOR=#0F766E"
+  set "TAB_COLOR_TAG=TEAL"
+)
+if /I "%~1"=="DepScanMgr" (
+  set "TAB_COLOR=#B45309"
+  set "TAB_COLOR_TAG=AMBR"
+)
+if /I "%~1"=="WebEngine" (
+  set "TAB_COLOR=#BE123C"
+  set "TAB_COLOR_TAG=ROSE"
+)
+if /I "%~1"=="TaskTrayStatus" (
+  set "TAB_COLOR=#1D4ED8"
+  set "TAB_COLOR_TAG=AZUR"
+)
+if /I "%~1"=="CronAiAthon" (
+  set "TAB_COLOR=#15803D"
+  set "TAB_COLOR_TAG=GRN"
+)
+if /I "%~1"=="CronProc1" (
+  set "TAB_COLOR=#4D7C0F"
+  set "TAB_COLOR_TAG=LIME"
+)
+if /I "%~1"=="SvcDashboard" (
+  set "TAB_COLOR=#7E22CE"
+  set "TAB_COLOR_TAG=VLT"
+)
+if /I "%~1"=="FullSysScan" (
+  set "TAB_COLOR=#B91C1C"
+  set "TAB_COLOR_TAG=RED"
+)
+if /I "%~1"=="PSEnvScan" (
+  set "TAB_COLOR=#92400E"
+  set "TAB_COLOR_TAG=GOLD"
+)
+if /I "%~1"=="EngineBootstrap" (
+  set "TAB_COLOR=#334155"
+  set "TAB_COLOR_TAG=SLAT"
+)
+if /I "%~1"=="WebStatus" (
+  set "TAB_COLOR=#475569"
+  set "TAB_COLOR_TAG=STAT"
+)
+if /I "%~1"=="CrashCleanupDry" (
+  set "TAB_COLOR=#991B1B"
+  set "TAB_COLOR_TAG=CRSH"
+)
+if /I "%~1"=="ScanDashboard" (
+  set "TAB_COLOR=#0C4A6E"
+  set "TAB_COLOR_TAG=DASH"
+)
+if /I "%~1"=="EventLogViewer" (
+  set "TAB_COLOR=#155E75"
+  set "TAB_COLOR_TAG=EVNT"
+)
+if /I "%~1"=="MCPConfig" (
+  set "TAB_COLOR=#4338CA"
+  set "TAB_COLOR_TAG=MCP"
 )
 exit /b 0
 
