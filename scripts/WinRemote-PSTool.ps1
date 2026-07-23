@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -84,7 +84,14 @@ function Load-RemoteHosts {
     if (Test-Path $script:HostsFile) {
         try {
             $json = Get-Content -Path $script:HostsFile -Raw -ErrorAction Stop | ConvertFrom-Json
-            return @($json)
+            if ($json -is [System.Collections.IEnumerable] -and -not ($json -is [pscustomobject])) {
+                # Backward compatibility: legacy files stored hosts as root array.
+                return @($json)
+            }
+            if ($json -and $json.PSObject.Properties.Name -contains 'Hosts') {
+                return @($json.Hosts)
+            }
+            return @()
         } catch {
             return @()
         }
@@ -97,7 +104,11 @@ function Save-RemoteHosts {
     if (-not (Test-Path $script:ConfigDir)) {
         New-Item -ItemType Directory -Path $script:ConfigDir -Force | Out-Null
     }
-    $Hosts | ConvertTo-Json -Depth 4 | Set-Content -Path $script:HostsFile -Encoding UTF8 -Force
+    $payload = [ordered]@{
+        VersionTag = '2607.B6.V53.0'
+        Hosts = @($Hosts)
+    }
+    $payload | ConvertTo-Json -Depth 4 | Set-Content -Path $script:HostsFile -Encoding UTF8 -Force
 }
 
 function New-HostEntry {

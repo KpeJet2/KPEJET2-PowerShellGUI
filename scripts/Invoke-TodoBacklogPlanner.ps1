@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B6.V53.0
 # FileRole: Script
 # Purpose: Normalize backlog data from todo JSON files and inline TODO/FIXME/HACK markers.
 

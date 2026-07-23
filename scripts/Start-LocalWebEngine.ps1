@@ -1,4 +1,4 @@
-﻿# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -1287,6 +1287,469 @@ function Get-EngineLogsList {
         })
     }
     Send-Json -Context $Context -Object @{ logs = @($result) }
+}
+
+# ─── Route: GET/POST /api/netmon/connections ────────────────────────────────
+<#
+.SYNOPSIS
+Get or ingest NetMon connection telemetry records.
+.DESCRIPTION
+GET returns recent records from logs/netmon/connections.jsonl.
+POST appends one or more telemetry records for dashboard consumption.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-NetMonLogPaths {
+    [CmdletBinding()]
+    param()
+    $root = Join-Path $WorkspacePath 'logs'
+    $netmonDir = Join-Path $root 'netmon'
+    if (-not (Test-Path -LiteralPath $netmonDir)) {
+        New-Item -Path $netmonDir -ItemType Directory -Force | Out-Null
+    }
+    return [ordered]@{
+        directory       = $netmonDir
+        connectionsJson = (Join-Path $netmonDir 'connections.jsonl')
+        eventsJson      = (Join-Path $netmonDir 'events.jsonl')
+    }
+}
+
+function ConvertTo-NetMonRecord {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$InputObject,
+        [string]$DefaultSource = 'api'
+    )
+
+    $ip = [string]$InputObject.ip
+    if ([string]::IsNullOrWhiteSpace($ip)) { $ip = '0.0.0.0' }
+    $protocol = [string]$InputObject.protocol
+    if ([string]::IsNullOrWhiteSpace($protocol)) { $protocol = 'UNKNOWN' }
+    $service = [string]$InputObject.service
+    if ([string]::IsNullOrWhiteSpace($service)) { $service = 'n/a' }
+    $status = [string]$InputObject.status
+    if ([string]::IsNullOrWhiteSpace($status)) { $status = 'SUCCESS' }
+    $country = [string]$InputObject.country
+    if ([string]::IsNullOrWhiteSpace($country)) { $country = 'UNKNOWN' }
+    $source = [string]$InputObject.source
+    if ([string]::IsNullOrWhiteSpace($source)) { $source = $DefaultSource }
+    $ts = [string]$InputObject.ts
+    if ([string]::IsNullOrWhiteSpace($ts)) { $ts = (Get-Date -Format 'o') }
+
+    return [ordered]@{
+        ts        = $ts
+        ip        = $ip
+        country   = $country
+        protocol  = $protocol.ToUpperInvariant()
+        service   = $service
+        status    = $status.ToUpperInvariant()
+        bytesIn   = [int]$InputObject.bytesIn
+        bytesOut  = [int]$InputObject.bytesOut
+        latencyMs = [int]$InputObject.latencyMs
+        source    = $source
+    }
+}
+
+function Write-NetMonRecords {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [Parameter(Mandatory)] [object[]]$Records
+    )
+
+    foreach ($r in @($Records)) {
+        $json = ($r | ConvertTo-Json -Depth 6 -Compress)
+        Add-Content -LiteralPath $FilePath -Value $json -Encoding UTF8
+    }
+}
+
+function Read-NetMonRecords {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [int]$Tail = 200
+    )
+
+    if (-not (Test-Path -LiteralPath $FilePath)) { return @() }
+    if ($Tail -lt 1) { $Tail = 1 }
+    if ($Tail -gt 5000) { $Tail = 5000 }
+
+    $rows = [System.Collections.ArrayList]@()
+    $lines = @(Get-Content -LiteralPath $FilePath -Encoding UTF8 -Tail $Tail -ErrorAction SilentlyContinue)
+    foreach ($line in @($lines)) {
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+        try {
+            $obj = $line | ConvertFrom-Json -ErrorAction Stop
+            $null = $rows.Add($obj)
+        } catch {
+            Write-EngineLog "NetMon parse skip: $($_.Exception.Message)" -Level 'WARN'
+        }
+    }
+    return @($rows)
+}
+
+function Get-NetMonConnections {
+    [CmdletBinding()]
+    param($Context)
+
+    $tailParam = $Context.Request.QueryString['tail']
+    $statusParam = [string]$Context.Request.QueryString['status']
+    $ipLikeParam = [string]$Context.Request.QueryString['ipLike']
+    $protocolParam = [string]$Context.Request.QueryString['protocol']
+
+    $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 200 }
+    if ($tail -gt 5000) { $tail = 5000 }
+
+    $paths = Get-NetMonLogPaths
+    $allRows = @(Read-NetMonRecords -FilePath $paths.connectionsJson -Tail $tail)
+
+    $filtered = @($allRows)
+    if (-not [string]::IsNullOrWhiteSpace($statusParam) -and $statusParam -ne 'all') {
+        $statusUpper = $statusParam.ToUpperInvariant()
+        $filtered = @($filtered | Where-Object { ([string]$_.status).ToUpperInvariant() -eq $statusUpper })
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ipLikeParam)) {
+        $filtered = @($filtered | Where-Object { ([string]$_.ip) -like ('*' + $ipLikeParam + '*') })
+    }
+    if (-not [string]::IsNullOrWhiteSpace($protocolParam) -and $protocolParam -ne 'all') {
+        $protoUpper = $protocolParam.ToUpperInvariant()
+        $filtered = @($filtered | Where-Object { ([string]$_.protocol).ToUpperInvariant() -eq $protoUpper })
+    }
+
+    $protocolMap = @{}
+    $ipMap = @{}
+    $successCount = 0
+    foreach ($r in @($filtered)) {
+        $proto = ([string]$r.protocol).ToUpperInvariant()
+        if (-not $protocolMap.ContainsKey($proto)) {
+            $protocolMap[$proto] = [ordered]@{ attempts = 0; success = 0; failed = 0 }
+        }
+        $protocolMap[$proto].attempts++
+        if (([string]$r.status).ToUpperInvariant() -eq 'SUCCESS') {
+            $protocolMap[$proto].success++
+            $successCount++
+        } else {
+            $protocolMap[$proto].failed++
+        }
+
+        $ip = [string]$r.ip
+        if (-not $ipMap.ContainsKey($ip)) {
+            $ipMap[$ip] = [ordered]@{
+                ip = $ip
+                country = [string]$r.country
+                firstSeen = [string]$r.ts
+                lastSeen = [string]$r.ts
+                totalCount = 0
+            }
+        }
+        $ipMap[$ip].totalCount++
+        $ipMap[$ip].lastSeen = [string]$r.ts
+    }
+
+    Send-Json -Context $Context -Object @{
+        schema = 'NetMonConnections/1.0'
+        returned = @($filtered).Count
+        tail = $tail
+        success = $successCount
+        failed = (@($filtered).Count - $successCount)
+        uniqueIps = @($ipMap.Keys).Count
+        protocols = $protocolMap
+        ipSummary = @($ipMap.Values)
+        connections = @($filtered)
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+
+function Add-NetMonConnections {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $bodyStr = ''
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Close()
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($bodyStr)) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    $body = $null
+    try {
+        $body = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    $records = @()
+    if ($body -is [System.Collections.IEnumerable] -and -not ($body -is [string])) {
+        foreach ($entry in @($body)) {
+            $records += (ConvertTo-NetMonRecord -InputObject $entry -DefaultSource 'api-batch')
+        }
+    } elseif ($null -ne $body.connections -and $body.connections -is [System.Collections.IEnumerable]) {
+        foreach ($entry in @($body.connections)) {
+            $records += (ConvertTo-NetMonRecord -InputObject $entry -DefaultSource 'api-connections')
+        }
+    } else {
+        $records += (ConvertTo-NetMonRecord -InputObject $body -DefaultSource 'api-single')
+    }
+
+    if (@($records).Count -lt 1) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'No records supplied'
+        return
+    }
+
+    $paths = Get-NetMonLogPaths
+    Write-NetMonRecords -FilePath $paths.connectionsJson -Records @($records)
+    Write-NetMonRecords -FilePath $paths.eventsJson -Records @($records | Where-Object { ([string]$_.status).ToUpperInvariant() -eq 'SUCCESS' })
+
+    Send-Json -Context $Context -Object @{
+        accepted = @($records).Count
+        path = $paths.connectionsJson
+        schema = 'NetMonConnections/1.0'
+    }
+}
+
+function Get-NetMonCollectorRuntimePaths {
+    [CmdletBinding()]
+    param()
+    $paths = Get-NetMonLogPaths
+    return [ordered]@{
+        collectorScript = (Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-NetMonCollector.ps1')
+        pidFile         = (Join-Path $paths.directory 'collector.pid.json')
+        logFile         = (Join-Path $paths.directory 'netmon-collector.log')
+    }
+}
+
+function Get-NetMonCollectorProcess {
+    [CmdletBinding()]
+    param([int]$ProcessId)
+
+    if ($ProcessId -le 0) { return $null }
+    $p = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+    if ($null -eq $p) { return $null }
+
+    $cmd = ''
+    try {
+        $cim = Get-CimInstance -ClassName Win32_Process -ErrorAction Stop -Filter ("ProcessId = " + $ProcessId)
+        if ($null -ne $cim) {
+            $cmd = [string]$cim.CommandLine
+        }
+    } catch { <# Intentional: fallback to process-only telemetry #> }
+
+    return [pscustomobject]@{
+        pid = [int]$p.Id
+        processName = [string]$p.ProcessName
+        commandLine = $cmd
+        startTime = (Get-Date $p.StartTime -Format 'o')
+        isCollector = ($cmd -match 'Invoke-NetMonCollector\.ps1')
+    }
+}
+
+function Get-NetMonCollectorStatus {
+    [CmdletBinding()]
+    param($Context)
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    $pidValue = 0
+    $pidMeta = $null
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $pidMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $pidMeta.pid) {
+                $pidValue = [int]$pidMeta.pid
+            }
+        } catch { <# Intentional: tolerate malformed pid file #> }
+    }
+
+    $proc = Get-NetMonCollectorProcess -ProcessId $pidValue
+    $isRunning = ($null -ne $proc -and $proc.isCollector)
+    Send-Json -Context $Context -Object @{
+        running = $isRunning
+        pid = if ($isRunning) { $proc.pid } else { 0 }
+        processName = if ($isRunning) { $proc.processName } else { '' }
+        startTime = if ($isRunning) { $proc.startTime } else { '' }
+        commandLine = if ($isRunning) { $proc.commandLine } else { '' }
+        scriptPath = $runtime.collectorScript
+        pidFile = $runtime.pidFile
+        logFile = $runtime.logFile
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+
+function Start-NetMonCollector {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    if (-not (Test-Path -LiteralPath $runtime.collectorScript)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'Invoke-NetMonCollector.ps1 not found'
+        return
+    }
+
+    $bodyObj = $null
+    $bodyStr = ''
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Close()
+        }
+        if (-not [string]::IsNullOrWhiteSpace($bodyStr)) {
+            $bodyObj = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+        }
+    } catch { <# Intentional: fallback to defaults when body is empty or malformed #> }
+
+    $requestedPoll = 10
+    $requestedLimit = 120
+    $includeLoopback = $false
+    if ($null -ne $bodyObj) {
+        if ($bodyObj.PSObject.Properties.Name -contains 'pollSeconds') {
+            $requestedPoll = [int]$bodyObj.pollSeconds
+        }
+        if ($bodyObj.PSObject.Properties.Name -contains 'sampleLimit') {
+            $requestedLimit = [int]$bodyObj.sampleLimit
+        }
+        if ($bodyObj.PSObject.Properties.Name -contains 'includeLoopback') {
+            $includeLoopback = [bool]$bodyObj.includeLoopback
+        }
+    }
+    if ($requestedPoll -lt 2) { $requestedPoll = 2 }
+    if ($requestedPoll -gt 600) { $requestedPoll = 600 }
+    if ($requestedLimit -lt 1) { $requestedLimit = 1 }
+    if ($requestedLimit -gt 1000) { $requestedLimit = 1000 }
+
+    $existingPid = 0
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $existingMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $existingMeta.pid) {
+                $existingPid = [int]$existingMeta.pid
+            }
+        } catch { <# Intentional: ignore malformed pid file #> }
+    }
+    $existing = Get-NetMonCollectorProcess -ProcessId $existingPid
+    if ($null -ne $existing -and $existing.isCollector) {
+        Send-Json -Context $Context -Object @{
+            started = $false
+            running = $true
+            pid = $existing.pid
+            message = 'Collector already running'
+        }
+        return
+    }
+
+    $hostExe = 'pwsh.exe'
+    if (-not (Get-Command -Name $hostExe -ErrorAction SilentlyContinue)) {
+        $hostExe = 'powershell.exe'
+    }
+    if (-not (Get-Command -Name $hostExe -ErrorAction SilentlyContinue)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'No PowerShell host found for collector'
+        return
+    }
+
+    $engineBase = ('http://127.0.0.1:' + $Port)
+    $argsList = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $runtime.collectorScript,
+        '-WorkspacePath', $WorkspacePath,
+        '-EngineBaseUrl', $engineBase,
+        '-Continuous',
+        '-PollSeconds', [string]$requestedPoll,
+        '-SampleLimit', [string]$requestedLimit
+    )
+    if ($includeLoopback) {
+        $argsList += '-IncludeLoopback'
+    }
+
+    try {
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $argsList -WindowStyle Hidden -PassThru -ErrorAction Stop
+        $pidMeta = [ordered]@{
+            pid = [int]$proc.Id
+            host = $hostExe
+            pollSeconds = $requestedPoll
+            sampleLimit = $requestedLimit
+            includeLoopback = $includeLoopback
+            startedAt = (Get-Date -Format 'o')
+            scriptPath = $runtime.collectorScript
+        }
+        $pidJson = $pidMeta | ConvertTo-Json -Depth 5
+        Set-Content -LiteralPath $runtime.pidFile -Value $pidJson -Encoding UTF8 -Force
+        Send-Json -Context $Context -Object @{
+            started = $true
+            running = $true
+            pid = [int]$proc.Id
+            pollSeconds = $requestedPoll
+            sampleLimit = $requestedLimit
+            includeLoopback = $includeLoopback
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ("Failed to start collector: " + $_.Exception.Message)
+    }
+}
+
+function Stop-NetMonCollector {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    $pidValue = 0
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $pidMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $pidMeta.pid) {
+                $pidValue = [int]$pidMeta.pid
+            }
+        } catch { <# Intentional: ignore malformed pid file #> }
+    }
+
+    $collectorProcess = Get-NetMonCollectorProcess -ProcessId $pidValue
+    if ($null -eq $collectorProcess -or -not $collectorProcess.isCollector) {
+        if (Test-Path -LiteralPath $runtime.pidFile) {
+            Remove-Item -LiteralPath $runtime.pidFile -Force -ErrorAction SilentlyContinue
+        }
+        Send-Json -Context $Context -Object @{ stopped = $false; running = $false; message = 'Collector not running' }
+        return
+    }
+
+    try {
+        Stop-Process -Id $collectorProcess.pid -Force -ErrorAction Stop
+        if (Test-Path -LiteralPath $runtime.pidFile) {
+            Remove-Item -LiteralPath $runtime.pidFile -Force -ErrorAction SilentlyContinue
+        }
+        Send-Json -Context $Context -Object @{ stopped = $true; running = $false; pid = $collectorProcess.pid }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ("Failed to stop collector: " + $_.Exception.Message)
+    }
 }
 
 # ─── Route: POST /api/scan/full | /api/scan/incremental ───────────────────────
@@ -3458,6 +3921,24 @@ try {
             }
             '^/api/engine/events$' {
                 if ($method -eq 'GET') { Get-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/connections$' {
+                if ($method -eq 'GET')      { Get-NetMonConnections -Context $context }
+                elseif ($method -eq 'POST') { Add-NetMonConnections -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/status$' {
+                if ($method -eq 'GET') { Get-NetMonCollectorStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/start$' {
+                if ($method -eq 'POST') { Start-NetMonCollector -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/stop$' {
+                if ($method -eq 'POST') { Stop-NetMonCollector -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/logs/list$' {

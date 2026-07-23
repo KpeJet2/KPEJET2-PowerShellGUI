@@ -5,6 +5,12 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
 
+- **2026-07-23 23:39:26** Baseline refresh (`./config/pipeline-refine-baseline-nightly.json`, profile=nightly): MEDIUM:deprecated-reference: 0 -> 1; MEDIUM:duplicate-function: 0 -> 20
+
+- **2026-07-23 23:38:39** Baseline refresh (`./config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 0 -> 1
+
+- **2026-07-23 23:38:02** Baseline refresh (`./config/pipeline-refine-baseline-full.json`, profile=full): MEDIUM:deprecated-reference: 0 -> 1; MEDIUM:duplicate-function: 0 -> 20
+
 - **2605.B5.V46.2** — CORTIX R2 dependency-map refactor.
   1. **⚙ New viewer** — `XHTML-DependencyMapR2-CORTIX.xhtml` adds a modular capture surface for folders, files, metadata, hyperlinks, websites, APIs, network/Wi-Fi, NetSecOps, geo/weather, automation, UML, and media cipher export.
   2. **⚙ Launch integration** — `Main-GUI.ps1`, `XHTML-WorkspaceHub.xhtml`, `scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml`, and `modules/PwShGUI-TrayHost.psd1` now expose the new CORTIX tool entry.
@@ -65,6 +71,9 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## How to Regenerate
 Run tools/Generate-Changelog.ps1 to update this file from VersionTag and git log.
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+# VersionTag: 2607.B6.V53.0
 # FileRole: Module
 # Module: PwShGUI-LaunchTimingProfile
 # Purpose: Aggregate Launch-GUI*.bat startup timings from logs into a trend.

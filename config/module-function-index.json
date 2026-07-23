@@ -1,5 +1,6 @@
 [
   {
+  "VersionTag": "2607.B6.V53.0",
     "module": "AgentRegistry",
     "function": "Get-AutoHealCandidates",
     "source": "sovereign-kernel\\core\\AgentRegistry.psm1"

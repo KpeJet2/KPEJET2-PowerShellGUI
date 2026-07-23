@@ -1,0 +1,2009 @@
+{
+  "summary": {
+    "targetVersion": "2607.B6.V53.0",
+    "manifestEntries": 285,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 284,
+    "manifestMissingFile": 0,
+    "skipped": 1,
+    "errors": 0
+  },
+  "results": [
+    {
+      "path": "modules/_TEMPLATE-Module.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/AssistedSASC.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/AVPN-Tracker.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/ConvoVault-BWcli.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/CronAiAthon-BugTracker.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/CronAiAthon-ErrorLinker.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/CronAiAthon-EventLog.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/CronAiAthon-Pipeline.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/CronAiAthon-Scheduler.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/Get-LaunchTelemetry.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/Import-WorkspaceModule.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PKIChainManager.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI_AutoIssueFinder.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-AgentScorecard.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-AiActionLog.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-AutoRemediate.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-BreakingChange.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-CheckpointPrune.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-ConvoVault.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-CoverageReport.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-DependencyMap.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-EventLogAdapter.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-EventLogReplay.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-HistoryZip.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-IntegrityCore.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-KillSwitch.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-LaunchTimingProfile.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-LegacyEncoding.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-ManifestDiff.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-NetworkTools.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-PesterParallel.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-PSScriptAnalyzerScan.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-PSVersionStandards.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SchemaTranslator.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SecretScan.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SessionMetrics.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SinDriftScan.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SinFixBranch.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SinFromScan.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-SinHeatmap.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-Theme.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-TrayHost.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-TrayServiceRoutes.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-VersionManager.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-VersionTag.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-WebEngineServices.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-WorkspaceSeed.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUI-XhtmlReportTester.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/PwShGUICore.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/RE-memorAiZ.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/SASC-Adapters.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/SINGovernance.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/UserProfileManager.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "modules/WorkspaceIntentReview.psm1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Add-VersionTag.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Add-XhtmlVersionLink.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Apply-CanonicalVersion.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-AgenticManifest.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-DirectoryTree.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-DynaManifest.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-SandboxTestingPlan.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-ScanToolsManifest.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-ToolsInventory.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Build-XhtmlVersionFeed.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Convert-SinScanToBugs.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/ConvertTo-FeatureToDo.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Export-SystemReport.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Find-ModuleReferences.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/fix_check_version.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/fix_update_version.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Fix-P006-EncodingViolations.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Install-BitwardenLite.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Install-PreCommitHook.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-AgentCallStats.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-AiActionLogReport.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-AutoApprovalWriter.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-BacklogReconcile.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ChangelogDiff.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ChatIssueSinBatch.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ChecklistActions.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-CodeStandardsAssessment.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-CodRhiPear.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ConfigCoverageAudit.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-CronProcessor.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-CyclicRenameCheck.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DataMigration.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DeduplicationAssessment.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DependencyScanManager.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DiagnosticDryRunPipeline.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DiffScheduler.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-DynaManifestValidation.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-EngineCrashCleanup.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-EngineServiceMonitor.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ErrorHandlingContinuousLoop.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ErrorHandlingRemediation.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-EventLogStandardSweep.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-EventLogViewInject.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-FileChangeTracker.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-FullSystemsScan.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-GeneratedCandidateCleanup.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-HelpMenuCompliance.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-HistoryRotation.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-InteropDriftIteration.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ModuleManagement.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ObjectivePipelineCycle.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-OrphanAudit.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-OrphanCleanup.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-OrphanedFileAudit.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PesterSingleFile.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PesterTriage.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PipeGAP.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PipelineIntegrityCheck.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PipelineProcess20.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-PSEnvironmentScanner.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ReferenceIntegrityCheck.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ReleasePreFlight.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-RenameProposal.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ReportRetention.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-SASCIntegrityPreflight.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-ScriptDependencyMatrix.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-SecretLeakScanner.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-SelfReviewCycle.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-SINRegistryReindex.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-SINRemedyEngine.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-StaticWorkspaceScan.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TestCoverageGateCheck.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TestRoutine.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TodoArchiver.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TodoBacklogPlanner.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TodoBundleRebuild.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TodoManager.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-TodoQueueGateway.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-Top15IssueSinBatch.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-UniversalListGene.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-VersionAlignmentTool.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-WorkspaceDependencyMap.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-WorkspaceIntegrityCheck.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-WorkspaceRollback.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Invoke-XhtmlReportTriage.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/New-InstallerScript.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/New-PwShGUIModule.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Normalize-TodoStatusVocabulary.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/PS-CheatSheet-EXAMPLES-V2.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/PS-CheatSheet-EXAMPLES.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Publish-WorkspaceModules.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/R3-StressTest.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Raise-AllVersionTags.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Register-CronTask.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Register-CyclicRenameTask.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Register-DiffSchedulerTask.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Register-WorkspaceRepository.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Repair-ModulePaths.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Report-Taggable.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Run-FullPipeline.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Run-PipelineChurn35.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Scan-WorkspaceVersions.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-A.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-B.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-C.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-D.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-E.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-F - LinkToConfigJson.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-F-LinkToConfigJson.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script-F.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script1.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script2.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script3.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script4.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script5.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Script6.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Set-WorkspaceModulePath.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Setup-ModuleEnvironment.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-AppTemplateManager.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-CertificateManager.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-CronAiAthonTool.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-EventLogViewer.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-MCPServiceConfig.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-SandboxTestTool.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-ScanDashboard.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Show-WorkspaceIntentReview.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Start-BWServe.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Start-Engines.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Start-LocalWebEngine.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Start-LocalWebEngineService.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Sync-ChangelogViewerData.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Sync-LogIndexToViewer.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Sync-PipelineRegistryFromDisk.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Test-ModuleDependencies.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Test-Prerequisites.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/UserProfile-Manager.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/Validate-ModuleImports.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "scripts/WinRemote-PSTool.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/agent-call-stats.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/AVPN_device-types.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/AVPN-devices.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/bootstrap-menu.config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/browser-test-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/cert-store-baseline.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/chief-approvals.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/cron-aiathon-pipeline.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/cron-aiathon-schedule.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/css-layout-index.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/cyclic-tasks.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/dependency-scan-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/diff-scheduler.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/engine-client-controls.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/engine-cluster-trust.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/engine-monitor.targets.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/help-menu-registry.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/manifest-cache.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/menu-layout.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/module-function-index.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/My-LookupLocationsConfig.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/prerequisites-baseline.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/ps5-compat-flags.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/pwsh-app-config-BASE.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/pwsh-scriptfolders-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/sasc-integrity.sha256.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/sasc-tuning.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/sasc-vault-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/scan-schema-version-map.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/schema-transforms.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/self-review-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/self-review-history.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/sin-baseline.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/style-remediation-inventory.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/tray-service-config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/waiting-jokes.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/webengine-services.components.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/widget-tools-inventory.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/winremote-hosts.json",
+      "action": "skip-nonobject-json",
+      "before": "",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-change-log.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-hub-data-sources.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-hub-offline-cache.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-hub.config.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-intent-registry.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "config/workspace-memory-summary.json",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/AssistedSASC.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/AVPN-Tracker.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/CronAiAthon-BugTracker.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/CronAiAthon-EventLog.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/CronAiAthon-Pipeline.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/CronAiAthon-Scheduler.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-AgentCallStats.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-ConventionComplianceSuite.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-EngineCrashCleanup.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-PipelineChurnLifecycle.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-PipelineIntegration.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-RegressionSuite.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-ScriptLoadability.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-SINPatternScanner.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-StaticWorkspaceScan.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Invoke-WidgetSmokeTests.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/ModuleEnvironment-NineScripts.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/ModuleMaintenance-Targeted.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PKIChainManager.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwSh-HelpFilesUpdateSource-ReR.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI_AutoIssueFinder.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-ConvoVault.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-EventLogAdapter.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-IntegrityCore.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-KillSwitch.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-LaunchTelemetry.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-PSVersionStandards.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-Theme.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-TrayHost.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-VersionManager.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUI-WebEngineServices.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/PwShGUICore.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/SASC-Adapters.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Show-CronAiAthonTool.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Show-ScriptLoadability.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/SIN-P027-NullArrayIndex.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/SIN-P041-JsonSchemaPropertyDrift.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/SINGovernance.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Start-LocalWebEngine.BootstrapGovernance.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Start-LocalWebEngine.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Start-LocalWebEngineIntegration.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/Start-LocalWebEngineService.BootstrapMenu.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/SyntaxGuard.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/UserProfileManager.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    },
+    {
+      "path": "tests/VersionTag-Canonical.Tests.ps1",
+      "action": "unchanged",
+      "before": "2607.B6.V53.0",
+      "after": "",
+      "note": ""
+    }
+  ]
+}

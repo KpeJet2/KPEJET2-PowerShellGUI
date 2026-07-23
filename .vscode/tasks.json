@@ -45,6 +45,22 @@
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
         },
+        {
+            "label": "NetMon: Collector (one-shot)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-NetMonCollector.ps1 -WorkspacePath ${workspaceFolder} -EngineBaseUrl http://127.0.0.1:8042 -SampleLimit 120",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "NetMon: Collector (continuous)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-NetMonCollector.ps1 -WorkspacePath ${workspaceFolder} -EngineBaseUrl http://127.0.0.1:8042 -Continuous -PollSeconds 10 -SampleLimit 120",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
         // ── Tests ────────────────────────────────────────────────────────────
         {
             "label": "Test: Run All Pester (pwsh)",
@@ -76,6 +92,62 @@
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SINPatternScanner.ps1 -WorkspacePath ${workspaceFolder} -Runtime Both -ExtraExtensions .bat,.cmd",
             "detail": "Opt-in lint of .bat/.cmd launchers; activates P081 (WorkspacePath not forwarded) and other batch-aware patterns.",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -UpdateReadme -BaselineProfile full -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine (staged)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile full -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline (staged)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine (nightly)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile nightly -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline (nightly)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile nightly -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Validate Canonical Paths",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-ValidateCanonicalPaths.ps1 -WorkspacePath ${workspaceFolder} -RegistryPath ${workspaceFolder}\\config\\pipeline-canonical-paths.json -FailOnMissing",
             "group": "test",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []

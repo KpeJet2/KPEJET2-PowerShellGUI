@@ -1,0 +1,3889 @@
+{
+  "summary": {
+    "simulatedTargetTag": "2607.B6.V53.0",
+    "manifestPath": "config/dynamic-manifest.json",
+    "manifestedFilesTotal": 285,
+    "manifestedFilesWithVersionTag": 284,
+    "manifestedFilesAlreadyTarget": 284,
+    "manifestedFilesWouldChange": 0,
+    "manifestedFilesMissingVersionTag": 1,
+    "distinctCurrentVersionValuesInManifested": 1,
+    "unmanifestedCandidateFilesTotal": 4443,
+    "unmanifestedFilesWithVersionTag": 351,
+    "unmanifestedFilesWithoutVersionTag": 4092,
+    "orphanNoTagNoMetadataCount": 3258
+  },
+  "manifestedWouldChange": [],
+  "manifestedMissingVersionTag": [
+    {
+      "path": "config/winremote-hosts.json",
+      "currentTag": null,
+      "willChange": false,
+      "alreadyTarget": false
+    }
+  ],
+  "unmanifestedWithVersionTag": [
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".yml"
+    },
+    {
+      "path": ".sin/SIN-PATTERN-028-ModuleImportMustUseManifest.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": ".snapshots/readme.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": ".snapshots/sponsors.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "## Chat Customization Diagnostics3.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/.README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/# Phase 3 Debug Logging & Error Handling.prompt.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/AVPN-TRACKER-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/CFRM ENU-FIX-SESSION-20260404.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/CFRMENU-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/CHANGELOG.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/DIRECTORY-TREE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/DOC-ICON-STANDARD.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/ENHANCEMENTS-LOG.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/ERROR-HANDLING-TEMPLATES.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/FILES-MANIFEST.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/GUI-PERFORMANCE-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/IMPROVEMENT-PLAN-10POINT.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/INDEX.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/LAUNCH-GUI-ENHANCEMENT-PLAN.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/LAUNCH-GUI-IMPLEMENTATION-CHECKLIST.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/LAUNCH-GUI-QUICK-REFERENCE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/LAUNCH-GUI-SWITCHES-REFERENCE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/MODULE-FUNCTION-INDEX.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/MODULE-LOAD-ORDER.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/NETWORK-TOOLS-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/PHASE-1-INTEGRATION-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/PIPELINE-CONTROLS-REFERENCE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/PS7-FIRST-TESTING-METHODOLOGY.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/QUICK-JNR-LAUNCH-IMPROVEMENTS.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/QUICK-START.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/REFERENCE-CONSISTENCY-STANDARD.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/SECRETS-MANAGEMENT-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/SESSION-ERROR-HANDLING-SUMMARY-20260404.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/SESSION-FIX-SUMMARY-20260404.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/SETUP-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/STARTUP-BEHAVIOR.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/STYLE-REMEDIATION-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/SYSTEM-INTERCONNECTION-MAP.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/VERSION-UPDATES-REDIRECT.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/WORKSPACE-INVENTORY-CANONICAL.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/XHTML-DataRelationalViz-DESIGN-PLAN.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~README.md/XHTML-VALIDATION-COMPLIANCE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/archive/VERSION-UPDATES-20260410.md",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CONVERGENCE-REPORT-20260405.md",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/DocFreshness/freshness_20260504-1948.json",
+      "hasVersionTag": true,
+      "versionTag": "** 2604.B1.v2.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/SNAPSHOT-20260522-181708/agentic-manifest.before.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/MODULE-SPLIT-PLAN.md",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/objective-pipeline-cycle-20260429-001704.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B3.V33.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/objective-pipeline-cycle-20260526-090544.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/pipeline-standards-audit-20260404.md",
+      "hasVersionTag": true,
+      "versionTag": "2604.B1.V1.0",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260403-023608.json",
+      "hasVersionTag": true,
+      "versionTag": "2603.B0.v27.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260415-022307.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260417-020352.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260417-025736.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260417-031753.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260417-031801.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260418-145437.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260426-164506.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.2",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260501-221628.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.2",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260504-195000.json",
+      "hasVersionTag": true,
+      "versionTag": "2604.B2.V31.2",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260507-013733.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B2.V31.7",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260516-034108.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260516-103505.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260516-111813.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260516-233410.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260518-171035.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260521-041859.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260521-045105.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260521-045501.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260521-045757.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260521-201255.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260522-031039.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260522-180532.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260523-012556.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V46.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260524-211243.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V51.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260524-212617.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V51.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260526-092522.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V51.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-012544.json",
+      "hasVersionTag": true,
+      "versionTag": "2605.B5.V51.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-090409.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-101001.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-102233.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-103149.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-103348.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-103407.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-104117.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-104123.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-110616.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260618-111322.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260709-141800.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/workspace-dependency-map-20260709-191347.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/xhtml-version-feed.json",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "agents/AGENT-SKILLS-MANIFEST.md",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "agents/focalpoint-null/agents/__init__.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/agents/code_compiler_agent.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/agents/code_tester_agent.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/agents/focalpoint_orchestrator.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/agents/sub_agents.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/Chat-FocalPoint.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "agents/focalpoint-null/compat.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/config/focalpoint_config.yaml",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".yaml"
+    },
+    {
+      "path": "agents/focalpoint-null/config/standards/AGENT-CREATION-TEMPLATE.yaml",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".yaml"
+    },
+    {
+      "path": "agents/focalpoint-null/core/__init__.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/checkpoint_manager.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/consensus_engine.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/log_manager.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/models.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/monitoring.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/multi_model_dispatcher.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/pki_manager.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/sin_registry.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/task_manager.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/core/viewpoint_init.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/main.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "agents/focalpoint-null/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "agents/focalpoint-null/Start-FocalPoint.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "agents/focalpoint-null/Start-FocalPoint.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "agents/H-Ai-Nikr-Agi/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "agents/koe-RumA/config/koe-ruma_config.yaml",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".yaml"
+    },
+    {
+      "path": "agents/koe-RumA/core/koe-RumA.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "agents/koe-RumA/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "agents/PipelineSteering/core/PipelineSteering.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "agents/PipelineSteering/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260405-025707.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260412-183652.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260412-190830.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260414-213149.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260414-215622.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260414-215929.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260427-130628.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260428-111159.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260502-004227.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260502-012401.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260504-095941.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260506-232238.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260507-013718.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260518-103320.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260522-182008.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260522-205659.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-000629.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-000748.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-012147.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-015741.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-050550.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-051146.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/agentic-manifest-history/agentic-manifest_20260523-112252.json",
+      "hasVersionTag": true,
+      "versionTag": "String",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/AI-REReFineFine22.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "config/APPLICATION-STRATEGY-v1.0.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "config/CODE-STANDARDS-v1.0.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "config/error-handling-templates.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "config/ITEMS2DO-GUIDE.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-allowlist.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-baseline-full.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-baseline-nightly.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-baseline-staged.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-baseline.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/pipeline-refine-severity-policy.json",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "config/PSScriptAnalyzerSettings.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "docs/AI-ACTIONS-LOG-STANDARD.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/DataRelationalViz-Phase1-Contracts.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/EVENT-LOG-STANDARD.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/HISTORY-ARCHIVAL.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/Qik-GU-ide-CheatSheet.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/SIN-CHAT-ISSUES-BATCH-20260523.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/SIN-TOP15-PROGRAMMING-ISSUES-RESEARCH-20260523.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/SOV-Sys-zero-Pipeline-Daily-Runbook.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "docs/Workspace-Flow-Diagram.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "fix_check_version.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "fix_update_version.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "Invoke-ComprehensiveValidation.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "Launch-ChaosTest.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Launch-GUI-BUILD-VER.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Launch-GUI-SmokeTest.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Launch-SandboxBrowserTest.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Launch-SandboxInteractive.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Launch-SandboxSmokeTest.bat",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".bat"
+    },
+    {
+      "path": "Main-GUI.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "modules/_TEMPLATE-Module.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/AssistedSASC.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/AVPN-Tracker.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/CronAiAthon-BugTracker.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/CronAiAthon-ErrorLinker.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/CronAiAthon-EventLog.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/CronAiAthon-Pipeline.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/CronAiAthon-Scheduler.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/Get-LaunchTelemetry.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/Import-WorkspaceModule.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PKIChainManager.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI_AutoIssueFinder.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-AgentScorecard.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-AiActionLog.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-AutoRemediate.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-BreakingChange.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-CheckpointPrune.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-ConvoVault.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-CoverageReport.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-DependencyMap.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-EventLogAdapter.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-EventLogReplay.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-HistoryZip.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-IntegrityCore.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-KillSwitch.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-LaunchTimingProfile.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-LegacyEncoding.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-ManifestDiff.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-NetworkTools.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-PesterParallel.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-PSScriptAnalyzerScan.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-PSVersionStandards.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SchemaTranslator.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SecretScan.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SessionMetrics.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SinDriftScan.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SinFixBranch.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SinFromScan.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-SinHeatmap.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-Theme.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-TrayHost.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-VersionManager.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-VersionTag.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUI-XhtmlReportTester.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/PwShGUICore.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "modules/PwShGUICore.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/RE-memorAiZ.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/SASC-Adapters.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/SINGovernance.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/UserProfileManager.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "modules/WorkspaceIntentReview.psd1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psd1"
+    },
+    {
+      "path": "README-delete.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "scripts/Invoke-NetMonCollector.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B6.V53.1",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.1",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/Invoke-ValidateCanonicalPaths.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/~BACKUPS/PWSH_Quick-APP.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/~BACKUPS/PWSH_Quick-APP2.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/~BACKUPS/PWSH_Quick-APP3 - Copy.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/~PWSH_Quick-APP3.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/DellCommandUpdate_Gary-Blok.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/DellCommandUpdate.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector0/FileInspector.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector1/FileInspector-FalseResults_20260427-0942.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector1/FileInspector.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector1/FileInspector1.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/Install-ModulesList.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/Install-ModulesLisToImportTXT.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/ModulesLisToImportTXT.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/ModulesLisToInstall-TXT.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/PackagesLisToInstall-TXT.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/ScriptsListToInstall-TXT.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/test - Copy.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/test.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/test(Get-Host).ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/HELP-FILES-MANAGER.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/INSTALLS.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260121.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260124.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260125.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260130.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260202.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260203.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260206.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260214.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260216.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260218.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260219.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260222.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260223.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260224.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260303.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/LOG/XPS15-MS_20260308.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/QUICK-APP/PWSH-SETUP.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/REPAIR.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/QUICK-APP/TEST.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/scripts/Inghams_NewIntuneDeviceSetup.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/service-cluster-dashboard/server.py",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".py"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_Decoder.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/XHTML-Checker/XHTML-Invoke-AutomatedTests.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "scripts/XPS15-MS-2026-04-15.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "scripts/XPS15-MS-2026-05-07.log",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".log"
+    },
+    {
+      "path": "sin_registry/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "sovereign-kernel/core/AgentRegistry.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/CallProxy.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/CryptoEngine.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/CycleManager.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/LedgerWriter.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/SandboxManager.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/SelfHealer.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/SovereignPolicy.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/core/WatchdogSupervisor.psm1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".psm1"
+    },
+    {
+      "path": "sovereign-kernel/Initialize-SovereignKernel.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "sovereign-kernel/Start-SovereignKernel.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "sovereign-kernel/tests/Test-SovereignKernel.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "styles/_color-map.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-app-template.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-archive-ops.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-build-pkg.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-changelog.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-code-analysis.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-config-mgmt.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-cronaiathon.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-env-scanner.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-event-log.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-feature-requests.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-folder-actions.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-master-todo.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-mcp-config.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-remote-paths.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-scan-dashboard.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-secrets-vault.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-shop-items.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/accent-testing-builder.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/layout-mastertight-wleftmenu.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/layout-page-black-technicalui.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/layout-tabs-black-checklist.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/layout-tabs-black-modernui.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/layout-tabs-white-wleftmenu.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/pwshgui-base.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "styles/pwshgui-responsive.css",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".css"
+    },
+    {
+      "path": "tests/Convert-SinScanToJUnit.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/Invoke-PreCommitValidation.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/Invoke-SINPatternScanner.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/README-SmokeTest.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "tests/sandbox/ConvertTo-BugTask.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Export-SandboxTestArchive.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Get-HostTesterPayload.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Install-BrowserTestDependencies.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Invoke-BrowserPageTest.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Invoke-SandboxBootstrap.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Invoke-SandboxBrowserTestSuite.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/README.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "tests/sandbox/Send-SandboxCommand.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tests/sandbox/Start-InteractiveSandbox.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "todo/_bundle.js",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".js"
+    },
+    {
+      "path": "tools/Check-BOM.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tools/Generate-Changelog.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tools/Package-HistoryFilesByMajorVersion.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "tools/README-ArchiveStrategies.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "tools/README-BOM-Check.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "UPM/config/pwsh-app-config-BASE.json",
+      "hasVersionTag": true,
+      "versionTag": "2602.a.8",
+      "hasMetadata": true,
+      "extension": ".json"
+    },
+    {
+      "path": "UPM/docs/VERSION-HISTORY.md",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".md"
+    },
+    {
+      "path": "UPM/UserProfile-Manager.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "validate-changes.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2607.B1.V52.0",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    },
+    {
+      "path": "View-Config.ps1",
+      "hasVersionTag": true,
+      "versionTag": "2606.B5.V51.4",
+      "hasMetadata": true,
+      "extension": ".ps1"
+    }
+  ],
+  "orphanNoTagNoMetadataTop200": [
+    {
+      "path": ".snapshots/config.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": ".vscode/## Chat Customization Diagnostics.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": ".vscode/launch.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": ".vscode/mcp.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/125-Issue-Fix-Campaign-Report.xhtml",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".xhtml"
+    },
+    {
+      "path": "~REPORTS/ai-actions/ai-actions-archive-summary.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/ai-actions/ai-actions-summary.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/AutoApproval-20260429-105056.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/AUTOMATED-PIPE-PASS-20260515.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CertMonitor/cert-monitor-202604150140.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CertMonitor/cert-monitor-202605041951.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CertMonitor/cert-monitor-202605070139.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CertMonitor/cert-monitor-202605230126.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/changelog-restoration-score-20260429-022210.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260429-101626.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260429-101626.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260429-101649.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260429-101649.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-085117.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-085117.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090032.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090032.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090110.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090110.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090125.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090125.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090903.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-090903.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091110.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091110.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091308.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091308.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091547.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091547.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091747.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/CodRhiPear-20260526-091747.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260414-220821.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260415-020509.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260416-230450.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260416-230547.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260417-035908.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-020002.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-065213.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-065253.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-065351.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-065432.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260425-065508.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260426-155448.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260426-155532.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260426-163715.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260426-233106.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260428-141920.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260429-093012.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260429-093334.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260429-093541.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260429-094139.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260502-034016.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260502-035645.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260516-111749.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-133409.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-133518.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-133931.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-135934.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-212625.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-213404.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260524-213804.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-002559.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-002732.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-002911.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-211211.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-225432.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-225511.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-225713.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-230512.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-230626.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-230755.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-231802.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-233357.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-233654.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-233923.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260525-234007.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-000101.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-092129.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-092208.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-092245.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-092535.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-094216.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-094351.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-100810.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-102310.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-102410.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260526-104057.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260618-011108.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260618-011231.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260618-012609.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/crash-report-20260618-015835.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/dependency-visualisation-pointer.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-001937/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-001937/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-001937/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-002438/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-002438/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-002438/iteration-01/03-FullSystemsScan-attempt1-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-002438/iteration-01/03-FullSystemsScan-attempt2-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003055/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003055/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003055/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003545/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003545/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-003545/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004012/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004012/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004012/iteration-01/02-ModuleDiagnose-attempt1-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004012/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004155/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004155/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004155/iteration-01/02-ModuleDiagnose-attempt1-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004155/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004315/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004315/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004315/iteration-01/02-ModuleDiagnose-attempt1-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004315/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004449/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004449/diagnostic-summary.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004449/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004449/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004625/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004625/diagnostic-summary.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004625/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004625/iteration-01/02-ModuleDiagnose-attempt1-stderr.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004625/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004848/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004848/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-004848/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-005821/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-005821/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-005821/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-005821/iteration-01/03-FullSystemsScan-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-005821/iteration-01/04-SINPatternScan-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-010208/diagnostic-run.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-010208/iteration-01/01-ValidateImports-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/diagnostic-dryrun/run-20260525-010208/iteration-01/02-ModuleDiagnose-attempt1-stdout.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-211218.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-211533.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-212755.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-213930.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214010.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214110.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214207.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214303.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214419.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214549.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214642.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-214704.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215421.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215436.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215647.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215702.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215719.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215737.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215813.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-215829.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-221236.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260404-221252.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260405-052046.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260405-052939.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260405-053953.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260405-060344.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260405-060406.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260507-014711.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260507-014732.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260507-014759.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260507-021645.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260522-204340.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-013823.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-013845.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-014122.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-033942.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-041805.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-042947.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-045326.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-045809.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/error-handling-compliance-20260523-050711.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/ErrorHandlingLoop/error-handling-loop-20260507-014733.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/ErrorHandlingLoop/error-handling-loop-20260523-013846.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/EventLogSweep-20260429-105029.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/EventLogSweep-20260429-105029.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/cron-real.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/integrity-norefresh.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/Invoke-PipelineIntegrityCheck-20260504-100519.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/Invoke-TodoBundleRebuild-20260504-100600.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/pipeline-20260504-095507.log",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".log"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/PIPELINE-CHURN-OPTION-B-20260522.md",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".md"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/SNAPSHOT-20260522-181708/queue-counts.after-cycle1.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/SNAPSHOT-20260522-181708/queue-counts.before.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/SNAPSHOT-20260522-181708/todo-index.before.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/snapshot-after-20260504-105358.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    },
+    {
+      "path": "~REPORTS/full-pipeline-pass/snapshot-after-20260504-105429.json",
+      "hasVersionTag": false,
+      "versionTag": null,
+      "hasMetadata": false,
+      "extension": ".json"
+    }
+  ],
+  "manifestedCurrentVersionHistogram": {
+    "2607.B6.V53.0": 284
+  }
+}

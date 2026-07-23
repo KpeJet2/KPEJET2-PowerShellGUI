@@ -1,0 +1,48 @@
+{
+  "VersionTag": "2607.B1.V52.1",
+  "description": "Allowlist for intentional duplicate-function findings in pipeline refinement scans.",
+  "duplicateFunctionAllowlist": [
+    {
+      "name": "Write-AppLog",
+      "owner": "core-logging",
+      "expiresOn": "2027-12-31",
+      "reason": "Shared logging helper used intentionally across multiple scripts and modules."
+    },
+    {
+      "name": "Wait-KeyOrTimeout",
+      "owner": "ui-launchers",
+      "expiresOn": "2027-12-31",
+      "reason": "Launcher UX helper replicated by design across entrypoint scripts."
+    },
+    {
+      "name": "Show-Section",
+      "owner": "menu-runtime",
+      "expiresOn": "2027-12-31",
+      "reason": "Console section renderer currently duplicated in menu-driven wrappers."
+    },
+    {
+      "name": "New-StyledButton",
+      "owner": "xhtml-ui",
+      "expiresOn": "2027-12-31",
+      "reason": "UI helper intentionally mirrored across related page builders pending convergence."
+    },
+    {
+      "name": "New-StyledLabel",
+      "owner": "xhtml-ui",
+      "expiresOn": "2027-12-31",
+      "reason": "UI helper intentionally mirrored across related page builders pending convergence."
+    },
+    {
+      "name": "Get-FileEncodingInfo",
+      "owner": "encoding-governance",
+      "expiresOn": "2027-12-31",
+      "reason": "Encoding scanner helper currently duplicated in compatibility scripts."
+    },
+    {
+      "name": "Write-CleanupLog",
+      "owner": "cleanup-runtime",
+      "expiresOn": "2027-12-31",
+      "reason": "Cleanup workflow helper exists in multiple dedicated maintenance scripts."
+    }
+  ]
+}

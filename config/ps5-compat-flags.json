@@ -1,4 +1,5 @@
 ﻿{
+  "VersionTag": "2607.B6.V53.0",
   "description": "PS5 compatibility flags per script/module. Tracks v5/v7+ compatibility workflow.",
   "optimalVersion": "7.6",
   "minimumVersion": "5.1",
