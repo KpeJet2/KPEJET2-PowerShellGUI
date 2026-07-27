@@ -90,6 +90,60 @@ function Invoke-SetupModuleEnvironmentDiagnose {
     }
 }
 
+function Invoke-UIEventSafetyNestedGate {
+    param(
+        [Parameter(Mandatory)] [string]$ScriptPath,
+        [Parameter(Mandatory)] [string]$WorkspacePath
+    )
+
+    if (-not (Test-Path -LiteralPath $ScriptPath)) {
+        throw "Required script not found: $ScriptPath"
+    }
+
+    try {
+        Write-Log "Executing nested failure gate: $ScriptPath -WorkspacePath $WorkspacePath -AsObject"
+        $scan = & $ScriptPath -WorkspacePath $WorkspacePath -AsObject
+
+        if ($null -eq $scan) {
+            throw 'UI event safety scan returned no result object.'
+        }
+
+        if (-not ($scan.PSObject.Properties.Name -contains 'Checks')) {
+            throw 'UI event safety scan result is missing Checks collection.'
+        }
+
+        $checks = @($scan.Checks)
+        if (@($checks).Count -eq 0) {
+            throw 'UI event safety scan returned an empty Checks collection.'
+        }
+
+        $allPass = $true
+        foreach ($check in $checks) {
+            $status = ''
+            $name = ''
+            if ($check.PSObject.Properties.Name -contains 'Status') { $status = [string]$check.Status }
+            if ($check.PSObject.Properties.Name -contains 'Name') { $name = [string]$check.Name }
+
+            if ($status -ne 'PASS') {
+                $allPass = $false
+                Write-Log ("UIEventSafety FAIL: " + $name + " status=" + $status)
+            } else {
+                Write-Log ("UIEventSafety PASS: " + $name)
+            }
+        }
+
+        if (-not $allPass) {
+            throw 'UI event safety nested gate failed: one or more checks are not PASS.'
+        }
+
+        Write-Log 'UI event safety nested gate passed: all checks are PASS.'
+        return $true
+    } catch {
+        Write-Log "ERROR running nested UI event safety gate: $($_.Exception.Message)"
+        return $false
+    }
+}
+
 Write-Log "Repository root: $RepoRoot"
 Write-Log "Exclusion regex: $ExcludeRegex"
 
@@ -136,7 +190,7 @@ if (-not (Invoke-IfExists -Path $sinScript)) {
 
 # 4.1) Proactive UI event safety scan
 $uiEventSafetyScan = Join-Path $RepoRoot 'tests\Invoke-UIEventSafetyScan.ps1'
-if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptParams @{ WorkspacePath = $RepoRoot })) { exit 1 }
+if (-not (Invoke-UIEventSafetyNestedGate -ScriptPath $uiEventSafetyScan -WorkspacePath $RepoRoot)) { exit 1 }
 
 # 5) Full test gate (Pester + SIN + smoke + module accessibility)
 $runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
