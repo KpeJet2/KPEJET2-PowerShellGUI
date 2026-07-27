@@ -3,10 +3,10 @@
     "simulatedTargetTag": "2607.B6.V53.0",
     "manifestPath": "config/dynamic-manifest.json",
     "manifestedFilesTotal": 285,
-    "manifestedFilesWithVersionTag": 284,
-    "manifestedFilesAlreadyTarget": 284,
+    "manifestedFilesWithVersionTag": 285,
+    "manifestedFilesAlreadyTarget": 285,
     "manifestedFilesWouldChange": 0,
-    "manifestedFilesMissingVersionTag": 1,
+    "manifestedFilesMissingVersionTag": 0,
     "distinctCurrentVersionValuesInManifested": 1,
     "unmanifestedCandidateFilesTotal": 4443,
     "unmanifestedFilesWithVersionTag": 351,
@@ -14,14 +14,7 @@
     "orphanNoTagNoMetadataCount": 3258
   },
   "manifestedWouldChange": [],
-  "manifestedMissingVersionTag": [
-    {
-      "path": "config/winremote-hosts.json",
-      "currentTag": null,
-      "willChange": false,
-      "alreadyTarget": false
-    }
-  ],
+  "manifestedMissingVersionTag": [],
   "unmanifestedWithVersionTag": [
     {
       "path": ".github/workflows/sin-scan.yml",
@@ -3884,6 +3877,6 @@
     }
   ],
   "manifestedCurrentVersionHistogram": {
-    "2607.B6.V53.0": 284
+    "2607.B6.V53.0": 285
   }
 }

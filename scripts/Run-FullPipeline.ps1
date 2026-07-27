@@ -19,7 +19,12 @@ param(
     [switch]$SkipLaunchBatches,
     [switch]$AutoInstallPester,
     [switch]$NoModuleValidation,
-    [switch]$SkipPipelineMetricHarness
+    [switch]$SkipPipelineMetricHarness,
+    [switch]$EnableAutoCorrect,
+    [ValidateSet('FullWorkspace','KnowSafeRemidiations','KnowSafeRemediations','FastFix_Auto-Correct','SpecificFocus')]
+    [string]$AutoCorrectScope = 'KnowSafeRemidiations',
+    [string[]]$AutoCorrectFocusTargets = @(),
+    [int]$AutoCorrectRecentDays = 14
 )
 
 Set-StrictMode -Version Latest
@@ -150,6 +155,27 @@ if (-not (Invoke-IfExists -Path $runAllTests -ScriptParams $testParams -Required
 if (-not $SkipPipelineMetricHarness) {
     $metricHarness = Join-Path $RepoRoot 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
     if (-not (Invoke-IfExists -Path $metricHarness -ScriptParams @{ WorkspacePath = $RepoRoot; SkipGuiCoverage = $true })) { exit 1 }
+}
+
+# 5.2) Optional auto-correct gate.
+if ($EnableAutoCorrect) {
+    $autoCorrectGate = Join-Path $RepoRoot 'tests\Invoke-PreCommitValidation.ps1'
+    $autoCorrectDir = Join-Path (Join-Path $RepoRoot 'reports') 'pipeline-autocorrect-gate'
+    if (-not (Test-Path -LiteralPath $autoCorrectDir)) {
+        $null = New-Item -ItemType Directory -Path $autoCorrectDir -Force
+    }
+
+    $autoCorrectReport = Join-Path $autoCorrectDir 'run-fullpipeline-autocorrect-latest.json'
+    $autoCorrectParams = @{
+        WorkspacePath = $RepoRoot
+        OutputJson = $autoCorrectReport
+        AutoCorrectFailures = $true
+        AutoCorrectScope = $AutoCorrectScope
+        AutoCorrectFocusTargets = @($AutoCorrectFocusTargets)
+        AutoCorrectRecentDays = $AutoCorrectRecentDays
+    }
+
+    if (-not (Invoke-IfExists -Path $autoCorrectGate -ScriptParams $autoCorrectParams -Required)) { exit 1 }
 }
 
 # 6) Optional launch batch runs

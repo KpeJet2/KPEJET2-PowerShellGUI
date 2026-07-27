@@ -1,0 +1,142 @@
+{
+  "summary": {
+    "scanId": "PIPE-REFINE-20260728-011544",
+    "workspace": "C:\\PowerShellGUI",
+    "timestamp": "2026-07-28T01:15:06.5357846+08:00",
+    "requiredPathChecks": 16,
+    "pathRegistryLoaded": true,
+    "pathRegistry": "config/pipeline-canonical-paths.json",
+    "pathRegistryMissing": 0,
+    "deprecatedReferenceHits": 3,
+    "stagedOnly": true,
+    "stagedFileCount": 18,
+    "baselineProfile": "staged",
+    "duplicateFunctionGroups": 0,
+    "duplicateFunctionAllowlisted": 0,
+    "versionTagIssues": 0,
+    "dotfilePlacementIssues": 0,
+    "readmeManagedMarkers": true,
+    "findingsBySeverity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 3,
+      "LOW": 0
+    },
+    "countsByKey": {
+      "MEDIUM:deprecated-reference": 3
+    },
+    "baselinePath": "config/pipeline-refine-baseline-staged.json",
+    "baselineApplied": true,
+    "regressions": [
+      {
+        "key": "MEDIUM:deprecated-reference",
+        "baseline": 1,
+        "current": 3,
+        "delta": 2
+      }
+    ],
+    "improvements": [],
+    "blockingSeverities": [
+      "CRITICAL",
+      "HIGH"
+    ],
+    "totalFindings": 3,
+    "autoCorrectEnabled": true,
+    "autoCorrectWhatIf": true,
+    "autoCorrectScope": "KnowSafeRemidiations",
+    "autoCorrectFocusTargets": [],
+    "autoCorrectRecentDays": 14,
+    "autoCorrectExecutionFailed": false,
+    "autoCorrectExecutionError": "",
+    "autoCorrectCorrected": 0,
+    "autoCorrectEscalated": 3,
+    "autoCorrectStopped": 1,
+    "autoCorrectPassed": false,
+    "autoCorrectFinalErrorCount": 0,
+    "autoCorrectFinalWarnCount": 0
+  },
+  "findings": [
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    }
+  ],
+  "duplicateFunctions": [],
+  "duplicateFunctionsAllowlisted": [],
+  "deprecatedReferenceHits": [
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    }
+  ],
+  "autoCorrect": {
+    "processed": 3,
+    "corrected": 0,
+    "escalated": 3,
+    "rolledBack": 0,
+    "stopHits": [],
+    "errors": 0,
+    "attempts": [],
+    "items": [
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 0,
+        "checkpoint": ""
+      },
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 0,
+        "checkpoint": ""
+      },
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 0,
+        "checkpoint": ""
+      }
+    ],
+    "scope": "KnowSafeRemidiations",
+    "focusTargets": [],
+    "recentDays": 14,
+    "finalParsePassed": true,
+    "finalParseErrors": 0,
+    "finalErrorCount": 0,
+    "finalWarnCount": 0,
+    "finalFindingCount": 0,
+    "passed": false,
+    "stopped": true
+  }
+}

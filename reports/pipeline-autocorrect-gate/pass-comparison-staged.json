@@ -1,0 +1,44 @@
+[
+  {
+    "pass": "pass1-staged-refine.json",
+    "scanId": "PIPE-REFINE-20260728-011544",
+    "totalFindings": 3,
+    "regressions": 1,
+    "improvements": 0,
+    "autoCorrectEnabled": true,
+    "autoCorrectWhatIf": true,
+    "autoCorrectPassed": false,
+    "autoCorrectCorrected": 0,
+    "autoCorrectEscalated": 3,
+    "autoCorrectFinalErrorCount": 0,
+    "autoCorrectExecutionFailed": false
+  },
+  {
+    "pass": "pass2-staged-refine.json",
+    "scanId": "PIPE-REFINE-20260728-011646",
+    "totalFindings": 3,
+    "regressions": 1,
+    "improvements": 0,
+    "autoCorrectEnabled": true,
+    "autoCorrectWhatIf": false,
+    "autoCorrectPassed": false,
+    "autoCorrectCorrected": 0,
+    "autoCorrectEscalated": 3,
+    "autoCorrectFinalErrorCount": 0,
+    "autoCorrectExecutionFailed": false
+  },
+  {
+    "pass": "pass3-staged-refine.json",
+    "scanId": "PIPE-REFINE-20260728-011821",
+    "totalFindings": 3,
+    "regressions": 1,
+    "improvements": 0,
+    "autoCorrectEnabled": true,
+    "autoCorrectWhatIf": false,
+    "autoCorrectPassed": false,
+    "autoCorrectCorrected": 0,
+    "autoCorrectEscalated": 3,
+    "autoCorrectFinalErrorCount": 0,
+    "autoCorrectExecutionFailed": false
+  }
+]

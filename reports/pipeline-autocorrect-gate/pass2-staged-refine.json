@@ -1,0 +1,231 @@
+{
+  "summary": {
+    "scanId": "PIPE-REFINE-20260728-011646",
+    "workspace": "C:\\PowerShellGUI",
+    "timestamp": "2026-07-28T01:16:09.3902634+08:00",
+    "requiredPathChecks": 16,
+    "pathRegistryLoaded": true,
+    "pathRegistry": "config/pipeline-canonical-paths.json",
+    "pathRegistryMissing": 0,
+    "deprecatedReferenceHits": 3,
+    "stagedOnly": true,
+    "stagedFileCount": 21,
+    "baselineProfile": "staged",
+    "duplicateFunctionGroups": 0,
+    "duplicateFunctionAllowlisted": 0,
+    "versionTagIssues": 0,
+    "dotfilePlacementIssues": 0,
+    "readmeManagedMarkers": true,
+    "findingsBySeverity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 3,
+      "LOW": 0
+    },
+    "countsByKey": {
+      "MEDIUM:deprecated-reference": 3
+    },
+    "baselinePath": "config/pipeline-refine-baseline-staged.json",
+    "baselineApplied": true,
+    "regressions": [
+      {
+        "key": "MEDIUM:deprecated-reference",
+        "baseline": 1,
+        "current": 3,
+        "delta": 2
+      }
+    ],
+    "improvements": [],
+    "blockingSeverities": [
+      "CRITICAL",
+      "HIGH"
+    ],
+    "totalFindings": 3,
+    "autoCorrectEnabled": true,
+    "autoCorrectWhatIf": false,
+    "autoCorrectScope": "KnowSafeRemidiations",
+    "autoCorrectFocusTargets": [],
+    "autoCorrectRecentDays": 14,
+    "autoCorrectExecutionFailed": false,
+    "autoCorrectExecutionError": "",
+    "autoCorrectCorrected": 0,
+    "autoCorrectEscalated": 3,
+    "autoCorrectStopped": 1,
+    "autoCorrectPassed": false,
+    "autoCorrectFinalErrorCount": 0,
+    "autoCorrectFinalWarnCount": 0
+  },
+  "findings": [
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    }
+  ],
+  "duplicateFunctions": [],
+  "duplicateFunctionsAllowlisted": [],
+  "deprecatedReferenceHits": [
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    }
+  ],
+  "autoCorrect": {
+    "processed": 3,
+    "corrected": 0,
+    "escalated": 3,
+    "rolledBack": 3,
+    "stopHits": [
+      {
+        "item": "config\\pipeline-canonical-paths.json",
+        "condition": "K5",
+        "reason": "loop-cap-no-progress"
+      },
+      {
+        "item": "config\\pipeline-canonical-paths.json",
+        "condition": "K5",
+        "reason": "loop-cap-no-progress"
+      },
+      {
+        "item": "config\\pipeline-canonical-paths.json",
+        "condition": "K5",
+        "reason": "loop-cap-no-progress"
+      }
+    ],
+    "errors": 0,
+    "attempts": [
+      {
+        "AttemptNumber": 1,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:16:57.5972275Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "NO_PROGRESS",
+        "StopCondition": "",
+        "Notes": ""
+      },
+      {
+        "AttemptNumber": 2,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:17:02.7429365Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "STOP",
+        "StopCondition": "K5",
+        "Notes": ""
+      },
+      {
+        "AttemptNumber": 1,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:17:13.0180877Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "NO_PROGRESS",
+        "StopCondition": "",
+        "Notes": ""
+      },
+      {
+        "AttemptNumber": 2,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:17:18.3318768Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "STOP",
+        "StopCondition": "K5",
+        "Notes": ""
+      },
+      {
+        "AttemptNumber": 1,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:17:28.1835000Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "NO_PROGRESS",
+        "StopCondition": "",
+        "Notes": ""
+      },
+      {
+        "AttemptNumber": 2,
+        "ItemPath": "config\\pipeline-canonical-paths.json",
+        "Corrector": "SINRemedyEngine",
+        "TimestampUtc": "2026-07-27T17:17:33.3833139Z",
+        "PreTotalFindings": 0,
+        "PostTotalFindings": 0,
+        "ParsePassed": true,
+        "Status": "STOP",
+        "StopCondition": "K5",
+        "Notes": ""
+      }
+    ],
+    "items": [
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 2,
+        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011652-pipeline-canonical-paths"
+      },
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 2,
+        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011707-pipeline-canonical-paths"
+      },
+      {
+        "path": "config\\pipeline-canonical-paths.json",
+        "gate": "UNKNOWN",
+        "severity": "MEDIUM",
+        "corrected": false,
+        "escalated": true,
+        "attempts": 2,
+        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011723-pipeline-canonical-paths"
+      }
+    ],
+    "scope": "KnowSafeRemidiations",
+    "focusTargets": [],
+    "recentDays": 14,
+    "finalParsePassed": true,
+    "finalParseErrors": 0,
+    "finalErrorCount": 0,
+    "finalWarnCount": 0,
+    "finalFindingCount": 0,
+    "passed": false,
+    "stopped": true
+  }
+}

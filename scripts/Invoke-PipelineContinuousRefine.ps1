@@ -57,7 +57,14 @@ param(
     [string]$SeverityPolicyJson = '',
     [string]$ChangelogPath = '',
     [switch]$SkipChangelogOnBaselineUpdate,
-    [string]$TrendJson = ''
+    [string]$TrendJson = '',
+    [switch]$EnableAutoCorrect,
+    [ValidateSet('FullWorkspace','KnowSafeRemidiations','KnowSafeRemediations','FastFix_Auto-Correct','SpecificFocus')]
+    [string]$AutoCorrectScope = 'KnowSafeRemidiations',
+    [string[]]$AutoCorrectFocusTargets = @(),
+    [int]$AutoCorrectRecentDays = 14,
+    [int]$AutoCorrectMaxAttempts = 3,
+    [switch]$AutoCorrectWhatIf
 )
 
 Set-StrictMode -Version Latest
@@ -626,6 +633,37 @@ $scanIdentifier = 'PIPE-REFINE-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
 $duplicateFunctionsTop = @($duplicateFunctions | Select-Object -First 200)
 $allowedDuplicates = @($duplicateFunctions | Where-Object { $duplicateFunctionAllowlist -contains $_.functionName })
 
+$autoCorrectReport = $null
+$autoCorrectExecutionFailed = $false
+$autoCorrectExecutionError = ''
+if ($EnableAutoCorrect) {
+    $autoCorrectModule = Join-Path (Join-Path $root 'modules') 'PwShGUI-AutoCorrectGate.psm1'
+    if (-not (Test-Path -LiteralPath $autoCorrectModule)) {
+        $autoCorrectExecutionFailed = $true
+        $autoCorrectExecutionError = ('AutoCorrect module not found: ' + $autoCorrectModule)
+    } else {
+        try {
+            Import-Module -Name $autoCorrectModule -Force -DisableNameChecking -ErrorAction Stop
+
+            $autoCorrectParams = @{
+                WorkspacePath = $root
+                FailItems = @($findings.ToArray())
+                Scope = $AutoCorrectScope
+                FocusTargets = @($AutoCorrectFocusTargets)
+                RecentDays = $AutoCorrectRecentDays
+            }
+            if ($AutoCorrectMaxAttempts -gt 0) {
+                $autoCorrectParams['MaxAttempts'] = $AutoCorrectMaxAttempts
+            }
+
+            $autoCorrectReport = Invoke-AutoCorrectGate @autoCorrectParams -WhatIf:$AutoCorrectWhatIf
+        } catch {
+            $autoCorrectExecutionFailed = $true
+            $autoCorrectExecutionError = $_.Exception.Message
+        }
+    }
+}
+
 $summary = [ordered]@{}
 $summary.scanId = $scanIdentifier
 $summary.workspace = $root
@@ -651,6 +689,33 @@ $summary.regressions = @($regressions)
 $summary.improvements = @($improvements)
 $summary.blockingSeverities = @($script:BlockingSeverities)
 $summary.totalFindings = $totalFindingsCount
+$summary.autoCorrectEnabled = [bool]$EnableAutoCorrect
+$summary.autoCorrectWhatIf = [bool]$AutoCorrectWhatIf
+$summary.autoCorrectScope = $AutoCorrectScope
+$summary.autoCorrectFocusTargets = @($AutoCorrectFocusTargets)
+$summary.autoCorrectRecentDays = $AutoCorrectRecentDays
+$summary.autoCorrectExecutionFailed = [bool]$autoCorrectExecutionFailed
+$summary.autoCorrectExecutionError = $autoCorrectExecutionError
+if ($null -ne $autoCorrectReport) {
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'corrected') {
+        $summary.autoCorrectCorrected = [int]$autoCorrectReport.corrected
+    }
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'escalated') {
+        $summary.autoCorrectEscalated = [int]$autoCorrectReport.escalated
+    }
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'stopped') {
+        $summary.autoCorrectStopped = [int]$autoCorrectReport.stopped
+    }
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'passed') {
+        $summary.autoCorrectPassed = [bool]$autoCorrectReport.passed
+    }
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'finalErrorCount') {
+        $summary.autoCorrectFinalErrorCount = [int]$autoCorrectReport.finalErrorCount
+    }
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'finalWarnCount') {
+        $summary.autoCorrectFinalWarnCount = [int]$autoCorrectReport.finalWarnCount
+    }
+}
 
 $result = [ordered]@{}
 $result.summary = $summary
@@ -658,6 +723,7 @@ $result.findings = @($findings.ToArray())
 $result.duplicateFunctions = $duplicateFunctionsTop
 $result.duplicateFunctionsAllowlisted = @($allowedDuplicates)
 $result.deprecatedReferenceHits = @($deprecatedHits.ToArray())
+$result.autoCorrect = $autoCorrectReport
 
 $jsonPath = Join-Path $OutputRoot 'pipeline-refine-latest.json'
 $mdPath   = Join-Path $OutputRoot 'pipeline-refine-latest.md'
@@ -807,6 +873,15 @@ Write-Host ('[PipelineRefine] Trend MD  : ' + $trendMdPath) -ForegroundColor Gre
 Write-Host ('[PipelineRefine] Weekly Rollup MD: ' + $weeklyRollupPath) -ForegroundColor Green
 
 $blocking = @($findings.ToArray() | Where-Object { $script:BlockingSeverities -contains $_.severity }).Count
+if ($EnableAutoCorrect -and $autoCorrectExecutionFailed) {
+    Write-Error ('AutoCorrect stage failed: ' + $autoCorrectExecutionError)
+    exit 1
+}
+if ($EnableAutoCorrect -and $null -ne $autoCorrectReport) {
+    if ($autoCorrectReport.PSObject.Properties.Name -contains 'finalErrorCount') {
+        $blocking = [int]$autoCorrectReport.finalErrorCount
+    }
+}
 if ($FailOnDrift) {
     if ($baselineApplied) {
         if (@($regressions).Count -gt 0) {

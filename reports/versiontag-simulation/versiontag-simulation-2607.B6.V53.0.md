@@ -3,10 +3,10 @@
 TargetTag: 2607.B6.V53.0
 ManifestSource: config/dynamic-manifest.json
 Manifested files total: 285
-Manifested with VersionTag: 284
-Manifested already at target: 284
+Manifested with VersionTag: 285
+Manifested already at target: 285
 Manifested that would change: 0
-Manifested missing VersionTag: 1
+Manifested missing VersionTag: 0
 Distinct current VersionTag values in manifested: 1
 Unmanifested candidate files total: 4443
 Unmanifested with VersionTag: 351
@@ -16,7 +16,7 @@ Orphan (no tag + no workspace/pipeline metadata): 3258
 ## Top Current Manifested VersionTag Values
 | VersionTag | Count |
 |---|---:|
-| 2607.B6.V53.0 | 284 |
+| 2607.B6.V53.0 | 285 |
 
 ## Sample Orphans (first 40)
 - .snapshots/config.json

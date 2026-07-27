@@ -1,0 +1,29 @@
+AutoCorrect Gate Baseline Convergence Report
+Generated: 2026-07-27
+Workspace: C:\PowerShellGUI
+
+Three-pass baseline summary
+- Pass 1: filesChecked=284, errorCount=59, warnCount=257, passed=false
+- Pass 2: filesChecked=287, errorCount=59, warnCount=258, passed=false
+- Pass 3: filesChecked=287, errorCount=59, warnCount=258, passed=false
+
+Observed stable failures
+- Dominant parse failure: modules\AVPN-Tracker.psm1
+- Other persistent pipeline-control failures: artifact integrity mismatch and stale interruption backlog
+- The baseline is stable across all three passes; no convergence improvement was observed in the existing validation gates
+
+AutoCorrect gate smoke validation
+- Targeted subset run completed with 2 findings from the baseline report
+- processed=2
+- corrected=0
+- escalated=2
+- finalParsePassed=false
+- finalErrorCount=25
+- finalWarnCount=1
+- finalFindingCount=26
+- passed=false
+- stopped=true
+
+Notes
+- The full WhatIf run over the entire baseline was too large for a practical smoke validation, so the targeted subset was used to verify gate execution and escalation behavior.
+- The new gate module and pre-commit hook are wired and validate cleanly with Pester/parser checks.

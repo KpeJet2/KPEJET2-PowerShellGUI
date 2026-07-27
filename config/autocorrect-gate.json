@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "defaultScope": "KnowSafeRemidiations",
+  "maxAttempts": 3,
+  "stallAttempts": 2,
+  "perItemTimeoutSec": 120,
+  "fastFixRecentDays": 14,
+  "regressionDelta": 0,
+  "protectedPaths": [
+    "sovereign-kernel",
+    "modules/PwShGUI-KillSwitch.psm1",
+    "config/kill-switches.csv",
+    "config/chief-approvals.json"
+  ],
+  "safeCorrectorModules": [
+    "PwShGUI-AutoRemediate.psm1",
+    "CronAiAthon-Pipeline.psm1",
+    "PwShGUI-AiActionLog.psm1"
+  ],
+  "scopeProfiles": {
+    "FullWorkspace": {
+      "correctors": ["AutoRemediate", "SINRemedyEngine", "RoutineRemediation"]
+    },
+    "KnowSafeRemidiations": {
+      "correctors": ["AutoRemediate", "SINRemedyEngine"]
+    },
+    "FastFix_Auto-Correct": {
+      "correctors": ["AutoRemediate"]
+    },
+    "SpecificFocus": {
+      "correctors": ["AutoRemediate", "SINRemedyEngine"]
+    }
+  },
+  "approval": {
+    "type": "Bugs2FIX",
+    "source": "AutoCron",
+    "category": "approval",
+    "priority": "HIGH"
+  }
+}

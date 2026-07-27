@@ -53,6 +53,11 @@ param(
     [switch]  $SkipPipelineControlGate,
     [switch]  $SkipPipelineMetricGate,
     [switch]  $PipelineMetricIncludeGuiCoverage,
+    [switch]  $AutoCorrectFailures,
+    [ValidateSet('FullWorkspace','KnowSafeRemidiations','KnowSafeRemediations','FastFix_Auto-Correct','SpecificFocus')]
+    [string]  $AutoCorrectScope = 'KnowSafeRemidiations',
+    [string[]]$AutoCorrectFocusTargets = @(),
+    [int]     $AutoCorrectRecentDays = 14,
     # Gate 3 (P027) performance guards. P027 scanner is O(n) per file but its AST walk
     # is heavy on very large files; skip oversize files and cap the total count to keep
     # pre-commit under ~30s.
@@ -748,6 +753,8 @@ $report = [ordered]@{
     warnCount     = $warnCount
     passed        = ($blockingCount -eq 0)
     failOnWarning = $FailOnWarning.IsPresent
+    autoCorrect   = $null
+    autoCorrectScope = $AutoCorrectScope
     findings      = @($allFindings)
 }
 
@@ -758,6 +765,28 @@ try {
     Write-Gate "  Report  : $OutputJson" 'Info'
 } catch {
     Write-Gate "  [WARN] Could not write report: $($_.Exception.Message)" 'Warn'
+}
+
+if ($AutoCorrectFailures -and $blockingCount -gt 0) {
+    Write-Gate '[AutoCorrect] Attempting iterative corrections for blocking findings...' 'Info'
+    $autoCorrectModule = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AutoCorrectGate.psm1'
+    if (Test-Path -LiteralPath $autoCorrectModule) {
+        try {
+            Import-Module -LiteralPath $autoCorrectModule -Force -DisableNameChecking -ErrorAction Stop
+            $autoCorrectReport = Invoke-AutoCorrectGate -WorkspacePath $WorkspacePath -FailItems @($allFindings) -MaxAttempts 3 -Scope $AutoCorrectScope -FocusTargets @($AutoCorrectFocusTargets) -RecentDays $AutoCorrectRecentDays
+            $report.autoCorrect = $autoCorrectReport
+            $report.errorCount = $autoCorrectReport.finalErrorCount
+            $report.warnCount = $autoCorrectReport.finalWarnCount
+            $report.passed = [bool]$autoCorrectReport.passed
+            $blockingCount = if ($autoCorrectReport.passed) { 0 } else { 1 }
+            $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
+            Write-Gate ("  AutoCorrect: corrected={0} escalated={1} stopped={2}" -f $autoCorrectReport.corrected, $autoCorrectReport.escalated, $autoCorrectReport.stopped) 'Info'
+        } catch {
+            Write-Gate "  [WARN] AutoCorrect failed: $($_.Exception.Message)" 'Warn'
+        }
+    } else {
+        Write-Gate "  [WARN] AutoCorrect module not found: $autoCorrectModule" 'Warn'
+    }
 }
 
 if ($blockingCount -gt 0) {
