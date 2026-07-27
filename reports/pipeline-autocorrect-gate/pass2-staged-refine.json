@@ -1,15 +1,15 @@
 {
   "summary": {
-    "scanId": "PIPE-REFINE-20260728-021502",
+    "scanId": "PIPE-REFINE-20260728-024100",
     "workspace": "C:\\PowerShellGUI",
-    "timestamp": "2026-07-28T02:14:26.0904932+08:00",
+    "timestamp": "2026-07-28T02:40:22.7546679+08:00",
     "requiredPathChecks": 16,
     "pathRegistryLoaded": true,
     "pathRegistry": "config/pipeline-canonical-paths.json",
     "pathRegistryMissing": 0,
-    "deprecatedReferenceHits": 3,
+    "deprecatedReferenceHits": 0,
     "stagedOnly": true,
-    "stagedFileCount": 0,
+    "stagedFileCount": 20,
     "baselineProfile": "staged",
     "duplicateFunctionGroups": 0,
     "duplicateFunctionAllowlisted": 0,
@@ -19,28 +19,26 @@
     "findingsBySeverity": {
       "CRITICAL": 0,
       "HIGH": 0,
-      "MEDIUM": 3,
+      "MEDIUM": 0,
       "LOW": 0
     },
-    "countsByKey": {
-      "MEDIUM:deprecated-reference": 3
-    },
-    "baselinePath": "config/pipeline-refine-baseline-staged.json",
+    "countsByKey": {},
+    "baselinePath": "./config/pipeline-refine-baseline-staged.json",
     "baselineApplied": true,
-    "regressions": [
+    "regressions": [],
+    "improvements": [
       {
         "key": "MEDIUM:deprecated-reference",
         "baseline": 1,
-        "current": 3,
-        "delta": 2
+        "current": 0,
+        "delta": 1
       }
     ],
-    "improvements": [],
     "blockingSeverities": [
       "CRITICAL",
       "HIGH"
     ],
-    "totalFindings": 3,
+    "totalFindings": 0,
     "autoCorrectEnabled": true,
     "autoCorrectWhatIf": false,
     "autoCorrectScope": "KnowSafeRemidiations",
@@ -49,73 +47,25 @@
     "autoCorrectExecutionFailed": false,
     "autoCorrectExecutionError": "",
     "autoCorrectCorrected": 0,
-    "autoCorrectEscalated": 1,
-    "autoCorrectStopped": 1,
-    "autoCorrectPassed": false,
+    "autoCorrectEscalated": 0,
+    "autoCorrectStopped": 0,
+    "autoCorrectPassed": true,
     "autoCorrectFinalErrorCount": 0,
     "autoCorrectFinalWarnCount": 0
   },
-  "findings": [
-    {
-      "category": "deprecated-reference",
-      "severity": "MEDIUM",
-      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
-      "path": "config/pipeline-canonical-paths.json"
-    },
-    {
-      "category": "deprecated-reference",
-      "severity": "MEDIUM",
-      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
-      "path": "config/pipeline-canonical-paths.json"
-    },
-    {
-      "category": "deprecated-reference",
-      "severity": "MEDIUM",
-      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
-      "path": "config/pipeline-canonical-paths.json"
-    }
-  ],
+  "findings": [],
   "duplicateFunctions": [],
   "duplicateFunctionsAllowlisted": [],
-  "deprecatedReferenceHits": [
-    {
-      "path": "config/pipeline-canonical-paths.json",
-      "deprecated": "config/pipeline-refine-baseline.json"
-    },
-    {
-      "path": "config/pipeline-canonical-paths.json",
-      "deprecated": ".\\config\\pipeline-refine-baseline.json"
-    },
-    {
-      "path": "config/pipeline-canonical-paths.json",
-      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
-    }
-  ],
+  "deprecatedReferenceHits": [],
   "autoCorrect": {
-    "processed": 1,
+    "processed": 0,
     "corrected": 0,
-    "escalated": 1,
+    "escalated": 0,
     "rolledBack": 0,
-    "stopHits": [
-      {
-        "item": "config\\pipeline-canonical-paths.json",
-        "condition": "K5",
-        "reason": "unsupported-target-type"
-      }
-    ],
+    "stopHits": [],
     "errors": 0,
     "attempts": [],
-    "items": [
-      {
-        "path": "config\\pipeline-canonical-paths.json",
-        "gate": "UNKNOWN",
-        "severity": "MEDIUM",
-        "corrected": false,
-        "escalated": true,
-        "attempts": 0,
-        "checkpoint": ""
-      }
-    ],
+    "items": [],
     "scope": "KnowSafeRemidiations",
     "focusTargets": [],
     "recentDays": 14,
@@ -124,7 +74,7 @@
     "finalErrorCount": 0,
     "finalWarnCount": 0,
     "finalFindingCount": 0,
-    "passed": false,
-    "stopped": true
+    "passed": true,
+    "stopped": false
   }
 }

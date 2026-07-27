@@ -187,7 +187,7 @@ function ConvertTo-NormalizedFailItem {
         return $null
     }
 
-    $gate = Get-FirstPresentPropertyValue -InputObject $FailItem -Names @('gate','sinId','sin','pattern','rule')
+    $gate = Get-FirstPresentPropertyValue -InputObject $FailItem -Names @('gate','category','sinId','sin','pattern','rule')
     $severity = Get-FirstPresentPropertyValue -InputObject $FailItem -Names @('severity','level','priority')
     $message = Get-FirstPresentPropertyValue -InputObject $FailItem -Names @('message','reason','description','content','title')
 
@@ -371,6 +371,55 @@ function Invoke-CorrectorStep {
     )
 
     switch ($Corrector) {
+        'CanonicalRegistryRemediation' {
+            if ([string]::IsNullOrWhiteSpace($Item.Path) -or -not (Test-Path -LiteralPath $Item.Path)) {
+                return [PSCustomObject]@{ Name = $Corrector; Invoked = $false; Succeeded = $false; Message = 'Target file unavailable' }
+            }
+
+            $targetName = [System.IO.Path]::GetFileName($Item.Path)
+            if ($targetName -ne 'pipeline-canonical-paths.json') {
+                return [PSCustomObject]@{ Name = $Corrector; Invoked = $false; Succeeded = $true; Message = 'Skipped: not canonical registry file' }
+            }
+
+            try {
+                $raw = Get-Content -LiteralPath $Item.Path -Raw -Encoding UTF8
+                $json = $raw | ConvertFrom-Json
+                if ($null -eq $json) {
+                    return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $false; Message = 'Cannot parse canonical registry JSON' }
+                }
+
+                if (-not ($json.PSObject.Properties.Name -contains 'deprecatedPathLiterals')) {
+                    return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $true; Message = 'No deprecatedPathLiterals property present' }
+                }
+
+                $current = @($json.deprecatedPathLiterals)
+                $replacement = @('config/pipeline-refine-baseline-full.json')
+
+                $changed = $false
+                if (@($current).Count -ne @($replacement).Count) {
+                    $changed = $true
+                } else {
+                    if (@($current).Count -gt 0 -and [string]$current[0] -ne [string]$replacement[0]) {  # SIN-EXEMPT:P027 -- guarded by count check
+                        $changed = $true
+                    }
+                }
+
+                if (-not $changed) {
+                    return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $true; Message = 'Canonical deprecatedPathLiterals already normalized' }
+                }
+
+                if ($DryRun) {
+                    return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $true; Message = 'WhatIf: would normalize deprecatedPathLiterals' }
+                }
+
+                $json.deprecatedPathLiterals = @($replacement)
+                $out = $json | ConvertTo-Json -Depth 10
+                Set-Content -LiteralPath $Item.Path -Value $out -Encoding UTF8
+                return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $true; Message = 'Normalized deprecatedPathLiterals to canonical baseline literal' }
+            } catch {
+                return [PSCustomObject]@{ Name = $Corrector; Invoked = $true; Succeeded = $false; Message = $_.Exception.Message }
+            }
+        }
         'AutoRemediate' {
             $modulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AutoRemediate.psm1'
             $loaded = Import-OptionalModuleFile -ModulePath $modulePath
@@ -852,6 +901,29 @@ function Invoke-AutoCorrectGate {
         if ($null -ne $item) { $normalized += $item }
     }
 
+    if (@($normalized).Count -eq 0) {
+        return [PSCustomObject]@{
+            processed         = 0
+            corrected         = 0
+            escalated         = 0
+            rolledBack        = 0
+            stopHits          = @()
+            errors            = 0
+            attempts          = @()
+            items             = @()
+            scope             = $Scope
+            focusTargets      = @($FocusTargets)
+            recentDays        = $RecentDays
+            finalParsePassed  = $true
+            finalParseErrors  = 0
+            finalErrorCount   = 0
+            finalWarnCount    = 0
+            finalFindingCount = 0
+            passed            = $true
+            stopped           = $false
+        }
+    }
+
     $scopeSelection = Resolve-AutoCorrectScopeItems -WorkspacePath $workspaceFull -Items $normalized -Scope $Scope -FocusTargets $FocusTargets -RecentDays $RecentDays
     $normalized = Get-UniqueNormalizedItems -Items @($scopeSelection.Items)
 
@@ -879,6 +951,8 @@ function Invoke-AutoCorrectGate {
     foreach ($item in @($normalized)) {
         $summary.processed++
 
+        $itemCorrectorOrder = @($correctorOrder)
+
         $paths = @()
         if (-not [string]::IsNullOrWhiteSpace($item.Path)) {
             $paths += $item.Path
@@ -896,7 +970,9 @@ function Invoke-AutoCorrectGate {
         $preScan = Invoke-ResultantSinScan -WorkspacePath $workspaceFull -Paths $paths
         $preCommit = Invoke-AutoCorrectPreCommitValidation -WorkspacePath $workspaceFull -Paths @($item.RelativePath) -Quiet
 
-        if (-not (Test-AutoCorrectTargetSupported -Path $item.Path)) {
+        $isCanonicalRegistryTarget = ($item.Gate -eq 'deprecated-reference' -and [System.IO.Path]::GetFileName($item.Path) -eq 'pipeline-canonical-paths.json')
+
+        if (-not $isCanonicalRegistryTarget -and -not (Test-AutoCorrectTargetSupported -Path $item.Path)) {
             $summary.stopHits += [PSCustomObject]@{ item = $item.RelativePath; condition = 'K5'; reason = 'unsupported-target-type' }
             $summary.escalated++
             $itemEscalated = $true
@@ -911,6 +987,10 @@ function Invoke-AutoCorrectGate {
                 checkpoint  = ''
             }
             continue
+        }
+
+        if ($isCanonicalRegistryTarget) {
+            $itemCorrectorOrder = @('CanonicalRegistryRemediation')
         }
 
         if ($PSCmdlet.ShouldProcess($item.Path, 'Auto-correct gate attempt loop')) {
@@ -928,7 +1008,7 @@ function Invoke-AutoCorrectGate {
                 $actionId = 'autocorrect-' + [guid]::NewGuid().ToString('N').Substring(0, 12)
                 Write-AutoCorrectAttemptActionLog -WorkspacePath $workspaceFull -ActionId $actionId -Summary ('attempt-start #' + $attemptCount) -Result 'unknown' -FilePath $item.RelativePath -IsStart
 
-                foreach ($corrector in @($correctorOrder)) {
+                foreach ($corrector in @($itemCorrectorOrder)) {
                     $step = Invoke-CorrectorStep -Corrector ([string]$corrector) -Item $item -WorkspacePath $workspaceFull -DryRun:$isWhatIf
                     $lastCorrector = [string]$step.Name
                     $correctorMessage = [string]$step.Message

@@ -349,7 +349,19 @@ if (@($deprecatedRefs).Count -gt 0) {
     $refScanFiles = @(Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1,*.bat,*.cmd,*.md,*.json,*.yml,*.yaml,*.xhtml,*.html -ErrorAction SilentlyContinue |
         Where-Object { $_.FullName -notmatch '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|temp)\\' })
 
+    $canonicalRegistryRel = Convert-ToWorkspaceRelative -Root $root -FullPath $CanonicalPathRegistry
+    $canonicalRegistryFull = [System.IO.Path]::GetFullPath($CanonicalPathRegistry)
+
     foreach ($rf in $refScanFiles) {
+        $relRf = Convert-ToWorkspaceRelative -Root $root -FullPath $rf.FullName
+        $rfFull = [System.IO.Path]::GetFullPath($rf.FullName)
+        if ($rfFull.Equals($canonicalRegistryFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+            continue
+        }
+        if (-not [string]::IsNullOrWhiteSpace($canonicalRegistryRel) -and $relRf -eq $canonicalRegistryRel) {
+            continue
+        }
+
         $content = Get-Content -LiteralPath $rf.FullName -Raw -ErrorAction SilentlyContinue
         if ($null -eq $content) { continue }
         $normalizedContent = Normalize-PathLiteral -Value $content
@@ -364,7 +376,6 @@ if (@($deprecatedRefs).Count -gt 0) {
                 }
             }
             if ($matchedDeprecated) {
-                $relRf = Convert-ToWorkspaceRelative -Root $root -FullPath $rf.FullName
                 $deprecatedHits.Add([pscustomobject]@{ path = $relRf; deprecated = $dref })
                 $findings.Add((New-Finding -Category 'deprecated-reference' -Severity 'MEDIUM' -Message ('Deprecated path literal referenced: ' + $dref) -Path $relRf))
             }
