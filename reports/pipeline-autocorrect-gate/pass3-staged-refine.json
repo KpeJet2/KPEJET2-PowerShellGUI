@@ -1,15 +1,15 @@
 {
   "summary": {
-    "scanId": "PIPE-REFINE-20260728-011821",
+    "scanId": "PIPE-REFINE-20260728-021600",
     "workspace": "C:\\PowerShellGUI",
-    "timestamp": "2026-07-28T01:17:44.6312633+08:00",
+    "timestamp": "2026-07-28T02:15:23.2647256+08:00",
     "requiredPathChecks": 16,
     "pathRegistryLoaded": true,
     "pathRegistry": "config/pipeline-canonical-paths.json",
     "pathRegistryMissing": 0,
     "deprecatedReferenceHits": 3,
     "stagedOnly": true,
-    "stagedFileCount": 21,
+    "stagedFileCount": 0,
     "baselineProfile": "staged",
     "duplicateFunctionGroups": 0,
     "duplicateFunctionAllowlisted": 0,
@@ -49,7 +49,7 @@
     "autoCorrectExecutionFailed": false,
     "autoCorrectExecutionError": "",
     "autoCorrectCorrected": 0,
-    "autoCorrectEscalated": 3,
+    "autoCorrectEscalated": 1,
     "autoCorrectStopped": 1,
     "autoCorrectPassed": false,
     "autoCorrectFinalErrorCount": 0,
@@ -92,102 +92,19 @@
     }
   ],
   "autoCorrect": {
-    "processed": 3,
+    "processed": 1,
     "corrected": 0,
-    "escalated": 3,
-    "rolledBack": 3,
+    "escalated": 1,
+    "rolledBack": 0,
     "stopHits": [
       {
         "item": "config\\pipeline-canonical-paths.json",
         "condition": "K5",
-        "reason": "loop-cap-no-progress"
-      },
-      {
-        "item": "config\\pipeline-canonical-paths.json",
-        "condition": "K5",
-        "reason": "loop-cap-no-progress"
-      },
-      {
-        "item": "config\\pipeline-canonical-paths.json",
-        "condition": "K5",
-        "reason": "loop-cap-no-progress"
+        "reason": "unsupported-target-type"
       }
     ],
     "errors": 0,
-    "attempts": [
-      {
-        "AttemptNumber": 1,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:18:32.8437608Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "NO_PROGRESS",
-        "StopCondition": "",
-        "Notes": ""
-      },
-      {
-        "AttemptNumber": 2,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:18:37.9530420Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "STOP",
-        "StopCondition": "K5",
-        "Notes": ""
-      },
-      {
-        "AttemptNumber": 1,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:18:47.6526350Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "NO_PROGRESS",
-        "StopCondition": "",
-        "Notes": ""
-      },
-      {
-        "AttemptNumber": 2,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:18:52.5416276Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "STOP",
-        "StopCondition": "K5",
-        "Notes": ""
-      },
-      {
-        "AttemptNumber": 1,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:19:02.3188603Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "NO_PROGRESS",
-        "StopCondition": "",
-        "Notes": ""
-      },
-      {
-        "AttemptNumber": 2,
-        "ItemPath": "config\\pipeline-canonical-paths.json",
-        "Corrector": "SINRemedyEngine",
-        "TimestampUtc": "2026-07-27T17:19:07.7019552Z",
-        "PreTotalFindings": 0,
-        "PostTotalFindings": 0,
-        "ParsePassed": true,
-        "Status": "STOP",
-        "StopCondition": "K5",
-        "Notes": ""
-      }
-    ],
+    "attempts": [],
     "items": [
       {
         "path": "config\\pipeline-canonical-paths.json",
@@ -195,26 +112,8 @@
         "severity": "MEDIUM",
         "corrected": false,
         "escalated": true,
-        "attempts": 2,
-        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011827-pipeline-canonical-paths"
-      },
-      {
-        "path": "config\\pipeline-canonical-paths.json",
-        "gate": "UNKNOWN",
-        "severity": "MEDIUM",
-        "corrected": false,
-        "escalated": true,
-        "attempts": 2,
-        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011842-pipeline-canonical-paths"
-      },
-      {
-        "path": "config\\pipeline-canonical-paths.json",
-        "gate": "UNKNOWN",
-        "severity": "MEDIUM",
-        "corrected": false,
-        "escalated": true,
-        "attempts": 2,
-        "checkpoint": "C:\\PowerShellGUI\\checkpoints\\autocorrect-gate\\20260728-011857-pipeline-canonical-paths"
+        "attempts": 0,
+        "checkpoint": ""
       }
     ],
     "scope": "KnowSafeRemidiations",

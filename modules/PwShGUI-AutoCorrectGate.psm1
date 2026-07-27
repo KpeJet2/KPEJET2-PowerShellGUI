@@ -204,6 +204,54 @@ function ConvertTo-NormalizedFailItem {
     }
 }
 
+function Get-NormalizedItemKey {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [PSCustomObject]$Item)
+
+    $rel = ''
+    if ($Item.PSObject.Properties.Name -contains 'RelativePath' -and -not [string]::IsNullOrWhiteSpace([string]$Item.RelativePath)) {
+        $rel = [string]$Item.RelativePath
+    }
+
+    if ([string]::IsNullOrWhiteSpace($rel) -and $Item.PSObject.Properties.Name -contains 'Path') {
+        $rel = [string]$Item.Path
+    }
+
+    return ($rel -replace '/', '\').ToLowerInvariant()
+}
+
+function Get-UniqueNormalizedItems {
+    [CmdletBinding()]
+    param([AllowNull()] [object[]]$Items)
+
+    $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    $unique = @()
+
+    foreach ($entry in @($Items)) {
+        if ($null -eq $entry) { continue }
+        $item = [PSCustomObject]$entry
+        $key = Get-NormalizedItemKey -Item $item
+        if ([string]::IsNullOrWhiteSpace($key)) {
+            $unique += $item
+            continue
+        }
+        if ($seen.Add($key)) {
+            $unique += $item
+        }
+    }
+
+    return @($unique)
+}
+
+function Test-AutoCorrectTargetSupported {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+    $ext = [System.IO.Path]::GetExtension($Path)
+    return ($ext -in @('.ps1','.psm1','.psd1'))
+}
+
 function Get-ParserValidationResult {
     [CmdletBinding()]
     param(
@@ -805,7 +853,7 @@ function Invoke-AutoCorrectGate {
     }
 
     $scopeSelection = Resolve-AutoCorrectScopeItems -WorkspacePath $workspaceFull -Items $normalized -Scope $Scope -FocusTargets $FocusTargets -RecentDays $RecentDays
-    $normalized = @($scopeSelection.Items)
+    $normalized = Get-UniqueNormalizedItems -Items @($scopeSelection.Items)
 
     $correctorOrder = @($scopeSelection.Correctors)
     if (@($correctorOrder).Count -eq 0) {
@@ -847,6 +895,23 @@ function Invoke-AutoCorrectGate {
         $preParse = Get-ParserValidationResult -Paths $paths
         $preScan = Invoke-ResultantSinScan -WorkspacePath $workspaceFull -Paths $paths
         $preCommit = Invoke-AutoCorrectPreCommitValidation -WorkspacePath $workspaceFull -Paths @($item.RelativePath) -Quiet
+
+        if (-not (Test-AutoCorrectTargetSupported -Path $item.Path)) {
+            $summary.stopHits += [PSCustomObject]@{ item = $item.RelativePath; condition = 'K5'; reason = 'unsupported-target-type' }
+            $summary.escalated++
+            $itemEscalated = $true
+
+            $summary.items += [PSCustomObject]@{
+                path        = $item.RelativePath
+                gate        = $item.Gate
+                severity    = $item.Severity
+                corrected   = $false
+                escalated   = $true
+                attempts    = 0
+                checkpoint  = ''
+            }
+            continue
+        }
 
         if ($PSCmdlet.ShouldProcess($item.Path, 'Auto-correct gate attempt loop')) {
             if ($cfg.Guardrails.RequirePreWriteCheckpoint -and -not $isWhatIf) {
