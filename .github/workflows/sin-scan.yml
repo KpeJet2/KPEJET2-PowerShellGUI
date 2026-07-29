@@ -210,7 +210,7 @@ jobs:
         run: |
           $result = & ./tests/Run-AllTests.ps1 `
             -RequirePester $true `
-            -IncludeModuleValidation $true `
+            -IncludeModuleValidation `
             -PesterOnly
           if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
             $failed = [int]$result.summary.failed
