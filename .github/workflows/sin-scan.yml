@@ -147,7 +147,25 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
-<<<<<<< HEAD
+      - name: Auto-create bugs from CRITICAL SIN findings
+        if: always()
+        shell: pwsh
+        run: |
+          # Wire Convert-SinScanToBugs.ps1 to turn CRITICAL findings into BUG-*.json
+          $scanJson = 'reports/sin-scan-permissive.json'
+          if (Test-Path -LiteralPath $scanJson) {
+            & ./scripts/Convert-SinScanToBugs.ps1 `
+              -WorkspacePath . `
+              -ScanResultsPath $scanJson `
+              -SeverityFilter @('CRITICAL','Blocking') `
+              -Apply `
+              -MaxItems 30
+            Write-Host "Bug creation from SIN scan complete." -ForegroundColor Green
+          } else {
+            Write-Host "SIN scan output not found; skipping bug creation."
+          }
+        continue-on-error: true
+
   refine-smoke-matrix:
     runs-on: windows-latest
     timeout-minutes: 15
@@ -175,26 +193,6 @@ jobs:
               -BaselineJson .\config\pipeline-refine-baseline-staged.json `
               -OutputRoot .\reports\pipeline-refine-smoke
           }
-=======
-      - name: Auto-create bugs from CRITICAL SIN findings
-        if: always()
-        shell: pwsh
-        run: |
-          # Wire Convert-SinScanToBugs.ps1 to turn CRITICAL findings into BUG-*.json
-          $scanJson = 'reports/sin-scan-permissive.json'
-          if (Test-Path -LiteralPath $scanJson) {
-            & ./scripts/Convert-SinScanToBugs.ps1 `
-              -WorkspacePath . `
-              -ScanResultsPath $scanJson `
-              -SeverityFilter @('CRITICAL','Blocking') `
-              -Apply `
-              -MaxItems 30
-            Write-Host "Bug creation from SIN scan complete." -ForegroundColor Green
-          } else {
-            Write-Host "SIN scan output not found; skipping bug creation."
-          }
-        continue-on-error: true
->>>>>>> origin/main
 
   pester-tests:
     runs-on: windows-latest
