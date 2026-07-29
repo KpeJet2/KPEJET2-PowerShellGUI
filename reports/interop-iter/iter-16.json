@@ -1,0 +1,187 @@
+{
+  "iteration": 16,
+  "startedAt": "2026-07-29T12:25:34.7395204+00:00",
+  "workspace": ".",
+  "findings": [
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/_TEMPLATE-XHTMLTool.xhtml",
+      "detail": "Broken ref '../../styles/accent-[TOOL_ACCENT].css' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Help-Index.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Checklists.xhtml' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Help-Index.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/Dependency-Visualisation.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Checklists.xhtml' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Checklists.xhtml' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/PwShGUI-Help-Index.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/Dependency-Visualisation.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "RELPATH",
+      "severity": "MEDIUM",
+      "file": "./scripts/XHTML-Checker/XHTML-FeatureRequests.xhtml",
+      "detail": "Broken ref '../../~README.md/SURVEY-Viewpoints.html' (no unique candidate; 0 matches)",
+      "autoFixable": false
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Test-Prerequisites.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Repair-ModulePaths.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Export-SystemReport.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-CFRMenu.bat",
+      "detail": "Script not found: '%testsDir%\\Invoke-SINPatternScanner.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptDir%View-Config.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-BUILD-VER.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-BUILD-VER.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-quik_jnr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-quik_jnr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-slow_snr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-slow_snr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-SmokeTest.bat",
+      "detail": "Script not found: '%scriptDir%tests\\Invoke-GUISmokeTest.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI-SmokeTest.bat",
+      "detail": "Script not found: '%scriptDir%tests\\Invoke-GUISmokeTest.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI.bat",
+      "detail": "Script not found: '%scriptDir%scripts\\Set-WorkspaceModulePath.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI/Launch-GUI.bat",
+      "detail": "Script not found: '%scriptDir%scripts\\Register-WorkspaceRepository.ps1'"
+    }
+  ],
+  "fixes": [],
+  "verify": {
+    "parse": {
+      "parseErrors": []
+    },
+    "sin": {
+      "skipped": true
+    },
+    "pipelineIntegrity": {
+      "skipped": true
+    }
+  },
+  "summary": {
+    "findingsTotal": 25,
+    "findingsAtDiscovery": 25,
+    "fixesApplied": 0,
+    "bySeverity": "\nName                           Value\n----                           -----\nHIGH                           15\nMEDIUM                         10\n\n",
+    "byCategory": "LAUNCHBAT=15, RELPATH=10"
+  },
+  "completedAt": "2026-07-29T12:25:36.7091042+00:00"
+}

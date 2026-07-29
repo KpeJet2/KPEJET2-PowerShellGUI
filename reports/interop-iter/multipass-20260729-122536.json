@@ -1,0 +1,47 @@
+{
+  "schema": "InteropDriftMultiPass/1.0",
+  "versionTag": "2605.B5.V46.1",
+  "generatedAt": "2026-07-29T12:25:36.7117934+00:00",
+  "workspacePath": ".",
+  "resumedFromIter": 13,
+  "startedAtIter": 14,
+  "minPasses": 3,
+  "maxPasses": 6,
+  "passesRun": 3,
+  "endedAtIter": 16,
+  "noFix": false,
+  "noPipelineDry": true,
+  "noSinScan": true,
+  "passes": [
+    {
+      "iteration": 14,
+      "findings": 29,
+      "fixes": 4,
+      "byCategory": "LAUNCHBAT=15, RELPATH=14",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "reportPath": "./reports/interop-iter/iter-14.json"
+    },
+    {
+      "iteration": 15,
+      "findings": 25,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=15, RELPATH=10",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "reportPath": "./reports/interop-iter/iter-15.json"
+    },
+    {
+      "iteration": 16,
+      "findings": 25,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=15, RELPATH=10",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "reportPath": "./reports/interop-iter/iter-16.json"
+    }
+  ]
+}
