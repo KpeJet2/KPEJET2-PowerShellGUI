@@ -436,6 +436,7 @@ function Show-ScanDashboard {
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
+            $timer.Add_Tick({
                 $ji = $shared.RunningJobs[$defName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State
@@ -834,6 +835,7 @@ function Show-ScanDashboard {
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
+            $timer.Add_Tick({
                 $ji = $shared.RunningJobs[$capturedName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State

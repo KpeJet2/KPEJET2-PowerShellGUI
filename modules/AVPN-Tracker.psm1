@@ -1499,6 +1499,7 @@ function Show-AVPNConnectionTracker {
                             DstInst = $m.Device.instanceId
                             DstConn = "$($m.Type):$($m.Index)"
                         }
+                        $mi.Add_Click({
                             $t = $this.Tag
                             $newConn = [pscustomobject]@{
                                 SourceInstance  = $t.SrcInst
@@ -1821,6 +1822,7 @@ function Show-AVPNConnectionTracker {
         $showPassCheck.Text = "Show Password"
         $showPassCheck.Location = New-Object System.Drawing.Point(120, 130)
         $showPassCheck.Size = New-Object System.Drawing.Size(140, 20)
+        $showPassCheck.Add_CheckedChanged({
             $passTextBox.UseSystemPasswordChar = -not $showPassCheck.Checked
         })
         $propForm.Controls.Add($showPassCheck)
