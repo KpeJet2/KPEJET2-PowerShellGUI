@@ -54,6 +54,10 @@ function Invoke-IfExists {
         } else {
             & $Path $ScriptArgs
         }
+        $scriptSucceeded = $?
+        if (-not $scriptSucceeded) {
+            throw "Script returned a failure status: $Path"
+        }
         if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
             throw "Non-zero exit code $LASTEXITCODE from $Path"
         }
