@@ -31,7 +31,7 @@ function Write-Log {
 function Invoke-IfExists {
     param(
         [string]$Path,
-        [array]$ScriptArgs = @(),
+        [object]$ScriptArgs = @(),
         [switch]$Required
     )
 
@@ -45,7 +45,15 @@ function Invoke-IfExists {
 
     try {
         Write-Log "Executing: $Path"
-        & $Path @ScriptArgs
+        if ($null -eq $ScriptArgs) {
+            & $Path
+        } elseif ($ScriptArgs -is [System.Collections.IDictionary]) {
+            & $Path @ScriptArgs
+        } elseif ($ScriptArgs -is [System.Collections.IEnumerable] -and -not ($ScriptArgs -is [string])) {
+            & $Path @($ScriptArgs)
+        } else {
+            & $Path $ScriptArgs
+        }
         if ($LASTEXITCODE -ne $null -and $LASTEXITCODE -ne 0) {
             throw "Non-zero exit code $LASTEXITCODE from $Path"
         }
@@ -89,23 +97,23 @@ if (-not (Invoke-IfExists -Path $fixCheck)) { exit 1 }
 
 # 1.1) Viewer/changelog sync + AI action summary refresh
 $syncViewer = Join-Path $RepoRoot 'scripts\Sync-ChangelogViewerData.ps1'
-if (-not (Invoke-IfExists -Path $syncViewer -ScriptArgs @('-WorkspacePath', $RepoRoot, '-RefreshAiActionSummary:$true', '-IncludeTestAiActions'))) { exit 1 }
+if (-not (Invoke-IfExists -Path $syncViewer -ScriptArgs @{ WorkspacePath = $RepoRoot; RefreshAiActionSummary = $true; IncludeTestAiActions = $true })) { exit 1 }
 
 # 2) Module environment diagnostics
 $validateImports = Join-Path $RepoRoot 'scripts\Validate-ModuleImports.ps1'
 $setupModuleEnv = Join-Path $RepoRoot 'scripts\Setup-ModuleEnvironment.ps1'
-if (-not (Invoke-IfExists -Path $validateImports -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-IfExists -Path $validateImports -ScriptArgs @{ WorkspacePath = $RepoRoot })) { exit 1 }
 if (-not (Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot)) { exit 1 }
 
 # 3) Manifest refresh
 $buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
-if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
+if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @{ OutputPath = (Join-Path $RepoRoot 'config\agentic-manifest.json') })) { exit 1 }
 
 # 4) Optional local engine + SIN script helpers
 $isWindowsHost = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
 if ($isWindowsHost) {
-    if (-not (Invoke-IfExists -Path $localWeb -ScriptArgs @('-Action', 'RunAsService', '-NoLaunchBrowser'))) { exit 1 }
+    if (-not (Invoke-IfExists -Path $localWeb -ScriptArgs @{ Action = 'RunAsService'; NoLaunchBrowser = $true })) { exit 1 }
 } else {
     Write-Log 'Non-Windows host detected; skipping local web engine startup helper.'
 }
@@ -118,23 +126,23 @@ if (Test-Path -LiteralPath $sinScript) {
 } elseif (Test-Path -LiteralPath $sinAlt) {
     if (-not (Invoke-IfExists -Path $sinAlt)) { exit 1 }
 } else {
-    if (-not (Invoke-IfExists -Path $sinScanner -ScriptArgs @('-WorkspacePath', $RepoRoot) -Required)) { exit 1 }
+    if (-not (Invoke-IfExists -Path $sinScanner -ScriptArgs @{ WorkspacePath = $RepoRoot } -Required)) { exit 1 }
 }
 
 # 4.1) Proactive UI event safety scan
 $uiEventSafetyScan = Join-Path $RepoRoot 'tests\Invoke-UIEventSafetyScan.ps1'
-if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @('-WorkspacePath', $RepoRoot))) { exit 1 }
+if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @{ WorkspacePath = $RepoRoot })) { exit 1 }
 
 # 5) Full test gate (Pester + SIN + smoke + module accessibility)
 $runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
-$testArgs = @('-RequirePester', $true)
+$testArgs = @{ RequirePester = $true }
 if ($AutoInstallPester) {
-    $testArgs += @('-AutoInstallPester')
+    $testArgs.AutoInstallPester = $true
 }
 if ($NoModuleValidation) {
-    $testArgs += @('-IncludeModuleValidation', $false)
+    $testArgs.IncludeModuleValidation = $false
 } else {
-    $testArgs += @('-IncludeModuleValidation', $true)
+    $testArgs.IncludeModuleValidation = $true
 }
 if (-not (Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required)) { exit 1 }
 
