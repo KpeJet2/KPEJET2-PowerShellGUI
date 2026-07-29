@@ -102,13 +102,23 @@ $buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
 if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @('-OutputPath', (Join-Path $RepoRoot 'config\agentic-manifest.json')))) { exit 1 }
 
 # 4) Optional local engine + SIN script helpers
+$isWindowsHost = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
-if (-not (Invoke-IfExists -Path $localWeb)) { exit 1 }
+if ($isWindowsHost) {
+    if (-not (Invoke-IfExists -Path $localWeb -ScriptArgs @('-Action', 'RunAsService', '-NoLaunchBrowser'))) { exit 1 }
+} else {
+    Write-Log 'Non-Windows host detected; skipping local web engine startup helper.'
+}
 
 $sinScript = Join-Path $RepoRoot 'tools\run-sin-scan.ps1'
 $sinAlt = Join-Path $RepoRoot 'scripts\Run-SIN-Scan.ps1'
-if (-not (Invoke-IfExists -Path $sinScript)) {
+$sinScanner = Join-Path $RepoRoot 'tests\Invoke-SINPatternScanner.ps1'
+if (Test-Path -LiteralPath $sinScript) {
+    if (-not (Invoke-IfExists -Path $sinScript)) { exit 1 }
+} elseif (Test-Path -LiteralPath $sinAlt) {
     if (-not (Invoke-IfExists -Path $sinAlt)) { exit 1 }
+} else {
+    if (-not (Invoke-IfExists -Path $sinScanner -ScriptArgs @('-WorkspacePath', $RepoRoot) -Required)) { exit 1 }
 }
 
 # 4.1) Proactive UI event safety scan
@@ -152,4 +162,3 @@ if (-not $SkipLaunchBatches) {
 
 Write-Log 'Pipeline run complete. All gates passed.'
 exit 0
-
