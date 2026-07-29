@@ -18,6 +18,8 @@ jobs:
     name: Parse Health & Manifest Integrity
     runs-on: windows-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -75,6 +77,8 @@ jobs:
     name: Error-Handling Compliance
     runs-on: windows-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -114,6 +118,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     needs: parse-and-manifest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4

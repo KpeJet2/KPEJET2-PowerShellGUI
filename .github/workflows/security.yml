@@ -17,6 +17,8 @@ jobs:
     name: Secret Leak Scan
     runs-on: windows-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - name: Checkout (full history for diff)
         uses: actions/checkout@v4
@@ -58,6 +60,8 @@ jobs:
     name: SASC Integrity Preflight
     runs-on: windows-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -132,6 +136,8 @@ jobs:
     name: Workspace Bloat Gate
     runs-on: windows-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
