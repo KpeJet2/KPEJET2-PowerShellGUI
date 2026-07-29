@@ -1,20 +1,25 @@
 {
   "$schema": "PwShGUI-WorkspaceMemory/1.0",
-  "lastUpdated": "2026-04-08T12:00:00",
-  "lastUpdatedBy": "RE-memorAiZ",
+  "lastUpdated": "2026-07-29T12:44:00",
+  "lastUpdatedBy": "Plan-1A-Implementation",
   "sessionId": "initial",
   "projectName": "PowerShellGUI",
   "projectRoot": "C:\\PowerShellGUI",
   "targetRuntime": "PowerShell 5.1",
   "versionTagFormat": "YYMM.B<build>.V<major>.<minor>",
-  "currentVersionTag": "2604.B2.V31.1",
+  "currentVersionTag": "2605.B5.V46.1",
   "inventory": {
-    "modules": 22,
-    "scripts": 79,
-    "tests": 43,
-    "sinPatterns": 91,
+    "modules": 51,
+    "scripts": 126,
+    "tests": 157,
+    "sinPatterns": 47,
     "agents": 4,
-    "agentNames": ["focalpoint-null", "H-Ai-Nikr-Agi", "koe-RumA", "PipelineSteering"]
+    "agentNames": [
+      "focalpoint-null",
+      "H-Ai-Nikr-Agi",
+      "koe-RumA",
+      "PipelineSteering"
+    ]
   },
   "moduleRegistry": {
     "coreInfrastructure": [
@@ -132,5 +137,36 @@
     "quickStart": "Import-Module modules\\RE-memorAiZ.psm1; Invoke-REmemorAiZ -WorkspacePath C:\\PowerShellGUI"
   },
   "handbackRegistry": {},
-  "lastSessionPhases": {}
+  "lastSessionPhases": {},
+  "pipelineState": {
+    "ciWorkflows": [
+      "sin-scan.yml",
+      "quality-gates.yml",
+      "security.yml",
+      "tests.yml"
+    ],
+    "lastInteropIter": 16,
+    "lastInteropFindings": 25,
+    "lastInteropFindingsBreakdown": {
+      "LAUNCHBAT": 15,
+      "RELPATH": 10
+    },
+    "scriptsWithNullMetadata": 108,
+    "sinPatternCount": 47,
+    "multiPassScript": "scripts/Invoke-PipelineMultiPass.ps1",
+    "driftRegressionGuardEnabled": true,
+    "aiActionLogEnabled": true
+  },
+  "cyclicTasksRegistered": [
+    "cyclicRenameCheck",
+    "reportRetention",
+    "orphanAudit",
+    "workspaceMemorySync",
+    "deduplicationCheck"
+  ],
+  "knownGaps": {
+    "launchBatEnvVarRefs": "15 LAUNCHBAT findings use %scriptsDir% \u2014 need %~dp0 relative pattern",
+    "relPathTemplateTokens": "10 RELPATH findings use [TOOL_ACCENT] CSS tokens \u2014 resolve via style-remediation-inventory.json",
+    "manifestUnexportedFunctions": "91 unexported functions in psd1 manifests \u2014 LOW severity, manual curation needed"
+  }
 }

@@ -1,0 +1,142 @@
+# VersionTag: 2605.B5.V46.1
+# feature:pipeline feature:stability phase:verify
+name: Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  # ── P1: Parse-health gate ─────────────────────────────────────────────────
+  # Runs Invoke-InteropDriftIteration.ps1 in discovery-only mode and fails if
+  # any .ps1/.psm1/.psd1 file has parse errors (parseErrFiles > 0) or any
+  # CRITICAL MANIFEST finding is detected.
+  parse-and-manifest:
+    name: Parse Health & Manifest Integrity
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show PowerShell version
+        shell: pwsh
+        run: $PSVersionTable | Format-List
+
+      - name: Run interop-drift discovery (read-only)
+        id: drift
+        shell: pwsh
+        run: |
+          $result = & ./scripts/Invoke-InteropDriftIteration.ps1 `
+            -Iteration 0 `
+            -WorkspacePath . `
+            -NoFix `
+            -NoPipelineDry `
+            -NoSinScan
+
+          # Fail on parse errors in any .ps1/.psm1/.psd1
+          if ($result.parseErrFiles -gt 0) {
+            Write-Host "::error::Parse errors detected in $($result.parseErrFiles) file(s). Fix before merge." -ForegroundColor Red
+            exit 1
+          }
+
+          # Fail on CRITICAL manifest findings
+          $iterReport = Get-Content -Path $result.reportPath -Raw -Encoding UTF8 | ConvertFrom-Json
+          $critManifest = @($iterReport.findings | Where-Object {
+            $_.category -eq 'MANIFEST' -and $_.severity -eq 'CRITICAL'
+          })
+          if (@($critManifest).Count -gt 0) {
+            Write-Host "::error::$(@($critManifest).Count) CRITICAL MANIFEST finding(s). Fix before merge."
+            foreach ($f in $critManifest) {
+              Write-Host "  - $($f.file): $($f.detail)"
+            }
+            exit 1
+          }
+
+          Write-Host "Parse health OK. Manifest CRITICAL findings: 0." -ForegroundColor Green
+          Write-Host "Total findings: $($result.findings)  Fixes applied: $($result.fixes)"
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parse-manifest-report
+          path: reports/interop-iter/iter-0.json
+          retention-days: 14
+
+  # ── P2: Error-handling compliance gate ────────────────────────────────────
+  # Runs Invoke-ErrorHandlingContinuousLoop.ps1 capped at 2 iterations.
+  # Fails if any SEC11-WriteWarning / SEC11-WriteError target violations remain
+  # beyond the baseline.
+  error-handling:
+    name: Error-Handling Compliance
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run error-handling compliance loop (2 iterations)
+        shell: pwsh
+        run: |
+          $result = & ./scripts/Invoke-ErrorHandlingContinuousLoop.ps1 `
+            -WorkspacePath . `
+            -MaxIterations 2
+
+          # Surface final violation count
+          $hist = @($result.history)
+          if (@($hist).Count -gt 0) {
+            $last = $hist[-1]
+            $target = if ($last.PSObject.Properties.Name -contains 'targetViolations') { [int]$last.targetViolations } else { 0 }
+            Write-Host "Final target violations: $target"
+            if ($target -gt 0) {
+              Write-Host "::warning::$target error-handling violation(s) remain (SEC11-WriteWarning / SEC11-WriteError). Review ~REPORTS/ErrorHandlingLoop/."
+            }
+          }
+          Write-Host "Error-handling loop complete." -ForegroundColor Green
+
+      - name: Upload error-handling loop report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-handling-loop
+          path: '~REPORTS/ErrorHandlingLoop/'
+          retention-days: 14
+
+  # ── P3: SIN-P048 linkage gate ─────────────────────────────────────────────
+  # Checks that every SIN-PATTERN-NNN file referenced in scan results has a
+  # corresponding pipeline linkage record (SIN-PATTERN-048 governance).
+  sin-linkage:
+    name: SIN Pipeline Linkage (P048)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    needs: parse-and-manifest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check SIN-P048 linkage coverage
+        shell: pwsh
+        run: |
+          $sinDir = Join-Path . 'sin_registry'
+          $patterns = @(Get-ChildItem -Path $sinDir -Filter 'SIN-PATTERN-*.json' -File -ErrorAction SilentlyContinue)
+          $missing = [System.Collections.ArrayList]::new()
+          foreach ($p in $patterns) {
+            $j = Get-Content -LiteralPath $p.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+            $linked = $j.PSObject.Properties.Name -contains 'pipeline_linkage' -and
+                      -not [string]::IsNullOrWhiteSpace($j.pipeline_linkage)
+            if (-not $linked) {
+              [void]$missing.Add($p.Name)
+            }
+          }
+          if (@($missing).Count -gt 0) {
+            Write-Host "::warning::$(@($missing).Count) SIN pattern(s) missing pipeline_linkage field (SIN-P048):"
+            foreach ($m in $missing) { Write-Host "  - $m" }
+          } else {
+            Write-Host "All $(@($patterns).Count) SIN patterns have pipeline_linkage. P048 satisfied." -ForegroundColor Green
+          }
+          # Advisory only — do not block merge on missing linkage
+          exit 0

@@ -28,6 +28,50 @@ function Write-Log {
     Write-Output "[Run-FullPipeline] $Msg"
 }
 
+# ── AI Action Log bootstrap ──────────────────────────────────────────────────
+$script:_AiLogLoaded  = $false
+$script:_AiActionId   = $null
+$script:_AiLogModule  = Join-Path $RepoRoot 'modules\PwShGUI-AiActionLog.psm1'
+try {
+    if (Test-Path -LiteralPath $script:_AiLogModule) {
+        Import-Module $script:_AiLogModule -Force -DisableNameChecking -ErrorAction Stop
+        $script:_AiLogLoaded = $true
+        $script:_AiActionId  = 'pipeline-' + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([guid]::NewGuid().ToString('N').Substring(0,6))
+        Write-AiActionStart `
+            -ActionId   $script:_AiActionId `
+            -ActionName 'Run-FullPipeline' `
+            -AgentId    'Run-FullPipeline' `
+            -Summary    'Full pipeline run started' `
+            -Files      @() `
+            -WorkspacePath $RepoRoot | Out-Null
+    }
+} catch {
+    Write-Log "AI action log start failed (non-fatal): $($_.Exception.Message)"
+    try {
+        if ($script:_AiLogLoaded -and $script:_AiActionId) {
+            Write-AiActionLoggingError -ActionId $script:_AiActionId -ActionName 'Run-FullPipeline' `
+                -AgentId 'Run-FullPipeline' -Summary 'Logging init error' `
+                -ErrorMessage $_.Exception.Message -Files @() -WorkspacePath $RepoRoot | Out-Null
+        }
+    } catch { <# Intentional: non-fatal logging-error suppression #> }
+}
+
+function Invoke-AiActionFinishSafe {
+    param([string]$ResultStatus = 'success', [string[]]$TouchedFiles = @())
+    if (-not $script:_AiLogLoaded -or -not $script:_AiActionId) { return }
+    try {
+        $fileObjs = @($TouchedFiles | ForEach-Object { @{ path = $_; kind = 'modified' } })
+        Write-AiActionFinish `
+            -ActionId   $script:_AiActionId `
+            -ActionName 'Run-FullPipeline' `
+            -AgentId    'Run-FullPipeline' `
+            -Summary    "Full pipeline run finished: $ResultStatus" `
+            -Files      $fileObjs `
+            -Result     $ResultStatus `
+            -WorkspacePath $RepoRoot | Out-Null
+    } catch { <# Intentional: non-fatal finish-log suppression #> }
+}
+
 function Invoke-IfExists {
     param(
         [string]$Path,
@@ -93,31 +137,42 @@ function Invoke-SetupModuleEnvironmentDiagnose {
 Write-Log "Repository root: $RepoRoot"
 Write-Log "Exclusion regex: $ExcludeRegex"
 
+function Invoke-PipelineStep {
+    param([string]$StepName, [scriptblock]$Body)
+    Write-Log "Step: $StepName"
+    $ok = & $Body
+    if (-not $ok) {
+        Write-Log "FAILED at step: $StepName"
+        Invoke-AiActionFinishSafe -ResultStatus 'failed'
+        exit 1
+    }
+}
+
 # 1) Version update + check
 $fixUpdate = Join-Path $RepoRoot 'fix_update_version.ps1'
 $fixCheck = Join-Path $RepoRoot 'fix_check_version.ps1'
-if (-not (Invoke-IfExists -Path $fixUpdate)) { exit 1 }
-if (-not (Invoke-IfExists -Path $fixCheck)) { exit 1 }
+Invoke-PipelineStep 'version-update' { Invoke-IfExists -Path $fixUpdate }
+Invoke-PipelineStep 'version-check'  { Invoke-IfExists -Path $fixCheck }
 
 # 1.1) Viewer/changelog sync + AI action summary refresh
 $syncViewer = Join-Path $RepoRoot 'scripts\Sync-ChangelogViewerData.ps1'
-if (-not (Invoke-IfExists -Path $syncViewer -ScriptArgs @{ WorkspacePath = $RepoRoot; RefreshAiActionSummary = $true; IncludeTestAiActions = $true })) { exit 1 }
+Invoke-PipelineStep 'changelog-sync' { Invoke-IfExists -Path $syncViewer -ScriptArgs @{ WorkspacePath = $RepoRoot; RefreshAiActionSummary = $true; IncludeTestAiActions = $true } }
 
 # 2) Module environment diagnostics
 $validateImports = Join-Path $RepoRoot 'scripts\Validate-ModuleImports.ps1'
 $setupModuleEnv = Join-Path $RepoRoot 'scripts\Setup-ModuleEnvironment.ps1'
-if (-not (Invoke-IfExists -Path $validateImports -ScriptArgs @{ WorkspacePath = $RepoRoot })) { exit 1 }
-if (-not (Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot)) { exit 1 }
+Invoke-PipelineStep 'validate-imports'  { Invoke-IfExists -Path $validateImports -ScriptArgs @{ WorkspacePath = $RepoRoot } }
+Invoke-PipelineStep 'setup-module-env' { Invoke-SetupModuleEnvironmentDiagnose -ScriptPath $setupModuleEnv -Workspace $RepoRoot }
 
 # 3) Manifest refresh
 $buildAgenticManifest = Join-Path $RepoRoot 'scripts\Build-AgenticManifest.ps1'
-if (-not (Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @{ OutputPath = (Join-Path $RepoRoot 'config\agentic-manifest.json') })) { exit 1 }
+Invoke-PipelineStep 'agentic-manifest' { Invoke-IfExists -Path $buildAgenticManifest -ScriptArgs @{ OutputPath = (Join-Path $RepoRoot 'config\agentic-manifest.json') } }
 
 # 4) Optional local engine + SIN script helpers
 $isWindowsHost = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
 $localWeb = Join-Path $RepoRoot 'scripts\Start-LocalWebEngine.ps1'
 if ($isWindowsHost) {
-    if (-not (Invoke-IfExists -Path $localWeb -ScriptArgs @{ Action = 'RunAsService'; NoLaunchBrowser = $true })) { exit 1 }
+    Invoke-PipelineStep 'local-web-engine' { Invoke-IfExists -Path $localWeb -ScriptArgs @{ Action = 'RunAsService'; NoLaunchBrowser = $true } }
 } else {
     Write-Log 'Non-Windows host detected; skipping local web engine startup helper.'
 }
@@ -126,16 +181,16 @@ $sinScript = Join-Path $RepoRoot 'tools\run-sin-scan.ps1'
 $sinAlt = Join-Path $RepoRoot 'scripts\Run-SIN-Scan.ps1'
 $sinScanner = Join-Path $RepoRoot 'tests\Invoke-SINPatternScanner.ps1'
 if (Test-Path -LiteralPath $sinScript) {
-    if (-not (Invoke-IfExists -Path $sinScript)) { exit 1 }
+    Invoke-PipelineStep 'sin-scan' { Invoke-IfExists -Path $sinScript }
 } elseif (Test-Path -LiteralPath $sinAlt) {
-    if (-not (Invoke-IfExists -Path $sinAlt)) { exit 1 }
+    Invoke-PipelineStep 'sin-scan-alt' { Invoke-IfExists -Path $sinAlt }
 } else {
-    if (-not (Invoke-IfExists -Path $sinScanner -ScriptArgs @{ WorkspacePath = $RepoRoot } -Required)) { exit 1 }
+    Invoke-PipelineStep 'sin-scan-tests' { Invoke-IfExists -Path $sinScanner -ScriptArgs @{ WorkspacePath = $RepoRoot } -Required }
 }
 
 # 4.1) Proactive UI event safety scan
 $uiEventSafetyScan = Join-Path $RepoRoot 'tests\Invoke-UIEventSafetyScan.ps1'
-if (-not (Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @{ WorkspacePath = $RepoRoot })) { exit 1 }
+Invoke-PipelineStep 'ui-event-safety' { Invoke-IfExists -Path $uiEventSafetyScan -ScriptArgs @{ WorkspacePath = $RepoRoot } }
 
 # 5) Full test gate (Pester + SIN + smoke + module accessibility)
 $runAllTests = Join-Path $RepoRoot 'tests\Run-AllTests.ps1'
@@ -148,7 +203,7 @@ if ($NoModuleValidation) {
 } else {
     $testArgs.IncludeModuleValidation = $true
 }
-if (-not (Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required)) { exit 1 }
+Invoke-PipelineStep 'run-all-tests' { Invoke-IfExists -Path $runAllTests -ScriptArgs $testArgs -Required }
 
 # 6) Optional launch batch runs
 if (-not $SkipLaunchBatches) {
@@ -167,10 +222,12 @@ if (-not $SkipLaunchBatches) {
             Write-Log "Completed batch: $($bat.Name)"
         } catch {
             Write-Log "ERROR running batch $($bat.FullName): $($_.Exception.Message)"
+            Invoke-AiActionFinishSafe -ResultStatus 'failed'
             exit 1
         }
     }
 }
 
 Write-Log 'Pipeline run complete. All gates passed.'
+Invoke-AiActionFinishSafe -ResultStatus 'success' -TouchedFiles @('scripts/Run-FullPipeline.ps1')
 exit 0

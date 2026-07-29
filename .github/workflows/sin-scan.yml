@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2605.B5.V46.1
 name: SIN Pattern Scan
 on:
   push:
@@ -60,16 +60,45 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
+      - name: Auto-create bugs from CRITICAL SIN findings
+        if: always()
+        shell: pwsh
+        run: |
+          # Wire Convert-SinScanToBugs.ps1 to turn CRITICAL findings into BUG-*.json
+          $scanJson = 'reports/sin-scan-permissive.json'
+          if (Test-Path -LiteralPath $scanJson) {
+            & ./scripts/Convert-SinScanToBugs.ps1 `
+              -WorkspacePath . `
+              -ScanResultsPath $scanJson `
+              -SeverityFilter @('CRITICAL','Blocking') `
+              -Apply `
+              -MaxItems 30
+            Write-Host "Bug creation from SIN scan complete." -ForegroundColor Green
+          } else {
+            Write-Host "SIN scan output not found; skipping bug creation."
+          }
+        continue-on-error: true
+
   pester-tests:
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Run Pester
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
+      - name: Run full test suite (Run-AllTests.ps1)
         shell: pwsh
         env:
           KILLSWITCH_NO_SELFTERMINATE: '1'
         run: |
-          Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
-          $r = Invoke-Pester -Path tests/PwShGUI-KillSwitch.Tests.ps1 -PassThru -Output Detailed
-          if ($r.FailedCount -gt 0) { exit 1 }
+          $result = & ./tests/Run-AllTests.ps1 `
+            -RequirePester $true `
+            -IncludeModuleValidation $true `
+            -PesterOnly
+          if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
+            $failed = [int]$result.summary.failed
+            Write-Host "Tests: total=$($result.summary.total) passed=$($result.summary.passed) failed=$failed"
+            if ($failed -gt 0) { exit 1 }
+          }

@@ -55,6 +55,45 @@ function Write-PassLog {
     Write-Host "[$ts][$Level] [MultiPass] $Msg"
 }
 
+# ── AI Action Log bootstrap ──────────────────────────────────────────────────
+$script:_MpAiLoaded  = $false
+$script:_MpActionId  = $null
+$_mpAiLogModule = Join-Path $WorkspacePath 'modules\PwShGUI-AiActionLog.psm1'
+if (-not (Test-Path -LiteralPath $_mpAiLogModule)) {
+    $_mpAiLogModule = Join-Path $WorkspacePath 'modules/PwShGUI-AiActionLog.psm1'
+}
+try {
+    if (Test-Path -LiteralPath $_mpAiLogModule) {
+        Import-Module $_mpAiLogModule -Force -DisableNameChecking -ErrorAction Stop
+        $script:_MpAiLoaded = $true
+        $script:_MpActionId = 'multipass-' + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([guid]::NewGuid().ToString('N').Substring(0,6))
+        Write-AiActionStart `
+            -ActionId   $script:_MpActionId `
+            -ActionName 'Invoke-PipelineMultiPass' `
+            -AgentId    'Invoke-PipelineMultiPass' `
+            -Summary    "Multi-pass pipeline started (min=$MinPasses max=$MaxPasses)" `
+            -Files      @() `
+            -WorkspacePath $WorkspacePath | Out-Null
+    }
+} catch {
+    Write-PassLog "AI action log start failed (non-fatal): $($_.Exception.Message)" 'WARN'
+}
+
+function Invoke-MpAiFinish {
+    param([string]$Status = 'success', [string]$Detail = '')
+    if (-not $script:_MpAiLoaded -or -not $script:_MpActionId) { return }
+    try {
+        Write-AiActionFinish `
+            -ActionId   $script:_MpActionId `
+            -ActionName 'Invoke-PipelineMultiPass' `
+            -AgentId    'Invoke-PipelineMultiPass' `
+            -Summary    "Multi-pass finished: $Status $Detail" `
+            -Files      @() `
+            -Result     $Status `
+            -WorkspacePath $WorkspacePath | Out-Null
+    } catch { <# Intentional: non-fatal finish-log suppression #> }
+}
+
 # ---- Locate iteration script ----
 $iterScript = Join-Path $WorkspacePath 'scripts\Invoke-InteropDriftIteration.ps1'
 if (-not (Test-Path -LiteralPath $iterScript)) {
@@ -124,8 +163,25 @@ for ($i = $startIter; $i -lt ($startIter + $MaxPasses); $i++) {
     [void]$results.Add($result)
     $passesRun++
 
-    $fixesThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'fixes') { [int]$result.fixes } else { 0 }
-    Write-PassLog "Pass $i complete — findings=$($result.findings)  fixes=$fixesThisPass"
+    $fixesThisPass    = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'fixes')    { [int]$result.fixes }    else { 0 }
+    $findingsThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'findings') { [int]$result.findings } else { 0 }
+    Write-PassLog "Pass $i complete — findings=$findingsThisPass  fixes=$fixesThisPass"
+
+    # ── Drift-regression guard ───────────────────────────────────────────────
+    # If findings INCREASED vs the previous pass, flag as DRIFT-REGRESSION.
+    $driftRegression = $false
+    if ($passesRun -ge 2) {
+        $prevResult = $results[$passesRun - 2]
+        $prevFindings = if ($null -ne $prevResult -and $prevResult.PSObject.Properties.Name -contains 'findings') { [int]$prevResult.findings } else { 0 }
+        if ($findingsThisPass -gt $prevFindings) {
+            $driftRegression = $true
+            Write-PassLog "DRIFT-REGRESSION: findings increased from $prevFindings to $findingsThisPass in pass $i" 'WARN'
+            # Stamp flag onto the result object so CI can detect it
+            if ($null -ne $result) {
+                Add-Member -InputObject $result -NotePropertyName 'driftRegression' -NotePropertyValue $true -Force
+            }
+        }
+    }
 
     if ($fixesThisPass -eq 0) {
         $consecutiveZeroFix++
@@ -167,6 +223,7 @@ $outFile = Join-Path $iterDir "multipass-$stamp.json"
 $summary | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $outFile -Encoding UTF8
 Write-PassLog "Summary written: $outFile"
 
+Invoke-MpAiFinish -Status 'success' -Detail "passes=$passesRun endIter=$($startIter + $passesRun - 1)"
 return [PSCustomObject]$summary
 
 <# Outline:

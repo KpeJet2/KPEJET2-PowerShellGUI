@@ -1,10 +1,45 @@
 ﻿{
-    "cyclicRenameCheck":  {
-                              "lastRun":  "2026-03-28T06:02:36.4655336+08:00",
-                              "intervalHours":  48,
-                              "lastResult":  {
-                                                 "todosCreated":  0,
-                                                 "proposals":  9
-                                             }
-                          }
+    "cyclicRenameCheck": {
+        "lastRun": "2026-03-28T06:02:36.4655336+08:00",
+        "intervalHours": 48,
+        "lastResult": {
+            "todosCreated": 0,
+            "proposals": 9
+        }
+    },
+    "reportRetention": {
+        "lastRun": null,
+        "intervalHours": 168,
+        "script": "scripts/Invoke-ReportRetention.ps1",
+        "description": "Prune reports/logs/~REPORTS to keep-count policy; archive older artefacts.",
+        "enabled": true,
+        "lastResult": null
+    },
+    "orphanAudit": {
+        "lastRun": null,
+        "intervalHours": 168,
+        "script": "scripts/Invoke-OrphanAudit.ps1",
+        "description": "Identify orphaned files not referenced by any known module, script, or manifest.",
+        "enabled": true,
+        "lastResult": null
+    },
+    "workspaceMemorySync": {
+        "lastRun": null,
+        "intervalHours": 24,
+        "script": "scripts/Build-AgenticManifest.ps1",
+        "postSteps": [
+            "scripts/Invoke-AgentCallStats.ps1"
+        ],
+        "description": "Refresh agentic-manifest.json and agent-call-stats.json so agents can read state without scanning the tree.",
+        "enabled": true,
+        "lastResult": null
+    },
+    "deduplicationCheck": {
+        "lastRun": null,
+        "intervalHours": 72,
+        "script": "scripts/Invoke-DeduplicationAssessment.ps1",
+        "description": "Detect duplicate bug/SIN/todo items accumulating in todo/ and sin_registry/.",
+        "enabled": true,
+        "lastResult": null
+    }
 }

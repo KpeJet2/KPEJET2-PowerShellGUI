@@ -1,0 +1,126 @@
+# VersionTag: 2605.B5.V46.1
+# feature:pipeline feature:stability phase:verify
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+  schedule:
+    # Nightly at 02:00 UTC for full pipeline convergence check
+    - cron: '0 2 * * *'
+
+jobs:
+  # ── Full Pester suite via Run-AllTests.ps1 ────────────────────────────────
+  pester-full:
+    name: Full Pester Suite
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]'5.0' })) {
+            Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
+          }
+
+      - name: Run all tests (Run-AllTests.ps1)
+        shell: pwsh
+        env:
+          KILLSWITCH_NO_SELFTERMINATE: '1'
+        run: |
+          $result = & ./tests/Run-AllTests.ps1 `
+            -RequirePester $true `
+            -IncludeModuleValidation $true `
+            -PesterOnly
+
+          if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
+            $failed = [int]$result.summary.failed
+            Write-Host "Tests: total=$($result.summary.total) passed=$($result.summary.passed) failed=$failed"
+            if ($failed -gt 0) { exit 1 }
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-results
+          path: |
+            testResults.xml
+            todo/test-results-history.json
+          retention-days: 14
+
+  # ── Nightly multi-pass pipeline convergence check ─────────────────────────
+  # Runs Invoke-PipelineMultiPass.ps1 in read-only mode; treats an increase in
+  # findings vs the last run as DRIFT-REGRESSION.
+  nightly-convergence:
+    name: Nightly Convergence Check
+    runs-on: windows-latest
+    timeout-minutes: 25
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run pipeline multi-pass (read-only, min 3)
+        shell: pwsh
+        run: |
+          $result = & ./scripts/Invoke-PipelineMultiPass.ps1 `
+            -WorkspacePath . `
+            -MinPasses 3 `
+            -MaxPasses 5 `
+            -NoFix `
+            -NoPipelineDry `
+            -NoSinScan
+
+          Write-Host "Passes run: $($result.passesRun)  Final iter: $($result.endedAtIter)"
+
+          # Check for DRIFT-REGRESSION flag in any pass
+          $regressions = @($result.passes | Where-Object {
+            $_.PSObject.Properties.Name -contains 'driftRegression' -and $_.driftRegression -eq $true
+          })
+          if (@($regressions).Count -gt 0) {
+            Write-Host "::error::DRIFT-REGRESSION detected in $(@($regressions).Count) pass(es)!"
+            exit 1
+          }
+
+          Write-Host "Convergence check passed." -ForegroundColor Green
+
+      - name: Upload convergence report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: convergence-report
+          path: reports/interop-iter/multipass-*.json
+          retention-days: 30
+
+  # ── Deduplication gate for todo/sin_registry/reports PRs ──────────────────
+  deduplication:
+    name: Deduplication Audit
+    runs-on: windows-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for changed todo/sin_registry/reports paths
+        id: paths
+        shell: pwsh
+        run: |
+          $changed = git diff --name-only origin/${{ github.base_ref }} HEAD 2>$null
+          $relevant = @($changed | Where-Object { $_ -match '^(todo/|sin_registry/|reports/)' })
+          "run_dedup=$($relevant.Count -gt 0)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "Relevant paths changed: $(@($relevant).Count)"
+
+      - name: Run deduplication assessment
+        if: steps.paths.outputs.run_dedup == 'true'
+        shell: pwsh
+        run: |
+          & ./scripts/Invoke-DeduplicationAssessment.ps1 -WorkspacePath .
+          Write-Host "Deduplication assessment complete." -ForegroundColor Green
