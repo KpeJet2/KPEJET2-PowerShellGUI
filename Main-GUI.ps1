@@ -8225,6 +8225,7 @@ function New-GUI {
             # Trigger a quick status check after 2s
             $kickTimer = New-Object System.Windows.Forms.Timer
             $kickTimer.Interval = 2000
+            $kickTimer.Add_Tick({
                 $kickTimer.Stop()
                 try {
                     $req = [System.Net.HttpWebRequest]::Create('http://127.0.0.1:8042/api/engine/status')
@@ -8410,6 +8411,7 @@ function New-GUI {
 
         $dlg.Controls.Add($btnPanel)
 
+        $generateBtn.Add_Click({
             $resultsBox.Clear()
             $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
             & $setProgressUi 10
@@ -8452,12 +8454,14 @@ function New-GUI {
             }
         })
 
+        $openVizBtn.Add_Click({
             if ($openVizBtn.Tag -and (Test-Path $openVizBtn.Tag)) {
                 Write-AppLog "Opening dependency visualisation: $($openVizBtn.Tag)" "Audit"
                 Start-Process $openVizBtn.Tag
             }
         })
 
+        $openReportBtn.Add_Click({
             if ($openReportBtn.Tag -and (Test-Path $openReportBtn.Tag)) {
                 Write-AppLog "Opening dependency report: $($openReportBtn.Tag)" "Audit"
                 Invoke-Item $openReportBtn.Tag
@@ -8468,6 +8472,7 @@ function New-GUI {
         $modCheckBtn = New-Object System.Windows.Forms.Button
         $modCheckBtn.Text = 'Module Check \u21E8'
         $modCheckBtn.Width = 120
+        $modCheckBtn.Add_Click({
             Write-AppLog "Cross-launch: Script Matrix -> Module Dependency Check" "Audit"
             $dlg.Close()
             $moduleCheckItem.PerformClick()
@@ -8639,6 +8644,7 @@ function New-GUI {
         }
 
 
+        $installBtn.Add_Click({
             $confirm = [System.Windows.Forms.MessageBox]::Show(
                 "Install missing public modules (CurrentUser scope)?`n`nThis will try LOCAL first, then PSGallery as a fallback.",
                 "Confirm Install",
@@ -8651,16 +8657,19 @@ function New-GUI {
             }
         })
 
+        $workspaceBtn.Add_Click({
             Write-AppLog "User selected Use Workspace Modules" "Audit"
             & $runModMgmt @{ AutoInstallMissing = $true; UseWorkspaceModules = $true }
         })
 
+        $exportInstallerBtn.Add_Click({
             Write-AppLog "User selected Export Installer" "Audit"
             $statusLabel.Text = 'Generating installer script...'
             $dlg.Refresh()
             & $runModMgmt @{ ExportInstaller = $true }
         })
 
+        $exportInventoryBtn.Add_Click({
             Write-AppLog "User selected Export Inventory" "Audit"
             $statusLabel.Text = 'Exporting module inventory...'
             $dlg.Refresh()
