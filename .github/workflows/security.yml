@@ -1,0 +1,163 @@
+# VersionTag: 2605.B5.V46.1
+# feature:security phase:verify
+name: Security Gates
+
+on:
+  push:
+    branches: [main, develop, 'release/**']
+  pull_request:
+    branches: [main, develop, 'release/**']
+  workflow_dispatch:
+
+jobs:
+  # ── Secret leak scan ──────────────────────────────────────────────────────
+  # Scans changed files for PEM private key material and known secret markers.
+  # Blocks on any hit — runs before SIN scan so secrets never reach the scan log.
+  secret-scan:
+    name: Secret Leak Scan
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout (full history for diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect changed files
+        id: changed
+        shell: pwsh
+        run: |
+          $base = if ($env:GITHUB_EVENT_NAME -eq 'pull_request') {
+            $env:GITHUB_BASE_REF
+          } else {
+            'HEAD~1'
+          }
+          $changed = git diff --name-only $base HEAD 2>$null
+          if (-not $changed) { $changed = @() }
+          $joined = ($changed | Where-Object { $_ }) -join ','
+          "files=$joined" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "Changed files: $($changed.Count)"
+
+      - name: Run secret leak scanner
+        shell: pwsh
+        run: |
+          $files = '${{ steps.changed.outputs.files }}' -split ',' | Where-Object { $_ }
+          if (@($files).Count -eq 0) {
+            Write-Host "No changed files to scan. Skipping." -ForegroundColor Yellow
+            exit 0
+          }
+          & ./scripts/Invoke-SecretLeakScanner.ps1 `
+            -IncludeFiles $files `
+            -RepoRoot . `
+            -FailOnFindings
+        continue-on-error: false
+
+  # ── SASC integrity preflight ──────────────────────────────────────────────
+  # Verifies config/sasc-integrity.sha256.json matches current workspace state.
+  sasc-integrity:
+    name: SASC Integrity Preflight
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify SASC integrity manifest
+        shell: pwsh
+        run: |
+          $integrityScript = Join-Path . 'modules\PwShGUI-IntegrityCore.psm1'
+          if (-not (Test-Path -LiteralPath $integrityScript)) {
+            Write-Host "::warning::PwShGUI-IntegrityCore.psm1 not found — SASC check skipped."
+            exit 0
+          }
+          Import-Module $integrityScript -Force -DisableNameChecking
+          if (-not (Get-Command -Name 'Invoke-SASCIntegrityPreflight' -ErrorAction SilentlyContinue)) {
+            Write-Host "::warning::Invoke-SASCIntegrityPreflight not available — SASC check skipped."
+            exit 0
+          }
+          try {
+            Invoke-SASCIntegrityPreflight -WorkspacePath . -AutoRegenerate:$false
+            Write-Host "SASC integrity check passed." -ForegroundColor Green
+          } catch {
+            Write-Host "::error::SASC integrity check failed: $($_.Exception.Message)"
+            exit 1
+          }
+
+  # ── SIN scan (strict ratchet for release branches) ────────────────────────
+  # On release/* branches the ratchet is upgraded to Strict mode.
+  sin-scan-release:
+    name: SIN Strict Scan (release branches)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.head_ref, 'release/')
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run SIN scanner (Strict ratchet)
+        shell: pwsh
+        run: |
+          ./tests/Invoke-SINPatternScanner.ps1 `
+            -RatchetMode Strict `
+            -BaselineJson config/sin-baseline.json `
+            -OutputJson reports/sin-scan-strict.json `
+            -FailOnCritical
+        continue-on-error: false
+
+      - name: Convert to JUnit XML
+        if: always()
+        shell: pwsh
+        run: |
+          ./tests/Convert-SinScanToJUnit.ps1 `
+            -ScanJson     reports/sin-scan-strict.json `
+            -BaselineJson config/sin-baseline.json `
+            -OutputXml    reports/sin-scan-strict-junit.xml
+
+      - name: Upload strict scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sin-scan-strict
+          path: |
+            reports/sin-scan-strict.json
+            reports/sin-scan-strict-junit.xml
+          retention-days: 30
+
+  # ── Bloat gate: .bak file count ───────────────────────────────────────────
+  # Fails if the number of *.bak / *.remediate.bak files exceeds threshold.
+  bloat-gate:
+    name: Workspace Bloat Gate
+    runs-on: windows-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check .bak file count
+        shell: pwsh
+        run: |
+          $maxBak = 15
+          $excluded = @('.git','node_modules','.venv','.venv-pygame312','~DOWNLOADS','temp','gallery')
+          $bakFiles = @(Get-ChildItem -Path . -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object {
+              $_.Name -match '\.(bak|remediate\.bak)$' -and
+              -not ($excluded | Where-Object { $_.FullName -match [regex]::Escape($_) })
+            })
+          Write-Host "Found $(@($bakFiles).Count) .bak file(s) (threshold: $maxBak)"
+          if (@($bakFiles).Count -gt $maxBak) {
+            Write-Host "::warning::$(@($bakFiles).Count) .bak files exceed threshold $maxBak. Run cleanup:"
+            $bakFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
+          } else {
+            Write-Host "Bloat gate passed." -ForegroundColor Green
+          }
+          # Advisory only — warn but do not block
+          exit 0

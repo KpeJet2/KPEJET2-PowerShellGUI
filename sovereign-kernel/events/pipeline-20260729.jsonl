@@ -1,0 +1,2 @@
+{"ts":"2026-07-29T12:15:59.4140246Z","severity":"WARN","scope":"pipeline","component":"PesterTest","msg":"round-trip-check","corrId":"PESTER-54700483","host":null,"pid":10825,"source":""}
+{"ts":"2026-07-29T12:15:59.4296743Z","severity":"INFO","scope":"pipeline","component":"PesterTest","msg":"provenance-check","corrId":"PESTER-PROV-eb9fd85e","host":null,"pid":10825,"source":"","eventId":123456789,"itemId":"TODO-PA-123","itemType":"ToDo","actionId":"action-xyz","agentId":"PesterAgent","editor":"PesterEditor"}
