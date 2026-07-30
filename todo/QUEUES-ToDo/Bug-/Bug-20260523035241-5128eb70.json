@@ -1,0 +1,57 @@
+﻿{
+    "id":  "Bug-20260523035241-5128eb70",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Scanner-detected violations of SIN-PATTERN-039 in modules\\PwShGUI-LegacyEncoding.psm1 (1 hits).\nTitle: BOM round-trip via Win-1252 corrupts first character to \u0027?\u0027\nSeverity: HIGH\n\nSample matches:\nline 72: $win1252Bytes = [System.Text.Encoding]::GetEncoding(1252).GetBytes($utf8)",
+    "lastSeenAt":  "2026-05-22T19:52:41.0028724Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "[SIN-SCAN] SIN-PATTERN-039 :: BOM round-trip via Win-1252 corrupts first character to \u0027?\u0027",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-22T19:52:41.0028724Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "SIN-Scanner",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "modules\\PwShGUI-LegacyEncoding.psm1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "executionAgent":  "",
+    "implementedAt":  null,
+    "notes":  "Created by Convert-SinScanToBugs from SIN-PATTERN-039 hotspot (1 line hits).",
+    "bugReferrals":  [
+
+                     ],
+    "category":  "sin-scan",
+    "reopenedAt":  null,
+    "created":  "2026-05-22T19:52:41.0028724Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "sinPattern":  "SIN-PATTERN-039",
+    "modified":  "2026-05-22T19:52:41.0028724Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

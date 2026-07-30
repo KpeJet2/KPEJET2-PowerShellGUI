@@ -1,5 +1,5 @@
-#Requires -Version 5.1
-# VersionTag: 2605.B5.V46.0
+﻿#Requires -Version 5.1
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -25,7 +25,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot  = $PSScriptRoot
 $projectRoot = Split-Path $scriptRoot -Parent
 $configDir   = Join-Path $projectRoot 'config'
-$logsDir     = Join-Path $projectRoot 'logs'
+$logsDir     = Join-Path (Join-Path $projectRoot 'logs') 'pipeline'
 $logFile     = Join-Path $logsDir 'cyclic-rename-check.log'
 $stateFile   = Join-Path $configDir 'cyclic-tasks.json'
 $renameScript = Join-Path $scriptRoot 'Invoke-RenameProposal.ps1'
@@ -119,6 +119,8 @@ Write-CyclicLog '=== Cyclic Rename Check END ==='
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

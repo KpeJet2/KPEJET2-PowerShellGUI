@@ -1,0 +1,19 @@
+{
+  "id": "master-006",
+  "created": "2026-03-24T08:00:00Z",
+  "category": "optimization",
+  "priority": "high",
+  "status": "DONE",
+  "title": "Unify module logging to Write-AppLog (eliminate custom loggers)",
+  "description": "Completed logging convergence across the targeted modules: AVPN-Tracker and PwShGUI_AutoIssueFinder route their wrapper logging through Write-AppLog, UserProfileManager was verified as already Write-AppLog-based, and AutoIssueFinder direct stream mirroring was removed so Write-AppLog is the sole logging contract.",
+  "files": [
+    "modules/AVPN-Tracker.psm1",
+    "modules/PwShGUI_AutoIssueFinder.psm1",
+    "modules/UserProfileManager.psm1"
+  ],
+  "createdAt": "2026-03-24T08:00:00Z",
+  "plannedAt": "2026-03-31T01:25:48.3877203+08:00",
+  "notes": "Completed 2026-05-26: AVPN-Tracker and PwShGUI_AutoIssueFinder now route wrapper logging through Write-AppLog, UserProfileManager was reviewed and already used a Write-AppLog shim, and direct stream mirroring was removed from AutoIssueFinder. master-006 is complete.",
+  "type": "ToDo",
+  "modified": "2026-05-26T09:21:00Z"
+}

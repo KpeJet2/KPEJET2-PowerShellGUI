@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # FileRole: ServiceDashboard-Backend
 # service-cluster-dashboard/server.py
 # FastAPI backend for PwShGUI Service Cluster Dashboard
@@ -32,7 +32,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import httpx
-import psutil
 import uvicorn
 from fastapi import (
     Depends,
@@ -48,6 +47,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+try:
+    import psutil  # type: ignore
+    _PSUTIL_IMPORT_ERROR: Optional[str] = None
+except Exception as _psutil_ex:
+    psutil = None  # type: ignore
+    _PSUTIL_IMPORT_ERROR = str(_psutil_ex)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
@@ -67,6 +73,14 @@ STATIC_DIR   = SCRIPT_DIR / "static"
 ENGINE_INSTANCE_FILE = LOGS_DIR / "engine-instance-current.json"
 ENGINE_PID_FILE      = LOGS_DIR / "engine.pid"
 ENGINE_PORT          = 8042    # local PS web engine port
+
+MENU_TOOL_SCRIPT_MAP: Dict[str, Path] = {
+    "View-Config": WORKSPACE / "View-Config.ps1",
+    "Update-Help": WORKSPACE / "fix_update_version.ps1",
+    "Build-Package": SCRIPTS_DIR / "Build-AgenticManifest.ps1",
+    "Show-About": SCRIPTS_DIR / "Show-About.ps1",
+    "Show-ManifestsSINs": SCRIPTS_DIR / "Show-ManifestsSINs.ps1",
+}
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -160,6 +174,8 @@ def _engine_running() -> bool:
     pid = _get_engine_pid()
     if pid is None:
         return False
+    if psutil is None:
+        return False
     try:
         return psutil.pid_exists(pid) and psutil.Process(pid).is_running()
     except Exception:
@@ -176,6 +192,29 @@ async def _engine_responding() -> bool:
 
 
 def _collect_metrics() -> Dict[str, Any]:
+    if psutil is None:
+        return {
+            "ts": datetime.now(tz=timezone.utc).isoformat(),
+            "cpu_pct": 0,
+            "ram": {
+                "total_gb": 0,
+                "available_gb": 0,
+                "used_gb": 0,
+                "percent": 0,
+            },
+            "disk": {},
+            "top_procs": [],
+            "host": {
+                "node": platform.node(),
+                "system": platform.system(),
+                "release": platform.release(),
+                "machine": platform.machine(),
+                "python": sys.version,
+                "boot_time_utc": None,
+            },
+            "warnings": [f"psutil unavailable: {_PSUTIL_IMPORT_ERROR}"],
+        }
+
     cpu = psutil.cpu_percent(interval=None)
     vm  = psutil.virtual_memory()
     boot_ts = datetime.fromtimestamp(psutil.boot_time(), tz=timezone.utc).isoformat()
@@ -270,6 +309,16 @@ def _list_admin_tools() -> List[Dict[str, Any]]:
     return tools
 
 
+def _resolve_tool_script(tool_name: str) -> Optional[Path]:
+    mapped = MENU_TOOL_SCRIPT_MAP.get(tool_name)
+    if mapped and mapped.exists():
+        return mapped
+    candidate = SCRIPTS_DIR / f"{tool_name}.ps1"
+    if candidate.exists():
+        return candidate
+    return None
+
+
 def _sin_summary() -> Dict[str, Any]:
     total = critical = medium = high = resolved = penance = 0
     try:
@@ -353,9 +402,14 @@ async def _heartbeat_peers_loop() -> None:
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
-    asyncio.create_task(_broadcast_metrics_loop())
-    asyncio.create_task(_heartbeat_peers_loop())
-    yield
+    metrics_task = asyncio.create_task(_broadcast_metrics_loop())
+    heartbeat_task = asyncio.create_task(_heartbeat_peers_loop())
+    try:
+        yield
+    finally:
+        for task in (metrics_task, heartbeat_task):
+            task.cancel()
+        await asyncio.gather(metrics_task, heartbeat_task, return_exceptions=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -576,6 +630,34 @@ async def engine_control(body: EngineAction, _=Depends(_verify_token)):
         raise HTTPException(500, str(exc))
 
 
+@app.post("/api/engine/autorecover", tags=["Engine"])
+async def engine_autorecover(_=Depends(_verify_token)):
+    """Attempt service-level recovery when engine remains offline/stale."""
+    service_script = SCRIPTS_DIR / "Start-LocalWebEngineService.ps1"
+    if not service_script.exists():
+        raise HTTPException(500, "Start-LocalWebEngineService.ps1 not found")
+
+    running = _engine_running()
+    responding = await _engine_responding()
+    if running and responding:
+        return {"submitted": False, "action": "none", "reason": "engine already healthy"}
+
+    action = "Restart" if running else "Start"
+    cmd = [
+        "powershell.exe", "-NonInteractive", "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", str(service_script),
+        "-Action", action,
+        "-Port", str(ENGINE_PORT),
+        "-NoLaunchBrowser",
+    ]
+    try:
+        proc = subprocess.Popen(cmd, cwd=str(WORKSPACE))
+        return {"submitted": True, "pid": proc.pid, "action": action.lower()}
+    except Exception as exc:
+        raise HTTPException(500, str(exc))
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Routes — MCP
 # ─────────────────────────────────────────────────────────────────────────────
@@ -621,8 +703,8 @@ async def launch_tool(body: JobSubmit, _=Depends(_verify_token)):
     # Validate name — no path chars allowed (P009)
     if re.search(r'[/\\\.]{2}|[<>|;&`]', body.tool):
         raise HTTPException(400, "Invalid tool name")
-    ps1 = SCRIPTS_DIR / f"{body.tool}.ps1"
-    if not ps1.exists():
+    ps1 = _resolve_tool_script(body.tool)
+    if not ps1:
         raise HTTPException(404, f"Tool script not found: {body.tool}.ps1")
     cmd = ["powershell.exe", "-NonInteractive", "-NoProfile",
            "-ExecutionPolicy", "Bypass",
@@ -630,6 +712,31 @@ async def launch_tool(body: JobSubmit, _=Depends(_verify_token)):
     try:
         proc = subprocess.Popen(cmd, cwd=str(WORKSPACE))
         return {"launched": True, "pid": proc.pid, "tool": body.tool}
+    except Exception as exc:
+        raise HTTPException(500, str(exc))
+
+
+@app.post("/api/system/open-folder", tags=["Tools"])
+async def open_folder(body: Dict[str, Any], _=Depends(_verify_token)):
+    raw = str(body.get("path") or "").strip().replace("/", "\\")
+    if not raw:
+        raise HTTPException(400, "path is required")
+    if re.search(r"[<>|;&`]", raw):
+        raise HTTPException(400, "Invalid path")
+
+    folder = (WORKSPACE / raw).resolve()
+    workspace_root = WORKSPACE.resolve()
+    try:
+        folder.relative_to(workspace_root)
+    except Exception:
+        raise HTTPException(403, "Path outside workspace")
+
+    if not folder.exists() or not folder.is_dir():
+        raise HTTPException(404, f"Folder not found: {raw}")
+
+    try:
+        subprocess.Popen(["explorer.exe", str(folder)], cwd=str(WORKSPACE))
+        return {"opened": True, "path": str(folder)}
     except Exception as exc:
         raise HTTPException(500, str(exc))
 
@@ -879,12 +986,17 @@ if __name__ == "__main__":
     print(f"[INFO] PwShGUI Service Cluster Dashboard starting on http://127.0.0.1:{DASHBOARD_PORT}")
     print(f"[INFO] Cluster role: {THIS_NODE['role']}")
     print(f"[INFO] Cluster token file: {SCRIPT_DIR / 'cluster.token'}")
-    uvicorn.run(
-        "server:app",
-        host="127.0.0.1",
-        port=DASHBOARD_PORT,
-        reload=False,
-        log_level="info",
-        ws="websockets",
-    )
+    try:
+        uvicorn.run(
+            "server:app",
+            host="127.0.0.1",
+            port=DASHBOARD_PORT,
+            reload=False,
+            log_level="info",
+            ws="websockets",
+        )
+    except KeyboardInterrupt:
+        print("[INFO] Dashboard shutdown requested. Exiting cleanly.")
+
+
 

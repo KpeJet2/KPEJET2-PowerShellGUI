@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.1
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -71,6 +71,93 @@ if ($AsService -and $Action -eq 'Start') {
     $Action = 'RunAsService'
 }
 
+# Defined before the action switch below: the Stop/Status cases call this during
+# early dispatch (before the main engine body). Keep it above 'switch ($Action)'.
+function Get-EngineRuntimeState {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [int]$Port,
+        [switch]$RecoverStaleArtifacts
+    )
+
+    $logsDir = Join-Path $WorkspacePath 'logs'
+    $stopSignalFile = Join-Path $logsDir 'engine.stop'
+    $pidFile = Join-Path $logsDir 'engine.pid'
+    $instanceFile = Join-Path $logsDir 'engine-instance-current.json'
+    $pidValue = $null
+    $pidRunning = $false
+    $instanceState = ''
+    $instancePid = $null
+    $hasStaleArtifacts = $false
+    $staleRecovered = $false
+
+    if (Test-Path -LiteralPath $pidFile) {
+        try {
+            $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
+            if ($pidText -match '^\d+$') {
+                $pidValue = [int]$pidText
+                $pidRunning = @((Get-Process -Id $pidValue -ErrorAction SilentlyContinue)).Count -gt 0
+                if (-not $pidRunning) { $hasStaleArtifacts = $true }
+            } else {
+                $hasStaleArtifacts = $true
+            }
+        } catch {
+            $hasStaleArtifacts = $true
+        }
+    }
+
+    if (Test-Path -LiteralPath $instanceFile) {
+        try {
+            $instanceJson = Get-Content -LiteralPath $instanceFile -Raw -Encoding UTF8
+            if (-not [string]::IsNullOrWhiteSpace($instanceJson)) {
+                $instanceObj = $instanceJson | ConvertFrom-Json
+                if ($null -ne $instanceObj) {
+                    if ($instanceObj.PSObject.Properties.Name -contains 'state') {
+                        $instanceState = [string]$instanceObj.state
+                    }
+                    if ($instanceObj.PSObject.Properties.Name -contains 'pid' -and $null -ne $instanceObj.pid) {
+                        try { $instancePid = [int]$instanceObj.pid } catch { $instancePid = $null }
+                    }
+                }
+            }
+        } catch {
+            $hasStaleArtifacts = $true
+        }
+    }
+
+    if ($pidValue -isnot [int]) {
+        if ($instancePid -is [int]) {
+            $pidValue = $instancePid
+            $pidRunning = @((Get-Process -Id $pidValue -ErrorAction SilentlyContinue)).Count -gt 0
+            if (-not $pidRunning) { $hasStaleArtifacts = $true }
+        }
+    }
+
+    if ($RecoverStaleArtifacts -and $hasStaleArtifacts -and -not $pidRunning) {
+        foreach ($artifact in @($pidFile, $stopSignalFile)) {
+            if (Test-Path -LiteralPath $artifact) {
+                try { Remove-Item -LiteralPath $artifact -Force -ErrorAction Stop } catch { <# Intentional: non-fatal #> }
+            }
+        }
+        $staleRecovered = $true
+    }
+
+    return [pscustomobject]@{
+        LogsDir           = $logsDir
+        StatusUrl         = ("http://127.0.0.1:$Port/api/engine/status")
+        StopSignalFile    = $stopSignalFile
+        PidFile           = $pidFile
+        InstanceFile      = $instanceFile
+        PidValue          = $pidValue
+        PidRunning        = $pidRunning
+        InstanceState     = $instanceState
+        InstancePid       = $instancePid
+        HasStaleArtifacts = $hasStaleArtifacts
+        StaleRecovered    = $staleRecovered
+    }
+}
+
 switch ($Action) {
     'Start' {
         # Continue into canonical in-process engine startup flow below.
@@ -93,46 +180,29 @@ switch ($Action) {
         }
 
         if (-not $stopRequested) {
-            $logsDir = Join-Path $WorkspacePath 'logs'
-            $stopSignal = Join-Path $logsDir 'engine.stop'
-            $pidFile = Join-Path $logsDir 'engine.pid'
-            $pidValue = $null
-            $pidRunning = $false
-
-            if (Test-Path -LiteralPath $pidFile) {
+            $runtimeState = Get-EngineRuntimeState -WorkspacePath $WorkspacePath -Port $Port -RecoverStaleArtifacts
+            if ($runtimeState.PidRunning) {
                 try {
-                    $pidText = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
-                    if ($pidText -match '^\d+$') {
-                        $pidValue = [int]$pidText
-                        $pidRunning = @((Get-Process -Id $pidValue -ErrorAction SilentlyContinue)).Count -gt 0
-                    }
-                } catch {
-                    $pidRunning = $false
-                }
-            }
-
-            if ($pidRunning) {
-                try {
-                    New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
-                    Set-Content -LiteralPath $stopSignal -Value '1' -Encoding UTF8 -Force
-                    Write-Host "Stop signal file written: $stopSignal" -ForegroundColor Yellow
+                    New-Item -ItemType Directory -Path $runtimeState.LogsDir -Force | Out-Null
+                    Set-Content -LiteralPath $runtimeState.StopSignalFile -Value '1' -Encoding UTF8 -Force
+                    Write-Host "Stop signal file written: $($runtimeState.StopSignalFile)" -ForegroundColor Yellow
                     $stopRequested = $true
                 } catch {
                     Write-Host "Failed to write stop signal: $($_.Exception.Message)" -ForegroundColor DarkYellow
                 }
 
-                if ($Force -and $null -ne $pidValue) {
+                if ($Force -and $null -ne $runtimeState.PidValue) {
                     try {
-                        Stop-Process -Id $pidValue -Force -ErrorAction Stop
-                        Write-Host "Force-stopped engine PID $pidValue" -ForegroundColor Yellow
+                        Stop-Process -Id $runtimeState.PidValue -Force -ErrorAction Stop
+                        Write-Host "Force-stopped engine PID $($runtimeState.PidValue)" -ForegroundColor Yellow
                         $stopRequested = $true
                     } catch {
                         Write-Host "Force stop failed: $($_.Exception.Message)" -ForegroundColor Red
                     }
                 }
             } else {
-                if (Test-Path -LiteralPath $stopSignal) {
-                    Remove-Item -LiteralPath $stopSignal -Force -ErrorAction SilentlyContinue
+                if (Test-Path -LiteralPath $runtimeState.StopSignalFile) {
+                    Remove-Item -LiteralPath $runtimeState.StopSignalFile -Force -ErrorAction SilentlyContinue
                 }
                 Write-Host "Engine is not running on port $Port. Nothing to stop." -ForegroundColor DarkYellow
                 exit 0
@@ -156,13 +226,27 @@ switch ($Action) {
         exit $LASTEXITCODE
     }
     'Status' {
-        $statusUrl = "http://127.0.0.1:$Port/api/engine/status"
+        $runtimeState = Get-EngineRuntimeState -WorkspacePath $WorkspacePath -Port $Port -RecoverStaleArtifacts
+        $statusUrl = $runtimeState.StatusUrl
         try {
             $resp = Invoke-WebRequest -Uri $statusUrl -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop
             Write-Host $resp.Content
             exit 0
         } catch {
-            Write-Host "Engine offline on port $Port" -ForegroundColor Yellow
+            $statusPayload = [ordered]@{
+                responding     = $false
+                running        = [bool]$runtimeState.PidRunning
+                staleRecovered = [bool]$runtimeState.StaleRecovered
+                staleArtifacts = [bool]$runtimeState.HasStaleArtifacts
+                pid            = $runtimeState.PidValue
+                pidRunning     = [bool]$runtimeState.PidRunning
+                port           = $Port
+                state          = if ($runtimeState.InstanceState) { $runtimeState.InstanceState } else { 'offline' }
+                workspacePath  = $WorkspacePath
+                instanceFile   = $runtimeState.InstanceFile
+                stopSignalFile = $runtimeState.StopSignalFile
+            }
+            Write-Host ($statusPayload | ConvertTo-Json -Depth 5)
             exit 1
         }
     }
@@ -206,9 +290,11 @@ $ConfigFile = Join-Path $WorkspacePath 'config'
 $ConfigFile = Join-Path $ConfigFile 'dependency-scan-config.json'
 
 # ─── Log file paths ───────────────────────────────────────────────────────────
-$script:EngineLogFile      = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-stdout.log'
-$script:BootstrapLogFile   = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-bootstrap.log'
-$script:CrashLogFile       = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-crash.log'
+$script:EngineLogsDir      = Join-Path (Join-Path $WorkspacePath 'logs') 'engine'
+if (-not (Test-Path $script:EngineLogsDir)) { New-Item -ItemType Directory -Path $script:EngineLogsDir -Force | Out-Null }
+$script:EngineLogFile      = Join-Path $script:EngineLogsDir 'engine-stdout.log'
+$script:BootstrapLogFile   = Join-Path $script:EngineLogsDir 'engine-bootstrap.log'
+$script:CrashLogFile       = Join-Path $script:EngineLogsDir 'engine-crash.log'
 $script:EngineInstanceFile = Join-Path (Join-Path $WorkspacePath 'logs') 'engine-instance-current.json'
 $script:StopSignalFile     = Join-Path (Join-Path $WorkspacePath 'logs') 'engine.stop'
 $script:_ExitClean         = $false   # set $true on graceful stop; $false = dirty exit
@@ -492,6 +578,8 @@ $script:_EngineBytesIn = [long]0
 $script:_EngineBytesOut = [long]0
 $script:_EngineLastErrorMessage = ''
 $script:_EngineStatusFreshnessSec = 45
+$script:_SiblingPidsCache = @()
+$script:_SiblingPidsCacheAt = [long]0
 
 <#
 .SYNOPSIS
@@ -615,20 +703,53 @@ function Send-Response {
     $resp.Headers.Set('Access-Control-Max-Age', '600')
     foreach ($kv in $ExtraHeaders.GetEnumerator()) { $resp.Headers.Set($kv.Key, $kv.Value) }
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
-    [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
+    # HEAD responses MUST carry the same entity headers (including Content-Length)
+    # that the equivalent GET would return, but MUST NOT contain a body. HttpListener
+    # rejects any body byte written to a HEAD response with
+    #   "Bytes to be written to the stream exceed the Content-Length bytes size specified."
+    # Page/static routes dispatch on URL only (not method), so a HEAD probe reaches a
+    # body-producing handler. Detect HEAD and suppress the body write while keeping the
+    # correct Content-Length header. Also skip writing a zero-length body.
+    $isHead = $false
+    try { $isHead = ([string]$Context.Request.HttpMethod -eq 'HEAD') } catch { $isHead = $false }
     $resp.ContentLength64 = $bytes.Length
+    if (-not $isHead) {
+        [void][System.Threading.Interlocked]::Add([ref]$script:_EngineBytesOut, [int64]$bytes.Length)
+    }
+    if ($StatusCode -ge 500) {
+        try {
+            $errUrl = try { [string]$Context.Request.Url.AbsolutePath } catch { '?' }
+            $errMethod = try { [string]$Context.Request.HttpMethod } catch { '?' }
+            Write-EngineLog "Server error $StatusCode returned for $errMethod $errUrl" -Level 'WARN'
+        } catch { <# Intentional: 5xx logging is best-effort and must never re-throw into the response path #> }
+    }
     try {
-        $resp.OutputStream.Write($bytes, 0, $bytes.Length)
+        if (-not $isHead -and $bytes.Length -gt 0) {
+            $resp.OutputStream.Write($bytes, 0, $bytes.Length)
+        }
         $resp.OutputStream.Close()
+    } catch [System.Net.HttpListenerException] {
+        $script:_EngineLastErrorMessage = "Client disconnected before response flush: $($_.Exception.Message)"
+        <# Intentional: benign client abort — remote closed the connection mid-write #>
+    } catch [System.IO.IOException] {
+        $script:_EngineLastErrorMessage = "Client disconnected before response flush: $($_.Exception.Message)"
+        <# Intentional: benign client abort — broken pipe / half-open socket #>
+    } catch [System.ObjectDisposedException] {
+        $script:_EngineLastErrorMessage = "Response stream already closed: $($_.Exception.Message)"
+        <# Intentional: benign — stream already disposed by an earlier send on this context #>
     } catch {
+        # Genuine, unexpected write fault — surface via status endpoint AND engine log.
         $script:_EngineLastErrorMessage = "Response write failure: $($_.Exception.Message)"
-        <# client disconnected #>
+        try { Write-EngineLog "Response write failure [$StatusCode]: $($_.Exception.Message)" -Level 'WARN' } catch { <# Intentional: best-effort logging #> }
     }
 }
 
 function Get-PublicKeyFingerprint {
     [CmdletBinding()]
     param()
+    if (-not [string]::IsNullOrWhiteSpace([string]$script:_PublicKeyFingerprintCache)) {
+        return [string]$script:_PublicKeyFingerprintCache
+    }
     $pkiDir = Join-Path $WorkspacePath 'pki'
     if (-not (Test-Path -LiteralPath $pkiDir -PathType Container)) {
         return 'Unavailable'
@@ -651,7 +772,8 @@ function Get-PublicKeyFingerprint {
             $hex = [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant()
             if ($hex.Length -gt 24) { $hex = $hex.Substring(0, 24) }
             $label = [System.IO.Path]::GetFileName($candidate)
-            return "${label}:$hex"
+            $script:_PublicKeyFingerprintCache = "${label}:$hex"
+            return [string]$script:_PublicKeyFingerprintCache
         } finally {
             $sha.Dispose()
         }
@@ -721,6 +843,76 @@ function Get-EngineProcessTelemetry {
         memoryWorkingSetMB = $wsMb
         memoryPeakWorkingSetMB = $peakMb
     }
+}
+
+<#
+.SYNOPSIS
+Enumerate all PowerShell processes whose command line matches a local web
+engine entrypoint. Always includes $PID first if alive.
+.DESCRIPTION
+Used by GET /api/engine/status to surface multi-instance situations
+(zombie engines, restart races, parallel debug runs) so the Workspace Hub
+can list every PID currently linked to the engine. Returns an array of
+[pscustomobject]@{ pid; processName; commandLine; startTime; isSelf }.
+#>
+function Get-EngineSiblingPids {
+    [CmdletBinding()]
+    param()
+    # Reliability: GET /api/engine/status is polled every ~3s. Enumerating sibling
+    # PIDs runs a Get-CimInstance Win32_Process WMI query that costs 100s of ms and,
+    # because the engine is single-threaded, BLOCKS every other request for that
+    # duration -> status "misses" -> false Offline cascade. Cache the result with a
+    # short TTL so hot-path polls return instantly and the CIM query runs at most
+    # once per TTL window.
+    $nowTicks = [System.Diagnostics.Stopwatch]::GetTimestamp()
+    $ttlSec   = 8
+    if ($null -ne $script:_SiblingPidsCache -and $script:_SiblingPidsCacheAt -gt 0) {
+        $ageSec = ($nowTicks - $script:_SiblingPidsCacheAt) / [System.Diagnostics.Stopwatch]::Frequency
+        if ($ageSec -ge 0 -and $ageSec -lt $ttlSec) {
+            return ,@($script:_SiblingPidsCache)
+        }
+    }
+    $results = New-Object System.Collections.Generic.List[object]
+    $seen = @{}
+
+    $addProc = {
+        param($procId, $procName, $cmdLine, $startTime, $isSelf)
+        if (-not $procId) { return }
+        $key = [int]$procId
+        if ($seen.ContainsKey($key)) { return }
+        $seen[$key] = $true  # SIN-EXEMPT: P027 - hashtable key set, not null-array index
+        $iso = $null
+        try { if ($startTime) { $iso = (Get-Date $startTime -Format 'o') } } catch { <# Intentional: ignore #> }
+        $results.Add([pscustomobject]@{
+            pid         = $key
+            processName = [string]$procName
+            commandLine = [string]$cmdLine
+            startTime   = $iso
+            isSelf      = [bool]$isSelf
+        }) | Out-Null
+    }
+
+    $selfProc = Get-Process -Id $PID -ErrorAction SilentlyContinue
+    if ($selfProc) {
+        & $addProc $PID $selfProc.ProcessName $null $selfProc.StartTime $true
+    }
+
+    try {
+        $cim = Get-CimInstance -ClassName Win32_Process -ErrorAction Stop -Filter "Name = 'powershell.exe' OR Name = 'pwsh.exe'"
+        foreach ($p in @($cim)) {
+            $cl = [string]$p.CommandLine
+            if ([string]::IsNullOrEmpty($cl)) { continue }
+            if ($cl -notmatch 'Start-LocalWebEngine(?:Service)?\.ps1') { continue }
+            $st = $null
+            try { $st = $p.CreationDate } catch { <# Intentional: ignore #> }
+            & $addProc $p.ProcessId $p.Name $cl $st ([int]$p.ProcessId -eq $PID)
+        }
+    } catch { <# Intentional: CIM unavailable, return self only #> }
+
+    $resolved = @($results.ToArray())
+    $script:_SiblingPidsCache = $resolved
+    $script:_SiblingPidsCacheAt = $nowTicks
+    return ,@($resolved)
 }
 
 <#
@@ -900,10 +1092,18 @@ function Get-EngineStatus {
     $proc = Get-EngineProcessTelemetry
     $publicKey = Get-PublicKeyFingerprint
     $lastErr = Get-EngineLastErrorMessage
+    $siblings = @(Get-EngineSiblingPids)
+    $pidList = @($siblings | ForEach-Object {
+        $pidVal = @($_.pid)[0]   # P027: tolerate scalar or array; never throw on cast
+        $pidInt = 0
+        if ([int]::TryParse([string]$pidVal, [ref]$pidInt)) { $pidInt }
+    })
     Send-Json -Context $Context -Object @{
         running     = $true
         responding  = $true
         pid         = $PID
+        pids        = $pidList
+        enginePids  = $siblings
         processName = $proc.processName
         port        = $Port
         state       = 'Running'
@@ -988,7 +1188,7 @@ function Get-EngineLog {
     $logKey = if ($null -ne $nameParam -and $allowedNames.ContainsKey($nameParam)) { $nameParam } else { 'stdout' }
     $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 50 }
     if ($tail -gt 5000) { $tail = 5000 }  # cap max tail
-    $logFile = Join-Path $WorkspacePath (Join-Path 'logs' $allowedNames[$logKey])
+    $logFile = Join-Path $WorkspacePath (Join-Path 'logs\engine' $allowedNames[$logKey])
     $lines = @()
     if (Test-Path -LiteralPath $logFile) {
         $lines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -Tail $tail -ErrorAction SilentlyContinue)
@@ -1025,7 +1225,7 @@ function Get-EngineEvents {
     }
     $events = [System.Collections.ArrayList]@()
     foreach ($kv in $logMap.GetEnumerator()) {
-        $logFile = Join-Path (Join-Path $WorkspacePath 'logs') $kv.Value
+        $logFile = Join-Path (Join-Path $WorkspacePath 'logs\engine') $kv.Value
         if (-not (Test-Path -LiteralPath $logFile)) { continue }
         try {
             $fileLines = @(Get-Content -LiteralPath $logFile -Encoding UTF8 -ErrorAction SilentlyContinue)
@@ -1072,7 +1272,7 @@ The HttpListenerContext for the request.
 function Get-EngineLogsList {
     [CmdletBinding()]
     param($Context)
-    $logsDir = Join-Path $WorkspacePath 'logs'
+    $logsDir = Join-Path $WorkspacePath 'logs\engine'
     $knownNames = @{ stdout='engine-stdout.log'; stderr='engine-stderr.log'; service='engine-service.log'; bootstrap='engine-bootstrap.log'; crash='engine-crash.log' }
     $result = [System.Collections.ArrayList]@()
     foreach ($kv in $knownNames.GetEnumerator()) {
@@ -1087,6 +1287,469 @@ function Get-EngineLogsList {
         })
     }
     Send-Json -Context $Context -Object @{ logs = @($result) }
+}
+
+# ─── Route: GET/POST /api/netmon/connections ────────────────────────────────
+<#
+.SYNOPSIS
+Get or ingest NetMon connection telemetry records.
+.DESCRIPTION
+GET returns recent records from logs/netmon/connections.jsonl.
+POST appends one or more telemetry records for dashboard consumption.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function Get-NetMonLogPaths {
+    [CmdletBinding()]
+    param()
+    $root = Join-Path $WorkspacePath 'logs'
+    $netmonDir = Join-Path $root 'netmon'
+    if (-not (Test-Path -LiteralPath $netmonDir)) {
+        New-Item -Path $netmonDir -ItemType Directory -Force | Out-Null
+    }
+    return [ordered]@{
+        directory       = $netmonDir
+        connectionsJson = (Join-Path $netmonDir 'connections.jsonl')
+        eventsJson      = (Join-Path $netmonDir 'events.jsonl')
+    }
+}
+
+function ConvertTo-NetMonRecord {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$InputObject,
+        [string]$DefaultSource = 'api'
+    )
+
+    $ip = [string]$InputObject.ip
+    if ([string]::IsNullOrWhiteSpace($ip)) { $ip = '0.0.0.0' }
+    $protocol = [string]$InputObject.protocol
+    if ([string]::IsNullOrWhiteSpace($protocol)) { $protocol = 'UNKNOWN' }
+    $service = [string]$InputObject.service
+    if ([string]::IsNullOrWhiteSpace($service)) { $service = 'n/a' }
+    $status = [string]$InputObject.status
+    if ([string]::IsNullOrWhiteSpace($status)) { $status = 'SUCCESS' }
+    $country = [string]$InputObject.country
+    if ([string]::IsNullOrWhiteSpace($country)) { $country = 'UNKNOWN' }
+    $source = [string]$InputObject.source
+    if ([string]::IsNullOrWhiteSpace($source)) { $source = $DefaultSource }
+    $ts = [string]$InputObject.ts
+    if ([string]::IsNullOrWhiteSpace($ts)) { $ts = (Get-Date -Format 'o') }
+
+    return [ordered]@{
+        ts        = $ts
+        ip        = $ip
+        country   = $country
+        protocol  = $protocol.ToUpperInvariant()
+        service   = $service
+        status    = $status.ToUpperInvariant()
+        bytesIn   = [int]$InputObject.bytesIn
+        bytesOut  = [int]$InputObject.bytesOut
+        latencyMs = [int]$InputObject.latencyMs
+        source    = $source
+    }
+}
+
+function Write-NetMonRecords {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [Parameter(Mandatory)] [object[]]$Records
+    )
+
+    foreach ($r in @($Records)) {
+        $json = ($r | ConvertTo-Json -Depth 6 -Compress)
+        Add-Content -LiteralPath $FilePath -Value $json -Encoding UTF8
+    }
+}
+
+function Read-NetMonRecords {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [int]$Tail = 200
+    )
+
+    if (-not (Test-Path -LiteralPath $FilePath)) { return @() }
+    if ($Tail -lt 1) { $Tail = 1 }
+    if ($Tail -gt 5000) { $Tail = 5000 }
+
+    $rows = [System.Collections.ArrayList]@()
+    $lines = @(Get-Content -LiteralPath $FilePath -Encoding UTF8 -Tail $Tail -ErrorAction SilentlyContinue)
+    foreach ($line in @($lines)) {
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+        try {
+            $obj = $line | ConvertFrom-Json -ErrorAction Stop
+            $null = $rows.Add($obj)
+        } catch {
+            Write-EngineLog "NetMon parse skip: $($_.Exception.Message)" -Level 'WARN'
+        }
+    }
+    return @($rows)
+}
+
+function Get-NetMonConnections {
+    [CmdletBinding()]
+    param($Context)
+
+    $tailParam = $Context.Request.QueryString['tail']
+    $statusParam = [string]$Context.Request.QueryString['status']
+    $ipLikeParam = [string]$Context.Request.QueryString['ipLike']
+    $protocolParam = [string]$Context.Request.QueryString['protocol']
+
+    $tail = if ($null -ne $tailParam -and $tailParam -match '^\d+$') { [int]$tailParam } else { 200 }
+    if ($tail -gt 5000) { $tail = 5000 }
+
+    $paths = Get-NetMonLogPaths
+    $allRows = @(Read-NetMonRecords -FilePath $paths.connectionsJson -Tail $tail)
+
+    $filtered = @($allRows)
+    if (-not [string]::IsNullOrWhiteSpace($statusParam) -and $statusParam -ne 'all') {
+        $statusUpper = $statusParam.ToUpperInvariant()
+        $filtered = @($filtered | Where-Object { ([string]$_.status).ToUpperInvariant() -eq $statusUpper })
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ipLikeParam)) {
+        $filtered = @($filtered | Where-Object { ([string]$_.ip) -like ('*' + $ipLikeParam + '*') })
+    }
+    if (-not [string]::IsNullOrWhiteSpace($protocolParam) -and $protocolParam -ne 'all') {
+        $protoUpper = $protocolParam.ToUpperInvariant()
+        $filtered = @($filtered | Where-Object { ([string]$_.protocol).ToUpperInvariant() -eq $protoUpper })
+    }
+
+    $protocolMap = @{}
+    $ipMap = @{}
+    $successCount = 0
+    foreach ($r in @($filtered)) {
+        $proto = ([string]$r.protocol).ToUpperInvariant()
+        if (-not $protocolMap.ContainsKey($proto)) {
+            $protocolMap[$proto] = [ordered]@{ attempts = 0; success = 0; failed = 0 }
+        }
+        $protocolMap[$proto].attempts++
+        if (([string]$r.status).ToUpperInvariant() -eq 'SUCCESS') {
+            $protocolMap[$proto].success++
+            $successCount++
+        } else {
+            $protocolMap[$proto].failed++
+        }
+
+        $ip = [string]$r.ip
+        if (-not $ipMap.ContainsKey($ip)) {
+            $ipMap[$ip] = [ordered]@{
+                ip = $ip
+                country = [string]$r.country
+                firstSeen = [string]$r.ts
+                lastSeen = [string]$r.ts
+                totalCount = 0
+            }
+        }
+        $ipMap[$ip].totalCount++
+        $ipMap[$ip].lastSeen = [string]$r.ts
+    }
+
+    Send-Json -Context $Context -Object @{
+        schema = 'NetMonConnections/1.0'
+        returned = @($filtered).Count
+        tail = $tail
+        success = $successCount
+        failed = (@($filtered).Count - $successCount)
+        uniqueIps = @($ipMap.Keys).Count
+        protocols = $protocolMap
+        ipSummary = @($ipMap.Values)
+        connections = @($filtered)
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+
+function Add-NetMonConnections {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $bodyStr = ''
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Close()
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($bodyStr)) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    $body = $null
+    try {
+        $body = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    $records = @()
+    if ($body -is [System.Collections.IEnumerable] -and -not ($body -is [string])) {
+        foreach ($entry in @($body)) {
+            $records += (ConvertTo-NetMonRecord -InputObject $entry -DefaultSource 'api-batch')
+        }
+    } elseif ($null -ne $body.connections -and $body.connections -is [System.Collections.IEnumerable]) {
+        foreach ($entry in @($body.connections)) {
+            $records += (ConvertTo-NetMonRecord -InputObject $entry -DefaultSource 'api-connections')
+        }
+    } else {
+        $records += (ConvertTo-NetMonRecord -InputObject $body -DefaultSource 'api-single')
+    }
+
+    if (@($records).Count -lt 1) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'No records supplied'
+        return
+    }
+
+    $paths = Get-NetMonLogPaths
+    Write-NetMonRecords -FilePath $paths.connectionsJson -Records @($records)
+    Write-NetMonRecords -FilePath $paths.eventsJson -Records @($records | Where-Object { ([string]$_.status).ToUpperInvariant() -eq 'SUCCESS' })
+
+    Send-Json -Context $Context -Object @{
+        accepted = @($records).Count
+        path = $paths.connectionsJson
+        schema = 'NetMonConnections/1.0'
+    }
+}
+
+function Get-NetMonCollectorRuntimePaths {
+    [CmdletBinding()]
+    param()
+    $paths = Get-NetMonLogPaths
+    return [ordered]@{
+        collectorScript = (Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-NetMonCollector.ps1')
+        pidFile         = (Join-Path $paths.directory 'collector.pid.json')
+        logFile         = (Join-Path $paths.directory 'netmon-collector.log')
+    }
+}
+
+function Get-NetMonCollectorProcess {
+    [CmdletBinding()]
+    param([int]$ProcessId)
+
+    if ($ProcessId -le 0) { return $null }
+    $p = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+    if ($null -eq $p) { return $null }
+
+    $cmd = ''
+    try {
+        $cim = Get-CimInstance -ClassName Win32_Process -ErrorAction Stop -Filter ("ProcessId = " + $ProcessId)
+        if ($null -ne $cim) {
+            $cmd = [string]$cim.CommandLine
+        }
+    } catch { <# Intentional: fallback to process-only telemetry #> }
+
+    return [pscustomobject]@{
+        pid = [int]$p.Id
+        processName = [string]$p.ProcessName
+        commandLine = $cmd
+        startTime = (Get-Date $p.StartTime -Format 'o')
+        isCollector = ($cmd -match 'Invoke-NetMonCollector\.ps1')
+    }
+}
+
+function Get-NetMonCollectorStatus {
+    [CmdletBinding()]
+    param($Context)
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    $pidValue = 0
+    $pidMeta = $null
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $pidMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $pidMeta.pid) {
+                $pidValue = [int]$pidMeta.pid
+            }
+        } catch { <# Intentional: tolerate malformed pid file #> }
+    }
+
+    $proc = Get-NetMonCollectorProcess -ProcessId $pidValue
+    $isRunning = ($null -ne $proc -and $proc.isCollector)
+    Send-Json -Context $Context -Object @{
+        running = $isRunning
+        pid = if ($isRunning) { $proc.pid } else { 0 }
+        processName = if ($isRunning) { $proc.processName } else { '' }
+        startTime = if ($isRunning) { $proc.startTime } else { '' }
+        commandLine = if ($isRunning) { $proc.commandLine } else { '' }
+        scriptPath = $runtime.collectorScript
+        pidFile = $runtime.pidFile
+        logFile = $runtime.logFile
+        serverTime = (Get-Date -Format 'o')
+    }
+}
+
+function Start-NetMonCollector {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    if (-not (Test-Path -LiteralPath $runtime.collectorScript)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'Invoke-NetMonCollector.ps1 not found'
+        return
+    }
+
+    $bodyObj = $null
+    $bodyStr = ''
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Close()
+        }
+        if (-not [string]::IsNullOrWhiteSpace($bodyStr)) {
+            $bodyObj = $bodyStr | ConvertFrom-Json -ErrorAction Stop
+        }
+    } catch { <# Intentional: fallback to defaults when body is empty or malformed #> }
+
+    $requestedPoll = 10
+    $requestedLimit = 120
+    $includeLoopback = $false
+    if ($null -ne $bodyObj) {
+        if ($bodyObj.PSObject.Properties.Name -contains 'pollSeconds') {
+            $requestedPoll = [int]$bodyObj.pollSeconds
+        }
+        if ($bodyObj.PSObject.Properties.Name -contains 'sampleLimit') {
+            $requestedLimit = [int]$bodyObj.sampleLimit
+        }
+        if ($bodyObj.PSObject.Properties.Name -contains 'includeLoopback') {
+            $includeLoopback = [bool]$bodyObj.includeLoopback
+        }
+    }
+    if ($requestedPoll -lt 2) { $requestedPoll = 2 }
+    if ($requestedPoll -gt 600) { $requestedPoll = 600 }
+    if ($requestedLimit -lt 1) { $requestedLimit = 1 }
+    if ($requestedLimit -gt 1000) { $requestedLimit = 1000 }
+
+    $existingPid = 0
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $existingMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $existingMeta.pid) {
+                $existingPid = [int]$existingMeta.pid
+            }
+        } catch { <# Intentional: ignore malformed pid file #> }
+    }
+    $existing = Get-NetMonCollectorProcess -ProcessId $existingPid
+    if ($null -ne $existing -and $existing.isCollector) {
+        Send-Json -Context $Context -Object @{
+            started = $false
+            running = $true
+            pid = $existing.pid
+            message = 'Collector already running'
+        }
+        return
+    }
+
+    $hostExe = 'pwsh.exe'
+    if (-not (Get-Command -Name $hostExe -ErrorAction SilentlyContinue)) {
+        $hostExe = 'powershell.exe'
+    }
+    if (-not (Get-Command -Name $hostExe -ErrorAction SilentlyContinue)) {
+        Send-Error -Context $Context -StatusCode 500 -Message 'No PowerShell host found for collector'
+        return
+    }
+
+    $engineBase = ('http://127.0.0.1:' + $Port)
+    $argsList = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $runtime.collectorScript,
+        '-WorkspacePath', $WorkspacePath,
+        '-EngineBaseUrl', $engineBase,
+        '-Continuous',
+        '-PollSeconds', [string]$requestedPoll,
+        '-SampleLimit', [string]$requestedLimit
+    )
+    if ($includeLoopback) {
+        $argsList += '-IncludeLoopback'
+    }
+
+    try {
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $argsList -WindowStyle Hidden -PassThru -ErrorAction Stop
+        $pidMeta = [ordered]@{
+            pid = [int]$proc.Id
+            host = $hostExe
+            pollSeconds = $requestedPoll
+            sampleLimit = $requestedLimit
+            includeLoopback = $includeLoopback
+            startedAt = (Get-Date -Format 'o')
+            scriptPath = $runtime.collectorScript
+        }
+        $pidJson = $pidMeta | ConvertTo-Json -Depth 5
+        Set-Content -LiteralPath $runtime.pidFile -Value $pidJson -Encoding UTF8 -Force
+        Send-Json -Context $Context -Object @{
+            started = $true
+            running = $true
+            pid = [int]$proc.Id
+            pollSeconds = $requestedPoll
+            sampleLimit = $requestedLimit
+            includeLoopback = $includeLoopback
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ("Failed to start collector: " + $_.Exception.Message)
+    }
+}
+
+function Stop-NetMonCollector {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $runtime = Get-NetMonCollectorRuntimePaths
+    $pidValue = 0
+    if (Test-Path -LiteralPath $runtime.pidFile) {
+        try {
+            $pidMeta = Get-Content -LiteralPath $runtime.pidFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $pidMeta.pid) {
+                $pidValue = [int]$pidMeta.pid
+            }
+        } catch { <# Intentional: ignore malformed pid file #> }
+    }
+
+    $collectorProcess = Get-NetMonCollectorProcess -ProcessId $pidValue
+    if ($null -eq $collectorProcess -or -not $collectorProcess.isCollector) {
+        if (Test-Path -LiteralPath $runtime.pidFile) {
+            Remove-Item -LiteralPath $runtime.pidFile -Force -ErrorAction SilentlyContinue
+        }
+        Send-Json -Context $Context -Object @{ stopped = $false; running = $false; message = 'Collector not running' }
+        return
+    }
+
+    try {
+        Stop-Process -Id $collectorProcess.pid -Force -ErrorAction Stop
+        if (Test-Path -LiteralPath $runtime.pidFile) {
+            Remove-Item -LiteralPath $runtime.pidFile -Force -ErrorAction SilentlyContinue
+        }
+        Send-Json -Context $Context -Object @{ stopped = $true; running = $false; pid = $collectorProcess.pid }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message ("Failed to stop collector: " + $_.Exception.Message)
+    }
 }
 
 # ─── Route: POST /api/scan/full | /api/scan/incremental ───────────────────────
@@ -1694,6 +2357,727 @@ function Save-BootstrapMenuConfig {
     }
 }
 
+# ─── Route: GET/POST /api/config/webengine-components ───────────────────────
+function Get-DefaultWebEngineComponentsConfig {
+    [CmdletBinding()]
+    param()
+
+    return [ordered]@{
+        schema = 'WebEngineServicesConfig/1.0'
+        _versionTag = '2605.B5.V51.2'
+        hotReload = [ordered]@{
+            enabled = $true
+            pollSeconds = 20
+        }
+        components = @(
+            [ordered]@{
+                componentId = 'svc-cluster-dashboard'
+                name = 'ServiceClusterDashboard'
+                path = 'scripts/service-cluster-dashboard/Launch-ServiceClusterDashboard.bat'
+                startArgs = @()
+                statusHints = @('Launch-ServiceClusterDashboard.bat','uvicorn server:app','--port 8099')
+                enabled = $true
+                controlMode = 'toggle'
+                objectVersion = '1.0.0'
+                upgradeScript = ''
+            },
+            [ordered]@{
+                componentId = 'engine-bootstrap'
+                name = 'EngineBootstrap'
+                path = 'scripts/Start-Engines.ps1'
+                startArgs = @('-Quiet')
+                statusHints = @('Start-Engines.ps1')
+                enabled = $true
+                controlMode = 'toggle'
+                objectVersion = '1.0.0'
+                upgradeScript = ''
+            },
+            [ordered]@{
+                componentId = 'engine-monitor'
+                name = 'Start-EngineServiceMonitor'
+                path = 'scripts/Invoke-EngineServiceMonitor.ps1'
+                startArgs = @('/AUTO','-Quiet')
+                statusHints = @('Invoke-EngineServiceMonitor.ps1','engine-monitor')
+                enabled = $true
+                controlMode = 'toggle'
+                objectVersion = '1.0.0'
+                upgradeScript = ''
+            },
+            [ordered]@{
+                componentId = 'cron-processor-1'
+                name = 'Invoke-CronProcessor.ps1 #1'
+                path = 'scripts/Invoke-CronProcessor.ps1'
+                startArgs = @()
+                statusHints = @('Invoke-CronProcessor.ps1')
+                enabled = $true
+                controlMode = 'toggle'
+                objectVersion = '1.0.0'
+                upgradeScript = ''
+            },
+            [ordered]@{
+                componentId = 'cron-processor-2'
+                name = 'Invoke-CronProcessor.ps1 #2'
+                path = 'scripts/Invoke-CronProcessor.ps1'
+                startArgs = @()
+                statusHints = @('Invoke-CronProcessor.ps1')
+                enabled = $true
+                controlMode = 'toggle'
+                objectVersion = '1.0.0'
+                upgradeScript = ''
+            }
+        )
+    }
+}
+
+function Test-WebEngineComponentsConfigObject {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Config,
+        [ref]$ValidationError
+    )
+
+    $ValidationError.Value = ''
+
+    if ($null -eq $Config) {
+        $ValidationError.Value = 'Config object is null.'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'components')) {
+        $ValidationError.Value = 'Config must include components array.'
+        return $false
+    }
+
+    $components = @($Config.components)
+    foreach ($component in $components) {
+        if ($null -eq $component) {
+            $ValidationError.Value = 'Component entry cannot be null.'
+            return $false
+        }
+
+        $name = if ($component.PSObject.Properties.Name -contains 'name') { [string]$component.name } else { '' }
+        $path = if ($component.PSObject.Properties.Name -contains 'path') { [string]$component.path } else { '' }
+        if ([string]::IsNullOrWhiteSpace($name) -or [string]::IsNullOrWhiteSpace($path)) {
+            $ValidationError.Value = 'Each component requires non-empty name and path.'
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-WebEngineComponentsConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'webengine-services.components.json'
+    $obj = $null
+    if (Test-Path -LiteralPath $cfgFile) {
+        try {
+            $obj = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+        } catch {
+            Send-Error -Context $Context -StatusCode 500 -Message "WebEngine components config parse failed: $_"
+            return
+        }
+    }
+
+    if ($null -eq $obj) {
+        $obj = Get-DefaultWebEngineComponentsConfig
+    }
+
+    Send-Json -Context $Context -Object $obj
+}
+
+function Save-WebEngineComponentsConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        $parsed = $bodyStr | ConvertFrom-Json
+        if ($null -eq $parsed) {
+            Send-Error -Context $Context -StatusCode 400 -Message 'Invalid payload: body is empty or malformed JSON'
+            return
+        }
+
+        if ($parsed.PSObject.Properties.Name -contains 'schema' -and -not [string]::IsNullOrWhiteSpace([string]$parsed.schema)) {
+            if ([string]$parsed.schema -ne 'WebEngineServicesConfig/1.0') {
+                Send-Error -Context $Context -StatusCode 400 -Message "Unsupported schema: $($parsed.schema)"
+                return
+            }
+        } else {
+            $parsed | Add-Member -NotePropertyName schema -NotePropertyValue 'WebEngineServicesConfig/1.0' -Force
+        }
+
+        $validationError = ''
+        if (-not (Test-WebEngineComponentsConfigObject -Config $parsed -ValidationError ([ref]$validationError))) {
+            Send-Error -Context $Context -StatusCode 400 -Message "Invalid payload: $validationError"
+            return
+        }
+
+        $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'webengine-services.components.json'
+        Set-Content -LiteralPath $cfgFile -Value ($parsed | ConvertTo-Json -Depth 12) -Encoding UTF8 -Force
+
+        Send-Json -Context $Context -Object @{
+            saved = $true
+            file = 'config/webengine-services.components.json'
+            schema = [string]$parsed.schema
+            componentCount = @($parsed.components).Count
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
+    }
+}
+
+function Resolve-WebEngineComponentPathInfo {
+    [CmdletBinding()]
+    param([AllowEmptyString()] [string]$PathValue)
+
+    $result = [ordered]@{
+        input = [string]$PathValue
+        resolved = ''
+        inWorkspace = $false
+        exists = $false
+    }
+
+    if ([string]::IsNullOrWhiteSpace($PathValue)) {
+        return [PSCustomObject]$result
+    }
+
+    $candidate = [string]$PathValue
+    $candidate = $candidate.Trim().Trim('"',"'")
+    $candidate = $candidate -replace '/', '\\'
+
+    $combined = if ([System.IO.Path]::IsPathRooted($candidate)) {
+        $candidate
+    } else {
+        Join-Path $WorkspacePath $candidate
+    }
+
+    try {
+        $resolved = [System.IO.Path]::GetFullPath($combined)
+        $result.resolved = $resolved
+
+        $wsRoot = [System.IO.Path]::GetFullPath($WorkspacePath).TrimEnd('\\')
+        $resolvedNorm = $resolved.TrimEnd('\\')
+        $wsPrefix = $wsRoot + '\\'
+        if ($resolvedNorm -eq $wsRoot -or $resolvedNorm.StartsWith($wsPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $result.inWorkspace = $true
+            $result.exists = [bool](Test-Path -LiteralPath $resolved -PathType Leaf)
+        }
+    } catch {
+        <# Intentional: invalid path format returns default result #>
+    }
+
+    return [PSCustomObject]$result
+}
+
+function Validate-WebEngineComponentsConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $bodyStr = ''
+        if ($Context.Request.ContentLength64 -gt 0) {
+            $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+            try {
+                $bodyStr = $reader.ReadToEnd()
+            } finally {
+                $reader.Dispose()
+            }
+        }
+
+        $parsed = $null
+        if (-not [string]::IsNullOrWhiteSpace($bodyStr)) {
+            $parsed = $bodyStr | ConvertFrom-Json
+        } else {
+            $cfgFile = Join-Path (Join-Path $WorkspacePath 'config') 'webengine-services.components.json'
+            if (Test-Path -LiteralPath $cfgFile -PathType Leaf) {
+                $parsed = (Get-Content -LiteralPath $cfgFile -Raw -Encoding UTF8) | ConvertFrom-Json
+            } else {
+                $parsed = Get-DefaultWebEngineComponentsConfig
+            }
+        }
+
+        $validationError = ''
+        if (-not (Test-WebEngineComponentsConfigObject -Config $parsed -ValidationError ([ref]$validationError))) {
+            Send-Error -Context $Context -StatusCode 400 -Message "Invalid payload: $validationError"
+            return
+        }
+
+        $items = [System.Collections.ArrayList]@()
+        $index = 0
+        foreach ($component in @($parsed.components)) {
+            $name = if ($component.PSObject.Properties.Name -contains 'name') { [string]$component.name } else { '' }
+            $componentId = if ($component.PSObject.Properties.Name -contains 'componentId') { [string]$component.componentId } else { '' }
+            $pathValue = if ($component.PSObject.Properties.Name -contains 'path') { [string]$component.path } else { '' }
+            $upgradeScript = if ($component.PSObject.Properties.Name -contains 'upgradeScript') { [string]$component.upgradeScript } else { '' }
+
+            $pathInfo = Resolve-WebEngineComponentPathInfo -PathValue $pathValue
+            $upgradeConfigured = -not [string]::IsNullOrWhiteSpace($upgradeScript)
+            $upgradeInfo = Resolve-WebEngineComponentPathInfo -PathValue $upgradeScript
+
+            $warnings = [System.Collections.ArrayList]@()
+            if (-not $pathInfo.inWorkspace) {
+                [void]$warnings.Add('Component path is outside workspace boundary.')
+            } elseif (-not $pathInfo.exists) {
+                [void]$warnings.Add('Component path file not found.')
+            }
+
+            if ($upgradeConfigured) {
+                if (-not $upgradeInfo.inWorkspace) {
+                    [void]$warnings.Add('Upgrade script path is outside workspace boundary.')
+                } elseif (-not $upgradeInfo.exists) {
+                    [void]$warnings.Add('Upgrade script file not found.')
+                }
+            }
+
+            [void]$items.Add([PSCustomObject]@{
+                index = $index
+                componentId = $componentId
+                name = $name
+                pathResolved = $pathInfo.resolved
+                pathInWorkspace = [bool]$pathInfo.inWorkspace
+                pathExists = [bool]$pathInfo.exists
+                upgradeConfigured = [bool]$upgradeConfigured
+                upgradeResolved = $upgradeInfo.resolved
+                upgradeInWorkspace = [bool]$upgradeInfo.inWorkspace
+                upgradeExists = if ($upgradeConfigured) { [bool]$upgradeInfo.exists } else { $false }
+                warnings = @($warnings)
+            })
+
+            $index++
+        }
+
+        Send-Json -Context $Context -Object @{
+            validated = $true
+            componentCount = @($items).Count
+            items = @($items)
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Validation failed: $_"
+    }
+}
+
+# ─── Route: GET /api/config/workspace-hub ───────────────────────────────────
+function Get-DefaultWorkspaceHubConfig {
+    [CmdletBinding()]
+    param()
+
+    return [ordered]@{
+        schema = 'WorkspaceHubConfig/1.0'
+        lastUpdated = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+        sections = @(
+            [ordered]@{ key = 'tools'; label = 'Tools'; visible = $true; order = 1 },
+            [ordered]@{ key = 'reports'; label = 'Reports'; visible = $true; order = 2 },
+            [ordered]@{ key = 'timeline'; label = 'Timeline'; visible = $true; order = 3 },
+            [ordered]@{ key = 'approvals'; label = 'Approvals'; visible = $true; order = 4 },
+            [ordered]@{ key = 'crashes'; label = 'Crashes'; visible = $true; order = 5 },
+            [ordered]@{ key = 'eventlogs'; label = 'Event Logs'; visible = $true; order = 6 },
+            [ordered]@{ key = 'monitor'; label = 'Monitor'; visible = $true; order = 7 },
+            [ordered]@{ key = 'sources'; label = 'Data Sources'; visible = $true; order = 8 },
+            [ordered]@{ key = 'codecopycats'; label = 'Code Copy-Cats'; visible = $true; order = 9 }
+        )
+        serviceMonitors = @(
+            [ordered]@{ key = 'engineStatus'; label = 'Engine Status'; enabled = $true; target = '/api/engine/status' },
+            [ordered]@{ key = 'engineLog'; label = 'Engine Log Tail'; enabled = $true; target = '/api/engine/log?tail=40' },
+            [ordered]@{ key = 'scanStatus'; label = 'Scan Status'; enabled = $true; target = '/api/scan/status' }
+        )
+        objectCounters = @(
+            [ordered]@{ key = 'requestsTotal'; label = 'Requests Total'; enabled = $true },
+            [ordered]@{ key = 'requestsServed'; label = 'Requests Served'; enabled = $true },
+            [ordered]@{ key = 'requestsClientError'; label = 'Requests 4xx'; enabled = $true },
+            [ordered]@{ key = 'requestsServerError'; label = 'Requests 5xx'; enabled = $true },
+            [ordered]@{ key = 'queueLength'; label = 'Request Queue'; enabled = $true }
+        )
+        testButtons = @(
+            [ordered]@{ id = 'scan-full'; label = 'Full Scan'; method = 'POST'; target = '/api/scan/full'; enabled = $true },
+            [ordered]@{ id = 'scan-incremental'; label = 'Get Missing Data'; method = 'POST'; target = '/api/scan/incremental'; enabled = $true },
+            [ordered]@{ id = 'validate-sources'; label = 'Validate Sources'; method = 'GET'; target = '/api/config/menus'; enabled = $true }
+        )
+        helpBlocks = @(
+            [ordered]@{ id = 'mode-help'; title = 'Data Modes'; visible = $true; content = 'Auto: runtime decides. Force Online: requires engine. Force Offline: cache only.' },
+            [ordered]@{ id = 'security-help'; title = 'Security Access'; visible = $true; content = 'Save and test operations are SASC-gated and can require vault secret access.' }
+        )
+        extraPages = @(
+            [ordered]@{ title = 'Workspace Hub Section Maintenance'; href = 'scripts/XHTML-Checker/XHTML-WorkspaceHubSectionMaintenance.xhtml'; enabled = $true }
+        )
+        security = [ordered]@{
+            enforceSASC = $true
+            requireVaultUnlocked = $true
+            requireAdmin = $false
+            requiredSecretName = 'workspace-hub-config-write'
+        }
+    }
+}
+
+function Get-WorkspaceHubConfigPath {
+    [CmdletBinding()]
+    param()
+    return (Join-Path (Join-Path $WorkspacePath 'config') 'workspace-hub.config.json')
+}
+
+function Get-WorkspaceHubAuditPath {
+    [CmdletBinding()]
+    param()
+    return (Join-Path (Join-Path $WorkspacePath 'logs') 'workspace-hub-config-audit.jsonl')
+}
+
+function Write-WorkspaceHubAudit {
+    [CmdletBinding()]
+    param(
+        [string]$Action,
+        [string]$Result,
+        [string]$Message
+    )
+
+    try {
+        $auditPath = Get-WorkspaceHubAuditPath
+        $entry = [ordered]@{
+            timestamp = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+            action = $Action
+            result = $Result
+            message = $Message
+            user = $env:USERNAME
+            host = $env:COMPUTERNAME
+        }
+        Add-Content -LiteralPath $auditPath -Value (($entry | ConvertTo-Json -Depth 6 -Compress)) -Encoding UTF8
+    } catch {
+        Write-EngineLog "WorkspaceHub audit write failed: $($_.Exception.Message)" -Level 'WARN'
+    }
+}
+
+function Test-WorkspaceHubConfigObject {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Config,
+        [ref]$ValidationError
+    )
+
+    $ValidationError.Value = ''
+    if ($null -eq $Config) {
+        $ValidationError.Value = 'payload is null'
+        return $false
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'schema') -or [string]::IsNullOrWhiteSpace([string]$Config.schema)) {
+        $Config | Add-Member -NotePropertyName schema -NotePropertyValue 'WorkspaceHubConfig/1.0' -Force
+    }
+
+    if ([string]$Config.schema -ne 'WorkspaceHubConfig/1.0') {
+        $ValidationError.Value = "unsupported schema: $($Config.schema)"
+        return $false
+    }
+
+    $requiredArrays = @('sections','serviceMonitors','objectCounters','testButtons','helpBlocks')
+    foreach ($prop in $requiredArrays) {
+        if (-not ($Config.PSObject.Properties.Name -contains $prop)) {
+            $Config | Add-Member -NotePropertyName $prop -NotePropertyValue @() -Force
+        }
+        if ($null -eq $Config.$prop) {
+            $Config.$prop = @()
+        }
+    }
+
+    $sections = @($Config.sections)
+    for ($i = 0; $i -lt @($sections).Count; $i++) {
+        $section = $sections[$i]
+        if ($null -eq $section) {
+            $ValidationError.Value = "sections[$i] is null"
+            return $false
+        }
+        $key = if ($section.PSObject.Properties.Name -contains 'key') { [string]$section.key } else { '' }
+        if ([string]::IsNullOrWhiteSpace($key)) {
+            $ValidationError.Value = "sections[$i].key is required"
+            return $false
+        }
+    }
+
+    $testButtons = @($Config.testButtons)
+    for ($t = 0; $t -lt @($testButtons).Count; $t++) {
+        $btn = $testButtons[$t]
+        if ($null -eq $btn) {
+            $ValidationError.Value = "testButtons[$t] is null"
+            return $false
+        }
+        $target = if ($btn.PSObject.Properties.Name -contains 'target') { [string]$btn.target } else { '' }
+        if ([string]::IsNullOrWhiteSpace($target)) {
+            $ValidationError.Value = "testButtons[$t].target is required"
+            return $false
+        }
+    }
+
+    if (-not ($Config.PSObject.Properties.Name -contains 'security') -or $null -eq $Config.security) {
+        $Config | Add-Member -NotePropertyName security -NotePropertyValue ([ordered]@{
+            enforceSASC = $true
+            requireVaultUnlocked = $true
+            requireAdmin = $false
+            requiredSecretName = 'workspace-hub-config-write'
+        }) -Force
+    }
+
+    return $true
+}
+
+function Test-WorkspaceHubConfigAccess {
+    [CmdletBinding()]
+    param(
+        [object]$Security,
+        [ref]$AccessError
+    )
+
+    $AccessError.Value = ''
+    $sec = $Security
+    if ($null -eq $sec) {
+        $sec = [ordered]@{
+            enforceSASC = $true
+            requireVaultUnlocked = $true
+            requireAdmin = $false
+            requiredSecretName = 'workspace-hub-config-write'
+        }
+    }
+
+    $enforceSASC = $true
+    $requireVault = $true
+    $requireAdmin = $false
+    $requiredScopeToken = [string]::Join('-', @('workspace','hub','config','write'))
+
+    if ($sec.PSObject.Properties.Name -contains 'enforceSASC') { $enforceSASC = [bool]$sec.enforceSASC }
+    if ($sec.PSObject.Properties.Name -contains 'requireVaultUnlocked') { $requireVault = [bool]$sec.requireVaultUnlocked }
+    if ($sec.PSObject.Properties.Name -contains 'requireAdmin') { $requireAdmin = [bool]$sec.requireAdmin }
+    if ($sec.PSObject.Properties.Name -contains 'requiredSecretName' -and -not [string]::IsNullOrWhiteSpace([string]$sec.requiredSecretName)) {
+        $requiredScopeToken = [string]$sec.requiredSecretName
+    }
+
+    if ($requireAdmin) {
+        try {
+            $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+            if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+                $AccessError.Value = 'Administrator role is required by workspace-hub security policy.'
+                return $false
+            }
+        } catch {
+            $AccessError.Value = "Unable to verify admin role: $($_.Exception.Message)"
+            return $false
+        }
+    }
+
+    if (-not $enforceSASC) {
+        return $true
+    }
+
+    $sascModulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'AssistedSASC.psd1'
+    if (-not (Test-Path -LiteralPath $sascModulePath)) {
+        $AccessError.Value = 'AssistedSASC module is missing; cannot enforce secure config access.'
+        return $false
+    }
+
+    try {
+        Import-Module $sascModulePath -Force -DisableNameChecking
+        Initialize-SASCModule -ScriptDir $WorkspacePath | Out-Null
+    } catch {
+        $AccessError.Value = "Failed to initialize AssistedSASC: $($_.Exception.Message)"
+        return $false
+    }
+
+    if ($requireVault) {
+        try {
+            $vaultStatus = Test-VaultStatus
+            if ($null -eq $vaultStatus -or -not ($vaultStatus.PSObject.Properties.Name -contains 'State') -or [string]$vaultStatus.State -ne 'Unlocked') {
+                $AccessError.Value = 'Vault must be unlocked to modify Workspace Hub maintenance config.'
+                return $false
+            }
+        } catch {
+            $AccessError.Value = "Vault status check failed: $($_.Exception.Message)"
+            return $false
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($requiredScopeToken)) {
+        try {
+            $secret = Get-VaultItem -Name $requiredScopeToken
+            if ($null -eq $secret) {
+                $AccessError.Value = "Required vault secret '$requiredScopeToken' was not found."
+                return $false
+            }
+        } catch {
+            $AccessError.Value = "Secret gate failed for '$requiredScopeToken': $($_.Exception.Message)"
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-WorkspaceHubConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    try {
+        $cfgPath = Get-WorkspaceHubConfigPath
+        $cfg = $null
+        if (Test-Path -LiteralPath $cfgPath) {
+            $cfg = (Get-Content -LiteralPath $cfgPath -Raw -Encoding UTF8) | ConvertFrom-Json
+        }
+        if ($null -eq $cfg) {
+            $cfg = Get-DefaultWorkspaceHubConfig
+        }
+        Send-Json -Context $Context -Object $cfg
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Workspace hub config read failed: $_"
+    }
+}
+
+function Save-WorkspaceHubConfig {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream, [System.Text.Encoding]::UTF8)
+        try {
+            $bodyStr = $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+
+        $parsed = $bodyStr | ConvertFrom-Json
+        $validationError = ''
+        if (-not (Test-WorkspaceHubConfigObject -Config $parsed -ValidationError ([ref]$validationError))) {
+            Write-WorkspaceHubAudit -Action 'save' -Result 'denied' -Message ("validation-failed: " + $validationError)
+            Send-Error -Context $Context -StatusCode 400 -Message ("Invalid payload: " + $validationError)
+            return
+        }
+
+        $accessError = ''
+        if (-not (Test-WorkspaceHubConfigAccess -Security $parsed.security -AccessError ([ref]$accessError))) {
+            Write-WorkspaceHubAudit -Action 'save' -Result 'denied' -Message $accessError
+            Send-Error -Context $Context -StatusCode 403 -Message $accessError
+            return
+        }
+
+        $cfgPath = Get-WorkspaceHubConfigPath
+        $parsed.lastUpdated = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+        Set-Content -LiteralPath $cfgPath -Value ($parsed | ConvertTo-Json -Depth 14) -Encoding UTF8 -Force
+
+        Write-WorkspaceHubAudit -Action 'save' -Result 'ok' -Message 'workspace hub maintenance config saved'
+        Send-Json -Context $Context -Object @{
+            saved = $true
+            file = 'config/workspace-hub.config.json'
+            schema = [string]$parsed.schema
+            lastUpdated = $parsed.lastUpdated
+        }
+    } catch {
+        Write-WorkspaceHubAudit -Action 'save' -Result 'error' -Message $_.Exception.Message
+        Send-Error -Context $Context -StatusCode 500 -Message "Save failed: $_"
+    }
+}
+
+function Test-WorkspaceHubConfigRoute {
+    [CmdletBinding()]
+    param($Context)
+
+    $incomingToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $incomingToken -or $incomingToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $cfgPath = Get-WorkspaceHubConfigPath
+        $cfg = $null
+        if (Test-Path -LiteralPath $cfgPath) {
+            $cfg = (Get-Content -LiteralPath $cfgPath -Raw -Encoding UTF8) | ConvertFrom-Json
+        }
+        if ($null -eq $cfg) {
+            $cfg = Get-DefaultWorkspaceHubConfig
+        }
+
+        $validationError = ''
+        $valid = Test-WorkspaceHubConfigObject -Config $cfg -ValidationError ([ref]$validationError)
+        $accessError = ''
+        $accessOk = Test-WorkspaceHubConfigAccess -Security $cfg.security -AccessError ([ref]$accessError)
+
+        $modeNames = @('auto','live','offline')
+        $buttons = @($cfg.testButtons)
+        $modeSupport = @()
+        foreach ($m in $modeNames) {
+            $modeSupport += [ordered]@{
+                mode = $m
+                supported = $true
+                notes = if ($m -eq 'offline') { 'Writes disabled by design in offline mode.' } else { 'Live endpoints required for mutation actions.' }
+            }
+        }
+
+        $report = [ordered]@{
+            testedAt = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+            validSchema = $valid
+            validationError = $validationError
+            accessGranted = $accessOk
+            accessError = $accessError
+            sectionCount = @($cfg.sections).Count
+            serviceMonitorCount = @($cfg.serviceMonitors).Count
+            objectCounterCount = @($cfg.objectCounters).Count
+            testButtonCount = @($buttons).Count
+            helpBlockCount = @($cfg.helpBlocks).Count
+            dataModes = $modeSupport
+        }
+
+        Write-WorkspaceHubAudit -Action 'test' -Result (if ($valid -and $accessOk) { 'ok' } else { 'warn' }) -Message 'workspace hub maintenance test executed'
+        Send-Json -Context $Context -Object $report
+    } catch {
+        Write-WorkspaceHubAudit -Action 'test' -Result 'error' -Message $_.Exception.Message
+        Send-Error -Context $Context -StatusCode 500 -Message "Test failed: $_"
+    }
+}
+
+function Get-WorkspaceHubConfigAudit {
+    [CmdletBinding()]
+    param($Context)
+
+    try {
+        $auditPath = Get-WorkspaceHubAuditPath
+        $rows = @()
+        if (Test-Path -LiteralPath $auditPath) {
+            $lines = @(Get-Content -LiteralPath $auditPath -Encoding UTF8 | Select-Object -Last 200)
+            foreach ($line in $lines) {
+                if ([string]::IsNullOrWhiteSpace($line)) { continue }
+                try {
+                    $rows += ($line | ConvertFrom-Json)
+                } catch {
+                    $rows += [ordered]@{ timestamp = ''; action = 'parse'; result = 'warn'; message = 'Unparseable audit line'; user = ''; host = '' }
+                }
+            }
+        }
+        Send-Json -Context $Context -Object @{ entries = $rows; count = @($rows).Count }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Audit query failed: $_"
+    }
+}
+
 # ─── Route: GET /api/workspace/files ──────────────────────────────────────────
 <#
 .SYNOPSIS
@@ -1807,40 +3191,16 @@ The HttpListenerContext for the request.
 function Start-WebSocketHandler {
     [CmdletBinding()]
     param([System.Net.HttpListenerContext]$Context)
+    # WebSocket push is intentionally DISABLED. The /ws route returns HTTP 501 and
+    # never reaches this handler. Accepting an upgrade here via a blocking
+    # AcceptWebSocketAsync().GetAwaiter().GetResult() inside the single-threaded
+    # engine pins a thread per connection and exhausts the thread pool (SIN P079/
+    # P080 -- the verified 8042 HANG). This stub is retained only so external
+    # references and the agentic manifest resolve; it must NEVER accept a socket.
     try {
-        $wsCtx = $Context.AcceptWebSocketAsync('').GetAwaiter().GetResult()
-        $ws    = $wsCtx.WebSocket
-        $wsId  = [System.Guid]::NewGuid().ToString()
-        $WsClients.TryAdd($wsId, $ws) | Out-Null
-
-        # Send hello metadata only; do not expose CSRF token over WebSocket.
-        $hello = @{ event = 'connected'; wsId = $wsId; serverTime = (Get-Date -Format 'o') }
-        $helloBytes = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
-        $ws.SendAsync([System.ArraySegment[byte]]::new($helloBytes), `
-            [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
-            [System.Threading.CancellationToken]::None).Wait(3000) | Out-Null
-
-        # Read loop
-        $buf = New-Object byte[] 4096
-        while ($ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
-            $result = $ws.ReceiveAsync([System.ArraySegment[byte]]::new($buf), `
-                [System.Threading.CancellationToken]::None).GetAwaiter().GetResult()
-            if ($result.MessageType -eq [System.Net.WebSockets.WebSocketMessageType]::Close) { break }
-            # Ping/keepalive — echo back
-            $msgStr = [System.Text.Encoding]::UTF8.GetString($buf, 0, $result.Count)
-            if ($msgStr -match '"type":"ping"') {
-                $pong = [System.Text.Encoding]::UTF8.GetBytes('{"type":"pong"}')
-                $ws.SendAsync([System.ArraySegment[byte]]::new($pong), `
-                    [System.Net.WebSockets.WebSocketMessageType]::Text, $true, `
-                    [System.Threading.CancellationToken]::None).Wait(1000) | Out-Null
-            }
-        }
-    } catch { <# client disconnected #> }
-    finally {
-        $removed = $null
-        $WsClients.TryRemove($wsId, [ref]$removed) | Out-Null
-        try { $ws.Dispose() } catch { <# non-fatal #> }
-    }
+        $Context.Response.StatusCode = 501
+        $Context.Response.Close()
+    } catch { <# Intentional: non-fatal #> }
 }
 
 # ─── Route: GET /api/hub/version ─────────────────────────────────────────────
@@ -1992,9 +3352,9 @@ function Get-HistoryList {
 # ─── Route: GET /api/pipeline/approvals ──────────────────────────────────────
 <#
 .SYNOPSIS
-Get pending approval items from todo/*.json files.
+Get pending approval items from todo JSON files (including queue subfolders).
 .DESCRIPTION
-Scans todo folder for items with status=PENDING_APPROVAL.
+Scans todo folder recursively for items with status=PENDING_APPROVAL.
 .PARAMETER Context
 The HttpListenerContext for the request.
 #>
@@ -2003,9 +3363,9 @@ function Get-PipelineApprovals {
     param($Context)
     $todoDir = Join-Path $WorkspacePath 'todo'
     $approvals = [System.Collections.ArrayList]@()
-    
+
     if (Test-Path -LiteralPath $todoDir) {
-        $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
+        $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -Recurse -ErrorAction SilentlyContinue)
         foreach ($file in $jsonFiles) {
             try {
                 $obj = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -2026,7 +3386,7 @@ function Get-PipelineApprovals {
             } catch { <# non-fatal — skip unreadable todo file #> }
         }
     }
-    
+
     $sorted = @($approvals | Sort-Object { $_.priority; $_.created } -Descending)
     Send-Json -Context $Context -Object @{ items = $sorted; count = @($sorted).Count }
 }
@@ -2037,7 +3397,7 @@ function Get-PipelineApprovals {
 Apply approval actions (approve, reject, done) to items.
 .DESCRIPTION
 Expects JSON body: { action: 'approve'|'reject'|'done', ids: [...] }
-Updates corresponding todo/*.json files with new status.
+Updates corresponding todo JSON files (including queue subfolders) with new status.
 .PARAMETER Context
 The HttpListenerContext for the request.
 #>
@@ -2050,41 +3410,41 @@ function Set-PipelineApprovals {
         Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
         return
     }
-    
+
     # Read JSON body
     $bodyReader = [System.IO.StreamReader]::new($Context.Request.InputStream)
     $body = $bodyReader.ReadToEnd()
     $bodyReader.Close()
-    
+
     $payload = $null
     try { $payload = $body | ConvertFrom-Json } catch { <# Intentional: invalid JSON #> }
-    
+
     if ($null -eq $payload -or -not ($payload.PSObject.Properties.Name -contains 'action') -or -not ($payload.PSObject.Properties.Name -contains 'ids')) {
         Send-Error -Context $Context -StatusCode 400 -Message 'Missing action or ids in request body'
         return
     }
-    
+
     $action = [string]$payload.action
     $ids = @($payload.ids)
     $statusMap = @{ 'approve' = 'IN_PROGRESS'; 'reject' = 'CLOSED'; 'done' = 'DONE' }
     $newStatus = $statusMap[$action]
-    
+
     if ([string]::IsNullOrWhiteSpace($newStatus)) {
         Send-Error -Context $Context -StatusCode 400 -Message "Unknown action: $action"
         return
     }
-    
+
     $todoDir = Join-Path $WorkspacePath 'todo'
     $updated = 0
     $failed = @()
-    
+
     foreach ($id in $ids) {
         $idStr = [string]$id
         $foundFile = $null
-        
+
         # Search for matching file
         if (Test-Path -LiteralPath $todoDir) {
-            $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue)
+            $jsonFiles = @(Get-ChildItem -Path $todoDir -Filter '*.json' -File -Recurse -ErrorAction SilentlyContinue)
             foreach ($file in $jsonFiles) {
                 try {
                     $obj = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -2096,12 +3456,12 @@ function Set-PipelineApprovals {
                 } catch { <# skip unreadable #> }
             }
         }
-        
+
         if ($null -eq $foundFile) {
             $failed += $idStr
             continue
         }
-        
+
         # Update status and write back
         try {
             $obj = Get-Content -LiteralPath $foundFile.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -2114,7 +3474,7 @@ function Set-PipelineApprovals {
             $failed += $idStr
         }
     }
-    
+
     Send-Json -Context $Context -Object @{
         action = $action
         updated = $updated
@@ -2141,20 +3501,20 @@ function Invoke-PipelineProcess {
         Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
         return
     }
-    
+
     $scriptPath = Join-Path (Join-Path $WorkspacePath 'scripts') 'Invoke-PipelineProcess20.ps1'
     if (-not (Test-Path -LiteralPath $scriptPath)) {
         Send-Error -Context $Context -StatusCode 500 -Message 'Invoke-PipelineProcess20.ps1 not found'
         return
     }
-    
+
     # Launch as background job
     $jobId = [guid]::NewGuid().ToString()
     $null = Start-Job -ScriptBlock {
         param($script, $ws)
         & powershell.exe -NoProfile -NonInteractive -File $script -WorkspacePath $ws -PassThru
     } -ArgumentList $scriptPath, $WorkspacePath -Name "pipeline-$jobId"
-    
+
     Send-Json -Context $Context -Object @{
         started = $true
         jobId = $jobId
@@ -2181,7 +3541,7 @@ function New-TestCrashDump {
         Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
         return
     }
-    
+
     try {
         $testCrash = @{
             exitKind      = 'TEST_CRASH'
@@ -2192,7 +3552,7 @@ function New-TestCrashDump {
             reason        = 'Test crash dump created via /api/test/crashdump'
             testMarker    = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
         } | ConvertTo-Json -Depth 4
-        
+
         Add-Content -LiteralPath $script:CrashLogFile -Value $testCrash -Encoding UTF8
         Send-Json -Context $Context -Object @{ created = $true; type = 'crash'; timestamp = (Get-Date -Format 'o') }
     } catch {
@@ -2218,7 +3578,7 @@ function New-TestEventLog {
         Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
         return
     }
-    
+
     try {
         $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $testId = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
@@ -2248,7 +3608,7 @@ function New-TestHistory {
         Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
         return
     }
-    
+
     try {
         $actionLogFile = Join-Path (Join-Path $WorkspacePath 'todo') 'action-log.json'
         $testId = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
@@ -2259,7 +3619,7 @@ function New-TestHistory {
             status = 'IN_PROGRESS'
             source = 'api-test'
         }
-        
+
         # Append to action log (create if missing)
         if (Test-Path -LiteralPath $actionLogFile) {
             $log = Get-Content -LiteralPath $actionLogFile -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -2274,7 +3634,7 @@ function New-TestHistory {
             $json = $newLog | ConvertTo-Json -Depth 5
             Set-Content -LiteralPath $actionLogFile -Value $json -Encoding UTF8 -Force
         }
-        
+
         Send-Json -Context $Context -Object @{ created = $true; type = 'history'; testId = $testId; timestamp = (Get-Date -Format 'o') }
     } catch {
         Send-Error -Context $Context -StatusCode 500 -Message "Failed to create test history: $_"
@@ -2301,7 +3661,7 @@ function Add-RuntimeToolExit {
             pid = $PID
             runtime = [int]([System.Diagnostics.Stopwatch]::GetTimestamp() / [System.Diagnostics.Stopwatch]::Frequency - $script:_EngineStartEpoch)
         } | ConvertTo-Json -Depth 3
-        
+
         Add-Content -LiteralPath $runtimeHistFile -Value $exitEvent -Encoding UTF8
         Send-Json -Context $Context -Object @{ recorded = $true; timestamp = (Get-Date -Format 'o') }
     } catch {
@@ -2385,16 +3745,20 @@ try {
                     $script:_ExitClean = $true
                     break
                 }
-                # Idle tick — broadcast any new scan-progress data to WebSocket clients
-                try {
-                    if (Test-Path -LiteralPath $pgPath) {
-                        $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
-                        if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
-                            $script:lastProgressContent = $raw
-                            Send-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                # Idle tick — only poll/broadcast progress when a WS client is connected.
+                # WS is currently disabled by design and /ws returns 501, so this avoids
+                # unnecessary 500ms file I/O work in the hot idle path.
+                if ($WsClients.Count -gt 0) {
+                    try {
+                        if (Test-Path -LiteralPath $pgPath) {
+                            $raw = Get-Content -LiteralPath $pgPath -Raw -Encoding UTF8
+                            if (-not [string]::IsNullOrEmpty($raw) -and $raw -ne $script:lastProgressContent) {
+                                $script:lastProgressContent = $raw
+                                Send-WsMessage -JsonMessage ('{"event":"scan_progress","data":' + $raw + '}')
+                            }
                         }
-                    }
-                } catch { <# non-fatal — progress file may not exist yet #> }
+                    } catch { <# non-fatal — progress file may not exist yet #> }
+                }
                 continue
             }
             $context = $pendingTask.Result
@@ -2431,55 +3795,13 @@ try {
 
         # ── WebSocket upgrade ────────────────────────────────────────────
         if ($req.IsWebSocketRequest -and $url -eq '/ws') {
-            # Start-Job creates a new process without script functions — use a runspace instead
-            $wsCtxRef  = $context
-            $wsClRef   = $WsClients
-            $wsPsInst  = [System.Management.Automation.PowerShell]::Create()
-            $null = $wsPsInst.AddScript({
-                param($wsCtx, $wsClients)
-                $wsId = $null
-                $ws   = $null
-                try {
-                    $acc    = $wsCtx.AcceptWebSocketAsync('').GetAwaiter().GetResult()
-                    $ws     = $acc.WebSocket
-                    $wsId   = [System.Guid]::NewGuid().ToString()
-                    $wsClients.TryAdd($wsId, $ws) | Out-Null
-                    $hello  = @{ event='connected'; wsId=$wsId; serverTime=(Get-Date -Format 'o') }
-                    $helloB = [System.Text.Encoding]::UTF8.GetBytes(($hello | ConvertTo-Json -Depth 3))
-                    $ws.SendAsync(
-                        [System.ArraySegment[byte]]::new($helloB),
-                        [System.Net.WebSockets.WebSocketMessageType]::Text,
-                        $true,
-                        [System.Threading.CancellationToken]::None
-                    ).Wait(3000) | Out-Null
-                    $buf = New-Object byte[] 4096
-                    while ($ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
-                        $rcv = $ws.ReceiveAsync(
-                            [System.ArraySegment[byte]]::new($buf),
-                            [System.Threading.CancellationToken]::None
-                        ).GetAwaiter().GetResult()
-                        if ($rcv.MessageType -eq [System.Net.WebSockets.WebSocketMessageType]::Close) { break }
-                        $msg = [System.Text.Encoding]::UTF8.GetString($buf, 0, $rcv.Count)
-                        if ($msg -match '"type":"ping"') {
-                            $pongB = [System.Text.Encoding]::UTF8.GetBytes('{"type":"pong"}')
-                            $ws.SendAsync(
-                                [System.ArraySegment[byte]]::new($pongB),
-                                [System.Net.WebSockets.WebSocketMessageType]::Text,
-                                $true,
-                                [System.Threading.CancellationToken]::None
-                            ).Wait(1000) | Out-Null
-                        }
-                    }
-                } catch { <# client disconnected #> }
-                finally {
-                    $removed = $null
-                    if ($null -ne $wsId -and $null -ne $wsClients) {
-                        $wsClients.TryRemove($wsId, [ref]$removed) | Out-Null
-                    }
-                    if ($null -ne $ws) { try { $ws.Dispose() } catch { <# Intentional: non-fatal, WebSocket disposal #> } }
-                }
-            }).AddArgument($wsCtxRef).AddArgument($wsClRef)
-            $null = $wsPsInst.BeginInvoke()   # fire-and-forget; runspace self-cleans on WS close
+            # Real-time WebSocket push is intentionally disabled. Accepting the
+            # upgrade inside a blocking runspace leaks a thread per connection
+            # (AcceptWebSocketAsync().GetResult() never returns when the client
+            # gives up), and a browser retry-storm then exhausts the thread pool
+            # and hangs this single-threaded engine. Reject cleanly with HTTP 501
+            # so the engine stays responsive; the page falls back to HTTP polling.
+            try { Send-Response -Context $context -StatusCode 501 -Body '' } catch { <# Intentional: client may have already abandoned the half-open upgrade #> }
             continue
         }
 
@@ -2495,6 +3817,9 @@ try {
         }
 
         # ── API routes ───────────────────────────────────────────────────
+        # Resilience: a single route-handler fault must return 500, NOT propagate
+        # out of the loop and crash the engine (DIRTY_EXIT).
+        try {
         switch -Regex ($url) {
             '^/api/scan/status$' {
                 if ($method -eq 'GET') { Get-ScanStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
@@ -2540,6 +3865,17 @@ try {
                 else                        { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/config/webengine-components$' {
+                if ($method -eq 'GET')      { Get-WebEngineComponentsConfig -Context $context }
+                elseif ($method -eq 'POST') { Save-WebEngineComponentsConfig -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/webengine-components/validate$' {
+                if ($method -eq 'POST') { Validate-WebEngineComponentsConfig -Context $context }
+                else                    { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/config/bootstrap-menu/history$' {
                 if ($method -eq 'GET') { Get-BootstrapMenuSnapshotHistory -Context $context }
                 else                   { Send-Error -Context $context -StatusCode 405 }
@@ -2548,6 +3884,22 @@ try {
             '^/api/config/bootstrap-menu/rollback$' {
                 if ($method -eq 'POST') { Rollback-BootstrapMenuConfig -Context $context }
                 else                    { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/workspace-hub$' {
+                if ($method -eq 'GET')      { Get-WorkspaceHubConfig -Context $context }
+                elseif ($method -eq 'POST') { Save-WorkspaceHubConfig -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/workspace-hub/test$' {
+                if ($method -eq 'POST') { Test-WorkspaceHubConfigRoute -Context $context }
+                else                    { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/config/workspace-hub/audit$' {
+                if ($method -eq 'GET') { Get-WorkspaceHubConfigAudit -Context $context }
+                else                   { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/csrf-token$' {
@@ -2569,6 +3921,24 @@ try {
             }
             '^/api/engine/events$' {
                 if ($method -eq 'GET') { Get-EngineEvents -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/connections$' {
+                if ($method -eq 'GET')      { Get-NetMonConnections -Context $context }
+                elseif ($method -eq 'POST') { Add-NetMonConnections -Context $context }
+                else                        { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/status$' {
+                if ($method -eq 'GET') { Get-NetMonCollectorStatus -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/start$' {
+                if ($method -eq 'POST') { Start-NetMonCollector -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/netmon/collector/stop$' {
+                if ($method -eq 'POST') { Stop-NetMonCollector -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/engine/logs/list$' {
@@ -2630,6 +4000,11 @@ try {
                 Get-StaticFile -Context $context -RelPath 'XHTML-WorkspaceHub.xhtml'
                 break
             }
+            '^/favicon\.ico$' {
+                # No site icon — return 204 so browsers don't log a 404.
+                Send-Response -Context $context -StatusCode 204 -Body ''
+                break
+            }
             '^/pages/dependency-vis$' {
                 Get-StaticFile -Context $context -RelPath '~README.md\Dependency-Visualisation.html'
                 break
@@ -2640,6 +4015,14 @@ try {
             }
             '^/pages/bootstrap-menu-config$' {
                 Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-BootstrapMenuConfig.xhtml'
+                break
+            }
+            '^/pages/webengine-components-config$' {
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-WebEngineComponentsConfig.xhtml'
+                break
+            }
+            '^/pages/workspace-hub-config$' {
+                Get-StaticFile -Context $context -RelPath 'scripts\XHTML-Checker\XHTML-WorkspaceHubSectionMaintenance.xhtml'
                 break
             }
             '^/pages/bw-vault$' {
@@ -2673,6 +4056,11 @@ try {
             default {
                 Send-Error -Context $context -StatusCode 404 -Message "Route not found: $url"
             }
+        }
+        } catch {
+            # Per-request handler fault — log and return 500 so the engine keeps serving.
+            try { Write-EngineLog "Unhandled route error [$method $url]: $($_.Exception.Message)" -Level 'ERROR' } catch { <# Intentional: logging is best-effort #> }
+            try { Send-Error -Context $context -StatusCode 500 -Message 'Internal engine error' } catch { <# Intentional: response may already be partially sent #> }
         }
     }
 } finally {
@@ -2731,6 +4119,8 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

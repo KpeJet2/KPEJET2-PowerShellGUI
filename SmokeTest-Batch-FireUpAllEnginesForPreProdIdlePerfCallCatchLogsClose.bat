@@ -23,7 +23,8 @@ for %%A in (%*) do (
 )
 
 if not exist "%scriptDir%logs" mkdir "%scriptDir%logs" >nul 2>&1
-set "logFile=%scriptDir%logs\SmokeTest-Batch-FireUpAllEngines.log"
+if not exist "%scriptDir%logs\smoke-tests" mkdir "%scriptDir%logs\smoke-tests" >nul 2>&1
+set "logFile=%scriptDir%logs\smoke-tests\SmokeTest-Batch-FireUpAllEngines.log"
 
 echo ============================================================>>"%logFile%"
 echo [%date% %time%] FireUpAllEngines run started>>"%logFile%"

@@ -1,5 +1,6 @@
-REM VersionTag: 2605.B5.V46.0
+REM VersionTag: 2606.B5.V46.1
 REM VersionBuildHistory:
+REM   2606.B5.V46.1  2026-06-18  Add chcp 65001 so box-drawing menu UI renders correctly (SIN-PATTERN-082)
 REM   2604.B2.V31.1  2026-04-12  Inject PSModulePath; option 2 now auto-persists
 REM   2604.B2.V31.0  2026-04-04  Initial creation - First Run Configuration Menu
 REM ============================================================
@@ -14,6 +15,7 @@ REM             first Launch-GUI.bat run. ESC returns to main menu.
 REM  Usage    : Auto-launched on first run, or call directly.
 REM ============================================================
 @echo off
+chcp 65001 >nul
 
 setlocal enabledelayedexpansion
 
@@ -59,7 +61,7 @@ echo  13^) Check for Hardcoded Secrets ^(security scan^)
 echo  14^) Validate File Encodings ^(UTF-8 BOM check for Unicode files^)
 echo.
 echo  QUICK LAUNCHER WIDGETS
-echo  ──────────────────────────────────────────────────────────────────────  
+echo  ──────────────────────────────────────────────────────────────────────
 echo   A^) Launch-GUI-quik_jnr.bat ^(fast startup^)
 echo   B^) Launch-GUI-slow_snr.bat ^(full checks^)
 echo   C^) Launch-SandboxInteractive.bat

@@ -1,0 +1,41 @@
+{
+  "sin_id": "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522",
+  "title": "Same event handler scriptblock variable registered twice on the same object (double-fire)",
+  "description": "PowerShell WinForms event handler methods (Add_Click, Add_Tick, Add_FormClosing, etc.) accumulate delegates — calling Add_Click($handler) twice on the same object registers the handler twice. This causes the handler body to execute twice per event: duplicate log writes, duplicate navigation, duplicate mutations, duplicate API calls, or race conditions on UI controls. A common occurrence is when the same $handlerName variable is used with Add_<Event> in separate code blocks (e.g. builder block + re-declaration block) due to copy-paste or iterative refactoring. In Start-LocalWebEngineService.ps1 the $exitItemClick handler was added via Add_Click twice on $exitItem.",
+  "severity": "HIGH",
+  "category": "reliability",
+  "vector": "winforms-duplicate-event-registration",
+  "ps_version_scope": "BOTH",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 1,
+  "created_at": "2026-05-22T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Per-file scan: collect all .Add_<EventName>($varName) calls; flag any ($object, $varName) pair that appears more than once. The regex below detects the simpler form where the same Add_<Event>($var) literal appears twice in the same file.",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "preventionRule": "Never call Add_<Event> more than once with the same handler variable on the same object. If refreshing handlers, call Remove_<Event> first:\n  $btn.Remove_Click($handler)\n  $btn.Add_Click($handler)\nOr assign via direct event property when available.",
+  "remedy": "Remove the duplicate Add_<Event> call. If both registrations exist intentionally (different code paths), consolidate into a single registration point and have the handler branch internally.",
+  "scan_regex": "\\.Add_(Click|Tick|FormClosing|Shown|Load|Closing|SelectedIndexChanged|TextChanged|CheckedChanged|KeyDown|Resize|Scroll|ValueChanged)\\s*\\(\\$([A-Za-z_][A-Za-z0-9_]*)\\)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|\\.Tests\\.ps1$|Invoke-SINPatternScanner|sin_registry|templates",
+  "context_guard_regex": null,
+  "context_guard_lines": 0,
+  "context_guard_direction": "above",
+  "scan_mode": "duplicate-within-file",
+  "scan_note": "The scan_regex detects the call form; deduplication logic in the scanner must group by (file, varName) and flag count > 1.",
+  "known_instances": [
+    {
+      "file": "scripts/Start-LocalWebEngineService.ps1",
+      "line": "two occurrences of $exitItem.Add_Click($exitItemClick)",
+      "status": "OPEN",
+      "risk": "MEDIUM — causes $timer.Stop() and ExitThread() to run twice on menu exit click"
+    }
+  ],
+  "related_sins": ["P029"],
+  "tags": ["winforms", "event-handler", "double-registration", "duplicate", "ps51-compatible"],
+  "date_added": "2026-05-22"
+}

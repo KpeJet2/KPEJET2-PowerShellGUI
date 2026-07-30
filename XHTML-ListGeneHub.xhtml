@@ -1,0 +1,1026 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ListGene Hub - PwShGUI</title>
+  <link rel="stylesheet" type="text/css" href="styles/pwshgui-hub.css" />
+  <style type="text/css">
+    :root {
+      --bg: #191c22;
+      --panel: #252a34;
+      --panel-2: #20252f;
+      --accent: #2d9cdb;
+      --accent-2: #5eead4;
+      --txt: #e8edf5;
+      --txt-sub: #9aa6bc;
+      --ok: #22c55e;
+      --warn: #fbbf24;
+      --danger: #ef4444;
+      --line: #394355;
+      --chip: #2f3a4f;
+      --mono: Consolas, 'Cascadia Code', monospace;
+      --ui: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --radius: 8px;
+      --gap: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at 10% 0%, #243247 0%, #191c22 55%);
+      color: var(--txt);
+      font-family: var(--ui);
+      min-height: 100%;
+    }
+
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg, #16425f 0%, #27557c 50%, #2d9cdb 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .hdr-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .hdr-sub {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--gap);
+      padding: 12px;
+    }
+
+    .left,
+    .right {
+      min-height: calc(100vh - 74px);
+    }
+
+    .left {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: var(--gap);
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      color: var(--accent-2);
+    }
+
+    .small {
+      font-size: 11px;
+      color: var(--txt-sub);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .metric {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .metric .lbl {
+      font-size: 10px;
+      color: var(--txt-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .metric .val {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 3px;
+      color: var(--accent);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      background: var(--chip);
+      border: 1px solid #4b5870;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      color: #d7e2f2;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #212733;
+      color: var(--txt);
+      padding: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      border-color: var(--accent);
+      background: #243247;
+    }
+
+    .tool-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #1f2530;
+      color: var(--txt);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .btn:hover { border-color: var(--accent); }
+
+    .btn.ok { color: var(--ok); border-color: #2a5a3d; }
+    .btn.warn { color: var(--warn); border-color: #6b5120; }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .mt-8 {
+      margin-top: 8px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      margin-bottom: 3px;
+      color: #c8d5eb;
+    }
+
+    input[type='text'],
+    input[type='number'],
+    input[type='time'],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #1a1f27;
+      color: var(--txt);
+      padding: 7px;
+      font-size: 12px;
+      font-family: var(--ui);
+    }
+
+    textarea {
+      min-height: 120px;
+      font-family: var(--mono);
+    }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: auto;
+      max-height: 360px;
+      background: #1c212a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #2d3442;
+      padding: 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #222a36;
+      color: #b8c6dd;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    tr:hover td {
+      background: #242d3b;
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .status {
+      font-size: 11px;
+      color: var(--txt-sub);
+      margin-top: 6px;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.danger { color: var(--danger); }
+
+    .iframe-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      height: 320px;
+      background: #131821;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    .svg-card {
+      background: #18202d;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px;
+      overflow: auto;
+    }
+
+    .legend {
+      font-size: 11px;
+      color: var(--txt-sub);
+      margin-top: 6px;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--txt-sub);
+      border-top: 1px dashed var(--line);
+      padding-top: 8px;
+    }
+
+    .schema-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .schema-tile {
+      border: 1px solid var(--line);
+      background: #1d2531;
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .schema-tile .k {
+      color: var(--txt-sub);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .schema-tile .v {
+      color: #cde3ff;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 1040px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .left,
+      .right {
+        min-height: 0;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+
+      .grid.cols-2,
+      .schema-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hdr">
+    <div class="hdr-title">ListGene Hub Toolset</div>
+    <div class="small">Workspace Hub likeness | list sets + schema enhancements</div>
+    <div class="hdr-sub">VersionTag 2605.B5.V51.1</div>
+  </div>
+
+  <div class="shell">
+    <div class="left">
+      <div class="card">
+        <h3>Sections</h3>
+        <button class="nav-btn active" data-panel="overview">Overview</button>
+        <button class="nav-btn" data-panel="area1">Area 1 - Indexed Lists</button>
+        <button class="nav-btn" data-panel="area2">Area 2 - Observed Lists</button>
+        <button class="nav-btn" data-panel="area3">Area 3 - Global List Set</button>
+        <button class="nav-btn" data-panel="area4">Area 4 - Query + Save</button>
+        <button class="nav-btn" data-panel="schedule">ListRun Scheduling</button>
+        <button class="nav-btn" data-panel="flow">Vector Mapping</button>
+      </div>
+
+      <div class="card">
+        <h3>Data Source</h3>
+        <div class="small mono" id="sourcePath">reports/listgene/listgene-output.json</div>
+        <div class="tool-row">
+          <button class="btn ok" id="btnReload">Reload</button>
+          <button class="btn" id="btnOpenOutput">Preview Output</button>
+          <button class="btn" id="btnOpenGlobal">Preview Global Set</button>
+        </div>
+        <div id="loadStatus" class="status">Loading list data...</div>
+      </div>
+
+      <div class="card">
+        <h3>Template Schema Enhancements</h3>
+        <div class="chip-row">
+          <span class="chip">schema-cards</span>
+          <span class="chip">sortable tables</span>
+          <span class="chip">chip taxonomies</span>
+          <span class="chip">command builders</span>
+          <span class="chip">density friendly</span>
+        </div>
+        <div class="footer-note">
+          This page standardizes reusable UI schema tiles, status strips, and command templates to improve the base XHTML tool template style.
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <h2>Live Metrics</h2>
+        <div class="metrics">
+          <div class="metric"><div class="lbl">Area 1 Items</div><div class="val" id="mArea1">0</div></div>
+          <div class="metric"><div class="lbl">Area 2 Signals</div><div class="val" id="mArea2">0</div></div>
+          <div class="metric"><div class="lbl">Area 3 Global Entries</div><div class="val" id="mArea3">0</div></div>
+          <div class="metric"><div class="lbl">Area 4 Results</div><div class="val" id="mArea4">0</div></div>
+        </div>
+        <div class="chip-row" id="catChips"></div>
+      </div>
+
+      <div class="card">
+        <div class="schema-grid">
+          <div class="schema-tile"><div class="k">Template Family</div><div class="v">Workspace Hub Toolsets</div></div>
+          <div class="schema-tile"><div class="k">Render Mode</div><div class="v">XHTML + Client Schema Map</div></div>
+          <div class="schema-tile"><div class="k">Primary Export</div><div class="v">Markdown / Json / Csv</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="overview" class="panel active">
+          <h2>ListGene Summary</h2>
+          <p class="small">This XHTML tool surfaces all four list areas and command pathways from your ListGene service, including query/save and schedule command generation.</p>
+          <div class="grid cols-2 mt-8">
+            <div>
+              <h3>Included Global Domains</h3>
+              <ul class="small" id="domainList"></ul>
+            </div>
+            <div>
+              <h3>Quick Commands</h3>
+              <label for="quickCommands" class="sr-only">Quick command list</label>
+              <textarea id="quickCommands" readonly="readonly" class="mono" title="Quick command list"></textarea>
+            </div>
+          </div>
+          <h3>Source Preview (iframe)</h3>
+          <div class="iframe-wrap"><iframe id="srcFrame" title="Source Preview"></iframe></div>
+        </div>
+
+        <div id="area1" class="panel">
+          <h2>Area 1 - Systematically Indexed Lists</h2>
+          <div class="grid cols-2">
+            <div>
+              <label for="a1Filter">Filter path</label>
+              <input id="a1Filter" type="text" value="" />
+            </div>
+            <div>
+              <label for="a1Sort">Sort by</label>
+              <select id="a1Sort">
+                <option value="path">path</option>
+                <option value="lineCount">lineCount</option>
+                <option value="sizeBytes">sizeBytes</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap mt-8"><table id="a1Table"></table></div>
+        </div>
+
+        <div id="area2" class="panel">
+          <h2>Area 2 - System Obtained Lists and Arrays</h2>
+          <div class="grid cols-2">
+            <div>
+              <label for="a2Filter">Filter path/sample</label>
+              <input id="a2Filter" type="text" value="" />
+            </div>
+            <div>
+              <label for="a2Sort">Sort by</label>
+              <select id="a2Sort">
+                <option value="path">path</option>
+                <option value="signalCount">signalCount</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap mt-8"><table id="a2Table"></table></div>
+        </div>
+
+        <div id="area3" class="panel">
+          <h2>Area 3 - Global List Set (Sequential)</h2>
+          <div class="grid cols-2">
+            <div>
+              <label for="a3Category">Category</label>
+              <select id="a3Category"></select>
+            </div>
+            <div>
+              <label for="a3Filter">Search name/value</label>
+              <input id="a3Filter" type="text" value="" />
+            </div>
+          </div>
+          <div class="table-wrap mt-8"><table id="a3Table"></table></div>
+        </div>
+
+        <div id="area4" class="panel">
+          <h2>Area 4 - Universal List Query</h2>
+          <div class="grid cols-2">
+            <div>
+              <label for="qTerm">Query term</label>
+              <input id="qTerm" type="text" value="icon|emoji|rune" />
+            </div>
+            <div>
+              <label for="qMax">Max results</label>
+              <input id="qMax" type="number" value="120" min="1" max="1000" />
+            </div>
+          </div>
+          <div class="tool-row mt-8">
+            <label><input id="qRegex" type="checkbox" checked="checked" /> use regex</label>
+            <button class="btn ok" id="btnRunClientQuery">Run client query</button>
+            <button class="btn" id="btnBuildPsQuery">Build PowerShell query command</button>
+          </div>
+          <label for="qCommand" class="sr-only">Generated query command</label>
+          <textarea id="qCommand" class="mono mt-8" readonly="readonly" title="Generated query command"></textarea>
+          <div class="table-wrap mt-8"><table id="a4Table"></table></div>
+        </div>
+
+        <div id="schedule" class="panel">
+          <h2>ListRun Scheduling</h2>
+          <div class="grid cols-2">
+            <div>
+              <label for="sTask">Task name</label>
+              <input id="sTask" type="text" value="PwShGUI-ListRun-Scheduler" />
+            </div>
+            <div>
+              <label for="sTime">Daily at</label>
+              <input id="sTime" type="time" value="02:00" />
+            </div>
+            <div>
+              <label for="sFormat">Output format</label>
+              <select id="sFormat">
+                <option value="Markdown">Markdown</option>
+                <option value="Json">Json</option>
+                <option value="Csv">Csv</option>
+              </select>
+            </div>
+            <div>
+              <label for="sPath">Output path</label>
+              <input id="sPath" type="text" value="reports/listgene/listgene-nightly.md" />
+            </div>
+          </div>
+          <div class="tool-row mt-8">
+            <button class="btn ok" id="btnBuildSchedule">Build register command</button>
+            <button class="btn warn" id="btnBuildUnschedule">Build unregister command</button>
+          </div>
+          <label for="sCommand" class="sr-only">Generated scheduler command</label>
+          <textarea id="sCommand" class="mono mt-8" readonly="readonly" title="Generated scheduler command"></textarea>
+        </div>
+
+        <div id="flow" class="panel">
+          <h2>Vector Flowcharts + Functional Mapping</h2>
+          <div class="svg-card">
+            <svg xmlns="http://www.w3.org/2000/svg" width="980" height="270" viewBox="0 0 980 270">
+              <defs>
+                <marker id="arrowA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#7dd3fc"></polygon>
+                </marker>
+              </defs>
+              <rect x="20" y="95" width="150" height="46" rx="8" fill="#213248" stroke="#7dd3fc"></rect>
+              <text x="30" y="123" fill="#dbeafe" font-size="12">Workspace Sources</text>
+              <rect x="220" y="95" width="190" height="46" rx="8" fill="#1e3a34" stroke="#5eead4"></rect>
+              <text x="232" y="123" fill="#d1fae5" font-size="12">Invoke-UniversalListGene.ps1</text>
+              <rect x="470" y="18" width="170" height="40" rx="8" fill="#2a253d" stroke="#c4b5fd"></rect>
+              <text x="482" y="42" fill="#ede9fe" font-size="12">Area 1 Indexed Lists</text>
+              <rect x="470" y="73" width="170" height="40" rx="8" fill="#2a253d" stroke="#c4b5fd"></rect>
+              <text x="478" y="97" fill="#ede9fe" font-size="12">Area 2 Observed Lists</text>
+              <rect x="470" y="128" width="170" height="40" rx="8" fill="#2a253d" stroke="#c4b5fd"></rect>
+              <text x="478" y="152" fill="#ede9fe" font-size="12">Area 3 Global Set</text>
+              <rect x="470" y="183" width="170" height="40" rx="8" fill="#2a253d" stroke="#c4b5fd"></rect>
+              <text x="478" y="207" fill="#ede9fe" font-size="12">Area 4 Query Results</text>
+              <rect x="700" y="95" width="120" height="46" rx="8" fill="#3a2b18" stroke="#fbbf24"></rect>
+              <text x="722" y="123" fill="#fde68a" font-size="12">Renderer</text>
+              <rect x="850" y="95" width="108" height="46" rx="8" fill="#3b1f26" stroke="#fb7185"></rect>
+              <text x="865" y="123" fill="#fecdd3" font-size="12">Docs/Reports</text>
+
+              <line x1="170" y1="118" x2="220" y2="118" stroke="#7dd3fc" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="410" y1="118" x2="470" y2="38" stroke="#5eead4" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="410" y1="118" x2="470" y2="93" stroke="#5eead4" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="410" y1="118" x2="470" y2="148" stroke="#5eead4" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="410" y1="118" x2="470" y2="203" stroke="#5eead4" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="640" y1="38" x2="700" y2="108" stroke="#c4b5fd" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="640" y1="93" x2="700" y2="114" stroke="#c4b5fd" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="640" y1="148" x2="700" y2="121" stroke="#c4b5fd" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="640" y1="203" x2="700" y2="128" stroke="#c4b5fd" stroke-width="2" marker-end="url(#arrowA)"></line>
+              <line x1="820" y1="118" x2="850" y2="118" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrowA)"></line>
+            </svg>
+          </div>
+
+          <div class="svg-card mt-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="980" height="250" viewBox="0 0 980 250">
+              <defs>
+                <marker id="arrowB" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa"></polygon>
+                </marker>
+              </defs>
+
+              <rect x="20" y="20" width="290" height="80" rx="8" fill="#1f2937" stroke="#60a5fa"></rect>
+              <text x="32" y="45" fill="#dbeafe" font-size="12">Documentation Surface</text>
+              <text x="32" y="66" fill="#93c5fd" font-size="11">README-LISTGENE + LISTS-* markdown outputs</text>
+
+              <rect x="350" y="20" width="290" height="80" rx="8" fill="#1f2937" stroke="#34d399"></rect>
+              <text x="362" y="45" fill="#dcfce7" font-size="12">Runtime and Data</text>
+              <text x="362" y="66" fill="#86efac" font-size="11">Invoke-UniversalListGene.ps1 + global-list-set.json</text>
+
+              <rect x="680" y="20" width="280" height="80" rx="8" fill="#1f2937" stroke="#f59e0b"></rect>
+              <text x="692" y="45" fill="#fef3c7" font-size="12">Automation</text>
+              <text x="692" y="66" fill="#fcd34d" font-size="11">ListRun Scheduling + report destinations</text>
+
+              <rect x="260" y="150" width="430" height="62" rx="8" fill="#1e293b" stroke="#93c5fd"></rect>
+              <text x="275" y="177" fill="#dbeafe" font-size="12">XHTML-ListGeneHub.xhtml</text>
+              <text x="275" y="196" fill="#bfdbfe" font-size="11">Unified UI schema templates, chips, sortable tables, command builders</text>
+
+              <line x1="165" y1="100" x2="360" y2="150" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowB)"></line>
+              <line x1="495" y1="100" x2="480" y2="150" stroke="#34d399" stroke-width="2" marker-end="url(#arrowB)"></line>
+              <line x1="820" y1="100" x2="590" y2="150" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowB)"></line>
+            </svg>
+          </div>
+
+          <div class="legend">Vector rendering uses inline SVG so charts remain crisp under scaling and export well for static documentation snapshots.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function () {
+    'use strict';
+
+    var state = {
+      area1: [],
+      area2: [],
+      area3: [],
+      area4: [],
+      categories: []
+    };
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function setText(id, value) {
+      var el = byId(id);
+      if (el) {
+        el.textContent = value;
+      }
+    }
+
+    function escapeHtml(value) {
+      var div = document.createElement('div');
+      div.textContent = value;
+      return div.innerHTML;
+    }
+
+    function safeArr(v) {
+      return Array.isArray(v) ? v : [];
+    }
+
+    function number(v) {
+      var n = Number(v);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function tryFetchJson(paths) {
+      var index = 0;
+      function next() {
+        if (index >= paths.length) {
+          return Promise.reject(new Error('All source paths failed.'));
+        }
+        var p = paths[index++];
+        return fetch(p, { cache: 'no-store' }).then(function (r) {
+          if (!r.ok) {
+            throw new Error('HTTP ' + r.status + ' for ' + p);
+          }
+          return r.json();
+        }).then(function (json) {
+          return { path: p, json: json };
+        }).catch(function () {
+          return next();
+        });
+      }
+      return next();
+    }
+
+    function sortBy(items, key) {
+      var copy = items.slice(0);
+      copy.sort(function (a, b) {
+        var av = a[key];
+        var bv = b[key];
+        if (typeof av === 'number' || typeof bv === 'number') {
+          return number(av) - number(bv);
+        }
+        return String(av || '').localeCompare(String(bv || ''));
+      });
+      return copy;
+    }
+
+    function renderTable(tableId, headers, rows) {
+      var table = byId(tableId);
+      if (!table) {
+        return;
+      }
+
+      var html = '<thead><tr>';
+      headers.forEach(function (h) {
+        html += '<th>' + escapeHtml(h) + '</th>';
+      });
+      html += '</tr></thead><tbody>';
+
+      if (rows.length === 0) {
+        html += '<tr><td colspan="' + headers.length + '">No rows</td></tr>';
+      } else {
+        rows.forEach(function (r) {
+          html += '<tr>';
+          r.forEach(function (c) {
+            html += '<td>' + escapeHtml(String(c)) + '</td>';
+          });
+          html += '</tr>';
+        });
+      }
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+
+    function updateMetrics() {
+      setText('mArea1', String(state.area1.length));
+      setText('mArea2', String(state.area2.length));
+      setText('mArea3', String(state.area3.length));
+      setText('mArea4', String(state.area4.length));
+
+      var chips = byId('catChips');
+      if (chips) {
+        var counts = {};
+        state.area3.forEach(function (x) {
+          var key = x.category || 'unknown';
+          if (!counts[key]) {
+            counts[key] = 0;
+          }
+          counts[key] += 1;
+        });
+        var html = '';
+        Object.keys(counts).sort().forEach(function (k) {
+          html += '<span class="chip">' + escapeHtml(k) + ': ' + counts[k] + '</span>';
+        });
+        chips.innerHTML = html;
+      }
+    }
+
+    function renderOverview() {
+      var domains = byId('domainList');
+      if (domains) {
+        var html = '';
+        state.categories.forEach(function (c) {
+          html += '<li>' + escapeHtml(c) + '</li>';
+        });
+        domains.innerHTML = html;
+      }
+
+      var commands = [
+        'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -Build -OutputFormat Markdown -OutputPath docs/LISTS-SYSTEMATIC-INDEX.md',
+        'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -Build -OutputFormat Markdown -OutputPath docs/LISTS-SYSTEM-OBSERVED.md',
+        'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -Build -OutputFormat Markdown -OutputPath docs/LISTS-GLOBAL-SEQUENTIAL.md',
+        'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -RunQuery -Query "icon|emoji|rune" -UseRegex -SaveQuery -QueryName symbols-scan -OutputFormat Markdown -OutputPath docs/LISTS-UNIVERSAL-LIST-GENE.md'
+      ];
+      var quick = byId('quickCommands');
+      if (quick) {
+        quick.value = commands.join('\n\n');
+      }
+    }
+
+    function renderArea1() {
+      var filter = String(byId('a1Filter').value || '').toLowerCase();
+      var sortKey = byId('a1Sort').value;
+      var rows = sortBy(state.area1, sortKey).filter(function (x) {
+        return String(x.path || '').toLowerCase().indexOf(filter) !== -1;
+      }).map(function (x) {
+        return [x.path || '', x.lineCount || 0, x.sizeBytes || 0, x.lastWriteUtc || ''];
+      });
+      renderTable('a1Table', ['Path', 'Lines', 'Bytes', 'LastWriteUtc'], rows);
+    }
+
+    function renderArea2() {
+      var filter = String(byId('a2Filter').value || '').toLowerCase();
+      var sortKey = byId('a2Sort').value;
+      var rows = sortBy(state.area2, sortKey).filter(function (x) {
+        var sample = safeArr(x.sample).join(' ; ').toLowerCase();
+        return String(x.path || '').toLowerCase().indexOf(filter) !== -1 || sample.indexOf(filter) !== -1;
+      }).map(function (x) {
+        return [x.path || '', x.signalCount || 0, safeArr(x.sample).join(' ; ')];
+      });
+      renderTable('a2Table', ['Path', 'SignalCount', 'Sample'], rows);
+    }
+
+    function renderArea3() {
+      var category = byId('a3Category').value;
+      var filter = String(byId('a3Filter').value || '').toLowerCase();
+      var rows = state.area3.filter(function (x) {
+        var catOk = (category === '__all__') || (String(x.category || '') === category);
+        var text = (String(x.name || '') + ' ' + String(x.value || '')).toLowerCase();
+        return catOk &amp;&amp; (text.indexOf(filter) !== -1);
+      }).map(function (x) {
+        return [x.seq || 0, x.category || '', x.name || '', x.value || '', x.unicode || ''];
+      });
+      renderTable('a3Table', ['Seq', 'Category', 'Name', 'Value', 'Unicode'], rows);
+    }
+
+    function runClientQuery() {
+      var term = String(byId('qTerm').value || '').trim();
+      var max = number(byId('qMax').value || 120);
+      var useRegex = byId('qRegex').checked;
+
+      var matcher;
+      if (!term) {
+        matcher = function () { return true; };
+      } else if (useRegex) {
+        try {
+          var rx = new RegExp(term, 'i');
+          matcher = function (s) { return rx.test(String(s || '')); };
+        } catch (e) {
+          setText('loadStatus', 'Invalid regex expression.');
+          byId('loadStatus').className = 'status danger';
+          return;
+        }
+      } else {
+        var low = term.toLowerCase();
+        matcher = function (s) { return String(s || '').toLowerCase().indexOf(low) !== -1; };
+      }
+
+      var rows = [];
+      state.area3.forEach(function (x) {
+        var text = x.category + ' ' + x.name + ' ' + x.value + ' ' + x.unicode;
+        if (matcher(text)) {
+          rows.push({
+            path: 'global-list-set:' + x.category,
+            line: x.seq,
+            text: x.name + ' | ' + x.value + ' | ' + x.unicode
+          });
+        }
+      });
+
+      state.area2.forEach(function (x) {
+        var sample = safeArr(x.sample).join(' ; ');
+        if (matcher(x.path + ' ' + sample)) {
+          rows.push({
+            path: x.path,
+            line: 0,
+            text: sample
+          });
+        }
+      });
+
+      state.area4 = rows.slice(0, max);
+      renderTable('a4Table', ['Path', 'Line', 'Text'], state.area4.map(function (x) {
+        return [x.path, x.line, x.text];
+      }));
+      updateMetrics();
+      setText('loadStatus', 'Client query complete: ' + state.area4.length + ' rows.');
+      byId('loadStatus').className = 'status ok';
+    }
+
+    function buildQueryCommand() {
+      var term = String(byId('qTerm').value || '').trim();
+      var max = number(byId('qMax').value || 120);
+      var useRegex = byId('qRegex').checked;
+      var cmd = 'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -RunQuery -Query "' + term.replace(/"/g, '\\"') + '"';
+      if (useRegex) {
+        cmd += ' -UseRegex';
+      }
+      cmd += ' -MaxResults ' + max + ' -OutputFormat Markdown -OutputPath docs/LISTS-UNIVERSAL-LIST-GENE.md';
+      byId('qCommand').value = cmd;
+    }
+
+    function buildScheduleCommand(registerMode) {
+      var task = String(byId('sTask').value || 'PwShGUI-ListRun-Scheduler');
+      var time = String(byId('sTime').value || '02:00');
+      var format = String(byId('sFormat').value || 'Markdown');
+      var path = String(byId('sPath').value || 'reports/listgene/listgene-nightly.md');
+
+      var cmd;
+      if (registerMode) {
+        cmd = 'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -RegisterSchedule -TaskName "' + task.replace(/"/g, '\\"') + '" -DailyAt "' + time + '" -ScheduledOutputFormat ' + format + ' -ScheduledOutputPath "' + path.replace(/"/g, '\\"') + '"';
+      } else {
+        cmd = 'pwsh -NoProfile -File .\\scripts\\Invoke-UniversalListGene.ps1 -UnregisterSchedule -TaskName "' + task.replace(/"/g, '\\"') + '"';
+      }
+      byId('sCommand').value = cmd;
+    }
+
+    function setFrame(srcPath) {
+      var frame = byId('srcFrame');
+      if (frame) {
+        frame.setAttribute('src', srcPath);
+      }
+    }
+
+    function bindNav() {
+      var nav = document.querySelectorAll('.nav-btn');
+      for (var i = 0; i &lt; nav.length; i++) {
+        nav[i].addEventListener('click', function () {
+          var p = this.getAttribute('data-panel');
+          var j;
+          for (j = 0; j &lt; nav.length; j++) {
+            nav[j].className = 'nav-btn';
+          }
+          this.className = 'nav-btn active';
+
+          var panels = document.querySelectorAll('.panel');
+          for (j = 0; j &lt; panels.length; j++) {
+            panels[j].className = 'panel';
+          }
+          byId(p).className = 'panel active';
+        });
+      }
+    }
+
+    function bindEvents() {
+      bindNav();
+      byId('btnReload').addEventListener('click', loadData);
+      byId('btnOpenOutput').addEventListener('click', function () { setFrame('reports/listgene/listgene-output.json'); });
+      byId('btnOpenGlobal').addEventListener('click', function () { setFrame('config/listgene/global-list-set.json'); });
+
+      byId('a1Filter').addEventListener('input', renderArea1);
+      byId('a1Sort').addEventListener('change', renderArea1);
+      byId('a2Filter').addEventListener('input', renderArea2);
+      byId('a2Sort').addEventListener('change', renderArea2);
+      byId('a3Category').addEventListener('change', renderArea3);
+      byId('a3Filter').addEventListener('input', renderArea3);
+
+      byId('btnRunClientQuery').addEventListener('click', runClientQuery);
+      byId('btnBuildPsQuery').addEventListener('click', buildQueryCommand);
+
+      byId('btnBuildSchedule').addEventListener('click', function () { buildScheduleCommand(true); });
+      byId('btnBuildUnschedule').addEventListener('click', function () { buildScheduleCommand(false); });
+    }
+
+    function fillCategorySelect() {
+      var sel = byId('a3Category');
+      var html = '<option value="__all__">all</option>';
+      state.categories.forEach(function (c) {
+        html += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+      });
+      sel.innerHTML = html;
+    }
+
+    function hydrate(output, globalSet) {
+      state.area1 = safeArr(output.area1_systematicallyIndexedLists);
+      state.area2 = safeArr(output.area2_systemObservedListsAndArrays);
+      state.area3 = safeArr(output.area3_globalSequentialList);
+      state.area4 = safeArr(output.area4_universalListGeneResults);
+
+      var cats = [];
+      if (globalSet &amp;&amp; globalSet.categories) {
+        cats = Object.keys(globalSet.categories);
+      }
+      state.categories = cats;
+
+      fillCategorySelect();
+      updateMetrics();
+      renderOverview();
+      renderArea1();
+      renderArea2();
+      renderArea3();
+      renderTable('a4Table', ['Path', 'Line', 'Text'], state.area4.map(function (x) {
+        return [x.path || '', x.line || 0, x.text || ''];
+      }));
+      buildQueryCommand();
+      buildScheduleCommand(true);
+      setFrame('docs/LISTS-UNIVERSAL-LIST-GENE.md');
+    }
+
+    function loadData() {
+      setText('loadStatus', 'Loading list data...');
+      byId('loadStatus').className = 'status';
+
+      Promise.all([
+        tryFetchJson(['reports/listgene/listgene-output.json', 'reports/listgene/listgene-smoke.json']),
+        tryFetchJson(['config/listgene/global-list-set.json'])
+      ]).then(function (arr) {
+        var output = arr[0].json;
+        var globalSet = arr[1].json;
+        setText('sourcePath', arr[0].path);
+        hydrate(output, globalSet);
+        setText('loadStatus', 'Loaded successfully from ' + arr[0].path);
+        byId('loadStatus').className = 'status ok';
+      }).catch(function () {
+        setText('loadStatus', 'Load failed. Build data first: scripts/Invoke-UniversalListGene.ps1');
+        byId('loadStatus').className = 'status warn';
+      });
+    }
+
+    bindEvents();
+    loadData();
+  }());
+  //]]>
+  </script>
+</body>
+</html>
+

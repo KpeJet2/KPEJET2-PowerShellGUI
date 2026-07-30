@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2607.B6.V53.0
+# FileRole: Script
 #Requires -Version 5.1
 <#
 .SYNOPSIS
@@ -133,3 +134,4 @@ Write-CleanupLog "Cleanup JSON: $jsonPath"
 Write-CleanupLog "Cleanup Markdown: $mdPath"
 Write-CleanupLog "Delete planned: $($summaryOut.deletePlanned)"
 Write-CleanupLog "Delete applied: $($summaryOut.deleteApplied)"
+

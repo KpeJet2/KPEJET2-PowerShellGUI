@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-054-REPORT-ROOT-DRIFT",
+  "sin_id": "SIN-PATTERN-054-REPORT-ROOT-DRIFT",
+  "title": "Non-canonical Report root usage (Report/)",
+  "description": "Legacy Report/ root still appears in tooling and documentation, creating split artifact surfaces and cleanup gaps.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "Artifacts/Consistency",
+  "detection_method": "Regex scan for Report/ path usage and Join-Path calls targeting Report.",
+  "scan_regex": "(?i)(Join-Path\\s+\\$[\\w:]+\\s+'Report'|\\bReport/)",
+  "context_guard_regex": "retention|migration|legacy",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.md;*.json;*.bat;*.cmd",
+  "ps_version_scope": "BOTH",
+  "remediation": "Move live writes to ~REPORTS and leave Report/ as archived/read-only historical data.",
+  "examples": [
+    "# Bad\n$out = Join-Path $WorkspacePath 'Report'",
+    "# Good\n$out = Join-Path $WorkspacePath '~REPORTS'"
+  ],
+  "tags": ["reports", "legacy", "consistency"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -23,9 +23,36 @@ $todoDir  = Join-Path $WorkspacePath 'todo'
 $outFile  = Join-Path $todoDir '_bundle.js'
 $excludes = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
 
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    try {
+        Import-Module -Name $pipelineModulePath -Force -ErrorAction Stop
+        if (Get-Command -Name Move-PipelineTodoFilesToQueues -ErrorAction SilentlyContinue) {
+            $queueSync = Move-PipelineTodoFilesToQueues -WorkspacePath $WorkspacePath
+            Write-Host "[TodoBundle] Queue sync: moved=$($queueSync.moved) skipped=$($queueSync.skipped) errors=$($queueSync.errors)" -ForegroundColor Gray
+        }
+        if (Get-Command -Name Export-CentralMasterToDo -ErrorAction SilentlyContinue) {
+            $masterPath = Export-CentralMasterToDo -WorkspacePath $WorkspacePath
+            Write-Host "[TodoBundle] Refreshed master aggregate: $masterPath" -ForegroundColor Gray
+        }
+        if (Get-Command -Name Update-TodoBundle -ErrorAction SilentlyContinue) {
+            $bundlePath = Update-TodoBundle -WorkspacePath $WorkspacePath
+            if (Get-Command -Name Update-PipelineIndex -ErrorAction SilentlyContinue) {
+                $null = Update-PipelineIndex -WorkspacePath $WorkspacePath
+            }
+            Write-Host "[TodoBundle] Written: $bundlePath" -ForegroundColor Green
+            return
+        }
+    } catch {
+        Write-Host "[TodoBundle] WARN: Failed to refresh master aggregate: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
 Write-Host "[TodoBundle] Scanning $todoDir ..." -ForegroundColor Cyan
 
-$files = Get-ChildItem -Path "$todoDir\*.json" | Where-Object { $excludes -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } | Sort-Object Name
+$files = Get-ChildItem -Path $todoDir -Filter '*.json' -File -Recurse -ErrorAction SilentlyContinue |
+    Where-Object { $excludes -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
+    Sort-Object Name
 if (-not $files -or @($files).Count -eq 0) {
     Write-Host "[TodoBundle] No JSON files found in $todoDir" -ForegroundColor Yellow
     return
@@ -36,7 +63,12 @@ $errors = 0
 foreach ($f in $files) {
     try {
         $raw = Get-Content $f.FullName -Raw -Encoding UTF8
-        $null = $raw | ConvertFrom-Json  # validate JSON
+        $parsed = $raw | ConvertFrom-Json  # validate JSON
+        if ($parsed -is [System.Array]) {
+            Write-Host "[TodoBundle] SKIP (array root): $($f.Name)" -ForegroundColor Yellow
+            $errors++
+            continue
+        }
         $items += $raw.Trim()
     } catch {
         Write-Host "[TodoBundle] SKIP (invalid JSON): $($f.Name)" -ForegroundColor Yellow
@@ -79,6 +111,8 @@ Write-Host "[TodoBundle] Written: $outFile ($size KB, $totalCount items)" -Foreg
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

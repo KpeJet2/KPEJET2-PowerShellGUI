@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # Module: PwShGUI-PesterParallel
 # Purpose: Run Pester suites in parallel under PS7+ with per-module isolation.
 
@@ -69,4 +70,7 @@ function Invoke-PesterParallel {
 }
 
 Export-ModuleMember -Function Invoke-PesterParallel
+
+
+
 

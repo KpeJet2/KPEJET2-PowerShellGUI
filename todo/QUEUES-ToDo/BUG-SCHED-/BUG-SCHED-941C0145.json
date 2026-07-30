@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "Unknown task type: HelpMenuCompliance",
+    "description":  "Unknown task type: HelpMenuCompliance",
+    "title":  "Scheduler task failure: TASK-HelpMenuCompliance",
+    "id":  "BUG-SCHED-941C0145",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-HelpMenuCompliance",
+    "lastUpdated":  "2026-05-22T17:38:50.4057513Z",
+    "createdAt":  "2026-05-22T17:38:50.4057513Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

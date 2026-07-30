@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # Module: PwShGUI-LaunchTimingProfile
 # Purpose: Aggregate Launch-GUI*.bat startup timings from logs into a trend.
 
@@ -55,4 +56,7 @@ function Get-LaunchTimingProfile {
 }
 
 Export-ModuleMember -Function Get-LaunchTimingProfile
+
+
+
 

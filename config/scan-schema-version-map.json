@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "$schema": "PwShGUI-ScanSchemaVersionMap/1.0",
   "meta": {
     "description": "Maps PwShGUI scan data schema versions to build versions and transform chains. Used by PwShGUI-SchemaTranslator.psm1 to upgrade legacy scan files to the current schema.",

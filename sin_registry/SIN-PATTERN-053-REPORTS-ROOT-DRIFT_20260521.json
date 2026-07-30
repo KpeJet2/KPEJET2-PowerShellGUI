@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
+  "sin_id": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
+  "title": "Non-canonical reports root usage (reports/)",
+  "description": "Report artifacts are split across reports/ and ~REPORTS/, increasing retention overhead and reducing discoverability.",
+  "severity": "HIGH",
+  "status": "pattern-defined",
+  "category": "Artifacts/Consistency",
+  "detection_method": "Regex scan for reports/ path usage and Join-Path calls targeting reports.",
+  "scan_regex": "(?i)(Join-Path\\s+\\$[\\w:]+\\s+'reports'|(?<!~)\\breports/)",
+  "context_guard_regex": "retention|migration|legacy",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.md;*.json;*.bat;*.cmd",
+  "ps_version_scope": "BOTH",
+  "remediation": "Standardize report output paths on ~REPORTS and add compatibility redirects for legacy consumers.",
+  "examples": [
+    "# Bad\n$reportRoot = Join-Path $Workspace 'reports'",
+    "# Good\n$reportRoot = Join-Path $Workspace '~REPORTS'"
+  ],
+  "tags": ["reports", "retention", "consistency"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

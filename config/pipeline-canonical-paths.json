@@ -1,0 +1,27 @@
+{
+  "VersionTag": "2607.B1.V52.1",
+  "description": "Canonical pipeline paths used by runtime, CI, pre-commit, and governance loops.",
+  "requiredPaths": [
+    "tests/Invoke-SINPatternScanner.ps1",
+    "tests/Convert-SinScanToJUnit.ps1",
+    "tests/Invoke-PreCommitValidation.ps1",
+    "scripts/Invoke-ReferenceIntegrityCheck.ps1",
+    "scripts/Invoke-PipelineContinuousRefine.ps1",
+    "scripts/Sync-ReadmeFeatureIndex.ps1",
+    "scripts/Invoke-ValidateCanonicalPaths.ps1",
+    "config/pipeline-canonical-paths.json",
+    "config/pipeline-refine-allowlist.json",
+    "config/pipeline-refine-severity-policy.json",
+    "config/pipeline-refine-baseline-full.json",
+    "config/pipeline-refine-baseline-staged.json",
+    "config/pipeline-refine-baseline-nightly.json",
+    ".github/workflows/sin-scan.yml",
+    ".vscode/tasks.json",
+    "README.md"
+  ],
+  "deprecatedPathLiterals": [
+    "config/pipeline-refine-baseline.json",
+    ".\\config\\pipeline-refine-baseline.json",
+    "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+  ]
+}

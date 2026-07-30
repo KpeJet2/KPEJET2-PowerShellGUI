@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -249,7 +249,7 @@ function Show-ConfigMaintenanceForm {
     <#
     .SYNOPSIS
     Displays a comprehensive Config Maintenance Form for managing all application folders and settings.
-    
+
     .DESCRIPTION
     Shows current config paths with validation, file counts, and folder management options including:
     - Nest folders within DefaultFolder
@@ -261,7 +261,7 @@ function Show-ConfigMaintenanceForm {
         [Parameter(Mandatory=$true)]
         [hashtable]$CurrentPaths
     )
-    
+
     Write-AppLog "Opening Config Maintenance Form" "Audit"
 
     $defaultBase = $scriptDir
@@ -347,7 +347,7 @@ function Show-ConfigMaintenanceForm {
         }
         return $result
     }
-    
+
     # Create main form
     $mainForm = New-Object System.Windows.Forms.Form
     $mainForm.Text = "Config Maintenance & Folder Management"
@@ -359,7 +359,7 @@ function Show-ConfigMaintenanceForm {
     $mainForm.MaximizeBox = $true
     $mainForm.GetType().GetProperty('DoubleBuffered',
         [System.Reflection.BindingFlags]'Instance,NonPublic').SetValue($mainForm, $true, $null)
-    
+
     # Header label
     $headerLabel = New-Object System.Windows.Forms.Label
     $headerLabel.Text = "Manage Configuration Paths and Folder Content"
@@ -368,7 +368,7 @@ function Show-ConfigMaintenanceForm {
     $headerLabel.Padding = New-Object System.Windows.Forms.Padding(10, 6, 0, 0)
     $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
     $mainForm.Controls.Add($headerLabel)
-    
+
     # Split container: DGV top, tabs bottom
     $splitContainer = New-Object System.Windows.Forms.SplitContainer
     $splitContainer.Dock = [System.Windows.Forms.DockStyle]::Fill
@@ -388,7 +388,7 @@ function Show-ConfigMaintenanceForm {
     $dgv.ReadOnly = $false
     $dgv.AutoSizeColumnsMode = "Fill"
     $dgv.RowHeadersVisible = $false
-    
+
     # Add columns – optimised widths: checkbox narrow, numerics right-aligned
     $colSelect = New-Object System.Windows.Forms.DataGridViewCheckBoxColumn -Property @{
         Name = "Select"; HeaderText = [char]0x2611; Width = 35; ReadOnly = $false
@@ -484,7 +484,7 @@ function Show-ConfigMaintenanceForm {
     }
 
     $splitContainer.Panel1.Controls.Add($dgv)
-    
+
     # ══════════════════════════════════════════════════════════════
     # TabControl – replaces flat action panel with tabbed panes
     # ══════════════════════════════════════════════════════════════
@@ -512,7 +512,8 @@ function Show-ConfigMaintenanceForm {
     $nestButton.Text = "Nest Folders →"
     $nestButton.Location = New-Object System.Drawing.Point(340, 9)
     $nestButton.Size = New-Object System.Drawing.Size(140, 25)
-    $nestButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $nestButton.Add_Click({
+        try {
         $selectedRows = @()
         foreach ($row in $dgv.Rows) {
             if ($row.IsNewRow) { continue }
@@ -549,6 +550,9 @@ function Show-ConfigMaintenanceForm {
                 Write-AppLog "Nested folder $key into $dest" "Info"
             } catch { Write-AppLog "Nest operation failed for $path : $_" "Error" }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabFolderActions.Controls.Add($nestButton)
 
@@ -563,7 +567,8 @@ function Show-ConfigMaintenanceForm {
     $moveButton.Text = "Move Content..."
     $moveButton.Location = New-Object System.Drawing.Point(10, 72)
     $moveButton.Size = New-Object System.Drawing.Size(120, 25)
-    $moveButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $moveButton.Add_Click({
+        try {
         $selected = Get-SelectedConfigRows
         if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
         $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -584,6 +589,9 @@ function Show-ConfigMaintenanceForm {
                 Write-AppLog "Moved content from $($item.Path) to $target" "Info"
             } catch { Write-AppLog "Move content failed for $($item.Path) : $_" "Error" }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabFolderActions.Controls.Add($moveButton)
 
@@ -591,7 +599,8 @@ function Show-ConfigMaintenanceForm {
     $copyButton.Text = "Copy Content..."
     $copyButton.Location = New-Object System.Drawing.Point(140, 72)
     $copyButton.Size = New-Object System.Drawing.Size(120, 25)
-    $copyButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $copyButton.Add_Click({
+        try {
         $selected = Get-SelectedConfigRows
         if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
         $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -606,12 +615,16 @@ function Show-ConfigMaintenanceForm {
             New-Item -ItemType Directory -Path $target -Force | Out-Null
             try {
                 Get-ChildItem -LiteralPath $item.Path -Force -ErrorAction SilentlyContinue | ForEach-Object {
-                    if ($_.PSIsContainer) { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $target $_.Name) -Recurse -Force -ErrorAction SilentlyContinue }
+                    $itemName = $_.Name
+                    if ($_.PSIsContainer) { Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $target $itemName) -Recurse -Force -ErrorAction SilentlyContinue }
                     else { Copy-Item -LiteralPath $_.FullName -Destination $target -Force -ErrorAction SilentlyContinue }
                 }
                 Update-RowStats -Row $item.Row -Path $item.Path
                 Write-AppLog "Copied content from $($item.Path) to $target" "Info"
             } catch { Write-AppLog "Copy content failed for $($item.Path) : $_" "Error" }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $tabFolderActions.Controls.Add($copyButton)
@@ -620,7 +633,8 @@ function Show-ConfigMaintenanceForm {
     $abandonButton.Text = "Abandon Folders"
     $abandonButton.Location = New-Object System.Drawing.Point(270, 72)
     $abandonButton.Size = New-Object System.Drawing.Size(120, 25)
-    $abandonButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $abandonButton.Add_Click({
+        try {
         $selected = Get-SelectedConfigRows
         if ($selected.Count -eq 0) { [System.Windows.Forms.MessageBox]::Show("No config folders selected.", "Info"); return }
         $confirmMsg = "ABANDON WARNING`n`nMark $($selected.Count) folder(s) as abandoned (config reset to defaults).`nContent remains on disk.`n`nFolders: $(($selected | ForEach-Object { $_.Key }) -join ', ')`n`nContinue?"
@@ -633,6 +647,9 @@ function Show-ConfigMaintenanceForm {
             Update-RowStats -Row $item.Row -Path $defaultPath
             Save-CurrentPaths
             Write-AppLog "Abandoned $($item.Key) and reset to default $defaultPath" "Warning"
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $tabFolderActions.Controls.Add($abandonButton)
@@ -647,7 +664,8 @@ function Show-ConfigMaintenanceForm {
     $archiveInPlaceButton.Text = "Archive In-Place"
     $archiveInPlaceButton.Location = New-Object System.Drawing.Point(10, 14)
     $archiveInPlaceButton.Size = New-Object System.Drawing.Size(140, 28)
-    $archiveInPlaceButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $archiveInPlaceButton.Add_Click({
+        try {
         $selected = @()
         foreach ($row in $dgv.Rows) {
             if ($row.IsNewRow) { continue }
@@ -708,6 +726,9 @@ function Show-ConfigMaintenanceForm {
         }
         $resultMsg = "Archive In-Place complete.`nSucceeded: $successCount folder(s), Failed: $failCount folder(s).`nCheck logs for details."
         [System.Windows.Forms.MessageBox]::Show($resultMsg, "Archive In-Place")
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabArchive.Controls.Add($archiveInPlaceButton)
 
@@ -715,7 +736,8 @@ function Show-ConfigMaintenanceForm {
     $archiveOutYonderButton.Text = "Archive Out-Yonder..."
     $archiveOutYonderButton.Location = New-Object System.Drawing.Point(160, 14)
     $archiveOutYonderButton.Size = New-Object System.Drawing.Size(160, 28)
-    $archiveOutYonderButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $archiveOutYonderButton.Add_Click({
+        try {
         $selected = @()
         foreach ($row in $dgv.Rows) {
             if ($row.IsNewRow) { continue }
@@ -738,6 +760,9 @@ function Show-ConfigMaintenanceForm {
             catch { Write-AppLog "Archive out-yonder failed for $($item.Path) : $_" "Error" }
         }
         [System.Windows.Forms.MessageBox]::Show("Archive complete. Check logs for details.", "Archive Out-Yonder")
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabArchive.Controls.Add($archiveOutYonderButton)
 
@@ -746,7 +771,8 @@ function Show-ConfigMaintenanceForm {
     $clearCleanButton.Location = New-Object System.Drawing.Point(330, 14)
     $clearCleanButton.Size = New-Object System.Drawing.Size(120, 28)
     $clearCleanButton.ForeColor = [System.Drawing.Color]::DarkRed
-    $clearCleanButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $clearCleanButton.Add_Click({
+        try {
         $selected = @()
         foreach ($row in $dgv.Rows) {
             if ($row.IsNewRow) { continue }
@@ -767,6 +793,9 @@ function Show-ConfigMaintenanceForm {
                 Write-AppLog "Cleared content for $($item.Path)" "Warning"
             } catch { Write-AppLog "Clear-clean failed for $($item.Path) : $_" "Error" }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabArchive.Controls.Add($clearCleanButton)
 
@@ -780,7 +809,8 @@ function Show-ConfigMaintenanceForm {
     $exportButton.Text = "Export Config"
     $exportButton.Location = New-Object System.Drawing.Point(10, 14)
     $exportButton.Size = New-Object System.Drawing.Size(120, 28)
-    $exportButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $exportButton.Add_Click({
+        try {
         Write-AppLog "User clicked Export Config" "Audit"
         if (-not (Test-Path $configFile)) { [System.Windows.Forms.MessageBox]::Show("Config file not found: $configFile", "Error"); return }
         $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
@@ -791,6 +821,9 @@ function Show-ConfigMaintenanceForm {
         try { Copy-Item -LiteralPath $configFile -Destination $saveDialog.FileName -Force; Write-AppLog "Config export to: $($saveDialog.FileName)" "Info"; [System.Windows.Forms.MessageBox]::Show("Config exported successfully.", "Export") }
         catch { Write-AppLog "Config export failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Export failed: $_", "Error") }
         finally { $saveDialog.Dispose() }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabConfig.Controls.Add($exportButton)
 
@@ -798,7 +831,8 @@ function Show-ConfigMaintenanceForm {
     $importButton.Text = "Import Config"
     $importButton.Location = New-Object System.Drawing.Point(140, 14)
     $importButton.Size = New-Object System.Drawing.Size(120, 28)
-    $importButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $importButton.Add_Click({
+        try {
         Write-AppLog "User clicked Import Config" "Audit"
         $openDialog = New-Object System.Windows.Forms.OpenFileDialog
         $openDialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
@@ -821,6 +855,9 @@ function Show-ConfigMaintenanceForm {
             [System.Windows.Forms.MessageBox]::Show("Config imported successfully.", "Import")
         } catch { Write-AppLog "Config import failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Import failed: $_", "Error") }
         finally { $openDialog.Dispose() }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabConfig.Controls.Add($importButton)
 
@@ -829,7 +866,8 @@ function Show-ConfigMaintenanceForm {
     $resetButton.Location = New-Object System.Drawing.Point(270, 14)
     $resetButton.Size = New-Object System.Drawing.Size(130, 28)
     $resetButton.ForeColor = [System.Drawing.Color]::DarkRed
-    $resetButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $resetButton.Add_Click({
+        try {
         Write-AppLog "User clicked Reset to Defaults" "Audit"
         if ([System.Windows.Forms.MessageBox]::Show("RESET WARNING`n`nReset ALL configuration to factory defaults?`nCurrent config backed up.", "Confirm Reset", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Warning) -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         try {
@@ -846,6 +884,9 @@ function Show-ConfigMaintenanceForm {
             Write-AppLog "Config reset to defaults" "Warning"
             [System.Windows.Forms.MessageBox]::Show("Config reset to defaults.", "Reset")
         } catch { Write-AppLog "Config reset failed: $_" "Error"; [System.Windows.Forms.MessageBox]::Show("Reset failed: $_", "Error") }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabConfig.Controls.Add($resetButton)
 
@@ -904,13 +945,17 @@ function Show-ConfigMaintenanceForm {
     $saveRemoteButton.Text = "Save All Remote Paths"
     $saveRemoteButton.Location = New-Object System.Drawing.Point(6, ($ry + 6))
     $saveRemoteButton.Size = New-Object System.Drawing.Size(170, 26)
-    $saveRemoteButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveRemoteButton.Add_Click({
+        try {
         foreach ($def in $remotePathDefs) {
             $val = $remoteTextBoxes[$def.XPath].Text.Trim()
             try { Set-ConfigSubValue -XPath $def.XPath -Value $val; Set-Variable -Name $def.Label -Value $val -Scope Script -ErrorAction SilentlyContinue; Write-AppLog "Remote path saved: $($def.XPath) = $val" "Info" }
             catch { Write-AppLog "Failed to save $($def.XPath): $_" "Warning" }
         }
         [System.Windows.Forms.MessageBox]::Show("Remote paths saved to config.", "Saved", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabRemote.Controls.Add($saveRemoteButton)
 
@@ -919,9 +964,13 @@ function Show-ConfigMaintenanceForm {
     $clearRemoteButton.Location = New-Object System.Drawing.Point(186, ($ry + 6))
     $clearRemoteButton.Size = New-Object System.Drawing.Size(90, 26)
     $clearRemoteButton.ForeColor = [System.Drawing.Color]::DarkRed
-    $clearRemoteButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $clearRemoteButton.Add_Click({
+        try {
         if ([System.Windows.Forms.MessageBox]::Show("Clear all remote path fields?", "Confirm", "YesNo", [System.Windows.Forms.MessageBoxIcon]::Question) -eq [System.Windows.Forms.DialogResult]::Yes) {
             foreach ($tb in $remoteTextBoxes.Values) { $tb.Text = "" }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $tabRemote.Controls.Add($clearRemoteButton)
@@ -930,7 +979,8 @@ function Show-ConfigMaintenanceForm {
     $compareRemoteButton.Text = "Compare && Sync from RemoteUpdatePath..."
     $compareRemoteButton.Location = New-Object System.Drawing.Point(6, ($ry + 38))
     $compareRemoteButton.Size = New-Object System.Drawing.Size(280, 26)
-    $compareRemoteButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $compareRemoteButton.Add_Click({
+        try {
         $remotePath = $remoteTextBoxes["RemoteUpdatePath"].Text.Trim()
         if ([string]::IsNullOrWhiteSpace($remotePath)) {
             [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is not set.", "Not Set", "OK", [System.Windows.Forms.MessageBoxIcon]::Warning); return
@@ -1001,6 +1051,9 @@ function Show-ConfigMaintenanceForm {
         $summary = "Sync complete.`n`nCopied : $successCount file(s)`nFailed : $errorCount file(s)"
         Write-AppLog $summary "Info"
         [System.Windows.Forms.MessageBox]::Show($summary, "Sync Complete", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabRemote.Controls.Add($compareRemoteButton)
 
@@ -1074,9 +1127,13 @@ function Show-ConfigMaintenanceForm {
         $pkgSizeLabel.Text = "Estimated uncompressed size: $totalMB MB  ($($totalBytes.ToString('N0')) bytes)"
     }
     Update-PackageSizeEstimate
-    $pkgFolderList.Add_ItemCheck({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $pkgFolderList.Add_ItemCheck({
+        try {
         # ItemCheck fires before state changes, so use BeginInvoke to defer
         $pkgFolderList.BeginInvoke([Action]{ Update-PackageSizeEstimate })
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # Right side – options panel
@@ -1160,10 +1217,14 @@ function Show-ConfigMaintenanceForm {
     $pkgOptGroup.Controls.Add($txtPassword)
 
     # Toggle encryption controls
-    $chkEncrypt.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $chkEncrypt.Add_CheckedChanged({
+        try {
         $en = $chkEncrypt.Checked
         $cboEncMethod.Enabled = $en; $lblEncMethod.Enabled = $en
         $txtPassword.Enabled  = $en; $lblPassword.Enabled  = $en
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # Copy to remote
@@ -1179,7 +1240,8 @@ function Show-ConfigMaintenanceForm {
     $btnBuildPackage.Location = New-Object System.Drawing.Point(545, 276)
     $btnBuildPackage.Size = New-Object System.Drawing.Size(140, 30)
     $btnBuildPackage.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
-    $btnBuildPackage.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBuildPackage.Add_Click({
+        try {
         Write-AppLog "User initiated Build Package from Config Maintenance" "Audit"
 
         # Gather selected folder names
@@ -1283,6 +1345,9 @@ function Show-ConfigMaintenanceForm {
 
         Write-AppLog "Package created: $destinationPath" "Info"
         [System.Windows.Forms.MessageBox]::Show("Package created successfully:`n$destinationPath", "Build Package", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabPackage.Controls.Add($btnBuildPackage)
 
@@ -1292,9 +1357,13 @@ function Show-ConfigMaintenanceForm {
     $btnSelectAll.Location = New-Object System.Drawing.Point(700, 276)
     $btnSelectAll.Size = New-Object System.Drawing.Size(56, 30)
     $btnSelectAll.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
-    $btnSelectAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSelectAll.Add_Click({
+        try {
         for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) { $pkgFolderList.SetItemChecked($i, $true) }
         Update-PackageSizeEstimate
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabPackage.Controls.Add($btnSelectAll)
 
@@ -1303,9 +1372,13 @@ function Show-ConfigMaintenanceForm {
     $btnDeselectAll.Location = New-Object System.Drawing.Point(762, 276)
     $btnDeselectAll.Size = New-Object System.Drawing.Size(56, 30)
     $btnDeselectAll.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
-    $btnDeselectAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnDeselectAll.Add_Click({
+        try {
         for ($i = 0; $i -lt $pkgFolderList.Items.Count; $i++) { $pkgFolderList.SetItemChecked($i, $false) }
         Update-PackageSizeEstimate
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $tabPackage.Controls.Add($btnDeselectAll)
 
@@ -1424,33 +1497,77 @@ if (Test-Path $avpnModulePath) {
 
 # Import SASC (Secrets Access & Security Checks) modules if available
 
-# Always import the module manifest (.psd1) for AssistedSASC and SASC-Adapters
+# Always prefer the module manifest (.psd1) for AssistedSASC; fallback to .psm1 only when required.
 $sascModuleManifest = Join-Path $modulesDir 'AssistedSASC.psd1'
 $sascAdaptersManifest = Join-Path $modulesDir 'SASC-Adapters.psd1'
-if (Test-Path $sascModuleManifest) {
-    Import-Module $sascModuleManifest -Force
-    Write-AppLog "SASC module loaded from $sascModuleManifest" "Info"
-} else {
-    Write-AppLog "SASC module not found at $sascModuleManifest" "Warning"
+$script:_SASCLastLoadAttempt = ''
+
+function Test-SASCModuleReady {
+    [CmdletBinding()]
+    param(
+        [switch]$Quiet
+    )
+
+    $candidateModules = [System.Collections.Generic.List[string]]::new()
+    $sascScriptPath = Get-ProjectPath SascModule
+
+    if (Test-Path -LiteralPath $sascModuleManifest) {
+        $candidateModules.Add($sascModuleManifest) | Out-Null
+    }
+    if (-not [string]::IsNullOrWhiteSpace($sascScriptPath) -and (Test-Path -LiteralPath $sascScriptPath)) {
+        if ($candidateModules -notcontains $sascScriptPath) {
+            $candidateModules.Add($sascScriptPath) | Out-Null
+        }
+    }
+
+    foreach ($candidate in $candidateModules) {
+        try {
+            Import-Module $candidate -Force -ErrorAction Stop
+            if (-not $Quiet) {
+                Write-AppLog "SASC module loaded from $candidate" "Info"
+            }
+            break
+        } catch {
+            $script:_SASCLastLoadAttempt = ('Path: {0} | Error: {1}' -f $candidate, $_.Exception.Message)
+            if (-not $Quiet) {
+                Write-AppLog ("SASC module load failed at {0}. {1}" -f $candidate, $_.Exception.Message) "Warning"
+            }
+        }
+    }
+
+    try {
+        if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
+            [void](Initialize-SASCModule -ScriptDir $scriptDir)
+        }
+    } catch {
+        $script:_SASCLastLoadAttempt = ('Initialize-SASCModule failed: {0}' -f $_.Exception.Message)
+        if (-not $Quiet) {
+            Write-AppLog "SASC initialization failed: $($_.Exception.Message)" "Warning"
+        }
+    }
+
+    $requiredFunctions = @('Test-VaultStatus', 'Lock-Vault', 'Show-VaultStatusDialog', 'Show-VaultUnlockDialog')
+    $missingFunctions = @($requiredFunctions | Where-Object { -not (Get-Command $_ -ErrorAction SilentlyContinue) })
+    $script:_SASCAvailable = (@($missingFunctions).Count -eq 0)
+
+    if ($script:_SASCAvailable) {
+        $script:_SASCLastLoadAttempt = ''
+    } elseif ([string]::IsNullOrWhiteSpace($script:_SASCLastLoadAttempt)) {
+        $script:_SASCLastLoadAttempt = "Missing commands: $($missingFunctions -join ', ')"
+    }
+
+    return $script:_SASCAvailable
 }
-if (Test-Path $sascAdaptersManifest) {
+
+if (Test-Path -LiteralPath $sascAdaptersManifest) {
     Import-Module $sascAdaptersManifest -Force
     Write-AppLog "SASC-Adapters module loaded from $sascAdaptersManifest" "Info"
 } else {
     Write-AppLog "SASC-Adapters module not found at $sascAdaptersManifest" "Warning"
 }
-# Initialize SASC module state
-try {
-    if (Get-Command Initialize-SASCModule -ErrorAction SilentlyContinue) {
-        $script:_SASCAvailable = Initialize-SASCModule -ScriptDir $scriptDir
-        Write-AppLog "SASC initialized: $_SASCAvailable" "Info"
-    } else {
-        $script:_SASCAvailable = $false
-    }
-} catch {
-    $script:_SASCAvailable = $false
-    Write-AppLog "SASC initialization failed: $($_.Exception.Message)" "Warning"
-}
+
+$script:_SASCAvailable = Test-SASCModuleReady
+Write-AppLog "SASC initialized: $($script:_SASCAvailable)" "Info"
 
 # ==================== CONFIG FUNCTIONS ====================
 # Initialize-ConfigFile is now provided by PwShGUICore module.
@@ -1458,12 +1575,12 @@ try {
 
 function Get-ConfigVariable {
     param([string]$VariableName)
-    
+
     if (-not (Test-Path $configFile)) {
         Write-AppLog "Config file not found: $configFile" "Warning"
         return $null
     }
-    
+
     [xml]$xml = Get-Content $configFile
     return $xml.SystemVariables.$VariableName.InnerText
 }
@@ -1473,10 +1590,10 @@ function Get-ButtonConfiguration {
         Write-AppLog "Config file not found: $configFile" "Warning"
         return @{ Left = @(); Right = @() }
     }
-    
+
     [xml]$xml = Get-Content $configFile
     $buttonConfig = @{ Left = @(); Right = @() }
-    
+
     # Load left column buttons
     if ($xml.SystemVariables.Buttons.LeftColumn) {
         foreach ($btn in $xml.SystemVariables.Buttons.LeftColumn.Button) {
@@ -1486,7 +1603,7 @@ function Get-ButtonConfiguration {
             }
         }
     }
-    
+
     # Load right column buttons
     if ($xml.SystemVariables.Buttons.RightColumn) {
         foreach ($btn in $xml.SystemVariables.Buttons.RightColumn.Button) {
@@ -1497,7 +1614,7 @@ function Get-ButtonConfiguration {
             }
         }
     }
-    
+
     return $buttonConfig
 }
 
@@ -1508,13 +1625,13 @@ function Get-ConfigSubValue {
         Write-AppLog "Config file not found: $configFile" "Warning"
         return $null
     }
-    
+
     # Load config once and cache it
     if (-not $script:_XmlCache.ConfigFile -or -not $script:_XmlCache.LastConfigLoad -or (Test-Path $configFile -NewerThan $script:_XmlCache.LastConfigLoad)) {
         $script:_XmlCache.ConfigFile = [xml](Get-Content $configFile)
         $script:_XmlCache.LastConfigLoad = Get-Item $configFile | Select-Object -ExpandProperty LastWriteTime
     }
-    
+
     $node = $script:_XmlCache.ConfigFile.SelectSingleNode("/SystemVariables/$XPath")
     if ($node) { return $node.InnerText } else { return $null }
 }
@@ -1560,13 +1677,13 @@ function Get-ConfigList {
         Write-AppLog "Config file not found: $configFile" "Warning"
         return @()
     }
-    
+
     # Load config once and cache it
     if (-not $script:_XmlCache.ConfigFile -or -not $script:_XmlCache.LastConfigLoad -or (Test-Path $configFile -NewerThan $script:_XmlCache.LastConfigLoad)) {
         $script:_XmlCache.ConfigFile = [xml](Get-Content $configFile)
         $script:_XmlCache.LastConfigLoad = Get-Item $configFile | Select-Object -ExpandProperty LastWriteTime
     }
-    
+
     $nodes = $script:_XmlCache.ConfigFile.SelectNodes("/SystemVariables/$ListName/Folder")
     return $nodes | ForEach-Object { $_.InnerText }
 }
@@ -1603,13 +1720,13 @@ function Initialize-LinksConfigFile {
 
 function Get-LinksConfig {
     if (-not (Test-Path $linksConfigFile)) { Initialize-LinksConfigFile }
-    
+
     # Load and cache links config
     if (-not $script:_XmlCache.LinksConfig -or -not $script:_XmlCache.LastLinksLoad -or (Test-Path $linksConfigFile -NewerThan $script:_XmlCache.LastLinksLoad)) {
         $script:_XmlCache.LinksConfig = [xml](Get-Content $linksConfigFile)
         $script:_XmlCache.LastLinksLoad = Get-Item $linksConfigFile | Select-Object -ExpandProperty LastWriteTime
     }
-    
+
     return $script:_XmlCache.LinksConfig
 }
 
@@ -1669,7 +1786,13 @@ function Build-LinksMenu {
             $linkItem = New-Object System.Windows.Forms.ToolStripMenuItem
             $linkItem.Text = $link.name
             $urlCopy = $link.url
-            $linkItem.Add_Click({ Start-Process $urlCopy })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $linkItem.Add_Click({
+                try {
+                    Start-Process $urlCopy
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
+            })
             $catItem.DropDownItems.Add($linkItem) | Out-Null
         }
         $LinksMenu.DropDownItems.Add($catItem) | Out-Null
@@ -1698,7 +1821,8 @@ function Show-DiskCheckDialog {
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "Run"
     $okBtn.Location = New-Object System.Drawing.Point(176, 245)
-    $okBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okBtn.Add_Click({
+        try {
         $selected = @($list.CheckedItems)
         if (-not $selected) {
             [System.Windows.Forms.MessageBox]::Show("Select at least one drive.", "Disk Check") | Out-Null
@@ -1708,13 +1832,22 @@ function Show-DiskCheckDialog {
             Start-Process -FilePath "cmd.exe" -ArgumentList "/c chkdsk $drive /f" -Verb RunAs
         }
         $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($okBtn)
 
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
     $cancelBtn.Location = New-Object System.Drawing.Point(256, 245)
-    $cancelBtn.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cancelBtn.Add_Click({
+        try {
+            $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $form.Controls.Add($cancelBtn)
 
     $form.ShowDialog() | Out-Null
@@ -1833,7 +1966,8 @@ function Show-WingetUpdateAllDialog {
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "Run"
     $okBtn.Location = New-Object System.Drawing.Point(336, 120)
-    $okBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okBtn.Add_Click({
+        try {
         $wingetArgs = "upgrade --all"
         if ($autoRadio.Checked) {
             $wingetArgs = "upgrade --all --accept-source-agreements --accept-package-agreements"
@@ -1846,13 +1980,22 @@ function Show-WingetUpdateAllDialog {
             Start-Process -FilePath "winget" -ArgumentList $wingetArgs
         }
         $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($okBtn)
 
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
     $cancelBtn.Location = New-Object System.Drawing.Point(416, 120)
-    $cancelBtn.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cancelBtn.Add_Click({
+        try {
+            $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $form.Controls.Add($cancelBtn)
 
     $form.ShowDialog() | Out-Null
@@ -2413,11 +2556,16 @@ function Show-BuildPackageOptionsForm {
     $form.AcceptButton = $okButton
     $form.CancelButton = $cancelButton
 
-    $advancedToggle.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $advancedToggle.Add_CheckedChanged({
+        try {
         $advancedGroup.Visible = $advancedToggle.Checked
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $okButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okButton.Add_Click({
+        try {
         if ($bakeIn.Checked -and [string]::IsNullOrWhiteSpace($remotePathText.Text)) {
             [System.Windows.Forms.MessageBox]::Show("RemoteUpdatePath is required when Bake-in is enabled.", "Validation", "OK", [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
             $form.DialogResult = [System.Windows.Forms.DialogResult]::None
@@ -2444,6 +2592,9 @@ function Show-BuildPackageOptionsForm {
             [System.Windows.Forms.MessageBox]::Show("Cert subject is required for code signing.", "Validation", "OK", [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
             $form.DialogResult = [System.Windows.Forms.DialogResult]::None
             return
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -2694,14 +2845,151 @@ function New-BuildManifest {
 
     $manifestLines | Out-File -FilePath $manifestPath -Encoding UTF8
 
+    $cacheEntries = @($newCacheEntries.ToArray())
     $cachePayload = @{
         Version = $versionString
         Generated = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
-        Entries = @($newCacheEntries)
+        Entries = $cacheEntries
     }
     $cachePayload | ConvertTo-Json -Depth 6 | Set-Content -Path $manifestCachePath -Encoding UTF8
 
     Write-AppLog "Manifest cache summary: reused=$reusedCount refreshed=$refreshedCount total=$($reusedCount + $refreshedCount)" "Info"
+}
+
+function Get-FriendlyErrorSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$ErrorRecord
+    )
+
+    $parts = @()
+
+    if ($ErrorRecord -and $ErrorRecord.Exception) {
+        $message = [string]$ErrorRecord.Exception.Message
+        if (-not [string]::IsNullOrWhiteSpace($message)) {
+            $parts += $message.Trim()
+        }
+
+        if ($ErrorRecord.Exception.InnerException) {
+            $innerMessage = [string]$ErrorRecord.Exception.InnerException.Message
+            if (-not [string]::IsNullOrWhiteSpace($innerMessage) -and -not ($parts -contains $innerMessage.Trim())) {
+                $parts += $innerMessage.Trim()
+            }
+        }
+    }
+
+    $reason = ''
+    try {
+        $reason = [string]$ErrorRecord.CategoryInfo.Reason
+    } catch {
+        $reason = ''
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($reason) -and -not ($parts -contains $reason.Trim())) {
+        $parts += $reason.Trim()
+    }
+
+    if (@($parts).Count -eq 0) {
+        return [string]$ErrorRecord
+    }
+
+    return ($parts -join ' | ')
+}
+
+function Write-StartupIssueSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [object[]]$Issues,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ExpectedVersion,
+
+        [int]$MaxPerGroup = 8
+    )
+
+    $issueKinds = @(
+        [PSCustomObject]@{ Name = 'tag mismatch'; Label = 'Tag mismatches' },
+        [PSCustomObject]@{ Name = 'missing tag'; Label = 'Missing version tags' },
+        [PSCustomObject]@{ Name = 'not in manifest'; Label = 'Missing from manifest' }
+    )
+
+    Write-Information "Detected issues:" -InformationAction Continue
+    foreach ($issueKind in $issueKinds) {
+        $groupItems = @($Issues | Where-Object { $_.Issue -eq $issueKind.Name })
+        if (@($groupItems).Count -eq 0) { continue }
+
+        Write-Information ("  {0}: {1}" -f $issueKind.Label, @($groupItems).Count) -InformationAction Continue
+        foreach ($groupItem in ($groupItems | Select-Object -First $MaxPerGroup)) {
+            $detail = $groupItem.Path
+            if ($issueKind.Name -eq 'tag mismatch' -and $groupItem.Found) {
+                $detail = "$detail (found: $($groupItem.Found), expected: $ExpectedVersion)"
+            }
+            Write-Information "    - $detail" -InformationAction Continue
+        }
+
+        $remaining = @($groupItems).Count - [Math]::Min(@($groupItems).Count, $MaxPerGroup)
+        if ($remaining -gt 0) {
+            Write-Information "    ... and $remaining more" -InformationAction Continue
+        }
+        Write-Information "" -InformationAction Continue
+    }
+}
+
+function Get-StartupParentProcessId {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$ProcessId,
+
+        [int]$OperationTimeoutSec = 1
+    )
+
+    if ($ProcessId -le 0) { return $null }
+
+    try {
+        $proc = Get-CimInstance Win32_Process -Filter ("ProcessId = " + $ProcessId) -OperationTimeoutSec $OperationTimeoutSec -ErrorAction Stop
+        if ($proc -and $proc.ParentProcessId) {
+            return [int]$proc.ParentProcessId
+        }
+    } catch {
+        return $null
+    }
+
+    return $null
+}
+
+function Get-StartupProcessSummary {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$ProcessId,
+
+        [switch]$IncludeParentProcessId,
+
+        [int]$OperationTimeoutSec = 1
+    )
+
+    if ($ProcessId -le 0) { return $null }
+
+    try {
+        $proc = Get-Process -Id $ProcessId -ErrorAction Stop
+        $summary = [ordered]@{
+            ProcessId = [int]$proc.Id
+            Name = [string]$proc.ProcessName
+            Summary = ("{0} (PID {1})" -f $proc.ProcessName, $proc.Id)
+            ParentProcessId = $null
+        }
+
+        if ($IncludeParentProcessId) {
+            $summary.ParentProcessId = Get-StartupParentProcessId -ProcessId $proc.Id -OperationTimeoutSec $OperationTimeoutSec
+        }
+
+        return [PSCustomObject]$summary
+    } catch {
+        return $null
+    }
 }
 
 function Test-VersionTag {
@@ -2863,6 +3151,7 @@ function Compare-ExcludedFolder {
     )
     $excludes = Get-ConfigList "Do-Not-VersionTag-FoldersFiles"
     $reportedIssues = New-Object 'System.Collections.Generic.HashSet[string]'
+    $manifestDriftPaths = New-Object 'System.Collections.Generic.List[string]'
 
     foreach ($ex in $excludes) {
         if ($ex -ieq 'logs') { continue }
@@ -2909,7 +3198,7 @@ function Compare-ExcludedFolder {
                 $issueKey = "$ex|$relname"
                 if (-not $reportedIssues.Add($issueKey)) { return }
 
-                Write-AppLog "$relname exists but not in manifest" "Error"
+                $manifestDriftPaths.Add($relativeFromExcludedFolder) | Out-Null
                 if ($diffs) { $diffs.Value += "$folderPath\$relname - not in manifest" }
                 if ($orphanCandidates) {
                     $orphanCandidates.Value.Add([ordered]@{
@@ -2937,6 +3226,12 @@ function Compare-ExcludedFolder {
                 }
             }
         }
+    }
+
+    if ($manifestDriftPaths.Count -gt 0) {
+        $samplePaths = @($manifestDriftPaths | Select-Object -First 8)
+        Write-AppLog "Manifest inventory drift detected: $($manifestDriftPaths.Count) file(s) missing from manifest entries" "Warning"
+        Write-AppLog ("Manifest drift sample: {0}" -f ([string]::Join('; ', $samplePaths))) "Info"
     }
 }
 
@@ -3245,19 +3540,19 @@ function Invoke-ScriptWithElevation {
     param(
         [Parameter(Mandatory = $true)]
         [string]$ScriptName,
-        
+
         [bool]$RunAsAdmin = $false
     )
-    
+
     $scriptPath = Join-Path $scriptsDir "$ScriptName.ps1"
-    
+
     if (-not (Test-Path $scriptPath)) {
         Write-AppLog "Script not found: $scriptPath" "Error"
         Write-ScriptLog "Script not found: $scriptPath" $ScriptName "Error"
         [System.Windows.Forms.MessageBox]::Show("Script not found: $ScriptName.ps1", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         return $false
     }
-    
+
     $scriptContent = Get-Content $scriptPath -Raw -ErrorAction SilentlyContinue
     $scoreInfo = if ($scriptContent) { Get-ScriptSafetyScore -Content $scriptContent } else { $null }
     $safetyScore = if ($scoreInfo) { $scoreInfo.Score } else { 0 }
@@ -3287,14 +3582,14 @@ function Invoke-ScriptWithElevation {
         $useWhatIf = $true
         Write-AppLog "Auto-enabling -WhatIf due to safety score > 50" "Info"
     }
-    
+
     try {
         if ($RunAsAdmin) {
             # Check if already running as admin
             $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
             $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
             $isAdmin = $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-            
+
             if ($isAdmin) {
                 Write-AppLog "Already running as admin, executing script directly" "Info"
                 Write-ScriptLog "Executing as admin (current session elevated)" $ScriptName "Info"
@@ -3318,7 +3613,10 @@ function Invoke-ScriptWithElevation {
                 if ($requiresInteractive) {
                     Write-AppLog "Interactive input detected (Read-Host). Skipping progress monitor for elevated run." "Info"
                     Write-ScriptLog "Interactive input detected. Skipping progress monitor for elevated run." $ScriptName "Info"
-                    $proc.WaitForExit()
+                    if (-not $proc.WaitForExit(3600000)) {
+                        Write-AppLog "Elevated interactive script timed out after 3600s: $ScriptName" "Warning"
+                        Write-ScriptLog "Elevated interactive script timed out after 3600s" $ScriptName "Warning"
+                    }
                 } else {
                     Wait-ProcessWithProgress -Process $proc -ScriptName $ScriptName -EstimatedSeconds 10
                 }
@@ -3339,7 +3637,7 @@ function Invoke-ScriptWithElevation {
                 $null = Invoke-LocalScriptWithProgress -ScriptPath $scriptPath -ScriptName $ScriptName -UseWhatIf $useWhatIf -EstimatedSeconds 10
             }
         }
-        
+
         Write-AppLog "Script execution completed: $ScriptName" "Info"
         Write-ScriptLog "Script execution completed successfully" $ScriptName "Info"
         return $true
@@ -3357,21 +3655,21 @@ function Show-ElevationPrompt {
         [string]$ScriptName,
         [string]$ScriptPath
     )
-    
+
     Write-AppLog "Displaying admin elevation prompt for script: $ScriptName" "Audit"
-    
+
     # Calculate safety score
     $safetyScore = 0
     $scoreEmoji = "[ ]"
     $scoreColor = "Unknown"
     $scriptContent = ""
-    
+
     if ($ScriptPath -and (Test-Path $ScriptPath)) {
         $scriptContent = Get-Content $ScriptPath -Raw -ErrorAction SilentlyContinue
         if ($scriptContent) {
             $scoreInfo = Get-ScriptSafetyScore -Content $scriptContent
             $safetyScore = $scoreInfo.Score
-            
+
             # Determine color and emoji
             if ($safetyScore -ge 80) {
                 $scoreEmoji = "[+]"
@@ -3385,7 +3683,7 @@ function Show-ElevationPrompt {
             }
         }
     }
-    
+
     # Build message with safety badge
     $message = "=======================================`n"
     $message += "  Script: $ScriptName`n"
@@ -3393,30 +3691,30 @@ function Show-ElevationPrompt {
     $message += "  Status: $scoreColor`n"
     $message += "=======================================`n`n"
     $message += "Run with administrator privileges?"
-    
+
     if ($safetyScore -gt 50 -and $safetyScore -lt 100) {
         $message += "`n`nNOTE: Script will run with -WhatIf (preview mode)"
     }
-    
+
     Write-AppLog "Script safety score displayed: $safetyScore ($scoreColor)" "Info"
-    
+
     $result = [System.Windows.Forms.MessageBox]::Show(
         $message,
         "Admin Elevation Request",
         [System.Windows.Forms.MessageBoxButtons]::YesNo,
         [System.Windows.Forms.MessageBoxIcon]::Question
     )
-    
+
     $shouldElevate = $result -eq [System.Windows.Forms.DialogResult]::Yes
     Write-AppLog "Admin elevation response: $(if ($shouldElevate) { 'YES' } else { 'NO' })" "Audit"
-    
+
     return $shouldElevate
 }
 
 # ==================== NETWORK DIAGNOSTICS ====================
 function Get-NetworkDiagnostic {
     $results = @()
-    
+
     # Get local IP
     try {
         $localIP = (Get-NetIPAddress -AddressFamily IPv4 -PrefixOrigin Manual -ErrorAction SilentlyContinue | Select-Object -First 1).IPAddress
@@ -3428,7 +3726,7 @@ function Get-NetworkDiagnostic {
     catch {
         $results += "Local IP: Unable to determine"
     }
-    
+
     # Get gateway IP
     try {
         $gateway = (Get-NetRoute -DestinationPrefix 0.0.0.0/0 | Select-Object -First 1).NextHop
@@ -3437,7 +3735,7 @@ function Get-NetworkDiagnostic {
     catch {
         $results += "Gateway IP: Unable to determine"
     }
-    
+
     # Get public WAN IP
     try {
         $wanIP = Invoke-RestMethod -Uri "https://api.ipify.org?format=json" -TimeoutSec 5 -ErrorAction Stop | Select-Object -ExpandProperty ip
@@ -3447,33 +3745,33 @@ function Get-NetworkDiagnostic {
         Write-AppLog "WAN IP lookup failed: $_" "Warning"
         $results += "Public WAN IP: Unable to determine"
     }
-    
+
     # DNS servers
     $results += "`nDNS Configuration:"
     $dnsServers = @("1.1.1.1", "9.9.9.9", "8.8.8.8")
-    
+
     foreach ($dns in $dnsServers) {
         $pingTest = $false
         $dnsTest = $false
-        
+
         try {
             $ping = Test-Connection -ComputerName $dns -Count 1 -ErrorAction SilentlyContinue
             $pingTest = $null -ne $ping
         }
         catch { $pingTest = $false }
-        
+
         try {
             $dnsResolve = Resolve-DnsName -Name "google.com" -Server $dns -ErrorAction SilentlyContinue
             $dnsTest = $null -ne $dnsResolve
         }
         catch { $dnsTest = $false }
-        
+
         $pingStatus = if ($pingTest) { "OK Reachable" } else { "FAIL Unreachable" }
         $dnsStatus = if ($dnsTest) { "OK Working" } else { "FAIL Failed" }
-        
+
         $results += "DNS $dns - Ping: $pingStatus | Lookup: $dnsStatus"
     }
-    
+
     return $results
 }
 
@@ -3542,20 +3840,20 @@ For more information, see the documentation files.
 # ==================== PATH MANAGEMENT FUNCTIONS ====================
 function Test-PathReadWrite {
     param([string]$Path)
-    
+
     if (-not (Test-Path $Path)) {
         return @{ Readable = $false; Writable = $false; Exists = $false }
     }
-    
+
     $canRead = $true
     $canWrite = $true
-    
+
     try {
         $null = Get-ChildItem -Path $Path -ErrorAction Stop
     } catch {
         $canRead = $false
     }
-    
+
     try {
         $testFile = Join-Path $Path ".access-test-$([guid]::NewGuid().ToString()).tmp"
         New-Item -ItemType File -Path $testFile -Force | Out-Null
@@ -3563,7 +3861,7 @@ function Test-PathReadWrite {
     } catch {
         $canWrite = $false
     }
-    
+
     return @{ Readable = $canRead; Writable = $canWrite; Exists = $true }
 }
 
@@ -3678,7 +3976,8 @@ function Show-PathSettingsGUI {
         $browseBtn.Text = "Browse..."
         $browseBtn.Location = New-Object System.Drawing.Point(720, $yPos)
         $browseBtn.Size = New-Object System.Drawing.Size(60, 22)
-        $browseBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $browseBtn.Add_Click({
+            try {
             param($btnSender, $e)
             $folder = New-Object System.Windows.Forms.FolderBrowserDialog
             $folder.Description = "Select path for $($btnSender.Tag)"
@@ -3688,6 +3987,9 @@ function Show-PathSettingsGUI {
                 & $ValidatePathStatus
             }
             $folder.Dispose()
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         }.GetNewClosure())
         $browseBtn.Tag = $pathItem.Label
         $form.Controls.Add($browseBtn)
@@ -3729,7 +4031,8 @@ function Show-PathSettingsGUI {
         $rBrowseBtn.Size = New-Object System.Drawing.Size(60, 22)
         $rItemCopy    = $rItem
         $rTextBoxCopy = $rTextBox
-        $rBrowseBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $rBrowseBtn.Add_Click({
+            try {
             $fb = New-Object System.Windows.Forms.FolderBrowserDialog
             $fb.Description = "Select path for $($rItemCopy.Label)"
             $fb.SelectedPath = if ([string]::IsNullOrWhiteSpace($rTextBoxCopy.Text)) { $scriptDir } else { $rTextBoxCopy.Text }
@@ -3737,6 +4040,9 @@ function Show-PathSettingsGUI {
                 $rTextBoxCopy.Text = $fb.SelectedPath
             }
             $fb.Dispose()
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         }.GetNewClosure())
         $rBrowseBtn.Tag = $rItem.Label
         $form.Controls.Add($rBrowseBtn)
@@ -3752,7 +4058,13 @@ function Show-PathSettingsGUI {
     $validateBtn.Text = "Validate All"
     $validateBtn.Location = New-Object System.Drawing.Point(12, $yPos)
     $validateBtn.Size = New-Object System.Drawing.Size(100, 25)
-    $validateBtn.Add_Click({ & $ValidatePathStatus })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $validateBtn.Add_Click({
+        try {
+            & $ValidatePathStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $form.Controls.Add($validateBtn)
 
     # OK Button
@@ -3761,7 +4073,8 @@ function Show-PathSettingsGUI {
     $okBtn.Location = New-Object System.Drawing.Point(620, $yPos)
     $okBtn.Size = New-Object System.Drawing.Size(75, 25)
     $okBtn.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $okBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okBtn.Add_Click({
+        try {
         # Save local paths to script variables
         $script:ConfigPath    = $pathControls["ConfigPath"].TextBox.Text
         $script:DefaultFolder = $pathControls["DefaultFolder"].TextBox.Text
@@ -3783,6 +4096,9 @@ function Show-PathSettingsGUI {
         }
 
         $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($okBtn)
 
@@ -3802,12 +4118,12 @@ function Show-PathSettingsGUI {
 function Get-AllScriptFolders {
     $baseFolders = @($scriptsDir)
     $customFolders = @()
-    
+
     $config = Get-ScriptFoldersConfig
     if ($config -and $config.customScriptFolders) {
         $customFolders = @($config.customScriptFolders | Where-Object { $_.enabled -eq $true } | ForEach-Object { $_.path })
     }
-    
+
     return @($baseFolders + $customFolders)
 }
 
@@ -3816,49 +4132,50 @@ function Show-ScriptFolderSettingsGUI {
     if (-not $config) {
         $config = @{ customScriptFolders = @() }
     }
-    
+
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "Manage Script Folders"
     $form.Size = New-Object System.Drawing.Size(700, 500)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = "FixedDialog"
     $form.MaximizeBox = $false
-    
+
     $titleLabel = New-Object System.Windows.Forms.Label
     $titleLabel.Text = "Configure Custom Script Folders"
     $titleLabel.Location = New-Object System.Drawing.Point(12, 12)
     $titleLabel.Size = New-Object System.Drawing.Size(670, 20)
     $titleLabel.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
     $form.Controls.Add($titleLabel)
-    
+
     $infoLabel = New-Object System.Windows.Forms.Label
     $infoLabel.Text = "Add or remove additional script folder paths. Each path will be stored and loaded on app startup."
     $infoLabel.Location = New-Object System.Drawing.Point(12, 35)
     $infoLabel.Size = New-Object System.Drawing.Size(670, 30)
     $form.Controls.Add($infoLabel)
-    
+
     # ListBox for folders
     $listBox = New-Object System.Windows.Forms.ListBox
     $listBox.Location = New-Object System.Drawing.Point(12, 70)
     $listBox.Size = New-Object System.Drawing.Size(670, 350)
     $listBox.SelectionMode = [System.Windows.Forms.SelectionMode]::One
-    
+
     foreach ($folder in $config.customScriptFolders) {
         $displayText = "$($folder.label) - $($folder.path)"
         [void]$listBox.Items.Add($displayText)
     }
-    
+
     $form.Controls.Add($listBox)
-    
+
     # Add Button
     $addBtn = New-Object System.Windows.Forms.Button
     $addBtn.Text = "Add Folder..."
     $addBtn.Location = New-Object System.Drawing.Point(12, 430)
     $addBtn.Size = New-Object System.Drawing.Size(100, 25)
-    $addBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $addBtn.Add_Click({
+        try {
         $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderDialog.Description = "Select a script folder to add"
-        
+
         if ($folderDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             $newFolder = @{
                 path = $folderDialog.SelectedPath
@@ -3866,41 +4183,52 @@ function Show-ScriptFolderSettingsGUI {
                 enabled = $true
                 addedDate = (Get-Date -Format "yyyy-MM-dd")
             }
-            
+
             $config.customScriptFolders += $newFolder
             $displayText = "$($newFolder.label) - $($newFolder.path)"
             [void]$listBox.Items.Add($displayText)
         }
         $folderDialog.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($addBtn)
-    
+
     # Remove Button
     $removeBtn = New-Object System.Windows.Forms.Button
     $removeBtn.Text = "Remove"
     $removeBtn.Location = New-Object System.Drawing.Point(120, 430)
     $removeBtn.Size = New-Object System.Drawing.Size(75, 25)
-    $removeBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $removeBtn.Add_Click({
+        try {
         if ($listBox.SelectedIndex -ge 0) {
             $selected = $listBox.SelectedIndex
             $config.customScriptFolders = @($config.customScriptFolders | Where-Object { $_ -ne $config.customScriptFolders[$selected] })
             $listBox.Items.RemoveAt($selected)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($removeBtn)
-    
+
     # OK Button
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "OK"
     $okBtn.Location = New-Object System.Drawing.Point(490, 430)
     $okBtn.Size = New-Object System.Drawing.Size(90, 25)
-    $okBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okBtn.Add_Click({
+        try {
         Save-ScriptFoldersConfig -Config $config
         Write-AppLog "Script folders configuration updated" "Info"
         $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($okBtn)
-    
+
     # Cancel Button
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
@@ -3908,7 +4236,7 @@ function Show-ScriptFolderSettingsGUI {
     $cancelBtn.Size = New-Object System.Drawing.Size(90, 25)
     $cancelBtn.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $form.Controls.Add($cancelBtn)
-    
+
     $form.ShowDialog() | Out-Null
     $form.Dispose()
 }
@@ -4041,12 +4369,16 @@ function Show-ManifestsRegistrySinsViewer {
         catch { <# skip unparseable files #> }
     }
 
-    $sinTab.ListView.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $sinTab.ListView.Add_SelectedIndexChanged({
+        try {
         if ($sinTab.ListView.SelectedItems.Count -gt 0) {
             $selId = $sinTab.ListView.SelectedItems[0].Text
             if ($sinDetailMap.ContainsKey($selId)) {
                 $sinTab.Detail.Text = $sinDetailMap[$selId]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -4123,12 +4455,16 @@ function Show-ManifestsRegistrySinsViewer {
         $mfTab.ListView.Items.Add($item) | Out-Null
     }
 
-    $mfTab.ListView.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $mfTab.ListView.Add_SelectedIndexChanged({
+        try {
         if ($mfTab.ListView.SelectedItems.Count -gt 0) {
             $selName = $mfTab.ListView.SelectedItems[0].Text
             if ($mfDetailMap.ContainsKey($selName)) {
                 $mfTab.Detail.Text = $mfDetailMap[$selName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -4217,12 +4553,16 @@ function Show-ManifestsRegistrySinsViewer {
         $regTab.ListView.Items.Add($item) | Out-Null
     }
 
-    $regTab.ListView.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $regTab.ListView.Add_SelectedIndexChanged({
+        try {
         if ($regTab.ListView.SelectedItems.Count -gt 0) {
             $selName = $regTab.ListView.SelectedItems[0].Text
             if ($regDetailMap.ContainsKey($selName)) {
                 $regTab.Detail.Text = $regDetailMap[$selName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -4320,7 +4660,7 @@ function Show-ManifestsRegistrySinsViewer {
 function Show-UpdateHelp {
     Write-AppLog "User initiated Update-Help" "Audit"
     [System.Windows.Forms.MessageBox]::Show("Updating PowerShell Help...", "Please Wait", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
-    
+
     try {
         Update-Help -Force -ErrorAction SilentlyContinue
         Write-AppLog "Help updated successfully" "Info"
@@ -4334,17 +4674,17 @@ function Show-UpdateHelp {
 
 function Show-NetworkDiagnosticsDialog {
     Write-AppLog "User opened Network Diagnostics" "Audit"
-    
+
     $results = Get-NetworkDiagnostic
     $resultText = $results -join "`r`n"
-    
+
     [System.Windows.Forms.MessageBox]::Show(
         $resultText,
         "Network Diagnostics",
         [System.Windows.Forms.MessageBoxButtons]::OK,
         [System.Windows.Forms.MessageBoxIcon]::Information
     ) | Out-Null
-    
+
     Write-AppLog "Network Diagnostics results displayed" "Debug"
 }
 
@@ -4527,7 +4867,7 @@ function Get-ScriptSafetyScore {
 
     $patterns = @(
         @{ Name = "Invoke-Expression"; Regex = "\bInvoke-Expression\b|\biex\b"; Penalty = 12 },
-        @{ Name = "Download and Execute"; Regex = "(Invoke-WebRequest|iwr|New-Object\s+Net.WebClient).*?(DownloadString|DownloadFile)"; Penalty = 18 },
+        @{ Name = "Download and Execute"; Regex = "(Invoke-WebRequest|iwr|New-Object\s+Net.WebClient).*?(DownloadString|DownloadFile)"; Penalty = 18 }, # SIN-EXEMPT:P070 -- regex signature text, not an outbound web call
         @{ Name = "Execution Policy Change"; Regex = "\bSet-ExecutionPolicy\b"; Penalty = 8 },
         @{ Name = "Recursive Force Delete"; Regex = "\bRemove-Item\b.*-Recurse.*-Force"; Penalty = 10 },
         @{ Name = "RunAs Elevation"; Regex = "\bStart-Process\b.*-Verb\s+RunAs"; Penalty = 8 },
@@ -4667,9 +5007,16 @@ function Show-StartupShortcutForm {
     $btnCancel.Size = New-Object System.Drawing.Size(90, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnCancel }
 
-    $btnCancel.Add_Click({ $scForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $scForm.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCancel.Add_Click({
+        try {
+            $scForm.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $scForm.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnCreate.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCreate.Add_Click({
+        try {
         $batPath = Join-Path $scriptDir 'Launch-GUI-quik_jnr.bat'
         if (-not (Test-Path $batPath)) { $batPath = Join-Path $scriptDir 'Launch-GUI.bat' }
         $trayArg = if ($chkTray.Checked) { '/TASKTRAY' } else { '' }
@@ -4724,6 +5071,9 @@ function Show-StartupShortcutForm {
         [System.Windows.Forms.MessageBox]::Show($msg, "Startup Shortcut", "OK",
             $(if ($failed.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information }))
         if ($failed.Count -eq 0 -and $created.Count -gt 0) { $scForm.DialogResult = [System.Windows.Forms.DialogResult]::OK; $scForm.Close() }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $scForm.Controls.Add($btnCreate)
@@ -4783,12 +5133,16 @@ function Show-RemoteBuildConfigForm {
     $btnBrowse.Text = "..."
     $btnBrowse.Location = New-Object System.Drawing.Point(618, 34)
     $btnBrowse.Size = New-Object System.Drawing.Size(60, 26)
-    $btnBrowse.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBrowse.Add_Click({
+        try {
         $fb = New-Object System.Windows.Forms.FolderBrowserDialog
         $fb.Description = "Select Remote Build Path"
         if (-not [string]::IsNullOrWhiteSpace($txtRemotePath.Text)) { $fb.SelectedPath = $txtRemotePath.Text }
         if ($fb.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { $txtRemotePath.Text = $fb.SelectedPath }
         $fb.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $rbForm.Controls.Add($btnBrowse)
 
@@ -4798,7 +5152,8 @@ function Show-RemoteBuildConfigForm {
     $btnCheck.Location = New-Object System.Drawing.Point(12, 70)
     $btnCheck.Size = New-Object System.Drawing.Size(160, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnCheck }
-    $btnCheck.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCheck.Add_Click({
+        try {
         $resultsBox.Clear()
         $rp = $txtRemotePath.Text.Trim()
         if ([string]::IsNullOrWhiteSpace($rp)) {
@@ -4872,6 +5227,9 @@ function Show-RemoteBuildConfigForm {
             }
         }
         Write-AppLog "Remote build path check completed for: $rp" "Info"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $rbForm.Controls.Add($btnCheck)
 
@@ -4881,7 +5239,8 @@ function Show-RemoteBuildConfigForm {
     $btnBuild.Location = New-Object System.Drawing.Point(12, 110)
     $btnBuild.Size = New-Object System.Drawing.Size(160, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnBuild }
-    $btnBuild.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBuild.Add_Click({
+        try {
         $resultsBox.Clear()
         $rp = $txtRemotePath.Text.Trim()
         if ([string]::IsNullOrWhiteSpace($rp)) {
@@ -4913,6 +5272,9 @@ function Show-RemoteBuildConfigForm {
             & $appendResult "[FAIL] Build/upload error: $_" ([System.Drawing.Color]::OrangeRed)
             Write-AppLog "Build zip upload failed: $_" "Error"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $rbForm.Controls.Add($btnBuild)
 
@@ -4922,7 +5284,8 @@ function Show-RemoteBuildConfigForm {
     $btnTestBuild.Location = New-Object System.Drawing.Point(185, 110)
     $btnTestBuild.Size = New-Object System.Drawing.Size(180, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnTestBuild }
-    $btnTestBuild.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestBuild.Add_Click({
+        try {
         $resultsBox.Clear()
         $rp = $txtRemotePath.Text.Trim()
         & $appendResult "=== TEST (WhatIf): Build Zip Package ===" ([System.Drawing.Color]::Yellow)
@@ -4958,6 +5321,9 @@ function Show-RemoteBuildConfigForm {
         }
         & $appendResult "`n=== WhatIf complete -- no changes made ===" ([System.Drawing.Color]::Yellow)
         Write-AppLog "WhatIf build zip test completed" "Info"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $rbForm.Controls.Add($btnTestBuild)
 
@@ -4967,7 +5333,8 @@ function Show-RemoteBuildConfigForm {
     $btnTestCopy.Location = New-Object System.Drawing.Point(378, 110)
     $btnTestCopy.Size = New-Object System.Drawing.Size(195, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnTestCopy }
-    $btnTestCopy.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestCopy.Add_Click({
+        try {
         $resultsBox.Clear()
         $rp = $txtRemotePath.Text.Trim()
         & $appendResult "=== TEST (WhatIf): Build Remote Copy from Current Version ===" ([System.Drawing.Color]::Yellow)
@@ -5017,6 +5384,9 @@ function Show-RemoteBuildConfigForm {
 
         & $appendResult "`n=== WhatIf complete -- no changes made ===" ([System.Drawing.Color]::Yellow)
         Write-AppLog "WhatIf remote copy test completed" "Info"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $rbForm.Controls.Add($btnTestCopy)
 
@@ -5039,7 +5409,8 @@ function Show-RemoteBuildConfigForm {
     $btnSave.Location = New-Object System.Drawing.Point(12, 190)
     $btnSave.Size = New-Object System.Drawing.Size(200, 32)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnSave }
-    $btnSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSave.Add_Click({
+        try {
         $val = $txtRemotePath.Text.Trim()
         try {
             Set-ConfigSubValue -XPath "RemoteUpdatePath" -Value $val
@@ -5048,6 +5419,9 @@ function Show-RemoteBuildConfigForm {
             Write-AppLog "Remote build path saved: $val" "Info"
         } catch {
             & $appendResult "Failed to save: $_" ([System.Drawing.Color]::OrangeRed)
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $rbForm.Controls.Add($btnSave)
@@ -5058,7 +5432,13 @@ function Show-RemoteBuildConfigForm {
     $btnClose.Location = New-Object System.Drawing.Point(600, 550)
     $btnClose.Size = New-Object System.Drawing.Size(90, 28)
     if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) { Set-ModernButtonStyle -Button $btnClose }
-    $btnClose.Add_Click({ $rbForm.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnClose.Add_Click({
+        try {
+            $rbForm.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $rbForm.Controls.Add($btnClose)
     $rbForm.CancelButton = $btnClose
 
@@ -5536,7 +5916,8 @@ function Show-ModernAboutScreen {
     $fpTextRef   = $fpText
     $pubKeysRef  = $pubKeys
     $pkiDirRef   = $pkiDir
-    $keyDrop.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $keyDrop.Add_SelectedIndexChanged({
+        try {
         $idx = $keyDropRef.SelectedIndex
         if ($idx -lt 0 -or $idx -ge @($pubKeysRef).Count) { return }
         $pk  = $pubKeysRef[$idx]  # SIN-EXEMPT:P027 -- index access, context-verified safe
@@ -5549,11 +5930,18 @@ function Show-ModernAboutScreen {
             $bmp = New-QrFingerprintBitmap -Text "$($pk.BaseName):$hash" -Size 200
             if ($null -ne $bmp) { $picBoxRef.Image = $bmp }
         } catch { $fpTextRef.Text = "(error reading key)" }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $copyBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $copyBtn.Add_Click({
+        try {
         if (-not [string]::IsNullOrWhiteSpace($fpTextRef.Text)) {
             [System.Windows.Forms.Clipboard]::SetText($fpTextRef.Text)
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     }.GetNewClosure())
 
@@ -5611,18 +5999,23 @@ function Show-ModernAboutScreen {
     $tabAudit.Controls.Add($auditGrid)
 
     # Row colouring by status
-    $auditGrid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $auditGrid.Add_CellFormatting({
+        try {
         $rowStatus = $this.Rows[$_.RowIndex].Cells['Status'].Value
         switch ($rowStatus) {
             'Relic'     { $_.CellStyle.ForeColor = $FG_DANGER }
             'Untracked' { $_.CellStyle.ForeColor = $FG_WARN }
             'Error'     { $_.CellStyle.ForeColor = [System.Drawing.Color]::Magenta }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $auditGridRef = $auditGrid
     $auditStatusRef = $auditStatus
-    $btnRefreshAudit.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshAudit.Add_Click({
+        try {
         $auditStatusRef.Text = "Scanning..."
         $auditGridRef.Rows.Clear()
         $mismatches = Get-ManifestMismatches -WorkspacePath $PSScriptRoot
@@ -5631,9 +6024,13 @@ function Show-ModernAboutScreen {
         $untracked = @($mismatches | Where-Object { $_.Status -eq 'Untracked' }).Count
         $auditStatusRef.Text = "Relics: $relics  |  Untracked: $untracked  |  Total issues: $(@($mismatches).Count)"
         Write-AppLog "Audit scan: $relics relics, $untracked untracked" "Audit"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnExportAudit.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnExportAudit.Add_Click({
+        try {
         $sfd = New-Object System.Windows.Forms.SaveFileDialog
         $sfd.Filter   = "CSV files (*.csv)|*.csv"
         $sfd.FileName = "audit-manifest-$(Get-Date -Format 'yyyyMMdd-HHmm').csv"
@@ -5643,6 +6040,9 @@ function Show-ModernAboutScreen {
                 $rows += [PSCustomObject]@{ File=$row.Cells['File'].Value; Status=$row.Cells['Status'].Value; Note=$row.Cells['Note'].Value }
             }
             $rows | Export-Csv -LiteralPath $sfd.FileName -Encoding UTF8 -NoTypeInformation
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     }.GetNewClosure())
 
@@ -5710,13 +6110,17 @@ function Show-ModernAboutScreen {
     $appGrid.Columns[$cols4.Count-1].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
     $tabApprovals.Controls.Add($appGrid)
 
-    $appGrid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $appGrid.Add_CellFormatting({
+        try {
         $v = $this.Rows[$_.RowIndex].Cells['Status'].Value
         switch ($v) {
             'Approved'  { $_.CellStyle.ForeColor = $FG_OK }
             'Rejected'  { $_.CellStyle.ForeColor = $FG_DANGER }
             'Pending'   { $_.CellStyle.ForeColor = $FG_WARN }
             'Bypassed'  { $_.CellStyle.ForeColor = [System.Drawing.Color]::Cyan }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -5753,7 +6157,8 @@ function Show-ModernAboutScreen {
     }
     Refresh-ApprovalsGrid
 
-    $btnNewApproval.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnNewApproval.Add_Click({
+        try {
         $dlg = New-Object System.Windows.Forms.Form
         $dlg.Text = "Submit Item for Chief Approval"
         $dlg.Size = New-Object System.Drawing.Size(480, 320)
@@ -5798,9 +6203,13 @@ function Show-ModernAboutScreen {
             Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
             Refresh-ApprovalsGrid
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnApprove.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnApprove.Add_Click({
+        try {
         $rows = @($appGridRef.SelectedRows)
         if (@($rows).Count -eq 0) { return }
         foreach ($row in $rows) {
@@ -5812,9 +6221,13 @@ function Show-ModernAboutScreen {
         Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
         Refresh-ApprovalsGrid
         Write-AppLog "Chief approved $(@($rows).Count) item(s)" "Audit"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnReject.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnReject.Add_Click({
+        try {
         $rows = @($appGridRef.SelectedRows)
         if (@($rows).Count -eq 0) { return }
         foreach ($row in $rows) {
@@ -5825,9 +6238,13 @@ function Show-ModernAboutScreen {
         }
         Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
         Refresh-ApprovalsGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnBypass.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBypass.Add_Click({
+        try {
         $exp = (Get-Date).AddDays(28).ToString('yyyy-MM-dd')
         if ($null -eq ($appData.PSObject.Properties['bypassExpiry'])) {
             $appData | Add-Member -MemberType NoteProperty -Name 'bypassExpiry' -Value $exp -Force
@@ -5835,6 +6252,9 @@ function Show-ModernAboutScreen {
         Save-ChiefApprovals -Data $appData -WorkspacePath $PSScriptRoot
         Refresh-ApprovalsGrid
         Write-AppLog "Chief granted 28-day review bypass until $exp" "Audit"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
     # ── Status bar ──────────────────────────────────────────────────
@@ -6277,9 +6697,45 @@ function Show-AboutAppDialog {
         $b.BackColor = [System.Drawing.Color]::FromArgb(30,30,50); $b.ForeColor = $FG
         $b.Font = New-Object System.Drawing.Font("Segoe UI", 9)
         $scriptPath = Join-Path $PSScriptRoot $bd.S
-        $b.Add_Click({ Invoke-LocalScriptWithProgress -ScriptPath $scriptPath -Owner $appFormRef }.GetNewClosure())  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $b.Add_Click({
+            try {
+                Invoke-LocalScriptWithProgress -ScriptPath $scriptPath -Owner $appFormRef
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        }.GetNewClosure())
         $toolsPanel.Controls.Add($b)
     }
+
+    $cortixButton = New-Object System.Windows.Forms.Button
+    $cortixButton.Text = '🧬  CORTIX Dependency Map R2'
+    $cortixButton.Width = 360
+    $cortixButton.Height = 38
+    $cortixButton.Margin = New-Object System.Windows.Forms.Padding(4)
+    $cortixButton.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $cortixButton.BackColor = [System.Drawing.Color]::FromArgb(30,30,50)
+    $cortixButton.ForeColor = $FG
+    $cortixButton.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $cortixButton.Add_Click({
+        try {
+        $cortixPath = Join-Path $PSScriptRoot 'XHTML-DependencyMapR2-CORTIX.xhtml'
+        if (Test-Path $cortixPath) {
+            Write-AppLog "Opening CORTIX dependency map: $cortixPath" "Audit"
+            Invoke-Item $cortixPath
+        } else {
+            Write-AppLog "CORTIX dependency map not found: $cortixPath" "Warning"
+            [System.Windows.Forms.MessageBox]::Show(
+                "CORTIX dependency map file not found. Expected:`n$cortixPath",
+                "CORTIX Dependency Map R2",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            ) | Out-Null
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $toolsPanel.Controls.Add($cortixButton)
 
     # ─── Status bar ──────────────────────────────────────────────────
     $sb = New-Object System.Windows.Forms.StatusStrip
@@ -6499,7 +6955,8 @@ function Invoke-LaunchModuleCheck {
         } catch { return "ERR: $_" }
     }
 
-    $btnAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnAll.Add_Click({
+        try {
         $count = 0
         foreach ($m in $missing) {
             $r = & $registerModPath $m.PSD $modsDirRef
@@ -6508,9 +6965,13 @@ function Invoke-LaunchModuleCheck {
         }
         $resRef.Text = "Registered $count module(s)"
         Write-AppLog "Module path registered: $modsDirRef" "Info"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnSel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnSel.Add_Click({
+        try {
         $count = 0
         foreach ($li in $lvRef.CheckedItems) {
             $psd = $li.SubItems[1].Text
@@ -6519,9 +6980,18 @@ function Invoke-LaunchModuleCheck {
             $count++
         }
         $resRef.Text = "Registered $count module(s)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     }.GetNewClosure())
 
-    $btnNo.Add_Click({ $dlg.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnNo.Add_Click({
+        try {
+            $dlg.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     $dlg.ShowDialog() | Out-Null
     $dlg.Dispose()
@@ -6585,7 +7055,7 @@ function New-GUI {
     )
     if (-not $PSCmdlet.ShouldProcess("Main GUI", "Create and show")) { return }
     # Assemblies already loaded at script scope
-    
+
     # Create main form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "PowerShellGUI - Scriptz Launchr"
@@ -6749,22 +7219,23 @@ function New-GUI {
             return $false
         }
     }
-    
+
     # ==================== MENU STRIP ====================
     $menuStrip = New-Object System.Windows.Forms.MenuStrip
     $form.Controls.Add($menuStrip)
-    
+
     # File Menu
     $fileMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $fileMenu.Text = "&File"
-    
+
     # Settings submenu
     $settingsMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $settingsMenu.Text = "&Settings"
-    
+
     $pathSettingsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $pathSettingsItem.Text = "&Configure Paths..."
-    $pathSettingsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $pathSettingsItem.Add_Click({
+        try {
         Write-AppLog "User selected File > Settings > Configure Paths" "Audit"
         Show-PathSettingsGUI
         # ── Cycle 3: Refresh status bar and service lights after path save ──
@@ -6775,19 +7246,26 @@ function New-GUI {
             if ($statusRightRow2) { $statusRightRow2.Text = "Remote: $rd | Scripts: $scriptsDir" }
             if ($script:_ServiceTimer) { $script:_ServiceTimer.Stop(); $script:_ServiceTimer.Interval = 100; $script:_ServiceTimer.Start() }
         } catch { Write-AppLog "[Settings] Path settings reload error: $_" 'Warning' }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $settingsMenu.DropDownItems.Add($pathSettingsItem) | Out-Null
-    
+
     $scriptFoldersItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $scriptFoldersItem.Text = "&Script Folders..."
-    $scriptFoldersItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $scriptFoldersItem.Add_Click({
+        try {
         Write-AppLog "User selected File > Settings > Script Folders" "Audit"
         Show-ScriptFolderSettingsGUI
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $settingsMenu.DropDownItems.Add($scriptFoldersItem) | Out-Null
-    
+
     $fileMenu.DropDownItems.Add($settingsMenu) | Out-Null
-    
+
     # Separator
     $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
 
@@ -6826,13 +7304,17 @@ function New-GUI {
             param($uiSender, $uiEventArgs)
             try {
                 & $Handler $uiSender $uiEventArgs
-            } catch [System.Management.Automation.PipelineStoppedException] {
-                # UI teardown or re-entrant click can stop a running event pipeline; treat as non-fatal.
-                try { Write-AppLog ("[UI-SAFE] {0}: pipeline stopped; ignored" -f $HandlerName) 'Debug' } catch { <# Intentional: non-fatal #> }
-            } catch [System.ObjectDisposedException] {
-                try { Write-AppLog ("[UI-SAFE] {0}: control/form disposed; ignored" -f $HandlerName) 'Debug' } catch { <# Intentional: non-fatal #> }
             } catch {
-                try { Write-AppLog ("[UI-SAFE] {0}: {1}" -f $HandlerName, $_.Exception.Message) 'Warning' } catch { <# Intentional: non-fatal #> }
+                # P063: bare catch required — typed catch for PipelineStoppedException is unreliable in WinForms delegates
+                if ($_ -is [System.Management.Automation.PipelineStoppedException] -or
+                    ($null -ne $_.Exception -and $_.Exception -is [System.Management.Automation.PipelineStoppedException])) {
+                    try { Write-AppLog ("[UI-SAFE] {0}: pipeline stopped; ignored" -f $HandlerName) 'Debug' } catch { <# Intentional: non-fatal #> }
+                } elseif ($_ -is [System.ObjectDisposedException] -or
+                    ($null -ne $_.Exception -and $_.Exception -is [System.ObjectDisposedException])) {
+                    try { Write-AppLog ("[UI-SAFE] {0}: control/form disposed; ignored" -f $HandlerName) 'Debug' } catch { <# Intentional: non-fatal #> }
+                } else {
+                    try { Write-AppLog ("[UI-SAFE] {0}: {1}" -f $HandlerName, $_.Exception.Message) 'Warning' } catch { <# Intentional: non-fatal #> }
+                }
             }
         }.GetNewClosure()
     }
@@ -6859,7 +7341,7 @@ function New-GUI {
                 Start-Sleep -Milliseconds 100
                 $waitCount++
             }
-        
+
         $targetForm = $form
         if (($null -eq $targetForm -or $targetForm.IsDisposed) -and (Get-Command Restore-TrayHostForm -ErrorAction SilentlyContinue)) {
             try {
@@ -6898,11 +7380,15 @@ function New-GUI {
         Write-Information '' -InformationAction Continue
         Write-Information '***GUI-is-RESTORED-from-TASKTRAY***' -InformationAction Continue
         Write-Information '' -InformationAction Continue
-        } catch [System.Management.Automation.PipelineStoppedException] {
-            # Reentrant tray click cancelled this pipeline; the surviving call will complete the restore.
-            try { Write-AppLog "[TrayHost] Restore pipeline stopped (reentrant click); ignored" "Debug" } catch { <# Intentional: non-fatal — logging is best-effort in tray handler #> }
         } catch {
-            try { Write-AppLog "[TrayHost] Restore handler unexpected error: $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal — logging is best-effort in tray handler #> }
+            # P063: bare catch required — typed catch for PipelineStoppedException is unreliable in WinForms delegates
+            if ($_ -is [System.Management.Automation.PipelineStoppedException] -or
+                ($null -ne $_.Exception -and $_.Exception -is [System.Management.Automation.PipelineStoppedException])) {
+                # Reentrant tray click cancelled this pipeline; the surviving call will complete the restore.
+                try { Write-AppLog "[TrayHost] Restore pipeline stopped (reentrant click); ignored" "Debug" } catch { <# Intentional: non-fatal — logging is best-effort in tray handler #> }
+            } else {
+                try { Write-AppLog "[TrayHost] Restore handler unexpected error: $($_.Exception.Message)" "Warning" } catch { <# Intentional: non-fatal — logging is best-effort in tray handler #> }
+            }
         } finally {
             $script:_RestoreInFlight = $false
         }
@@ -6959,7 +7445,7 @@ function New-GUI {
     # ── System Folders flyout ────────────────────────────────────
     $foldersMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $foldersMenu.Text = "System &Folders"
-    $foldersMenu.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $foldersMenu.Add_Click({
         try {
             if (@($this.DropDownItems).Count -gt 0) { $this.ShowDropDown() }
         } catch {
@@ -6979,7 +7465,13 @@ function New-GUI {
         $mi = New-Object System.Windows.Forms.ToolStripMenuItem
         $mi.Text = $kf.Name
         $mi.Tag  = $kf.Path
-        $mi.Add_Click({ Start-Process explorer.exe $this.Tag })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $mi.Add_Click({
+            try {
+                Start-Process explorer.exe $this.Tag
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $foldersMenu.DropDownItems.Add($mi) | Out-Null
     }
     $foldersMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
@@ -6987,25 +7479,49 @@ function New-GUI {
     # My Computer (This PC)
     $miPC = New-Object System.Windows.Forms.ToolStripMenuItem
     $miPC.Text = "My Computer"
-    $miPC.Add_Click({ Start-Process explorer.exe "shell:MyComputerFolder" })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miPC.Add_Click({
+        try {
+            Start-Process explorer.exe "shell:MyComputerFolder"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $foldersMenu.DropDownItems.Add($miPC) | Out-Null
 
     # Control Panel
     $miCP = New-Object System.Windows.Forms.ToolStripMenuItem
     $miCP.Text = "Control Panel"
-    $miCP.Add_Click({ Start-Process control.exe })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miCP.Add_Click({
+        try {
+            Start-Process control.exe
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $foldersMenu.DropDownItems.Add($miCP) | Out-Null
 
     # God Mode
     $miGod = New-Object System.Windows.Forms.ToolStripMenuItem
     $miGod.Text = "God Mode (All Settings)"
-    $miGod.Add_Click({ Start-Process explorer.exe "shell:::{ED7BA470-8E54-465E-825C-99712043E01C}" })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miGod.Add_Click({
+        try {
+            Start-Process explorer.exe "shell:::{ED7BA470-8E54-465E-825C-99712043E01C}"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $foldersMenu.DropDownItems.Add($miGod) | Out-Null
 
     # Network Browser
     $miNet = New-Object System.Windows.Forms.ToolStripMenuItem
     $miNet.Text = "Network Browser"
-    $miNet.Add_Click({ Start-Process explorer.exe "shell:NetworkPlacesFolder" })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $miNet.Add_Click({
+        try {
+            Start-Process explorer.exe "shell:NetworkPlacesFolder"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $foldersMenu.DropDownItems.Add($miNet) | Out-Null
 
     $foldersMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
@@ -7018,7 +7534,13 @@ function New-GUI {
             $dmi = New-Object System.Windows.Forms.ToolStripMenuItem
             $dmi.Text = $label
             $dmi.Tag  = $drv.Name
-            $dmi.Add_Click({ Start-Process explorer.exe $this.Tag })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $dmi.Add_Click({
+                try {
+                    Start-Process explorer.exe $this.Tag
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
+            })
             $foldersMenu.DropDownItems.Add($dmi) | Out-Null
         }
     } catch { Write-AppLog "[TrayHost] Drive folders menu error: $_" 'Warning' }
@@ -7028,7 +7550,7 @@ function New-GUI {
     # ── Utilities flyout ─────────────────────────────────────────
     $utilsMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $utilsMenu.Text = "&Utilities"
-    $utilsMenu.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $utilsMenu.Add_Click({
         try {
             if (@($this.DropDownItems).Count -gt 0) { $this.ShowDropDown() }
         } catch {
@@ -7050,9 +7572,13 @@ function New-GUI {
             $ui = New-Object System.Windows.Forms.ToolStripMenuItem
             $ui.Text = $ue.Name
             $ui.Tag  = if ($ue.Args) { "$exePath|$($ue.Args)" } else { "$exePath|" }
-            $ui.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $ui.Add_Click({
+                try {
                 $parts = $this.Tag -split '\|', 2
                 if ($parts[1]) { Start-Process $parts[0] $parts[1] } else { Start-Process $parts[0] }  # SIN-EXEMPT: P027 - split result guarded by if/truthy check on same line
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
             })
             $utilsMenu.DropDownItems.Add($ui) | Out-Null
         }
@@ -7086,7 +7612,13 @@ function New-GUI {
         $ai = New-Object System.Windows.Forms.ToolStripMenuItem
         $ai.Text = $at.Name
         $ai.Tag  = $atPath
-        $ai.Add_Click({ Start-Process $this.Tag })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $ai.Add_Click({
+            try {
+                Start-Process $this.Tag
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $utilsMenu.DropDownItems.Add($ai) | Out-Null
     }
 
@@ -7104,7 +7636,7 @@ function New-GUI {
             $clone = New-Object System.Windows.Forms.ToolStripMenuItem
             $clone.Text = $topItem.Text
             $clone.Tag  = $topItem
-            $clone.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $clone.Add_Click({
                 try {
                     if (@($this.DropDownItems).Count -gt 0) {
                         $this.ShowDropDown()
@@ -7129,7 +7661,7 @@ function New-GUI {
                 $cc.Text = $child.Text
                 $cc.Tag  = $child                # reference to real item
                 if ($child.HasDropDown) {
-                    $cc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                    $cc.Add_Click({
                         try {
                             if (@($this.DropDownItems).Count -gt 0) { $this.ShowDropDown() }
                         } catch {
@@ -7137,7 +7669,8 @@ function New-GUI {
                         }
                     })
                 } else {
-                    $cc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                    $cc.Add_Click({
+                        try {
                         $realItem = $this.Tag
                         if ($realItem -and $form -and -not $form.IsDisposed) {
                             # Restore form so menu handlers can interact with it
@@ -7149,6 +7682,9 @@ function New-GUI {
                             } catch {
                                 Write-AppLog "[TrayHost] Cloned menu click failed: $($_.Exception.Message)" "Warning"
                             }
+                        }
+                        } catch {
+                            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
                         }
                     })
                 }
@@ -7163,7 +7699,8 @@ function New-GUI {
                         $gc = New-Object System.Windows.Forms.ToolStripMenuItem
                         $gc.Text = $grandchild.Text
                         $gc.Tag  = $grandchild
-                        $gc.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                        $gc.Add_Click({
+                            try {
                             $realItem = $this.Tag
                             if ($realItem -and $form -and -not $form.IsDisposed) {
                                 try {
@@ -7174,6 +7711,9 @@ function New-GUI {
                                 } catch {
                                     Write-AppLog "[TrayHost] Cloned submenu click failed: $($_.Exception.Message)" "Warning"
                                 }
+                            }
+                            } catch {
+                                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
                             }
                         })
                         $cc.DropDownItems.Add($gc) | Out-Null
@@ -7220,11 +7760,12 @@ function New-GUI {
 
     # Separator
     $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-    
+
     $exitItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $exitItem.Text = "E&xit"
     $exitItem.ShortcutKeys = "Control+Q"
-    $exitItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $exitItem.Add_Click({
+        try {
         Write-AppLog "User selected File > Exit" "Audit"
         $result = [System.Windows.Forms.MessageBox]::Show(
             "Do you want to CLOSE and EXIT the application?`n`nYes = Close and Exit`nNo  = Minimize to Taskbar",
@@ -7239,9 +7780,12 @@ function New-GUI {
             Write-AppLog "User chose MINIMIZE instead of exit" "Audit"
             $form.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $fileMenu.DropDownItems.Add($exitItem) | Out-Null
-    
+
     $menuStrip.Items.Add($fileMenu) | Out-Null
 
     # Tests Menu
@@ -7250,17 +7794,25 @@ function New-GUI {
 
     $versionCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $versionCheckItem.Text = "&Version Check"
-    $versionCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $versionCheckItem.Add_Click({
+        try {
         Write-AppLog "User selected Tests > Version Check" "Audit"
         Test-VersionTag
         [System.Windows.Forms.MessageBox]::Show("Version check completed. See diff XML file if any differences.", "Version Check")
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($versionCheckItem) | Out-Null
 
     $networkDiagItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $networkDiagItem.Text = "&Network Diagnostics"
-    $networkDiagItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $networkDiagItem.Add_Click({
+        try {
         Show-NetworkDiagnosticsDialog
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($networkDiagItem) | Out-Null
 
@@ -7268,22 +7820,34 @@ function New-GUI {
 
     $diskCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $diskCheckItem.Text = "&Disk Check"
-    $diskCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $diskCheckItem.Add_Click({
+        try {
         Show-DiskCheckDialog
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($diskCheckItem) | Out-Null
 
     $privacyCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $privacyCheckItem.Text = "&Privacy Check"
-    $privacyCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $privacyCheckItem.Add_Click({
+        try {
         Show-PrivacyCheck
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($privacyCheckItem) | Out-Null
 
     $systemCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $systemCheckItem.Text = "&System Check"
-    $systemCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $systemCheckItem.Add_Click({
+        try {
         Show-SystemCheck
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($systemCheckItem) | Out-Null
 
@@ -7291,25 +7855,33 @@ function New-GUI {
 
     $appTestingItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $appTestingItem.Text = "App Testing (Docs && Comments)"
-    $appTestingItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $appTestingItem.Add_Click({
+        try {
         Write-AppLog "User selected Tests > App Testing" "Audit"
         $results = Test-AppTesting
         $count = if ($results) { $results.Count } else { 0 }
         if ($results -and $null -ne $results.Count) { $count = $results.Count }
         [System.Windows.Forms.MessageBox]::Show("App Testing completed. Findings: $count. Opening latest report...", "App Testing") | Out-Null
         if ($results.ReportPath -and (Test-Path $results.ReportPath)) { Invoke-Item $results.ReportPath }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($appTestingItem) | Out-Null
 
     $scrutinyItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $scrutinyItem.Text = "Scrutiny Safety && SecOps"
-    $scrutinyItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $scrutinyItem.Add_Click({
+        try {
         Write-AppLog "User selected Tests > Scrutiny Safety and SecOps" "Audit"
         $results = Test-ScriptSafetySecOp
         $count = if ($results) { $results.Count } else { 0 }
         if ($results -and $null -ne $results.Count) { $count = $results.Count }
         [System.Windows.Forms.MessageBox]::Show("Scrutiny scan completed. Findings: $count. Opening latest report...", "Scrutiny Safety and SecOps") | Out-Null
         if ($results.ReportPath -and (Test-Path $results.ReportPath)) { Invoke-Item $results.ReportPath }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $testsMenu.DropDownItems.Add($scrutinyItem) | Out-Null
 
@@ -7328,22 +7900,34 @@ function New-GUI {
 
     $wingetAppsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $wingetAppsItem.Text = "Installed Apps (&Grid View)"
-    $wingetAppsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $wingetAppsItem.Add_Click({
+        try {
         Show-WingetInstalledApp
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $wingetsMenu.DropDownItems.Add($wingetAppsItem) | Out-Null
 
     $wingetCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $wingetCheckItem.Text = "Detect Updates (&Check-Only)"
-    $wingetCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $wingetCheckItem.Add_Click({
+        try {
         Show-WingetUpgradeCheck
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $wingetsMenu.DropDownItems.Add($wingetCheckItem) | Out-Null
 
     $wingetUpdateAllItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $wingetUpdateAllItem.Text = "Update All (Admin Options)"
-    $wingetUpdateAllItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $wingetUpdateAllItem.Add_Click({
+        try {
         Show-WingetUpdateAllDialog
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $wingetsMenu.DropDownItems.Add($wingetUpdateAllItem) | Out-Null
 
@@ -7352,7 +7936,7 @@ function New-GUI {
 
     $bwLiteInstallItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $bwLiteInstallItem.Text = "Install-BitWarden-&LITE"
-    $bwLiteInstallItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $bwLiteInstallItem.Add_Click({
         try {
             $installerPath = Join-Path $scriptsDir 'Install-BitwardenLite.ps1'
             if (Test-Path $installerPath) {
@@ -7457,7 +8041,8 @@ function New-GUI {
 
     $appTemplateItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $appTemplateItem.Text = "App &Template Manager..."
-    $appTemplateItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $appTemplateItem.Add_Click({
+        try {
         Write-AppLog "User selected WinGets > App Template Manager" "Audit"
         $templateScript = Join-Path $scriptsDir 'Show-AppTemplateManager.ps1'
         if (Test-Path $templateScript) {
@@ -7474,18 +8059,22 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("Show-AppTemplateManager.ps1 not found in scripts.", "Missing Script",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $wingetsMenu.DropDownItems.Add($appTemplateItem) | Out-Null
 
     $menuStrip.Items.Add($wingetsMenu) | Out-Null
-    
+
     # Tools Menu
     $toolsMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $toolsMenu.Text = "&Tools"
-    
+
     $viewConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $viewConfigItem.Text = "View &Config"
-    $viewConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $viewConfigItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > View Config" "Audit"
         if (Test-Path $configFile) {
             Write-AppLog "Opening config file: $configFile" "Debug"
@@ -7495,12 +8084,16 @@ function New-GUI {
             Write-AppLog "Config file not found at: $configFile" "Warning"
             [System.Windows.Forms.MessageBox]::Show("Config file not found. Run a script first.", "Info")
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($viewConfigItem) | Out-Null
-    
+
     $configMaintenanceItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $configMaintenanceItem.Text = "&Config Maintenance..."
-    $configMaintenanceItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $configMaintenanceItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Config Maintenance" "Audit"
         $currentConfigPaths = @{
             ConfigPath = $ConfigPath
@@ -7510,31 +8103,65 @@ function New-GUI {
             DownloadFolder = $DownloadFolder
         }
         Show-ConfigMaintenanceForm -CurrentPaths $currentConfigPaths
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($configMaintenanceItem) | Out-Null
-    
+
     $openLogsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $openLogsItem.Text = "Open &Logs Directory"
-    $openLogsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $openLogsItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Open Logs Directory" "Audit"
         Write-AppLog "Opening logs directory: $logsDir" "Debug"
         Invoke-Item $logsDir
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($openLogsItem) | Out-Null
-    
+
+    $cortixItem = New-Object System.Windows.Forms.ToolStripMenuItem
+    $cortixItem.Text = "CORTIX Dependency Map &R2..."
+    $cortixItem.Add_Click({
+        try {
+        Write-AppLog "User selected Tools > CORTIX Dependency Map R2" "Audit"
+        $cortixPath = Join-Path $PSScriptRoot 'XHTML-DependencyMapR2-CORTIX.xhtml'
+        if (Test-Path $cortixPath) {
+            Invoke-Item $cortixPath
+        } else {
+            [System.Windows.Forms.MessageBox]::Show(
+                "CORTIX dependency map file not found.`nExpected: $cortixPath",
+                "CORTIX Dependency Map R2",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            ) | Out-Null
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
+    $toolsMenu.DropDownItems.Add($cortixItem) | Out-Null
+
     $toolsMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-    
+
     $layoutItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $layoutItem.Text = "Scriptz n Portz N PowerShellD (Layout)"
-    $layoutItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $layoutItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Display Layout" "Audit"
         Show-GUILayout
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($layoutItem) | Out-Null
-    
+
     $buttonMainItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $buttonMainItem.Text = "&Button Maintenance"
-    $buttonMainItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $buttonMainItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Button Maintenance" "Audit"
         [System.Windows.Forms.MessageBox]::Show(
             "Button Maintenance Tool`n`nFeature coming soon: Add/Edit/Delete custom buttons for scripts and applications.`n`nThis will allow you to manage your script launcher buttons from the GUI.",
@@ -7542,23 +8169,34 @@ function New-GUI {
             [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Information
         )
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($buttonMainItem) | Out-Null
-    
+
     $networkDetailsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $networkDetailsItem.Text = "&Network Details"
-    $networkDetailsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $networkDetailsItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Network Details (-> WinRemote PS Tool)" "Audit"
         Invoke-MenuScriptSafely -MenuLabel 'WinRemote PS Tool' `
             -RelativeCandidates @('scripts\WinRemote-PSTool.ps1') -UseNewProcess
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($networkDetailsItem) | Out-Null
-    
+
     $avpnItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $avpnItem.Text = "A&VPN Connection Tracker"
-    $avpnItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $avpnItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > AVPN Connection Tracker" "Audit"
         Show-AVPNConnectionTracker -ConfigPath $avpnConfigFile -LogCallback { param($m, $l) Write-AppLog $m $l } -Owner $form
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($avpnItem) | Out-Null
 
@@ -7571,7 +8209,8 @@ function New-GUI {
     $startEngineItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $startEngineItem.Text = "&#x25B6; Start Local Web Engine"
     $startEngineItem.Text = "Start Local Web Engine"
-    $startEngineItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $startEngineItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Script Services > Start Local Web Engine" "Audit"
         $engineScript = Join-Path $PSScriptRoot 'scripts\Start-LocalWebEngine.ps1'
         if (-not (Test-Path -LiteralPath $engineScript)) {
@@ -7586,7 +8225,7 @@ function New-GUI {
             # Trigger a quick status check after 2s
             $kickTimer = New-Object System.Windows.Forms.Timer
             $kickTimer.Interval = 2000
-            $kickTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $kickTimer.Add_Tick({
                 $kickTimer.Stop()
                 try {
                     $req = [System.Net.HttpWebRequest]::Create('http://127.0.0.1:8042/api/engine/status')
@@ -7604,12 +8243,16 @@ function New-GUI {
             Write-AppLog "Failed to start LocalWebEngine: $_" "Error"
             [System.Windows.Forms.MessageBox]::Show("Failed to start engine:`n$_","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $servicesMenu.DropDownItems.Add($startEngineItem) | Out-Null
 
     $stopEngineItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $stopEngineItem.Text = "Stop Local Web Engine"
-    $stopEngineItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $stopEngineItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Script Services > Stop Local Web Engine" "Audit"
         try {
             $tokenResponse = Invoke-RestMethod -Uri 'http://127.0.0.1:8042/api/csrf-token' -Method Get -TimeoutSec 3 -ErrorAction Stop
@@ -7623,6 +8266,9 @@ function New-GUI {
         } catch {
             Write-AppLog "Failed to stop engine: $_" "Error"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $servicesMenu.DropDownItems.Add($stopEngineItem) | Out-Null
 
@@ -7630,23 +8276,31 @@ function New-GUI {
 
     $openHubItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $openHubItem.Text = "Open &Workspace Hub"
-    $openHubItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $openHubItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Script Services > Open Workspace Hub" "Audit"
         try {
             Start-Process 'http://127.0.0.1:8042/'
         } catch {
             Write-AppLog "Failed to open hub browser: $_" "Warning"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $servicesMenu.DropDownItems.Add($openHubItem) | Out-Null
 
     $openMcpConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $openMcpConfigItem.Text = "MCP Service &Config"
-    $openMcpConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $openMcpConfigItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Script Services > MCP Service Config" "Audit"
         $mcpHref = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MCPServiceConfig.xhtml'
         if (Test-Path -LiteralPath $mcpHref) { Start-Process $mcpHref } else {
             [System.Windows.Forms.MessageBox]::Show("MCP config page not found:`n$mcpHref","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning)
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $servicesMenu.DropDownItems.Add($openMcpConfigItem) | Out-Null
@@ -7657,7 +8311,8 @@ function New-GUI {
 
     $depMatrixItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $depMatrixItem.Text = "Script &Dependency Matrix"
-    $depMatrixItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $depMatrixItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Script Dependency Matrix" "Audit"
 
         $matrixScript = Join-Path $PSScriptRoot 'scripts\Invoke-ScriptDependencyMatrix.ps1'
@@ -7735,7 +8390,6 @@ function New-GUI {
         $closeBtn2 = New-Object System.Windows.Forms.Button
         $closeBtn2.Text = 'Close'
         $closeBtn2.Width = 90
-        $closeBtn2.Add_Click({ $dlg.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $btnPanel.Controls.Add($closeBtn2)
 
         $openVizBtn = New-Object System.Windows.Forms.Button
@@ -7757,7 +8411,7 @@ function New-GUI {
 
         $dlg.Controls.Add($btnPanel)
 
-        $generateBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $generateBtn.Add_Click({
             $resultsBox.Clear()
             $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
             & $setProgressUi 10
@@ -7800,14 +8454,14 @@ function New-GUI {
             }
         })
 
-        $openVizBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $openVizBtn.Add_Click({
             if ($openVizBtn.Tag -and (Test-Path $openVizBtn.Tag)) {
                 Write-AppLog "Opening dependency visualisation: $($openVizBtn.Tag)" "Audit"
                 Start-Process $openVizBtn.Tag
             }
         })
 
-        $openReportBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $openReportBtn.Add_Click({
             if ($openReportBtn.Tag -and (Test-Path $openReportBtn.Tag)) {
                 Write-AppLog "Opening dependency report: $($openReportBtn.Tag)" "Audit"
                 Invoke-Item $openReportBtn.Tag
@@ -7818,7 +8472,7 @@ function New-GUI {
         $modCheckBtn = New-Object System.Windows.Forms.Button
         $modCheckBtn.Text = 'Module Check \u21E8'
         $modCheckBtn.Width = 120
-        $modCheckBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $modCheckBtn.Add_Click({
             Write-AppLog "Cross-launch: Script Matrix -> Module Dependency Check" "Audit"
             $dlg.Close()
             $moduleCheckItem.PerformClick()
@@ -7827,12 +8481,16 @@ function New-GUI {
 
         $dlg.ShowDialog($form) | Out-Null
         $dlg.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($depMatrixItem) | Out-Null
 
     $moduleCheckItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $moduleCheckItem.Text = "Module &Management"
-    $moduleCheckItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $moduleCheckItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Module Management" "Audit"
 
         $moduleScript = Join-Path $PSScriptRoot 'scripts\Invoke-ModuleManagement.ps1'
@@ -7911,7 +8569,6 @@ function New-GUI {
         $closeBtn = New-Object System.Windows.Forms.Button
         $closeBtn.Text = 'Close'
         $closeBtn.Width = 90
-        $closeBtn.Add_Click({ $dlg.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         $buttonPanel.Controls.Add($closeBtn)
 
         $installBtn = New-Object System.Windows.Forms.Button
@@ -7986,9 +8643,8 @@ function New-GUI {
             }
         }
 
-        $refreshBtn.Add_Click({ & $runModMgmt @{} })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
-        $installBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $installBtn.Add_Click({
             $confirm = [System.Windows.Forms.MessageBox]::Show(
                 "Install missing public modules (CurrentUser scope)?`n`nThis will try LOCAL first, then PSGallery as a fallback.",
                 "Confirm Install",
@@ -8001,19 +8657,19 @@ function New-GUI {
             }
         })
 
-        $workspaceBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $workspaceBtn.Add_Click({
             Write-AppLog "User selected Use Workspace Modules" "Audit"
             & $runModMgmt @{ AutoInstallMissing = $true; UseWorkspaceModules = $true }
         })
 
-        $exportInstallerBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $exportInstallerBtn.Add_Click({
             Write-AppLog "User selected Export Installer" "Audit"
             $statusLabel.Text = 'Generating installer script...'
             $dlg.Refresh()
             & $runModMgmt @{ ExportInstaller = $true }
         })
 
-        $exportInventoryBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $exportInventoryBtn.Add_Click({
             Write-AppLog "User selected Export Inventory" "Audit"
             $statusLabel.Text = 'Exporting module inventory...'
             $dlg.Refresh()
@@ -8021,20 +8677,26 @@ function New-GUI {
         })
 
         # initial scan on dialog open
-        $dlg.Add_Shown({ & $runModMgmt @{} })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 
         $dlg.ShowDialog($form) | Out-Null
         $dlg.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($moduleCheckItem) | Out-Null
 
     $envScannerItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $envScannerItem.Text = "PS &Environment Scanner"
-    $envScannerItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $envScannerItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > PS Environment Scanner" "Audit"
         [void](Invoke-MenuScriptSafely -MenuLabel 'Environment Scanner' -RelativeCandidates @(
             'scripts\Invoke-PSEnvironmentScanner.ps1'
         ) -ScriptArguments @{ AutoScan = $true })
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($envScannerItem) | Out-Null
 
@@ -8042,22 +8704,30 @@ function New-GUI {
 
     $upmItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $upmItem.Text = "&User Profile Manager"
-    $upmItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $upmItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > User Profile Manager" "Audit"
         [void](Invoke-MenuScriptSafely -MenuLabel 'User Profile Manager' -RelativeCandidates @(
             'UPM\UserProfile-Manager.ps1',
             'scripts\UserProfile-Manager.ps1'
         ) -UseNewProcess)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($upmItem) | Out-Null
 
     $eventLogItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $eventLogItem.Text = "Event Log &Viewer"
-    $eventLogItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $eventLogItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Event Log Viewer" "Audit"
         Invoke-MenuScriptSafely -MenuLabel 'Event Log Viewer' -RelativeCandidates @(
             'scripts\Show-EventLogViewer.ps1'
         )
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($eventLogItem) | Out-Null
 
@@ -8108,7 +8778,8 @@ function New-GUI {
     $scanDashItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $scanDashItem.Text = if ($script:UseLegacyScanDashboard) { "Scan &Dashboard (Legacy)..." } else { "Scan &Dashboard (Scanner)..." }
 
-    $scanDashModeItem.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $scanDashModeItem.Add_CheckedChanged({
+        try {
         $script:UseLegacyScanDashboard = [bool]$this.Checked
         if ($null -ne $scanDashItem) {
             if ($script:UseLegacyScanDashboard) {
@@ -8127,9 +8798,13 @@ function New-GUI {
         } catch {
             Write-AppLog "Failed to persist Scan Dashboard mode: $($_.Exception.Message)" "Warning"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $scanDashItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $scanDashItem.Add_Click({
+        try {
         if ($script:UseLegacyScanDashboard) {
             Write-AppLog "User selected Tools > Scan Dashboard (legacy mode)" "Audit"
             $dashScript = Join-Path $scriptsDir 'Show-ScanDashboard.ps1'
@@ -8154,6 +8829,9 @@ function New-GUI {
         [void](Invoke-MenuScriptSafely -MenuLabel 'Scan Dashboard (Scanner)' -RelativeCandidates @(
             'scripts\Invoke-PSEnvironmentScanner.ps1'
         ) -ScriptArguments @{ AutoScan = $true })
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($scanDashModeItem) | Out-Null
     $toolsMenu.DropDownItems.Add($scanDashItem) | Out-Null
@@ -8161,10 +8839,14 @@ function New-GUI {
     # ── WinRemote PS Tool ──────────────────────────────────────────────────
     $winRemoteItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $winRemoteItem.Text = "Win&Remote PS Tool"
-    $winRemoteItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $winRemoteItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > WinRemote PS Tool" "Audit"
         Invoke-MenuScriptSafely -MenuLabel 'WinRemote PS Tool' `
             -RelativeCandidates @('scripts\WinRemote-PSTool.ps1') -UseNewProcess
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($winRemoteItem) | Out-Null
 
@@ -8173,7 +8855,8 @@ function New-GUI {
     # ── Cron-Ai-Athon Tool ─────────────────────────────────────────────────
     $cronAiAthonItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $cronAiAthonItem.Text = "Cron-Ai-Athon &Tool"
-    $cronAiAthonItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cronAiAthonItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Cron-Ai-Athon Tool" "Audit"
         $cronScript = Join-Path $PSScriptRoot 'scripts\Show-CronAiAthonTool.ps1'
         if (Test-Path $cronScript) {
@@ -8190,6 +8873,9 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("Show-CronAiAthonTool.ps1 not found in scripts.", "Missing Script",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($cronAiAthonItem) | Out-Null
 
@@ -8198,7 +8884,8 @@ function New-GUI {
     # ── MCP Service Config ─────────────────────────────────────────────────
     $mcpConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $mcpConfigItem.Text = "&MCP Service Config"
-    $mcpConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $mcpConfigItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > MCP Service Config" "Audit"
         $mcpScript = Join-Path $PSScriptRoot 'scripts\Show-MCPServiceConfig.ps1'
         if (Test-Path $mcpScript) {
@@ -8215,6 +8902,9 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("Show-MCPServiceConfig.ps1 not found in scripts.", "Missing Script",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($mcpConfigItem) | Out-Null
 
@@ -8223,7 +8913,8 @@ function New-GUI {
     # ── Interactive Sandbox Test Tool ──────────────────────────────────────
     $sandboxTestItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $sandboxTestItem.Text = "Interactive &Sandbox Test"
-    $sandboxTestItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $sandboxTestItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Interactive Sandbox Test" "Audit"
         $sandboxScript = Join-Path $PSScriptRoot 'scripts\Show-SandboxTestTool.ps1'
         if (Test-Path $sandboxScript) {
@@ -8240,6 +8931,9 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("Show-SandboxTestTool.ps1 not found in scripts.", "Missing Script",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($sandboxTestItem) | Out-Null
 
@@ -8251,37 +8945,53 @@ function New-GUI {
 
     $xhtmlCodeAnalysisItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $xhtmlCodeAnalysisItem.Text = "Code &Analysis"
-    $xhtmlCodeAnalysisItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $xhtmlCodeAnalysisItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > XHTML Reports > Code Analysis" "Audit"
         $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-code-analysis.xhtml'
         [void](Open-MenuPathSafely -MenuLabel 'XHTML Code Analysis' -PathToOpen $xhtmlPath)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $xhtmlSubMenu.DropDownItems.Add($xhtmlCodeAnalysisItem) | Out-Null
 
     $xhtmlFeatureReqItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $xhtmlFeatureReqItem.Text = "&Feature Requests"
-    $xhtmlFeatureReqItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $xhtmlFeatureReqItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > XHTML Reports > Feature Requests" "Audit"
         $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-FeatureRequests.xhtml'
         [void](Open-MenuPathSafely -MenuLabel 'XHTML Feature Requests' -PathToOpen $xhtmlPath)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $xhtmlSubMenu.DropDownItems.Add($xhtmlFeatureReqItem) | Out-Null
 
     $xhtmlMCPConfigItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $xhtmlMCPConfigItem.Text = "MCP Service &Config"
-    $xhtmlMCPConfigItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $xhtmlMCPConfigItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > XHTML Reports > MCP Service Config" "Audit"
         $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MCPServiceConfig.xhtml'
         [void](Open-MenuPathSafely -MenuLabel 'XHTML MCP Service Config' -PathToOpen $xhtmlPath)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $xhtmlSubMenu.DropDownItems.Add($xhtmlMCPConfigItem) | Out-Null
 
     $xhtmlMasterToDoItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $xhtmlMasterToDoItem.Text = "Central Master &To-Do"
-    $xhtmlMasterToDoItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $xhtmlMasterToDoItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > XHTML Reports > Central Master To-Do" "Audit"
         $xhtmlPath = Join-Path $PSScriptRoot 'scripts\XHTML-Checker\XHTML-MasterToDo.xhtml'
         [void](Open-MenuPathSafely -MenuLabel 'Central Master To-Do' -PathToOpen $xhtmlPath)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $xhtmlSubMenu.DropDownItems.Add($xhtmlMasterToDoItem) | Out-Null
 
@@ -8289,22 +8999,30 @@ function New-GUI {
 
     # ── Startup Shortcut ──
     $startupShortcutItem = New-Object System.Windows.Forms.ToolStripMenuItem("Create Startup Shortcut...")
-    $startupShortcutItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $startupShortcutItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Create Startup Shortcut" "Audit"
         Show-StartupShortcutForm -Owner $form
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($startupShortcutItem) | Out-Null
 
     # ── Remote Build Config ──
     $remoteBuildItem = New-Object System.Windows.Forms.ToolStripMenuItem("Remote Build Path Config...")
-    $remoteBuildItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $remoteBuildItem.Add_Click({
+        try {
         Write-AppLog "User selected Tools > Remote Build Path Config" "Audit"
         Show-RemoteBuildConfigForm -Owner $form
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $toolsMenu.DropDownItems.Add($remoteBuildItem) | Out-Null
 
     $menuStrip.Items.Add($toolsMenu) | Out-Null
-    
+
     # ==================== SECURITY MENU ====================
     Write-AppLog "[Build-Checkpoint] Building Security menu..." "Debug"
     # Helper: Check if running as admin
@@ -8665,7 +9383,8 @@ function New-GUI {
         if ($grid.Columns['Detail']) { $grid.Columns['Detail'].AutoSizeMode = 'Fill' }
         if ($grid.Columns['RunAsProfile']) { $grid.Columns['RunAsProfile'].AutoSizeMode = 'Fill' }
 
-        $grid.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $grid.Add_CellFormatting({
+            try {
             param($gridSender, $e)
             if ($e.RowIndex -lt 0) { return }
             $row = $gridSender.Rows[$e.RowIndex]
@@ -8677,6 +9396,9 @@ function New-GUI {
                 '✗' { $row.DefaultCellStyle.ForeColor = [System.Drawing.Color]::OrangeRed }
             }
             $row.Cells['State'].ToolTipText = [string]$row.Cells['Guidance'].Value
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
 
         $dlg.Controls.Add($grid)
@@ -8690,7 +9412,7 @@ function New-GUI {
 
     $securityChecklistItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $securityChecklistItem.Text = "Security &Checklist..."
-    $securityChecklistItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $securityChecklistItem.Add_Click({
         try {
             Show-SecurityChecklistForm
         } catch {
@@ -8704,7 +9426,7 @@ function New-GUI {
     # Assisted SASC Wizard
     $sascWizardItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $sascWizardItem.Text = "Assisted SASC &Wizard..."
-    $sascWizardItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $sascWizardItem.Add_Click({
         try {
             if ($script:_SASCAvailable -and (Get-Command Show-AssistedSASCDialog -ErrorAction SilentlyContinue)) {
                 Show-AssistedSASCDialog
@@ -8722,12 +9444,21 @@ function New-GUI {
     # Vault Status
     $vaultStatusItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $vaultStatusItem.Text = "Vault &Status..."
-    $vaultStatusItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultStatusItem.Add_Click({
         try {
+            if (-not (Get-Command Show-VaultStatusDialog -ErrorAction SilentlyContinue)) {
+                [void](Test-SASCModuleReady -Quiet)
+            }
+
             if (Get-Command Show-VaultStatusDialog -ErrorAction SilentlyContinue) {
                 Show-VaultStatusDialog
             } else {
-                [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
+                $detail = if ([string]::IsNullOrWhiteSpace($script:_SASCLastLoadAttempt)) {
+                    'No additional diagnostics available.'
+                } else {
+                    $script:_SASCLastLoadAttempt
+                }
+                [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.`n$detail", "Unavailable",
                     [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
             }
         } catch {
@@ -8742,7 +9473,7 @@ function New-GUI {
     # Unlock Vault
     $unlockVaultItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $unlockVaultItem.Text = "&Unlock Vault..."
-    $unlockVaultItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $unlockVaultItem.Add_Click({
         try {
             if (Get-Command Show-VaultUnlockDialog -ErrorAction SilentlyContinue) {
                 $result = Show-VaultUnlockDialog
@@ -8765,7 +9496,7 @@ function New-GUI {
     # Lock Vault
     $lockVaultItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $lockVaultItem.Text = "&Lock Vault"
-    $lockVaultItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $lockVaultItem.Add_Click({
         try {
             if (Get-Command Lock-Vault -ErrorAction SilentlyContinue) {
                 Lock-Vault
@@ -8793,7 +9524,8 @@ function New-GUI {
     }
 
     # Enable/disable flyout items dynamically when the menu opens
-    $securityMenu.Add_DropDownOpening({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $securityMenu.Add_DropDownOpening({
+        try {
         $isUnlocked = & $testVaultUnlocked
         $vaultOpsItem.Enabled = $isUnlocked
         if ($isUnlocked) {
@@ -8801,12 +9533,15 @@ function New-GUI {
         } else {
             $vaultOpsItem.Text = "Vault &Operations  [Locked]"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # --- Save Secret ---
     $saveSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $saveSecretItem.Text = "&Save Secret..."
-    $saveSecretItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveSecretItem.Add_Click({
         try {
             $dlg = New-Object System.Windows.Forms.Form
             $dlg.Text = 'Save Secret to Vault'
@@ -8866,7 +9601,7 @@ function New-GUI {
     # --- Retrieve Secret ---
     $retrieveSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $retrieveSecretItem.Text = "&Retrieve Secret..."
-    $retrieveSecretItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $retrieveSecretItem.Add_Click({
         try {
             $inputDlg = New-Object System.Windows.Forms.Form
             $inputDlg.Text = 'Retrieve Secret'
@@ -8916,9 +9651,13 @@ function New-GUI {
                 # Clear clipboard after 30 seconds
                 $clipTimer = New-Object System.Windows.Forms.Timer
                 $clipTimer.Interval = 30000
-                $clipTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                $clipTimer.Add_Tick({
+                    try {
                     [System.Windows.Forms.Clipboard]::Clear()
                     $this.Stop(); $this.Dispose()
+                    } catch {
+                        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                    }
                 })
                 $clipTimer.Start()
             }
@@ -8933,7 +9672,7 @@ function New-GUI {
     # --- Create New Secret ---
     $createSecretItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $createSecretItem.Text = "&Create New Secret..."
-    $createSecretItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $createSecretItem.Add_Click({
         try {
             $dlg = New-Object System.Windows.Forms.Form
             $dlg.Text = 'Create New Vault Secret'
@@ -8958,7 +9697,8 @@ function New-GUI {
             $btnRand = New-Object System.Windows.Forms.Button
             $btnRand.Text = 'Generate Random (15 char)'
             $btnRand.Location = New-Object System.Drawing.Point(100, $y); $btnRand.Size = New-Object System.Drawing.Size(200, 26)
-            $btnRand.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $btnRand.Add_Click({
+                try {
                 $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@#$%^&*_-+='
                 $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
                 $bytes = [byte[]]::new(15)
@@ -8967,6 +9707,9 @@ function New-GUI {
                 $rng.Dispose()
                 $dlg.Controls['txtPass'].UseSystemPasswordChar = $false
                 $dlg.Controls['txtPass'].Text = $pw
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
             })
             $dlg.Controls.Add($btnRand)
             $y += 34
@@ -9011,7 +9754,7 @@ function New-GUI {
     # --- Propose Secure Random 15-char Password ---
     $randomPwItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $randomPwItem.Text = "&Propose Random Password (15 char)"
-    $randomPwItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $randomPwItem.Add_Click({
         try {
             $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@#$%^&*_-+='
             $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
@@ -9023,7 +9766,13 @@ function New-GUI {
             # Auto-clear clipboard after 30 seconds
             $clipTimer = New-Object System.Windows.Forms.Timer
             $clipTimer.Interval = 30000
-            $clipTimer.Add_Tick({ [System.Windows.Forms.Clipboard]::Clear(); $this.Stop(); $this.Dispose() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $clipTimer.Add_Tick({
+                try {
+                    [System.Windows.Forms.Clipboard]::Clear(); $this.Stop(); $this.Dispose()
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
+            })
             $clipTimer.Start()
             [System.Windows.Forms.MessageBox]::Show(
                 "Generated password:`n`n$pw`n`nCopied to clipboard (auto-clears in 30 seconds).",
@@ -9041,7 +9790,7 @@ function New-GUI {
     $bwServeItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $bwServeItem.Text = "BW-CLI &Server..."
     $bwServeItem.ToolTipText = "Launch Bitwarden CLI HTTP API service in an independent shell"
-    $bwServeItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $bwServeItem.Add_Click({
         try {
             [void](Invoke-MenuScriptSafely -MenuLabel 'BW-CLI Server' `
                 -RelativeCandidates @('scripts\Start-BWServe.ps1') `
@@ -9061,7 +9810,8 @@ function New-GUI {
     # Import Secrets
     $importSecretsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $importSecretsItem.Text = "Import &Secrets..."
-    $importSecretsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $importSecretsItem.Add_Click({
+        try {
         if (-not (Request-ElevationConfirmation 'Import Secrets')) { return }
         if (Get-Command Import-VaultSecrets -ErrorAction SilentlyContinue) {
             # --- Format picker dialog ---
@@ -9123,13 +9873,17 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($importSecretsItem) | Out-Null
 
     # Import Certificates
     $importCertsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $importCertsItem.Text = "Import &Certificates..."
-    $importCertsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $importCertsItem.Add_Click({
+        try {
         if (-not (Request-ElevationConfirmation 'Import Certificates')) { return }
         if (Get-Command Import-Certificates -ErrorAction SilentlyContinue) {
             $ofd = New-Object System.Windows.Forms.OpenFileDialog
@@ -9149,6 +9903,9 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($importCertsItem) | Out-Null
 
@@ -9158,7 +9915,8 @@ function New-GUI {
     # Vault Security Audit
     $secAuditItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $secAuditItem.Text = "Vault Security &Audit..."
-    $secAuditItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $secAuditItem.Add_Click({
+        try {
         if (-not (Request-ElevationConfirmation 'Vault Security Audit')) { return }
         if (Get-Command Test-VaultSecurity -ErrorAction SilentlyContinue) {
             try {
@@ -9177,13 +9935,17 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($secAuditItem) | Out-Null
 
     # Integrity Verification
     $integrityItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $integrityItem.Text = "&Integrity Verification..."
-    $integrityItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $integrityItem.Add_Click({
+        try {
         if (Get-Command Test-IntegrityManifest -ErrorAction SilentlyContinue) {
             try {
                 $intResult = Test-IntegrityManifest
@@ -9210,6 +9972,9 @@ function New-GUI {
                 Write-AppLog "Integrity check error: $($_.Exception.Message)" "Error"
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($integrityItem) | Out-Null
 
@@ -9219,7 +9984,8 @@ function New-GUI {
     # LAN Sharing Settings
     $lanSharingItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $lanSharingItem.Text = "LA&N Vault Sharing..."
-    $lanSharingItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $lanSharingItem.Add_Click({
+        try {
         if (Get-Command Get-VaultLANStatus -ErrorAction SilentlyContinue) {
             try {
                 $lanStatus = Get-VaultLANStatus
@@ -9242,6 +10008,9 @@ function New-GUI {
                 Write-SecurityErrorAdvice -Operation 'LAN Vault Sharing' -ExceptionObject $_.Exception
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($lanSharingItem) | Out-Null
     Write-AppLog "[Build-Checkpoint] Security menu: LAN sharing item added (end of major Security block)" "Debug"
@@ -9249,7 +10018,8 @@ function New-GUI {
     # Windows Hello Integration
     $helloItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $helloItem.Text = "Windows &Hello Setup..."
-    $helloItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $helloItem.Add_Click({
+        try {
         if (-not (Request-ElevationConfirmation 'Windows Hello Setup')) { return }
         if (Get-Command Enable-WindowsHello -ErrorAction SilentlyContinue) {
             try {
@@ -9264,6 +10034,9 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($helloItem) | Out-Null
 
@@ -9273,7 +10046,7 @@ function New-GUI {
     # Invoke Secrets (XHTML page)
     $invokeSecretsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $invokeSecretsItem.Text = "Invoke Secrets &Page..."
-    $invokeSecretsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $invokeSecretsItem.Add_Click({
         try {
             if (Get-Command Show-SecretsInvokerForm -ErrorAction SilentlyContinue) {
                 Show-SecretsInvokerForm
@@ -9296,7 +10069,8 @@ function New-GUI {
     # Export Vault Backup
     $exportBackupItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $exportBackupItem.Text = "Export Vault &Backup..."
-    $exportBackupItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $exportBackupItem.Add_Click({
+        try {
         if (-not (Request-ElevationConfirmation 'Export Vault Backup')) { return }
         if (Get-Command Export-VaultBackup -ErrorAction SilentlyContinue) {
             $sfd = New-Object System.Windows.Forms.SaveFileDialog
@@ -9317,46 +10091,62 @@ function New-GUI {
             [System.Windows.Forms.MessageBox]::Show("SASC module not loaded.", "Unavailable",
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $securityMenu.DropDownItems.Add($exportBackupItem) | Out-Null
 
     $menuStrip.Items.Add($securityMenu) | Out-Null
     Write-AppLog "[Build-Checkpoint] Security menu attached to MenuStrip; building Help menu..." "Debug"
-    
+
     # Help Menu
     $helpMenu = New-Object System.Windows.Forms.ToolStripMenuItem
     $helpMenu.Text = "&Help"
-    
+
     $updateHelpItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $updateHelpItem.Text = "Update-&Help"
-    $updateHelpItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $updateHelpItem.Add_Click({
+        try {
         Show-UpdateHelp
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($updateHelpItem) | Out-Null
-    
+
     $helpIndexItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $helpIndexItem.Text = "PwShGUI App &Help (Webpage Index)"
-    $helpIndexItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $helpIndexItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > PwShGUI App Help" "Audit"
         $helpFile = Get-ProjectPath HelpIndex
         [void](Open-MenuPathSafely -MenuLabel 'PwShGUI Help Index' -PathToOpen $helpFile)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($helpIndexItem) | Out-Null
-    
+
     $packageItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $packageItem.Text = "&Package Workspace"
-    $packageItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $packageItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > Package Workspace" "Audit"
         Export-WorkspacePackage
         [System.Windows.Forms.MessageBox]::Show("Workspace packaged.","Package","OK",[System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($packageItem) | Out-Null
-    
+
     $helpMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
 
     $depVizHelpItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $depVizHelpItem.Text = "Dependency &Visualisation"
-    $depVizHelpItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $depVizHelpItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > Dependency Visualisation" "Audit"
         # Prefer canonical README location, then latest history snapshot,
         # then legacy checker path for backward compatibility.
@@ -9382,12 +10172,16 @@ function New-GUI {
                 }
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($depVizHelpItem) | Out-Null
 
     $cheatSheetItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $cheatSheetItem.Text = "PS-&Cheatsheet V2"
-    $cheatSheetItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cheatSheetItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > PS-Cheatsheet V2" "Audit"
         $cheatFile = Join-Path $PSScriptRoot 'scripts\PS-CheatSheet-EXAMPLES-V2.ps1'
         if (Test-Path $cheatFile) {
@@ -9416,6 +10210,9 @@ function New-GUI {
                 [System.Windows.Forms.MessageBoxIcon]::Warning
             )
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($cheatSheetItem) | Out-Null
 
@@ -9423,9 +10220,13 @@ function New-GUI {
 
     $mrsItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $mrsItem.Text = "&Manifests, Registries && SINs"
-    $mrsItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $mrsItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > Manifests, Registries & SINs" "Audit"
         Show-ManifestsRegistrySinsViewer
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($mrsItem) | Out-Null
 
@@ -9434,28 +10235,40 @@ function New-GUI {
     $aboutItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $aboutItem.Text = "🔷  &About"
     $aboutItem.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
-    $aboutItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $aboutItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > About" "Audit"
         Show-ModernAboutScreen
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($aboutItem) | Out-Null
 
     $aboutSysItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $aboutSysItem.Text = "🖥  About - System"
-    $aboutSysItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $aboutSysItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > About - System" "Audit"
         Show-AboutSystemDialog
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($aboutSysItem) | Out-Null
 
     $aboutAppItem = New-Object System.Windows.Forms.ToolStripMenuItem
     $aboutAppItem.Text = "📊  About - App"
-    $aboutAppItem.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $aboutAppItem.Add_Click({
+        try {
         Write-AppLog "User selected Help > About - App" "Audit"
         Show-AboutAppDialog
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $helpMenu.DropDownItems.Add($aboutAppItem) | Out-Null
-    
+
     $menuStrip.Items.Add($helpMenu) | Out-Null
     Write-AppLog "[Build-Checkpoint] Help menu attached; applying modern menu style..." "Debug"
 
@@ -9464,7 +10277,7 @@ function New-GUI {
         Set-ModernMenuStyle -MenuStrip $menuStrip
     }
     Write-AppLog "[Build-Checkpoint] MenuStrip styled; advancing to Title label..." "Debug"
-    
+
     # ==================== TITLE LABEL ====================
     Write-AppLog "[Build-Checkpoint] Building title label, progress bar, buttons..." "Debug"
     $titleLabel = New-Object System.Windows.Forms.Label
@@ -9477,7 +10290,7 @@ function New-GUI {
         $titleLabel.ForeColor = Get-ThemeValue 'HeadingFore'
     }
     $form.Controls.Add($titleLabel)
-    
+
     # ==================== RAINBOW PROGRESS BAR & SPINNER ====================
     $script:_ProgressBar = $null
     $script:_Spinner = $null
@@ -9498,48 +10311,52 @@ function New-GUI {
     $buttonConfig = Get-ButtonConfiguration
     $buttonNames = $buttonConfig.Left
     $rightButtonNames = $buttonConfig.Right
-    
+
     $buttonHeight = 50
     $buttonWidth = 260
     $spacing = 10
     $column1X = 30
     $column2X = 310
     $startY = 90
-    
+
     # Add left column buttons (6 buttons, 3 per column)
     for ($i = 0; $i -lt $buttonNames.Count; $i++) {
         $button = New-Object System.Windows.Forms.Button
         $button.Text = $buttonNames[$i].DisplayName  # SIN-EXEMPT:P027 -- index access, context-verified safe
         $button.Size = New-Object System.Drawing.Size([int]$buttonWidth, [int]$buttonHeight)
         $button.Tag = $buttonNames[$i].ScriptName  # SIN-EXEMPT:P027 -- index access, context-verified safe
-        
+
         # Calculate position (left column - 3 buttons)
         $yPos = [int]($startY + ($i * ($buttonHeight + $spacing)))
         $button.Location = New-Object System.Drawing.Point([int]$column1X, $yPos)
-        
+
         if (Get-Command Set-ModernButtonStyle -ErrorAction SilentlyContinue) {
             Set-ModernButtonStyle -Button $button
         } else {
             $button.Font = New-Object System.Drawing.Font("Segoe UI", 10)
             $button.Cursor = [System.Windows.Forms.Cursors]::Hand
         }
-        
+
         # Create click handler
-        $button.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $button.Add_Click({
+            try {
             $scriptName = $this.Tag
             $displayName = $this.Text
-            
+
             Write-AppLog "Button clicked: $displayName ($scriptName)" "Audit"
             Write-ScriptLog "Button clicked for execution" $scriptName "Audit"
-            
+
             # Get elevation preference with safety badge
             $scriptPath = Join-Path $scriptsDir "$scriptName.ps1"
             $shouldElevate = Show-ElevationPrompt -ScriptName $scriptName -ScriptPath $scriptPath
-            
+
             # Invoke the script
             Invoke-ScriptWithElevation -ScriptName $scriptName -RunAsAdmin $shouldElevate
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
-        
+
         $form.Controls.Add($button)
     }
 
@@ -9560,25 +10377,29 @@ function New-GUI {
             $rightButton.Font = New-Object System.Drawing.Font("Segoe UI", 10)
             $rightButton.Cursor = [System.Windows.Forms.Cursors]::Hand
         }
-        
+
         # Create click handler for PWSH Quick App
-        $rightButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $rightButton.Add_Click({
+            try {
             $scriptName = $this.Tag
             $displayName = $this.Text
-            
+
             Write-AppLog "Button clicked: $displayName ($scriptName)" "Audit"
-            
+
             # Get elevation preference with safety badge
             $scriptPath = Join-Path $scriptsDir "$scriptName.ps1"
             $shouldElevate = Show-ElevationPrompt -ScriptName $scriptName -ScriptPath $scriptPath
-            
+
             # Invoke the script
             Invoke-ScriptWithElevation -ScriptName $scriptName -RunAsAdmin $shouldElevate
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
 
         $form.Controls.Add($rightButton)
     }
-    
+
     # ==================== MODERN DOCKED FOOTER (technical layout) ====================
     Write-AppLog "[Build-Checkpoint] Building docked footer: service lights, status bar, vault, engine indicators..." "Debug"
     if ($script:_SuppressFromFooterCheckpoint) {
@@ -9631,14 +10452,23 @@ function New-GUI {
         [void]$script:_FooterGrid.RowStyles.Add((New-Object System.Windows.Forms.RowStyle ([System.Windows.Forms.SizeType]::Absolute, 24)))
     }
     $script:_FooterDock.Controls.Add($script:_FooterGrid)
+    $footerGridRef = $script:_FooterGrid
 
     # Helper: standardise label placement inside the footer grid
     $script:_FooterAddCell = {
         param($lbl, $col, $row)
+        if ($null -eq $lbl) {
+            Write-AppLog "[Footer] Null label encountered for cell [$col,$row]; skipping render" "Warning"
+            return
+        }
+        if (($null -eq $footerGridRef) -or ($null -eq $footerGridRef.Controls)) {
+            Write-AppLog "[Footer] Footer grid unavailable for cell [$col,$row]; skipping render" "Warning"
+            return
+        }
         $lbl.Dock = [System.Windows.Forms.DockStyle]::Fill
         $lbl.Margin = New-Object System.Windows.Forms.Padding(0)
         $lbl.AutoSize = $false
-        $script:_FooterGrid.Controls.Add($lbl, $col, $row)
+        $footerGridRef.Controls.Add($lbl, $col, $row)
     }.GetNewClosure()
 
     $serviceToolTip = New-Object System.Windows.Forms.ToolTip
@@ -9778,7 +10608,7 @@ function New-GUI {
     # ── Service status refresh timer (every 10s) ──
     $script:_ServiceTimer = New-Object System.Windows.Forms.Timer
     $script:_ServiceTimer.Interval = 10000
-    $script:_ServiceTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_ServiceTimer.Add_Tick({
         try {
             # Null-guard: child-script StrictMode can make $script: vars inaccessible (P022)
             $timer = $script:_ServiceTimer
@@ -9789,7 +10619,8 @@ function New-GUI {
             if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
 
             # Vault status
-            if ($script:_SASCAvailable -and (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue)) {
+            if (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue) {
+                $script:_SASCAvailable = $true
                 $vs = Test-VaultStatus
                 switch ($vs.State) {
                     'Unlocked'        { Set-ServiceLight 'Vault' 'Running' "Vault: Unlocked" }
@@ -9800,6 +10631,7 @@ function New-GUI {
                     default           { Set-ServiceLight 'Vault' 'Off' "Vault: $($vs.State)" }
                 }
             } else {
+                $script:_SASCAvailable = $false
                 Set-ServiceLight 'Vault' 'Off' 'Vault: Module not loaded'
             }
 
@@ -10024,7 +10856,7 @@ function New-GUI {
     $script:_EngineStatusLabel.Padding = New-Object System.Windows.Forms.Padding(6, 0, 0, 0)
     $script:_EngineStatusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 7.5, [System.Drawing.FontStyle]::Bold)
     $script:_EngineStatusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $script:_EngineStatusLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_EngineStatusLabel.Add_Click({
         try { Start-Process 'http://127.0.0.1:8042/' } catch { <# non-fatal #> }
     })
     & $script:_FooterAddCell $script:_EngineStatusLabel 0 4
@@ -10058,13 +10890,13 @@ function New-GUI {
     # ── Row 1 Left: Computer/User — show config file metadata ──
     $statusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $cfgPath = $footerPaths.ConfigFile
-    $statusLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Configuration File'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $statusLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $cfgPath) {
                 Start-Process explorer.exe "/select,`"$cfgPath`""
@@ -10075,13 +10907,13 @@ function New-GUI {
     # ── Row 1 Right: Default folder path ──
     $statusRightRow1.Cursor = [System.Windows.Forms.Cursors]::Hand
     $defPath = $footerPaths.DefaultFolder
-    $statusRightRow1.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusRightRow1.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $defPath -ItemLabel 'Default Folder'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $statusRightRow1.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusRightRow1.Add_Click({
         try {
             if (Test-Path -LiteralPath $defPath) {
                 Start-Process explorer.exe "`"$defPath`""
@@ -10092,13 +10924,13 @@ function New-GUI {
     # ── Row 2 Left: Network info — show Main-GUI.ps1 metadata ──
     $script:_NetInfoLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $mainPath = $footerPaths.MainScript
-    $script:_NetInfoLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_NetInfoLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $mainPath -ItemLabel 'Main GUI Script'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $script:_NetInfoLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_NetInfoLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $mainPath) {
                 Start-Process explorer.exe "/select,`"$mainPath`""
@@ -10110,7 +10942,7 @@ function New-GUI {
     $statusRightRow2.Cursor = [System.Windows.Forms.Cursors]::Hand
     $sDir = $footerPaths.ScriptsDir
     $rDir = $footerPaths.RemoteUpdatePath
-    $statusRightRow2.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusRightRow2.Add_MouseEnter({
         try {
             $tipParts = @()
             $tipParts += (Get-FooterItemTooltip -ItemPath $rDir -ItemLabel '--- Remote Path ---')
@@ -10119,7 +10951,7 @@ function New-GUI {
             $serviceToolTip.SetToolTip($this, ($tipParts -join "`n"))
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $statusRightRow2.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $statusRightRow2.Add_Click({
         try {
             if (Test-Path -LiteralPath $sDir) {
                 Start-Process explorer.exe "`"$sDir`""
@@ -10130,13 +10962,13 @@ function New-GUI {
     # ── Row 3 Left: DHCP/DNS — show logs directory metadata ──
     $script:_DhcpDnsLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $logDir = $footerPaths.LogsDir
-    $script:_DhcpDnsLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_DhcpDnsLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $logDir -ItemLabel 'Logs Directory'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $script:_DhcpDnsLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_DhcpDnsLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $logDir) {
                 Start-Process explorer.exe "`"$logDir`""
@@ -10146,13 +10978,13 @@ function New-GUI {
 
     # ── Row 3 Right: SysInfo — show main script file metadata (version source) ──
     $script:_SysInfoLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $script:_SysInfoLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_SysInfoLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $mainPath -ItemLabel 'Application Script (Version Source)'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $script:_SysInfoLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_SysInfoLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $mainPath) {
                 Start-Process explorer.exe "/select,`"$mainPath`""
@@ -10162,13 +10994,13 @@ function New-GUI {
 
     # ── Row 4: Vault status — show config file metadata ──
     $vaultStatusLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $vaultStatusLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultStatusLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Vault Configuration Source'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $vaultStatusLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultStatusLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $cfgPath) {
                 Start-Process explorer.exe "/select,`"$cfgPath`""
@@ -10177,13 +11009,13 @@ function New-GUI {
     }.GetNewClosure())
 
     $vaultDetailLabel.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $vaultDetailLabel.Add_MouseEnter({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultDetailLabel.Add_MouseEnter({
         try {
             $tip = Get-FooterItemTooltip -ItemPath $cfgPath -ItemLabel 'Vault Detail — Config File'
             $serviceToolTip.SetToolTip($this, $tip)
         } catch { <# Intentional: non-fatal #> }
     }.GetNewClosure())
-    $vaultDetailLabel.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultDetailLabel.Add_Click({
         try {
             if (Test-Path -LiteralPath $cfgPath) {
                 Start-Process explorer.exe "/select,`"$cfgPath`""
@@ -10194,7 +11026,7 @@ function New-GUI {
     # ── WAN IP background refresh timer (every 5 minutes) ──
     $script:_WanRefreshTimer = New-Object System.Windows.Forms.Timer
     $script:_WanRefreshTimer.Interval = 500  # first tick fast, then switch to 5min
-    $script:_WanRefreshTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_WanRefreshTimer.Add_Tick({
         try {
             if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
             $script:_WanRefreshTimer.Interval = 300000  # 5 minutes after first tick
@@ -10229,12 +11061,13 @@ function New-GUI {
     $script:_BWStatusCacheTime = [datetime]::MinValue
     $vaultTimer = New-Object System.Windows.Forms.Timer
     $vaultTimer.Interval = 5000
-    $vaultTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $vaultTimer.Add_Tick({
         try {
             # Skip expensive checks when form is minimized (Cycle 6 optimization)
             if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
 
-            if ($script:_SASCAvailable -and (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue)) {
+            if (Get-Command Test-VaultStatus -ErrorAction SilentlyContinue) {
+                $script:_SASCAvailable = $true
                 $vs = Test-VaultStatus
 
                 # Periodically query bw status for live service health (every 30s to reduce overhead)
@@ -10306,6 +11139,7 @@ function New-GUI {
                     }
                 }
             } else {
+                $script:_SASCAvailable = $false
                 $vaultStatusLabel.Text = "Vault: Module Not Loaded"
                 $vaultStatusLabel.BackColor = [System.Drawing.Color]::MistyRose
                 $vaultStatusLabel.ForeColor = [System.Drawing.Color]::Red
@@ -10322,7 +11156,7 @@ function New-GUI {
     # ── Engine status poll timer (every 10 seconds) ────────────────────────────
     $script:_EngineTimer = New-Object System.Windows.Forms.Timer
     $script:_EngineTimer.Interval = 10000  # first tick after 10s; quick-kick on demand via menu
-    $script:_EngineTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_EngineTimer.Add_Tick({
         try {
             if ($form.WindowState -eq [System.Windows.Forms.FormWindowState]::Minimized) { return }
             $req = [System.Net.HttpWebRequest]::Create('http://127.0.0.1:8042/api/engine/status')
@@ -10356,20 +11190,25 @@ function New-GUI {
     })
     $script:_EngineTimer.Start()
     Write-AppLog "[Build-Checkpoint] Footer/status/vault/engine timers wired; advancing to keyboard accelerators..." "Debug"
-    
+
     # ==================== KEYBOARD ACCELERATORS ====================
     Write-AppLog "[Build-Checkpoint] Wiring keyboard accelerators and FormClosing handler..." "Debug"
 
     # One-shot diagnostic: log when the form is first shown (timing reference for tray restore).
     $script:_FormShownLogged = $false
-    $form.Add_Shown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
         if (-not $script:_FormShownLogged) {
             $script:_FormShownLogged = $true
             try { Write-AppLog "[Build-Checkpoint] Form.Shown fired (first paint complete)" "Debug" } catch { <# non-fatal #> }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $form.Add_KeyDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_KeyDown({
+        try {
         param($sender, $e)
         # Ctrl+Q -- Quit
         if ($e.Control -and $e.KeyCode -eq 'Q') { $e.SuppressKeyPress = $true; $sender.Close() }
@@ -10393,10 +11232,14 @@ function New-GUI {
                 if ($script:_ServiceTimer) { $script:_ServiceTimer.Stop(); $script:_ServiceTimer.Interval = 100; $script:_ServiceTimer.Start() }
             } catch { Write-AppLog "[Refresh] Module refresh error: $_" 'Warning' }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ==================== GRACEFUL EXIT HANDLER ====================
-    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_FormClosing({
+        try {
         param($s, $e)
         # If user clicked X (or Alt+F4) and we are NOT force-closing, minimize to tray instead
         # Null-guard _ForceClose: child-script StrictMode can make $script: vars inaccessible (P022)
@@ -10440,6 +11283,9 @@ function New-GUI {
         } catch {
             # Best-effort cleanup -- do not block close
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Start minimized to tray if requested ──
@@ -10465,7 +11311,7 @@ function New-GUI {
         Write-AppLog "Displaying GUI form window via ApplicationContext" "Audit"
         _SwMark 'first-paint-trayhost'
         Start-TrayApplicationLoop -StartMinimized:$StartMinimized
-        
+
         # Message loop has ended (Stop-TrayHost or ExitThread was called)
         Write-AppLog "[TrayHost] ApplicationContext loop returned -- performing final cleanup" "Debug"
         if ($form -and -not $form.IsDisposed) {
@@ -10593,7 +11439,7 @@ $major = $versionInfo.Major
 $minor = $versionInfo.Minor
 $build = $versionInfo.Build
 $hasIssues = $false
-$issueDetails = @()
+$issueRecords = New-Object 'System.Collections.Generic.List[object]'
 
 if ($StartupMode -eq 'slow_snr') {
     # Phase 1: Check version tags BEFORE any auto-increment
@@ -10608,11 +11454,18 @@ if ($StartupMode -eq 'slow_snr') {
             foreach($folder in $folders) {
                 $files = $folder.SelectNodes('File')
                 foreach($file in $files) {
-                    $issue = "$($file.GetAttribute('name')) - $($file.GetAttribute('issue'))"
-                    if ($file.HasAttribute('found')) {
-                        $issue += " (found: $($file.GetAttribute('found')), expected: $($file.GetAttribute('expected')))"
+                    $issuePath = $file.GetAttribute('name')
+                    $folderPath = $folder.GetAttribute('path')
+                    if (-not [string]::IsNullOrWhiteSpace($folderPath) -and $folderPath -ne '.' -and $issuePath -notmatch '[\\/]') {
+                        $issuePath = Join-Path $folderPath $issuePath
                     }
-                    $issueDetails += $issue
+
+                    $issueRecords.Add([PSCustomObject]@{
+                        Path = $issuePath
+                        Issue = $file.GetAttribute('issue')
+                        Found = if ($file.HasAttribute('found')) { $file.GetAttribute('found') } else { '' }
+                        Expected = if ($file.HasAttribute('expected')) { $file.GetAttribute('expected') } else { '' }
+                    }) | Out-Null
                 }
             }
         }
@@ -10632,10 +11485,7 @@ if ($StartupMode -eq 'slow_snr') {
         Write-Information "VERSION-TAGS FOUND THAT DO NOT MATCH" -InformationAction Continue
         Write-Information "Current Version: $(Get-VersionString)" -InformationAction Continue
         Write-Information "" -InformationAction Continue
-        Write-Information "Mismatches detected:" -InformationAction Continue
-        foreach($detail in $issueDetails) {
-            Write-Information "  - $detail" -InformationAction Continue
-        }
+        Write-StartupIssueSummary -Issues @($issueRecords) -ExpectedVersion (Get-VersionString)
         Write-Information "" -InformationAction Continue
         Write-Information "=====================================================================" -InformationAction Continue
         Write-Information "" -InformationAction Continue
@@ -10751,7 +11601,8 @@ try {
     }
     Write-AppLog "Phase 3: Build manifest generation completed successfully" "Info"
 } catch {
-    Write-AppLog "Phase 3 ERROR: Failed to generate build manifest: $_" "Error"
+    $manifestErrorSummary = Get-FriendlyErrorSummary -ErrorRecord $_
+    Write-AppLog "Phase 3 ERROR: Failed to generate build manifest. $manifestErrorSummary" "Error"
     Write-AppLog "DEBUG: Full exception details:`n$($_.ScriptStackTrace)" "Debug"
     Write-AppLog "Phase 3: Continuing to Phase 4 despite manifest generation failure" "Warning"
 }
@@ -10773,26 +11624,38 @@ try {
     $versionInfo = Get-VersionInfo
     $configVersion = Get-VersionString
     $timezone = (Get-TimeZone).DisplayName
-    $currentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $PID" -ErrorAction Stop
+    $processTreeFallback = $false
+    $currentProcess = Get-StartupProcessSummary -ProcessId $PID -IncludeParentProcessId -OperationTimeoutSec 1
     if ($currentProcess) {
         $parentPid = $currentProcess.ParentProcessId
         if ($parentPid) {
-            $parentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $parentPid" -ErrorAction SilentlyContinue
+            $parentProcess = Get-StartupProcessSummary -ProcessId $parentPid -IncludeParentProcessId -OperationTimeoutSec 1
             if ($parentProcess) {
-                $parentProcessSummary = "$($parentProcess.Name) (PID $($parentProcess.ProcessId))"
+                $parentProcessSummary = [string]$parentProcess.Summary
                 if ($parentProcess.ParentProcessId) {
-                    $grandParentProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $($parentProcess.ParentProcessId)" -ErrorAction SilentlyContinue
+                    $grandParentProcess = Get-StartupProcessSummary -ProcessId $parentProcess.ParentProcessId -OperationTimeoutSec 1
                     if ($grandParentProcess) {
-                        $grandParentProcessSummary = "$($grandParentProcess.Name) (PID $($grandParentProcess.ProcessId))"
+                        $grandParentProcessSummary = [string]$grandParentProcess.Summary
                     }
                 }
+            } else {
+                $processTreeFallback = $true
             }
+        } else {
+            $processTreeFallback = $true
         }
+    } else {
+        throw "Current process lookup failed for PID $PID"
+    }
+
+    if ($processTreeFallback) {
+        Write-AppLog "Phase 4: Parent process details unavailable; continuing with partial process tree information" "Warning"
     }
     Write-AppLog "Phase 4: Launch process tree resolved -- MainGUI PID $currentProcessPid | Parent $parentProcessSummary | GrandParent $grandParentProcessSummary" "Info"
     Write-AppLog "Phase 4: System information resolved successfully" "Info"
 } catch {
-    Write-AppLog "Phase 4 ERROR: System information collection failed: $_" "Error"
+    $systemInfoErrorSummary = Get-FriendlyErrorSummary -ErrorRecord $_
+    Write-AppLog "Phase 4 ERROR: System information collection failed. $systemInfoErrorSummary" "Error"
     Write-AppLog "Phase 4: Using fallback values for system information" "Warning"
 }
 
@@ -10902,7 +11765,7 @@ try {
     if (Get-Command Stop-SessionMetrics -ErrorAction SilentlyContinue) {
         $sessionMetrics = Stop-SessionMetrics
         Write-AppLog "[Metrics] Session ended - Uptime: $($sessionMetrics.UptimeSeconds)s | Crash Indicators: $(@($sessionMetrics.CrashIndicators).Count) | Objects Cached: $($sessionMetrics.ObjectsCached)" "Audit"
-        
+
         # Export metrics to file for post-mortem analysis if there were crash indicators
         if (@($sessionMetrics.CrashIndicators).Count -gt 0) {
             $metricsPath = Join-Path $logsDir "session-metrics-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
@@ -10942,6 +11805,8 @@ Export-LogBuffer
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

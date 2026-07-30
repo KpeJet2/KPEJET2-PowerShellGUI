@@ -1,11 +1,11 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
 # SupportsPS7.6TestedDate: null
 #Requires -Version 5.1
 <#
-.SYNOPSIS  CI pre-commit gate: parse check + critical SIN scan + P027 null-index scan + encoding + version tag alignment.
+.SYNOPSIS  CI pre-commit gate: parse check + critical SIN scan + P027 null-index scan + encoding + version tag alignment + todo artifact guard.
 .DESCRIPTION
     Lightweight gate designed to run before every commit (or as CronProcessor pre-step).
     Catches the most common, high-impact issues without the full SIN scanner runtime:
@@ -14,7 +14,9 @@
       Gate 2 - Critical SIN patterns (P001/P009/P010): hardcoded creds, IEX, path injection
       Gate 3 - P027 null-array-index findings from the SIN scanner
       Gate 4 - Encoding violations: UTF-8 BOM required for .ps1/.psm1 (P006)
-      Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
+    Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
+    Gate 6 - Todo artifact guard: no merge markers in todo/_master-aggregated.json and object-root JSON for active todo files
+    Gate 7 - Pipeline control report verification
 
     Exit codes:
       0 = all gates passed
@@ -49,6 +51,13 @@ param(
     [switch]  $Quiet,
     [switch]  $FailOnWarning,
     [switch]  $SkipPipelineControlGate,
+    [switch]  $SkipPipelineMetricGate,
+    [switch]  $PipelineMetricIncludeGuiCoverage,
+    [switch]  $AutoCorrectFailures,
+    [ValidateSet('FullWorkspace','KnowSafeRemidiations','KnowSafeRemediations','FastFix_Auto-Correct','SpecificFocus')]
+    [string]  $AutoCorrectScope = 'KnowSafeRemidiations',
+    [string[]]$AutoCorrectFocusTargets = @(),
+    [int]     $AutoCorrectRecentDays = 14,
     # Gate 3 (P027) performance guards. P027 scanner is O(n) per file but its AST walk
     # is heavy on very large files; skip oversize files and cap the total count to keep
     # pre-commit under ~30s.
@@ -58,6 +67,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$WorkspacePath = (Resolve-Path -LiteralPath $WorkspacePath).Path
 
 function Write-Gate {
     param([string]$Msg, [string]$Level = 'Info')
@@ -305,7 +315,7 @@ function Invoke-PipelineControlGate {
 
     $reportPath = Join-Path (Join-Path $Root 'temp') ('precommit-pipeline-controls-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
     try {
-        & $scriptPath -WorkspacePath $Root -WriteReport -ReportPath $reportPath -FailOnControlViolation
+        & $scriptPath -WorkspacePath $Root -WriteReport -ReportPath $reportPath -FailOnControlViolation -EnableContentPolicyChecks
     } catch {
         [void]$findings.Add([PSCustomObject]@{
             Gate     = 'PipelineControls'
@@ -353,7 +363,15 @@ function Invoke-PipelineControlGate {
             })
         }
 
-        foreach ($controlIssue in @($report.controls.payloadIssues)) {
+        $controlIssues = @()
+        if ($report.controls.PSObject.Properties.Name -contains 'payloadIssues') {
+            $controlIssues += @($report.controls.payloadIssues)
+        }
+        if ($report.controls.PSObject.Properties.Name -contains 'structuralIssues') {
+            $controlIssues += @($report.controls.structuralIssues)
+        }
+
+        foreach ($controlIssue in @($controlIssues)) {
             [void]$findings.Add([PSCustomObject]@{
                 Gate     = 'PipelineControls'
                 Severity = 'ERROR'
@@ -370,6 +388,271 @@ function Invoke-PipelineControlGate {
             Line     = 0
             Message  = "Could not parse pipeline control report: $($_.Exception.Message)"
         })
+    }
+
+    return @($findings)
+}
+
+function Invoke-PipelineMetricGate {
+    param(
+        [string]$Root,
+        [switch]$IncludeGuiCoverage
+    )
+
+    $findings = [System.Collections.ArrayList]::new()
+    $harnessPath = Join-Path $Root 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
+    if (-not (Test-Path -LiteralPath $harnessPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $harnessPath
+            Line     = 0
+            Message  = 'Pipeline metric increment harness not found'
+        })
+        return @($findings)
+    }
+
+    $reportPath = Join-Path (Join-Path $Root 'temp') ('precommit-pipeline-metric-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
+    $psArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', "`"$harnessPath`"",
+        '-WorkspacePath', "`"$Root`"",
+        '-OutputPath', "`"$reportPath`""
+    )
+    if (-not $IncludeGuiCoverage) {
+        $psArgs += '-SkipGuiCoverage'
+    }
+
+    try {
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $psArgs -Wait -PassThru -NoNewWindow
+        if ($proc.ExitCode -ne 0) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'PipelineMetric'
+                Severity = 'ERROR'
+                File     = $harnessPath
+                Line     = 0
+                Message  = "Metric harness failed with exit code $($proc.ExitCode)"
+            })
+        }
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $harnessPath
+            Line     = 0
+            Message  = "Metric harness invocation failed: $($_.Exception.Message)"
+        })
+        return @($findings)
+    }
+
+    if (-not (Test-Path -LiteralPath $reportPath)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = 'Metric harness report missing'
+        })
+        return @($findings)
+    }
+
+    try {
+        $report = Get-Content -LiteralPath $reportPath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+        if (-not $report.pass) {
+            foreach ($item in @($report.oneItemResults | Where-Object { -not $_.passed })) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = "Queue '$($item.queueName)' delta validation failed"
+                })
+            }
+            foreach ($gui in @($report.guiCoverage | Where-Object { -not $_.passed })) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = "GUI coverage failed: $($gui.name)"
+                })
+            }
+            if (@($findings).Count -eq 0) {
+                [void]$findings.Add([PSCustomObject]@{
+                    Gate     = 'PipelineMetric'
+                    Severity = 'ERROR'
+                    File     = $reportPath
+                    Line     = 0
+                    Message  = 'Metric harness reported failure'
+                })
+            }
+        }
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'PipelineMetric'
+            Severity = 'ERROR'
+            File     = $reportPath
+            Line     = 0
+            Message  = "Could not parse metric harness report: $($_.Exception.Message)"
+        })
+    }
+
+    return @($findings)
+}
+
+function Invoke-TodoArtifactGuardGate {
+    param([string]$Root)
+
+    $findings = [System.Collections.ArrayList]::new()
+    $todoDir = Join-Path $Root 'todo'
+    $masterPath = Join-Path $todoDir '_master-aggregated.json'
+
+    if (-not (Test-Path -LiteralPath $masterPath -PathType Leaf)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'TodoArtifactGuard'
+            Severity = 'ERROR'
+            File     = $masterPath
+            Line     = 0
+            Message  = 'Missing required artifact: todo/_master-aggregated.json'
+        })
+        return @($findings)
+    }
+
+    try {
+        $masterRaw = Get-Content -LiteralPath $masterPath -Raw -Encoding UTF8 -ErrorAction Stop
+        if ($masterRaw -match '(?m)^<<<<<<<\s' -or $masterRaw -match '(?m)^=======\s*$' -or $masterRaw -match '(?m)^>>>>>>>\s') {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'TodoArtifactGuard'
+                Severity = 'ERROR'
+                File     = $masterPath
+                Line     = 0
+                Message  = 'Merge conflict markers detected in todo/_master-aggregated.json'
+            })
+        }
+        $null = $masterRaw | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'TodoArtifactGuard'
+            Severity = 'ERROR'
+            File     = $masterPath
+            Line     = 0
+            Message  = "Invalid master aggregate JSON: $($_.Exception.Message)"
+        })
+    }
+
+    if (-not (Test-Path -LiteralPath $todoDir -PathType Container)) {
+        return @($findings)
+    }
+
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    $activeFiles = @(
+        Get-ChildItem -LiteralPath $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
+        Sort-Object Name
+    )
+
+    foreach ($file in @($activeFiles)) {
+        try {
+            $raw = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 -ErrorAction Stop
+            $parsed = $raw | ConvertFrom-Json -ErrorAction Stop
+            if ($parsed -is [System.Array]) {
+                # Only enforce object-root for item-like files; skip helper datasets.
+                if ($file.Name -match '^(Bug|Bugs2FIX|Feature|ToDo|todo-|NOID-)') {
+                    [void]$findings.Add([PSCustomObject]@{
+                        Gate     = 'TodoArtifactGuard'
+                        Severity = 'ERROR'
+                        File     = $file.FullName
+                        Line     = 1
+                        Message  = 'Active todo item must be object-root JSON (array root is not allowed)'
+                    })
+                }
+            }
+        } catch {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'TodoArtifactGuard'
+                Severity = 'ERROR'
+                File     = $file.FullName
+                Line     = 0
+                Message  = "Invalid active todo JSON: $($_.Exception.Message)"
+            })
+        }
+    }
+
+    return @($findings)
+}
+
+function Invoke-LogDriftGate {
+    param([string]$Root)
+
+    $findings = [System.Collections.ArrayList]::new()
+
+    $rootLogs = @()
+    try {
+        $rootLogs = @(Get-ChildItem -LiteralPath $Root -File -Filter '*.log' -ErrorAction SilentlyContinue)
+    } catch {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'LogDrift'
+            Severity = 'ERROR'
+            File     = $Root
+            Line     = 0
+            Message  = "Failed to enumerate root log files: $($_.Exception.Message)"
+        })
+        return @($findings)
+    }
+
+    foreach ($logFile in @($rootLogs)) {
+        [void]$findings.Add([PSCustomObject]@{
+            Gate     = 'LogDrift'
+            Severity = 'ERROR'
+            File     = $logFile.FullName
+            Line     = 0
+            Message  = 'Root-level log drift detected; move log under logs\\<subfolder>'
+        })
+    }
+
+    $logsDir = Join-Path $Root 'logs'
+    if (Test-Path -LiteralPath $logsDir -PathType Container) {
+        $topLevelLogs = @(Get-ChildItem -LiteralPath $logsDir -File -Filter '*.log' -ErrorAction SilentlyContinue)
+        foreach ($logFile in @($topLevelLogs)) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'LogDrift'
+                Severity = 'ERROR'
+                File     = $logFile.FullName
+                Line     = 0
+                Message  = 'Top-level logs\\*.log drift detected; move file under logs\\<subfolder>'
+            })
+        }
+    }
+
+    $viewerPath = Join-Path $Root 'XHTML-ChangelogViewer.xhtml'
+    if (Test-Path -LiteralPath $viewerPath -PathType Leaf) {
+        try {
+            $viewerContent = Get-Content -LiteralPath $viewerPath -Raw -Encoding UTF8 -ErrorAction Stop
+            $regex = [regex]"path:\s*'(?<path>logs\\[^']+\.log)'"
+            foreach ($match in $regex.Matches($viewerContent)) {
+                $relPath = $match.Groups['path'].Value
+                $resolvedPath = Join-Path $Root ($relPath -replace '/', '\\')
+                if (-not (Test-Path -LiteralPath $resolvedPath -PathType Leaf)) {
+                    [void]$findings.Add([PSCustomObject]@{
+                        Gate     = 'LogDrift'
+                        Severity = 'ERROR'
+                        File     = $viewerPath
+                        Line     = 0
+                        Message  = "Viewer log reference does not resolve after cleanup: $relPath"
+                    })
+                }
+            }
+        } catch {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'LogDrift'
+                Severity = 'ERROR'
+                File     = $viewerPath
+                Line     = 0
+                Message  = "Could not validate viewer log references: $($_.Exception.Message)"
+            })
+        }
     }
 
     return @($findings)
@@ -426,13 +709,33 @@ $vtHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($vtHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
 else { $vtHits | ForEach-Object { Write-Gate "  WARN $($_.File) - $($_.Message)" 'Warn' } }
 
+Write-Gate '[Gate 6] Todo artifact guard (_master merge markers + object-root active todos)...' 'Info'
+$todoArtifactHits = @(Invoke-TodoArtifactGuardGate -Root $WorkspacePath)
+$todoArtifactHits | ForEach-Object { [void]$allFindings.Add($_) }
+if (@($todoArtifactHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+else { $todoArtifactHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+
 if (-not $SkipPipelineControlGate) {
-    Write-Gate '[Gate 6] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
+    Write-Gate '[Gate 7] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
     $pipelineControlHits = @(Invoke-PipelineControlGate -Root $WorkspacePath)
     $pipelineControlHits | ForEach-Object { [void]$allFindings.Add($_) }
     if (@($pipelineControlHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
     else { $pipelineControlHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
 }
+
+if (-not $SkipPipelineMetricGate) {
+    Write-Gate '[Gate 8] Pipeline one-item metric increment harness...' 'Info'
+    $metricHits = @(Invoke-PipelineMetricGate -Root $WorkspacePath -IncludeGuiCoverage:$PipelineMetricIncludeGuiCoverage)
+    $metricHits | ForEach-Object { [void]$allFindings.Add($_) }
+    if (@($metricHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+    else { $metricHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+}
+
+Write-Gate '[Gate 9] Log drift and viewer log-reference guard...' 'Info'
+$logDriftHits = @(Invoke-LogDriftGate -Root $WorkspacePath)
+$logDriftHits | ForEach-Object { [void]$allFindings.Add($_) }
+if (@($logDriftHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
+else { $logDriftHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
 
 $errorCount = @($allFindings | Where-Object { $_.Severity -eq 'ERROR' }).Count
 $warnCount = @($allFindings | Where-Object { $_.Severity -eq 'WARN' }).Count
@@ -450,6 +753,8 @@ $report = [ordered]@{
     warnCount     = $warnCount
     passed        = ($blockingCount -eq 0)
     failOnWarning = $FailOnWarning.IsPresent
+    autoCorrect   = $null
+    autoCorrectScope = $AutoCorrectScope
     findings      = @($allFindings)
 }
 
@@ -460,6 +765,28 @@ try {
     Write-Gate "  Report  : $OutputJson" 'Info'
 } catch {
     Write-Gate "  [WARN] Could not write report: $($_.Exception.Message)" 'Warn'
+}
+
+if ($AutoCorrectFailures -and $blockingCount -gt 0) {
+    Write-Gate '[AutoCorrect] Attempting iterative corrections for blocking findings...' 'Info'
+    $autoCorrectModule = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AutoCorrectGate.psm1'
+    if (Test-Path -LiteralPath $autoCorrectModule) {
+        try {
+            Import-Module -LiteralPath $autoCorrectModule -Force -DisableNameChecking -ErrorAction Stop
+            $autoCorrectReport = Invoke-AutoCorrectGate -WorkspacePath $WorkspacePath -FailItems @($allFindings) -MaxAttempts 3 -Scope $AutoCorrectScope -FocusTargets @($AutoCorrectFocusTargets) -RecentDays $AutoCorrectRecentDays
+            $report.autoCorrect = $autoCorrectReport
+            $report.errorCount = $autoCorrectReport.finalErrorCount
+            $report.warnCount = $autoCorrectReport.finalWarnCount
+            $report.passed = [bool]$autoCorrectReport.passed
+            $blockingCount = if ($autoCorrectReport.passed) { 0 } else { 1 }
+            $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
+            Write-Gate ("  AutoCorrect: corrected={0} escalated={1} stopped={2}" -f $autoCorrectReport.corrected, $autoCorrectReport.escalated, $autoCorrectReport.stopped) 'Info'
+        } catch {
+            Write-Gate "  [WARN] AutoCorrect failed: $($_.Exception.Message)" 'Warn'
+        }
+    } else {
+        Write-Gate "  [WARN] AutoCorrect module not found: $autoCorrectModule" 'Warn'
+    }
 }
 
 if ($blockingCount -gt 0) {
@@ -481,4 +808,6 @@ exit 0
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 

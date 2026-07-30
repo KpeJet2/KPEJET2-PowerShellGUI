@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-062-TODO-ARRAY-ROOT-ACTIVE",
+  "sin_id": "SIN-PATTERN-062-TODO-ARRAY-ROOT-ACTIVE",
+  "title": "Array-root JSON in active todo item set",
+  "description": "Array-root JSON files in active todo inputs repeatedly caused bundle/index integrity mismatch and pipeline churn.",
+  "severity": "HIGH",
+  "status": "pattern-defined",
+  "category": "Pipeline/Artifacts",
+  "detection_method": "Scan todo/*.json for top-level array roots in active item files.",
+  "scan_regex": "^\\s*\\[",
+  "context_guard_regex": "",
+  "file_exclusion_regex": "todo\\\\(_index\\.json|_master-aggregated\\.json|action-log\\.json)|test-results-history\\.json|completed\\\\",
+  "scan_file_pattern": "todo/*.json",
+  "ps_version_scope": "BOTH",
+  "remediation": "Keep active todo item files object-root only and move helper/history arrays to excluded archival/helper paths.",
+  "examples": [
+    "# Bad\n[ { \"id\": \"TODO-1\" } ]",
+    "# Good\n{ \"id\": \"TODO-1\", \"status\": \"OPEN\" }"
+  ],
+  "tags": ["todo", "bundle", "integrity"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

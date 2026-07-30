@@ -1,0 +1,432 @@
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Workspace Seeding Setup | PowerShell GUI</title>
+    <style type="text/css">
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #1e1e1e; 
+            color: #e0e0e0; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 800px; margin: 0 auto; background: #252526; border-radius: 4px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        h1 { color: #007acc; margin-bottom: 20px; font-size: 28px; }
+        h2 { color: #007acc; margin-top: 25px; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #3e3e42; padding-bottom: 10px; }
+        .section { margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: #cccccc; font-weight: 500; }
+        input[type="text"], select, textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #3e3e42; 
+            border-radius: 3px; 
+            background: #1e1e1e; 
+            color: #e0e0e0; 
+            font-family: 'Consolas', monospace;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus { 
+            outline: none; 
+            border-color: #007acc; 
+            box-shadow: 0 0 4px rgba(0,122,204,0.3);
+        }
+        input[type="checkbox"] { margin-right: 8px; margin-top: 4px; }
+        .checkbox-label { display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; }
+        .checkbox-label input { margin: 0 8px 0 0; }
+        .candidate-list { 
+            background: #1e1e1e; 
+            border: 1px solid #3e3e42; 
+            border-radius: 3px; 
+            padding: 12px; 
+            max-height: 180px; 
+            overflow-y: auto;
+        }
+        .candidate-item { 
+            padding: 10px; 
+            margin-bottom: 8px; 
+            background: #2d2d30; 
+            border: 1px solid #3e3e42; 
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .candidate-item:hover { background: #3e3e42; }
+        .candidate-item.selected { background: #007acc; border-color: #0098ff; }
+        .candidate-name { font-weight: 600; color: #e0e0e0; }
+        .candidate-meta { font-size: 12px; color: #858585; margin-top: 4px; }
+        .preserve-list { 
+            background: #1e1e1e; 
+            border-left: 3px solid #007acc; 
+            padding: 12px; 
+            border-radius: 2px;
+            margin-bottom: 15px;
+        }
+        .preserve-item { 
+            font-family: 'Consolas', monospace; 
+            font-size: 12px; 
+            color: #ce9178; 
+            padding: 4px 0;
+            word-break: break-all;
+        }
+        .button-group { 
+            display: flex; 
+            gap: 10px; 
+            justify-content: flex-end; 
+            margin-top: 30px;
+        }
+        button { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        button.primary { 
+            background: #007acc; 
+            color: white;
+        }
+        button.primary:hover { 
+            background: #0098ff;
+        }
+        button.primary:disabled { 
+            background: #004578; 
+            cursor: not-allowed;
+            color: #858585;
+        }
+        button.secondary { 
+            background: #3e3e42; 
+            color: #e0e0e0;
+        }
+        button.secondary:hover { 
+            background: #4e4e54;
+        }
+        .status-message { 
+            padding: 12px; 
+            border-radius: 3px; 
+            margin-bottom: 15px;
+            display: none;
+        }
+        .status-message.info { 
+            background: #004b72; 
+            border-left: 3px solid #007acc; 
+            color: #b4d1f5;
+            display: block;
+        }
+        .status-message.success { 
+            background: #103d1c; 
+            border-left: 3px solid #13a538; 
+            color: #9ccc65;
+            display: block;
+        }
+        .status-message.error { 
+            background: #5a1e1a; 
+            border-left: 3px solid #f48771; 
+            color: #f48771;
+            display: block;
+        }
+        .warning { 
+            background: #3c3110; 
+            border-left: 3px solid #dca530; 
+            padding: 12px; 
+            border-radius: 3px; 
+            color: #dfd550;
+            margin-bottom: 15px;
+        }
+        .progress-bar { 
+            width: 100%; 
+            height: 20px; 
+            background: #1e1e1e; 
+            border: 1px solid #3e3e42; 
+            border-radius: 3px; 
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #007acc, #0098ff); 
+            width: 0%; 
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workspace Seeding Setup</h1>
+        <p style="color: #858585; margin-bottom: 20px;">Initialize your PowerShell GUI workspace from a backup or seed package.</p>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="section">
+            <h2>Step 1: Select Seed Source</h2>
+            
+            <div class="form-group">
+                <label>Auto-Detected Seed Packages:</label>
+                <div id="candidateList" class="candidate-list">
+                    <div style="color: #858585; text-align: center; padding: 20px;">Scanning for seed packages...</div>
+                </div>
+                <div style="color: #858585; font-size: 12px; margin-top: 8px;">Click a candidate to select it, or choose "Manual Path" below.</div>
+            </div>
+
+            <div class="form-group">
+                <label>Or Select Manual Path:</label>
+                <input type="text" id="manualPath" placeholder="Enter ZIP file path or folder path (e.g., c:\Backup\PowerShellGUI.zip)" />
+            </div>
+
+            <div id="selectedPathInfo" class="preserve-list" style="display: none;">
+                <div style="color: #007acc; margin-bottom: 8px; font-weight: 600;">Selected Seed:</div>
+                <div id="selectedPathText" class="preserve-item"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Review Preservation Rules</h2>
+            <p style="color: #858585; margin-bottom: 12px;">The following local files will be preserved (not overwritten):</p>
+            <div class="preserve-list">
+                <div class="preserve-item">config/*.json</div>
+                <div class="preserve-item">config/*.xml</div>
+                <div class="preserve-item">config/*.yaml</div>
+                <div class="preserve-item">logs/*</div>
+                <div class="preserve-item">temp/*</div>
+                <div class="preserve-item">pki/*</div>
+                <div class="preserve-item">~REPORTS/*</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Optional Settings</h2>
+            
+            <div class="checkbox-label">
+                <input type="checkbox" id="autoStartCheckbox" />
+                <label for="autoStartCheckbox" style="margin: 0; cursor: pointer;">Enable auto-start tray service on system startup</label>
+            </div>
+            <div style="color: #858585; font-size: 12px; margin-left: 24px; margin-bottom: 15px;">
+                Creates a scheduled task to launch the tray service automatically when Windows starts.
+            </div>
+
+            <div class="form-group">
+                <label for="autoStartMethod">Auto-start Method:</label>
+                <select id="autoStartMethod" disabled="disabled">
+                    <option value="ScheduledTask">Scheduled Task (Recommended)</option>
+                    <option value="Registry">Registry RunOnce</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section" id="summarySection" style="display: none;">
+            <h2>Summary</h2>
+            <div class="preserve-list" style="border-left-color: #13a538;">
+                <div style="color: #9ccc65; margin-bottom: 8px;">Ready to proceed with seeding:</div>
+                <div class="preserve-item">Source: <span id="summarySource"></span></div>
+                <div class="preserve-item">Target: <span id="summaryTarget"></span></div>
+                <div class="preserve-item">Auto-Start: <span id="summaryAutoStart">Disabled</span></div>
+            </div>
+        </div>
+
+        <div id="progressSection" style="display: none; margin-top: 25px;">
+            <h2>Progress</h2>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <div id="progressText" style="color: #858585; font-size: 12px;">Initializing...</div>
+        </div>
+
+        <div class="warning" id="warningBox" style="display: none;"></div>
+
+        <div class="button-group">
+            <button class="secondary" id="cancelBtn">Cancel</button>
+            <button class="secondary" id="backBtn" style="display: none;">Back</button>
+            <button class="primary" id="proceedBtn">Next</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function() {
+            'use strict';
+
+            const API_BASE = 'http://127.0.0.1:8042';
+            let selectedSeed = null;
+            let candidates = [];
+            let currentStep = 1;
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function showMessage(text, type) {
+                const msg = document.getElementById('statusMessage');
+                msg.textContent = text;
+                msg.className = 'status-message ' + type;
+            }
+
+            function updateProgress(percent, text) {
+                document.getElementById('progressFill').style.width = percent + '%';
+                document.getElementById('progressText').textContent = text;
+            }
+
+            async function fetchCandidates() {
+                try {
+                    const response = await fetch(API_BASE + '/api/seeding/candidates');
+                    if (!response.ok) throw new Error('Failed to fetch candidates: ' + response.statusText);
+                    return await response.json();
+                } catch (e) {
+                    showMessage('Could not fetch seed candidates from server: ' + e.message, 'error');
+                    return [];
+                }
+            }
+
+            function renderCandidates(list) {
+                candidates = list;
+                const container = document.getElementById('candidateList');
+                
+                if (candidates.length === 0) {
+                    container.innerHTML = '<div style="color: #858585; text-align: center; padding: 20px;">No seed packages found in fallback paths. Please specify a manual path above.</div>';
+                    return;
+                }
+
+                container.innerHTML = candidates.map((candidate, idx) => {
+                    return '<div class="candidate-item" data-index="' + idx + '">' +
+                        '<div class="candidate-name">' + escapeHtml(candidate.FileName) + '</div>' +
+                        '<div class="candidate-meta">' +
+                        'Type: ' + candidate.Type + ' | ' +
+                        'Size: ' + candidate.SizeGB + ' GB | ' +
+                        'Modified: ' + new Date(candidate.Modified).toLocaleString() +
+                        '</div>' +
+                        '</div>';
+                }).join('');
+
+                document.querySelectorAll('.candidate-item').forEach((el) => {
+                    el.addEventListener('click', function() {
+                        document.querySelectorAll('.candidate-item').forEach(e => e.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedSeed = candidates[parseInt(this.dataset.index)];
+                        updateSelectedPath();
+                    });
+                });
+            }
+
+            function updateSelectedPath() {
+                let path = null;
+                if (selectedSeed) {
+                    path = selectedSeed.Path;
+                } else {
+                    const manual = document.getElementById('manualPath').value.trim();
+                    if (manual) path = manual;
+                }
+
+                const info = document.getElementById('selectedPathInfo');
+                if (path) {
+                    document.getElementById('selectedPathText').textContent = escapeHtml(path);
+                    info.style.display = 'block';
+                } else {
+                    info.style.display = 'none';
+                }
+            }
+
+            function getSelectedPath() {
+                if (selectedSeed) return selectedSeed.Path;
+                return document.getElementById('manualPath').value.trim();
+            }
+
+            function updateSummary() {
+                const path = getSelectedPath();
+                document.getElementById('summarySource').textContent = escapeHtml(path);
+                document.getElementById('summaryTarget').textContent = escapeHtml(location.origin);
+                const autoStart = document.getElementById('autoStartCheckbox').checked ? 'Enabled' : 'Disabled';
+                document.getElementById('summaryAutoStart').textContent = autoStart;
+            }
+
+            async function performSeeding() {
+                const seedPath = getSelectedPath();
+                if (!seedPath) {
+                    showMessage('Please select a seed source.', 'error');
+                    return;
+                }
+
+                document.getElementById('progressSection').style.display = 'block';
+                document.querySelector('.button-group').style.display = 'none';
+
+                try {
+                    updateProgress(10, 'Validating seed package...');
+
+                    const seedRequest = {
+                        seedPath: seedPath,
+                        autoStart: document.getElementById('autoStartCheckbox').checked,
+                        autoStartMethod: document.getElementById('autoStartMethod').value
+                    };
+
+                    const response = await fetch(API_BASE + '/api/seeding/execute', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(seedRequest)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        updateProgress(100, 'Seeding completed successfully!');
+                        showMessage('Workspace seeded successfully. ' + result.extractedFileCount + ' files extracted, ' + result.preservedFileCount + ' local files preserved.', 'success');
+                        document.getElementById('proceedBtn').textContent = 'Close';
+                        document.getElementById('proceedBtn').onclick = () => window.close();
+                    } else {
+                        showMessage('Seeding failed: ' + (result.errors ? result.errors.join(', ') : 'Unknown error'), 'error');
+                        document.querySelector('.button-group').style.display = 'flex';
+                        document.getElementById('progressSection').style.display = 'none';
+                    }
+                } catch (e) {
+                    showMessage('Error during seeding: ' + e.message, 'error');
+                    document.querySelector('.button-group').style.display = 'flex';
+                    document.getElementById('progressSection').style.display = 'none';
+                }
+            }
+
+            document.getElementById('cancelBtn').addEventListener('click', () => window.close());
+            document.getElementById('autoStartCheckbox').addEventListener('change', function() {
+                document.getElementById('autoStartMethod').disabled = !this.checked;
+            });
+
+            document.getElementById('manualPath').addEventListener('input', updateSelectedPath);
+
+            document.getElementById('proceedBtn').addEventListener('click', () => {
+                if (currentStep === 1) {
+                    const path = getSelectedPath();
+                    if (!path) {
+                        showMessage('Please select a seed source.', 'error');
+                        return;
+                    }
+                    updateSummary();
+                    document.getElementById('summarySection').style.display = 'block';
+                    currentStep = 2;
+                    document.getElementById('proceedBtn').textContent = 'Start Seeding';
+                    document.getElementById('backBtn').style.display = 'inline-block';
+                } else if (currentStep === 2) {
+                    performSeeding();
+                }
+            });
+
+            document.getElementById('backBtn').addEventListener('click', () => {
+                if (currentStep === 2) {
+                    document.getElementById('summarySection').style.display = 'none';
+                    currentStep = 1;
+                    document.getElementById('proceedBtn').textContent = 'Next';
+                    document.getElementById('backBtn').style.display = 'none';
+                }
+            });
+
+            async function init() {
+                renderCandidates(await fetchCandidates());
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
+

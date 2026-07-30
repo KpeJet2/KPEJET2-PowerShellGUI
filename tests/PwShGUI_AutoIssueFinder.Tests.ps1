@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -30,7 +30,15 @@ Describe 'PwShGUI_AutoIssueFinder Module' {
 
 Describe 'Invoke-PwShGUIAutoIssueFinder' {
     It 'Returns scan results without error' {
-        { Invoke-PwShGUIAutoIssueFinder } | Should -Not -Throw
+        $tmpOut = Join-Path ([System.IO.Path]::GetTempPath()) ("AIF-" + [Guid]::NewGuid().ToString('N'))
+        $tmpScan = Join-Path ([System.IO.Path]::GetTempPath()) ("AIFScan-" + [Guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path $tmpScan -Force | Out-Null
+        try {
+            { Invoke-PwShGUIAutoIssueFinder -Paths @($tmpScan) -OutputRoot $tmpOut -IncludeSubfolders } | Should -Not -Throw
+        } finally {
+            Remove-Item -LiteralPath $tmpScan -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $tmpOut  -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 
@@ -46,6 +54,8 @@ Describe 'Invoke-PwShGUIAutoIssueFinder' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

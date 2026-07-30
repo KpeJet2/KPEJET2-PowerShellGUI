@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the property exists.",
+    "description":  "TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the property exists.",
+    "title":  "Scheduler task failure: TASK-TabErrorFix",
+    "id":  "BUG-SCHED-74EDB4B4",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-TabErrorFix",
+    "lastUpdated":  "2026-05-22T19:35:18.5928159Z",
+    "createdAt":  "2026-05-22T19:35:18.5928159Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sandbox Testing Plan</title>
+  <style type="text/css">
+    :root {
+      --bg: #0f1724;
+      --panel: #162133;
+      --panel2: #1d2b42;
+      --line: #324968;
+      --fg: #e8eef8;
+      --muted: #9eb3ce;
+      --accent: #27c1ff;
+      --ok: #3fd087;
+      --warn: #ffcc4d;
+      --danger: #ff6f6f;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: radial-gradient(circle at top right, #1f2f4a 0%, var(--bg) 55%);
+      color: var(--fg);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    h1 { margin: 0 0 8px 0; color: var(--accent); font-size: 24px; }
+    .sub { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    button {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 6px 10px;
+      color: var(--fg);
+      cursor: pointer;
+      font-size: 12px;
+      background: #203450;
+    }
+    button.primary { background: #0d6da5; border-color: #1989c7; }
+    button.ok { background: #1f6d50; border-color: #35946f; }
+    button.warn { background: #7c6430; border-color: #9f8440; }
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 10px;
+      border: 1px solid var(--line);
+      background: #20314a;
+      margin-right: 4px;
+    }
+    .mono { font-family: Consolas, monospace; font-size: 11px; color: #9be3ff; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .page-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .page-title { font-size: 15px; font-weight: bold; color: #89d8ff; }
+    .meta-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 6px;
+      vertical-align: top;
+    }
+    th { text-align: left; color: #b3c7e3; background: rgba(255,255,255,0.02); }
+    input[type='text'], textarea, select {
+      width: 100%;
+      background: #0d1624;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--fg);
+      padding: 5px;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    textarea { min-height: 52px; resize: vertical; }
+    .status-pending { color: var(--warn); }
+    .status-done { color: var(--ok); }
+    .status-fail { color: var(--danger); }
+    .footer-note { color: var(--muted); font-size: 11px; margin-top: 8px; }
+    @media (max-width: 900px) {
+      body { padding: 10px; }
+      table { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sandbox Testing Plan</h1>
+  <div class="sub">Checklist for smoke, scan, validation, confirmation, and sign-off across discovered XHTML page functions.</div>
+
+  <div class="card">
+    <div class="toolbar">
+      <button class="primary" onclick="loadPlan()">Reload Plan</button>
+      <button class="ok" onclick="exportFeedback()">Export Feedback JSON</button>
+      <button class="warn" onclick="copyBugSummary()">Copy Bug Summary</button>
+      <button onclick="markAllVisible('validated', true)">Mark Visible Validated</button>
+      <button onclick="markAllVisible('confirmed', true)">Mark Visible Confirmed</button>
+    </div>
+    <div class="meta-badges">
+      <span class="badge">tag: smoke</span>
+      <span class="badge">tag: scan</span>
+      <span class="badge">tag: sandbox</span>
+      <span class="badge">tag: testing-plan</span>
+      <span class="badge">tag: feedback</span>
+      <span class="badge">standard: SOV-Sys-zero</span>
+      <span class="badge">standard: SIN governance</span>
+      <span class="badge">memory: <span class="mono">/memories/repo/testing-plan-feedback-link.md</span></span>
+    </div>
+    <div class="footer-note" id="meta">Plan metadata not loaded.</div>
+  </div>
+
+  <div class="card">
+    <input type="text" id="filter" placeholder="Filter by page path or function name..." onkeyup="render()" />
+  </div>
+
+  <div id="host" class="grid"></div>
+
+  <script type="text/javascript">
+  /*<![CDATA[*/
+  var plan = null;
+  var feedback = {};
+
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function keyFor(checkId) {
+    return 'sandbox-testing-plan::' + checkId;
+  }
+
+  function loadSaved(checkId) {
+    try {
+      var raw = localStorage.getItem(keyFor(checkId));
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveItem(checkId, obj) {
+    try {
+      localStorage.setItem(keyFor(checkId), JSON.stringify(obj));
+    } catch (e) {
+      // non-fatal
+    }
+    feedback[checkId] = obj;
+  }
+
+  function statusClass(status) {
+    if (status === 'done' || status === 'pass') return 'status-done';
+    if (status === 'fail') return 'status-fail';
+    return 'status-pending';
+  }
+
+  function updateCheck(checkId, field, value) {
+    var current = feedback[checkId] || {};
+    current[field] = value;
+
+    if (field === 'validated' || field === 'confirmed') {
+      if (current.validated && current.confirmed) {
+        current.status = 'done';
+      } else {
+        current.status = 'pending';
+      }
+    }
+
+    saveItem(checkId, current);
+    render();
+  }
+
+  function markAllVisible(field, value) {
+    if (!plan || !plan.pages) return;
+    var filterText = (document.getElementById('filter').value || '').toLowerCase();
+    for (var i = 0; i < plan.pages.length; i++) {
+      var page = plan.pages[i];
+      var pagePath = String(page.page || '').toLowerCase();
+      var checks = Array.isArray(page.checks) ? page.checks : [];
+      for (var c = 0; c < checks.length; c++) {
+        var chk = checks[c];
+        var fn = String(chk.functionName || '').toLowerCase();
+        if (filterText && pagePath.indexOf(filterText) < 0 && fn.indexOf(filterText) < 0) {
+          continue;
+        }
+        var current = feedback[chk.checkId] || {};
+        current[field] = value;
+        if ((field === 'validated' || field === 'confirmed') && current.validated && current.confirmed) {
+          current.status = 'done';
+        }
+        saveItem(chk.checkId, current);
+      }
+    }
+    render();
+  }
+
+  function loadPlan() {
+    var url = '../~REPORTS/testing-plan/sandbox-testing-plan.json?t=' + Date.now();
+    fetch(url, { cache: 'no-store' })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(j) {
+        plan = j;
+        document.getElementById('meta').innerHTML =
+          'Generated: <span class="mono">' + esc(j.generatedAt || '--') +
+          '</span> | Pages: <span class="mono">' + esc(j.pagesCount || 0) +
+          '</span> | Checks: <span class="mono">' + esc(j.checksCount || 0) + '</span>';
+        render();
+      })
+      .catch(function(err) {
+        document.getElementById('host').innerHTML = '<div class="card">Failed to load testing plan JSON: ' + esc(err.message) + '</div>';
+      });
+  }
+
+  function buildRow(pagePath, check) {
+    var saved = loadSaved(check.checkId) || {};
+    if (!feedback[check.checkId]) {
+      feedback[check.checkId] = {
+        checkId: check.checkId,
+        page: pagePath,
+        functionName: check.functionName,
+        status: saved.status || check.status || 'pending',
+        validated: !!saved.validated,
+        confirmed: !!saved.confirmed,
+        signOff: saved.signOff || '',
+        comments: saved.comments || '',
+        bugRefs: saved.bugRefs || '',
+        standards: check.standards || [],
+        tags: check.tags || [],
+        memoryRefs: check.memoryRefs || []
+      };
+    }
+    var item = feedback[check.checkId];
+
+    var status = esc(item.status || 'pending');
+    var standards = esc((item.standards || []).join(', '));
+    var tags = esc((item.tags || []).join(', '));
+    var memoryRefs = esc((item.memoryRefs || []).join(', '));
+
+    var row = '';
+    row += '<tr>';
+    row += '<td><span class="mono">' + esc(check.checkId) + '</span></td>';
+    row += '<td>' + esc(check.functionName || '') + '</td>';
+    row += '<td><span class="' + statusClass(status) + '">' + status + '</span></td>';
+    row += '<td><input type="checkbox" ' + (item.validated ? 'checked="checked"' : '') + ' onchange="updateCheck(\'' + esc(check.checkId) + '\',\'validated\',this.checked)" /></td>';
+    row += '<td><input type="checkbox" ' + (item.confirmed ? 'checked="checked"' : '') + ' onchange="updateCheck(\'' + esc(check.checkId) + '\',\'confirmed\',this.checked)" /></td>';
+    row += '<td><input type="text" value="' + esc(item.signOff || '') + '" onchange="updateCheck(\'' + esc(check.checkId) + '\',\'signOff\',this.value)" /></td>';
+    row += '<td><textarea onchange="updateCheck(\'' + esc(check.checkId) + '\',\'comments\',this.value)">' + esc(item.comments || '') + '</textarea></td>';
+    row += '<td><input type="text" value="' + esc(item.bugRefs || '') + '" onchange="updateCheck(\'' + esc(check.checkId) + '\',\'bugRefs\',this.value)" placeholder="Bug-YYYY..." /></td>';
+    row += '<td>' + standards + '<br /><span class="mono">' + tags + '</span><br /><span class="mono">' + memoryRefs + '</span></td>';
+    row += '</tr>';
+    return row;
+  }
+
+  function render() {
+    if (!plan || !Array.isArray(plan.pages)) {
+      document.getElementById('host').innerHTML = '<div class="card">No plan loaded.</div>';
+      return;
+    }
+
+    var filterText = (document.getElementById('filter').value || '').toLowerCase();
+    var html = '';
+
+    for (var i = 0; i < plan.pages.length; i++) {
+      var page = plan.pages[i];
+      var pagePath = String(page.page || '');
+      var checks = Array.isArray(page.checks) ? page.checks : [];
+
+      var rows = '';
+      var count = 0;
+      for (var c = 0; c < checks.length; c++) {
+        var fn = String(checks[c].functionName || '').toLowerCase();
+        var pp = pagePath.toLowerCase();
+        if (filterText && pp.indexOf(filterText) < 0 && fn.indexOf(filterText) < 0) {
+          continue;
+        }
+        rows += buildRow(pagePath, checks[c]);
+        count++;
+      }
+
+      if (count === 0) {
+        continue;
+      }
+
+      html += '<div class="card">';
+      html += '<div class="page-head"><div class="page-title">' + esc(pagePath) + '</div>';
+      html += '<div class="sub">Functions: ' + esc(count) + '</div></div>';
+      html += '<table><thead><tr>';
+      html += '<th>Check ID</th><th>Function</th><th>Status</th><th>Validated</th><th>Confirmed</th><th>Sign-off</th><th>Comments</th><th>Bug Refs</th><th>Standards / Tags / Memory</th>';
+      html += '</tr></thead><tbody>' + rows + '</tbody></table>';
+      html += '</div>';
+    }
+
+    if (!html) {
+      html = '<div class="card">No matching checks for current filter.</div>';
+    }
+
+    document.getElementById('host').innerHTML = html;
+  }
+
+  function exportFeedback() {
+    var items = [];
+    var k;
+    for (k in feedback) {
+      if (feedback.hasOwnProperty(k)) {
+        items.push(feedback[k]);
+      }
+    }
+
+    var payload = {
+      schema: 'PwShGUI-SandboxTestingFeedback/1.0',
+      generatedAt: new Date().toISOString(),
+      sourcePlan: '../~REPORTS/testing-plan/sandbox-testing-plan.json',
+      standards: ['SOV-Sys-zero', 'SIN governance', 'DualEngine-SmokeGate'],
+      tags: ['feedback', 'bug-report-ready', 'smoke', 'scan', 'sandbox', 'testing-plan'],
+      memoryLinks: ['/memories/repo/testing-plan-feedback-link.md'],
+      items: items
+    };
+
+    var text = JSON.stringify(payload, null, 2);
+    var blob = new Blob([text], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'sandbox-testing-feedback.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function copyBugSummary() {
+    var lines = [];
+    var k;
+    for (k in feedback) {
+      if (!feedback.hasOwnProperty(k)) continue;
+      var item = feedback[k];
+      if (item.comments || item.bugRefs || item.status === 'fail') {
+        lines.push(
+          '[CHECK] ' + item.checkId +
+          ' | [PAGE] ' + item.page +
+          ' | [FN] ' + item.functionName +
+          ' | [STATUS] ' + (item.status || 'pending') +
+          ' | [BUG] ' + (item.bugRefs || '-') +
+          ' | [COMMENT] ' + (item.comments || '-')
+        );
+      }
+    }
+
+    var summary = lines.join('\n');
+    var ta = document.createElement('textarea');
+    ta.value = summary;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    alert('Bug summary copied to clipboard. Lines: ' + lines.length);
+  }
+
+  loadPlan();
+  /*]]>*/
+  </script>
+</body>
+</html>
+

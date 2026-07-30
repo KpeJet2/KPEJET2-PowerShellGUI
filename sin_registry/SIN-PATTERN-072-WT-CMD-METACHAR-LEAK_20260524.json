@@ -1,0 +1,39 @@
+{
+  "id": "SIN-PATTERN-072-WT-CMD-METACHAR-LEAK_20260524",
+  "sin_id": "SIN-PATTERN-072-WT-CMD-METACHAR-LEAK_20260524",
+  "title": "wt/start command payload leaks cmd metacharacters and breaks tab launch",
+  "description": "When a batch launcher passes a pwsh -Command string through cmd or wt without strict quoting, cmd can consume pipe, semicolon, or ampersand tokens before PowerShell receives them. This causes false command-not-found failures and can corrupt batch control flow.",
+  "severity": "HIGH",
+  "category": "reliability",
+  "vector": "wt-cmd-metachar-leak",
+  "ps_version_scope": "BOTH",
+  "status": "pattern-defined",
+  "created_at": "2026-05-24T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for AddTab style batch launch lines that embed pwsh -Command payloads containing cmd metacharacters",
+  "scan_regex": "call\\s+:AddTab[^\\r\\n]*pwsh[^\\r\\n]*-Command[^\\r\\n]*[|&;]",
+  "scan_file_pattern": "*.bat;*.cmd",
+  "file_exclusion_regex": "sin_registry|~REPORTS|\\.backup",
+  "context_guard_regex": "\\^\\||\\^&|cmd\\s+/d\\s+/s\\s+/c|\\-File\\s+",
+  "context_guard_lines": 2,
+  "context_guard_direction": "both",
+  "preventionRule": "For wt/cmd launchers, avoid shell metacharacters in forwarded pwsh payloads. Prefer pwsh -File scripts, or wrap a single quoted -Command payload that cmd cannot parse into operators.",
+  "remedy": "Replace inline pipeline command payloads with a script file or a metachar-safe command sequence. Example: avoid '| Format-List' in cmd-forwarded payloads; emit object directly or move formatting into a .ps1 file.",
+  "tags": [
+    "batch",
+    "wt",
+    "cmd",
+    "quoting",
+    "powershell",
+    "launcher"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

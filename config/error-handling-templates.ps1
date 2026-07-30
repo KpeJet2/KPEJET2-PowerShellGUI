@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -209,7 +209,7 @@ $backoff = 1
 $result = $null
 while ($retries -lt $maxRetries) {
     try {
-        $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $payload -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $payload -TimeoutSec 15 -ErrorAction Stop
         $result = $response
         Write-AppLog -Message "API call succeeded" -Level Info
         break
@@ -364,14 +364,14 @@ try {
 
 # ❌ ANTI-PATTERN 3: Generic catch without specific handling
 try {
-    $result = Invoke-WebRequest -Uri $url
+    $result = Invoke-WebRequest -Uri $url  # SIN-EXEMPT:P070 -- Intentional anti-pattern example (missing timeout)
 } catch {
     Write-Host "Error occurred"  # Too generic, no details
 }
 
 # ✅ CORRECT: Specific error message with details
 try {
-    $result = Invoke-WebRequest -Uri $url -ErrorAction Stop
+    $result = Invoke-WebRequest -Uri $url -TimeoutSec 15 -ErrorAction Stop
 } catch {
     Write-AppLog -Message "Web request failed for ${url}: $($_.Exception.Message)" -Level Error
 }
@@ -460,6 +460,8 @@ $psVersion = try { $PSVersionTable.PSVersion } catch { Write-Warning "Version un
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

@@ -1,0 +1,542 @@
+{
+  "runtime": "Both",
+  "scanMode": "Standard",
+  "scanId": "SINSCAN-20260618033936",
+  "timestamp": "2026-06-18T03:39:45.2502261+08:00",
+  "workspace": ".",
+  "patternsLoaded": 73,
+  "filesScanned": 1,
+  "totalFindings": 0,
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 0,
+  "blockedById": {},
+  "blockedCount": 0,
+  "regexTimeoutMs": 200,
+  "regexTimeoutAbortThreshold": 8,
+  "regexTimeouts": 0,
+  "totalRawMatches": 35,
+  "totalSuppressed": 35,
+  "elapsedMs": 8534,
+  "patternSummary": [
+    {
+      "sinId": "SIN-PATTERN-001-HARDCODED-CREDENTIALS_202604042257",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-004-DOTCOUNT-WITHOUT-ARRAY_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-005-PS7ONLY-OPERATORS_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-007-VERSIONTAG-STALE_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-008-ADDTYPE-MISSING-ASSEMBLY_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-009-UNVALIDATED-PATH-JOIN_202604042257",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-010-IEX-DYNAMIC-STRING_202604042257",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 28,
+      "suppressed": 0,
+      "findings": 28
+    },
+    {
+      "sinId": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-013-FILESIZEBLOWOUT_202604042257",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-016-TODO-FIXME-STALE_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-017-OUTFILE-NO-ENCODING_202604042257",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING_202604040000",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-020-SSL-CERT-BYPASS_202604040000",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-021-DIVZERO-UNGUARDED_202601040000",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-022-NULL-METHOD-CALL_202603040000",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-023-DOUBLE-ENCODED-UTF8_202604042345",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-024-STRICTMODE-SHOWDIALOG-BLEED_202604042345",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-025-FORECOLOR-NULL-ASSIGNMENT",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-026-DATATABLE-PSOBJECT-CAST",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "severity": "HIGH",
+      "rawMatches": 3,
+      "suppressed": 3,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-028-INLINE-SWITCH-EXPRESSION_202604120000",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-035-NESTED-BLOCK-COMMENT",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-036-INLINE-CMD-MULTILINE-FAIL",
+      "severity": "LOW",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-037-DICTKEYS-COUNT-IN-LITERAL",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-038",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-039",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-040",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-041-JSON-SCHEMA-PROPERTY-DRIFT_20260502",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-042-UNDECLARED-PARAMETER-PASSED_20260503",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-043-RESTRICTED-CSV-HASH-DRIFT_20260504",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-047-SIN-SCHEMA-DRIFT",
+      "severity": "Blocking",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-048-PIPELINE-SIN-LINKAGE-MISSING",
+      "severity": "Blocking",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+      "severity": "HIGH",
+      "rawMatches": 1,
+      "suppressed": 1,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
+      "severity": "MEDIUM",
+      "rawMatches": 3,
+      "suppressed": 3,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-054-REPORT-ROOT-DRIFT",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-055-STUB-PLACEHOLDER-BLOCK",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-056-TODO-DESCRIPTION-PLACEHOLDER",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-057-P029-EXEMPT-STALE",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-058-PRECOMMIT-SYNOPSIS-DRIFT",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-059-MERGE-CONFLICT-MARKERS-ACTIVE",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-060-WORKSPACE-FILE-URI-TEMPLATE",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-061-CHECKLIST-COPY-DRIFT",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-062-TODO-ARRAY-ROOT-ACTIVE",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-063-TYPED-CATCH-PIPELINE-STOPPED_20260522",
+      "severity": "CRITICAL",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-064-APPLICATION-RUN-NO-STRICTMODE-OFF_20260522",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-066-TIMER-INTERVAL-UNVALIDATED_20260522",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-067-JS-FETCH-NO-ABORT-SIGNAL_20260522",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-068-SCRIPTSCOPE-CONTROLSADD-NOGUARD_20260523",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-069-UNICODE-REPLACEMENT-CHAR-SOURCE_20260523",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-070-POWERSHELL-WEBREQUEST-NO-TIMEOUTSEC_20260523",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-071-BLOCKING-WAIT-NO-TIMEOUT_20260523",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-072-WT-CMD-METACHAR-LEAK_20260524",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-073-UVICORN-SHUTDOWN-TRACEBACK-NOISE_20260524",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-074-FASTAPI-LIFESPAN-TASK-NO-CANCEL_20260524",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-075-CRONPROCESSOR-UNBOUNDED-ENTRY_20260524",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-076-PWSH-NO-PS51-FALLBACK_20260524",
+      "severity": "MEDIUM",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-077-SINSCAN-RUNTIME-NOT-EXPLICIT_20260524",
+      "severity": "LOW",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-078-INVALID-BRACE-PAREN-INTERPOLATION_20260618",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-079-SYNC-OVER-ASYNC-BLOCKING-CALL_20260618",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-080-WEBSOCKET-BLOCKING-ACCEPT-IN-LISTENER_20260618",
+      "severity": "HIGH",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    },
+    {
+      "sinId": "SIN-PATTERN-081-BATCH-WORKSPACEPATH-NOT-FORWARDED_20260618",
+      "severity": "LOW",
+      "rawMatches": 0,
+      "suppressed": 0,
+      "findings": 0
+    }
+  ],
+  "findings": [],
+  "countsBySinId": {},
+  "baselinePath": "",
+  "baselineApplied": false,
+  "ratchetMode": "Permissive",
+  "regressions": [],
+  "improvements": []
+}

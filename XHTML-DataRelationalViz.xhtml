@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- VersionTag: 2606.B5.V51.4 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -85,6 +85,13 @@ canvas#vizCanvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:cr
 table.data{width:100%;border-collapse:collapse;font-size:12px}
 table.data th{background:var(--surface2);color:var(--accent);text-align:left;padding:4px 8px;border:1px solid var(--border)}
 table.data td{padding:4px 8px;border:1px solid var(--border)}
+table.data th.sortable{cursor:pointer;-webkit-user-select:none;user-select:none}
+table.data th.sortable:hover{background:#21213a}
+.src-filter-row th{background:#10101a;padding:3px 6px}
+.src-filter-row input{width:100%;background:#0c0f1c;color:#c8d8f0;border:1px solid #23324f;border-radius:4px;padding:2px 5px;font-size:11px;font-family:var(--font)}
+.src-delta-up{color:#00c853;font-weight:bold;font-size:10px;margin-left:6px}
+.src-delta-down{color:#ff3b30;font-weight:bold;font-size:10px;margin-left:6px}
+.src-pick{text-align:center;width:34px}
 .log-area{background:var(--bg);color:var(--text2);font-family:Consolas,monospace;font-size:11px;padding:8px;overflow-y:auto;flex:1;white-space:pre-wrap;border:1px solid var(--border);border-radius:var(--radius)}
 .foresight-chart{width:100%;min-height:300px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
 .sbar{background:var(--surface);border-top:1px solid var(--border);padding:4px 12px;font-size:10px;color:var(--text2);display:flex;gap:16px;flex-shrink:0}
@@ -142,12 +149,37 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
 .fs-q-tag.entangled{color:#ff00ff;border-color:#7a2870;background:#1a0820}
 .fs-q-tag.epoch{color:#ffaa00;border-color:#7a5a10}
 .fs-q-tag.basis{color:#00ffaa;border-color:#207a48}
+/* Shortcuts overlay */
+.shortcuts-overlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px}
+.shortcuts-card{width:min(560px,100%);max-height:80vh;overflow-y:auto;background:#0d1020;border:1px solid #1a3050;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);padding:14px}
+.shortcuts-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#88ccff;font-size:14px;font-weight:bold}
+.shortcuts-close{background:#1a2a48;color:#aaccff;border:1px solid #2a4070;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px}
+.shortcuts-grid{display:grid;grid-template-columns:120px 1fr;gap:6px 10px;font-size:12px}
+.shortcuts-key{color:#7bed9f;font-family:Consolas,monospace}
+.shortcuts-desc{color:#c8d8f0}
+.shortcuts-note{margin-top:8px;color:#6688aa;font-size:11px}
+.shortcut-hint-chip{margin-left:8px;background:#162034;color:#aaccff;border:1px solid #2a4070;border-radius:999px;padding:1px 8px;font-size:10px;cursor:pointer;opacity:1;transition:opacity .6s ease,transform .6s ease}
+.shortcut-hint-chip.fading{opacity:0;transform:translateY(-3px)}
+.shortcut-hint-chip.hidden{display:none}
+.db-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.db-hint{color:#7aa6c7;font-size:10px;margin-left:4px}
+.db-profile-msg{font-size:11px;color:#88aacc}
+.db-audit-box{border:1px solid #1a3050;border-radius:6px;background:#0c1120;padding:6px;max-height:200px;overflow-y:auto}
+.db-audit-item{font-size:11px;color:#c8d8f0;padding:3px 4px;border-bottom:1px solid #16233a}
+.db-audit-tag{display:inline-block;font-size:10px;border-radius:3px;padding:1px 5px;margin-left:5px}
+.db-audit-tag.dup{background:#2a1414;border:1px solid #5a2020;color:#ff8080}
+.db-audit-tag.sim{background:#2a230f;border:1px solid #5a4a20;color:#ffd27a}
+.db-audit-tag.miss{background:#1f102a;border:1px solid #4a2a60;color:#d09cff}
+.db-crossref-wrap{position:relative}
+.db-crossref-panel{position:absolute;top:30px;left:0;z-index:50;background:#0d1020;border:1px solid #1a3050;border-radius:6px;min-width:280px;max-height:220px;overflow-y:auto;padding:6px}
+.db-crossref-item{display:flex;align-items:center;gap:6px;color:#c8d8f0;font-size:11px;padding:2px 0}
+.db-crossref-item input{accent-color:#66b3ff}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--surface)}
 ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
 /* ]]> */
 </style>
-  <meta name="pwshgui-version-tag" content="2605.B5.V46.0" />
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.2" />
   <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
   <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
 </head>
@@ -190,6 +222,7 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
       <option value="psych-meds">Psych Diagnoses &amp; Medications</option>
       <option value="car-models">Car Models &amp; Manufacturers</option>
       <option value="taxonomy-styles">Taxonomy of Styles, Cultures &amp; Origins (400yr)</option>
+      <option value="gods-and-worship">Gods and Worship (500-2500)</option>
     </select>
   </label>
   <label>Layout:
@@ -204,6 +237,13 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
       <option value="ego">Ego Network</option>
       <option value="sankey">Sankey Layered</option>
       <option value="chord">Chord Circular</option>
+      <option value="tree">Tree (Top-Down)</option>
+      <option value="pyramid">Pyramid</option>
+      <option value="timeline-down">Timeline Downward</option>
+      <option value="timeline-ltr">Timeline Left&#x2192;Right</option>
+      <option value="concentric">Concentric Rings</option>
+      <option value="spiral">Spiral Orbit</option>
+      <option value="timeline-zigzag">Timeline ZigZag</option>
     </select>
   </label>
   <div class="ctl-sep"></div>
@@ -216,6 +256,8 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
   <button class="ctl-btn" id="btnExportPng" title="Export canvas as PNG image">&#x1F5BC; PNG</button>
   <button class="ctl-btn" id="btnExportJson" title="Export graph data as JSON">&#x1F4CB; JSON</button>
   <button class="ctl-btn" id="btnExportCsv" title="Export node list as CSV">&#x1F4C4; CSV</button>
+  <button class="ctl-btn" id="btnExportPdfReport" title="Export full dataset parameter report as printable PDF">PDF Report</button>
+  <button class="ctl-btn" id="btnShortcuts" title="Show keyboard shortcuts (?)">Shortcuts</button>
   <span id="nodeCount" style="margin-left:auto;color:var(--text2);font-size:11px">Nodes: 0 | Links: 0 | Sel: 0</span>
 </div>
 
@@ -285,6 +327,42 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
             <option value="gartner">Gartner Research</option>
             <option value="github-archive">GitHub Archive (BigQuery)</option>
             <option value="common-crawl">Common Crawl</option>
+            <option value="eurostat">Eurostat</option>
+            <option value="oecd">OECD Data</option>
+            <option value="undata">UN Data</option>
+            <option value="who-gho">WHO Global Health Observatory</option>
+            <option value="faostat">FAOSTAT</option>
+            <option value="usgs">USGS Data</option>
+            <option value="noaa-ncei">NOAA NCEI</option>
+            <option value="nasa-earthdata">NASA Earthdata</option>
+            <option value="nih-reporter">NIH RePORTER</option>
+            <option value="clinicaltrials">ClinicalTrials.gov</option>
+            <option value="iea-data">IEA Data Browser</option>
+            <option value="eia-open">US EIA Open Data</option>
+            <option value="fred">FRED (St. Louis Fed)</option>
+            <option value="alphavantage">Alpha Vantage</option>
+            <option value="polygon">Polygon.io</option>
+            <option value="iex-cloud">IEX Cloud</option>
+            <option value="open-meteo">Open-Meteo</option>
+            <option value="geonames">GeoNames</option>
+            <option value="worldpop">WorldPop</option>
+            <option value="owid">Our World in Data</option>
+            <option value="kaggle">Kaggle Datasets</option>
+            <option value="data-gov-us">Data.gov (US)</option>
+            <option value="data-gov-uk">Data.gov.uk</option>
+            <option value="data-gov-au">data.gov.au</option>
+            <option value="data-europa-eu">data.europa.eu</option>
+            <option value="cdc-open">CDC Open Data</option>
+            <option value="ecb-sdw">ECB SDW</option>
+            <option value="boe-statistics">Bank of England Data</option>
+            <option value="patentsview">PatentsView</option>
+            <option value="lens">Lens.org</option>
+            <option value="uspto">USPTO Open Data</option>
+            <option value="wipo">WIPO PATENTSCOPE</option>
+            <option value="overpass-osm">OpenStreetMap Overpass</option>
+            <option value="dbpedia">DBpedia SPARQL</option>
+            <option value="quandl-nasdaq">Nasdaq Data Link (Quandl)</option>
+            <option value="tradingeconomics">Trading Economics</option>
           </select>
         </label>
         <button class="run" id="btnRunWizard">&#x25B6; Run Wizard</button>
@@ -315,6 +393,7 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
         <option value="psych-meds">Psych Dx &amp; Meds</option>
         <option value="car-models">Car Models</option>
         <option value="taxonomy-styles">Taxonomy Styles (400yr)</option>
+        <option value="gods-and-worship">Gods and Worship</option>
       </select>
 
       <div class="sb-section-title">Filter by Type</div>
@@ -335,6 +414,13 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
         <option value="ego">Ego Network</option>
         <option value="sankey">Sankey Layered</option>
         <option value="chord">Chord Circular</option>
+        <option value="tree">Tree (Top-Down)</option>
+        <option value="pyramid">Pyramid</option>
+        <option value="timeline-down">Timeline Downward</option>
+        <option value="timeline-ltr">Timeline Left&#x2192;Right</option>
+        <option value="concentric">Concentric Rings</option>
+        <option value="spiral">Spiral Orbit</option>
+        <option value="timeline-zigzag">Timeline ZigZag</option>
       </select>
     </div>
 
@@ -451,8 +537,30 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
 
   <div class="panel" id="panelSources">
     <div class="panel-content">
+      <div class="controls-row" style="background:transparent;border:none;padding:0 0 8px 0">
+        <button class="ctl-btn accent" id="btnSourceRefreshSelected" type="button">Refresh Selected Sources</button>
+        <button class="ctl-btn" id="btnSourceRefreshAll" type="button">Refresh All Sources</button>
+        <span id="srcRefreshInfo" style="color:var(--text2);font-size:11px">No source refresh executed yet.</span>
+      </div>
       <table class="data" id="sourcesTable">
-        <thead><tr><th>Source</th><th>URL</th><th>Status</th><th>Records</th><th>Last Fetched</th></tr></thead>
+        <thead>
+          <tr>
+            <th class="src-pick"><input type="checkbox" id="srcSelectAll" title="Select all sources"/></th>
+            <th class="sortable" data-sort="name">Source</th>
+            <th class="sortable" data-sort="url">URL</th>
+            <th class="sortable" data-sort="status">Status</th>
+            <th class="sortable" data-sort="records">Records</th>
+            <th class="sortable" data-sort="lastFetched">Last Fetched</th>
+          </tr>
+          <tr class="src-filter-row">
+            <th></th>
+            <th><input type="text" id="srcFilterName" placeholder="filter source"/></th>
+            <th><input type="text" id="srcFilterUrl" placeholder="filter url"/></th>
+            <th><input type="text" id="srcFilterStatus" placeholder="filter status"/></th>
+            <th><input type="text" id="srcFilterRecords" placeholder="filter records"/></th>
+            <th><input type="text" id="srcFilterFetched" placeholder="filter date"/></th>
+          </tr>
+        </thead>
         <tbody></tbody>
       </table>
     </div>
@@ -461,24 +569,71 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
   <div class="panel" id="panelBuilder">
     <div class="panel-content">
       <div class="wizard-panel">
+        <div class="sb-section-title">Dataset Profiles</div>
+        <label>Existing Dataset
+          <select id="dbExistingDataset"></select>
+        </label>
+        <label>Parameter Set
+          <select id="dbParamSet"></select>
+        </label>
+        <div class="db-row">
+          <button class="ctl-btn accent" id="btnDbNewDataset" type="button">New Dataset</button>
+          <button class="ctl-btn" id="btnDbLoadParamSet" type="button">Load Set</button>
+          <button class="ctl-btn" id="btnDbForkParamSet" type="button">Fork Set</button>
+          <button class="ctl-btn" id="btnDbRenameCopySet" type="button">Rename/Copy Dataset</button>
+          <button class="ctl-btn" id="btnDbSetDefaultParam" type="button">Set Default Params</button>
+        </div>
+        <div id="dbProfileMsg" class="db-profile-msg">Profile ready.</div>
+        <div id="dbAutoUpdatePanel" class="hidden" style="border:1px solid var(--border);border-radius:var(--radius);padding:8px;background:#0d1220">
+          <div class="sb-section-title" style="margin-top:0">Auto Update Settings</div>
+          <div class="db-row" style="gap:12px">
+            <label><input type="checkbox" id="dbAutoUpdateArticles"/> Auto Update Articles</label>
+            <label><input type="checkbox" id="dbAutoUpdateNodeNames"/> Auto Update Node Names</label>
+            <label><input type="checkbox" id="dbAutoUpdateSources"/> Auto Update Sources</label>
+            <label><input type="checkbox" id="dbAutoUpdateLinks"/> Auto Update Links</label>
+            <label><input type="checkbox" id="dbAutoUpdateAll"/> AUTO-ALL</label>
+            <button class="ctl-btn accent" id="btnDbApplyAutoUpdate" type="button">Apply</button>
+          </div>
+        </div>
+        <div id="dbLoadedNodeAuditPanel" class="hidden">
+          <div class="sb-section-title" style="margin-top:8px">Loaded Nodes Audit</div>
+          <div class="db-row" style="justify-content:space-between">
+            <span class="db-profile-msg" id="dbNodeAuditSummary">No loaded node audit yet.</span>
+            <button class="ctl-btn" id="btnDbSmartRenameLoaded" type="button" title="Smartly rename all nodes in the loaded dataset param set">Smart Rename Loaded Nodes</button>
+          </div>
+          <div id="dbLoadedNodeAudit" class="db-audit-box"></div>
+        </div>
+
         <div class="sb-section-title">Dataset Parameters</div>
-        <label>Dataset Key <input type="text" id="dbKey" placeholder="e.g. custom-taxonomy-01"/></label>
-        <label>Seed Topic <input type="text" id="dbSeedTopic" placeholder="e.g. Taxonomy of visual styles"/></label>
-        <label>Seed Year <input type="number" id="dbSeedYear" value="2000" min="-20000" max="3000"/></label>
-        <label>Period (years) <input type="number" id="dbPeriod" value="25" min="1" max="2000"/></label>
-        <label>Depth <input type="number" id="dbDepth" value="20" min="1" max="200"/></label>
-        <label>Deviation <input type="text" id="dbDeviation" placeholder="e.g. disruption-pivot"/></label>
-        <label>Node Count <input type="number" id="dbNodeCount" value="12" min="2" max="200"/></label>
-        <label>Min Link Value <input type="number" id="dbMinLinkVal" value="1" min="1" max="10"/></label>
-        <label>Max Link Value <input type="number" id="dbMaxLinkVal" value="5" min="1" max="20"/></label>
-        <label>Preferred Link Type
+        <label>Dataset Key <span class="db-hint" id="hintDbKey"></span><input type="text" id="dbKey" placeholder="e.g. custom-taxonomy-01"/></label>
+        <label><input type="checkbox" id="dbHideDataset"/> Hide Dataset from top selectors</label>
+        <label>Seed Topic <span class="db-hint" id="hintDbSeedTopic"></span><input type="text" id="dbSeedTopic" placeholder="e.g. Taxonomy of visual styles"/></label>
+        <label>Seed Year <span class="db-hint" id="hintDbSeedYear"></span><input type="number" id="dbSeedYear" value="2000" min="-20000" max="3000"/></label>
+        <label>Period (years) <span class="db-hint" id="hintDbPeriod"></span><input type="number" id="dbPeriod" value="25" min="1" max="2000"/></label>
+        <label>Depth <span class="db-hint" id="hintDbDepth"></span><input type="number" id="dbDepth" value="20" min="1" max="200"/></label>
+        <label>Deviation <span class="db-hint" id="hintDbDeviation"></span><input type="text" id="dbDeviation" placeholder="e.g. disruption-pivot"/></label>
+        <label>Node Count <span class="db-hint" id="hintDbNodeCount"></span><input type="number" id="dbNodeCount" value="50" min="2" max="500"/></label>
+        <label>Object Cap <span class="db-hint" id="hintDbObjectCap"></span><input type="number" id="dbObjectCap" value="200" min="20" max="2000"/></label>
+        <label>Min Link Value <span class="db-hint" id="hintDbMinLinkVal"></span><input type="number" id="dbMinLinkVal" value="1" min="1" max="66"/></label>
+        <label>Max Link Value <span class="db-hint" id="hintDbMaxLinkVal"></span><input type="number" id="dbMaxLinkVal" value="66" min="1" max="66"/></label>
+        <label>Article Links Min <span class="db-hint" id="hintDbArticleLinksMin"></span><input type="number" id="dbArticleLinksMin" value="1" min="1" max="1000"/></label>
+        <label>Article Links Max <span class="db-hint" id="hintDbArticleLinksMax"></span><input type="number" id="dbArticleLinksMax" value="66" min="1" max="1000"/></label>
+        <label>Article Link Ref Cap <span class="db-hint" id="hintDbArticleRefCap"></span><input type="number" id="dbArticleRefCap" value="1000" min="1" max="1000"/></label>
+        <label>Preferred Link Type <span class="db-hint" id="hintDbPreferredLinkType"></span>
           <select id="dbPreferredLinkType"></select>
         </label>
-        <label>Sources
+        <label><input type="checkbox" id="dbAutoNodes" checked="checked"/> Automatic Create Nodes</label>
+        <label>Auto Node Name Pattern <span class="db-hint" id="hintDbAutoNodePattern">Use {topic}, {n}, {year}, {type}</span><input type="text" id="dbAutoNodePattern" value="{topic}-N{n}"/></label>
+        <label>Sources <span class="db-hint" id="hintDbSources"></span>
           <select id="dbSources" multiple="multiple" style="height:120px"></select>
         </label>
-        <label>Nodes (optional, one per line: id|year|type|group|desc)
-          <textarea id="dbNodesText" rows="5" placeholder="Node A|2001|event|1|Description"></textarea>
+        <label>Cross Reference Group Types</label>
+        <div class="db-crossref-wrap">
+          <button class="ctl-btn" id="btnDbCrossRefToggle" type="button">Cross Ref Groups &#x25BE;</button>
+          <div id="dbCrossRefPanel" class="db-crossref-panel hidden"></div>
+        </div>
+        <label>Nodes (optional, one per line: id|year|type|group|desc|aliasesCsv|synonymsCsv)
+          <textarea id="dbNodesText" rows="5" placeholder="Node A|2001|event|1|Description|Alias 1,Alias 2|Synonym 1,Synonym 2"></textarea>
         </label>
         <label>Links (optional, one per line: source|target|value|type)
           <textarea id="dbLinksText" rows="4" placeholder="Node A|Node B|3|correlation"></textarea>
@@ -490,6 +645,11 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
           <button class="ctl-btn" id="btnDbApply">Apply Runtime</button>
           <button class="ctl-btn" id="btnDbSaveLocal">Save Local</button>
           <button class="ctl-btn" id="btnDbDownload">Download JSON</button>
+          <button class="ctl-btn" id="btnDbExportProfiles" type="button" title="Export all builder param sets to JSON file">&#x2B07; Export Profiles</button>
+          <button class="ctl-btn" id="btnDbImportProfiles" type="button" title="Import param sets from JSON file">&#x2B06; Import Profiles</button>
+          <button class="ctl-btn" id="btnDbRestoreBuild" type="button" title="Restore the skeleton from the previous build">&#x21BA; Undo Build</button>
+          <button class="ctl-btn" id="btnDbAutoRenameNodes" type="button" title="Create succinct, related node names for the active dataset">Auto Succinct Names</button>
+          <input type="file" id="dbImportProfilesFile" accept=".json" style="display:none"/>
         </div>
       </div>
       <div class="sb-section-title" style="margin-top:10px">Skeleton Preview</div>
@@ -537,7 +697,28 @@ table.data td{padding:4px 8px;border:1px solid var(--border)}
   <span id="statusMsg">Ready</span>
   <span id="statusDataset">Dataset: none</span>
   <span id="statusLayout">Layout: force</span>
+  <button id="shortcutHintChip" class="shortcut-hint-chip" type="button" title="Show keyboard shortcuts">Press ? for shortcuts</button>
   <span style="margin-left:auto" id="statusTime"></span>
+</div>
+
+<div id="shortcutsOverlay" class="shortcuts-overlay hidden" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div class="shortcuts-card" id="shortcutsCard">
+    <div class="shortcuts-title">
+      <span>Keyboard Shortcuts</span>
+      <button class="shortcuts-close" id="btnCloseShortcuts" type="button">Close</button>
+    </div>
+    <div class="shortcuts-grid">
+      <div class="shortcuts-key">g t f p s b l o</div><div class="shortcuts-desc">Open Graph, Timeline, Foresight, Pattern, Sources, Builder, Linkage, Log tabs</div>
+      <div class="shortcuts-key">r</div><div class="shortcuts-desc">Refresh active dataset</div>
+      <div class="shortcuts-key">c</div><div class="shortcuts-desc">Clear current selection</div>
+      <div class="shortcuts-key">w</div><div class="shortcuts-desc">Toggle AI wizard panel</div>
+        <div class="shortcuts-key">Ctrl+B</div><div class="shortcuts-desc">Jump directly to Builder tab</div>
+      <div class="shortcuts-key">?</div><div class="shortcuts-desc">Open or close this shortcuts panel</div>
+      <div class="shortcuts-key">Esc</div><div class="shortcuts-desc">Close shortcuts panel</div>
+      <div class="shortcuts-key">Enter</div><div class="shortcuts-desc">Apply root when cursor is in Root input</div>
+    </div>
+    <div class="shortcuts-note">Shortcuts are ignored while typing in inputs, selects, or textareas.</div>
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -548,6 +729,10 @@ function log(msg,level){
   var el=document.getElementById("logArea");
   var ts=new Date().toISOString().substr(11,12);
   if(el){el.textContent+="["+ts+"] "+(level||"INFO")+": "+msg+"\n";el.scrollTop=el.scrollHeight;}
+}
+function bindById(id2,evt,fn){
+  var el=document.getElementById(id2);
+  if(el)el.addEventListener(evt||"click",fn);
 }
 /* ---- LINKAGE TAXONOMY + COLOURS ---- */
 var ALL_LINK_METHODS=[
@@ -603,8 +788,414 @@ function isLinkTypeEnabled(t){
   return !!state.enabledLinkTypes[nt];
 }
 /* ---- STATE ---- */
-var state={nodes:[],links:[],dataset:"custom",layout:"force",selectedIds:[],rootNodeId:null,rootLabel:"",hiddenTypes:{},pulseP:[],trailP:[],focusMode:"off",focusedParentIds:[],layoutSeed:1,linkLegendFilter:"",enabledLinkTypes:{causal:true,correlation:true},recommendedIdx:0,builderPreview:null,localDatasetKeys:[]};
+var state={nodes:[],links:[],dataset:"custom",layout:"force",selectedIds:[],rootNodeId:null,rootLabel:"",hiddenTypes:{},pulseP:[],trailP:[],focusMode:"off",focusedParentIds:[],layoutSeed:1,linkLegendFilter:"",enabledLinkTypes:{causal:true,correlation:true},recommendedIdx:0,builderPreview:null,localDatasetKeys:[],activeTab:"graph",builderLoadedBase:"",builderLoadedSetId:"",builderLoadedDataset:null,sourceView:{sortKey:"name",sortDir:1,filters:{name:"",url:"",status:"",records:"",lastFetched:""},selected:{},counts:{},lastFetched:{},lastDelta:{},refreshTick:0,lastRefreshSummary:""}};
 var probe={speed:8,freq:2,pulseDepth:3,trailLife:25,solidDepth:7,linkDisplay:"all",boundaryMargin:20,collisionPad:8};
+var DATASET_POLICY={
+  defaultObjectCap:250,
+  newDatasetDefaultCap:200,
+  defaultMinLinks:1,
+  defaultMaxLinks:66,
+  maxArticleReferenceLinks:1000,
+  qualityThreshold:77,
+  expansionStep:50,
+  initialExpansionTarget:50,
+  policyVersion:3
+};
+
+var DOMAIN_QUALITY_PROFILES={
+  default:{
+    key:"default",
+    tags:["general"],
+    weights:{degree:6,desc:2,id:1,genericPenalty:-8,typeBoost:4,topicBoost:6,yearProximity:2,keywordMatch:3},
+    keywords:[]
+  },
+  cyber:{
+    key:"cyber",
+    tags:["security","incident"],
+    weights:{degree:8,desc:2,id:1,genericPenalty:-10,typeBoost:5,topicBoost:8,yearProximity:1,keywordMatch:5},
+    keywords:["apt","ransomware","malware","exploit","cve","breach","intrusion","phishing","botnet"]
+  },
+  finance:{
+    key:"finance",
+    tags:["banking","market"],
+    weights:{degree:7,desc:2,id:1,genericPenalty:-8,typeBoost:5,topicBoost:7,yearProximity:2,keywordMatch:5},
+    keywords:["bank","fund","market","equity","bond","merger","acquisition","listing","sec","earnings"]
+  },
+  health:{
+    key:"health",
+    tags:["medical","biotech"],
+    weights:{degree:6,desc:3,id:1,genericPenalty:-8,typeBoost:4,topicBoost:7,yearProximity:3,keywordMatch:5},
+    keywords:["health","clinical","trial","vaccine","epidemic","pandemic","hormone","therapy","diagnostic"]
+  },
+  policy:{
+    key:"policy",
+    tags:["regulatory","governance"],
+    weights:{degree:6,desc:3,id:1,genericPenalty:-7,typeBoost:5,topicBoost:7,yearProximity:2,keywordMatch:5},
+    keywords:["policy","regulation","law","framework","directive","standard","mandate","governance"]
+  },
+  ai:{
+    key:"ai",
+    tags:["ml","model"],
+    weights:{degree:7,desc:3,id:1,genericPenalty:-8,typeBoost:5,topicBoost:8,yearProximity:2,keywordMatch:5},
+    keywords:["ai","model","llm","neural","taxonomy","agent","inference","prompt","dataset"]
+  }
+};
+
+var ASSOCIATION_SYNONYM_MAP={
+  event:["incident","occurrence","milestone"],
+  attack:["assault","strike","offensive"],
+  breach:["intrusion","compromise","breakin"],
+  policy:["rule","directive","governance"],
+  model:["framework","schema","pattern"],
+  influence:["impact","effect","pressure"],
+  correlation:["association","relationship","linkage"],
+  dependency:["requirement","prerequisite","reliance"],
+  source:["reference","citation","origin"]
+};
+
+function clampInt(v,min,max,def){
+  var n=parseInt(v,10);
+  if(isNaN(n))n=def;
+  if(n<min)n=min;
+  if(n>max)n=max;
+  return n;
+}
+
+function getDatasetObjectCap(ds,isNewDataset){
+  var fallback=isNewDataset?DATASET_POLICY.newDatasetDefaultCap:DATASET_POLICY.defaultObjectCap;
+  return clampInt(ds&&ds.objectCap,20,2000,fallback);
+}
+
+function getDatasetLinkBounds(ds){
+  var minL=clampInt(ds&&ds.minLinkVal,1,66,DATASET_POLICY.defaultMinLinks);
+  var maxL=clampInt(ds&&ds.maxLinkVal,minL,66,DATASET_POLICY.defaultMaxLinks);
+  return {min:minL,max:maxL};
+}
+
+function getDatasetArticleRefConfig(ds){
+  var minLinks=clampInt(ds&&ds.articleLinksMin,1,DATASET_POLICY.maxArticleReferenceLinks,DATASET_POLICY.defaultMinLinks);
+  var maxLinks=clampInt(ds&&ds.articleLinksMax,minLinks,DATASET_POLICY.maxArticleReferenceLinks,DATASET_POLICY.defaultMaxLinks);
+  var cap=clampInt(ds&&ds.articleRefCap,maxLinks,DATASET_POLICY.maxArticleReferenceLinks,DATASET_POLICY.maxArticleReferenceLinks);
+  return {minLinks:minLinks,maxLinks:maxLinks,cap:cap};
+}
+
+function uniqueStringArray(arr){
+  var out=[];
+  var seen={};
+  (arr||[]).forEach(function(v){
+    var t=String(v||"").trim();
+    if(!t)return;
+    var k=t.toLowerCase();
+    if(seen[k])return;
+    seen[k]=1;
+    out.push(t);
+  });
+  return out;
+}
+
+function normalizeAssociationText(t){
+  return String(t||"").toLowerCase().replace(/[^a-z0-9\s\-]/g," ").replace(/\s+/g," ").trim();
+}
+
+function objectSimilarityKey(name){
+  var toks=smartTokenize(name||"").map(function(x){return x.toLowerCase();}).slice(0,5);
+  if(!toks.length)return normalizeAssociationText(name||"");
+  return toks.join(" ");
+}
+
+function detectDatasetDomainProfile(ds){
+  var text=normalizeAssociationText(((ds&&ds.seedTopic)||"")+" "+((ds&&ds.deviation)||""));
+  if(!text&&ds&&Array.isArray(ds.nodes)&&ds.nodes.length){
+    text=normalizeAssociationText((ds.nodes[0].id||"")+" "+(ds.nodes[0].desc||""));
+  }
+  function hit(words){
+    for(var i=0;i<words.length;i++){
+      if(text.indexOf(words[i])>=0)return true;
+    }
+    return false;
+  }
+  if(hit(["apt","ransomware","malware","breach","exploit","cve","intrusion","cyber"]))return DOMAIN_QUALITY_PROFILES.cyber;
+  if(hit(["bank","finance","market","equity","fund","sec","earnings","merger"]))return DOMAIN_QUALITY_PROFILES.finance;
+  if(hit(["health","clinical","vaccine","pandemic","therapy","hormone","medical"]))return DOMAIN_QUALITY_PROFILES.health;
+  if(hit(["policy","regulation","law","directive","governance","standard"]))return DOMAIN_QUALITY_PROFILES.policy;
+  if(hit(["ai","model","llm","agent","taxonomy","neural","inference","prompt"]))return DOMAIN_QUALITY_PROFILES.ai;
+  return DOMAIN_QUALITY_PROFILES.default;
+}
+
+function datasetProfileKey(ds){
+  var p=detectDatasetDomainProfile(ds||{});
+  return (p&&p.key)||"default";
+}
+
+function scoreNodeQuality(node,ds,degree,profile){
+  var p=profile||DOMAIN_QUALITY_PROFILES.default;
+  var w=p.weights||DOMAIN_QUALITY_PROFILES.default.weights;
+  var topic=(ds&&ds.seedTopic)||"";
+  var score=0;
+  var deg=(degree&&degree[node.id])||0;
+  score+=deg*(w.degree||6);
+  var descT=smartTokenize(node.desc||"");
+  var idT=smartTokenize(node.id||"");
+  score+=Math.min(10,descT.length)*(w.desc||2);
+  score+=Math.min(8,idT.length)*(w.id||1);
+  if((node.type||"")!=="article-ref")score+=(w.typeBoost||4);
+  if(topic&&normalizeAssociationText(node.id).indexOf(normalizeAssociationText(topic))>=0)score+=(w.topicBoost||6);
+  if(/quality object|auto-generated node|article reference/i.test(String(node.id||"")+" "+String(node.desc||"")))score+=(w.genericPenalty||-8);
+  var seedYear=clampInt(ds&&ds.seedYear,-20000,3000,2000);
+  var span=Math.max(1,clampInt(ds&&ds.period,1,2000,25));
+  var y=clampInt(node&&node.year,-20000,3000,seedYear);
+  if(Math.abs(y-seedYear)<=Math.ceil(span*0.6))score+=(w.yearProximity||2);
+  var profileKeywords=(p.keywords||[]);
+  if(profileKeywords.length){
+    var norm=normalizeAssociationText((node.id||"")+" "+(node.desc||""));
+    for(var i=0;i<profileKeywords.length;i++){
+      if(norm.indexOf(profileKeywords[i])>=0){
+        score+=(w.keywordMatch||3);
+      }
+    }
+  }
+  return score;
+}
+
+function selectBestHalfObjects(ds){
+  var nodes=Array.isArray(ds.nodes)?ds.nodes:[];
+  var links=Array.isArray(ds.links)?ds.links:[];
+  if(nodes.length<=2)return;
+
+  var degree={};
+  nodes.forEach(function(n){degree[n.id]=0;});
+  links.forEach(function(l){
+    if(typeof degree[l.source]!=="undefined")degree[l.source]++;
+    if(typeof degree[l.target]!=="undefined")degree[l.target]++;
+  });
+
+  var profile=detectDatasetDomainProfile(ds);
+  var bestByKey={};
+  nodes.forEach(function(n){
+    var key=objectSimilarityKey((n.id||"")+" "+(n.desc||""));
+    var q=scoreNodeQuality(n,ds,degree,profile);
+    var cur=bestByKey[key];
+    if(!cur||q>cur._q){
+      var clone={id:n.id,year:n.year,type:n.type,group:n.group,desc:n.desc,aliases:uniqueStringArray(n.aliases||[]),synonyms:uniqueStringArray(n.synonyms||[]),_q:q};
+      bestByKey[key]=clone;
+    }
+  });
+
+  var ranked=Object.keys(bestByKey).map(function(k){return bestByKey[k];});
+  ranked.sort(function(a,b){
+    if(b._q!==a._q)return b._q-a._q;
+    return String(a.id||"").localeCompare(String(b.id||""));
+  });
+  var keepCount=Math.max(2,Math.ceil(ranked.length/2));
+  ranked=ranked.slice(0,keepCount);
+
+  var keep={};
+  ranked.forEach(function(n){keep[n.id]=1;});
+  var keptLinks=links.filter(function(l){return !!keep[l.source]&&!!keep[l.target];});
+  if(!keptLinks.length&&ranked.length>1){
+    for(var i=1;i<ranked.length;i++){
+      keptLinks.push({source:ranked[i-1].id,target:ranked[i].id,value:ds.minLinkVal||1,type:"correlation"});
+    }
+  }
+  ranked.forEach(function(n){delete n._q;});
+  ds.nodes=ranked;
+  ds.links=keptLinks;
+}
+
+function buildObjectSynonyms(node,name,topic){
+  var tokens=smartTokenize((name||"")+" "+(node.desc||"")+" "+(topic||"")).map(function(t){return t.toLowerCase();});
+  var out=[];
+  tokens.forEach(function(t){
+    if(ASSOCIATION_SYNONYM_MAP[t])out=out.concat(ASSOCIATION_SYNONYM_MAP[t]);
+  });
+  var rawName=String(name||"").replace(/\b\d{3,4}\b/g," ").replace(/\s+/g," ").trim();
+  if(rawName)out.push(rawName);
+  return uniqueStringArray(out);
+}
+
+function makeTopicSpecificName(node,topic,usedNames,usedKeys){
+  var topicPart=compactPhrase(smartTokenize(topic||""),2,22)||"Dataset";
+  var eventPart=compactPhrase(smartTokenize((node.desc||"")+" "+(node.id||"")),4,38)||typeTag(node.type||"event");
+  var typePart=typeTag(node.type||"event");
+  var yearPart=(node.year&&Math.abs(node.year)>=1)?(" "+String(node.year)):"";
+  var base=smartTitleCase((topicPart+" "+typePart+" "+eventPart).replace(/\s+/g," ").trim())+yearPart;
+  if(base.length>72)base=base.substr(0,72).trim();
+  var candidate=base||("Object "+Math.abs(hashString(String(node.id||""))%10000));
+  var key=objectSimilarityKey(candidate);
+  var idx=2;
+  while(usedNames[candidate.toLowerCase()]||usedKeys[key]){
+    candidate=base+" Ref "+idx;
+    key=objectSimilarityKey(candidate);
+    idx++;
+  }
+  usedNames[candidate.toLowerCase()]=1;
+  usedKeys[key]=1;
+  return candidate;
+}
+
+function harmonizeObjectNamesAndAliases(ds){
+  var nodes=Array.isArray(ds.nodes)?ds.nodes:[];
+  var links=Array.isArray(ds.links)?ds.links:[];
+  var usedNames={},usedKeys={},mapOldToNew={};
+  var topic=(ds&&ds.seedTopic)||"Dataset";
+  nodes.forEach(function(n){
+    var oldId=String(n.id||"").trim()||("Object "+Math.abs(hashString(JSON.stringify(n)||"x")));
+    var newId=makeTopicSpecificName(n,topic,usedNames,usedKeys);
+    mapOldToNew[oldId]=newId;
+    n.id=newId;
+    n.aliases=uniqueStringArray([oldId].concat(n.aliases||[]));
+    n.synonyms=uniqueStringArray((n.synonyms||[]).concat(buildObjectSynonyms(n,newId,topic)));
+  });
+  links.forEach(function(l){
+    if(mapOldToNew[l.source])l.source=mapOldToNew[l.source];
+    if(mapOldToNew[l.target])l.target=mapOldToNew[l.target];
+  });
+}
+
+function normalizeDatasetAssociationLinks(ds){
+  var nodes=Array.isArray(ds.nodes)?ds.nodes:[];
+  var links=Array.isArray(ds.links)?ds.links:[];
+  var aliasMap={};
+  nodes.forEach(function(n){
+    var refs=[n.id].concat(n.aliases||[]).concat(n.synonyms||[]);
+    refs.forEach(function(r){
+      var k=normalizeAssociationText(r);
+      if(k&&!aliasMap[k])aliasMap[k]=n.id;
+    });
+  });
+  function resolveRef(ref){
+    var k=normalizeAssociationText(ref);
+    if(!k)return String(ref||"").trim();
+    if(aliasMap[k])return aliasMap[k];
+    var best="",bestDelta=99999;
+    Object.keys(aliasMap).forEach(function(ak){
+      if(ak.indexOf(k)>=0||k.indexOf(ak)>=0){
+        var d=Math.abs(ak.length-k.length);
+        if(d<bestDelta){bestDelta=d;best=aliasMap[ak];}
+      }
+    });
+    return best||String(ref||"").trim();
+  }
+  links.forEach(function(l){
+    l.source=resolveRef(l.source);
+    l.target=resolveRef(l.target);
+  });
+  ds.links=links.filter(function(l){return l.source&&l.target&&l.source!==l.target;});
+}
+
+function buildQualityObjectPool(ds){
+  var topic=(ds&&ds.seedTopic)||"Dataset";
+  var out=[];
+  SOURCE_CATALOG.forEach(function(s){
+    out.push(topic+" :: "+s.name+" Article Reference");
+    out.push(s.name+" Intelligence Link");
+  });
+  var kw=smartTokenize(topic+" "+((ds&&ds.deviation)||"")+" "+((ds&&ds.nodes||[]).map(function(n){return (n.id||"")+" "+(n.desc||"");}).join(" "))).slice(0,24);
+  for(var i=0;i<kw.length;i++){
+    out.push(smartTitleCase(kw[i])+" Source Correlation");
+    out.push(smartTitleCase(kw[i])+" Historical Context");
+  }
+  for(var j=1;j<=800;j++){
+    out.push(topic+" Quality Object "+j);
+  }
+  return out;
+}
+
+function expandDatasetNodesToTarget(ds,targetCount,pool){
+  var nodes=Array.isArray(ds.nodes)?ds.nodes:[];
+  var links=Array.isArray(ds.links)?ds.links:[];
+  var linkBounds=getDatasetLinkBounds(ds);
+  var existing={};
+  nodes.forEach(function(n){existing[n.id]=1;});
+  var linkSeen={};
+  links.forEach(function(l){var k=l.source+"|"+l.target+"|"+normalizeLinkType(l.type||"correlation");linkSeen[k]=1;});
+
+  while(nodes.length<targetCount&&pool.length){
+    var label=pool.shift();
+    if(existing[label])continue;
+    var yrBase=clampInt(ds.seedYear,-20000,3000,new Date().getFullYear());
+    var span=Math.max(1,clampInt(ds.period,1,2000,25));
+    var h=Math.abs(hashString(label));
+    var yr=yrBase-Math.floor(span/2)+(h%(span+1));
+    var nd={
+      id:label,
+      year:yr,
+      type:"article-ref",
+      group:(h%15)+1,
+      desc:"Auto-expanded quality object reference"
+    };
+    nodes.push(nd);
+    existing[label]=1;
+
+    var anchors=nodes.slice(0,Math.max(1,nodes.length-1));
+    var connectCount=1+((h>>>3)%3);
+    for(var ci=0;ci<connectCount&&anchors.length;ci++){
+      var ai=(h+ci*17)%anchors.length;
+      var target=anchors[ai];
+      if(!target||target.id===label)continue;
+      var type=ALL_LINK_METHODS[(h+ci*7)%ALL_LINK_METHODS.length]||"correlation";
+      var lk=label+"|"+target.id+"|"+type;
+      if(linkSeen[lk])continue;
+      linkSeen[lk]=1;
+      links.push({
+        source:label,
+        target:target.id,
+        value:linkBounds.min+((h+ci)%(Math.max(1,linkBounds.max-linkBounds.min+1))),
+        type:type
+      });
+    }
+  }
+
+  ds.nodes=nodes;
+  ds.links=links;
+}
+
+function applyDatasetExpansionPolicy(ds,isNewDataset){
+  if(!ds)return ds;
+  if(!Array.isArray(ds.nodes))ds.nodes=[];
+  if(!Array.isArray(ds.links))ds.links=[];
+  var profile=detectDatasetDomainProfile(ds);
+
+  var cap=getDatasetObjectCap(ds,!!isNewDataset);
+  ds.objectCap=cap;
+  var bounds=getDatasetLinkBounds(ds);
+  ds.minLinkVal=bounds.min;
+  ds.maxLinkVal=bounds.max;
+  var refCfg=getDatasetArticleRefConfig(ds);
+  ds.articleLinksMin=refCfg.minLinks;
+  ds.articleLinksMax=refCfg.maxLinks;
+  ds.articleRefCap=refCfg.cap;
+
+  if(!ds._policyState)ds._policyState={};
+  var mustRun=(ds._policyState.version!==DATASET_POLICY.policyVersion)||(ds._policyState.cap!==cap);
+  ds._policyState.profile=(profile&&profile.key)||"default";
+  if(!mustRun)return ds;
+
+  if(ds.nodes.length>cap){
+    ds.nodes=ds.nodes.slice(0,cap);
+  }
+
+  var pool=buildQualityObjectPool(ds).filter(function(name){
+    for(var i=0;i<ds.nodes.length;i++){if(ds.nodes[i].id===name)return false;}
+    return true;
+  });
+
+  if(ds.nodes.length<20){
+    expandDatasetNodesToTarget(ds,Math.min(cap,DATASET_POLICY.initialExpansionTarget),pool);
+  }
+  while(ds.nodes.length<cap&&pool.length>DATASET_POLICY.qualityThreshold){
+    expandDatasetNodesToTarget(ds,Math.min(cap,ds.nodes.length+DATASET_POLICY.expansionStep),pool);
+  }
+
+  selectBestHalfObjects(ds);
+  harmonizeObjectNamesAndAliases(ds);
+  normalizeDatasetAssociationLinks(ds);
+
+  ds._policyState.version=DATASET_POLICY.policyVersion;
+  ds._policyState.cap=cap;
+  ds._policyState.profile=(profile&&profile.key)||"default";
+  return ds;
+}
 /* ---- CANVAS SETUP ---- */
 var canvas=document.getElementById("vizCanvas");
 var ctx=canvas.getContext("2d");
@@ -818,6 +1409,109 @@ function applyLayout(layout){
       nd.targetY=cyy+Math.sin(a)*rr;
       nd.pinned=true;
     });
+  } else if(layout==="tree"){
+    /* BFS rooted tree — children spread under parent, subtree-width proportional */
+    var tAdj=buildAdjacency(),tVis={},tCh={};
+    var tRoot=ri>=0?simNodes[ri].id:simNodes[0].id;
+    var tQ=[tRoot];tVis[tRoot]=true;tCh[tRoot]=[];
+    while(tQ.length){var tCur=tQ.shift();(tAdj[tCur]||[]).forEach(function(nid){if(!tVis[nid]){tVis[nid]=true;if(!tCh[nid])tCh[nid]=[];(tCh[tCur]=tCh[tCur]||[]).push(nid);tQ.push(nid);}});}
+    simNodes.forEach(function(nd){if(!tVis[nd.id]){if(!tCh['__orp'])tCh['__orp']=[];tCh['__orp'].push(nd.id);}});
+    var tMaxD=0;
+    function _tDepth(id,d){tMaxD=Math.max(tMaxD,d);(tCh[id]||[]).forEach(function(c){_tDepth(c,d+1);});}
+    _tDepth(tRoot,0);
+    var tVGap=h/(tMaxD+2);
+    function _tSize(id){var ch=tCh[id]||[];if(!ch.length)return 1;var s=0;ch.forEach(function(c){s+=_tSize(c);});return Math.max(1,s);}
+    function _tAssign(id,left,right,depth){
+      var nd=nodeById(id),mid=(left+right)/2;
+      if(nd){nd.targetX=mid;nd.targetY=tVGap*(depth+1);nd.pinned=true;}
+      var ch=tCh[id]||[];if(!ch.length)return;
+      var parentSz=_tSize(id),pos=left;
+      ch.forEach(function(c){var cs=_tSize(c);var cw=(right-left)*(cs/parentSz);_tAssign(c,pos,pos+cw,depth+1);pos+=cw;});
+    }
+    _tAssign(tRoot,20,w-20,0);
+    var _orp=tCh['__orp']||[];_orp.forEach(function(id,i){var nd=nodeById(id);if(nd){nd.targetX=20+(i+1)*(w/(_orp.length+1));nd.targetY=h-28;nd.pinned=true;}});
+  } else if(layout==="pyramid"){
+    /* Pyramid — highest-degree nodes at apex, row 1 has 1 node, row 2 has 2, etc. */
+    var pDeg={};simNodes.forEach(function(nd){pDeg[nd.id]=0;});
+    simLinks.forEach(function(l){pDeg[l.source.id]=(pDeg[l.source.id]||0)+1;pDeg[l.target.id]=(pDeg[l.target.id]||0)+1;});
+    var pSorted=simNodes.slice().sort(function(a,b){return (pDeg[b.id]||0)-(pDeg[a.id]||0);});
+    var pTotalRows=Math.ceil((-1+Math.sqrt(1+8*n))/2);
+    var pRowH=(h-80)/(Math.max(1,pTotalRows)+0.5);
+    var pIdx=0,pRow=0,pRowSz=1;
+    while(pIdx<pSorted.length){
+      var pCount=Math.min(pRowSz,pSorted.length-pIdx);
+      var pXStep=(w-60)/(pCount+1);
+      for(var pI=0;pI<pCount;pI++){var pNd=pSorted[pIdx];pNd.targetX=30+pXStep*(pI+1);pNd.targetY=50+pRow*pRowH;pNd.pinned=true;pIdx++;}
+      pRow++;pRowSz++;
+    }
+  } else if(layout==="timeline-down"){
+    /* Timeline Downward — year maps to Y axis (top=oldest), nodes spread horizontally per year */
+    var tdYrs=simNodes.map(function(nd){return nd.year||0;});
+    var tdMin=Math.min.apply(null,tdYrs),tdMax=Math.max.apply(null,tdYrs),tdRng=tdMax-tdMin||1;
+    var tdBy={};simNodes.forEach(function(nd){var k=(nd.year||tdMin);if(!tdBy[k])tdBy[k]=[];tdBy[k].push(nd);});
+    Object.keys(tdBy).forEach(function(k){
+      var arr=tdBy[k],yNorm=((Number(k)||tdMin)-tdMin)/tdRng;
+      var ty=60+yNorm*(h-120);
+      arr.forEach(function(nd,i){nd.targetX=40+((i+1)/(arr.length+1))*(w-80);nd.targetY=ty;nd.pinned=true;});
+    });
+  } else if(layout==="timeline-ltr"){
+    /* Timeline Left→Right — year maps to X axis, nodes spread vertically per year */
+    var tlYrs=simNodes.map(function(nd){return nd.year||0;});
+    var tlMin=Math.min.apply(null,tlYrs),tlMax=Math.max.apply(null,tlYrs),tlRng=tlMax-tlMin||1;
+    var tlBy={};simNodes.forEach(function(nd){var k=(nd.year||tlMin);if(!tlBy[k])tlBy[k]=[];tlBy[k].push(nd);});
+    Object.keys(tlBy).forEach(function(k){
+      var arr=tlBy[k],xNorm=((Number(k)||tlMin)-tlMin)/tlRng;
+      var tx=60+xNorm*(w-120);
+      arr.forEach(function(nd,i){nd.targetX=tx;nd.targetY=40+((i+1)/(arr.length+1))*(h-80);nd.pinned=true;});
+    });
+  } else if(layout==="concentric"){
+    var cDeg={};
+    simNodes.forEach(function(nd){cDeg[nd.id]=0;});
+    simLinks.forEach(function(l){cDeg[l.source.id]=(cDeg[l.source.id]||0)+1;cDeg[l.target.id]=(cDeg[l.target.id]||0)+1;});
+    var cMax=1;Object.keys(cDeg).forEach(function(k){if(cDeg[k]>cMax)cMax=cDeg[k];});
+    var byBand={};
+    simNodes.forEach(function(nd){
+      var d=cDeg[nd.id]||0;
+      var b=Math.max(0,Math.min(4,4-Math.floor((d/Math.max(1,cMax))*4)));
+      if(!byBand[b])byBand[b]=[];
+      byBand[b].push(nd);
+    });
+    var cx=w/2,cy=h/2;
+    Object.keys(byBand).forEach(function(bk){
+      var b=parseInt(bk,10),arr=byBand[b],rad=50+b*55;
+      arr.forEach(function(nd,i){
+        var ang=(i/Math.max(1,arr.length))*Math.PI*2-Math.PI/2;
+        nd.targetX=cx+Math.cos(ang)*rad;
+        nd.targetY=cy+Math.sin(ang)*rad;
+        nd.pinned=true;
+      });
+    });
+  } else if(layout==="spiral"){
+    var sx0=w/2,sy0=h/2;
+    var sorted=simNodes.slice().sort(function(a,b){return (a.year||0)-(b.year||0);});
+    sorted.forEach(function(nd,i){
+      var t=i/Math.max(1,sorted.length-1);
+      var ang=t*10*Math.PI;
+      var rad=20+t*(Math.min(w,h)*0.42);
+      nd.targetX=sx0+Math.cos(ang)*rad;
+      nd.targetY=sy0+Math.sin(ang)*rad;
+      nd.pinned=true;
+    });
+  } else if(layout==="timeline-zigzag"){
+    var zy=simNodes.map(function(nd){return nd.year||0;});
+    var zmin=Math.min.apply(null,zy),zmax=Math.max.apply(null,zy),zr=zmax-zmin||1;
+    var zBy={};
+    simNodes.forEach(function(nd){var ky=(nd.year||zmin);if(!zBy[ky])zBy[ky]=[];zBy[ky].push(nd);});
+    Object.keys(zBy).sort(function(a,b){return Number(a)-Number(b);}).forEach(function(k,ri2){
+      var arr=zBy[k],xNorm=((Number(k)||zmin)-zmin)/zr;
+      var x=60+xNorm*(w-120);
+      arr.forEach(function(nd,i){
+        var left=(ri2%2===0),baseY=40+((i+1)/(arr.length+1))*(h-80);
+        nd.targetX=left?x:Math.max(60,Math.min(w-60,w-x));
+        nd.targetY=baseY;
+        nd.pinned=true;
+      });
+    });
   } else {
     simNodes.forEach(function(nd){nd.targetX=null;nd.targetY=null;nd.pinned=false;});
     if(ri>=0){simNodes[ri].targetX=w/2;simNodes[ri].targetY=h-60;simNodes[ri].pinned=true;}
@@ -866,15 +1560,22 @@ function simTick(){
     if(nd.pinned&&nd.targetX!==null){
       nd.x+=(nd.targetX-nd.x)*0.12;nd.y+=(nd.targetY-nd.y)*0.12;nd.vx=0;nd.vy=0;
     } else {
-      nd.vx+=(w/2-nd.x)*0.0005*sp;nd.vy+=(h/2-nd.y)*0.0005*sp;
+      if(nd.targetX!==null&&nd.targetY!==null){
+        nd.vx+=(nd.targetX-nd.x)*0.0035*sp;
+        nd.vy+=(nd.targetY-nd.y)*0.0035*sp;
+      }
+      var _dg=nd._degree||0;nd.vx+=(w/2-nd.x)*(0.00018+_dg*0.00026)*sp;nd.vy+=(h/2-nd.y)*(0.00018+_dg*0.00026)*sp;
       var bm=probe.boundaryMargin;
       if(nd.x<bm)nd.vx+=(bm-nd.x)*0.012*sp;
       if(nd.x>w-bm)nd.vx-=(nd.x-(w-bm))*0.012*sp;
       if(nd.y<bm)nd.vy+=(bm-nd.y)*0.012*sp;
       if(nd.y>h-bm)nd.vy-=(nd.y-(h-bm))*0.012*sp;
       nd.vx*=0.88;nd.vy*=0.88;nd.x+=nd.vx;nd.y+=nd.vy;
-      nd.x=Math.max(nd.radius+bm,Math.min(w-nd.radius-bm,nd.x));
-      nd.y=Math.max(nd.radius+bm,Math.min(h-nd.radius-bm,nd.y));
+      var minX=nd.radius+bm,maxX=w-nd.radius-bm,minY=nd.radius+bm,maxY=h-nd.radius-bm;
+      if(nd.x<minX){nd.x=minX+0.6;nd.vx=Math.abs(nd.vx)*0.42;}
+      else if(nd.x>maxX){nd.x=maxX-0.6;nd.vx=-Math.abs(nd.vx)*0.42;}
+      if(nd.y<minY){nd.y=minY+0.6;nd.vy=Math.abs(nd.vy)*0.42;}
+      else if(nd.y>maxY){nd.y=maxY-0.6;nd.vy=-Math.abs(nd.vy)*0.42;}
     }
   }
   if(probe.collisionPad>0){
@@ -1042,6 +1743,10 @@ function buildSim(){
     if(s&&t)simLinks.push({source:s,target:t,value:l.value||1,type:tNorm});
   });
   ALL_LINK_METHODS.sort(function(a,b){return a.localeCompare(b);});
+  /* degree per node for force-directed hub gravity */
+  var _dm={};simNodes.forEach(function(nd){_dm[nd.id]=0;});
+  simLinks.forEach(function(l){_dm[l.source.id]=(_dm[l.source.id]||0)+1;_dm[l.target.id]=(_dm[l.target.id]||0)+1;});
+  simNodes.forEach(function(nd){nd._degree=_dm[nd.id]||0;});
   applyLayout(state.layout);buildLinkLegend();buildTypeQS();buildSummaryQS();updateSelUI();renderLinkagePanel();startSim();
   document.getElementById("nodeCount").textContent="Nodes: "+simNodes.length+" | Links: "+simLinks.length+" | Sel: "+state.selectedIds.length;
   document.getElementById("statusMsg").textContent="Simulation running";
@@ -1091,10 +1796,24 @@ function updateSelUI(){
 function showDetail(id){
   var nd=nodeById(id);if(!nd)return;
   var links=simLinks.filter(function(l){return (l.source===nd||l.target===nd)&&isLinkTypeEnabled(l.type);});
+  var relatedNames=[];
+  links.forEach(function(l){var oth=l.source===nd?l.target:l.source;if(oth&&relatedNames.indexOf(oth.id)<0)relatedNames.push(oth.id);});
+  var kw=extractNodeKeywords(nd,relatedNames,6);
+  var art=getNodeArticleMeta(id);
+  var srcHtml="";
+  if(art&&art.sources&&art.sources.length){
+    srcHtml=art.sources.map(function(s){
+      var u=buildNodeSourceUrl(s,nd.id);
+      if(u)return "<a class=\"tl-src-pill\" href=\""+u+"\" target=\"_blank\" rel=\"noopener\">"+s+"</a>";
+      return "<span class=\"tl-src-pill\">"+s+"</span>";
+    }).join(" ");
+  }
   var html="<div class=\"nd-name\">"+nd.id+"</div>";
   html+="<div class=\"nd-row\"><span class=\"nd-key\">Year</span><span class=\"nd-val\">"+(nd.year||"?")+"</span></div>";
   html+="<div class=\"nd-row\"><span class=\"nd-key\">Type</span><span class=\"nd-val\">"+(nd.type||"?")+"</span></div>";
   html+="<div class=\"nd-row\"><span class=\"nd-key\">Group</span><span class=\"nd-val\">"+nd.group+"</span></div>";
+  if(kw.length)html+="<div class=\"nd-row\"><span class=\"nd-key\">Keywords</span><span class=\"nd-val\">"+kw.join(", ")+"</span></div>";
+  if(srcHtml)html+="<div style=\"margin-top:6px\"><div class=\"nd-key\" style=\"margin-bottom:3px\">Detected Sources</div><div>"+srcHtml+"</div></div>";
   if(nd.desc)html+="<div style=\"margin-top:5px;font-size:11px;color:#aabbcc\">"+nd.desc+"</div>";
   if(links.length){
     html+="<div style=\"color:#6688aa;font-size:10px;margin:7px 0 3px\">Connections ("+links.length+")</div>";
@@ -1104,19 +1823,24 @@ function showDetail(id){
   document.querySelectorAll("[data-nlid]").forEach(function(item){item.addEventListener("click",function(){showDetail(item.getAttribute("data-nlid"));});});
 }
 /* ---- CANVAS MOUSE ---- */
-var dragging=null,dox=0,doy=0;
+var dragging=null,dox=0,doy=0,dragStartX=0,dragStartY=0,dragMoved=false;
 canvas.addEventListener("mousedown",function(e){
   var r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-  for(var i=simNodes.length-1;i>=0;i--){var nd=simNodes[i];var dx=mx-nd.x,dy=my-nd.y;if(dx*dx+dy*dy<=(nd.radius+6)*(nd.radius+6)){dragging=nd;dox=dx;doy=dy;nd.pinned=true;return;}}
+  for(var i=simNodes.length-1;i>=0;i--){var nd=simNodes[i];var dx=mx-nd.x,dy=my-nd.y;if(dx*dx+dy*dy<=(nd.radius+6)*(nd.radius+6)){dragging=nd;dox=dx;doy=dy;dragStartX=mx;dragStartY=my;dragMoved=false;nd.pinned=true;return;}}
 });
 canvas.addEventListener("mousemove",function(e){
   if(!dragging)return;
-  var r=canvas.getBoundingClientRect();dragging.x=e.clientX-r.left-dox;dragging.y=e.clientY-r.top-doy;dragging.targetX=dragging.x;dragging.targetY=dragging.y;
+  var r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  if(!dragMoved){
+    var dmx=mx-dragStartX,dmy=my-dragStartY;
+    dragMoved=(dmx*dmx+dmy*dmy)>9;
+  }
+  dragging.x=mx-dox;dragging.y=my-doy;dragging.targetX=dragging.x;dragging.targetY=dragging.y;
 });
 canvas.addEventListener("mouseup",function(e){
   if(dragging){
     var r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-    var dx=mx-dragging.x-dox,dy=my-dragging.y-doy,moved=dx*dx+dy*dy>9;
+    var dx=mx-dragStartX,dy=my-dragStartY,moved=dragMoved||(dx*dx+dy*dy>9);
     if(!moved){
       var id=dragging.id;
       if(id!==state.rootNodeId){
@@ -1126,10 +1850,10 @@ canvas.addEventListener("mouseup",function(e){
         updateSelUI();showDetail(id);
       }
     } else dragging.pinned=false;
-    dragging=null;
+    dragging=null;dragMoved=false;
   }
 });
-canvas.addEventListener("mouseleave",function(){if(dragging){dragging.pinned=false;dragging=null;}});
+canvas.addEventListener("mouseleave",function(){if(dragging){dragging.pinned=false;dragging=null;dragMoved=false;}});
 /* ---- DATASETS ---- */
 var DATASETS={
 "virus-computer":{seedTopic:"Computer Viruses",seedYear:2000,period:25,depth:20,deviation:"Nation State",
@@ -1959,44 +2683,236 @@ links:[
   {source:"Global Digital Remix",target:"Hip-Hop",value:4,type:"influence"},
   {source:"Global Digital Remix",target:"Minimalism",value:3,type:"influence"},
   {source:"Global Digital Remix",target:"Ukiyo-e",value:3,type:"influence"}
-]}};
+]},
+"gods-and-worship":createGodsAndWorshipDataset()};
+function createGodsAndWorshipDataset(){
+  var ds={
+    seedTopic:"Gods and Worship",
+    seedYear:500,
+    period:2000,
+    depth:80,
+    deviation:"Syncretic Revival",
+    keywords:["religion","faith","belief"],
+    nodes:[],
+    links:[]
+  };
+  var traditions=[
+    {id:"Byzantine Christianity",year:500,type:"religion",group:1,desc:"Eastern Christian state worship tradition"},
+    {id:"Hindu Worship Traditions",year:500,type:"religion",group:2,desc:"Temple, bhakti, and ritual worship systems"},
+    {id:"Shinto Kami Worship",year:500,type:"religion",group:3,desc:"Japanese kami shrine devotion and belief"},
+    {id:"Norse Pagan Worship",year:550,type:"religion",group:4,desc:"Northern European ritual and saga belief"},
+    {id:"Mesoamerican Worship",year:600,type:"religion",group:5,desc:"Ritual cosmology and sacred kingship belief"},
+    {id:"Islamic Worship Tradition",year:610,type:"religion",group:6,desc:"Monotheistic faith rooted in Quranic worship"},
+    {id:"Jewish Rabbinic Worship",year:650,type:"religion",group:7,desc:"Synagogue-centered covenantal worship"},
+    {id:"Buddhist Worship Networks",year:700,type:"religion",group:8,desc:"Monastic and lay devotional faith practices"},
+    {id:"West African Orisha Worship",year:750,type:"religion",group:9,desc:"Ancestor-linked deity worship and belief"},
+    {id:"Orthodox Christian Worship",year:900,type:"religion",group:1,desc:"Liturgical icon-centered Eastern worship"},
+    {id:"Catholic Scholastic Worship",year:1100,type:"religion",group:1,desc:"Medieval Latin worship and doctrinal belief"},
+    {id:"Sufi Devotional Worship",year:1200,type:"religion",group:6,desc:"Mystical remembrance and embodied faith"},
+    {id:"Sikh Worship Tradition",year:1500,type:"religion",group:10,desc:"Gurdwara-based monotheistic worship"},
+    {id:"Protestant Worship Reform",year:1517,type:"religion",group:11,desc:"Reformation shifts in faith and authority"},
+    {id:"Syncretic Atlantic Worship",year:1600,type:"religion",group:9,desc:"Blended deity worship across diaspora"},
+    {id:"Modern Spiritualism",year:1850,type:"belief-system",group:12,desc:"Post-industrial faith movements and belief"},
+    {id:"Secular Humanist Belief",year:1900,type:"belief-system",group:13,desc:"Ethical belief without deity worship"},
+    {id:"Global Interfaith Worship",year:2000,type:"belief-system",group:14,desc:"Cross-tradition faith dialogue and practice"}
+  ];
+  var deities=[
+    {id:"Zeus",year:500,type:"god",group:4,desc:"Sky ruler deity in classical belief"},
+    {id:"Odin",year:550,type:"god",group:4,desc:"Wisdom and war deity in Norse faith"},
+    {id:"Thor",year:560,type:"god",group:4,desc:"Thunder protector deity in worship"},
+    {id:"Athena",year:520,type:"goddess",group:4,desc:"Wisdom goddess in civic worship"},
+    {id:"Shiva",year:500,type:"god",group:2,desc:"Transformation deity in Hindu worship"},
+    {id:"Vishnu",year:500,type:"god",group:2,desc:"Preserver deity in devotional faith"},
+    {id:"Lakshmi",year:520,type:"goddess",group:2,desc:"Prosperity goddess in household worship"},
+    {id:"Durga",year:540,type:"goddess",group:2,desc:"Protective goddess in ritual belief"},
+    {id:"Amaterasu",year:500,type:"goddess",group:3,desc:"Sun kami central to Shinto worship"},
+    {id:"Inari",year:550,type:"kami",group:3,desc:"Agrarian kami of prosperity belief"},
+    {id:"Hachiman",year:700,type:"kami",group:3,desc:"Protective kami in shrine worship"},
+    {id:"Susanoo",year:600,type:"kami",group:3,desc:"Storm kami in mythic belief"},
+    {id:"Oshun",year:800,type:"orisha",group:9,desc:"River deity in Yoruba faith"},
+    {id:"Shango",year:820,type:"orisha",group:9,desc:"Thunder orisha in ritual worship"},
+    {id:"Yemoja",year:830,type:"orisha",group:9,desc:"Mother-water deity in belief traditions"},
+    {id:"Elegua",year:840,type:"orisha",group:9,desc:"Crossroads orisha in initiation worship"},
+    {id:"Kukulkan",year:650,type:"god",group:5,desc:"Feathered serpent deity in Mesoamerican worship"},
+    {id:"Tlaloc",year:620,type:"god",group:5,desc:"Rain deity in agricultural belief"},
+    {id:"Quetzalcoatl",year:700,type:"god",group:5,desc:"Knowledge deity in sacred belief"},
+    {id:"Huitzilopochtli",year:750,type:"god",group:5,desc:"War deity in imperial worship"},
+    {id:"Brahma",year:500,type:"god",group:2,desc:"Creator deity in Hindu cosmological belief"},
+    {id:"Kali",year:600,type:"goddess",group:2,desc:"Transformative goddess in devotional faith"},
+    {id:"Freya",year:560,type:"goddess",group:4,desc:"Love and battle goddess in Norse worship"},
+    {id:"Loki",year:570,type:"god",group:4,desc:"Ambiguous trickster in mythic belief"}
+  ];
+  var concepts=[
+    {id:"Prayer Ritual",year:500,type:"belief",group:15,desc:"Structured worship communication"},
+    {id:"Temple Worship",year:500,type:"belief",group:15,desc:"Sacred place-centered faith practice"},
+    {id:"Pilgrimage Faith",year:650,type:"belief",group:15,desc:"Journey-based devotional belief"},
+    {id:"Scriptural Belief",year:700,type:"belief",group:15,desc:"Text-centered religious faith"},
+    {id:"Festival Worship",year:500,type:"belief",group:15,desc:"Calendar rites and communal worship"},
+    {id:"Ancestor Belief",year:500,type:"belief",group:15,desc:"Lineage-centered sacred faith"},
+    {id:"Mystical Faith",year:1000,type:"belief",group:15,desc:"Experiential and contemplative belief"},
+    {id:"Syncretic Revival",year:2000,type:"deviation",group:16,desc:"Modern fusion of religion faith belief patterns"}
+  ];
+  var worshipMap={
+    "Norse Pagan Worship":["Odin","Thor","Freya","Loki"],
+    "Hindu Worship Traditions":["Shiva","Vishnu","Lakshmi","Durga","Brahma","Kali"],
+    "Shinto Kami Worship":["Amaterasu","Inari","Hachiman","Susanoo"],
+    "West African Orisha Worship":["Oshun","Shango","Yemoja","Elegua"],
+    "Mesoamerican Worship":["Kukulkan","Tlaloc","Quetzalcoatl","Huitzilopochtli"],
+    "Byzantine Christianity":["Prayer Ritual","Temple Worship","Scriptural Belief"],
+    "Islamic Worship Tradition":["Prayer Ritual","Pilgrimage Faith","Scriptural Belief"],
+    "Jewish Rabbinic Worship":["Prayer Ritual","Scriptural Belief","Festival Worship"],
+    "Buddhist Worship Networks":["Temple Worship","Mystical Faith","Ancestor Belief"],
+    "Orthodox Christian Worship":["Prayer Ritual","Temple Worship","Festival Worship"],
+    "Catholic Scholastic Worship":["Prayer Ritual","Pilgrimage Faith","Scriptural Belief"],
+    "Sufi Devotional Worship":["Mystical Faith","Prayer Ritual","Festival Worship"],
+    "Sikh Worship Tradition":["Prayer Ritual","Scriptural Belief","Temple Worship"],
+    "Protestant Worship Reform":["Scriptural Belief","Prayer Ritual"],
+    "Syncretic Atlantic Worship":["Oshun","Shango","Ancestor Belief","Festival Worship"],
+    "Global Interfaith Worship":["Prayer Ritual","Pilgrimage Faith","Mystical Faith","Syncretic Revival"],
+    "Secular Humanist Belief":["Scriptural Belief","Festival Worship"],
+    "Modern Spiritualism":["Mystical Faith","Ancestor Belief","Syncretic Revival"]
+  };
+  ds.nodes=traditions.concat(deities).concat(concepts);
+  for(var i=1;i<traditions.length;i++){
+    ds.links.push({source:traditions[i-1].id,target:traditions[i].id,value:3,type:"temporal"});
+  }
+  Object.keys(worshipMap).forEach(function(tid){
+    var arr=worshipMap[tid]||[];
+    for(var j=0;j<arr.length;j++){
+      ds.links.push({source:tid,target:arr[j],value:4,type:"influence"});
+    }
+  });
+  deities.forEach(function(d){
+    var conceptTarget=concepts[Math.abs(hashString(d.id))%concepts.length];
+    ds.links.push({source:d.id,target:conceptTarget.id,value:2,type:"correlation"});
+  });
+  concepts.forEach(function(c,idx){
+    if(idx>0)ds.links.push({source:concepts[idx-1].id,target:c.id,value:2,type:"evolution"});
+  });
+  for(var k=0;k<traditions.length;k++){
+    var t=traditions[k];
+    var c2=concepts[Math.abs(hashString(t.id+"|faith"))%concepts.length];
+    ds.links.push({source:t.id,target:c2.id,value:3,type:"dependency"});
+  }
+  if(ds.links.length>777)ds.links=ds.links.slice(0,777);
+  return ds;
+}
 /* ---- LOAD DATASET ---- */
-function loadDataset(key){
+function loadDatasetCompat(key){
   var ds=DATASETS[key];
   if(!ds){
-    try{
-      var raw=localStorage.getItem("drv-ds:"+key);
-      if(raw)ds=JSON.parse(raw);
-    }catch(ex){log("Local dataset parse error: "+ex.message,"WARN");}
+    ds=storageMigrations.readDataset(key);
   }
   if(!ds){log("Unknown dataset: "+key,"WARN");return;}
-  state.dataset=key;state.nodes=ds.nodes;state.links=ds.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+  ds=applyDatasetExpansionPolicy(ds,false);
+  var sameDataset=state.dataset===key;
+  var prevSel=sameDataset?state.selectedIds.slice():[];
+  var prevFocus=sameDataset?state.focusedParentIds.slice():[];
+  var prevRoot=sameDataset?state.rootNodeId:null;
+  var prevHidden=sameDataset?state.hiddenTypes:{};
+  state.dataset=key;state.nodes=ds.nodes;state.links=ds.links;
+  if(sameDataset){
+    var valid={};
+    ds.nodes.forEach(function(n){valid[n.id]=1;});
+    state.selectedIds=prevSel.filter(function(id2){return !!valid[id2];});
+    state.focusedParentIds=prevFocus.filter(function(id2){return !!valid[id2];});
+    state.rootNodeId=(prevRoot&&valid[prevRoot])?prevRoot:null;
+    state.hiddenTypes=prevHidden||{};
+  } else {
+    state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+  }
   document.getElementById("statusDataset").textContent="Dataset: "+key;
   log("Loaded: "+ds.seedTopic+" ("+ds.nodes.length+"n, "+ds.links.length+"l)");
+  applyDatasetVisibilityFilter();
   var ef=function(id2){return document.getElementById(id2);};
   if(ef("wizSeedTopic"))ef("wizSeedTopic").value=ds.seedTopic;
   if(ef("wizSeedYear"))ef("wizSeedYear").value=ds.seedYear;
   if(ef("wizPeriod"))ef("wizPeriod").value=ds.period;
   if(ef("wizDepth")){ef("wizDepth").value=ds.depth;ef("wizDepthVal").textContent=ds.depth;}
   if(ef("wizDeviation"))ef("wizDeviation").value=ds.deviation;
+  if(ef("rootFileDisp"))ef("rootFileDisp").textContent=state.rootNodeId||"No root file set";
+  if(ef("ctlRootFile"))ef("ctlRootFile").value=state.rootNodeId||"";
   buildSim();populateSourcesTable(ds);populateTimeline(ds);
+}
+function getActiveDatasetObject(){
+  if(DATASETS[state.dataset])return applyDatasetExpansionPolicy(DATASETS[state.dataset],false);
+  try{
+    if(state.dataset){
+      var localDs=storageMigrations.readDataset(state.dataset);
+      if(localDs)return applyDatasetExpansionPolicy(localDs,false);
+    }
+  }catch(ex){log("Active dataset resolve failed: "+ex.message,"WARN");}
+  if(state.nodes&&state.nodes.length){
+    return {seedTopic:state.dataset||"custom",seedYear:0,period:0,depth:probe.pulseDepth||3,deviation:"",nodes:state.nodes,links:state.links};
+  }
+  return null;
 }
 /* ---- TAB SWITCHING ---- */
 var panelIds={graph:"panelGraph",timeline:"panelTimeline",foresight:"panelForesight",pattern:"panelPattern",sources:"panelSources",builder:"panelBuilder",linkage:"panelLinkage",log:"panelLog"};
-document.getElementById("tabBar").addEventListener("click",function(e){
-  if(e.target.tagName.toUpperCase()!=="BUTTON")return;
-  var tab=e.target.getAttribute("data-tab");
+function openTab(tab){
+  if(!panelIds[tab])return;
+  state.activeTab=tab;
   document.getElementById("tabBar").querySelectorAll("button").forEach(function(b){b.className=b.getAttribute("data-tab")===tab?"active":"";});
   Object.keys(panelIds).forEach(function(k){var p=document.getElementById(panelIds[k]);if(p)p.className=k===tab?"panel active":"panel";});
   document.getElementById("rightSidebar").style.display=tab==="graph"?"":"none";
+  document.getElementById("statusMsg").textContent="Tab: "+tab;
   log("Tab: "+tab);
+}
+document.getElementById("tabBar").addEventListener("click",function(e){
+  if(e.target.tagName.toUpperCase()!=="BUTTON")return;
+  openTab(e.target.getAttribute("data-tab"));
 });
 /* ---- WIZARD TOGGLE ---- */
 document.getElementById("btnWizard").addEventListener("click",function(){var ws=document.getElementById("wizardSidebar");ws.className=ws.className.indexOf("hidden")>=0?"":"hidden";});
 /* ---- DATASET SYNC ---- */
 function syncDS(val){["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(el&&el.value!==val)el.value=val;});}
 ["datasetSelect","sbDataset"].forEach(function(id2){var el=document.getElementById(id2);if(!el)return;el.addEventListener("change",function(){syncDS(el.value);if(el.value!=="custom")loadDataset(el.value);});});
-function ensureDatasetOption(key,label){
+var DATASET_HIDE_PREFIX="drv-ds-hidden:";
+var DATASET_SCHEMA_VERSION=2;
+var PROFILE_SCHEMA_VERSION=2;
+function isDatasetHidden(key){
+  var k=sanitizeDatasetKey(key);
+  try{
+    if(localStorage.getItem(DATASET_HIDE_PREFIX+k)==="1")return true;
+    var raw=localStorage.getItem("drv-ds:"+k);
+    if(raw){
+      var ds=JSON.parse(raw);
+      if(ds&&ds.hidden===true)return true;
+    }
+  }catch(ex){log("Dataset hidden flag read failed: "+ex.message,"WARN");}
+  if(DATASETS[k]&&DATASETS[k].hidden===true)return true;
+  return false;
+}
+function setDatasetHidden(key,hidden){
+  var k=sanitizeDatasetKey(key);
+  try{localStorage.setItem(DATASET_HIDE_PREFIX+k,hidden?"1":"0");}catch(ex){log("Dataset hidden flag write failed: "+ex.message,"WARN");}
+  try{
+    var ds=storageMigrations.readDataset(k);
+    if(ds){
+      ds.hidden=!!hidden;
+      storageMigrations.writeDataset(k,ds);
+    }
+  }catch(ex2){log("Dataset hidden mirror write failed: "+ex2.message,"WARN");}
+  applyDatasetVisibilityFilter();
+}
+function removeDatasetOption(key){
+  ["datasetSelect","sbDataset"].forEach(function(id2){
+    var el=document.getElementById(id2);if(!el)return;
+    for(var i=el.options.length-1;i>=0;i--){if(el.options[i].value===key)el.remove(i);}
+  });
+}
+function applyDatasetVisibilityFilter(){
+  ["datasetSelect","sbDataset"].forEach(function(id2){
+    var el=document.getElementById(id2);if(!el)return;
+    for(var i=el.options.length-1;i>=0;i--){
+      var v=el.options[i].value;
+      if(v==="custom")continue;
+      if(isDatasetHidden(v)&&v!==state.dataset)el.remove(i);
+    }
+  });
+}
+function ensureDatasetOptionCompat(key,label){
+  if(isDatasetHidden(key)&&state.dataset!==key){removeDatasetOption(key);return;}
   ["datasetSelect","sbDataset"].forEach(function(id2){
     var el=document.getElementById(id2);if(!el)return;
     var found=false;
@@ -2008,7 +2924,7 @@ function ensureDatasetOption(key,label){
     }
   });
 }
-function loadStoredDatasetOptions(){
+function loadStoredDatasetOptionsCompat(){
   try{
     state.localDatasetKeys=[];
     for(var i=0;i<localStorage.length;i++){
@@ -2017,11 +2933,171 @@ function loadStoredDatasetOptions(){
       var dsKey=k.substring(7);
       var raw=localStorage.getItem(k)||"{}";
       var ds=JSON.parse(raw);
+      if(isDatasetHidden(dsKey)&&state.dataset!==dsKey)continue;
       var label=(ds.seedTopic?ds.seedTopic+" (local)":"Local: "+dsKey);
-      ensureDatasetOption(dsKey,label);
+      ensureDatasetOptionCompat(dsKey,label);
       state.localDatasetKeys.push(dsKey);
     }
+    applyDatasetVisibilityFilter();
   }catch(ex){log("Local dataset option load failed: "+ex.message,"WARN");}
+}
+var storageMigrations=(function(){
+  function safeParse(raw,kind,key){
+    if(!raw)return null;
+    try{return JSON.parse(raw);}catch(ex){log(kind+" parse failed for "+key+": "+ex.message,"WARN");}
+    return null;
+  }
+  function normalizeDataset(ds){
+    var out=cloneDatasetSafe(ds||{});
+    if(typeof out.hidden!=="boolean")out.hidden=false;
+    if(!Array.isArray(out.keywords))out.keywords=[];
+    if(!Array.isArray(out.sources))out.sources=[];
+    if(!Array.isArray(out.crossReferenceGroups))out.crossReferenceGroups=[];
+    if(!Array.isArray(out.nodes))out.nodes=[];
+    if(!Array.isArray(out.links))out.links=[];
+    out.links=out.links.map(function(l){
+      var val=parseInt((l&&l.value),10);
+      if(isNaN(val))val=1;
+      if(val<1)val=1;
+      if(val>66)val=66;
+      return {
+        source:(l&&l.source)?String(l.source):"",
+        target:(l&&l.target)?String(l.target):"",
+        value:val,
+        type:normalizeLinkType((l&&l.type)||"correlation")
+      };
+    }).filter(function(l){return l.source&&l.target;});
+    out=applyDatasetExpansionPolicy(out,false);
+    out.schemaVersion=DATASET_SCHEMA_VERSION;
+    return out;
+  }
+  function normalizeProfile(profile,key){
+    var base=sanitizeDatasetKey(key||((profile&&profile.baseKey)||""));
+    var out=cloneObj(profile||{});
+    out.baseKey=base;
+    if(!Array.isArray(out.sets))out.sets=[];
+    out.sets=out.sets.map(function(s){
+      var next=cloneObj(s||{});
+      if(!next.id)next.id=nowSetId();
+      if(!next.name)next.name=next.id;
+      if(!next.params)next.params={};
+      if(typeof next.params.hideDataset!=="boolean")next.params.hideDataset=false;
+      if(!next.params.autoUpdate)next.params.autoUpdate={};
+      next.params.autoUpdate=normalizeAutoUpdateSettings(next.params.autoUpdate);
+      return next;
+    });
+    if(!out.defaultSetId&&out.sets.length)out.defaultSetId=out.sets[0].id;
+    out.schemaVersion=PROFILE_SCHEMA_VERSION;
+    return out;
+  }
+  function readDataset(key){
+    var k=sanitizeDatasetKey(key);
+    var raw=localStorage.getItem("drv-ds:"+k);
+    var parsed=safeParse(raw,"Dataset",k);
+    if(!parsed)return null;
+    return normalizeDataset(parsed);
+  }
+  function writeDataset(key,ds){
+    var k=sanitizeDatasetKey(key);
+    var normalized=normalizeDataset(ds);
+    localStorage.setItem("drv-ds:"+k,JSON.stringify(normalized));
+    return normalized;
+  }
+  function readProfile(key){
+    var k=sanitizeDatasetKey(key);
+    var raw=localStorage.getItem(builderProfileKey(k));
+    var parsed=safeParse(raw,"Profile",k);
+    if(!parsed)return null;
+    return normalizeProfile(parsed,k);
+  }
+  function writeProfile(key,profile){
+    var k=sanitizeDatasetKey(key);
+    var normalized=normalizeProfile(profile,k);
+    localStorage.setItem(builderProfileKey(k),JSON.stringify(normalized));
+    return normalized;
+  }
+  function migrateAll(){
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var lsKey=localStorage.key(i)||"";
+        if(lsKey.indexOf("drv-ds:")===0){
+          var dkey=lsKey.substring(7);
+          var ds=readDataset(dkey);
+          if(ds)writeDataset(dkey,ds);
+          continue;
+        }
+        if(lsKey.indexOf(DB_PROFILE_PREFIX)===0){
+          var pkey=lsKey.substring(DB_PROFILE_PREFIX.length);
+          var prof=readProfile(pkey);
+          if(prof)writeProfile(pkey,prof);
+        }
+      }
+    }catch(ex){log("Migration pass failed: "+ex.message,"WARN");}
+  }
+  return {
+    migrateAll:migrateAll,
+    readDataset:readDataset,
+    writeDataset:writeDataset,
+    readProfile:readProfile,
+    writeProfile:writeProfile,
+    normalizeDataset:normalizeDataset,
+    normalizeProfile:normalizeProfile
+  };
+})();
+var selectorManager=(function(){
+  var reg={};
+  function registerDataset(key,metadata){
+    var k=sanitizeDatasetKey(key);
+    if(!k)return;
+    reg[k]=reg[k]||{};
+    if(metadata&&metadata.label)reg[k].label=metadata.label;
+    ensureDatasetOptionCompat(k,(reg[k]&&reg[k].label)||k);
+  }
+  function unregisterDataset(key){
+    var k=sanitizeDatasetKey(key);
+    delete reg[k];
+    removeDatasetOption(k);
+  }
+  function setHidden(key,isHidden){
+    setDatasetHidden(key,!!isHidden);
+  }
+  function isHidden(key){
+    return isDatasetHidden(key);
+  }
+  function setActive(key){
+    var k=sanitizeDatasetKey(key);
+    syncDS(k);
+    state.dataset=k;
+  }
+  function getActive(){
+    return state.dataset||"";
+  }
+  function refreshSelectors(){
+    loadStoredDatasetOptionsCompat();
+  }
+  function pruneHiddenOptionsExceptActive(){
+    applyDatasetVisibilityFilter();
+  }
+  return {
+    registerDataset:registerDataset,
+    unregisterDataset:unregisterDataset,
+    setHidden:setHidden,
+    isHidden:isHidden,
+    setActive:setActive,
+    getActive:getActive,
+    refreshSelectors:refreshSelectors,
+    pruneHiddenOptionsExceptActive:pruneHiddenOptionsExceptActive
+  };
+})();
+function ensureDatasetOption(key,label){
+  selectorManager.registerDataset(key,{label:label||key});
+}
+function loadStoredDatasetOptions(){
+  selectorManager.refreshSelectors();
+}
+function loadDataset(key){
+  selectorManager.setActive(key);
+  loadDatasetCompat(key);
 }
 
 /* ---- LINKAGE CONTROLS ---- */
@@ -2082,12 +3158,447 @@ function applyRecommendedLinkType(){
 }
 
 /* ---- DATASET BUILDER ---- */
+var CROSS_REF_GROUPS=[
+  "Private or Company ownership",
+  "Law and legal",
+  "Significant Dates",
+  "People of Interest",
+  "Universities",
+  "Scientific Research Areas",
+  "Geographical significance",
+  "Quantum and AI related",
+  "Conspiracy",
+  "Darkweb",
+  "Trademark, copywrite and patent",
+  "Deaths and Births",
+  "Renamed or Rebranded",
+  "Contradictory",
+  "War and Peace"
+];
+var DB_PROFILE_PREFIX="drv-profile:";
+function cloneObj(v){return JSON.parse(JSON.stringify(v));}
+function sanitizeDatasetKey(v){return (v||"custom-builder").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9\-_]/g,"");}
+function nowSetId(){return "set-"+(new Date().getTime());}
+function builderProfileKey(base){return DB_PROFILE_PREFIX+sanitizeDatasetKey(base);}
+function getSelectedValues(sel){
+  var out=[];if(!sel)return out;
+  for(var i=0;i<sel.options.length;i++){if(sel.options[i].selected)out.push(sel.options[i].value);} 
+  return out;
+}
+function setSelectedValues(sel,vals){
+  if(!sel)return;
+  var map={};(vals||[]).forEach(function(v){map[v]=1;});
+  for(var i=0;i<sel.options.length;i++){sel.options[i].selected=!!map[sel.options[i].value];}
+}
+function getCrossRefSelection(){
+  var out=[];
+  document.querySelectorAll("#dbCrossRefPanel input[type='checkbox'][data-cr]").forEach(function(cb){if(cb.checked)out.push(cb.getAttribute("data-cr"));});
+  return out;
+}
+function setCrossRefSelection(vals){
+  var map={};(vals||[]).forEach(function(v){map[v]=1;});
+  document.querySelectorAll("#dbCrossRefPanel input[type='checkbox'][data-cr]").forEach(function(cb){cb.checked=!!map[cb.getAttribute("data-cr")];});
+}
+function autoNodeName(pattern,topic,index,year,type){
+  var p=(pattern||"{topic}-N{n}");
+  return p.replace(/\{topic\}/gi,topic||"Node").replace(/\{n\}/gi,String(index+1)).replace(/\{year\}/gi,String(year||""))
+    .replace(/\{type\}/gi,type||"event");
+}
+function inferParamsFromDataset(base,ds){
+  var srcDefault=["wikipedia","openalex","wikidata","crossref"];
+  var inferredCap=getDatasetObjectCap(ds,false);
+  var inferredLinks=getDatasetLinkBounds(ds||{});
+  var inferredRefs=getDatasetArticleRefConfig(ds||{});
+  return {
+    key:sanitizeDatasetKey(base),
+    hideDataset:!!(ds&&ds.hidden),
+    seedTopic:ds.seedTopic||base,
+    seedYear:ds.seedYear||2000,
+    period:ds.period||25,
+    depth:ds.depth||20,
+    deviation:ds.deviation||"Deviation",
+    nodeCount:Math.max(2,Math.min(500,(ds.nodes&&ds.nodes.length)||50)),
+    objectCap:inferredCap,
+    minLinkVal:inferredLinks.min,
+    maxLinkVal:inferredLinks.max,
+    articleLinksMin:inferredRefs.minLinks,
+    articleLinksMax:inferredRefs.maxLinks,
+    articleRefCap:inferredRefs.cap,
+    preferredLinkType:"correlation",
+    sources:srcDefault,
+    autoNodes:true,
+    autoNodePattern:"{topic}-N{n}",
+    nodesText:"",
+    linksText:"",
+    crossReferenceGroups:[]
+  };
+}
+function loadBuilderProfile(base){
+  var b=sanitizeDatasetKey(base);
+  var prof=storageMigrations.readProfile(b);
+  if(prof&&prof.sets&&prof.sets.length)return prof;
+  var ds=DATASETS[b];
+  if(!ds){
+    ds=storageMigrations.readDataset(b);
+  }
+  if(!ds){
+    return {baseKey:b,defaultSetId:null,sets:[],schemaVersion:PROFILE_SCHEMA_VERSION};
+  }
+  return {baseKey:b,defaultSetId:"default",sets:[{id:"default",name:"Default Params",params:inferParamsFromDataset(b,ds),dataset:cloneObj(ds)}],schemaVersion:PROFILE_SCHEMA_VERSION};
+}
+function saveBuilderProfile(base,profile){
+  storageMigrations.writeProfile(base,profile);
+}
+function upsertProfileSet(profile,setObj){
+  var found=false;
+  profile.sets.forEach(function(s,i){if(s.id===setObj.id){profile.sets[i]=setObj;found=true;}});
+  if(!found)profile.sets.push(setObj);
+}
+function refreshBuilderDatasetOptions(){
+  var sel=document.getElementById("dbExistingDataset");if(!sel)return;
+  var keep=sel.value||sanitizeDatasetKey(document.getElementById("dbKey").value||state.dataset||"custom-builder");
+  var map={};
+  Object.keys(DATASETS).forEach(function(k){map[k]=1;});
+  (state.localDatasetKeys||[]).forEach(function(k){map[k]=1;});
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i)||"";
+      if(k.indexOf("drv-ds:")===0)map[k.substring(7)]=1;
+      if(k.indexOf(DB_PROFILE_PREFIX)===0)map[k.substring(DB_PROFILE_PREFIX.length)]=1;
+    }
+  }catch(ex){log("Builder dataset list scan failed: "+ex.message,"WARN");}
+  var keys=Object.keys(map).sort();
+  sel.innerHTML="";
+  keys.forEach(function(k){var op=document.createElement("option");op.value=k;op.text=k+(isDatasetHidden(k)?" (hidden)":"");sel.appendChild(op);});
+  if(keys.indexOf(keep)>=0)sel.value=keep;else if(keys.length)sel.value=keys[0];
+}
+function refreshParamSetOptions(base,selectedId){
+  var prof=loadBuilderProfile(base);
+  var sel=document.getElementById("dbParamSet");if(!sel)return prof;
+  sel.innerHTML="";
+  prof.sets.forEach(function(s){
+    var op=document.createElement("option");op.value=s.id;op.text=s.name||s.id;sel.appendChild(op);
+  });
+  if(prof.sets.length){
+    var target=selectedId||prof.defaultSetId||prof.sets[0].id;
+    sel.value=target;
+    if(sel.value!==target)sel.value=prof.sets[0].id;
+  }
+  return prof;
+}
+function getSelectedProfileSet(profile){
+  var id=(document.getElementById("dbParamSet")||{}).value;
+  for(var i=0;i<profile.sets.length;i++){if(profile.sets[i].id===id)return profile.sets[i];}
+  return profile.sets.length?profile.sets[0]:null;
+}
+function setBuilderProfileMsg(msg){var el=document.getElementById("dbProfileMsg");if(el)el.textContent=msg;}
+function cloneDatasetSafe(ds){
+  try{return JSON.parse(JSON.stringify(ds||{}));}catch(ex){return {nodes:[],links:[]};}
+}
+function getDatasetByKey(base){
+  var ds=DATASETS[base];
+  if(ds)return cloneDatasetSafe(ds);
+  ds=storageMigrations.readDataset(base);
+  if(ds)return ds;
+  return null;
+}
+function getLoadedBuilderDataset(base,setObj){
+  if(setObj&&setObj.dataset&&setObj.dataset.nodes)return cloneDatasetSafe(setObj.dataset);
+  return getDatasetByKey(base);
+}
+var datasetRegistry=(function(){
+  function getBuiltInDatasets(){
+    return DATASETS;
+  }
+  function getDatasetByKeyWrap(key){
+    return getDatasetByKey(sanitizeDatasetKey(key));
+  }
+  function normalizeDataset(ds){
+    return storageMigrations.normalizeDataset(ds);
+  }
+  return {
+    getBuiltInDatasets:getBuiltInDatasets,
+    getDatasetByKey:getDatasetByKeyWrap,
+    normalizeDataset:normalizeDataset
+  };
+})();
+function normTitle(s){
+  var v=(s||"").replace(/\s+/g," ").trim().toLowerCase();
+  return v;
+}
+function stemTitle(s){
+  var v=normTitle(s).replace(/[0-9]+/g,"").replace(/[^a-z\s]/g," ").replace(/\s+/g," ").trim();
+  return v;
+}
+function renderLoadedNodeAudit(ds){
+  var panel=document.getElementById("dbLoadedNodeAuditPanel");
+  var box=document.getElementById("dbLoadedNodeAudit");
+  var sum=document.getElementById("dbNodeAuditSummary");
+  if(!panel||!box||!sum)return;
+  if(!ds||!ds.nodes){panel.className="hidden";sum.textContent="No loaded node audit yet.";return;}
+  panel.className="";
+  var nodes=ds.nodes||[];
+  var dupMap={},stemMap={};
+  nodes.forEach(function(n){
+    var t=normTitle(n&&n.id?n.id:"");
+    if(t)dupMap[t]=(dupMap[t]||0)+1;
+    var st=stemTitle(n&&n.id?n.id:"");
+    if(st)stemMap[st]=(stemMap[st]||0)+1;
+  });
+  var dupC=0,simC=0,missC=0,html="";
+  nodes.forEach(function(n,i){
+    var nm=(n&&n.id)?String(n.id):"";
+    var t=normTitle(nm),st=stemTitle(nm),tags="";
+    if(!t){tags+="<span class=\"db-audit-tag miss\">MISSING NAME</span>";missC++;}
+    if(t&&dupMap[t]>1){tags+="<span class=\"db-audit-tag dup\">DUPLICATE TITLE</span>";dupC++;}
+    if(st&&stemMap[st]>=3){tags+="<span class=\"db-audit-tag sim\">MANY SIMILAR NAMES</span>";simC++;}
+    html+="<div class=\"db-audit-item\">"+(i+1)+". "+(nm||"(missing)")+tags+"</div>";
+  });
+  box.innerHTML=html||"<div class=\"db-audit-item\">No nodes found.</div>";
+  sum.textContent="Nodes "+nodes.length+" | Duplicate "+dupC+" | Similar "+simC+" | Missing "+missC;
+}
+function onBuilderParamSetLoaded(base,setObj,msg){
+  if(!setObj)return;
+  applyBuilderParams(setObj.params||{});
+  var ds=getLoadedBuilderDataset(base,setObj);
+  state.builderLoadedBase=base;
+  state.builderLoadedSetId=setObj.id||"";
+  state.builderLoadedDataset=ds;
+  renderLoadedNodeAudit(ds);
+  if(msg)setBuilderProfileMsg(msg);
+}
+function createNewDatasetSeed(){
+  var d=new Date();
+  var k="new-dataset-"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"-"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+String(d.getSeconds()).padStart(2,"0");
+  return sanitizeDatasetKey(k);
+}
+function escapeHtml(s){
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
+}
+var uiRenderHelpers=(function(){
+  function renderChipList(items){
+    var arr=Array.isArray(items)?items:[];
+    return arr.map(function(item){return "<span class=\"tl-chip\">"+escapeHtml(item)+"</span>";}).join("");
+  }
+  function renderStatusBadge(kind,text){
+    return "<span class=\"src-status src-status-"+escapeHtml(kind||"default")+"\">"+escapeHtml(text||"")+"</span>";
+  }
+  function renderRowCells(cells){
+    var arr=Array.isArray(cells)?cells:[];
+    return "<tr>"+arr.map(function(c){return "<td>"+escapeHtml(c)+"</td>";}).join("")+"</tr>";
+  }
+  return {
+    escapeHtml:escapeHtml,
+    renderChipList:renderChipList,
+    renderStatusBadge:renderStatusBadge,
+    renderRowCells:renderRowCells
+  };
+})();
+function summarizeInterestingInsights(ds){
+  var out=[];
+  var nodes=ds.nodes||[],links=ds.links||[];
+  var deg={},types={};
+  nodes.forEach(function(n){deg[n.id]=0;types[n.type||"unknown"]=(types[n.type||"unknown"]||0)+1;});
+  links.forEach(function(l){deg[l.source]=(deg[l.source]||0)+1;deg[l.target]=(deg[l.target]||0)+1;});
+  var hubs=Object.keys(deg).sort(function(a,b){return deg[b]-deg[a];}).slice(0,3);
+  if(hubs.length)out.push("Network hubs indicate high influence concentration around: "+hubs.join(", ")+".");
+  var tnames=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,3);
+  if(tnames.length)out.push("Dominant node archetypes suggest dataset emphasis on "+tnames.join(", ")+" relationships.");
+  var yrs=nodes.map(function(n){return n.year||0;}).filter(function(v){return !!v;});
+  if(yrs.length){
+    var minY=Math.min.apply(null,yrs),maxY=Math.max.apply(null,yrs);
+    out.push("Temporal spread ("+minY+" to "+maxY+") implies multi-phase evolution with clustered causality windows.");
+  }
+  var ltypes={};
+  links.forEach(function(l){var t=normalizeLinkType(l.type||"default");ltypes[t]=(ltypes[t]||0)+1;});
+  var lt=Object.keys(ltypes).sort(function(a,b){return ltypes[b]-ltypes[a];});
+  if(lt.length)out.push("Most frequent linkage pattern is '"+lt[0]+"', indicating deep structural dependency motifs.");
+  if(!out.length)out.push("Dataset has limited relational density; deeper insights emerge after adding links and source variation.");
+  return out;
+}
+function buildPdfReportHtml(ds,key){
+  var nodes=(ds.nodes||[]).slice();
+  var links=(ds.links||[]).slice();
+  var indexRows="";
+  var sections=[
+    {id:"sec-index",name:"Tabled Index"},
+    {id:"sec-params",name:"Dataset Parameters"},
+    {id:"sec-nodes",name:"All Nodes"},
+    {id:"sec-sub",name:"Sub Node Related Links Material"},
+    {id:"sec-sources",name:"Sources"},
+    {id:"sec-patterns",name:"Patterns"},
+    {id:"sec-timeline",name:"Timeline"},
+    {id:"sec-insights",name:"aIntersting insights"}
+  ];
+  sections.forEach(function(s,i){indexRows+="<tr><td>"+(i+1)+"</td><td><a href='#"+s.id+"'>"+escapeHtml(s.name)+"</a></td></tr>";});
+  var nodeRows=nodes.map(function(n,i){return "<tr><td>"+(i+1)+"</td><td>"+escapeHtml(n.id)+"</td><td>"+escapeHtml(n.type||"")+"</td><td>"+escapeHtml(n.year||"")+"</td><td>"+escapeHtml(n.group||"")+"</td><td>"+escapeHtml(n.desc||"")+"</td></tr>";}).join("");
+  var subRows=nodes.map(function(n){
+    var rel=links.filter(function(l){return l.source===n.id||l.target===n.id;}).map(function(l){
+      var o=l.source===n.id?l.target:l.source;
+      return escapeHtml(o+" ["+normalizeLinkType(l.type||"default")+", v="+(l.value||1)+"]");
+    }).join("; ");
+    return "<tr><td>"+escapeHtml(n.id)+"</td><td>"+escapeHtml(rel||"(none)")+"</td></tr>";
+  }).join("");
+  var sourceRows=SOURCE_CATALOG.map(function(s){
+    var est=estimateSourceDepth(s,ds,key||state.dataset||"");
+    return "<tr><td>"+escapeHtml(s.name)+"</td><td>"+escapeHtml(s.url)+"</td><td>"+est+"</td></tr>";
+  }).join("");
+  var patternCount={};
+  links.forEach(function(l){var t=normalizeLinkType(l.type||"default");patternCount[t]=(patternCount[t]||0)+1;});
+  var patternRows=Object.keys(patternCount).sort(function(a,b){return patternCount[b]-patternCount[a];}).map(function(t,i){return "<tr><td>"+(i+1)+"</td><td>"+escapeHtml(t)+"</td><td>"+patternCount[t]+"</td></tr>";}).join("");
+  var timeRows=nodes.slice().sort(function(a,b){return (a.year||0)-(b.year||0);}).map(function(n,i){return "<tr><td>"+(i+1)+"</td><td>"+escapeHtml(n.year||"")+"</td><td>"+escapeHtml(n.id)+"</td><td>"+escapeHtml(n.type||"")+"</td></tr>";}).join("");
+  var insights=summarizeInterestingInsights(ds).map(function(x){return "<li>"+escapeHtml(x)+"</li>";}).join("");
+  return "<!DOCTYPE html><html><head><meta charset='UTF-8'/><title>Dataset PDF Report</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:20px;color:#111}h1,h2{margin:14px 0 8px}table{border-collapse:collapse;width:100%;margin-bottom:14px}th,td{border:1px solid #bbb;padding:6px 8px;font-size:12px;vertical-align:top}th{background:#efefef}a{text-decoration:none;color:#004b91}.muted{color:#666;font-size:12px}ul{margin-top:6px}.break{page-break-before:always}</style></head><body>"+
+    "<h1>Full Dataset Param Report - "+escapeHtml(key||state.dataset||"custom")+"</h1><div class='muted'>Generated: "+escapeHtml(new Date().toLocaleString())+"</div>"+
+    "<h2 id='sec-index'>Tabled Index</h2><table><thead><tr><th>#</th><th>Section</th></tr></thead><tbody>"+indexRows+"</tbody></table>"+
+    "<h2 id='sec-params' class='break'>Dataset Parameters</h2><table><tbody>"+
+      "<tr><th>Dataset Key</th><td>"+escapeHtml(key||state.dataset||"")+"</td></tr>"+
+      "<tr><th>Seed Topic</th><td>"+escapeHtml(ds.seedTopic||"")+"</td></tr>"+
+      "<tr><th>Seed Year</th><td>"+escapeHtml(ds.seedYear||"")+"</td></tr>"+
+      "<tr><th>Period</th><td>"+escapeHtml(ds.period||"")+"</td></tr>"+
+      "<tr><th>Depth</th><td>"+escapeHtml(ds.depth||"")+"</td></tr>"+
+      "<tr><th>Deviation</th><td>"+escapeHtml(ds.deviation||"")+"</td></tr>"+
+      "<tr><th>Node Count</th><td>"+nodes.length+"</td></tr><tr><th>Link Count</th><td>"+links.length+"</td></tr>"+
+    "</tbody></table>"+
+    "<h2 id='sec-nodes' class='break'>All Nodes</h2><table><thead><tr><th>#</th><th>Node</th><th>Type</th><th>Year</th><th>Group</th><th>Description</th></tr></thead><tbody>"+nodeRows+"</tbody></table>"+
+    "<h2 id='sec-sub' class='break'>Sub Node Related Links Material</h2><table><thead><tr><th>Node</th><th>Related Links</th></tr></thead><tbody>"+subRows+"</tbody></table>"+
+    "<h2 id='sec-sources' class='break'>Sources</h2><table><thead><tr><th>Source</th><th>URL</th><th>Estimated Records</th></tr></thead><tbody>"+sourceRows+"</tbody></table>"+
+    "<h2 id='sec-patterns' class='break'>Patterns</h2><table><thead><tr><th>#</th><th>Link Pattern</th><th>Count</th></tr></thead><tbody>"+(patternRows||"<tr><td colspan='3'>(none)</td></tr>")+"</tbody></table>"+
+    "<h2 id='sec-timeline' class='break'>Timeline</h2><table><thead><tr><th>#</th><th>Year</th><th>Node</th><th>Type</th></tr></thead><tbody>"+timeRows+"</tbody></table>"+
+    "<h2 id='sec-insights' class='break'>aIntersting insights</h2><ul>"+insights+"</ul>"+
+    "</body></html>";
+}
+function exportDatasetPdfReport(){
+  var ds=getActiveDatasetObject();
+  if(!ds){log("No active dataset to report","WARN");return;}
+  var key=state.dataset||"custom";
+  var html=buildPdfReportHtml(ds,key);
+  var w=window.open("","_blank");
+  if(!w){log("Popup blocked; allow popups to export PDF report","WARN");return;}
+  w.document.open();w.document.write(html);w.document.close();
+  setTimeout(function(){try{w.focus();w.print();}catch(ex){}},350);
+  log("Opened printable PDF report for dataset: "+key);
+}
+function suggestAiHints(base){
+  var b=(base||"").toLowerCase();
+  var hints={
+    key:"Use stable slug names for profile families.",
+    seedTopic:"Name core concept clearly for auto-node generation.",
+    seedYear:"Anchor to first known event year.",
+    period:"Use larger periods for historical drift.",
+    depth:"Higher depth expands inferred relation chains.",
+    deviation:"Use a divergence node to model alternative paths.",
+    nodeCount:"50 initial expansion target; policy can add +50 batches up to object cap.",
+    minmax:"Keep spread narrow for cleaner line intensity.",
+    pref:"Start with correlation or influence for discovery.",
+    sources:"Pick 4-8 high-trust sources for stable previews."
+  };
+  if(/virus|health|psych|hormones/.test(b)){hints.period="Health timelines benefit from broader period windows.";hints.pref="Temporal/causal links often surface strongest.";}
+  if(/bank|fortune|company|finance/.test(b)){hints.pref="Ownership/dependency links are usually most informative.";hints.sources="Favor SEC/companies-house/FRED/OECD style sources.";}
+  if(/weapons|war/.test(b)){hints.deviation="Use deviation to mark doctrine or treaty pivot.";hints.pref="Conflict/influence/temporal typically highlight major shifts.";}
+  if(/ai|taxonomy|style/.test(b)){hints.depth="AI/culture topics benefit from deeper exploration (20+).";hints.sources="Blend scholarly + open knowledge + news sources.";}
+  return hints;
+}
+function updateBuilderHints(base){
+  var h=suggestAiHints(base);
+  var setTxt=function(id2,val){var el=document.getElementById(id2);if(el)el.textContent=val;};
+  setTxt("hintDbKey",h.key);setTxt("hintDbSeedTopic",h.seedTopic);setTxt("hintDbSeedYear",h.seedYear);setTxt("hintDbPeriod",h.period);
+  setTxt("hintDbDepth",h.depth);setTxt("hintDbDeviation",h.deviation);setTxt("hintDbNodeCount",h.nodeCount);
+  setTxt("hintDbObjectCap","Null -> 250. New dataset default is 200. Expansion grows by +50 while quality objects > 77.");
+  setTxt("hintDbMinLinkVal",h.minmax);setTxt("hintDbMaxLinkVal",h.minmax);setTxt("hintDbPreferredLinkType",h.pref);setTxt("hintDbSources",h.sources);
+  setTxt("hintDbArticleLinksMin","Default article-link floor per object.");
+  setTxt("hintDbArticleLinksMax","Default article-link ceiling per object (default 66).");
+  setTxt("hintDbArticleRefCap","Maximum link-referenced articles per object (up to 1000).");
+}
+function normalizeAutoUpdateSettings(cfg){
+  var c=cfg||{};
+  var all=!!c.all;
+  return {
+    articles:all||!!c.articles,
+    nodeNames:all||!!c.nodeNames,
+    sources:all||!!c.sources,
+    links:all||!!c.links,
+    all:all
+  };
+}
+function showAutoUpdatePanel(show){
+  var p=document.getElementById("dbAutoUpdatePanel");
+  if(!p)return;
+  p.className=show?"":"hidden";
+}
+function setAutoUpdateControls(cfg){
+  var c=normalizeAutoUpdateSettings(cfg);
+  var setC=function(id2,v){var el=document.getElementById(id2);if(el)el.checked=!!v;};
+  setC("dbAutoUpdateArticles",c.articles);
+  setC("dbAutoUpdateNodeNames",c.nodeNames);
+  setC("dbAutoUpdateSources",c.sources);
+  setC("dbAutoUpdateLinks",c.links);
+  setC("dbAutoUpdateAll",c.all);
+}
+function getAutoUpdateControls(){
+  var all=!!((document.getElementById("dbAutoUpdateAll")||{}).checked);
+  var c={
+    articles:!!((document.getElementById("dbAutoUpdateArticles")||{}).checked),
+    nodeNames:!!((document.getElementById("dbAutoUpdateNodeNames")||{}).checked),
+    sources:!!((document.getElementById("dbAutoUpdateSources")||{}).checked),
+    links:!!((document.getElementById("dbAutoUpdateLinks")||{}).checked),
+    all:all
+  };
+  if(all){c.articles=true;c.nodeNames=true;c.sources=true;c.links=true;}
+  return c;
+}
+function captureBuilderParamsCompat(){
+  return {
+    key:sanitizeDatasetKey(document.getElementById("dbKey").value||"custom-builder"),
+    hideDataset:!!((document.getElementById("dbHideDataset")||{}).checked),
+    seedTopic:(document.getElementById("dbSeedTopic").value||"Custom Dataset").trim(),
+    seedYear:parseInt(document.getElementById("dbSeedYear").value,10)||2000,
+    period:parseInt(document.getElementById("dbPeriod").value,10)||25,
+    depth:parseInt(document.getElementById("dbDepth").value,10)||20,
+    deviation:(document.getElementById("dbDeviation").value||"Deviation").trim(),
+    nodeCount:parseInt(document.getElementById("dbNodeCount").value,10)||50,
+    objectCap:parseInt(document.getElementById("dbObjectCap").value,10)||200,
+    minLinkVal:parseInt(document.getElementById("dbMinLinkVal").value,10)||1,
+    maxLinkVal:parseInt(document.getElementById("dbMaxLinkVal").value,10)||66,
+    articleLinksMin:parseInt(document.getElementById("dbArticleLinksMin").value,10)||1,
+    articleLinksMax:parseInt(document.getElementById("dbArticleLinksMax").value,10)||66,
+    articleRefCap:parseInt(document.getElementById("dbArticleRefCap").value,10)||1000,
+    preferredLinkType:normalizeLinkType((document.getElementById("dbPreferredLinkType").value||"correlation")),
+    sources:getSelectedValues(document.getElementById("dbSources")),
+    autoNodes:!!document.getElementById("dbAutoNodes").checked,
+    autoNodePattern:(document.getElementById("dbAutoNodePattern").value||"{topic}-N{n}"),
+    nodesText:document.getElementById("dbNodesText").value||"",
+    linksText:document.getElementById("dbLinksText").value||"",
+    crossReferenceGroups:getCrossRefSelection(),
+    autoUpdate:getAutoUpdateControls()
+  };
+}
+function applyBuilderParamsCompat(params){
+  if(!params)return;
+  var setV=function(id2,v){var el=document.getElementById(id2);if(el)el.value=(typeof v==="undefined"||v===null)?"":v;};
+  setV("dbKey",params.key);setV("dbSeedTopic",params.seedTopic);setV("dbSeedYear",params.seedYear);setV("dbPeriod",params.period);
+  setV("dbDepth",params.depth);setV("dbDeviation",params.deviation);setV("dbNodeCount",params.nodeCount);
+  setV("dbObjectCap",params.objectCap||200);
+  setV("dbMinLinkVal",params.minLinkVal);setV("dbMaxLinkVal",params.maxLinkVal);setV("dbPreferredLinkType",params.preferredLinkType||"correlation");
+  setV("dbArticleLinksMin",params.articleLinksMin||1);setV("dbArticleLinksMax",params.articleLinksMax||66);setV("dbArticleRefCap",params.articleRefCap||1000);
+  setV("dbAutoNodePattern",params.autoNodePattern||"{topic}-N{n}");
+  setV("dbNodesText",params.nodesText||"");setV("dbLinksText",params.linksText||"");
+  if(document.getElementById("dbHideDataset"))document.getElementById("dbHideDataset").checked=!!params.hideDataset;
+  document.getElementById("dbAutoNodes").checked=(typeof params.autoNodes==="boolean")?params.autoNodes:true;
+  setSelectedValues(document.getElementById("dbSources"),params.sources||[]);
+  setCrossRefSelection(params.crossReferenceGroups||[]);
+  setAutoUpdateControls(params.autoUpdate||{});
+  showAutoUpdatePanel(true);
+  updateBuilderHints(params.key||params.seedTopic||"");
+}
 function parseBuilderNodes(text,seedYear){
   var rows=(text||"").split(/\r?\n/).filter(function(x){return x.trim();});
   var out=[];
   rows.forEach(function(r,idx){
     var p=r.split("|");
-    out.push({id:(p[0]||("Node-"+(idx+1))).trim(),year:parseInt((p[1]||seedYear),10)||seedYear,type:(p[2]||"event").trim(),group:parseInt((p[3]||1),10)||1,desc:(p[4]||"Built in Dataset Builder").trim()});
+    var aliases=uniqueStringArray(String(p[5]||"").split(",").map(function(v){return v.trim();}));
+    var synonyms=uniqueStringArray(String(p[6]||"").split(",").map(function(v){return v.trim();}));
+    out.push({id:(p[0]||("Node-"+(idx+1))).trim(),year:parseInt((p[1]||seedYear),10)||seedYear,type:(p[2]||"event").trim(),group:parseInt((p[3]||1),10)||1,desc:(p[4]||"Built in Dataset Builder").trim(),aliases:aliases,synonyms:synonyms});
   });
   return out;
 }
@@ -2106,25 +3617,34 @@ function parseBuilderLinks(text,nodes,minV,maxV,prefType){
   }
   return out.filter(function(l){return l.source&&l.target;});
 }
-function buildDatasetFromBuilder(){
-  var key=(document.getElementById("dbKey").value||"custom-builder").trim().toLowerCase().replace(/\s+/g,"-");
-  var seedTopic=(document.getElementById("dbSeedTopic").value||"Custom Dataset").trim();
-  var seedYear=parseInt(document.getElementById("dbSeedYear").value,10)||2000;
-  var period=parseInt(document.getElementById("dbPeriod").value,10)||25;
-  var depth=parseInt(document.getElementById("dbDepth").value,10)||20;
-  var deviation=(document.getElementById("dbDeviation").value||"Deviation").trim();
-  var nodeCount=parseInt(document.getElementById("dbNodeCount").value,10)||12;
-  var minV=parseInt(document.getElementById("dbMinLinkVal").value,10)||1;
-  var maxV=parseInt(document.getElementById("dbMaxLinkVal").value,10)||5;
+function buildDatasetFromBuilderCompat(){
+  /* snapshot current state for undo */
+  state._lastBuildSnapshot={nodes:state.nodes.slice(),links:state.links.slice(),dataset:state.dataset};
+  var p=captureBuilderParams();
+  var key=sanitizeDatasetKey(p.key||"custom-builder");
+  var seedTopic=(p.seedTopic||"Custom Dataset").trim();
+  var seedYear=p.seedYear||2000;
+  var period=p.period||25;
+  var depth=p.depth||20;
+  var deviation=(p.deviation||"Deviation").trim();
+  var nodeCount=Math.max(2,Math.min(500,p.nodeCount||50));
+  var objectCap=clampInt(p.objectCap,20,2000,DATASET_POLICY.newDatasetDefaultCap);
+  var minV=clampInt(p.minLinkVal,1,66,1);
+  var maxV=Math.min(66,p.maxLinkVal||66);
   if(maxV<minV)maxV=minV;
-  var prefType=normalizeLinkType((document.getElementById("dbPreferredLinkType").value||"correlation"));
-  var nodes=parseBuilderNodes(document.getElementById("dbNodesText").value,seedYear);
+  var prefType=normalizeLinkType(p.preferredLinkType||"correlation");
+  var nodes=[];
+  if(!p.autoNodes){
+    nodes=parseBuilderNodes(p.nodesText,seedYear);
+  }
   if(!nodes.length){
-    for(var i=0;i<Math.max(2,nodeCount);i++){
-      nodes.push({id:seedTopic+"-"+(i+1),year:seedYear-Math.floor(period/2)+Math.floor((i/Math.max(1,nodeCount-1))*period),type:(i===0?"seed":"event"),group:(i%9)+1,desc:"Auto-generated node"});
+    for(var i=0;i<nodeCount;i++){
+      var yr=seedYear-Math.floor(period/2)+Math.floor((i/Math.max(1,nodeCount-1))*period);
+      var t=(i===0?"seed":"event");
+      nodes.push({id:autoNodeName(p.autoNodePattern,seedTopic,i,yr,t),year:yr,type:t,group:(i%9)+1,desc:"Auto-generated node"});
     }
   }
-  var links=parseBuilderLinks(document.getElementById("dbLinksText").value,nodes,minV,maxV,prefType);
+  var links=parseBuilderLinks(p.linksText,nodes,minV,maxV,prefType);
   if(nodes.filter(function(n){return n.id===deviation;}).length===0){
     nodes.push({id:deviation,year:seedYear,type:"deviation",group:9,desc:"Builder deviation anchor"});
     if(nodes.length>1)links.push({source:nodes[0].id,target:deviation,value:maxV,type:"influence"});
@@ -2135,20 +3655,171 @@ function buildDatasetFromBuilder(){
     if(typeof LINK_COLOR[l.type]==="undefined")LINK_COLOR[l.type]=linkTypeColorFromAlphabet(l.type);
   });
   ALL_LINK_METHODS.sort(function(a,b){return a.localeCompare(b);});
-  var ds={seedTopic:seedTopic,seedYear:seedYear,period:period,depth:depth,deviation:deviation,nodes:nodes,links:links};
-  return {key:key,dataset:ds};
+  var ds={seedTopic:seedTopic,seedYear:seedYear,period:period,depth:depth,deviation:deviation,nodes:nodes,links:links,sources:p.sources,crossReferenceGroups:p.crossReferenceGroups||[],objectCap:objectCap,minLinkVal:minV,maxLinkVal:maxV,articleLinksMin:clampInt(p.articleLinksMin,1,1000,1),articleLinksMax:clampInt(p.articleLinksMax,1,1000,66),articleRefCap:clampInt(p.articleRefCap,1,1000,1000)};
+  ds.hidden=!!p.hideDataset;
+  ds=applyDatasetExpansionPolicy(ds,true);
+  return {key:key,dataset:ds,params:p};
+}
+var builderState=(function(){
+  function captureBuilderParams(){
+    return captureBuilderParamsCompat();
+  }
+  function applyBuilderParams(params){
+    applyBuilderParamsCompat(params);
+  }
+  function buildDatasetFromBuilder(){
+    return buildDatasetFromBuilderCompat();
+  }
+  function loadBuilderProfileWrap(base){
+    return loadBuilderProfile(base);
+  }
+  function saveBuilderProfileWrap(base,profile){
+    saveBuilderProfile(base,profile);
+  }
+  return {
+    captureBuilderParams:captureBuilderParams,
+    applyBuilderParams:applyBuilderParams,
+    buildDatasetFromBuilder:buildDatasetFromBuilder,
+    loadBuilderProfile:loadBuilderProfileWrap,
+    saveBuilderProfile:saveBuilderProfileWrap
+  };
+})();
+function captureBuilderParams(){
+  return builderState.captureBuilderParams();
+}
+function applyBuilderParams(params){
+  builderState.applyBuilderParams(params);
+}
+function buildDatasetFromBuilder(){
+  return builderState.buildDatasetFromBuilder();
+}
+function smartTokenize(text){
+  var stop={of:1,and:1,the:1,for:1,with:1,from:1,into:1,to:1,in:1,on:1,at:1,vs:1,by:1,a:1,an:1,is:1,are:1,this:1,that:1,built:1,auto:1,generated:1,node:1,dataset:1,builder:1,related:1,link:1,context:1};
+  var raw=String(text||"").replace(/\([^\)]*\)/g," ").replace(/[^A-Za-z0-9\s\-]/g," ").replace(/\s+/g," ").trim();
+  if(!raw)return [];
+  return raw.split(" ").map(function(w){return w.trim();}).filter(function(w){return w&&w.length>1&&!stop[w.toLowerCase()];});
+}
+function smartTitleCase(s){
+  return String(s||"").split(/\s+/).filter(function(x){return !!x;}).map(function(p){return p.charAt(0).toUpperCase()+p.substr(1).toLowerCase();}).join(" ");
+}
+function typeTag(t){
+  var m={
+    event:"Event",seed:"Seed",deviation:"Pivot",policy:"Policy",impact:"Impact",tool:"Tool",tech:"Tech",model:"Model",vuln:"Vuln",apt:"APT",ransomware:"Ransom",bank:"Bank",subsidiary:"Sub"
+  };
+  var k=normalizeLinkType(t||"").replace(/-/g," ");
+  return m[k]||smartTitleCase((k||"node").split(" ")[0]);
+}
+function compactPhrase(tokens,maxWords,maxLen){
+  var phrase=tokens.slice(0,maxWords).join(" ").trim();
+  if(!phrase)return "";
+  if(phrase.length>maxLen)phrase=phrase.substr(0,maxLen).trim();
+  return smartTitleCase(phrase);
+}
+function inferNodeDescription(node){
+  var descTokens=smartTokenize(node.desc||"");
+  var idTokens=smartTokenize(node.id||"");
+  var base=(descTokens.length?descTokens:idTokens);
+  if(!base.length)base=[typeTag(node.type||"node")];
+  return compactPhrase(base,4,42)||"Unnamed Node";
+}
+function inferNodeContext(node,ctx){
+  var rel=(ctx&&ctx.relTypeTop&&ctx.relTypeTop[node.id])?ctx.relTypeTop[node.id]:"default";
+  var relLabel=(rel&&rel!=="default")?smartTitleCase(rel.replace(/-/g," ")):"Linked";
+  var nCtx=(ctx&&ctx.neighborSummary&&ctx.neighborSummary[node.id])?ctx.neighborSummary[node.id]:"";
+  var year=node.year||0;
+  var yearCtx="";
+  if(year&&year>999){
+    yearCtx=String(Math.floor(year/10)*10)+"s";
+  }
+  var degree=((ctx&&ctx.degree&&ctx.degree[node.id])||0);
+  var hubCtx=(ctx&&ctx.maxDegree&&degree>=Math.max(2,Math.ceil(ctx.maxDegree*0.75)))?"Hub":"Node";
+  var parts=[typeTag(node.type||"node"),relLabel];
+  if(nCtx)parts.push(nCtx);
+  if(yearCtx)parts.push(yearCtx);
+  parts.push(hubCtx);
+  var out=parts.join(" | ").replace(/\s+/g," ").trim();
+  if(out.length>64)out=out.substr(0,64).trim();
+  return out||"General Context";
+}
+function buildNodeLabel(node,index,ctx){
+  var desc=inferNodeDescription(node);
+  var context=inferNodeContext(node,ctx);
+  return "Node"+index+" - "+desc+" - "+context;
+}
+function applySuccinctNodeRename(ds){
+  var nodes=(ds.nodes||[]).map(function(n){return {id:n.id,year:n.year,type:n.type,group:n.group,desc:n.desc};});
+  var links=(ds.links||[]).map(function(l){return {source:l.source,target:l.target,value:l.value,type:l.type};});
+  var mapOldToNew={};
+  var used={};
+  var degree={},relTypeCount={},neighborTokens={};
+  nodes.forEach(function(n){degree[n.id]=0;relTypeCount[n.id]={};neighborTokens[n.id]=[];});
+  links.forEach(function(l){
+    degree[l.source]=(degree[l.source]||0)+1;
+    degree[l.target]=(degree[l.target]||0)+1;
+    var lt=normalizeLinkType(l.type||"default");
+    if(!relTypeCount[l.source])relTypeCount[l.source]={};
+    if(!relTypeCount[l.target])relTypeCount[l.target]={};
+    relTypeCount[l.source][lt]=(relTypeCount[l.source][lt]||0)+1;
+    relTypeCount[l.target][lt]=(relTypeCount[l.target][lt]||0)+1;
+    if(!neighborTokens[l.source])neighborTokens[l.source]=[];
+    if(!neighborTokens[l.target])neighborTokens[l.target]=[];
+    neighborTokens[l.source].push(l.target);
+    neighborTokens[l.target].push(l.source);
+  });
+  var maxDegree=1;Object.keys(degree).forEach(function(k){if(degree[k]>maxDegree)maxDegree=degree[k];});
+  var relTypeTop={};
+  Object.keys(relTypeCount).forEach(function(id2){
+    var top="",best=0;
+    Object.keys(relTypeCount[id2]).forEach(function(t){if(relTypeCount[id2][t]>best){best=relTypeCount[id2][t];top=t;}});
+    relTypeTop[id2]=top;
+  });
+  var nodeById={};nodes.forEach(function(n){nodeById[n.id]=n;});
+  var neighborSummary={};
+  Object.keys(neighborTokens).forEach(function(id3){
+    var seen={};
+    var topWords=[];
+    neighborTokens[id3].forEach(function(nid){
+      var nn=nodeById[nid];
+      if(!nn)return;
+      var tokens=smartTokenize((nn.desc||"")+" "+(nn.id||""));
+      for(var i=0;i<tokens.length;i++){
+        var k=tokens[i].toLowerCase();
+        if(!seen[k]){seen[k]=1;topWords.push(tokens[i]);}
+        if(topWords.length>=2)break;
+      }
+    });
+    neighborSummary[id3]=compactPhrase(topWords,2,20);
+  });
+  var ctx={degree:degree,maxDegree:maxDegree,relTypeTop:relTypeTop,neighborSummary:neighborSummary};
+  nodes.forEach(function(n,idxNode){
+    var base=buildNodeLabel(n,idxNode+1,ctx);
+    var nm=base,uniq=2;
+    while(used[nm]){nm=base+" - Unique"+uniq;uniq++;}
+    used[nm]=1;
+    mapOldToNew[n.id]=nm;
+    n.id=nm;
+  });
+  links.forEach(function(l){
+    if(mapOldToNew[l.source])l.source=mapOldToNew[l.source];
+    if(mapOldToNew[l.target])l.target=mapOldToNew[l.target];
+  });
+  return {nodes:nodes,links:links,map:mapOldToNew};
 }
 function renderBuilderPreview(obj,mode){
   state.builderPreview=obj;
   var box=document.getElementById("dbPreview");if(!box)return;
+  var profKey=(obj&&obj.dataset&&obj.dataset._policyState&&obj.dataset._policyState.profile)?obj.dataset._policyState.profile:datasetProfileKey(obj&&obj.dataset?obj.dataset:{});
   if(mode==="query"){
     var srcSel=document.getElementById("dbSources");
     var src=[];for(var i=0;i<srcSel.options.length;i++){if(srcSel.options[i].selected)src.push(srcSel.options[i].value);} 
     box.textContent="QUERY PREVIEW\n"+
       "datasetKey="+obj.key+"\n"+
+      "paramSet="+((document.getElementById("dbParamSet")||{}).value||"(new)")+"\n"+
       "seedTopic=\""+obj.dataset.seedTopic+"\"\n"+
       "yearRange="+(obj.dataset.seedYear-Math.floor(obj.dataset.period/2))+".."+(obj.dataset.seedYear+Math.ceil(obj.dataset.period/2))+"\n"+
+      "profile="+profKey+"\n"+
       "sources="+src.join(",")+"\n"+
+      "crossRefs="+((obj.dataset.crossReferenceGroups||[]).join(",")||"(none)")+"\n"+
       "nodeCount="+obj.dataset.nodes.length+"\nlinkCount="+obj.dataset.links.length;
     return;
   }
@@ -2170,6 +3841,8 @@ function renderBuilderSourceChecks(){
 function initBuilderControls(){
   var srcSel=document.getElementById("dbSources");
   var pref=document.getElementById("dbPreferredLinkType");
+  var existingSel=document.getElementById("dbExistingDataset");
+  var paramSel=document.getElementById("dbParamSet");
   if(srcSel&&srcSel.options.length===0){
     SOURCE_CATALOG.forEach(function(s){
       var op=document.createElement("option");op.value=s.key;op.text=s.name;op.selected=true;srcSel.appendChild(op);
@@ -2179,26 +3852,208 @@ function initBuilderControls(){
     ALL_LINK_METHODS.forEach(function(t){var op=document.createElement("option");op.value=t;op.text=t;pref.appendChild(op);});
     pref.value="correlation";
   }
+  var crPanel=document.getElementById("dbCrossRefPanel");
+  if(crPanel&&crPanel.children.length===0){
+    var chHtml="";
+    CROSS_REF_GROUPS.forEach(function(name,idx){
+      chHtml+="<label class=\"db-crossref-item\"><input type=\"checkbox\" data-cr=\""+name.replace(/\"/g,"&quot;")+"\" id=\"dbCr"+idx+"\"/>"+name+"</label>";
+    });
+    crPanel.innerHTML=chHtml;
+  }
+  var crBtn=document.getElementById("btnDbCrossRefToggle");
+  if(crBtn)crBtn.addEventListener("click",function(e){e.stopPropagation();crPanel.classList.toggle("hidden");});
+  document.addEventListener("click",function(e){
+    if(!crPanel||crPanel.classList.contains("hidden"))return;
+    if(e.target===crPanel||crPanel.contains(e.target)||e.target===crBtn)return;
+    crPanel.classList.add("hidden");
+  });
+
+  refreshBuilderDatasetOptions();
+  if(existingSel&&existingSel.value){
+    var prof0=refreshParamSetOptions(existingSel.value);
+    var set0=getSelectedProfileSet(prof0);
+    if(set0)onBuilderParamSetLoaded(existingSel.value,set0,"Loaded default params for "+existingSel.value+".");
+    updateBuilderHints(existingSel.value);
+  }
+
+  if(existingSel)existingSel.addEventListener("change",function(){
+    var base=sanitizeDatasetKey(existingSel.value);
+    var prof=refreshParamSetOptions(base);
+    var set1=getSelectedProfileSet(prof);
+    if(set1)onBuilderParamSetLoaded(base,set1,"Dataset selected: "+base);
+    document.getElementById("dbKey").value=base;
+    updateBuilderHints(base);
+  });
+  if(paramSel)paramSel.addEventListener("change",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),s=getSelectedProfileSet(prof);
+    if(s)onBuilderParamSetLoaded(base,s,"Loaded parameter set: "+((s&&s.name)||"(none)"));
+  });
+
+  (function(){
+    var allEl=document.getElementById("dbAutoUpdateAll");
+    var kids=["dbAutoUpdateArticles","dbAutoUpdateNodeNames","dbAutoUpdateSources","dbAutoUpdateLinks"];
+    if(allEl)allEl.addEventListener("change",function(){
+      if(allEl.checked){
+        kids.forEach(function(id2){var el=document.getElementById(id2);if(el)el.checked=true;});
+      }
+    });
+    kids.forEach(function(id2){
+      var el=document.getElementById(id2);
+      if(!el)return;
+      el.addEventListener("change",function(){
+        var allOn=true;
+        kids.forEach(function(kid){var ke=document.getElementById(kid);if(!ke||!ke.checked)allOn=false;});
+        if(allEl)allEl.checked=allOn;
+      });
+    });
+  })();
+
   var bind=function(id,fn){var el=document.getElementById(id);if(el)el.addEventListener("click",fn);};
+  bind("btnDbNewDataset",function(){
+    var k=createNewDatasetSeed();
+    var p={
+      key:k,
+      hideDataset:false,
+      seedTopic:"New Dataset",
+      seedYear:new Date().getFullYear(),
+      period:20,
+      depth:12,
+      deviation:"Deviation",
+      nodeCount:50,
+      objectCap:200,
+      minLinkVal:1,
+      maxLinkVal:66,
+      articleLinksMin:1,
+      articleLinksMax:66,
+      articleRefCap:1000,
+      preferredLinkType:"correlation",
+      sources:getSelectedValues(document.getElementById("dbSources")),
+      autoNodes:true,
+      autoNodePattern:"{topic}-N{n}",
+      nodesText:"",
+      linksText:"",
+      crossReferenceGroups:[],
+      autoUpdate:{articles:false,nodeNames:false,sources:false,links:false,all:false}
+    };
+    applyBuilderParams(p);
+    state.builderLoadedBase=k;
+    state.builderLoadedSetId="new";
+    state.builderLoadedDataset={seedTopic:p.seedTopic,seedYear:p.seedYear,period:p.period,depth:p.depth,deviation:p.deviation,nodes:[],links:[],sources:p.sources,crossReferenceGroups:[],objectCap:p.objectCap,minLinkVal:p.minLinkVal,maxLinkVal:p.maxLinkVal,articleLinksMin:p.articleLinksMin,articleLinksMax:p.articleLinksMax,articleRefCap:p.articleRefCap};
+    renderLoadedNodeAudit(state.builderLoadedDataset);
+    if(existingSel)existingSel.value="";
+    if(paramSel)paramSel.value="";
+    setBuilderProfileMsg("New dataset draft ready: "+k);
+  });
+  bind("btnDbLoadParamSet",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),s=getSelectedProfileSet(prof);
+    if(s)onBuilderParamSetLoaded(base,s,"Loaded set: "+(s.name||s.id));
+  });
+  bind("btnDbSmartRenameLoaded",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||state.builderLoadedBase||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),s=getSelectedProfileSet(prof);
+    if(!s){setBuilderProfileMsg("No parameter set selected to smart-rename nodes.");return;}
+    var ds=getLoadedBuilderDataset(base,s);
+    if(!ds||!ds.nodes||!ds.nodes.length){setBuilderProfileMsg("No loaded dataset nodes found.");return;}
+    var renamed=applySuccinctNodeRename(ds);
+    ds.nodes=renamed.nodes;ds.links=renamed.links;
+    s.dataset=cloneDatasetSafe(ds);
+    if(!s.params)s.params={};
+    s.params.autoNodes=false;
+    s.params.nodesText=(ds.nodes||[]).map(function(n){return [(n.id||""),(n.year||""),(n.type||"event"),(n.group||1),(n.desc||"")].join("|");}).join("\n");
+    s.params.linksText=(ds.links||[]).map(function(l){return [(l.source||""),(l.target||""),(l.value||1),(l.type||"correlation")].join("|");}).join("\n");
+    saveBuilderProfile(base,prof);
+    onBuilderParamSetLoaded(base,s,"Smart renamed loaded nodes for set: "+(s.name||s.id));
+    renderBuilderPreview({key:base,dataset:ds,params:s.params},"skeleton");
+    log("Builder smart rename complete for loaded set: "+(s.name||s.id));
+  });
+  bind("btnDbApplyAutoUpdate",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),s=getSelectedProfileSet(prof);
+    if(!s){setBuilderProfileMsg("No parameter set selected for auto update settings.");return;}
+    if(!s.params)s.params={};
+    s.params.autoUpdate=getAutoUpdateControls();
+    saveBuilderProfile(base,prof);
+    setBuilderProfileMsg("Auto update settings applied to set: "+(s.name||s.id));
+    log("Builder auto-update settings saved for "+base+"/"+(s.id||"set"));
+  });
+  bind("btnDbForkParamSet",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),s=getSelectedProfileSet(prof);
+    if(!s){setBuilderProfileMsg("No set to fork.");return;}
+    var nm=window.prompt("Fork name",(s.name||"Params")+" Fork");
+    if(!nm)return;
+    var ns={id:nowSetId(),name:nm,params:cloneObj(s.params),dataset:cloneObj(s.dataset||{})};
+    upsertProfileSet(prof,ns);saveBuilderProfile(base,prof);
+    refreshParamSetOptions(base,ns.id);if(existingSel)existingSel.value=base;
+    setBuilderProfileMsg("Forked parameter set: "+nm);
+  });
+  bind("btnDbRenameCopySet",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var doRename=window.confirm("Rename existing dataset?\nOK = Rename existing dataset\nCancel = Create new dataset (copy)");
+    var target=sanitizeDatasetKey(window.prompt("Target dataset key",base+(doRename?"-renamed":"-copy")));
+    if(!target)return;
+    if(doRename&&DATASETS[base]){window.alert("Built-in datasets cannot be renamed. A copy will be created instead.");doRename=false;}
+    var srcProf=loadBuilderProfile(base);
+    if(!srcProf.sets.length){setBuilderProfileMsg("No profile sets available to rename/copy.");return;}
+    var outProf=cloneObj(srcProf);outProf.baseKey=target;
+    saveBuilderProfile(target,outProf);
+    if(doRename){localStorage.removeItem(builderProfileKey(base));}
+    var sourceDs=getDatasetByKey(base);
+    if(sourceDs){storageMigrations.writeDataset(target,sourceDs);if(doRename)localStorage.removeItem("drv-ds:"+base);} else if(DATASETS[base]){storageMigrations.writeDataset(target,DATASETS[base]);}
+    ensureDatasetOption(target,target+" (local)");
+    loadStoredDatasetOptions();
+    refreshBuilderDatasetOptions();
+    if(existingSel)existingSel.value=target;
+    var prof2=refreshParamSetOptions(target,outProf.defaultSetId||null),s2=getSelectedProfileSet(prof2);
+    if(s2)onBuilderParamSetLoaded(target,s2,null);
+    document.getElementById("dbKey").value=target;
+    setBuilderProfileMsg((doRename?"Renamed":"Copied")+" dataset to "+target);
+  });
+  bind("btnDbSetDefaultParam",function(){
+    var base=sanitizeDatasetKey((existingSel&&existingSel.value)||document.getElementById("dbKey").value);
+    var prof=loadBuilderProfile(base),sid=(paramSel&&paramSel.value)||null;
+    if(!sid){setBuilderProfileMsg("No parameter set selected.");return;}
+    prof.defaultSetId=sid;saveBuilderProfile(base,prof);
+    setBuilderProfileMsg("Default params set updated for "+base+".");
+  });
   bind("btnDbBuild",function(){renderBuilderPreview(buildDatasetFromBuilder(),"skeleton");});
   bind("btnDbQuery",function(){renderBuilderPreview(buildDatasetFromBuilder(),"query");});
   bind("btnDbCheckSources",function(){renderBuilderSourceChecks();});
   bind("btnDbApply",function(){
     var obj=buildDatasetFromBuilder();
+    var profKey=(obj&&obj.dataset&&obj.dataset._policyState&&obj.dataset._policyState.profile)?obj.dataset._policyState.profile:datasetProfileKey(obj&&obj.dataset?obj.dataset:{});
     renderBuilderPreview(obj,"skeleton");
-    state.dataset="custom";state.nodes=obj.dataset.nodes;state.links=obj.dataset.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+    state.dataset=obj.key;state.nodes=obj.dataset.nodes;state.links=obj.dataset.links;state.selectedIds=[];state.focusedParentIds=[];state.hiddenTypes={};
+    setDatasetHidden(obj.key,!!obj.params.hideDataset);
+    ensureDatasetOption(obj.key,obj.dataset.seedTopic||obj.key);
     buildSim();populateTimeline(obj.dataset);populateSourcesTable(obj.dataset);
-    document.getElementById("statusDataset").textContent="Dataset: custom-builder";
-    log("Builder dataset applied runtime: "+obj.key);
+    syncDS(obj.key);
+    document.getElementById("statusDataset").textContent="Dataset: "+obj.key+" ["+profKey+"]";
+    document.getElementById("statusMsg").textContent="Builder applied (profile: "+profKey+")";
+    log("Builder dataset applied runtime: "+obj.key+" (profile: "+profKey+")");
   });
   bind("btnDbSaveLocal",function(){
     var obj=buildDatasetFromBuilder();
-    localStorage.setItem("drv-ds:"+obj.key,JSON.stringify(obj.dataset));
+    var base=obj.key;
+    var prof=loadBuilderProfile(base);
+    var sid=(paramSel&&paramSel.value)||nowSetId();
+    var sname=(paramSel&&paramSel.options&&paramSel.selectedIndex>=0)?paramSel.options[paramSel.selectedIndex].text:("Params "+sid);
+    upsertProfileSet(prof,{id:sid,name:sname,params:obj.params,dataset:obj.dataset});
+    if(!prof.defaultSetId)prof.defaultSetId=sid;
+    saveBuilderProfile(base,prof);
+    storageMigrations.writeDataset(obj.key,obj.dataset);
+    setDatasetHidden(base,!!obj.params.hideDataset);
     ensureDatasetOption(obj.key,obj.dataset.seedTopic+" (local)");
     syncDS(obj.key);
     loadStoredDatasetOptions();
+    refreshBuilderDatasetOptions();
+    if(existingSel)existingSel.value=base;
+    refreshParamSetOptions(base,sid);
     renderBuilderPreview(obj,"skeleton");
-    log("Builder dataset saved locally: "+obj.key);
+    log("Builder dataset saved locally: "+obj.key+" (set "+sid+")");
+    setBuilderProfileMsg("Saved local dataset and params set for "+base+".");
   });
   bind("btnDbDownload",function(){
     var obj=buildDatasetFromBuilder();
@@ -2208,6 +4063,101 @@ function initBuilderControls(){
     setTimeout(function(){URL.revokeObjectURL(a.href);},500);
     log("Builder dataset downloaded: "+obj.key+".json");
   });
+
+  /* ---- EXPORT BUILDER PROFILES ---- */
+  bind("btnDbExportProfiles",function(){
+    var profiles={};
+    for(var ki=0;ki<localStorage.length;ki++){
+      var lk=localStorage.key(ki);
+      if(lk&&lk.indexOf(DB_PROFILE_PREFIX)===0){
+        try{profiles[lk.slice(DB_PROFILE_PREFIX.length)]=JSON.parse(localStorage.getItem(lk));}catch(ex){profiles[lk.slice(DB_PROFILE_PREFIX.length)]=localStorage.getItem(lk);}
+      }
+    }
+    var blob2=new Blob([JSON.stringify(profiles,null,2)],{type:"application/json"});
+    var pa=document.createElement("a");pa.href=URL.createObjectURL(blob2);pa.download="drv-profiles-export.json";pa.click();
+    setTimeout(function(){URL.revokeObjectURL(pa.href);},500);
+    log("Exported "+Object.keys(profiles).length+" builder profile sets");
+  });
+
+  /* ---- IMPORT BUILDER PROFILES ---- */
+  bind("btnDbImportProfiles",function(){var fi=document.getElementById("dbImportProfilesFile");if(fi)fi.click();});
+  (function(){
+    var fi=document.getElementById("dbImportProfilesFile");
+    if(!fi)return;
+    fi.addEventListener("change",function(){
+      if(!fi.files||!fi.files.length)return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        try{
+          var data=JSON.parse(ev.target.result);
+          var count=0;
+          Object.keys(data).forEach(function(k){
+            storageMigrations.writeProfile(k,data[k]);count++;
+          });
+          var pm=document.getElementById("dbProfileMsg");
+          if(pm)pm.textContent="Imported "+count+" profile set(s). Reload dropdown to see them.";
+          log("Imported "+count+" builder profile(s)");
+          /* refresh existing dataset dropdown */
+          var ex=document.getElementById("dbExistingDataset");
+          if(ex){var cur=ex.value;ex.innerHTML="<option value=\"\">-- none --</option>";
+            for(var ki2=0;ki2<localStorage.length;ki2++){var lk2=localStorage.key(ki2);if(lk2&&lk2.indexOf("drv-ds:")===0){var opt=document.createElement("option");opt.value=lk2.slice(7);opt.textContent=lk2.slice(7);ex.appendChild(opt);}}
+            ex.value=cur;}
+        }catch(ex2){log("Profile import failed: "+ex2.message,"ERROR");}
+        fi.value="";
+      };
+      reader.readAsText(fi.files[0]);
+    });
+  })();
+
+  /* ---- UNDO BUILD (restore last skeleton) ---- */
+  bind("btnDbRestoreBuild",function(){
+    if(!state._lastBuildSnapshot){log("No previous build to restore","WARN");return;}
+    var snap=state._lastBuildSnapshot;
+    state.nodes=snap.nodes;state.links=snap.links;state.dataset=snap.dataset;
+    buildSim();
+    var pm=document.getElementById("dbProfileMsg");
+    if(pm)pm.textContent="Previous build restored.";
+    log("Builder: last build restored ("+snap.nodes.length+" nodes, "+snap.links.length+" links)");
+  });
+  bind("btnDbAutoRenameNodes",function(){
+    var active=getActiveDatasetObject();
+    if(!active||!active.nodes||!active.nodes.length){log("No active dataset to rename","WARN");return;}
+    state._lastBuildSnapshot={nodes:state.nodes.slice(),links:state.links.slice(),dataset:state.dataset};
+    var renamed=applySuccinctNodeRename(active);
+    var targetKey=state.dataset;
+    if(DATASETS[targetKey])targetKey=sanitizeDatasetKey(targetKey+"-succinct");
+    var newDs={
+      seedTopic:(active.seedTopic||targetKey)+" (Succinct)",
+      seedYear:active.seedYear||0,
+      period:active.period||0,
+      depth:active.depth||probe.pulseDepth||3,
+      deviation:active.deviation||"",
+      nodes:renamed.nodes,
+      links:renamed.links,
+      sources:active.sources||[],
+      crossReferenceGroups:active.crossReferenceGroups||[]
+    };
+    storageMigrations.writeDataset(targetKey,newDs);
+    ensureDatasetOption(targetKey,newDs.seedTopic+" (local)");
+    syncDS(targetKey);
+    state.dataset=targetKey;
+    state.nodes=newDs.nodes;
+    state.links=newDs.links;
+    state.selectedIds=[];
+    state.focusedParentIds=[];
+    state.rootNodeId=null;
+    buildSim();
+    populateTimeline(newDs);
+    populateSourcesTable(newDs);
+    loadStoredDatasetOptions();
+    refreshBuilderDatasetOptions();
+    renderBuilderPreview({key:targetKey,dataset:newDs,params:captureBuilderParams()},"skeleton");
+    setBuilderProfileMsg("Applied succinct node renaming to active dataset.");
+    log("Auto succinct rename complete: "+Object.keys(renamed.map).length+" node names updated");
+  });
+
+  var dbKeyEl=document.getElementById("dbKey");
+  if(dbKeyEl)dbKeyEl.addEventListener("input",function(){updateBuilderHints(dbKeyEl.value);});
 }
 
 function initLinkageControls(){
@@ -2230,12 +4180,12 @@ function syncLayout(val){["layoutSelect","sbLayout"].forEach(function(id2){var e
 /* ---- EXPORT HANDLERS ---- */
 (function(){
   var dlLink=function(href,name){var a=document.createElement("a");a.href=href;a.download=name;a.click();};
-  bind("btnExportPng",function(){
+  bindById("btnExportPng","click",function(){
     var cv=document.getElementById("vizCanvas");if(!cv)return;
     dlLink(cv.toDataURL("image/png"),(state.dataset||"graph")+"-export.png");
     log("Exported canvas as PNG");
   });
-  bind("btnExportJson",function(){
+  bindById("btnExportJson","click",function(){
     var payload={dataset:state.dataset,layout:state.layout,nodes:state.nodes,links:state.links};
     var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
     var url=URL.createObjectURL(blob);
@@ -2243,11 +4193,12 @@ function syncLayout(val){["layoutSelect","sbLayout"].forEach(function(id2){var e
     setTimeout(function(){URL.revokeObjectURL(url);},500);
     log("Exported graph as JSON ("+state.nodes.length+" nodes, "+state.links.length+" links)");
   });
-  bind("btnExportCsv",function(){
+  bindById("btnExportCsv","click",function(){
     var headers=["id","label","type","group","year","x","y"];
     var rows=state.nodes.map(function(n){
+      var sim=nodeById(n.id);
       return [n.id,n.label||n.id,n.type||"",n.group||"",n.year||"",
-        Math.round(n.x||0),Math.round(n.y||0)].map(function(v){
+        Math.round((sim&&sim.x)||0),Math.round((sim&&sim.y)||0)].map(function(v){
         var s=String(v);return s.indexOf(",")>-1?'"'+s.replace(/"/g,'""')+'"':s;
       }).join(",");
     });
@@ -2257,6 +4208,9 @@ function syncLayout(val){["layoutSelect","sbLayout"].forEach(function(id2){var e
     dlLink(url,(state.dataset||"graph")+"-nodes.csv");
     setTimeout(function(){URL.revokeObjectURL(url);},500);
     log("Exported "+state.nodes.length+" nodes as CSV");
+  });
+  bindById("btnExportPdfReport","click",function(){
+    exportDatasetPdfReport();
   });
 }());
 /* ---- PROBE CONTROLS ---- */
@@ -2276,7 +4230,7 @@ document.getElementById("btnApplyRoot").addEventListener("click",function(){
   if(match){state.rootNodeId=match.id;match.pinned=true;match.targetX=canvas.width/2;match.targetY=canvas.height-60;log("Root: "+match.id);}
   else{state.rootNodeId=null;log("Root label set: "+state.rootLabel);}
   document.getElementById("rootFileDisp").textContent=fname||val;
-  if(state.layout==="force")positionSelectedAtTop();
+  applyLayout(state.layout);
 });
 document.getElementById("btnSetRoot").addEventListener("click",function(){
   if(!state.selectedIds.length){log("Select a node first","WARN");return;}
@@ -2293,7 +4247,63 @@ document.getElementById("btnFocusParents").addEventListener("click",function(){
   applyLayout(state.layout);
 });
 document.getElementById("btnClearSel").addEventListener("click",function(){state.selectedIds.forEach(function(id2){var nd=nodeById(id2);if(nd){nd.pinned=false;nd.targetX=null;nd.targetY=null;}});state.selectedIds=[];state.focusedParentIds=[];updateSelUI();applyLayout(state.layout);});
-document.getElementById("btnRefresh").addEventListener("click",function(){if(state.dataset!=="custom")loadDataset(state.dataset);else buildSim();});
+document.getElementById("btnRefresh").addEventListener("click",function(){
+  if(DATASETS[state.dataset])loadDataset(state.dataset);
+  else {
+    var active=getActiveDatasetObject();
+    if(active){
+      state.nodes=active.nodes||[];state.links=active.links||[];
+      buildSim();populateSourcesTable(active);populateTimeline(active);
+    } else buildSim();
+  }
+  var active2=getActiveDatasetObject();
+  if(active2){
+    refreshSourceCounts(active2,null);
+    populateSourcesTable(active2);
+  }
+});
+document.getElementById("ctlRootFile").addEventListener("keydown",function(e){
+  if(e.key==="Enter")document.getElementById("btnApplyRoot").click();
+});
+function toggleShortcutsOverlay(forceOpen){
+  var ov=document.getElementById("shortcutsOverlay");
+  if(!ov)return;
+  var openNow=!ov.classList.contains("hidden");
+  var next=(typeof forceOpen==="boolean")?forceOpen:!openNow;
+  if(next)ov.classList.remove("hidden");
+  else ov.classList.add("hidden");
+  if(next){
+    var chip=document.getElementById("shortcutHintChip");
+    if(chip){chip.classList.add("hidden");}
+  }
+  document.getElementById("statusMsg").textContent=next?"Shortcuts open":"Ready";
+}
+bindById("btnShortcuts","click",function(){toggleShortcutsOverlay();});
+bindById("btnCloseShortcuts","click",function(){toggleShortcutsOverlay(false);});
+bindById("shortcutsOverlay","click",function(e){if(e.target&&e.target.id==="shortcutsOverlay")toggleShortcutsOverlay(false);});
+bindById("shortcutHintChip","click",function(){toggleShortcutsOverlay(true);});
+function initShortcutHintChip(){
+  var chip=document.getElementById("shortcutHintChip");
+  if(!chip)return;
+  setTimeout(function(){if(!chip.classList.contains("hidden"))chip.classList.add("fading");},2600);
+  setTimeout(function(){chip.classList.add("hidden");},3600);
+}
+document.addEventListener("keydown",function(e){
+  var ov=document.getElementById("shortcutsOverlay");
+  var overlayOpen=ov&&!ov.classList.contains("hidden");
+  if(e.key==="Escape"&&overlayOpen){toggleShortcutsOverlay(false);e.preventDefault();return;}
+  var tag=(e.target&&e.target.tagName?e.target.tagName.toUpperCase():"");
+  var inEditor=(tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT");
+  if(inEditor)return;
+  var k=(e.key||"").toLowerCase();
+  if(k==="?"){toggleShortcutsOverlay();e.preventDefault();return;}
+  var tabMap={g:"graph",t:"timeline",f:"foresight",p:"pattern",s:"sources",b:"builder",l:"linkage",o:"log"};
+  if(tabMap[k]){openTab(tabMap[k]);e.preventDefault();return;}
+  if(k==="r"){document.getElementById("btnRefresh").click();e.preventDefault();return;}
+  if(k==="c"){document.getElementById("btnClearSel").click();e.preventDefault();return;}
+  if(k==="w"){document.getElementById("btnWizard").click();e.preventDefault();return;}
+  if(e.ctrlKey&&k==="b"){openTab("builder");e.preventDefault();return;}
+});
 /* ---- WIZARD DEPTH SLIDER ---- */
 var wdsl=document.getElementById("wizDepth");if(wdsl)wdsl.addEventListener("input",function(){var dv=document.getElementById("wizDepthVal");if(dv)dv.textContent=wdsl.value;});
 /* ---- WIZARD RUN ---- */
@@ -2333,7 +4343,43 @@ var SOURCE_CATALOG=[
   {key:"idc",           name:"IDC Trackers",         url:"https://www.idc.com/tracker/",                       weight:{_default:0.40, "devices-suppliers":1.35}},
   {key:"gartner",       name:"Gartner Research",     url:"https://www.gartner.com/en/research",                weight:{_default:0.45, "devices-suppliers":1.20, "ai-displacement":1.15, "fortune500":1.05}},
   {key:"github-archive",name:"GitHub Archive (BigQuery)",url:"https://www.gharchive.org/",                     weight:{_default:0.45, "ai-displacement":1.25, "virus-computer":1.10}},
-  {key:"common-crawl",  name:"Common Crawl",         url:"https://commoncrawl.org/",                           weight:{_default:0.55, "ai-displacement":1.10, "virus-computer":1.05, "games-cost-profit":1.05}}
+  {key:"common-crawl",  name:"Common Crawl",         url:"https://commoncrawl.org/",                           weight:{_default:0.55, "ai-displacement":1.10, "virus-computer":1.05, "games-cost-profit":1.05}},
+  {key:"eurostat",      name:"Eurostat",             url:"https://ec.europa.eu/eurostat/api/dissemination/",  weight:{_default:0.50, "world-banking":1.15, "fortune500":1.05}},
+  {key:"oecd",          name:"OECD Data",            url:"https://sdmx.oecd.org/public/rest/",                 weight:{_default:0.50, "world-banking":1.15}},
+  {key:"undata",        name:"UN Data",              url:"https://data.un.org/",                               weight:{_default:0.45, "world-banking":1.10}},
+  {key:"who-gho",       name:"WHO Global Health Observatory", url:"https://ghoapi.azureedge.net/api/",        weight:{_default:0.45, "virus-human":1.35}},
+  {key:"faostat",       name:"FAOSTAT",              url:"https://fenixservices.fao.org/faostat/api/",         weight:{_default:0.40, "domesticated-animals":1.30}},
+  {key:"usgs",          name:"USGS Data",            url:"https://api.waterdata.usgs.gov/",                    weight:{_default:0.40}},
+  {key:"noaa-ncei",     name:"NOAA NCEI",            url:"https://www.ncei.noaa.gov/cdo-web/api/v2/",          weight:{_default:0.40}},
+  {key:"nasa-earthdata",name:"NASA Earthdata",       url:"https://cmr.earthdata.nasa.gov/search/",             weight:{_default:0.40}},
+  {key:"nih-reporter",  name:"NIH RePORTER",         url:"https://api.reporter.nih.gov/v2/",                   weight:{_default:0.45, "virus-human":1.25}},
+  {key:"clinicaltrials",name:"ClinicalTrials.gov",   url:"https://clinicaltrials.gov/api/v2/",                 weight:{_default:0.45, "virus-human":1.30}},
+  {key:"iea-data",      name:"IEA Data Browser",     url:"https://api.iea.org/stats/",                         weight:{_default:0.35, "fortune500":1.05}},
+  {key:"eia-open",      name:"US EIA Open Data",     url:"https://api.eia.gov/",                               weight:{_default:0.40, "fortune500":1.10}},
+  {key:"fred",          name:"FRED (St. Louis Fed)", url:"https://api.stlouisfed.org/fred/",                   weight:{_default:0.55, "world-banking":1.30}},
+  {key:"alphavantage",  name:"Alpha Vantage",        url:"https://www.alphavantage.co/query",                  weight:{_default:0.45, "fortune500":1.15, "games-cost-profit":1.05}},
+  {key:"polygon",       name:"Polygon.io",           url:"https://api.polygon.io/",                            weight:{_default:0.45, "fortune500":1.15}},
+  {key:"iex-cloud",     name:"IEX Cloud",            url:"https://api.iex.cloud/v1/",                          weight:{_default:0.40, "fortune500":1.10}},
+  {key:"open-meteo",    name:"Open-Meteo",           url:"https://api.open-meteo.com/v1/",                     weight:{_default:0.35}},
+  {key:"geonames",      name:"GeoNames",             url:"https://api.geonames.org/",                          weight:{_default:0.35}},
+  {key:"worldpop",      name:"WorldPop",             url:"https://www.worldpop.org/rest/data/",                weight:{_default:0.35}},
+  {key:"owid",          name:"Our World in Data",    url:"https://ourworldindata.org/grapher/",                weight:{_default:0.45, "virus-human":1.20}},
+  {key:"kaggle",        name:"Kaggle Datasets",      url:"https://www.kaggle.com/datasets",                    weight:{_default:0.45, "ai-displacement":1.10, "games-cost-profit":1.10}},
+  {key:"data-gov-us",   name:"Data.gov (US)",        url:"https://catalog.data.gov/api/3/action/package_search", weight:{_default:0.40}},
+  {key:"data-gov-uk",   name:"Data.gov.uk",          url:"https://data.gov.uk/api/3/action/package_search",    weight:{_default:0.40}},
+  {key:"data-gov-au",   name:"data.gov.au",          url:"https://data.gov.au/data/api/3/action/package_search", weight:{_default:0.40}},
+  {key:"data-europa-eu",name:"data.europa.eu",       url:"https://data.europa.eu/api/hub/search/search",       weight:{_default:0.40, "world-banking":1.10}},
+  {key:"cdc-open",      name:"CDC Open Data",        url:"https://data.cdc.gov/resource/",                     weight:{_default:0.45, "virus-human":1.25}},
+  {key:"ecb-sdw",       name:"ECB SDW",              url:"https://sdw-wsrest.ecb.europa.eu/service/",          weight:{_default:0.45, "world-banking":1.25}},
+  {key:"boe-statistics",name:"Bank of England Data", url:"https://www.bankofengland.co.uk/boeapps/database/",  weight:{_default:0.40, "world-banking":1.20}},
+  {key:"patentsview",   name:"PatentsView",          url:"https://api.patentsview.org/",                       weight:{_default:0.45, "ai-displacement":1.15, "devices-suppliers":1.10}},
+  {key:"lens",          name:"Lens.org",             url:"https://www.lens.org/lens/search",                   weight:{_default:0.40, "ai-displacement":1.15}},
+  {key:"uspto",         name:"USPTO Open Data",      url:"https://developer.uspto.gov/",                       weight:{_default:0.40, "ai-displacement":1.10}},
+  {key:"wipo",          name:"WIPO PATENTSCOPE",     url:"https://patentscope.wipo.int/search/en/search.jsf",  weight:{_default:0.35, "ai-displacement":1.10}},
+  {key:"overpass-osm",  name:"OpenStreetMap Overpass", url:"https://overpass-api.de/api/interpreter",          weight:{_default:0.35}},
+  {key:"dbpedia",       name:"DBpedia SPARQL",       url:"https://dbpedia.org/sparql",                         weight:{_default:0.45, "taxonomy-styles":1.20}},
+  {key:"quandl-nasdaq", name:"Nasdaq Data Link (Quandl)", url:"https://data.nasdaq.com/api/v3/",              weight:{_default:0.45, "world-banking":1.20, "fortune500":1.15}},
+  {key:"tradingeconomics", name:"Trading Economics", url:"https://api.tradingeconomics.com/",                 weight:{_default:0.45, "world-banking":1.20, "fortune500":1.10}}
 ];
 function estimateSourceDepth(s,ds,dsKey){
   var w=(s.weight&&(s.weight[dsKey]!==undefined?s.weight[dsKey]:s.weight._default))||0.5;
@@ -2342,17 +4388,140 @@ function estimateSourceDepth(s,ds,dsKey){
   var jitter=0.85+((depth*7+nodes*3+s.key.length)%30)/100; // deterministic 0.85..1.14
   return Math.max(0, Math.round(nodes*w*jitter + depth*w*0.6));
 }
+function initSourceView(){
+  if(!state.sourceView)state.sourceView={sortKey:"name",sortDir:1,filters:{name:"",url:"",status:"",records:"",lastFetched:""},selected:{},counts:{},lastFetched:{},lastDelta:{},refreshTick:0,lastRefreshSummary:""};
+  SOURCE_CATALOG.forEach(function(s){if(typeof state.sourceView.selected[s.key]==="undefined")state.sourceView.selected[s.key]=true;});
+}
+function sourceByKey(k){
+  for(var i=0;i<SOURCE_CATALOG.length;i++){if(SOURCE_CATALOG[i].key===k)return SOURCE_CATALOG[i];}
+  return null;
+}
+function sourceCountForRefresh(src,ds,dsKey,tick){
+  var base=estimateSourceDepth(src,ds,dsKey);
+  var drift=((Math.abs(hashString(dsKey+"|"+src.key+"|"+tick))%11)-5);
+  return Math.max(0,base+drift);
+}
+function refreshSourceCounts(ds,onlyKeys){
+  initSourceView();
+  var sv=state.sourceView,dsKey=state.dataset||"";
+  var keys=(onlyKeys&&onlyKeys.length)?onlyKeys:SOURCE_CATALOG.map(function(s){return s.key;});
+  var day=new Date().toISOString().substr(0,10);
+  var up=0,down=0,same=0;
+  keys.forEach(function(k){
+    var src=sourceByKey(k);if(!src)return;
+    var prev=(typeof sv.counts[k]==="number")?sv.counts[k]:estimateSourceDepth(src,ds,dsKey);
+    sv.refreshTick++;
+    var next=sourceCountForRefresh(src,ds,dsKey,sv.refreshTick);
+    var delta=next-prev;
+    sv.counts[k]=next;
+    sv.lastDelta[k]=delta;
+    sv.lastFetched[k]=day;
+    if(delta>0)up+=delta;else if(delta<0)down+=Math.abs(delta);else same++;
+  });
+  sv.lastRefreshSummary="Refreshed "+keys.length+" source(s). NewAdded +"+up+" | OldRemoved -"+down+" | Unchanged "+same;
+  var info=document.getElementById("srcRefreshInfo");
+  if(info)info.textContent=sv.lastRefreshSummary;
+}
+function sourceSortIndicator(key){
+  var sv=state.sourceView;
+  if(sv.sortKey!==key)return "";
+  return sv.sortDir>0?" \u2191":" \u2193";
+}
 function populateSourcesTable(ds){
+  initSourceView();
   var tb=document.getElementById("sourcesTable").querySelector("tbody");
   if(!tb)return;
+  var sv=state.sourceView;
   var dsKey=state.dataset||"";
   var today=new Date().toISOString().substr(0,10);
-  var html="";
-  SOURCE_CATALOG.forEach(function(s){
-    var r=estimateSourceDepth(s,ds,dsKey);
-    html+="<tr><td>"+s.name+"</td><td style=\"font-size:10px\">"+s.url+"</td><td style=\"color:#00c853\">Available</td><td>"+r+"</td><td>"+today+"</td></tr>";
+  var rows=SOURCE_CATALOG.map(function(s){
+    var st=navigator.onLine?"Available":"Offline";
+    var records=(typeof sv.counts[s.key]==="number")?sv.counts[s.key]:estimateSourceDepth(s,ds,dsKey);
+    if(typeof sv.counts[s.key]!=="number")sv.counts[s.key]=records;
+    var lf=sv.lastFetched[s.key]||today;
+    var delta=(typeof sv.lastDelta[s.key]==="number")?sv.lastDelta[s.key]:0;
+    return {key:s.key,name:s.name,url:s.url,status:st,records:records,lastFetched:lf,delta:delta,selected:!!sv.selected[s.key]};
   });
+  var f=sv.filters;
+  rows=rows.filter(function(r){
+    if(f.name&&r.name.toLowerCase().indexOf(f.name)<0)return false;
+    if(f.url&&r.url.toLowerCase().indexOf(f.url)<0)return false;
+    if(f.status&&r.status.toLowerCase().indexOf(f.status)<0)return false;
+    if(f.records&&String(r.records).indexOf(f.records)<0)return false;
+    if(f.lastFetched&&r.lastFetched.toLowerCase().indexOf(f.lastFetched)<0)return false;
+    return true;
+  });
+  rows.sort(function(a,b){
+    var k=sv.sortKey||"name",d=sv.sortDir||1;
+    var av=a[k],bv=b[k];
+    if(k==="records")return (av-bv)*d;
+    return String(av).localeCompare(String(bv))*d;
+  });
+  ["name","url","status","records","lastFetched"].forEach(function(k){
+    var th=document.querySelector("#sourcesTable th[data-sort='"+k+"']");
+    if(th)th.textContent=(k==="lastFetched"?"Last Fetched":(k.charAt(0).toUpperCase()+k.slice(1)))+sourceSortIndicator(k);
+  });
+  var html="";
+  rows.forEach(function(r){
+    var deltaHtml="";
+    if(r.delta>0)deltaHtml="<span class=\"src-delta-up\">+"+r.delta+" NewAdded</span>";
+    else if(r.delta<0)deltaHtml="<span class=\"src-delta-down\">"+r.delta+" OldRemoved</span>";
+    html+="<tr>"+
+      "<td class=\"src-pick\"><input type=\"checkbox\" data-src-key=\""+r.key+"\""+(r.selected?" checked=\"checked\"":"")+"/></td>"+
+      "<td>"+r.name+"</td>"+
+      "<td style=\"font-size:10px\">"+r.url+"</td>"+
+      "<td style=\"color:"+(r.status==="Available"?"#00c853":"#ff3b30")+"\">"+r.status+"</td>"+
+      "<td>"+r.records+deltaHtml+"</td>"+
+      "<td>"+r.lastFetched+"</td>"+
+    "</tr>";
+  });
+  if(!rows.length)html="<tr><td colspan=\"6\" style=\"color:var(--text2)\">No sources match current filters.</td></tr>";
   tb.innerHTML=html;
+  tb.querySelectorAll("input[data-src-key]").forEach(function(cb){
+    cb.addEventListener("change",function(){sv.selected[cb.getAttribute("data-src-key")]=!!cb.checked;});
+  });
+}
+function bindSourcesControls(){
+  initSourceView();
+  var sv=state.sourceView;
+  var bindFilter=function(id2,key){
+    var el=document.getElementById(id2);if(!el)return;
+    el.addEventListener("input",function(){sv.filters[key]=(el.value||"").toLowerCase();var ds=getActiveDatasetObject();if(ds)populateSourcesTable(ds);});
+  };
+  bindFilter("srcFilterName","name");
+  bindFilter("srcFilterUrl","url");
+  bindFilter("srcFilterStatus","status");
+  bindFilter("srcFilterRecords","records");
+  bindFilter("srcFilterFetched","lastFetched");
+  document.querySelectorAll("#sourcesTable th[data-sort]").forEach(function(th){
+    th.addEventListener("click",function(){
+      var key=th.getAttribute("data-sort");
+      if(sv.sortKey===key)sv.sortDir=sv.sortDir*-1;
+      else{sv.sortKey=key;sv.sortDir=1;}
+      var ds=getActiveDatasetObject();if(ds)populateSourcesTable(ds);
+    });
+  });
+  var sa=document.getElementById("srcSelectAll");
+  if(sa)sa.addEventListener("change",function(){
+    SOURCE_CATALOG.forEach(function(s){sv.selected[s.key]=!!sa.checked;});
+    var ds=getActiveDatasetObject();if(ds)populateSourcesTable(ds);
+  });
+  var rs=document.getElementById("btnSourceRefreshSelected");
+  if(rs)rs.addEventListener("click",function(){
+    var ds=getActiveDatasetObject();if(!ds)return;
+    var keys=[];SOURCE_CATALOG.forEach(function(s){if(sv.selected[s.key])keys.push(s.key);});
+    if(!keys.length){log("No sources selected for refresh","WARN");return;}
+    refreshSourceCounts(ds,keys);
+    populateSourcesTable(ds);
+    log("Source refresh selected: "+keys.length+" source(s)");
+  });
+  var ra=document.getElementById("btnSourceRefreshAll");
+  if(ra)ra.addEventListener("click",function(){
+    var ds=getActiveDatasetObject();if(!ds)return;
+    refreshSourceCounts(ds,null);
+    populateSourcesTable(ds);
+    log("Source refresh all completed");
+  });
 }
 /* ---- TIMELINE ---- */
 /* Article-meta synthesiser: deterministic per-node enrichment for source dates,
@@ -2370,17 +4539,89 @@ var FLAG_DEFS={
   contra: {key:"contra", glyph:"\u2694", label:"Contradiction across sources", cls:"contra"}
 };
 var SOURCE_POOL=["Wikipedia","Reuters","Bloomberg","SEC EDGAR","arXiv","OpenAlex","Wikidata","BBC News","NYT","Guardian","Financial Times","Crunchbase","OpenCorporates","GDELT","PubMed","CrossRef","TechCrunch","Ars Technica","The Register","ZDNet","Mainichi","Nikkei","Xinhua","Financial Review","Government Gazette","SteamDB","VGChartz","IDC","Gartner","Statista","World Bank","IMF","BIS","CompaniesHouse"];
+var SOURCE_NAME_ALIASES={
+  "reuters":"Reuters Eikon",
+  "bloomberg":"Bloomberg Terminal",
+  "crossref":"CrossRef",
+  "companieshouse":"UK Companies House",
+  "steamdb":"SteamDB / SteamCharts",
+  "sec edgar":"SEC EDGAR",
+  "world bank":"World Bank Open Data"
+};
 function pad2(n){return(n<10?"0":"")+n;}
+function normalizeSourceName(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"").trim();}
+function sourceCatalogUrlByName(sourceName){
+  var raw=String(sourceName||"").trim();
+  var norm=normalizeSourceName(raw);
+  if(!norm)return "";
+  var ali=SOURCE_NAME_ALIASES[raw.toLowerCase()]||SOURCE_NAME_ALIASES[norm]||"";
+  var candidates=[raw,ali].filter(function(v){return !!v;});
+  for(var i=0;i<candidates.length;i++){
+    var cNorm=normalizeSourceName(candidates[i]);
+    for(var j=0;j<SOURCE_CATALOG.length;j++){
+      var c=SOURCE_CATALOG[j];
+      var n1=normalizeSourceName(c.name),n2=normalizeSourceName(c.key);
+      if(cNorm===n1||cNorm===n2||n1.indexOf(cNorm)>=0||cNorm.indexOf(n1)>=0)return c.url;
+    }
+  }
+  return "";
+}
+function buildNodeSourceUrl(sourceName,nodeLabel){
+  var q=encodeURIComponent(String(nodeLabel||"").trim());
+  var base=sourceCatalogUrlByName(sourceName);
+  if(!base)return "";
+  if(base.indexOf("wikipedia.org")>=0)return "https://en.wikipedia.org/w/index.php?search="+q;
+  if(base.indexOf("arxiv.org")>=0)return "https://arxiv.org/search/?query="+q+"&searchtype=all";
+  if(base.indexOf("crossref.org")>=0)return "https://search.crossref.org/?q="+q;
+  if(base.indexOf("pubmed")>=0||base.indexOf("ncbi.nlm.nih.gov")>=0)return "https://pubmed.ncbi.nlm.nih.gov/?term="+q;
+  return base+(base.indexOf("?")>=0?"&":"?")+"q="+q;
+}
+function extractNodeKeywords(node,relatedNames,maxCount){
+  var bag={};
+  function addTokens(text,boost){
+    var toks=smartTokenize(text||"");
+    for(var i=0;i<toks.length;i++){
+      var k=toks[i].toLowerCase();
+      if(!k||k.length<2)continue;
+      bag[k]=(bag[k]||0)+(boost||1);
+    }
+  }
+  addTokens(node.id||"",3);
+  addTokens(node.desc||"",2);
+  addTokens(node.type||"",2);
+  if(relatedNames&&relatedNames.length){
+    relatedNames.slice(0,8).forEach(function(r){addTokens(r,1);});
+  }
+  var keys=Object.keys(bag).sort(function(a,b){
+    if(bag[b]!==bag[a])return bag[b]-bag[a];
+    return a.localeCompare(b);
+  });
+  var out=[];
+  for(var ix=0;ix<keys.length&&out.length<Math.max(1,maxCount||6);ix++){
+    out.push(smartTitleCase(keys[ix]));
+  }
+  return out;
+}
+function getNodeArticleMeta(nodeId){
+  var ds=getActiveDatasetObject();if(!ds)return null;
+  ensureDatasetArticles(ds);
+  var nodes=ds.nodes||[];
+  for(var i=0;i<nodes.length;i++){
+    if(nodes[i].id===nodeId)return nodes[i].article||null;
+  }
+  return null;
+}
 function jitterDate(year,h){
   // Stable month/day from hash, year may shift +/- 1 if discrepancy detected
   var m=((h>>>3)%12)+1,d=((h>>>9)%28)+1;
   return year+"-"+pad2(m)+"-"+pad2(d);
 }
-function buildArticleMeta(nd,nodeIndex,allNodes){
+function buildArticleMeta(nd,nodeIndex,allNodes,ds){
   if(nd.article)return nd.article; // memoise
   var seed=strHash32((nd.id||"")+"|"+(nd.year||0)+"|"+(nd.type||""));
   var rnd=mulberry32(seed);
-  var srcCount=2+Math.floor(rnd()*5); // 2..6 sources
+  var refCfg=getDatasetArticleRefConfig(ds||{});
+  var srcCount=Math.max(1,Math.min(12,refCfg.maxLinks,2+Math.floor(rnd()*5)));
   var srcs=[];var pool=SOURCE_POOL.slice();
   for(var i=0;i<srcCount;i++){var idx=Math.floor(rnd()*pool.length);srcs.push(pool.splice(idx,1)[0]);}
   // First source decision: ~60% are first sources; otherwise clone-of an earlier same-group node
@@ -2404,6 +4645,23 @@ function buildArticleMeta(nd,nodeIndex,allNodes){
   if(flags.leak)   notes.push({k:"leak",   t:"Referenced in pastebin / underground forum dump ("+date.substr(0,4)+"-Q"+(1+((seed>>>6)%4))+"); attribution unverified"});
   if(flags["false"])notes.push({k:"false", t:"Initial claim by "+srcs[srcs.length-1]+" later retracted; corrected figure differs by ~"+(10+(seed%40))+"%"});
   if(flags.contra) notes.push({k:"contra", t:"Source A ("+srcs[0]+") and Source B ("+srcs[1%srcs.length]+") report incompatible attribution"});
+  var kws=extractNodeKeywords(nd,srcs,6);
+  var linkRefCount=Math.max(refCfg.minLinks,Math.min(refCfg.maxLinks,1+Math.floor(rnd()*Math.max(1,refCfg.maxLinks))));
+  linkRefCount=Math.min(linkRefCount,refCfg.cap,DATASET_POLICY.maxArticleReferenceLinks);
+  var refs=[];
+  for(var ri=0;ri<linkRefCount;ri++){
+    var sname=srcs[ri%srcs.length]||"Wikipedia";
+    refs.push({
+      source:sname,
+      url:buildNodeSourceUrl(sname,nd.id+" "+(kws[ri%Math.max(1,kws.length)]||"")),
+      qualityScore:70+((seed+ri*19)%31),
+      title:(nd.id+" Reference "+(ri+1))
+    });
+  }
+  var snippetBits=[];
+  if(nd.desc)snippetBits.push(nd.desc);
+  snippetBits.push("Corroborated across "+srcCount+" detected sources");
+  if(kws.length)snippetBits.push("Keywords: "+kws.join(", "));
   nd.article={
     date:date,
     sources:srcs,
@@ -2413,14 +4671,16 @@ function buildArticleMeta(nd,nodeIndex,allNodes){
     flags:flags,
     flagCount:(flags.discrep?1:0)+(flags.leak?1:0)+(flags["false"]?1:0)+(flags.contra?1:0),
     notes:notes,
-    snippet:(nd.desc||"")+" - corroborated across "+srcCount+" sources."
+    keywords:kws,
+    references:refs,
+    snippet:snippetBits.join(". ")+"."
   };
   return nd.article;
 }
 function ensureDatasetArticles(ds){
   if(ds._articlesBuilt)return;
   var sorted=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
-  sorted.forEach(function(n,i){buildArticleMeta(n,i,sorted);});
+  sorted.forEach(function(n,i){buildArticleMeta(n,i,sorted,ds);});
   ds._articlesBuilt=true;
 }
 function tlFlagPills(art){
@@ -2494,7 +4754,13 @@ function populateTimeline(ds){
   items.forEach(function(n){
     var a=n.article,c=NODE_COLORS[n.group%NODE_COLORS.length];
     var related=ds.links.filter(function(l){return l.source===n.id||l.target===n.id;});
-    var srcPills=a.sources.map(function(s,i){var cls=(i===0&&a.isFirst)?"first":(a.cloneOf&&i===0?"clone":"");return "<span class=\"tl-src-pill "+cls+"\">"+s+"</span>";}).join("");
+    var srcPills=a.sources.map(function(s,i){
+      var cls=(i===0&&a.isFirst)?"first":(a.cloneOf&&i===0?"clone":"");
+      var u=buildNodeSourceUrl(s,n.id);
+      if(u)return "<a class=\"tl-src-pill "+cls+"\" href=\""+u+"\" target=\"_blank\" rel=\"noopener\" title=\"Open source for node\">"+s+"</a>";
+      return "<span class=\"tl-src-pill "+cls+"\">"+s+"</span>";
+    }).join("");
+    var kwPills=(a.keywords||[]).map(function(k){return "<span class=\"tl-src-pill\">"+k+"</span>";}).join("");
     var linkChips=related.map(function(l){var other=l.source===n.id?l.target:l.source;return "<span class=\"tl-link-chip\" data-target=\""+other.replace(/\"/g,"&quot;")+"\" title=\""+(l.type||"")+" - weight "+(l.value||1)+"\">"+other+" ("+(l.type||"link")+")</span>";}).join("");
     var notesHtml=a.notes.map(function(nt){return "<div class=\"tl-disc-row "+nt.k+"\">"+FLAG_DEFS[nt.k].glyph+" "+nt.t+"</div>";}).join("");
     html+="<div class=\"tl-card\" data-id=\""+n.id.replace(/\"/g,"&quot;")+"\" data-year=\""+(n.year||0)+"\" style=\"border-left-color:"+c+"\">"+
@@ -2505,6 +4771,7 @@ function populateTimeline(ds){
           "<div class=\"tl-meta-k\">Group</div><div class=\"tl-meta-v\">"+(n.group||0)+"</div>"+
           "<div class=\"tl-meta-k\">Snippet</div><div class=\"tl-meta-v\">"+a.snippet+"</div>"+
           "<div class=\"tl-meta-k\">Sources</div><div class=\"tl-meta-v\">"+srcPills+"</div>"+
+          "<div class=\"tl-meta-k\">Keywords</div><div class=\"tl-meta-v\">"+(kwPills||"<span style=\"color:#666\">(none)</span>")+"</div>"+
           (a.cloneOf?"<div class=\"tl-meta-k\">Clone of</div><div class=\"tl-meta-v\" style=\"color:#a8b2cc\">"+a.cloneOf+"</div>":"")+
           "<div class=\"tl-meta-k\">Related</div><div class=\"tl-meta-v\">"+(linkChips||"<span style=\"color:#666\">(none)</span>")+"</div>"+
         "</div>"+
@@ -2518,7 +4785,8 @@ function populateTimeline(ds){
     card.addEventListener("click",function(ev){
       if(ev.target.classList.contains("tl-link-chip")){
         var tid=ev.target.getAttribute("data-target");
-        var t=stream.querySelector('.tl-card[data-id="'+tid.replace(/\"/g,'\\\"')+'"]');
+        var t=null;
+        stream.querySelectorAll(".tl-card").forEach(function(c){if(!t&&c.getAttribute("data-id")===tid)t=c;});
         if(t){t.scrollIntoView({behavior:"smooth",block:"center"});t.classList.add("expanded");}
         ev.stopPropagation();return;
       }
@@ -2527,8 +4795,8 @@ function populateTimeline(ds){
   });
 }
 /* Filter & sort change */
-document.getElementById("tlFlagFilter").addEventListener("change",function(){var ds=DATASETS[state.dataset];if(ds)populateTimeline(ds);});
-document.getElementById("tlSort").addEventListener("change",function(){var ds=DATASETS[state.dataset];if(ds)populateTimeline(ds);});
+document.getElementById("tlFlagFilter").addEventListener("change",function(){var ds=getActiveDatasetObject();if(ds)populateTimeline(ds);});
+document.getElementById("tlSort").addEventListener("change",function(){var ds=getActiveDatasetObject();if(ds)populateTimeline(ds);});
 /* ---- PATTERN MATCH ---- */
 /* Dark-pattern + crossover taxonomy. Each colour represents a pattern family
    that may surface as link types or repeated topic substrings across datasets. */
@@ -2575,7 +4843,7 @@ function buildPatternSchematic(mode,minC){
   // Layout each dataset as a vertical lane
   var lanes={};var laneW=w/dsKeys.length;
   dsKeys.forEach(function(k,li){
-    var ds=DATASETS[k];if(!ds)return;
+    var ds=(k===state.dataset?getActiveDatasetObject():DATASETS[k]);if(!ds)return;
     ensureDatasetArticles(ds);
     var cx=li*laneW+laneW/2;
     var nodes=ds.nodes.slice().sort(function(a,b){return(a.year||0)-(b.year||0);});
@@ -2584,10 +4852,10 @@ function buildPatternSchematic(mode,minC){
   });
   // Build SVG: header lane labels, nodes coloured by primary detected pattern, intra-link arcs, cross-dataset crossover lines on shared substring
   var html="";
-  dsKeys.forEach(function(k,li){var ds=DATASETS[k];if(!ds)return;html+="<text x=\""+(li*laneW+laneW/2)+"\" y=\"18\" fill=\"#e94560\" font-size=\"12\" text-anchor=\"middle\" font-weight=\"bold\">"+(ds.seedTopic||k)+"</text>";});
+  dsKeys.forEach(function(k,li){var ds=(k===state.dataset?getActiveDatasetObject():DATASETS[k]);if(!ds)return;html+="<text x=\""+(li*laneW+laneW/2)+"\" y=\"18\" fill=\"#e94560\" font-size=\"12\" text-anchor=\"middle\" font-weight=\"bold\">"+(ds.seedTopic||k)+"</text>";});
   // Intra-dataset links (faint grey base + coloured if matches dark pattern)
   dsKeys.forEach(function(k){
-    var ds=DATASETS[k],lane=lanes[k];if(!ds||!lane)return;
+    var ds=(k===state.dataset?getActiveDatasetObject():DATASETS[k]),lane=lanes[k];if(!ds||!lane)return;
     ds.links.forEach(function(l){
       if((l.value||1)<minC*5)return;
       var sN=lane.nodes.filter(function(o){return o.n.id===l.source;})[0],tN=lane.nodes.filter(function(o){return o.n.id===l.target;})[0];
@@ -2629,7 +4897,7 @@ function renderPmSidePanels(mode){
   if(!darkBox||!hindBox)return;
   var keys=mode==="crossover"?Object.keys(DATASETS):[state.dataset];
   var darkRows=[],hindRows=[];
-  keys.forEach(function(k){var ds=DATASETS[k];if(!ds)return;ensureDatasetArticles(ds);ds.nodes.forEach(function(n){
+  keys.forEach(function(k){var ds=(k===state.dataset?getActiveDatasetObject():DATASETS[k]);if(!ds)return;ensureDatasetArticles(ds);ds.nodes.forEach(function(n){
     var pats=detectPatternsForNode(n);if(pats.length)darkRows.push({k:k,n:n,pats:pats});
     var hs=detectHindsightForNode(n);hs.forEach(function(m){hindRows.push({k:k,n:n,m:m});});
   });});
@@ -2783,7 +5051,7 @@ document.getElementById("btnRunForesight").addEventListener("click",function(){
   // Quantum entangled markers
   var qEvents=[];
   if(quantumOn){
-    var ds=DATASETS[state.dataset];
+    var ds=getActiveDatasetObject();
     if(ds){
       qEvents=quantumEvents(ds,qMin,qMax);
       qEvents.forEach(function(e){
@@ -2807,14 +5075,20 @@ renderQuantumBar();
 setInterval(function(){var el=document.getElementById("statusTime");if(el)el.textContent=new Date().toLocaleTimeString();},1000);
 /* ---- INIT ---- */
 resizeCanvas();
+storageMigrations.migrateAll();
 loadStoredDatasetOptions();
 initBuilderControls();
 initLinkageControls();
+bindSourcesControls();
 loadDataset("virus-computer");
+openTab(state.activeTab);
+initShortcutHintChip();
 })();
 //]]>
 </script>
-  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
+  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.2" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.2</div>
 </body>
 </html>
+
+
 

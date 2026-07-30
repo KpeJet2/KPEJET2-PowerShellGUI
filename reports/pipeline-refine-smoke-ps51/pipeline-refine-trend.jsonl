@@ -1,0 +1,1 @@
+﻿{"timestamp":"2026-07-23T23:50:15.1713544+08:00","scanId":"PIPE-REFINE-20260723-235038","profile":"staged","stagedOnly":true,"findingsTotal":3,"findingsBySeverity":{"CRITICAL":0,"HIGH":0,"MEDIUM":3,"LOW":0},"regressions":1,"improvements":0,"duplicateGroups":0,"deprecatedReferenceHits":3}

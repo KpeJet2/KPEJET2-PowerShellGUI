@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-29)
 # SupportsPS7.6: YES(As of: 2026-04-29)
 # FileRole: Pipeline
@@ -18,6 +18,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$WorkspacePath = (Resolve-Path -LiteralPath $WorkspacePath).Path
 
 function Convert-ToJsString {
     param([string]$Text)
@@ -47,7 +48,10 @@ function New-LogEntry {
         [System.IO.FileInfo]$File,
         [int]$MaxLines
     )
-    $rel = $File.FullName.Substring($WorkspacePath.Length).TrimStart('\','/')
+    $rel = $File.FullName
+    if ($File.FullName.StartsWith($WorkspacePath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $rel = $File.FullName.Substring($WorkspacePath.Length).TrimStart('\','/')
+    }
     $lines = Get-LogContent -Path $File.FullName -MaxLines $MaxLines
     return [ordered]@{
         category = $Category
@@ -74,12 +78,21 @@ $agentIterFiles = @()
 $reportFiles = @()
 
 if (Test-Path $logsRoot) {
-    $pipelineFiles = @(Get-ChildItem -LiteralPath $logsRoot -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^(cron-|automated-tests-|engine-|module-|self-review|cycle-|improvement-|scan-)' } |
+    $allLogFiles = @(Get-ChildItem -LiteralPath $logsRoot -Recurse -File -ErrorAction SilentlyContinue)
+    $pipelineFiles = @($allLogFiles |
+        Where-Object {
+            $relativePath = $_.FullName.Substring($logsRoot.Length).TrimStart('\','/')
+            $_.Name -match '^(cron-|automated-tests-|engine-|module-|self-review|cycle-|improvement-|scan-)' -or
+            $relativePath -match '^(pipeline|engine-instances|automated-pipe)[\\/]'
+        } |
         Sort-Object LastWriteTime -Descending |
         Select-Object -First $MaxLogsPerCategory)
-    $scriptExecFiles = @(Get-ChildItem -LiteralPath $logsRoot -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '(SCRIPTS|SmokeTest|XPS15-MS|Main-GUI_BATCH)' } |
+    $scriptExecFiles = @($allLogFiles |
+        Where-Object {
+            $relativePath = $_.FullName.Substring($logsRoot.Length).TrimStart('\','/')
+            $_.Name -match '(SCRIPTS|SmokeTest|XPS15-MS|Main-GUI_BATCH)' -or
+            $relativePath -match '^script-exec[\\/]'
+        } |
         Sort-Object LastWriteTime -Descending |
         Select-Object -First $MaxLogsPerCategory)
 }
@@ -172,4 +185,6 @@ if ($content -notmatch [regex]::Escape($startMarker)) {
 
 [System.IO.File]::WriteAllText($viewerPath, $content, [System.Text.UTF8Encoding]::new($true))
 Write-Host "LOG_INDEX synced: $(@($entries).Count) entries across Pipeline/ScriptExec/AgentIter/Report categories." -ForegroundColor Green
+
+
 

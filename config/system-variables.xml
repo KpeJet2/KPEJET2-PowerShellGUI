@@ -1,32 +1,32 @@
-﻿<!-- VersionTag: 2605.B5.V46.0 -->
+<!-- VersionTag: 2606.B5.V51.4 -->
 <SystemVariables>
-  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
-  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
-  <Windows>
-  </Windows>
-  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
-  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
-  <SystemRoot>C:\WINDOWS</SystemRoot>
-  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
-  <ComputerName>XPS15-MS</ComputerName>
-  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
-  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
-  <ProgramFiles>C:\Program Files</ProgramFiles>
-  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
-  <ExecutionDate>2026-03-29 00:24:12</ExecutionDate>
   <ProcessorCount>
   </ProcessorCount>
+  <PSVersion>7.6.1</PSVersion>
+  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ProgramFiles>C:\Program Files</ProgramFiles>
+  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
+  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
+  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
+  <UserName>msaib</UserName>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <SystemRoot>C:\WINDOWS</SystemRoot>
+  <Windows>
+  </Windows>
+  <UserDomain>XPS15-MS</UserDomain>
+  <ExecutionDate>2026-05-26 11:37:18</ExecutionDate>
+  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
+  <ComputerName>XPS15-MS</ComputerName>
   <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
   <PowerShellVersion>7</PowerShellVersion>
-  <PSVersion>7.5.5</PSVersion>
-  <UserDomain>XPS15-MS</UserDomain>
-  <UserName>msaib</UserName>
   <Version>
-    <Major>2605</Major>
+    <Major>2606</Major>
     <Minor>B5</Minor>
-    <Build>5</Build>
-    <VMajor>45</VMajor>
-    <VMinor>0</VMinor>
+    <Build>6</Build>
+    <VMajor>51</VMajor>
+    <VMinor>4</VMinor>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>

@@ -3,8 +3,28 @@ name: SIN Pattern Scan
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - 'logs/**'
+      - 'temp/**'
+      - 'reports/**'
+      - 'Report/**'
+      - 'checkpoints/**'
+      - 'pki/**'
+      - 'sovereign-kernel/**'
+      - '.history/**'
+      - '.snapshots/**'
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'logs/**'
+      - 'temp/**'
+      - 'reports/**'
+      - 'Report/**'
+      - 'checkpoints/**'
+      - 'pki/**'
+      - 'sovereign-kernel/**'
+      - '.history/**'
+      - '.snapshots/**'
   workflow_dispatch:
 
 jobs:
@@ -41,6 +61,68 @@ jobs:
             -BaselineJson config/sin-baseline.json `
             -OutputXml    reports/sin-scan-junit.xml
 
+      - name: Sanitize scan artifacts for GitHub upload
+        if: always()
+        shell: pwsh
+        run: |
+          $scanPath = 'reports/sin-scan-permissive.json'
+          if (-not (Test-Path -LiteralPath $scanPath)) {
+            exit 0
+          }
+
+          $privateRootPattern = '(?i)(^|[\\/])(sovereign-kernel|logs|Report|reports|checkpoints|pki|temp|\.history|\.snapshots)([\\/]|$)|localhost|127\.0\.0\.1|msaib|XPS15-MS-'
+          $scan = Get-Content -LiteralPath $scanPath -Raw | ConvertFrom-Json
+
+          if ($scan.PSObject.Properties.Name -contains 'workspace') {
+            $scan.workspace = '[REDACTED]'
+          }
+
+          if ($scan.PSObject.Properties.Name -contains 'findings') {
+            $safeFindings = @()
+            foreach ($finding in @($scan.findings)) {
+              $candidatePath = ''
+              if ($finding.PSObject.Properties.Name -contains 'file') {
+                $candidatePath = [string]$finding.file
+              }
+              if ($finding.PSObject.Properties.Name -contains 'path') {
+                $candidatePath = $candidatePath + ' ' + [string]$finding.path
+              }
+              if ($finding.PSObject.Properties.Name -contains 'fullPath') {
+                $candidatePath = $candidatePath + ' ' + [string]$finding.fullPath
+              }
+
+              if ($candidatePath -match $privateRootPattern) {
+                continue
+              }
+
+              if ($finding.PSObject.Properties.Name -contains 'content') {
+                $finding.content = '[REDACTED]'
+              }
+
+              $safeFindings += $finding
+            }
+
+            $scan.findings = $safeFindings
+          }
+
+          $scan | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $scanPath -Encoding UTF8
+
+      - name: Run pipeline continuous refine scan
+        if: always()
+        shell: pwsh
+        run: |
+          ./scripts/Invoke-ValidateCanonicalPaths.ps1 `
+            -WorkspacePath . `
+            -RegistryPath config/pipeline-canonical-paths.json `
+            -FailOnMissing
+
+          ./scripts/Invoke-PipelineContinuousRefine.ps1 `
+            -WorkspacePath . `
+            -OutputRoot reports/pipeline-refine `
+            -BaselineProfile full `
+            -BaselineJson config/pipeline-refine-baseline-full.json `
+            -FailOnDrift
+
       - name: Upload SIN scan artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -49,7 +131,12 @@ jobs:
           path: |
             reports/sin-scan-permissive.json
             reports/sin-scan-junit.xml
-          retention-days: 30
+            reports/pipeline-refine/pipeline-refine-latest.json
+            reports/pipeline-refine/pipeline-refine-latest.md
+            reports/pipeline-refine/pipeline-refine-trend.jsonl
+            reports/pipeline-refine/pipeline-refine-trend-latest.md
+            reports/pipeline-refine/pipeline-refine-weekly-rollup.md
+          retention-days: 7
 
       - name: Publish JUnit test results
         if: always()
@@ -79,6 +166,34 @@ jobs:
           }
         continue-on-error: true
 
+  refine-smoke-matrix:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [pwsh, powershell]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refine smoke run on matrix engine
+        shell: pwsh
+        run: |
+          if ('${{ matrix.engine }}' -eq 'powershell') {
+            powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-PipelineContinuousRefine.ps1 `
+              -WorkspacePath . `
+              -StagedOnly `
+              -BaselineProfile staged `
+              -BaselineJson .\config\pipeline-refine-baseline-staged.json `
+              -OutputRoot .\reports\pipeline-refine-smoke
+          } else {
+            pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-PipelineContinuousRefine.ps1 `
+              -WorkspacePath . `
+              -StagedOnly `
+              -BaselineProfile staged `
+              -BaselineJson .\config\pipeline-refine-baseline-staged.json `
+              -OutputRoot .\reports\pipeline-refine-smoke
+          }
+
   pester-tests:
     runs-on: windows-latest
     timeout-minutes: 20
@@ -95,7 +210,7 @@ jobs:
         run: |
           $result = & ./tests/Run-AllTests.ps1 `
             -RequirePester $true `
-            -IncludeModuleValidation $true `
+            -IncludeModuleValidation `
             -PesterOnly
           if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
             $failed = [int]$result.summary.failed

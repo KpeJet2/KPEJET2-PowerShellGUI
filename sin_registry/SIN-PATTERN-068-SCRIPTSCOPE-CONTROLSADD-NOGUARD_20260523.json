@@ -1,0 +1,37 @@
+{
+  "sin_id": "SIN-PATTERN-068-SCRIPTSCOPE-CONTROLSADD-NOGUARD_20260523",
+  "title": "Script-scope WinForms Controls.Add call without nearby null guard",
+  "description": "Flags direct use of $script:_* .Controls.Add(...) without a nearby null guard or local reference capture. In event handlers and closure-heavy WinForms code, script-scope controls can be null or disposed during re-entry, causing runtime crashes.",
+  "severity": "HIGH",
+  "category": "runtime-error",
+  "vector": "script-scope-null-dereference",
+  "ps_version_scope": "PS51",
+  "status": "pattern-defined",
+  "created_at": "2026-05-23T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for script-scope Controls.Add call with context guard suppression",
+  "scan_regex": "\\$script:_[A-Za-z0-9_]+\\.Controls\\.Add\\(",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "\\.Tests\\.ps1$|sin_registry|CheatSheet|EXAMPLES",
+  "context_guard_regex": "\\$null\\s*-ne\\s*\\$script:_[A-Za-z0-9_]+|\\$script:_[A-Za-z0-9_]+\\s*-ne\\s*\\$null|\\$null\\s*-eq\\s*\\$script:_[A-Za-z0-9_]+|\\$[A-Za-z0-9_]+Ref\\s*=\\s*\\$script:_[A-Za-z0-9_]+|if\\s*\\(\\s*\\$script:_[A-Za-z0-9_]+\\s*\\)",
+  "context_guard_lines": 6,
+  "context_guard_direction": "both",
+  "preventionRule": "Capture mutable script-scope controls into a local ref before closure use, and null-guard both control and .Controls before Add().",
+  "remedy": "# BEFORE\n$script:_FooterGrid.Controls.Add($lbl, $col, $row)\n\n# AFTER\n$footerGridRef = $script:_FooterGrid\nif (($null -ne $footerGridRef) -and ($null -ne $footerGridRef.Controls)) {\n    $footerGridRef.Controls.Add($lbl, $col, $row)\n}",
+  "tags": [
+    "winforms",
+    "null-guard",
+    "closure",
+    "script-scope",
+    "ps51-compatible"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-28
@@ -241,8 +241,9 @@ function Extract-Dependencies {
     $importMatches = [regex]::Matches($content, 'Import-Module\s+[''"]?([^''";\s]+)')
     foreach ($m in $importMatches) {
         $target = $m.Groups[1].Value
-        # Normalize: extract filename only
-        $target = [System.IO.Path]::GetFileName($target)
+        # Normalize: extract filename only (skip targets containing illegal path chars, e.g. variable expansions)
+        try { $target = [System.IO.Path]::GetFileName($target) } catch { continue }
+        if ([string]::IsNullOrWhiteSpace($target)) { continue }
         $null = $deps.Add([PSCustomObject]@{ Target = $target; Type = 'import' })
     }
 
@@ -250,7 +251,8 @@ function Extract-Dependencies {
     $dotMatches = [regex]::Matches($content, '\.\s+[''"]?\$?\w*[\\\/]([^''";\s]+\.ps1)')
     foreach ($m in $dotMatches) {
         $target = $m.Groups[1].Value
-        $target = [System.IO.Path]::GetFileName($target)
+        try { $target = [System.IO.Path]::GetFileName($target) } catch { continue }
+        if ([string]::IsNullOrWhiteSpace($target)) { continue }
         $null = $deps.Add([PSCustomObject]@{ Target = $target; Type = 'dot-source' })
     }
 
@@ -729,6 +731,32 @@ foreach ($xf in $rootXhtml) {
     })
 }
 
+# Nested XHTML across remaining workspace folders (mirror test exclusions:
+# skip ~REPORTS, .history, .venv, agentic-manifest-history, and already-scanned dirs).
+try {
+    $alreadyScanned = @($manifest.xhtmlTools | ForEach-Object { $_.path.ToLowerInvariant() })
+    $nestedXhtml = Get-ChildItem $ProjectRoot -Filter '*.xhtml' -Recurse -File -ErrorAction Stop |
+        Where-Object {
+            $_.FullName -notlike '*\~REPORTS\*' -and
+            $_.FullName -notlike '*\.history\*' -and
+            $_.FullName -notlike '*\.venv\*' -and
+            $_.FullName -notlike '*\agentic-manifest-history\*'
+        }
+    foreach ($xf in $nestedXhtml) {
+        $relPath = $xf.FullName.Replace($ProjectRoot, '').TrimStart([char[]]@('\','/'))
+        if ($alreadyScanned -contains $relPath.ToLowerInvariant()) { continue }
+        $null = $manifest.xhtmlTools.Add([ordered]@{
+            name     = $xf.BaseName
+            path     = $relPath
+            version  = Get-VersionTagFromFile $xf.FullName
+            sizeKB   = [math]::Round($xf.Length / 1KB, 1)
+            category = 'tool'
+        })
+    }
+} catch {
+    Write-AppLog -Message "Failed nested XHTML scan: $_" -Level Debug
+}
+
 # ── 5. Scan Config Files ──
 Write-Host "  [5/14] Scanning config files..." -ForegroundColor DarkCyan
 try {
@@ -928,7 +956,7 @@ try {
 Write-Host "  [9/14] Counting tracking items..." -ForegroundColor DarkCyan
 try {
     if (Test-Path $TodoDir) {
-        $todoFiles = Get-ChildItem $TodoDir -Filter '*.json' -ErrorAction Stop |
+        $todoFiles = Get-ChildItem $TodoDir -Filter '*.json' -File -Recurse -ErrorAction Stop |
             Where-Object { $_.Name -notlike '_*' -and $_.FullName -notlike "*\~*\*" }
         $manifest.tracking.todoCount    = @($todoFiles | Where-Object { $_.Name -like 'ToDo-*' }).Count
         $manifest.tracking.bugCount     = @($todoFiles | Where-Object { $_.Name -like 'Bug-*' -or $_.Name -like 'Bugs2FIX-*' }).Count
@@ -1291,6 +1319,8 @@ Write-Host "[AgenticManifest] Complete.`n" -ForegroundColor Green
 
 # Return the manifest object for pipeline use
 $manifest
+
+
 
 
 

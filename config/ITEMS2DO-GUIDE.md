@@ -112,7 +112,7 @@ $break = @{
 Store in `scripts/Invoke-SchemaMigration-PipelineItem-1-0-to-1-1.ps1`
 
 ```powershell
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # FileRole: MigrationScript
 # SchemaVersion: PipelineItemMigration/1.0
 #Requires -Version 5.1
@@ -358,5 +358,7 @@ See related files:
 - `modules/PwShGUI-SchemaTranslator.psm1` — Transform execution
 - `modules/CronAiAthon-Pipeline.psm1` — Pipeline item management
 - `config/CODE-STANDARDS-v1.0.md` — Overall standards
+
+
 
 

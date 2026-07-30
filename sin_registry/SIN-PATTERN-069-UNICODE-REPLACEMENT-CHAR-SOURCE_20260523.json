@@ -1,0 +1,35 @@
+{
+  "sin_id": "SIN-PATTERN-069-UNICODE-REPLACEMENT-CHAR-SOURCE_20260523",
+  "title": "Replacement character in source text indicates encoding corruption",
+  "description": "Flags U+FFFD replacement character in source files. This usually indicates broken decode/encode round-trips and is a strong early warning of parser drift, mojibake, or data loss.",
+  "severity": "HIGH",
+  "category": "encoding",
+  "vector": "replacement-char-corruption",
+  "status": "pattern-defined",
+  "created_at": "2026-05-23T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for Unicode replacement char literal",
+  "scan_regex": "\\uFFFD",
+  "scan_file_pattern": "*.ps1;*.psm1;*.psd1;*.bat;*.cmd;*.xhtml;*.html;*.js;*.ts;*.css;*.md",
+  "file_exclusion_regex": "sin_registry|\\.git|node_modules|\\.venv|\\.venv-pygame312",
+  "context_guard_regex": null,
+  "context_guard_lines": 0,
+  "context_guard_direction": "above",
+  "preventionRule": "After automated rewrites, verify file bytes and parser health. Avoid lossy decode paths; keep UTF-8 with BOM for Unicode-heavy PS files in PS5.1 workflows.",
+  "remedy": "1) Restore from known-good backup when possible. 2) Re-decode using the original encoding path and save as UTF-8 with BOM. 3) Run PS5 ParseFile() check after repair.",
+  "tags": [
+    "encoding",
+    "mojibake",
+    "parser-safety",
+    "ps51"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

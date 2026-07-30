@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-29)
 # SupportsPS7.6: YES(As of: 2026-04-29)
 # SupportPS5.1TestedDate: 2026-04-29
@@ -16,6 +16,11 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    Import-Module -Name $pipelineModulePath -Force -ErrorAction SilentlyContinue
+}
 
 $targetScripts = @(
     'scripts/Sync-ChangelogViewerData.ps1',
@@ -176,12 +181,24 @@ if (-not (Test-Path -LiteralPath $reportDir)) {
     New-Item -Path $reportDir -ItemType Directory -Force | Out-Null
 }
 
-$todoPath = Join-Path $WorkspacePath 'agents/focalpoint-null/todo/ADMIN-TODO.json'
-$activeTodoSummary = [pscustomobject]@{ source = 'none'; openItems = 0 }
-if (Test-Path -LiteralPath $todoPath) {
-    $todoObj = Get-Content -LiteralPath $todoPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    $openItems = @($todoObj.items | Where-Object { $_.status -eq 'OPEN' })
-    $activeTodoSummary = [pscustomobject]@{ source = 'agents/focalpoint-null/todo/ADMIN-TODO.json'; openItems = @($openItems).Count }
+$activeTodoSummary = [pscustomobject]@{ source = 'none'; openItems = 0; activeItems = 0; totalItems = 0 }
+if (Get-Command -Name Get-CentralMasterToDo -ErrorAction SilentlyContinue) {
+    $masterItems = @(Get-CentralMasterToDo -WorkspacePath $WorkspacePath)
+    $openItems = @($masterItems | Where-Object { $_.status -eq 'OPEN' })
+    $activeItems = @($masterItems | Where-Object { $_.status -in @('OPEN','PLANNED','IN_PROGRESS','IN-PROGRESS','PENDING_APPROVAL','BLOCKED','NEW','TESTING') })
+    $activeTodoSummary = [pscustomobject]@{
+        source = 'pipeline-master'
+        openItems = @($openItems).Count
+        activeItems = @($activeItems).Count
+        totalItems = @($masterItems).Count
+    }
+} else {
+    $todoPath = Join-Path $WorkspacePath 'agents/focalpoint-null/todo/ADMIN-TODO.json'
+    if (Test-Path -LiteralPath $todoPath) {
+        $todoObj = Get-Content -LiteralPath $todoPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $openItems = @($todoObj.items | Where-Object { $_.status -eq 'OPEN' })
+        $activeTodoSummary = [pscustomobject]@{ source = 'agents/focalpoint-null/todo/ADMIN-TODO.json'; openItems = @($openItems).Count; activeItems = @($openItems).Count; totalItems = @($todoObj.items).Count }
+    }
 }
 
 $countsPattern = @(5, 4, 3, 2)
@@ -220,4 +237,6 @@ Write-Output "Report: $outFile"
 <# Problems:
     Full GUI smoke is intentionally not executed per iteration due runtime cost; use dedicated smoke script after cycle completion.
 #>
+
+
 

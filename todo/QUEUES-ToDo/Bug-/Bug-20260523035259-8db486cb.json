@@ -1,0 +1,57 @@
+﻿{
+    "id":  "Bug-20260523035259-8db486cb",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Scanner-detected violations of SIN-PATTERN-053-REPORTS-ROOT-DRIFT in scripts\\Build-ScanToolsManifest.ps1 (1 hits).\nTitle: Non-canonical reports root usage (reports/)\nSeverity: HIGH\n\nSample matches:\nline 55: [pscustomobject]@{ name=\u0027InvokeOrphanedFileAudit\u0027;        script=\u0027scripts\\Invoke-OrphanedFileAudit.ps1\u0027;              group=\u0027Discovered\u0027; taskId=\u0027\u0027;            ",
+    "lastSeenAt":  "2026-05-22T19:52:59.9087884Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "[SIN-SCAN] SIN-PATTERN-053-REPORTS-ROOT-DRIFT :: Non-canonical reports root usage (reports/)",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-22T19:52:59.9087884Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "SIN-Scanner",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "scripts\\Build-ScanToolsManifest.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "executionAgent":  "",
+    "implementedAt":  null,
+    "notes":  "Created by Convert-SinScanToBugs from SIN-PATTERN-053-REPORTS-ROOT-DRIFT hotspot (1 line hits).",
+    "bugReferrals":  [
+
+                     ],
+    "category":  "sin-scan",
+    "reopenedAt":  null,
+    "created":  "2026-05-22T19:52:59.9087884Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "sinPattern":  "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
+    "modified":  "2026-05-22T19:52:59.9087884Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

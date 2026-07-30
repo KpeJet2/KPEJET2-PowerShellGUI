@@ -1,0 +1,559 @@
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Tray Configuration | PowerShell GUI</title>
+    <style type="text/css">
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #1e1e1e; 
+            color: #e0e0e0; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { background: #252526; border-radius: 4px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        h1 { color: #007acc; margin-bottom: 10px; }
+        .subtitle { color: #858585; }
+        .tabs { display: flex; gap: 0; background: #252526; border-bottom: 1px solid #3e3e42; margin-bottom: 0; border-radius: 4px 4px 0 0; }
+        .tab-button { 
+            padding: 12px 20px; 
+            border: none; 
+            background: #2d2d30; 
+            color: #858585; 
+            cursor: pointer; 
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-button:hover { color: #e0e0e0; }
+        .tab-button.active { 
+            background: #1e1e1e; 
+            color: #007acc; 
+            border-bottom-color: #007acc;
+        }
+        .tab-content { 
+            background: #252526; 
+            padding: 25px; 
+            display: none; 
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .tab-content.active { display: block; }
+        .section { margin-bottom: 25px; }
+        h2 { color: #007acc; margin-bottom: 12px; font-size: 16px; padding-bottom: 8px; border-bottom: 1px solid #3e3e42; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; color: #cccccc; font-weight: 500; }
+        input[type="text"], input[type="number"], select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #3e3e42; 
+            border-radius: 3px; 
+            background: #1e1e1e; 
+            color: #e0e0e0;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus { 
+            outline: none; 
+            border-color: #007acc; 
+            box-shadow: 0 0 4px rgba(0,122,204,0.3);
+        }
+        input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
+        .checkbox-group { margin-bottom: 12px; }
+        .checkbox-row { display: flex; align-items: center; margin-bottom: 8px; }
+        .item-list { 
+            background: #1e1e1e; 
+            border: 1px solid #3e3e42; 
+            border-radius: 3px; 
+            padding: 0;
+        }
+        .item-row { 
+            display: flex; 
+            align-items: center; 
+            padding: 12px; 
+            border-bottom: 1px solid #3e3e42;
+            gap: 10px;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-label { flex: 1; }
+        .item-controls { display: flex; gap: 8px; }
+        button { 
+            padding: 8px 12px; 
+            border: none; 
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-size: 13px; 
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        button.primary { background: #007acc; color: white; }
+        button.primary:hover { background: #0098ff; }
+        button.secondary { background: #3e3e42; color: #e0e0e0; }
+        button.secondary:hover { background: #4e4e54; }
+        button.danger { background: #c1666b; color: white; font-size: 12px; }
+        button.danger:hover { background: #d17a7f; }
+        button.small { padding: 6px 10px; font-size: 12px; }
+        .button-group { display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px; }
+        .hint { color: #858585; font-size: 12px; margin-top: 6px; }
+        .warning { background: #3c3110; color: #dfd550; padding: 12px; border-radius: 3px; border-left: 3px solid #dca530; margin-bottom: 15px; }
+        #warningMessage { display: none; }
+        .error { background: #421919; color: #ffb4b4; padding: 12px; border-radius: 3px; border-left: 3px solid #e57373; margin-bottom: 15px; display: none; }
+        .info { background: #132539; color: #9fd0ff; padding: 12px; border-radius: 3px; border-left: 3px solid #4fa3ff; margin-bottom: 15px; display: none; }
+        .success { background: #103d1c; color: #9ccc65; padding: 12px; border-radius: 3px; border-left: 3px solid #13a538; margin-bottom: 15px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tray Service Configuration</h1>
+            <p class="subtitle">Customize the local web engine tray behavior, menu layout, shortcuts, and monitoring.</p>
+        </div>
+
+        <div id="successMessage" class="success">Configuration saved successfully!</div>
+        <div id="warningMessage" class="warning"></div>
+        <div id="errorMessage" class="error"></div>
+        <div id="infoMessage" class="info"></div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="ui">UI Settings</button>
+            <button class="tab-button" data-tab="shortcuts">Shortcuts</button>
+            <button class="tab-button" data-tab="presets">Launch Presets</button>
+            <button class="tab-button" data-tab="tools">System Tools</button>
+            <button class="tab-button" data-tab="monitoring">Health Monitor</button>
+        </div>
+
+        <div id="ui-tab" class="tab-content active">
+            <div class="section">
+                <h2>Display Settings</h2>
+                
+                <div class="form-group">
+                    <label for="layoutMode">Layout Mode</label>
+                    <select id="layoutMode">
+                        <option value="compact">Compact (minimal menu items)</option>
+                        <option value="standard" selected="selected">Standard (recommended)</option>
+                        <option value="expanded">Expanded (all items visible)</option>
+                    </select>
+                    <div class="hint">Controls how many items are visible in tray menus by default.</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="themeDark" checked="checked" />
+                        <label for="themeDark">Dark Theme</label>
+                    </div>
+                    <div class="hint">Enables dark theme for all tray UI elements.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Menu Sort Order</h2>
+                <p style="color: #858585; margin-bottom: 12px;">Drag to reorder how menu sections appear:</p>
+                <div class="item-list">
+                    <div class="item-row">
+                        <span class="item-label">Services</span>
+                        <div class="item-controls">
+                            <button class="secondary small" data-menu="Services" data-action="up">↑</button>
+                            <button class="secondary small" data-menu="Services" data-action="down">↓</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <span class="item-label">Folders</span>
+                        <div class="item-controls">
+                            <button class="secondary small" data-menu="Folders" data-action="up">↑</button>
+                            <button class="secondary small" data-menu="Folders" data-action="down">↓</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <span class="item-label">Tools</span>
+                        <div class="item-controls">
+                            <button class="secondary small" data-menu="Tools" data-action="up">↑</button>
+                            <button class="secondary small" data-menu="Tools" data-action="down">↓</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <span class="item-label">Utilities</span>
+                        <div class="item-controls">
+                            <button class="secondary small" data-menu="Utilities" data-action="up">↑</button>
+                            <button class="secondary small" data-menu="Utilities" data-action="down">↓</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="shortcuts-tab" class="tab-content">
+            <div class="section">
+                <h2>Folder Shortcuts</h2>
+                <p style="color: #858585; margin-bottom: 12px;">Enable/disable automatic script folder shortcuts:</p>
+                
+                <div class="item-list">
+                    <div class="item-row">
+                        <input type="checkbox" id="shortcut-RUN" checked="checked" />
+                        <label for="shortcut-RUN" class="item-label">RUN Scripts (scripts/RUN*)</label>
+                        <div class="item-controls">
+                            <input type="number" class="shortcut-order" data-shortcut="RUN" value="1" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <input type="checkbox" id="shortcut-INVOKE" checked="checked" />
+                        <label for="shortcut-INVOKE" class="item-label">INVOKE Scripts (scripts/INVOKE*)</label>
+                        <div class="item-controls">
+                            <input type="number" class="shortcut-order" data-shortcut="INVOKE" value="2" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <input type="checkbox" id="shortcut-LAUNCH" checked="checked" />
+                        <label for="shortcut-LAUNCH" class="item-label">LAUNCH Scripts (scripts/LAUNCH*)</label>
+                        <div class="item-controls">
+                            <input type="number" class="shortcut-order" data-shortcut="LAUNCH" value="3" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <input type="checkbox" id="shortcut-START" checked="checked" />
+                        <label for="shortcut-START" class="item-label">START Scripts (scripts/START*)</label>
+                        <div class="item-controls">
+                            <input type="number" class="shortcut-order" data-shortcut="START" value="4" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 25px;">Document Shortcuts</h2>
+                <p style="color: #858585; margin-bottom: 12px;">Enable/disable document type shortcuts:</p>
+                
+                <div class="item-list">
+                    <div class="item-row">
+                        <input type="checkbox" id="doc-XHTML" checked="checked" />
+                        <label for="doc-XHTML" class="item-label">XHTML Tools (*.xhtml, *.html, *.htm, *.mha)</label>
+                        <div class="item-controls">
+                            <input type="number" class="doc-order" data-doc="XHTML" value="1" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <input type="checkbox" id="doc-Markdown" checked="checked" />
+                        <label for="doc-Markdown" class="item-label">Help &amp; Markdown (*.md)</label>
+                        <div class="item-controls">
+                            <input type="number" class="doc-order" data-doc="Markdown" value="2" min="1" max="10" style="width: 50px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="presets-tab" class="tab-content">
+            <div class="section">
+                <h2>Launch Parameter Presets</h2>
+                <p style="color: #858585; margin-bottom: 12px;">Add custom presets for running scripts with specific parameters:</p>
+                
+                <div id="presetsList" class="item-list">
+                    <div class="item-row">
+                        <div style="flex: 1;">
+                            <div style="color: #e0e0e0; font-weight: 600;">Full Pipeline GAP (Verbose)</div>
+                            <div style="color: #858585; font-size: 12px;">scripts/Invoke-PipeGAP.ps1 -Verbose</div>
+                        </div>
+                        <div class="item-controls">
+                            <button class="secondary small">Edit</button>
+                            <button class="danger small">Delete</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <div style="flex: 1;">
+                            <div style="color: #e0e0e0; font-weight: 600;">Pipeline Status (Report Only)</div>
+                            <div style="color: #858585; font-size: 12px;">scripts/Invoke-PipeGAP.ps1 -ReportOnly</div>
+                        </div>
+                        <div class="item-controls">
+                            <button class="secondary small">Edit</button>
+                            <button class="danger small">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary" id="addPresetBtn" style="margin-top: 15px;">+ Add New Preset</button>
+            </div>
+        </div>
+
+        <div id="tools-tab" class="tab-content">
+            <div class="section">
+                <h2>System Tools Flyout</h2>
+                <p style="color: #858585; margin-bottom: 12px;">Manage shortcuts to system utilities in the tray menu:</p>
+                
+                <div class="checkbox-group" style="margin-bottom: 20px;">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="toolsEnabled" checked="checked" />
+                        <label for="toolsEnabled">Enable System Tools Flyout</label>
+                    </div>
+                </div>
+
+                <div id="toolsList" class="item-list">
+                    <div class="item-row">
+                        <div style="flex: 1;">
+                            <div style="color: #e0e0e0; font-weight: 600;">Task Manager</div>
+                            <div style="color: #858585; font-size: 12px;">taskmgr.exe</div>
+                        </div>
+                        <div class="item-controls">
+                            <input type="number" class="tool-order" value="1" min="1" max="20" style="width: 50px;" />
+                            <button class="secondary small">Edit</button>
+                            <button class="danger small">Delete</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <div style="flex: 1;">
+                            <div style="color: #e0e0e0; font-weight: 600;">Event Viewer</div>
+                            <div style="color: #858585; font-size: 12px;">eventvwr.msc</div>
+                        </div>
+                        <div class="item-controls">
+                            <input type="number" class="tool-order" value="2" min="1" max="20" style="width: 50px;" />
+                            <button class="secondary small">Edit</button>
+                            <button class="danger small">Delete</button>
+                        </div>
+                    </div>
+                    <div class="item-row">
+                        <div style="flex: 1;">
+                            <div style="color: #e0e0e0; font-weight: 600;">Services</div>
+                            <div style="color: #858585; font-size: 12px;">services.msc</div>
+                        </div>
+                        <div class="item-controls">
+                            <input type="number" class="tool-order" value="3" min="1" max="20" style="width: 50px;" />
+                            <button class="secondary small">Edit</button>
+                            <button class="danger small">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary" id="addToolBtn" style="margin-top: 15px;">+ Add System Tool</button>
+            </div>
+        </div>
+
+        <div id="monitoring-tab" class="tab-content">
+            <div class="section">
+                <h2>Service Health Monitor</h2>
+                
+                <div class="checkbox-group" style="margin-bottom: 20px;">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="healthEnabled" checked="checked" />
+                        <label for="healthEnabled">Enable Health Monitoring</label>
+                    </div>
+                    <div class="hint">Periodically checks if services are running and restarts failed services.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="healthInterval">Check Interval (seconds)</label>
+                    <input type="number" id="healthInterval" value="420" min="60" max="3600" />
+                    <div class="hint">How often the tray checks service health (default: 7 minutes / 420 seconds).</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="healthMaxRetries">Auto-Restart Attempts</label>
+                    <input type="number" id="healthMaxRetries" value="1" min="0" max="5" />
+                    <div class="hint">How many times to automatically restart a failed service before escalating.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="healthEscalate">Escalate After (consecutive failures)</label>
+                    <input type="number" id="healthEscalate" value="3" min="1" max="10" />
+                    <div class="hint">Number of consecutive health check failures before sending admin alert.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Update Host Settings</h2>
+                
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="updateHostEnabled" />
+                        <label for="updateHostEnabled">Enable Update Host (Phase 3)</label>
+                    </div>
+                    <div class="hint">Enables the update host service on port 981 (disabled by default).</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateInterval">Auto-Check Interval (hours)</label>
+                    <input type="number" id="updateInterval" value="24" min="1" max="720" disabled="disabled" />
+                    <div class="hint">How often to check for updates from the update host.</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="updateAutoCheck" disabled="disabled" />
+                        <label for="updateAutoCheck">Enable Automatic Checks</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="secondary" id="resetBtn">Reset to Defaults</button>
+            <button class="secondary" id="cancelBtn">Cancel</button>
+            <button class="primary" id="saveBtn">Save Configuration</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        //<![CDATA[
+        (function() {
+            'use strict';
+
+            const API_BASE = 'http://127.0.0.1:8042';
+            const tabs = document.querySelectorAll('.tab-button');
+            const updateHostCheckbox = document.getElementById('updateHostEnabled');
+            const updateIntervalInput = document.getElementById('updateInterval');
+            const updateAutoCheckbox = document.getElementById('updateAutoCheck');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    const tabId = tab.dataset.tab + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            updateHostCheckbox.addEventListener('change', () => {
+                updateIntervalInput.disabled = !updateHostCheckbox.checked;
+                updateAutoCheckbox.disabled = !updateHostCheckbox.checked;
+            });
+
+            document.getElementById('saveBtn').addEventListener('click', saveConfiguration);
+            document.getElementById('cancelBtn').addEventListener('click', () => window.close());
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (confirm('Reset all settings to defaults?')) {
+                    resetToDefaults();
+                }
+            });
+
+            function saveConfiguration() {
+                const config = {
+                    ui: {
+                        layoutMode: document.getElementById('layoutMode').value,
+                        themeDark: document.getElementById('themeDark').checked,
+                        menuSortOrder: ['Services', 'Folders', 'Tools', 'Utilities']
+                    },
+                    folderShortcuts: {
+                        RUN: { enabled: document.getElementById('shortcut-RUN').checked, order: parseInt(document.querySelector('[data-shortcut="RUN"]').value) },
+                        INVOKE: { enabled: document.getElementById('shortcut-INVOKE').checked, order: parseInt(document.querySelector('[data-shortcut="INVOKE"]').value) },
+                        LAUNCH: { enabled: document.getElementById('shortcut-LAUNCH').checked, order: parseInt(document.querySelector('[data-shortcut="LAUNCH"]').value) },
+                        START: { enabled: document.getElementById('shortcut-START').checked, order: parseInt(document.querySelector('[data-shortcut="START"]').value) }
+                    },
+                    documentShortcuts: [
+                        { name: 'XHTML Tools', enabled: document.getElementById('doc-XHTML').checked, order: parseInt(document.querySelector('[data-doc="XHTML"]').value) },
+                        { name: 'Help & Markdown', enabled: document.getElementById('doc-Markdown').checked, order: parseInt(document.querySelector('[data-doc="Markdown"]').value) }
+                    ],
+                    systemToolsFlyout: {
+                        enabled: document.getElementById('toolsEnabled').checked
+                    },
+                    healthMonitor: {
+                        enabled: document.getElementById('healthEnabled').checked,
+                        intervalSec: parseInt(document.getElementById('healthInterval').value),
+                        maxRetries: parseInt(document.getElementById('healthMaxRetries').value),
+                        escalateAfterFailures: parseInt(document.getElementById('healthEscalate').value)
+                    },
+                    updateHost: {
+                        enabled: document.getElementById('updateHostEnabled').checked,
+                        checkIntervalHours: parseInt(document.getElementById('updateInterval').value),
+                        autoCheckEnabled: document.getElementById('updateAutoCheck').checked
+                    }
+                };
+
+                fetch(API_BASE + '/api/config/tray-service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                })
+                .then(async response => {
+                    let result = {};
+                    try {
+                        result = await response.json();
+                    } catch (e) {
+                        result = { success: false, error: 'The tray service returned a non-JSON response.' };
+                    }
+                    if (!response.ok) {
+                        const baseError = result.error || ('Request failed with HTTP ' + response.status);
+                        throw new Error(baseError);
+                    }
+                    return result;
+                })
+                .then(result => {
+                    if (result.success) {
+                        showStatusMessage('Configuration saved successfully. Tray settings are now persisted in config/tray-service-config.json.', 'success');
+                        setTimeout(() => window.close(), 2000);
+                    } else {
+                        const msg = explainTrayIssue(result.error || 'Unknown error while saving tray configuration.', 'error');
+                        showStatusMessage(msg, 'error');
+                    }
+                })
+                .catch(e => {
+                    const msg = explainTrayIssue(e && e.message ? e.message : 'Unknown network error while saving tray configuration.', 'error');
+                    showStatusMessage(msg, 'error');
+                });
+            }
+
+            function resetToDefaults() {
+                document.getElementById('layoutMode').value = 'standard';
+                document.getElementById('themeDark').checked = true;
+                document.getElementById('shortcut-RUN').checked = true;
+                document.getElementById('shortcut-INVOKE').checked = true;
+                document.getElementById('shortcut-LAUNCH').checked = true;
+                document.getElementById('shortcut-START').checked = true;
+                document.getElementById('healthEnabled').checked = true;
+                document.getElementById('healthInterval').value = 420;
+                document.getElementById('healthMaxRetries').value = 1;
+                document.getElementById('healthEscalate').value = 3;
+                document.getElementById('updateHostEnabled').checked = false;
+            }
+
+            function explainTrayIssue(rawMessage, level) {
+                const text = String(rawMessage || '').toLowerCase();
+                let explanation = 'Please retry. If the issue continues, check the tray service logs.';
+
+                if (text.indexOf('request body is empty') >= 0) {
+                    explanation = 'The tray service did not receive configuration data. Reload this page, update at least one setting, and save again.';
+                } else if (text.indexOf('tray config not found') >= 0) {
+                    explanation = 'Tray config file is missing (config/tray-service-config.json). Use Reset to Defaults and Save to recreate it.';
+                } else if (text.indexOf('failed to load tray config') >= 0) {
+                    explanation = 'Tray config exists but could not be parsed. The JSON may be malformed. Validate config/tray-service-config.json and retry.';
+                } else if (text.indexOf('failed to save config') >= 0) {
+                    explanation = 'The tray service could not write config/tray-service-config.json. Check file permissions and whether the file is locked.';
+                } else if (text.indexOf('http 404') >= 0 || text.indexOf('not found') >= 0) {
+                    explanation = 'The tray API route was not found. Confirm Start-LocalWebEngineService is running and serving tray routes.';
+                } else if (text.indexOf('http 500') >= 0 || text.indexOf('internal') >= 0) {
+                    explanation = 'The tray service hit an internal error. Check logs for stack details, then retry after fixing the reported cause.';
+                } else if (text.indexOf('failed to fetch') >= 0 || text.indexOf('network') >= 0) {
+                    explanation = 'Could not reach the tray API at http://127.0.0.1:8042. Start the local web engine service, then retry.';
+                }
+
+                if (level === 'warning') {
+                    return 'Tray warning: ' + rawMessage + ' | ' + explanation;
+                }
+                return 'Tray error: ' + rawMessage + ' | ' + explanation;
+            }
+
+            function hideStatusMessages() {
+                ['successMessage', 'warningMessage', 'errorMessage', 'infoMessage'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+            }
+
+            function showStatusMessage(message, level) {
+                hideStatusMessages();
+                const map = {
+                    success: 'successMessage',
+                    warning: 'warningMessage',
+                    error: 'errorMessage',
+                    info: 'infoMessage'
+                };
+                const id = map[level] || 'infoMessage';
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = message;
+                el.style.display = 'block';
+            }
+        })();
+        //]]>
+    </script>
+</body>
+</html>
+

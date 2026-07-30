@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspace Hub Section Maintenance</title>
+  <style>
+    :root {
+      --bg: #0b141f;
+      --panel: #122033;
+      --panel2: #15263d;
+      --txt: #e6edf3;
+      --muted: #8aa2bd;
+      --ok: #2ecc71;
+      --warn: #f1c40f;
+      --err: #e74c3c;
+      --accent: #27ae60;
+      --line: #28415f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 10% 0%, #16304a, #0b141f 52%);
+      color: var(--txt);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    .wrap { max-width: 1450px; margin: 0 auto; padding: 18px; }
+    h1 { margin: 0 0 6px; font-size: 26px; }
+    .sub { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    button {
+      background: #1c324d;
+      border: 1px solid #2c4c6f;
+      color: var(--txt);
+      border-radius: 8px;
+      padding: 7px 11px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    button:hover { border-color: #4f82b3; }
+    .ok { background: #18482f; border-color: #2a704a; }
+    .warn { background: #514113; border-color: #8d7330; }
+    .danger { background: #5a2222; border-color: #8a3131; }
+    .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 12px; }
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .card h2 { margin: 0 0 8px; font-size: 15px; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      flex: 1;
+    }
+    .field label { color: var(--muted); font-size: 11px; }
+    input, select, textarea {
+      width: 100%;
+      background: #0b1724;
+      color: var(--txt);
+      border: 1px solid #2a4663;
+      border-radius: 7px;
+      padding: 7px;
+      font-size: 12px;
+    }
+    textarea { min-height: 160px; resize: vertical; font-family: Consolas, monospace; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+    .tbl th, .tbl td { border-bottom: 1px solid #20384f; padding: 6px; text-align: left; }
+    .tbl th { color: #9bc0e2; font-weight: 600; }
+    .tbl td input[type="checkbox"] { width: auto; }
+    .status { min-height: 22px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.err { color: var(--err); }
+    .mono { font-family: Consolas, monospace; }
+    .audit { max-height: 220px; overflow: auto; border: 1px solid #2b4560; border-radius: 8px; padding: 8px; background: #0b1724; font-size: 11px; }
+    @media (max-width: 1200px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Workspace Hub Section Maintenance</h1>
+    <p class="sub">Configure section menu order/visibility, service monitors, object counters, test buttons, help blocks, and security access policy.</p>
+
+    <div class="toolbar">
+      <button id="btnLoad">Reload Config</button>
+      <button id="btnSave" class="ok">Save Config</button>
+      <button id="btnTest" class="warn">Run Validation (All Data Modes)</button>
+      <button id="btnAudit">Load Audit</button>
+      <button id="btnPretty">Pretty JSON</button>
+      <button id="btnOpenHub">Open Workspace Hub</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Structured Editors</h2>
+
+        <div class="row">
+          <div class="field" style="max-width:260px">
+            <label>New Section Key</label>
+            <input id="newSectionKey" placeholder="tools" />
+          </div>
+          <div class="field" style="max-width:260px">
+            <label>New Section Label</label>
+            <input id="newSectionLabel" placeholder="Tools" />
+          </div>
+          <button id="btnAddSection">Add Section</button>
+        </div>
+        <table class="tbl" id="tblSections">
+          <thead><tr><th>Key</th><th>Label</th><th>Visible</th><th>Order</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="row" style="margin-top:10px">
+          <div class="field" style="max-width:240px"><label>Counter Key</label><input id="newCounterKey" placeholder="requestsTotal" /></div>
+          <div class="field" style="max-width:260px"><label>Counter Label</label><input id="newCounterLabel" placeholder="Requests Total" /></div>
+          <button id="btnAddCounter">Add Counter</button>
+        </div>
+        <table class="tbl" id="tblCounters">
+          <thead><tr><th>Key</th><th>Label</th><th>Enabled</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="row" style="margin-top:10px">
+          <div class="field" style="max-width:240px"><label>Button ID</label><input id="newBtnId" placeholder="scan-full" /></div>
+          <div class="field"><label>Label</label><input id="newBtnLabel" placeholder="Full Scan" /></div>
+          <div class="field" style="max-width:120px"><label>Method</label><select id="newBtnMethod"><option>GET</option><option>POST</option></select></div>
+          <div class="field" style="min-width:280px"><label>Target</label><input id="newBtnTarget" placeholder="/api/scan/full" /></div>
+          <button id="btnAddTestBtn">Add Test Button</button>
+        </div>
+        <table class="tbl" id="tblButtons">
+          <thead><tr><th>ID</th><th>Label</th><th>Method</th><th>Target</th><th>Enabled</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="row" style="margin-top:10px">
+          <div class="field" style="max-width:220px"><label>Help ID</label><input id="newHelpId" placeholder="mode-help" /></div>
+          <div class="field" style="max-width:260px"><label>Help Title</label><input id="newHelpTitle" placeholder="Data Modes" /></div>
+          <div class="field"><label>Help Content</label><input id="newHelpContent" placeholder="Guidance text" /></div>
+          <button id="btnAddHelp">Add Help Block</button>
+        </div>
+        <table class="tbl" id="tblHelp">
+          <thead><tr><th>ID</th><th>Title</th><th>Visible</th><th>Content</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Security Policy + Raw JSON</h2>
+
+        <div class="row">
+          <div class="field" style="max-width:170px"><label>enforceSASC</label><select id="secEnforce"><option value="true">true</option><option value="false">false</option></select></div>
+          <div class="field" style="max-width:210px"><label>requireVaultUnlocked</label><select id="secVault"><option value="true">true</option><option value="false">false</option></select></div>
+          <div class="field" style="max-width:170px"><label>requireAdmin</label><select id="secAdmin"><option value="false">false</option><option value="true">true</option></select></div>
+          <div class="field"><label>requiredSecretName</label><input id="secSecret" class="mono" placeholder="workspace-hub-config-write" /></div>
+        </div>
+
+        <div class="field" style="margin-top:10px">
+          <label>Raw Config JSON</label>
+          <textarea id="rawJson" spellcheck="false"></textarea>
+        </div>
+
+        <div class="field" style="margin-top:10px">
+          <label>Validation Report</label>
+          <textarea id="testOutput" class="mono" readonly="readonly"></textarea>
+        </div>
+
+        <div class="field" style="margin-top:10px">
+          <label>Audit Log (latest 200)</label>
+          <div class="audit mono" id="auditHost">(not loaded)</div>
+        </div>
+
+        <div id="status" class="status">Idle</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+  //<![CDATA[
+  (function(){
+    'use strict';
+
+    var ENGINE_BASE = window.location.origin || 'http://127.0.0.1:8042';
+    var state = {
+      cfg: null,
+      csrf: ''
+    };
+
+    function setStatus(msg, cls) {
+      var el = document.getElementById('status');
+      if (!el) { return; }
+      el.className = 'status ' + (cls || '');
+      el.textContent = msg || '';
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function ensureArrays(cfg) {
+      var keys = ['sections','serviceMonitors','objectCounters','testButtons','helpBlocks','extraPages'];
+      for (var i = 0; i < keys.length; i++) {
+        if (!Array.isArray(cfg[keys[i]])) { cfg[keys[i]] = []; }
+      }
+      if (!cfg.security) {
+        cfg.security = {
+          enforceSASC: true,
+          requireVaultUnlocked: true,
+          requireAdmin: false,
+          requiredSecretName: 'workspace-hub-config-write'
+        };
+      }
+      return cfg;
+    }
+
+    function fetchCsrf() {
+      return fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){ return r.json(); }).then(function(d){
+        state.csrf = String((d && (d.csrfToken || d.token)) || '');
+      });
+    }
+
+    function loadConfig() {
+      return fetch(ENGINE_BASE + '/api/config/workspace-hub')
+        .then(function(r){
+          if (!r.ok) { throw new Error('Load failed: ' + r.status); }
+          return r.json();
+        })
+        .then(function(cfg){
+          state.cfg = ensureArrays(cfg || {});
+          bindSecurityFields();
+          renderAllTables();
+          renderRaw();
+          setStatus('Workspace Hub config loaded.', 'ok');
+        })
+        .catch(function(err){ setStatus(err.message, 'err'); });
+    }
+
+    function renderRaw() {
+      var raw = document.getElementById('rawJson');
+      if (!raw) { return; }
+      raw.value = JSON.stringify(state.cfg || {}, null, 2);
+    }
+
+    function applyRaw() {
+      var raw = document.getElementById('rawJson');
+      if (!raw) { return false; }
+      try {
+        state.cfg = ensureArrays(JSON.parse(raw.value || '{}'));
+        bindSecurityFields();
+        renderAllTables();
+        return true;
+      } catch (err) {
+        setStatus('Invalid JSON: ' + err.message, 'err');
+        return false;
+      }
+    }
+
+    function bindSecurityFields() {
+      var sec = state.cfg.security || {};
+      document.getElementById('secEnforce').value = String(sec.enforceSASC !== false);
+      document.getElementById('secVault').value = String(sec.requireVaultUnlocked !== false);
+      document.getElementById('secAdmin').value = String(sec.requireAdmin === true);
+      document.getElementById('secSecret').value = String(sec.requiredSecretName || 'workspace-hub-config-write');
+    }
+
+    function readSecurityFields() {
+      state.cfg.security = state.cfg.security || {};
+      state.cfg.security.enforceSASC = (document.getElementById('secEnforce').value === 'true');
+      state.cfg.security.requireVaultUnlocked = (document.getElementById('secVault').value === 'true');
+      state.cfg.security.requireAdmin = (document.getElementById('secAdmin').value === 'true');
+      state.cfg.security.requiredSecretName = String(document.getElementById('secSecret').value || 'workspace-hub-config-write').trim();
+    }
+
+    function renderAllTables() {
+      renderSections();
+      renderCounters();
+      renderButtons();
+      renderHelp();
+    }
+
+    function renderSections() {
+      var body = document.querySelector('#tblSections tbody');
+      if (!body) { return; }
+      var html = '';
+      for (var i = 0; i < state.cfg.sections.length; i++) {
+        var s = state.cfg.sections[i] || {};
+        html += '<tr data-i="' + i + '">' +
+          '<td><input data-k="key" value="' + esc(s.key || '') + '" /></td>' +
+          '<td><input data-k="label" value="' + esc(s.label || '') + '" /></td>' +
+          '<td><input data-k="visible" type="checkbox"' + (s.visible === false ? '' : ' checked="checked"') + ' /></td>' +
+          '<td><input data-k="order" type="number" value="' + esc(s.order || 0) + '" style="width:80px" /></td>' +
+          '<td><button data-del="1" class="danger">Delete</button></td>' +
+          '</tr>';
+      }
+      body.innerHTML = html;
+      bindTable(body, state.cfg.sections);
+    }
+
+    function renderCounters() {
+      var body = document.querySelector('#tblCounters tbody');
+      if (!body) { return; }
+      var html = '';
+      for (var i = 0; i < state.cfg.objectCounters.length; i++) {
+        var c = state.cfg.objectCounters[i] || {};
+        html += '<tr data-i="' + i + '">' +
+          '<td><input data-k="key" value="' + esc(c.key || '') + '" /></td>' +
+          '<td><input data-k="label" value="' + esc(c.label || '') + '" /></td>' +
+          '<td><input data-k="enabled" type="checkbox"' + (c.enabled === false ? '' : ' checked="checked"') + ' /></td>' +
+          '<td><button data-del="1" class="danger">Delete</button></td>' +
+          '</tr>';
+      }
+      body.innerHTML = html;
+      bindTable(body, state.cfg.objectCounters);
+    }
+
+    function renderButtons() {
+      var body = document.querySelector('#tblButtons tbody');
+      if (!body) { return; }
+      var html = '';
+      for (var i = 0; i < state.cfg.testButtons.length; i++) {
+        var b = state.cfg.testButtons[i] || {};
+        html += '<tr data-i="' + i + '">' +
+          '<td><input data-k="id" value="' + esc(b.id || '') + '" /></td>' +
+          '<td><input data-k="label" value="' + esc(b.label || '') + '" /></td>' +
+          '<td><select data-k="method"><option' + (String(b.method).toUpperCase() === 'GET' ? ' selected="selected"' : '') + '>GET</option><option' + (String(b.method).toUpperCase() === 'POST' ? ' selected="selected"' : '') + '>POST</option></select></td>' +
+          '<td><input data-k="target" value="' + esc(b.target || '') + '" /></td>' +
+          '<td><input data-k="enabled" type="checkbox"' + (b.enabled === false ? '' : ' checked="checked"') + ' /></td>' +
+          '<td><button data-del="1" class="danger">Delete</button></td>' +
+          '</tr>';
+      }
+      body.innerHTML = html;
+      bindTable(body, state.cfg.testButtons);
+    }
+
+    function renderHelp() {
+      var body = document.querySelector('#tblHelp tbody');
+      if (!body) { return; }
+      var html = '';
+      for (var i = 0; i < state.cfg.helpBlocks.length; i++) {
+        var h = state.cfg.helpBlocks[i] || {};
+        html += '<tr data-i="' + i + '">' +
+          '<td><input data-k="id" value="' + esc(h.id || '') + '" /></td>' +
+          '<td><input data-k="title" value="' + esc(h.title || '') + '" /></td>' +
+          '<td><input data-k="visible" type="checkbox"' + (h.visible === false ? '' : ' checked="checked"') + ' /></td>' +
+          '<td><input data-k="content" value="' + esc(h.content || '') + '" /></td>' +
+          '<td><button data-del="1" class="danger">Delete</button></td>' +
+          '</tr>';
+      }
+      body.innerHTML = html;
+      bindTable(body, state.cfg.helpBlocks);
+    }
+
+    function bindTable(tbody, arr) {
+      tbody.addEventListener('input', function(ev){
+        var tr = ev.target.closest('tr');
+        if (!tr) { return; }
+        var idx = Number(tr.getAttribute('data-i'));
+        if (!Number.isFinite(idx) || idx < 0 || idx >= arr.length) { return; }
+        var key = ev.target.getAttribute('data-k');
+        if (!key) { return; }
+        if (ev.target.type === 'checkbox') {
+          arr[idx][key] = !!ev.target.checked;
+        } else {
+          arr[idx][key] = ev.target.value;
+        }
+        renderRaw();
+      });
+
+      tbody.addEventListener('click', function(ev){
+        var btn = ev.target;
+        if (!btn || !btn.getAttribute('data-del')) { return; }
+        var tr = btn.closest('tr');
+        if (!tr) { return; }
+        var idx = Number(tr.getAttribute('data-i'));
+        if (!Number.isFinite(idx) || idx < 0 || idx >= arr.length) { return; }
+        arr.splice(idx, 1);
+        renderAllTables();
+        renderRaw();
+      });
+    }
+
+    function saveConfig() {
+      readSecurityFields();
+      renderRaw();
+      return fetch(ENGINE_BASE + '/api/config/workspace-hub', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': state.csrf
+        },
+        body: JSON.stringify(state.cfg || {})
+      }).then(function(r){
+        if (!r.ok) {
+          return r.text().then(function(t){ throw new Error('Save failed: ' + r.status + ' ' + t); });
+        }
+        return r.json();
+      }).then(function(){
+        setStatus('Workspace Hub maintenance config saved.', 'ok');
+      }).catch(function(err){
+        setStatus(err.message, 'err');
+      });
+    }
+
+    function runValidation() {
+      readSecurityFields();
+      return fetch(ENGINE_BASE + '/api/config/workspace-hub/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': state.csrf
+        },
+        body: JSON.stringify({})
+      }).then(function(r){
+        if (!r.ok) {
+          return r.text().then(function(t){ throw new Error('Validation failed: ' + r.status + ' ' + t); });
+        }
+        return r.json();
+      }).then(function(rep){
+        var out = document.getElementById('testOutput');
+        if (out) { out.value = JSON.stringify(rep, null, 2); }
+        setStatus('Validation completed (Auto/Force Online/Force Offline reported).', rep.validSchema && rep.accessGranted ? 'ok' : 'warn');
+      }).catch(function(err){
+        setStatus(err.message, 'err');
+      });
+    }
+
+    function loadAudit() {
+      return fetch(ENGINE_BASE + '/api/config/workspace-hub/audit').then(function(r){
+        if (!r.ok) { throw new Error('Audit load failed: ' + r.status); }
+        return r.json();
+      }).then(function(d){
+        var host = document.getElementById('auditHost');
+        var rows = (d && Array.isArray(d.entries)) ? d.entries : [];
+        if (rows.length === 0) {
+          host.textContent = '(no audit entries)';
+          return;
+        }
+        var html = '';
+        for (var i = rows.length - 1; i >= 0; i--) {
+          var e = rows[i] || {};
+          html += esc(String(e.timestamp || '')) + ' | ' + esc(String(e.action || '')) + ' | ' + esc(String(e.result || '')) + ' | ' + esc(String(e.user || '')) + ' | ' + esc(String(e.message || '')) + '<br/>';
+        }
+        host.innerHTML = html;
+      }).catch(function(err){
+        setStatus(err.message, 'err');
+      });
+    }
+
+    document.getElementById('btnLoad').addEventListener('click', function(){ loadConfig(); });
+    document.getElementById('btnSave').addEventListener('click', function(){ if (applyRaw()) { saveConfig(); } });
+    document.getElementById('btnTest').addEventListener('click', function(){ if (applyRaw()) { runValidation(); } });
+    document.getElementById('btnAudit').addEventListener('click', function(){ loadAudit(); });
+    document.getElementById('btnPretty').addEventListener('click', function(){ if (applyRaw()) { renderRaw(); setStatus('JSON normalized.', 'ok'); } });
+    document.getElementById('btnOpenHub').addEventListener('click', function(){ window.open(ENGINE_BASE + '/', '_blank', 'noopener'); });
+
+    document.getElementById('btnAddSection').addEventListener('click', function(){
+      var key = String(document.getElementById('newSectionKey').value || '').trim();
+      var label = String(document.getElementById('newSectionLabel').value || '').trim();
+      if (!key) { setStatus('Section key is required.', 'warn'); return; }
+      state.cfg.sections.push({ key: key, label: label || key, visible: true, order: state.cfg.sections.length + 1 });
+      renderAllTables(); renderRaw();
+    });
+
+    document.getElementById('btnAddCounter').addEventListener('click', function(){
+      var key = String(document.getElementById('newCounterKey').value || '').trim();
+      var label = String(document.getElementById('newCounterLabel').value || '').trim();
+      if (!key) { setStatus('Counter key is required.', 'warn'); return; }
+      state.cfg.objectCounters.push({ key: key, label: label || key, enabled: true });
+      renderAllTables(); renderRaw();
+    });
+
+    document.getElementById('btnAddTestBtn').addEventListener('click', function(){
+      var id = String(document.getElementById('newBtnId').value || '').trim();
+      var label = String(document.getElementById('newBtnLabel').value || '').trim();
+      var method = String(document.getElementById('newBtnMethod').value || 'GET').toUpperCase();
+      var target = String(document.getElementById('newBtnTarget').value || '').trim();
+      if (!id || !target) { setStatus('Button id and target are required.', 'warn'); return; }
+      state.cfg.testButtons.push({ id: id, label: label || id, method: method, target: target, enabled: true });
+      renderAllTables(); renderRaw();
+    });
+
+    document.getElementById('btnAddHelp').addEventListener('click', function(){
+      var id = String(document.getElementById('newHelpId').value || '').trim();
+      var title = String(document.getElementById('newHelpTitle').value || '').trim();
+      var content = String(document.getElementById('newHelpContent').value || '').trim();
+      if (!id) { setStatus('Help block id is required.', 'warn'); return; }
+      state.cfg.helpBlocks.push({ id: id, title: title || id, visible: true, content: content });
+      renderAllTables(); renderRaw();
+    });
+
+    fetchCsrf().then(loadConfig).catch(function(err){ setStatus('Initialization failed: ' + err.message, 'err'); });
+  }());
+  //]]>
+  </script>
+</body>
+</html>
+
+

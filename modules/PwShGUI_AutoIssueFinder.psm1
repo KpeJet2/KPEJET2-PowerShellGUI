@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -8,6 +8,13 @@
 #   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 8 entries)
 #Requires -Version 5.1
 # TODO: HelpMenu | Show-AutoIssueFinderHelp | Actions: Scan|Report|Fix|Help | Spec: config/help-menu-registry.json
+
+if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog {
+        param([string]$Message, [string]$Level = 'Info')
+        Write-Verbose "[$Level] $Message"
+    }
+}
 
 function Write-AIFLog {
     param(
@@ -24,13 +31,7 @@ function Write-AIFLog {
         Add-Content -Path $LogPath -Value $entry -Encoding UTF8 -ErrorAction SilentlyContinue
     }
 
-    if ($Level -eq "Warning") {
-        Write-Warning $entry
-    } elseif ($Level -eq "Error") {
-        Write-Error $entry -ErrorAction Continue
-    } else {
-        Write-Information $entry -InformationAction Continue
-    }
+    Write-AppLog -Message "[AIF] $Message" -Level $Level
 }
 
 function Save-AIFCheckpoint {
@@ -57,7 +58,7 @@ function Get-AIFCheckpoint {
 
 function Get-AIFDefaultPathList {
     param([string]$ModuleRoot)
-    $root = if ($ModuleRoot) { Split-Path $ModuleRoot -Parent } else { Get-Location }.Path
+    $root = if ($ModuleRoot) { Split-Path $ModuleRoot -Parent } else { (Get-Location).Path }
     $paths = @($root)
     $scripts = Join-Path $root "scripts"
     $modules = Join-Path $root "modules"
@@ -387,7 +388,7 @@ function Invoke-PwShGUIAutoIssueFinder {
         Save-AIFCheckpoint -Data $checkpointData -CheckpointPath $CheckpointPath
     }
 
-    $issues = $issues | Sort-Object Priority,Severity,ScriptName,Line
+    $issues = @($issues | Sort-Object Priority,Severity,ScriptName,Line)
 
     $checkpointData = [pscustomobject]@{
         stage = "scan-complete"
@@ -508,6 +509,9 @@ function Invoke-PwShGUIAutoIssueFinder {
     Stub: list pending work here.
 #>
 Export-ModuleMember -Function Invoke-PwShGUIAutoIssueFinder
+
+
+
 
 
 

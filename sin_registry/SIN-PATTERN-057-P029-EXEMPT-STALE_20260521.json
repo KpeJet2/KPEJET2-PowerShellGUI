@@ -1,0 +1,23 @@
+{
+  "id": "SIN-PATTERN-057-P029-EXEMPT-STALE",
+  "sin_id": "SIN-PATTERN-057-P029-EXEMPT-STALE",
+  "title": "Stale SIN-EXEMPT:P029 event handler marker",
+  "description": "Repeated SIN-EXEMPT:P029 'pending try/catch wrap' markers indicate unclosed hardening work in event handlers and recurring runtime fragility.",
+  "severity": "HIGH",
+  "status": "pattern-defined",
+  "category": "Reliability/EventHandling",
+  "detection_method": "Regex scan for stale handler pending try/catch exemption marker.",
+  "scan_regex": "SIN-EXEMPT:P029\\s*--\\s*handler pending try\\/catch wrap",
+  "context_guard_regex": "justified|approved exception",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "ps_version_scope": "BOTH",
+  "remediation": "Wrap handler bodies with try/catch, add Write-AppLog context, then remove stale exemption marker.",
+  "examples": [
+    "# Bad\n$btn.Add_Click({ ... })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap"
+  ],
+  "tags": ["p029", "event-handler", "hardening"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

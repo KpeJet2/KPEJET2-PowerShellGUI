@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -84,6 +84,21 @@ Describe 'Start-LocalWebEngineService bootstrap tray wiring' {
     It 'clears and rebuilds bootstrap menu items during reload' {
         $script:ServiceContent | Should -Match '\$bootstrapRoot\.DropDownItems\.Clear\(\)'
         $script:ServiceContent | Should -Match 'Add-BootstrapQuickAccessMenu\s+-RootMenu\s+\$bootstrapRoot'
+    }
+
+    It 'contains webengine components config page launcher' {
+        $script:ServiceContent | Should -Match '/pages/webengine-components-config'
+        $script:ServiceContent | Should -Match 'Configure WebEngine Components'
+    }
+
+    It 'contains rolling restart action for enabled components' {
+        $script:ServiceContent | Should -Match 'function\s+Invoke-RollingRestartTrayServices'
+        $script:ServiceContent | Should -Match 'Rolling restart enabled components'
+    }
+
+    It 'contains hot-reload hook for webengine component config changes' {
+        $script:ServiceContent | Should -Match 'Test-WebEngineServicesConfigChanged'
+        $script:ServiceContent | Should -Match 'Hot reload: service component config changed and was reloaded\.'
     }
 }
 
@@ -452,3 +467,5 @@ Describe 'Start-LocalWebEngineService bootstrap action dispatch' {
         }
     }
 }
+
+

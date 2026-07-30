@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -30,13 +30,14 @@
 
     Designed to be called by a Windows Scheduled Task (see Register-CronTask.ps1).
 .NOTES
-    VersionTag: 2605.B5.V46.0
+    VersionTag: 2605.B5.V51.0
 #>
 #Requires -Version 5.1
 [CmdletBinding()]
 param(
     [switch]$Force,
     [switch]$DryRun,
+    [switch]$SkipPesterGate,
     [ValidateRange(1,500)] [int]$BatchSize = 0
 )
 
@@ -45,7 +46,7 @@ $ErrorActionPreference = 'Continue'
 
 $script:Root      = Split-Path -Parent $PSScriptRoot   # c:\PowerShellGUI
 $script:TodoDir   = Join-Path $script:Root 'todo'
-$script:LogDir    = Join-Path $script:Root 'logs'
+$script:LogDir    = Join-Path (Join-Path $script:Root 'logs') 'pipeline'
 $script:LogFile   = Join-Path $script:LogDir 'cron-processor.log'
 $script:Results   = @{ Started = (Get-Date -Format 'o'); Steps = @{} }
 
@@ -146,18 +147,21 @@ function Test-MainGUIRunning {
 # ── Step 1: Feature check ──────────────────────────────────
 function Invoke-FeatureCheck {
     Write-CronProcessorLog 'Step 1: Feature status check'
-    $featureFiles = Get-ChildItem -Path $script:TodoDir -Filter 'feature-*.json' -ErrorAction SilentlyContinue
-    $implemented = 0; $open = 0
+    $featureFiles = @(
+        Get-ChildItem -Path $script:TodoDir -Filter 'feature-*.json' -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notlike '*\~*\*' }
+    )
+    $doneCount = 0; $open = 0
     foreach ($f in $featureFiles) {
         try {
             $item = Get-Content -Path $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             $st = ([string](Get-CronTodoPropertyValue -Record $item -Names @('status','source_status') -DefaultValue 'OPEN')).ToUpper()
-            if ($st -eq 'IMPLEMENTED' -or $st -eq 'CLOSED') { $implemented++ } else { $open++ }
+            if ($st -eq 'IMPLEMENTED' -or $st -eq 'CLOSED') { $doneCount++ } else { $open++ }  # legacy/compat: external todo JSON status vocabulary mapped to canonical DONE
         } catch {
             Write-CronProcessorLog "  Could not parse $($f.Name): $_" 'Warning'
         }
     }
-    $msg = "Features: $(@($featureFiles).Count) total, $open open, $implemented implemented"
+    $msg = "Features: $(@($featureFiles).Count) total, $open open, $doneCount done"
     Write-CronProcessorLog "  $msg"
     $script:Results.Steps['FeatureCheck'] = $msg
 }
@@ -253,8 +257,23 @@ function Invoke-SINPatternScan {
         $script:Results.Steps['SINPatternScan'] = 'DRY-RUN skipped'
         return
     }
+    $scanJob = $null
     try {
-        $scanResult = & $scanner -WorkspacePath $script:Root -Quiet -FailOnCritical
+        $scanJob = Start-Job -ScriptBlock {
+            param($scannerPath, $workspaceRoot)
+            & $scannerPath -WorkspacePath $workspaceRoot -Quiet -FailOnCritical
+        } -ArgumentList $scanner, $script:Root
+
+        $completedJob = Wait-Job -Job $scanJob -Timeout 120
+        if ($null -eq $completedJob) {
+            try { Stop-Job -Job $scanJob -Force -ErrorAction SilentlyContinue | Out-Null } catch { <# non-fatal #> }
+            $msg = 'SIN scan timed out after 120s; continuing with warning'
+            Write-CronProcessorLog "  $msg" 'Warning'
+            $script:Results.Steps['SINPatternScan'] = "TIMEOUT: $msg"
+            return
+        }
+
+        $scanResult = Receive-Job -Job $scanJob -ErrorAction Stop
         $total = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'totalFindings') { [int]$scanResult.totalFindings } else { 0 }
         $crit  = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'critical')      { [int]$scanResult.critical }      else { 0 }
         $p027 = if ($null -ne $scanResult -and $scanResult.PSObject.Properties.Name -contains 'findings') { @($scanResult.findings | Where-Object { $_.sinId -match 'SIN-PATTERN-0*27(?:\D|$)|NULL-ARRAY-INDEX|(?:^|-)P027(?:\D|$)' }).Count } else { 0 }
@@ -274,6 +293,10 @@ function Invoke-SINPatternScan {
     } catch {
         Write-CronProcessorLog "  SIN pattern scan error: $_" 'Error'
         $script:Results.Steps['SINPatternScan'] = "ERROR: $_"
+    } finally {
+        if ($null -ne $scanJob) {
+            try { Remove-Job -Job $scanJob -Force -ErrorAction SilentlyContinue | Out-Null } catch { <# non-fatal #> }
+        }
     }
 }
 
@@ -392,6 +415,7 @@ function Invoke-ScheduledTaskDispatch {
         $schedule = Initialize-CronSchedule -WorkspacePath $script:Root
         $now      = Get-Date
         $ran = 0; $skipped = 0; $errors = 0
+        $taskTimeoutSec = 180
         foreach ($task in @($schedule.tasks)) {
             if (-not $task.enabled) { $skipped++; continue }
             # Determine if the task is due
@@ -410,15 +434,65 @@ function Invoke-ScheduledTaskDispatch {
             if (-not $isDue) { $skipped++; continue }
             Write-CronProcessorLog "  Dispatching task: $($task.id) [$($task.type)]"
             try {
-                $cronJobParams = @{ WorkspacePath = $script:Root; TaskId = $task.id }
-                if ($BatchSize -gt 0) { $cronJobParams['BatchSize'] = $BatchSize }
-                $jobResult = Invoke-CronJob @cronJobParams
+                $batchSizeArg = if ($BatchSize -gt 0) { [int]$BatchSize } else { 0 }
+                $dispatchJob = $null
+                $jobResult = $null
+                try {
+                    $dispatchJob = Start-Job -ScriptBlock {
+                        param(
+                            [string]$WorkspacePath,
+                            [string]$TaskId,
+                            [int]$BatchSize,
+                            [string]$SchedulerModulePath
+                        )
+
+                        Import-Module $SchedulerModulePath -Force -ErrorAction Stop
+                        $params = @{ WorkspacePath = $WorkspacePath; TaskId = $TaskId }
+                        if ($BatchSize -gt 0) {
+                            $params['BatchSize'] = $BatchSize
+                        }
+                        Invoke-CronJob @params
+                    } -ArgumentList $script:Root, [string]$task.id, $batchSizeArg, $schedulerMod
+
+                    $completedJob = Wait-Job -Job $dispatchJob -Timeout $taskTimeoutSec
+                    if ($null -eq $completedJob) {
+                        try {
+                            Stop-Job -Job $dispatchJob -ErrorAction SilentlyContinue
+                        } catch {
+                            Write-CronProcessorLog "  Task $($task.id) timeout cleanup warning: $_" 'Warning'
+                        }
+                        Write-CronProcessorLog "  Task $($task.id) timed out after $taskTimeoutSec s" 'Warning'
+                        $errors++
+                        continue
+                    }
+
+                    $jobResult = Receive-Job -Job $dispatchJob -ErrorAction Stop
+                } finally {
+                    if ($null -ne $dispatchJob) {
+                        try {
+                            Remove-Job -Job $dispatchJob -Force -ErrorAction SilentlyContinue
+                        } catch {
+                            # Intentional: cleanup best-effort only
+                        }
+                    }
+                }
+
                 # P022: guard against output-leak arrays returning alongside the result dict
                 $realResult = if ($jobResult -is [array]) {
-                    @($jobResult | Where-Object { $_ -is [System.Collections.Specialized.OrderedDictionary] }) | Select-Object -Last 1
+                    @($jobResult | Where-Object { $_ -is [System.Collections.IDictionary] }) | Select-Object -Last 1
                 } else { $jobResult }
-                $status = if ($null -ne $realResult -and $realResult['success']) { 'OK' } else { 'FAIL' }
-                Write-CronProcessorLog "  Task $($task.id): $status — $($realResult.detail)"
+
+                $detail = if ($null -ne $realResult -and $realResult -is [System.Collections.IDictionary] -and $realResult.Contains('detail')) {
+                    [string]$realResult['detail']
+                } else {
+                    'No detail reported'
+                }
+                $status = if ($null -ne $realResult -and $realResult -is [System.Collections.IDictionary] -and $realResult.Contains('success') -and $realResult['success']) {
+                    'OK'
+                } else {
+                    'FAIL'
+                }
+                Write-CronProcessorLog "  Task $($task.id): $status — $detail"
                 $ran++
             } catch {
                 Write-CronProcessorLog "  Task $($task.id) ERROR: $_" 'Error'
@@ -476,13 +550,138 @@ function Invoke-SmokeTest {
         $script:Results.Steps['SmokeTest'] = 'DRY-RUN skipped'
         return
     }
+    $hostExe = $null
+    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'pwsh.exe'
+    } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'powershell.exe'
+    }
+
+    if ([string]::IsNullOrWhiteSpace($hostExe)) {
+        Write-CronProcessorLog '  No shell host available for smoke test, skipping' 'Warning'
+        $script:Results.Steps['SmokeTest'] = 'SKIPPED - no shell host'
+        return
+    }
+
+    $timeoutMs = 240000
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $stdoutPath = Join-Path $script:LogDir ("cron-smoke-stdout-$stamp.log")
+    $stderrPath = Join-Path $script:LogDir ("cron-smoke-stderr-$stamp.log")
+    $smokeArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $smokeScript,
+        '-RunShellMatrix',
+        '-HeadlessOnly',
+        '-Timeout', '30'
+    )
+
     try {
-        & $smokeScript -RunShellMatrix 2>&1 | Out-Null
-        $script:Results.Steps['SmokeTest'] = 'Completed'
-        Write-CronProcessorLog '  Smoke test completed'
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $smokeArgs -PassThru -NoNewWindow -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+        if ($null -eq $proc) {
+            throw 'Failed to start smoke test process.'
+        }
+
+        $finished = $proc.WaitForExit($timeoutMs)
+        if (-not $finished) {
+            try {
+                Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+            } catch {
+                Write-CronProcessorLog "  Smoke test timeout cleanup warning: $_" 'Warning'
+            }
+            $msg = "Smoke test timed out after $timeoutMs ms (host: $hostExe)"
+            Write-CronProcessorLog "  $msg" 'Warning'
+            $script:Results.Steps['SmokeTest'] = "TIMEOUT - $msg"
+            return
+        }
+
+        if ($proc.ExitCode -ne 0) {
+            $stderrTail = Get-CronFileTailMessage -Path $stderrPath
+            if (-not [string]::IsNullOrWhiteSpace($stderrTail)) {
+                throw "ExitCode=$($proc.ExitCode) stderr=$stderrTail"
+            }
+            throw "ExitCode=$($proc.ExitCode)"
+        }
+
+        $script:Results.Steps['SmokeTest'] = "Completed (isolated host: $hostExe)"
+        Write-CronProcessorLog "  Smoke test completed in isolated host: $hostExe"
     } catch {
         Write-CronProcessorLog "  Smoke test error: $_" 'Error'
         $script:Results.Steps['SmokeTest'] = "ERROR: $_"
+    }
+}
+
+# ── Step 5.5: Pipeline metric increment harness ────────────
+function Invoke-PipelineMetricHarnessGate {
+    Write-CronProcessorLog 'Step 5.5: Pipeline one-item metric increment harness'
+    $harnessScript = Join-Path $script:Root 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
+    if (-not (Test-Path $harnessScript)) {
+        Write-CronProcessorLog '  Invoke-PipelineMetricIncrementHarness.ps1 not found, blocking pipeline' 'Error'
+        $script:Results.Steps['PipelineMetricHarness'] = 'FAILED - harness not found'
+        return
+    }
+    if ($DryRun) {
+        $script:Results.Steps['PipelineMetricHarness'] = 'DRY-RUN skipped'
+        return
+    }
+
+    $hostExe = $null
+    if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'pwsh.exe'
+    } elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+        $hostExe = 'powershell.exe'
+    }
+
+    if ([string]::IsNullOrWhiteSpace($hostExe)) {
+        $script:Results.Steps['PipelineMetricHarness'] = 'FAILED - no shell host'
+        Write-CronProcessorLog '  Metric increment harness failed: no shell host available' 'Error'
+        return
+    }
+
+    $timeoutMs = 180000
+    $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $stdoutPath = Join-Path $script:LogDir ("cron-metric-harness-stdout-$stamp.log")
+    $stderrPath = Join-Path $script:LogDir ("cron-metric-harness-stderr-$stamp.log")
+    $harnessArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $harnessScript,
+        '-WorkspacePath', $script:Root,
+        '-SkipGuiCoverage'
+    )
+
+    try {
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $harnessArgs -PassThru -NoNewWindow -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+        if ($null -eq $proc) {
+            throw 'Failed to start metric harness process.'
+        }
+
+        $finished = $proc.WaitForExit($timeoutMs)
+        if (-not $finished) {
+            try {
+                Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+            } catch {
+                Write-CronProcessorLog "  Metric harness timeout cleanup warning: $_" 'Warning'
+            }
+            $msg = "Metric harness timed out after $timeoutMs ms (host: $hostExe)"
+            $script:Results.Steps['PipelineMetricHarness'] = "TIMEOUT - $msg"
+            Write-CronProcessorLog "  $msg" 'Warning'
+            return
+        }
+
+        if ($proc.ExitCode -ne 0) {
+            $stderrTail = Get-CronFileTailMessage -Path $stderrPath
+            if (-not [string]::IsNullOrWhiteSpace($stderrTail)) {
+                throw "ExitCode=$($proc.ExitCode) stderr=$stderrTail"
+            }
+            throw "ExitCode=$($proc.ExitCode)"
+        }
+
+        $script:Results.Steps['PipelineMetricHarness'] = 'PASSED'
+        Write-CronProcessorLog "  Metric increment harness passed (isolated host: $hostExe)"
+    } catch {
+        $script:Results.Steps['PipelineMetricHarness'] = "FAILED - $_"
+        Write-CronProcessorLog "  Metric increment harness failed: $_" 'Error'
     }
 }
 
@@ -493,12 +692,15 @@ function Invoke-XhtmlUpdate {
     $bugJsonPath     = Join-Path $script:Root 'scripts\XHTML-Checker\PsGUI-BugTracker.json'
 
     # Rebuild features JSON from todo/feature-*.json files
-    $featureFiles = Get-ChildItem -Path $script:TodoDir -Filter 'feature-*.json' -ErrorAction SilentlyContinue
+    $featureFiles = @(
+        Get-ChildItem -Path $script:TodoDir -Filter 'feature-*.json' -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notlike '*\~*\*' }
+    )
     $features = @()
     foreach ($f in $featureFiles) {
         try {
             $item = Get-Content -Path $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
-            $statusMap = @{ 'OPEN' = 'Proposed'; 'IN-PROGRESS' = 'ALPHA Testing'; 'IMPLEMENTED' = 'Released'; 'CLOSED' = 'Deferred' }
+            $statusMap = @{ 'OPEN' = 'Proposed'; 'IN-PROGRESS' = 'ALPHA Testing'; 'IMPLEMENTED' = 'Released'; 'CLOSED' = 'Deferred' }  # legacy/compat: one-way source-status vocabulary map
             $rawStatus = ([string](Get-CronTodoPropertyValue -Record $item -Names @('status','source_status') -DefaultValue 'OPEN')).ToUpper()
             $mappedStatus = if ($statusMap.ContainsKey($rawStatus)) { $statusMap[$rawStatus] } else { 'Proposed' }
             $featureId = Get-CronTodoFirstStringValue -Record $item -Names @('source_id','id','todo_id') -DefaultValue $f.BaseName
@@ -517,13 +719,16 @@ function Invoke-XhtmlUpdate {
     }
 
     # Rebuild bugs JSON from todo/bug-*.json files
-    $bugFiles = Get-ChildItem -Path $script:TodoDir -Filter 'bug-*.json' -ErrorAction SilentlyContinue
+    $bugFiles = @(
+        Get-ChildItem -Path $script:TodoDir -Filter 'bug-*.json' -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notlike '*\~*\*' }
+    )
     $bugs = @()
     $bid = 1
     foreach ($bf in $bugFiles) {
         try {
             $item = Get-Content -Path $bf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
-            $statusMap = @{ 'OPEN' = 'Open'; 'IMPLEMENTED' = 'Fixed'; 'CLOSED' = "Won't Fix" }
+            $statusMap = @{ 'OPEN' = 'Open'; 'IMPLEMENTED' = 'Fixed'; 'CLOSED' = "Won't Fix" }  # legacy/compat: one-way source-status vocabulary map
             $rawStatus = [string](Get-CronTodoPropertyValue -Record $item -Names @('status') -DefaultValue 'OPEN')
             $mappedStatus = if ($statusMap.ContainsKey($rawStatus.ToUpper())) { $statusMap[$rawStatus.ToUpper()] } else { 'Open' }
             $scriptRef = Get-CronTodoFirstStringValue -Record $item -Names @('file_refs','affectedFiles') -DefaultValue ''
@@ -553,7 +758,7 @@ function Invoke-XhtmlUpdate {
 function Invoke-CronReindexFallback {
     $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
     $files = @(
-        Get-ChildItem -Path $script:TodoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Get-ChildItem -Path $script:TodoDir -Filter '*.json' -File -Recurse -ErrorAction SilentlyContinue |
         Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
         Sort-Object Name
     )
@@ -972,13 +1177,19 @@ Invoke-FeatureCheck
 Invoke-ManifestRevision
 Invoke-DeepTest
 Invoke-SINPatternScan
-Invoke-FullPesterSuiteGate
+if ($SkipPesterGate) {
+    Write-CronProcessorLog 'Step 3.55: SKIPPED via -SkipPesterGate switch' 'Warning'
+    $script:Results.Steps['PesterSuiteGate'] = 'SKIPPED - -SkipPesterGate switch set'
+} else {
+    Invoke-FullPesterSuiteGate
+}
 Invoke-SINRemedyAttempt
 Invoke-ScheduledTaskDispatch
 Invoke-ErrorHandlingComplianceScan
 Invoke-EncodingValidation
 Invoke-BugDiscovery
 Invoke-SmokeTest
+Invoke-PipelineMetricHarnessGate
 Invoke-XhtmlUpdate
 Invoke-Reindex
 Invoke-DirectoryTreeRebuild
@@ -998,8 +1209,9 @@ $script:_CronCycleSw.Stop()
 $integrityStep = [string]($script:Results.Steps['IntegrityGate'])
 $sinStep = [string]($script:Results.Steps['SINPatternScan'])
 $pesterStep = [string]($script:Results.Steps['PesterSuiteGate'])
+$metricStep = [string]($script:Results.Steps['PipelineMetricHarness'])
 if (Get-Command Write-ProcessBanner -ErrorAction SilentlyContinue) {
-    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*' -or $sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*' -or $pesterStep -like 'FAILED*')
+    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*' -or $sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*' -or $pesterStep -like 'FAILED*' -or $metricStep -like 'FAILED*')
     Write-ProcessBanner -ProcessName 'Cron Processor Cycle' -Stopwatch $script:_CronCycleSw -Success $cronSuccess
 }
 if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
@@ -1010,6 +1222,9 @@ if ($sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*') {
 }
 if ($pesterStep -like 'FAILED*') {
     throw "Pester suite gate FAILED: $pesterStep"
+}
+if ($metricStep -like 'FAILED*') {
+    throw "Pipeline metric harness FAILED: $metricStep"
 }
 
 <# Outline:
@@ -1023,6 +1238,8 @@ if ($pesterStep -like 'FAILED*') {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

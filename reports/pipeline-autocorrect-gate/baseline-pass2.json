@@ -1,0 +1,2235 @@
+{
+  "generatedAt": "2026-07-27T14:50:22.8002814Z",
+  "source": "Invoke-PreCommitValidation.ps1",
+  "workspace": "C:\\PowerShellGUI",
+  "filesChecked": 284,
+  "errorCount": 59,
+  "warnCount": 257,
+  "passed": false,
+  "failOnWarning": false,
+  "findings": [
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1480,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1475,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1474,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1468,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1520,
+      "Message": "The Try statement is missing its Catch or Finally block."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1467,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1525,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1526,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1528,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1554,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1557,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1557,
+      "Message": "Unexpected token ')' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1825,
+      "Message": "The Try statement is missing its Catch or Finally block."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1747,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1872,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1875,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1875,
+      "Message": "Unexpected token ')' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 2192,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 461,
+      "Message": "The Try statement is missing its Catch or Finally block."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 461,
+      "Message": "An expression was expected after '('."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 404,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 475,
+      "Message": "An expression was expected after '('."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 475,
+      "Message": "Unexpected token ')' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 538,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 852,
+      "Message": "An expression was expected after '('."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 809,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 852,
+      "Message": "The Try statement is missing its Catch or Finally block."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 808,
+      "Message": "Missing closing '}' in statement block or type definition."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 864,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 866,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 869,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 869,
+      "Message": "Unexpected token ')' in expression or statement."
+    },
+    {
+      "Gate": "Parse",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 990,
+      "Message": "Unexpected token '}' in expression or statement."
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "Line": 80,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: YearMonth = [int]$Matches[1]"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "Line": 81,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: Build     = [int]$Matches[2]"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "Line": 82,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: Major     = [int]$Matches[3]"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "Line": 83,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: Minor     = [int]$Matches[4]"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-LocalWebEngine.ps1",
+      "Line": 1429,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $protocolMap[$proto].success++"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-LocalWebEngine.ps1",
+      "Line": 1432,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $protocolMap[$proto].failed++"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-LocalWebEngine.ps1",
+      "Line": 1437,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $ipMap[$ip] = [ordered]@{"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-LocalWebEngine.ps1",
+      "Line": 1445,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $ipMap[$ip].totalCount++"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-LocalWebEngine.ps1",
+      "Line": 1446,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $ipMap[$ip].lastSeen = [string]$r.ts"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DynaManifestValidation.ps1",
+      "Line": 76,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: Write-Host \"[DynaManifest] [$Level] $Msg\" -ForegroundColor $colors[$Level]"
+    },
+    {
+      "Gate": "P027",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DynaManifestValidation.ps1",
+      "Line": 139,
+      "Pattern": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "Message": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000: $hasBOM = ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\_TEMPLATE-Module.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\AssistedSASC.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-ErrorLinker.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\Get-LaunchTelemetry.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\Import-WorkspaceModule.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PKIChainManager.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-AgentScorecard.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-BreakingChange.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CheckpointPrune.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-CoverageReport.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-DependencyMap.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogAdapter.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-EventLogReplay.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-HistoryZip.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-KillSwitch.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-LaunchTimingProfile.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-LegacyEncoding.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-ManifestDiff.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-NetworkTools.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-PesterParallel.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-PSScriptAnalyzerScan.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-PSVersionStandards.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SecretScan.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SessionMetrics.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinDriftScan.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFixBranch.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-SinHeatmap.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayServiceRoutes.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionTag.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-WebEngineServices.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-WorkspaceSeed.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\PwShGUI-XhtmlReportTester.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\SINGovernance.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\UserProfileManager.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psm1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\~BACKUPS\\PWSH_Quick-APP.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\~BACKUPS\\PWSH_Quick-APP2.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\~BACKUPS\\PWSH_Quick-APP3 - Copy.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\FileInspector\\fileInspector1\\FileInspector1.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\DellCommandUpdate_Gary-Blok.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\DellCommandUpdate.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesList.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\Install-ModulesLisToImportTXT.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ModulesLisToImportTXT.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ModulesLisToInstall-TXT.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\PackagesLisToInstall-TXT.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\ScriptsListToInstall-TXT.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\test - [TEMP].ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\test - Copy.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\test.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\test(Get-Host).ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\~PWSH_Quick-APP3.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\HELP-FILES-MANAGER.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\INSTALLS.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\PWSH-SETUP.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\scripts\\Inghams_NewIntuneDeviceSetup.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r2-B_Decoder.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\windguits\\Qik-TERMInet0r\\Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\XHTML-Checker\\XHTML-Invoke-AutomatedTests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Add-VersionTag.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Add-XhtmlVersionLink.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Apply-CanonicalVersion.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-AgenticManifest.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-DirectoryTree.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-SandboxTestingPlan.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-ScanToolsManifest.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-ToolsInventory.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Build-XhtmlVersionFeed.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Convert-SinScanToBugs.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\ConvertTo-FeatureToDo.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Export-SystemReport.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Find-ModuleReferences.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\fix_check_version.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\fix_update_version.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Fix-P006-EncodingViolations.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Install-BitwardenLite.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-AgentCallStats.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-AiActionLogReport.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-AutoApprovalWriter.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-BacklogReconcile.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ChangelogDiff.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ChatIssueSinBatch.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ChecklistActions.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-CodeStandardsAssessment.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-CodRhiPear.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ConfigCoverageAudit.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DataMigration.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DeduplicationAssessment.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DependencyScanManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-DiagnosticDryRunPipeline.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-EngineCrashCleanup.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ErrorHandlingContinuousLoop.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ErrorHandlingRemediation.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-EventLogStandardSweep.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-EventLogViewInject.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-FileChangeTracker.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-FullSystemsScan.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-GeneratedCandidateCleanup.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-HelpMenuCompliance.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-HistoryRotation.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-InteropDriftIteration.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ModuleManagement.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ObjectivePipelineCycle.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-OrphanAudit.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-OrphanCleanup.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-OrphanedFileAudit.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PesterSingleFile.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PesterTriage.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PipeGAP.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PipelineIntegrityCheck.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PipelineProcess20.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-PSEnvironmentScanner.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ReferenceIntegrityCheck.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ReleasePreFlight.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-RenameProposal.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ReportRetention.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-SASCIntegrityPreflight.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-ScriptDependencyMatrix.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-SecretLeakScanner.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-SINRegistryReindex.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-SINRemedyEngine.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TestCoverageGateCheck.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TestRoutine.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TodoArchiver.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TodoBacklogPlanner.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TodoBundleRebuild.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TodoManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-TodoQueueGateway.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-Top15IssueSinBatch.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-UniversalListGene.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-VersionAlignmentTool.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-WorkspaceDependencyMap.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-WorkspaceRollback.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Invoke-XhtmlReportTriage.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\New-InstallerScript.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\New-PwShGUIModule.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Normalize-TodoStatusVocabulary.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES-V2.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\PS-CheatSheet-EXAMPLES.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Publish-WorkspaceModules.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\R3-StressTest.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Raise-AllVersionTags.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Register-CronTask.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Register-CyclicRenameTask.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Register-DiffSchedulerTask.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Register-WorkspaceRepository.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Repair-ModulePaths.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Report-Taggable.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Run-PipelineChurn35.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Scan-WorkspaceVersions.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-A.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-B.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-C.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-D.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-E.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-F - LinkToConfigJson.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-F-LinkToConfigJson.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script-F.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script1.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script2.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script3.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script4.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script5.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Script6.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Set-WorkspaceModulePath.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-AppTemplateManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-CertificateManager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-CronAiAthonTool.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-EventLogViewer.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-MCPServiceConfig.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-SandboxTestTool.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-ScanDashboard.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Show-WorkspaceIntentReview.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-BWServe.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Start-Engines.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-ChangelogViewerData.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Sync-PipelineRegistryFromDisk.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Test-ModuleDependencies.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Test-Prerequisites.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\UserProfile-Manager.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\Validate-ModuleImports.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\ConvertTo-BugTask.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Export-SandboxTestArchive.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Get-HostTesterPayload.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Install-BrowserTestDependencies.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Invoke-BrowserPageTest.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Invoke-SandboxBootstrap.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Invoke-SandboxBrowserTestSuite.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Send-SandboxCommand.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\sandbox\\Start-InteractiveSandbox.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\AssistedSASC.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\AVPN-Tracker.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Convert-SinScanToJUnit.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\CronAiAthon-BugTracker.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\CronAiAthon-EventLog.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\CronAiAthon-Pipeline.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\CronAiAthon-Scheduler.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-AgentCallStats.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-EngineCrashCleanup.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-PipelineChurnLifecycle.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-PipelineIntegration.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-RegressionSuite.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-ScriptLoadability.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-SINPatternScanner.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-SINPatternScanner.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-StaticWorkspaceScan.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-WidgetSmokeTests.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\ModuleEnvironment-NineScripts.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\ModuleMaintenance-Targeted.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PKIChainManager.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwSh-HelpFilesUpdateSource-ReR.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI_AutoIssueFinder.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-ConvoVault.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-EventLogAdapter.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-IntegrityCore.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-KillSwitch.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-LaunchTelemetry.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-PSVersionStandards.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-Theme.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-TrayHost.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-VersionManager.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUI-WebEngineServices.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\PwShGUICore.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\SASC-Adapters.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Show-CronAiAthonTool.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Show-ScriptLoadability.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\SIN-P027-NullArrayIndex.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\SINGovernance.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngine.BootstrapGovernance.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngine.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngineIntegration.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\Start-LocalWebEngineService.BootstrapMenu.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\SyntaxGuard.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\UserProfileManager.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "Encoding",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\tests\\VersionTag-Canonical.Tests.ps1",
+      "Line": 1,
+      "Message": "P006: Missing UTF-8 BOM"
+    },
+    {
+      "Gate": "VersionTag",
+      "Severity": "WARN",
+      "File": "C:\\PowerShellGUI\\scripts\\QUICK-APP\\FOLDER-ROOT\\test - [TEMP].ps1",
+      "Line": 1,
+      "Message": "P007: No VersionTag comment in first 5 lines"
+    },
+    {
+      "Gate": "PipelineMetric",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\tests\\Invoke-PipelineMetricIncrementHarness.ps1",
+      "Line": 0,
+      "Message": "Pipeline metric increment harness not found"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-build-20260709061259.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-build-20260709100959.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-build-20260709112718.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-build-20260709130814.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-validation-20260709061448.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-validation-20260709094111.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\dynamic-manifest-validation-20260709113545.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\engine-monitor-20260709-141759.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\engine-monitor-20260709-191345.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\engine-monitor-20260724-012546.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\engine-monitor-20260724-012742.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\engine-monitor-20260724-013205.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\full-pipeline-test-20260709-101859.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    },
+    {
+      "Gate": "LogDrift",
+      "Severity": "ERROR",
+      "File": "C:\\PowerShellGUI\\logs\\full-pipeline-test-fixed-20260709-112759.log",
+      "Line": 0,
+      "Message": "Top-level logs\\\\*.log drift detected; move file under logs\\\\<subfolder>"
+    }
+  ]
+}

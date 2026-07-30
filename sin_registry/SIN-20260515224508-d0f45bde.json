@@ -7,11 +7,28 @@
   "file_path": "C:\\PowerShellGUI\\logs\\engine-bootstrap.log",
   "agent_id": "CronAiAthon",
   "reported_by": "CronAiAthon-BugTracker",
-  "is_resolved": false,
+  "is_resolved": true,
   "occurrence_count": 1,
   "regression_count": 0,
-  "created_at": "2026-05-15T14:45:08.3211850Z",
+  "created_at": "2026-05-15T14:45:08.321185Z",
   "last_seen_at": "2026-05-15T14:45:08.3212195Z",
   "detection_method": "CronAiAthon-BugTracker",
-  "sessionModCount": 1
+  "sessionModCount": 1,
+  "remedy_tracking": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "timestamp": "2026-05-22T12:41:29.2656897Z",
+        "method": "external-fix-detected",
+        "success": true,
+        "notes": "Finding no longer detected at original location. Resolved externally."
+      }
+    ],
+    "last_attempt_at": "2026-05-22T12:41:29.2656897Z",
+    "total_attempts": 1,
+    "successful_count": 1,
+    "failed_count": 0,
+    "status": "RESOLVED",
+    "auto_retry": true
+  }
 }

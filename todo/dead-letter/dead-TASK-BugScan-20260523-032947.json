@@ -1,0 +1,12 @@
+﻿{
+    "id":  "TASK-BugScan",
+    "name":  "Full Bug Scan",
+    "type":  "BugScan",
+    "consecutiveFailures":  3,
+    "deadLetteredAt":  "2026-05-22T19:26:22.9030364Z",
+    "lastErrors":  [
+                       "The term \u0027Write-AppLog\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+                   ],
+    "detail":  "Exception: The term \u0027Write-AppLog\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+    "schedulePath":  "C:\\PowerShellGUI\\config\\cron-aiathon-schedule.json"
+}

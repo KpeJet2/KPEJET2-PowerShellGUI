@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedAt": "2026-03-30T20:27:09Z",
-    "versionTag": "2603.B0.v27.0",
+    "VersionTag": "2607.B6.V53.0",
     "description": "Machine-readable anti-pattern inventory for style remediation tracking",
     "sourceGuide": "~README.md/STYLE-REMEDIATION-GUIDE.md"
   },

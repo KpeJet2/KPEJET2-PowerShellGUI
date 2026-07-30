@@ -1,0 +1,8 @@
+{
+  "VersionTag": "2607.B1.V52.0",
+  "generatedAt": "2026-07-23T23:25:02.4311031+08:00",
+  "source": "scripts/Invoke-PipelineContinuousRefine.ps1",
+  "counts": {
+    "MEDIUM:duplicate-function": 25
+  }
+}

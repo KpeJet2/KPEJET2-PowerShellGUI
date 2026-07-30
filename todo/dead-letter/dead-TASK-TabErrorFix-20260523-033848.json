@@ -1,0 +1,12 @@
+﻿{
+    "id":  "TASK-TabErrorFix",
+    "name":  "Tab Error Auto-Fix",
+    "type":  "TabErrorFix",
+    "consecutiveFailures":  3,
+    "deadLetteredAt":  "2026-05-22T19:35:18.5928159Z",
+    "lastErrors":  [
+                       "TabErrorFix: The property \u0027tags\u0027 cannot be found on this object. Verify that the property exists."
+                   ],
+    "detail":  "",
+    "schedulePath":  "C:\\PowerShellGUI\\config\\cron-aiathon-schedule.json"
+}

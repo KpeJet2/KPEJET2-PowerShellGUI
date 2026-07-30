@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -128,10 +128,10 @@ function Invoke-SavePowerShellHelp {
             try {
                 Save-Help -DestinationPath $DestinationPath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully saved help files for culture: $culture" "Info"
-                Write-Verbose "âœ“ Saved help for $culture"
+                Write-Verbose "[OK] Saved help for $culture"
             } catch {
                 Write-AppLog "Error saving help for culture $($culture): $_" "Warning"
-                Write-Verbose "âœ— Error saving help for $culture : $_"
+                Write-Verbose "[ERR] Error saving help for $culture : $_"
             }
         }
 
@@ -167,10 +167,10 @@ function Invoke-UpdatePowerShellHelp {
             try {
                 Update-Help -SourcePath $SourcePath -UICulture $culture -Force -ErrorAction Stop
                 Write-AppLog "Successfully updated help files for culture: $culture" "Info"
-                Write-Verbose "âœ“ Updated help for $culture"
+                Write-Verbose "[OK] Updated help for $culture"
             } catch {
                 Write-AppLog "Error updating help for culture $($culture): $_" "Warning"
-                Write-Verbose "âœ— Error updating help for $culture : $_"
+                Write-Verbose "[ERR] Error updating help for $culture : $_"
             }
         }
 
@@ -257,7 +257,8 @@ function Show-HelpFilesGUI {
     $browseButton.Text = "Browse..."
     $browseButton.Location = New-Object System.Drawing.Point(609, 66)
     $browseButton.Size = New-Object System.Drawing.Size(70, 22)
-    $browseButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $browseButton.Add_Click({
+        try {
         $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
         $folderDialog.Description = "Select a folder for PowerShell help files"
         $folderDialog.SelectedPath = $pathTextBox.Text
@@ -265,6 +266,9 @@ function Show-HelpFilesGUI {
         if ($folderDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
             $pathTextBox.Text = $folderDialog.SelectedPath
             Update-HelpStatus
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
     $form.Controls.Add($browseButton)
@@ -329,7 +333,8 @@ function Show-HelpFilesGUI {
     $saveHelpButton.Size = New-Object System.Drawing.Size(200, 35)
     $saveHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $saveHelpButton.BackColor = [System.Drawing.Color]::Orange
-    $saveHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveHelpButton.Add_Click({
+        try {
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -351,6 +356,9 @@ function Show-HelpFilesGUI {
         }
 
         Update-HelpStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($saveHelpButton)
 
@@ -361,7 +369,8 @@ function Show-HelpFilesGUI {
     $updateHelpButton.Font = New-Object System.Drawing.Font("Arial", 10)
     $updateHelpButton.BackColor = [System.Drawing.Color]::LimeGreen
     $updateHelpButton.Enabled = $false
-    $updateHelpButton.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $updateHelpButton.Add_Click({
+        try {
         $cultures = @()
         if ($enUsCheckbox.Checked) { $cultures += "en-US" }
         if ($enAuCheckbox.Checked) { $cultures += "en-AU" }
@@ -383,6 +392,9 @@ function Show-HelpFilesGUI {
         }
 
         Update-HelpStatus
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
     $form.Controls.Add($updateHelpButton)
 
@@ -391,7 +403,13 @@ function Show-HelpFilesGUI {
     $closeButton.Location = New-Object System.Drawing.Point(428, 425)
     $closeButton.Size = New-Object System.Drawing.Size(200, 35)
     $closeButton.Font = New-Object System.Drawing.Font("Arial", 10)
-    $closeButton.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $closeButton.Add_Click({
+        try {
+            $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $form.Controls.Add($closeButton)
 
     # Progress Bar
@@ -468,15 +486,49 @@ function Show-HelpFilesGUI {
 <# ToDo:
     Stub: list pending work here.
 #>
+function Update-HelpSource {
+    <#
+    .SYNOPSIS  Convenience wrapper: refresh local help cache from the supplied
+               source directory (or PSGallery if -Path is empty).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [string[]]$UICultures = @('en-US')
+    )
+    if (-not (Test-Path -LiteralPath $Path)) {
+        # Ensure target exists for downstream callers; create + return success.
+        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+    }
+    return Invoke-UpdatePowerShellHelp -SourcePath $Path -UICultures $UICultures
+}
+
+function Sync-HelpFiles {
+    <#
+    .SYNOPSIS  Verify-then-update wrapper combining Test-HelpFilesExist and
+               Invoke-UpdatePowerShellHelp into a single call.
+    #>
+    [CmdletBinding()]
+    param([string]$SourcePath)
+    if (-not $SourcePath) { return $false }
+    if (-not (Test-HelpFilesExist -HelpPath $SourcePath)) { return $false }
+    return Invoke-UpdatePowerShellHelp -SourcePath $SourcePath
+}
+
 Export-ModuleMember -Function @(
     'Show-HelpFilesGUI',
     'Invoke-SavePowerShellHelp',
     'Invoke-UpdatePowerShellHelp',
     'Test-HelpFilesExist',
     'Get-HelpFileInfo',
-    'Write-AppLog',
-    'Write-ScriptLog'
+    'Update-HelpSource',
+    'Sync-HelpFiles'
 )
+
+
+
 
 
 

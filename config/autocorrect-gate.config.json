@@ -1,0 +1,108 @@
+{
+  "VersionTag": "2607.B6.V53.0",
+  "_schema": "autocorrect-gate/1.0",
+  "description": "Phase 1 design/governance contract for the Auto-Correct pipeline gate.",
+  "MaxAttempts": 3,
+  "StallAttempts": 2,
+  "PerItemTimeoutSec": 90,
+  "RegressionDelta": 0.03,
+  "CorrectorOrder": [
+    "AutoRemediate",
+    "SINRemedyEngine",
+    "RoutineRemediation"
+  ],
+  "Guardrails": {
+    "RequirePreWriteCheckpoint": true,
+    "RequireDryRunFirst": true,
+    "RequirePostWriteValidation": true,
+    "BlockProtectedPathMutation": true,
+    "RollbackOnAnyStopCondition": true,
+    "RequireAiActionLog": true
+  },
+  "ProtectedPathPatterns": [
+    "^sovereign-kernel($|[\\\\/])",
+    "^sovereign-kernel[\\\\/]ledger($|[\\\\/])",
+    "^sovereign-kernel[\\\\/]manifest($|[\\\\/])",
+    "^config[\\\\/]kill-switches\\.csv$",
+    "^modules[\\\\/]PwShGUI-KillSwitch\\.psm1$",
+    "^config[\\\\/]sasc-integrity\\.sha256\\.json$",
+    "^config[\\\\/]agentic-manifest\\.json$",
+    "^config[\\\\/]agentic-manifest-history($|[\\\\/])",
+    "^config[\\\\/]dynamic-manifest\\.json$",
+    "^config[\\\\/]dynamic-manifest-history($|[\\\\/])",
+    "^checkpoints($|[\\\\/])",
+    "^pki($|[\\\\/])",
+    "(^|[\\\\/])snapshots?($|[\\\\/])",
+    "(^|[\\\\/])manifests?($|[\\\\/])"
+  ],
+  "StopConditions": {
+    "K1": {
+      "name": "significant-regression",
+      "severity": "CRITICAL",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort when quality, error count, or SIN score regresses by more than RegressionDelta against baseline."
+    },
+    "K2": {
+      "name": "resultant-sin",
+      "severity": "CRITICAL",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort when new or higher-severity SIN findings are introduced by correction output."
+    },
+    "K3": {
+      "name": "charter-protected-path-violation",
+      "severity": "CRITICAL",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort when changes violate workspace charter or touch any protected path pattern."
+    },
+    "K4": {
+      "name": "paradox-oscillation",
+      "severity": "HIGH",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort when successive attempts alternate between conflicting states with no converging trend."
+    },
+    "K5": {
+      "name": "loop-cap-no-progress",
+      "severity": "HIGH",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort when MaxAttempts is reached or StallAttempts are exhausted without net improvement."
+    },
+    "K6": {
+      "name": "error-timeout-crash-lockup",
+      "severity": "CRITICAL",
+      "action": "rollback+escalate",
+      "enabled": true,
+      "description": "Abort on unhandled error, timeout, crash, hung process, or lockup condition."
+    }
+  },
+  "ApprovalDefaults": {
+    "A": {
+      "label": "AutoProceedLowRisk",
+      "defaultSelected": true,
+      "requiresHumanApproval": false,
+      "maxAllowedSeverity": "LOW"
+    },
+    "B": {
+      "label": "ProceedWithReviewer",
+      "defaultSelected": false,
+      "requiresHumanApproval": true,
+      "maxAllowedSeverity": "MEDIUM"
+    },
+    "C": {
+      "label": "RollbackAndEscalate",
+      "defaultSelected": false,
+      "requiresHumanApproval": true,
+      "maxAllowedSeverity": "HIGH"
+    },
+    "D": {
+      "label": "DenyAndManualOnly",
+      "defaultSelected": false,
+      "requiresHumanApproval": true,
+      "maxAllowedSeverity": "CRITICAL"
+    }
+  }
+}

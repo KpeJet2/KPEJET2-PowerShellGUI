@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-05-06
@@ -61,6 +61,8 @@ $script:TerminalWindowId = ''
 $script:TerminalWindowOpened = $false
 $script:UserTerminalTabsLaunched = $false
 $script:TerminalUnavailableWarned = $false
+$script:TerminalLaunchLogPath = ''
+$script:TerminalSummaryTabsCreated = $false
 $script:MonitorConfigPath = ''
 $script:MonitorOptions = $null
 $script:LauncherSets = $null
@@ -1800,6 +1802,290 @@ function Invoke-PipelineStep {
     }
 }
 
+function Get-PipelineErrorSourceAdapters {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Workspace)
+
+    $logsRoot = Join-Path $Workspace 'logs'
+    $reportsRoot = Join-Path $Workspace '~REPORTS'
+
+    return @(
+        [PSCustomObject]@{
+            Name = 'ServiceLogErrors'
+            SourceTag = 'service-log'
+            Category = 'service-runtime'
+            SchemaPath = 'bugs2FIX[]'
+            Kind = 'text-log'
+            Paths = @(
+                (Join-Path $logsRoot 'localwebengine-service.log')
+                (Join-Path $logsRoot 'localwebengine-http-service.log')
+                (Join-Path $logsRoot 'localwebengine-http.log')
+                (Join-Path $logsRoot 'http-service-events.log')
+                (Join-Path $logsRoot 'event-service.log')
+            )
+            TailLines = 220
+            Pattern = '(?i)\b(error|exception|failed|fatal|critical|http\s*5\d\d|status\s*5\d\d|unavailable|timeout)\b'
+            Tags = @('engine','http','eventlog','auto-escalated')
+        }
+        [PSCustomObject]@{
+            Name = 'CrashReportJson'
+            SourceTag = 'crash-report'
+            Category = 'engine-crash'
+            SchemaPath = 'bugs2FIX[]'
+            Kind = 'json-report'
+            Paths = @(
+                (Join-Path $Workspace 'reports\crash-report-*.json')
+                (Join-Path $reportsRoot 'crash-report-*.json')
+            )
+            MaxFiles = 8
+            Tags = @('engine','crash','auto-escalated')
+        }
+        [PSCustomObject]@{
+            Name = 'SecDumpLogs'
+            SourceTag = 'secdump-log'
+            Category = 'security-runtime'
+            SchemaPath = 'bugs2FIX[]'
+            Kind = 'text-log'
+            Paths = @(
+                Join-Path $logsRoot 'secdump\secdump-*.log'
+            )
+            TailLines = 180
+            Pattern = '(?i)\b(error|exception|failed|critical|fatal|alert|denied|tamper|integrity)\b'
+            Tags = @('security','secdump','auto-escalated')
+        }
+        [PSCustomObject]@{
+            Name = 'ScanFailureReports'
+            SourceTag = 'scan-failure'
+            Category = 'pipeline-governance'
+            SchemaPath = 'bugs2FIX[]'
+            Kind = 'json-report'
+            Paths = @(
+                (Join-Path $reportsRoot 'PipelineIntegrity\integrity-*.json')
+                (Join-Path $reportsRoot 'PipelineNormalization\PipeGAP-*.json')
+            )
+            MaxFiles = 6
+            Tags = @('pipeline','scan','auto-escalated')
+        }
+    )
+}
+
+function Get-RecentPipelineErrorSignals {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Workspace,
+        [int]$TailLines = 200
+    )
+
+    $signals = @()
+    $seen = @{}
+    $adapters = @(Get-PipelineErrorSourceAdapters -Workspace $Workspace)
+
+    foreach ($adapter in @($adapters)) {
+        foreach ($candidate in @($adapter.Paths)) {
+            $matches = @(
+                Get-ChildItem -Path $candidate -File -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First $(if ($adapter.PSObject.Properties.Name -contains 'MaxFiles') { [int]$adapter.MaxFiles } else { 10 })
+            )
+
+            foreach ($item in @($matches)) {
+                try {
+                    if ($adapter.Kind -eq 'text-log') {
+                        $tailCount = if ($adapter.PSObject.Properties.Name -contains 'TailLines') { [int]$adapter.TailLines } else { $TailLines }
+                        $pattern = if ($adapter.PSObject.Properties.Name -contains 'Pattern') { [string]$adapter.Pattern } else { '(?i)\b(error|exception|failed|fatal|critical)\b' }
+                        $tail = @(Get-Content -LiteralPath $item.FullName -Tail $tailCount -ErrorAction Stop)
+                        foreach ($line in @($tail)) {
+                            $text = [string]$line
+                            if ([string]::IsNullOrWhiteSpace($text)) { continue }
+                            if ($text -notmatch $pattern) { continue }
+                            $normalized = $text.Trim()
+                            if ($normalized.Length -gt 360) { $normalized = $normalized.Substring(0, 360) }
+                            $keyMaterial = "{0}|{1}" -f $adapter.SourceTag, $normalized.ToLowerInvariant()
+                            if ($seen.ContainsKey($keyMaterial)) { continue }
+                            [void]$seen.Add($keyMaterial, $true)
+                            $signals += [PSCustomObject]@{
+                                SourceTag = [string]$adapter.SourceTag
+                                Category = [string]$adapter.Category
+                                SchemaPath = [string]$adapter.SchemaPath
+                                SourcePath = [string]$item.FullName
+                                Message = $normalized
+                                DedupeMaterial = $keyMaterial
+                                Tags = @($adapter.Tags)
+                            }
+                        }
+                        continue
+                    }
+
+                    if ($adapter.Kind -eq 'json-report') {
+                        $raw = Get-Content -LiteralPath $item.FullName -Raw -Encoding UTF8 -ErrorAction Stop
+                        $json = $raw | ConvertFrom-Json -Depth 100 -ErrorAction Stop
+
+                        $msg = $null
+                        if ($adapter.SourceTag -eq 'crash-report') {
+                            $crashId = if ($json.PSObject.Properties.Name -contains 'crashId') { [string]$json.crashId } else { [System.IO.Path]::GetFileNameWithoutExtension($item.Name) }
+                            $quarantineCount = if ($json.PSObject.Properties.Name -contains 'quarantineCount') { [int]$json.quarantineCount } else { 0 }
+                            $msg = "Crash report detected: $crashId (quarantineCount=$quarantineCount)"
+                        } elseif ($adapter.SourceTag -eq 'scan-failure') {
+                            if ($item.Name -like 'integrity-*.json') {
+                                if ($json.PSObject.Properties.Name -contains 'overallHealthy' -and -not [bool]$json.overallHealthy) {
+                                    $msg = 'Pipeline integrity report flagged unhealthy state'
+                                }
+                            } elseif ($item.Name -like 'PipeGAP-*.json') {
+                                $h = if ($json.PSObject.Properties.Name -contains 'health') { $json.health } else { $null }
+                                if ($null -ne $h) {
+                                    $parseFailures = if ($h.PSObject.Properties.Name -contains 'parseFailures') { [int]$h.parseFailures } else { 0 }
+                                    $relicScripts = if ($h.PSObject.Properties.Name -contains 'relicScripts') { [int]$h.relicScripts } else { 0 }
+                                    $staleArtifacts = if ($h.PSObject.Properties.Name -contains 'staleArtifacts') { [int]$h.staleArtifacts } else { 0 }
+                                    if ($parseFailures -gt 0 -or $relicScripts -gt 0 -or $staleArtifacts -gt 0) {
+                                        $msg = "PipeGAP health issue: parseFailures=$parseFailures, relicScripts=$relicScripts, staleArtifacts=$staleArtifacts"
+                                    }
+                                }
+                            }
+                        }
+
+                        if ([string]::IsNullOrWhiteSpace($msg)) { continue }
+                        $keyMaterial = "{0}|{1}" -f $adapter.SourceTag, $msg.ToLowerInvariant()
+                        if ($seen.ContainsKey($keyMaterial)) { continue }
+                        [void]$seen.Add($keyMaterial, $true)
+                        $signals += [PSCustomObject]@{
+                            SourceTag = [string]$adapter.SourceTag
+                            Category = [string]$adapter.Category
+                            SchemaPath = [string]$adapter.SchemaPath
+                            SourcePath = [string]$item.FullName
+                            Message = $msg
+                            DedupeMaterial = $keyMaterial
+                            Tags = @($adapter.Tags)
+                        }
+                    }
+                } catch {
+                    Write-MonitorLog -Level 'DEBUG' -Message "Signal scan skipped for $($item.FullName): $($_.Exception.Message)"
+                }
+            }
+        }
+    }
+
+    return $signals
+}
+
+function Update-PipelineBugs2FixFromServiceErrors {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Workspace,
+        [switch]$PreviewOnly
+    )
+
+    $pipelinePath = Join-Path $Workspace 'config\cron-aiathon-pipeline.json'
+    if (-not (Test-Path -LiteralPath $pipelinePath -PathType Leaf)) {
+        Write-MonitorLog -Level 'WARN' -Message "Pipeline file missing for Bugs2FIX update: $pipelinePath"
+        return [PSCustomObject]@{ AddedCount = 0; AddedItems = @() }
+    }
+
+    $signals = @(Get-RecentPipelineErrorSignals -Workspace $Workspace -TailLines 220)
+    if (@($signals).Count -eq 0) {
+        return [PSCustomObject]@{ AddedCount = 0; AddedItems = @() }
+    }
+
+    try {
+        $raw = Get-Content -LiteralPath $pipelinePath -Raw -ErrorAction Stop
+        $json = $raw | ConvertFrom-Json -Depth 100
+    } catch {
+        Write-MonitorLog -Level 'WARN' -Message "Failed to parse pipeline file for Bugs2FIX update: $($_.Exception.Message)"
+        return [PSCustomObject]@{ AddedCount = 0; AddedItems = @() }
+    }
+
+    if (-not ($json.PSObject.Properties.Name -contains 'bugs2FIX')) {
+        $json | Add-Member -NotePropertyName 'bugs2FIX' -NotePropertyValue @()
+    }
+    if ($null -eq $json.bugs2FIX) {
+        $json.bugs2FIX = @()
+    }
+
+    $existing = @{}
+    $existingDedupe = @{}
+    foreach ($item in @($json.bugs2FIX)) {
+        $title = if ($item.PSObject.Properties.Name -contains 'title') { [string]$item.title } else { '' }
+        if (-not [string]::IsNullOrWhiteSpace($title)) {
+            $existing[$title.ToLowerInvariant()] = $true
+        }
+        $notesText = if ($item.PSObject.Properties.Name -contains 'notes') { [string]$item.notes } else { '' }
+        if ($notesText -match 'dedupeKey=([A-Fa-f0-9]{64})') {
+            $existingDedupe[$Matches[1].ToLowerInvariant()] = $true
+        }
+    }
+
+    $now = Get-Date
+    $createdStamp = $now.ToString('o')
+    $idStamp = $now.ToString('yyyyMMddHHmmss')
+    $added = @()
+
+    foreach ($sig in $signals) {
+        $dedupeBytes = [System.Text.Encoding]::UTF8.GetBytes([string]$sig.DedupeMaterial)
+        $dedupeHash = [System.BitConverter]::ToString([System.Security.Cryptography.SHA256]::Create().ComputeHash($dedupeBytes)).Replace('-', '').ToLowerInvariant()
+        if ($existingDedupe.ContainsKey($dedupeHash)) { continue }
+
+        $titleCore = $sig.Message
+        if ($titleCore.Length -gt 140) {
+            $titleCore = $titleCore.Substring(0, 140)
+        }
+        $title = "Auto escalated [$($sig.SourceTag)]: $titleCore"
+        $titleKey = $title.ToLowerInvariant()
+        if ($existing.ContainsKey($titleKey)) { continue }
+        [void]$existing.Add($titleKey, $true)
+        [void]$existingDedupe.Add($dedupeHash, $true)
+
+        $newId = "Bugs2FIX-$idStamp-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+        $entry = [ordered]@{
+            category = [string]$sig.Category
+            sessionModCount = 1
+            parentId = ''
+            source = "EngineServiceMonitor/$($sig.SourceTag)"
+            description = $sig.Message
+            linkedBugs = @()
+            acknowledged = $null
+            executionMethod = ''
+            title = $title
+            executedAt = $null
+            result = $null
+            type = 'Bugs2FIX'
+            id = $newId
+            priority = 'HIGH'
+            tags = @($sig.Tags)
+            affectedFiles = @([string]$sig.SourcePath)
+            sinId = ''
+            executionAgent = ''
+            created = $createdStamp
+            suggestedBy = 'EngineServiceMonitor'
+            linkedFeatures = @()
+            modified = $createdStamp
+            plannedAt = $null
+            completedAt = $null
+            status = 'OPEN'
+            notes = "Auto-escalated from unified error-source adapters during engine monitor handoff. schemaPath=$($sig.SchemaPath); dedupeKey=$dedupeHash"
+        }
+        $added += [PSCustomObject]$entry
+        $json.bugs2FIX += [PSCustomObject]$entry
+    }
+
+    if (@($added).Count -eq 0) {
+        return [PSCustomObject]@{ AddedCount = 0; AddedItems = @() }
+    }
+
+    if ($PreviewOnly) {
+        Write-MonitorLog -Level 'INFO' -Message ("DryRun: would append " + @($added).Count + ' Bugs2FIX item(s) from unified error-source adapters.')
+        return [PSCustomObject]@{ AddedCount = @($added).Count; AddedItems = @($added) }
+    }
+
+    try {
+        $json | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $pipelinePath -Encoding UTF8
+        Write-MonitorLog -Level 'ACTION' -Message ("Added " + @($added).Count + ' Bugs2FIX item(s) from unified error-source adapters.')
+    } catch {
+        Write-MonitorLog -Level 'WARN' -Message "Failed writing pipeline Bugs2FIX updates: $($_.Exception.Message)"
+        return [PSCustomObject]@{ AddedCount = 0; AddedItems = @() }
+    }
+
+    return [PSCustomObject]@{ AddedCount = @($added).Count; AddedItems = @($added) }
+}
+
 function Invoke-PipelineHandoff {
     [CmdletBinding()]
     param(
@@ -1816,6 +2102,7 @@ function Invoke-PipelineHandoff {
     }
 
     $pipe = $Config.pipeline
+    $bugs2FixUpdate = Update-PipelineBugs2FixFromServiceErrors -Workspace $Workspace -PreviewOnly:$PreviewOnly
     $steps = @()
 
     $integrityScript = if ($pipe.PSObject.Properties.Name -contains 'integrityScript') { [string]$pipe.integrityScript } else { '' }
@@ -1856,6 +2143,8 @@ function Invoke-PipelineHandoff {
         reason = $Reason
         failedTargetCount = @($FailedTargets).Count
         failedTargets = @($FailedTargets)
+        bugs2FixAdded = [int]$bugs2FixUpdate.AddedCount
+        bugs2FixItems = @($bugs2FixUpdate.AddedItems)
         pipelineSteps = @($steps)
         previewOnly = [bool]$PreviewOnly
     }
@@ -2183,3 +2472,5 @@ switch ($Action) {
 
 Write-MonitorLog -Level 'INFO' -Message 'Engine monitor run completed.'
 exit 0
+
+

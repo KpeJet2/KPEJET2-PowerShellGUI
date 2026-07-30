@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-055-STUB-PLACEHOLDER-BLOCK",
+  "sin_id": "SIN-PATTERN-055-STUB-PLACEHOLDER-BLOCK",
+  "title": "Unfinalized Stub placeholder blocks in executable files",
+  "description": "Placeholder Outline/Problems/ToDo stubs are repeatedly left in active scripts/modules, signaling unfinished documentation and noisy quality scans.",
+  "severity": "HIGH",
+  "status": "pattern-defined",
+  "category": "Quality/Hygiene",
+  "detection_method": "Regex scan for known stub placeholder phrases appended to active code files.",
+  "scan_regex": "Stub:\\s*(describe module\\/script purpose here\\.|list known issues here\\.|list pending work here\\.)",
+  "context_guard_regex": "PipelineSteering|template|generator",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\|\\\\_TEMPLATE-",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "ps_version_scope": "BOTH",
+  "remediation": "Replace placeholders with concrete content or remove the block entirely in production scripts/modules.",
+  "examples": [
+    "# Bad\n<# Outline:\n    Stub: describe module/script purpose here.\n#>",
+    "# Good\n<# Outline:\n    Maintains pipeline artifact integrity checks.\n#>"
+  ],
+  "tags": ["stubs", "hygiene", "finalization"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

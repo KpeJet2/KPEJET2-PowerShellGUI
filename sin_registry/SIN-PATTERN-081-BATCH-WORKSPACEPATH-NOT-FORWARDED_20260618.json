@@ -1,0 +1,42 @@
+{
+  "id": "SIN-PATTERN-081-BATCH-WORKSPACEPATH-NOT-FORWARDED_20260618",
+  "sin_id": "SIN-PATTERN-081-BATCH-WORKSPACEPATH-NOT-FORWARDED_20260618",
+  "title": "Batch/cmd launcher invokes a workspace script without forwarding -WorkspacePath",
+  "description": "Windows Terminal / cmd launchers (Launch-*.bat) that invoke workspace PowerShell scripts via -File <root>\\scripts\\X.ps1 must forward -WorkspacePath so the child resolves the same workspace root. Omitting it makes scripts fall back to a guessed root (Split-Path $PSScriptRoot -Parent), which diverges when launched from a different working directory and breaks config/report/log path resolution. Encountered while repairing Launch-ServiceClusterTabs.bat tabs.",
+  "severity": "LOW",
+  "category": "governance",
+  "vector": "batch-workspacepath-not-forwarded",
+  "ps_version_scope": "BOTH",
+  "status": "pattern-defined",
+  "created_at": "2026-06-18T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan (batch/cmd only) for a -File invocation of a scripts\\*.ps1 path that has no -WorkspacePath argument on the same line. A negative lookahead excludes known launcher utilities that intentionally do not accept -WorkspacePath (they self-resolve their root), keeping the pattern free of false positives.",
+  "scan_regex": "-File\\s+\\S*[\\\\/]scripts[\\\\/](?!(?:Scan-WorkspaceVersions|Start-Engines|Show-ScanDashboard|Show-EventLogViewer|Show-MCPServiceConfig)\\.ps1)[^\\r\\n\"]*\\.ps1(?![^\\r\\n]*-WorkspacePath)",
+  "false_positive_note": "Launcher scripts without a -WorkspacePath parameter are excluded via negative lookahead: Scan-WorkspaceVersions.ps1, Start-Engines.ps1, Show-ScanDashboard.ps1, Show-EventLogViewer.ps1, Show-MCPServiceConfig.ps1 (verified param-less 2026-06-18). Add new param-less launchers here rather than forcing -WorkspacePath onto a script that cannot bind it.",
+  "scan_file_pattern": "*.bat;*.cmd",
+  "file_exclusion_regex": "sin_registry|~REPORTS",
+  "context_guard_regex": "-WorkspacePath",
+  "context_guard_lines": 0,
+  "context_guard_direction": "both",
+  "preventionRule": "Every batch/cmd invocation of a workspace script that accepts -WorkspacePath must pass -WorkspacePath %WS% (or the resolved root).",
+  "remedy": "REM BEFORE\npwsh -NoProfile -File %WS%\\scripts\\Invoke-Foo.ps1\nREM AFTER\npwsh -NoProfile -File %WS%\\scripts\\Invoke-Foo.ps1 -WorkspacePath %WS%",
+  "tags": [
+    "batch",
+    "launcher",
+    "workspacepath",
+    "governance"
+  ],
+  "related_patterns": [
+    "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH",
+    "SIN-PATTERN-072-WT-CMD-METACHAR-LEAK"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # Module: PwShGUI-CheckpointPrune
 # Purpose: Apply a retention policy to checkpoints/ to bound disk usage.
 
@@ -55,4 +56,7 @@ function Invoke-CheckpointPrune {
 }
 
 Export-ModuleMember -Function Invoke-CheckpointPrune
+
+
+
 

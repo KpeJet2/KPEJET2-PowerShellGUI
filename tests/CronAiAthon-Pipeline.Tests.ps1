@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -134,7 +134,7 @@ Describe 'Pipeline CRUD' {
     }
 
     It 'Should retrieve added items' {
-        $items = Get-PipelineItems -WorkspacePath $script:wsPath
+        $items = @(Get-PipelineItems -WorkspacePath $script:wsPath)
         $items.Count | Should -BeGreaterOrEqual 1
     }
 
@@ -292,6 +292,26 @@ Describe 'Artifact Integrity Parity' {
     }
 }
 
+Describe 'Pipeline Metric Increment Harness' {
+    It 'Should pass one-item incremental metric validation harness' {
+        $repoRoot = Split-Path $PSScriptRoot -Parent
+        $harness = Join-Path $repoRoot 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
+        Test-Path $harness | Should -Be $true
+
+        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $args = @(
+            '-NoProfile',
+            '-ExecutionPolicy', 'Bypass',
+            '-File', $harness,
+            '-WorkspacePath', $repoRoot,
+            '-SkipGuiCoverage'
+        )
+
+        & $hostExe @args | Out-Null
+        $LASTEXITCODE | Should -Be 0
+    }
+}
+
 
 <# Outline:
     Stub: describe module/script purpose here.
@@ -304,6 +324,8 @@ Describe 'Artifact Integrity Parity' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

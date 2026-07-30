@@ -1,0 +1,24 @@
+{
+  "id": "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+  "sin_id": "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+  "title": "Hyphenated IN-PROGRESS status token drift",
+  "description": "Canonical machine status token is IN_PROGRESS. Hyphenated IN-PROGRESS creates inconsistent filters, counters, and transitions across pipeline and UI surfaces.",
+  "severity": "HIGH",
+  "status": "pattern-defined",
+  "category": "Pipeline/StatusVocabulary",
+  "detection_method": "Regex scan for IN-PROGRESS token in executable/config/view files.",
+  "scan_regex": "\\bIN-PROGRESS\\b",
+  "context_guard_regex": "Normalize-TodoStatusVocabulary|legacy|compat",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+  "scan_file_pattern": "*.ps1;*.psm1;*.json;*.xhtml;*.html;*.js;*.ts;*.md",
+  "ps_version_scope": "BOTH",
+  "remediation": "Normalize status writes to IN_PROGRESS. Keep read-side compatibility mapping only where unavoidable.",
+  "examples": [
+    "# Bad\n$status = 'IN-PROGRESS'",
+    "# Good\n$status = 'IN_PROGRESS'"
+  ],
+  "tags": ["status", "pipeline", "consistency"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

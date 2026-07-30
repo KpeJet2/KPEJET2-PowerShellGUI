@@ -1,0 +1,90 @@
+{
+  "patternId": "SIN-PATTERN-034",
+  "title": "⸸ P034 — XHTML Attributes Must Have Explicit Values",
+  "category": "XML/XHTML Validation",
+  "severity": "Critical",
+  "firstDetected": "2026-05-25T14:30:00Z",
+  "description": "XHTML specification requires all attributes to have explicit values. Boolean HTML5 attributes like 'checked', 'disabled', 'selected', and 'readonly' must be written as attribute=\"attribute\" in XHTML (e.g., 'checked=\"checked\"') instead of bare attribute names (e.g., 'checked'). Failure to do so causes XHTML parser errors: 'Specification mandates value for attribute <name>'.",
+  "targetFiles": "**/*.xhtml",
+  "relatedPatterns": ["P032"],
+  "scannable": true,
+  "blockingPattern": true,
+  "antiPatterns": [
+    {
+      "id": "P034-A",
+      "description": "Bare 'checked' attribute without value",
+      "example": "<input type=\"checkbox\" checked />",
+      "fix": "<input type=\"checkbox\" checked=\"checked\" />"
+    },
+    {
+      "id": "P034-B",
+      "description": "Bare 'disabled' attribute without value",
+      "example": "<input type=\"number\" disabled />",
+      "fix": "<input type=\"number\" disabled=\"disabled\" />"
+    },
+    {
+      "id": "P034-C",
+      "description": "Bare 'selected' attribute without value",
+      "example": "<option value=\"std\" selected>Standard</option>",
+      "fix": "<option value=\"std\" selected=\"selected\">Standard</option>"
+    },
+    {
+      "id": "P034-D",
+      "description": "Bare 'readonly' attribute without value",
+      "example": "<input type=\"text\" readonly />",
+      "fix": "<input type=\"text\" readonly=\"readonly\" />"
+    }
+  ],
+  "scanRegex": [
+    "\\s(checked|disabled|selected|readonly)(?:\\s|/?>)",
+    "\\s(checked|disabled|selected|readonly)\\s+[a-z]",
+    "\\s(checked|disabled|selected|readonly)\\s*/>"
+  ],
+  "excludeContexts": [
+    "// (JavaScript comments)",
+    "/* */ (JavaScript block comments)",
+    "<![CDATA[ ]]> (JavaScript in CDATA sections - safe)"
+  ],
+  "fixRegex": {
+    "checked": "checked=\"checked\"",
+    "disabled": "disabled=\"disabled\"",
+    "selected": "selected=\"selected\"",
+    "readonly": "readonly=\"readonly\""
+  },
+  "detectionNotes": [
+    "Bare boolean attributes appear as standalone tokens followed by whitespace or />",
+    "This is valid HTML5 but invalid XHTML strict mode",
+    "Scanner must exclude these attributes when found inside CDATA sections",
+    "Scanner must exclude these attributes when found inside HTML/JavaScript comments"
+  ],
+  "instances": {
+    "2026-05-25": {
+      "file": "pages/tray-config-ui.xhtml",
+      "count": 11,
+      "attributes": ["checked", "checked", "checked", "checked", "checked", "checked", "checked", "checked", "checked", "disabled", "disabled"],
+      "lines": [142, 192, 199, 206, 213, 226, 233, 282, 333, 371, 377],
+      "status": "FIXED"
+    },
+    "2026-05-25-checklist": {
+      "file": "~README.md/PwShGUI-Checklists.xhtml",
+      "count": 0,
+      "status": "NO BARE ATTRIBUTES (uses CDATA for JavaScript)"
+    }
+  },
+  "relatedIssues": [
+    "XHTML validation error: xmlParseEntityRef: no name (when unescaped && in script)",
+    "XHTML validation error: Specification mandates value for attribute <name>"
+  ],
+  "references": [
+    "W3C XHTML 1.0 Strict: https://www.w3.org/TR/xhtml1/",
+    "XHTML vs HTML5 boolean attributes",
+    "XML attribute value requirements"
+  ],
+  "preventionStrategies": [
+    "Use automated XHTML validator (xmllint, online validators) in CI pipeline",
+    "Use IDE extensions for XHTML validation (e.g., VS Code XHTML Validator)",
+    "Search-and-replace patterns for all XHTML files during creation/modification",
+    "Code review checklist: verify all boolean attributes have explicit values",
+    "Use template snippets in IDE that generate correct XHTML syntax"
+  ]
+}

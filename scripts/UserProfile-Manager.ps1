@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -312,7 +312,8 @@ $tabs.ItemSize     = New-Object System.Drawing.Size(200, 32)
 $tabs.Font         = $fontBold
 $tabs.Padding      = New-Object System.Drawing.Point(12, 6)
 $tabs.BackColor    = $clrBg
-$tabs.Add_DrawItem({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$tabs.Add_DrawItem({
+    try {
     param($sender, $e)
     $tab   = $sender.TabPages[$e.Index]
     $rect  = $e.Bounds
@@ -324,6 +325,9 @@ $tabs.Add_DrawItem({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     $tf.LineAlignment = [System.Drawing.StringAlignment]::Center
     $e.Graphics.DrawString($tab.Text, $fontBold, [System.Drawing.Brushes]::White, [System.Drawing.RectangleF]$rect, $tf)
     $brush.Dispose()
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 $form.Controls.Add($tabs)
 
@@ -619,7 +623,8 @@ function Populate-ViewTree {
     $expn.Expand()
 }
 
-$viewTree.Add_AfterSelect({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$viewTree.Add_AfterSelect({
+    try {
     $viewDetail.Columns.Clear()
     $viewDetail.Rows.Clear()
     if ($null -eq $script:LiveSnapshot -or $null -eq $this.SelectedNode) { return }
@@ -918,9 +923,13 @@ $viewTree.Add_AfterSelect({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             }
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$btnCapture.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnCapture.Add_Click({
+    try {
     $btnCapture.Enabled = $false
     $viewStatusLbl.Text = 'Capturing...'
     Write-UPMLog 'Capture initiated by user'
@@ -945,6 +954,9 @@ $btnCapture.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         }
     } finally {
         $btnCapture.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -982,11 +994,15 @@ $savePanel.Controls.AddRange(@($savePathCtl.Label, $savePathCtl.TextBox))
 $btnBrowseSave = New-StyledButton '...' 392 128 60 24
 $btnBrowseSave.Font = $fontMain
 $savePanel.Controls.Add($btnBrowseSave)
-$btnBrowseSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnBrowseSave.Add_Click({
+    try {
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
     $dlg.SelectedPath = $savePathCtl.TextBox.Text
     $dlg.Description  = 'Select folder for profile snapshots'
     if ($dlg.ShowDialog() -eq 'OK') { $savePathCtl.TextBox.Text = $dlg.SelectedPath }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Encryption section
@@ -1014,10 +1030,14 @@ $encBox.Controls.AddRange(@($encPw1Ctl.Label, $encPw1Ctl.TextBox, $encPw2Ctl.Lab
 
 $encPw1Ctl.TextBox.Enabled = $false
 $encPw2Ctl.TextBox.Enabled = $false
-$chkEncrypt.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$chkEncrypt.Add_CheckedChanged({
+    try {
     $encPw1Ctl.TextBox.Enabled = $chkEncrypt.Checked
     $encPw2Ctl.TextBox.Enabled = $chkEncrypt.Checked
     if (-not $chkEncrypt.Checked) { $encPw1Ctl.TextBox.Clear(); $encPw2Ctl.TextBox.Clear() }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Capture Options groupbox
@@ -1066,7 +1086,8 @@ $savePanel.Controls.Add($savePrgLbl)
 $btnSaveProfile = New-StyledButton 'Capture & Save Profile' 16 480 200 34
 $savePanel.Controls.Add($btnSaveProfile)
 
-$btnSaveProfile.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnSaveProfile.Add_Click({
+    try {
     $profileName = $saveNameCtl.TextBox.Text.Trim()
     $savePath    = $savePathCtl.TextBox.Text.Trim()
 
@@ -1127,6 +1148,9 @@ $btnSaveProfile.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         }
     } finally {
         $btnSaveProfile.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1293,7 +1317,13 @@ function Load-ProfileList {
     }
 }
 
-$btnCmpRefresh.Add_Click({ Load-ProfileList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnCmpRefresh.Add_Click({
+    try {
+        Load-ProfileList
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
 $cmpProgress = New-Object System.Windows.Forms.ProgressBar
 $cmpProgress.Location = New-Object System.Drawing.Point(8, 730)
@@ -1301,7 +1331,8 @@ $cmpProgress.Size     = New-Object System.Drawing.Size(600, 10)
 $cmpProgress.Visible  = $false
 $tabCompare.Controls.Add($cmpProgress)
 
-$btnCmpLoad.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnCmpLoad.Add_Click({
+    try {
     if ($cmpCombo.SelectedIndex -lt 0) {
         [System.Windows.Forms.MessageBox]::Show('Please select a profile.','Select Profile',[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
         return
@@ -1408,6 +1439,9 @@ $btnCmpLoad.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         }
     } finally {
         $btnCmpLoad.Enabled = $true
+    }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
     }
 })
 
@@ -1561,9 +1595,16 @@ function Load-RestoreList {
     }
 }
 
-$btnRestRefresh.Add_Click({ Load-RestoreList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRestRefresh.Add_Click({
+    try {
+        Load-RestoreList
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
-$btnLoadRest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnLoadRest.Add_Click({
+    try {
     if ($restCombo.SelectedIndex -lt 0) { return }
     $profiles = $restCombo.Tag
     if (-not $profiles -or $restCombo.SelectedIndex -ge $profiles.Count) { return }
@@ -1599,9 +1640,13 @@ $btnLoadRest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             }
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$btnStartRestore.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnStartRestore.Add_Click({
+    try {
     if ($null -eq $script:LoadedProfile) { return }
 
     $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -1650,12 +1695,16 @@ $btnStartRestore.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wra
     } finally {
         $btnStartRestore.Enabled = $true
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # ════════════════════════════════════════════════════════════════════════════
 #  STARTUP & SHOW
 # ════════════════════════════════════════════════════════════════════════════
-$form.Add_Load({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$form.Add_Load({
+    try {
     Write-UPMLog "UPM started. User=$($env:USERNAME) Computer=$($env:COMPUTERNAME) Store=$($script:ProfileStorePath)"
     $statusLabel.Text = "Loading profile list from: $($script:ProfileStorePath)"
     try {
@@ -1669,9 +1718,13 @@ $form.Add_Load({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
             StorePath = $script:ProfileStorePath
         }
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$form.Add_FormClosing({
+    try {
     param($sender, $e)
     $activeTab = if ($tabs -and $tabs.SelectedTab) { $tabs.SelectedTab.Text } else { '(none)' }
     Write-UPMLog "UPM closing. Reason=$($e.CloseReason) ActiveTab=$activeTab Status='$($statusLabel.Text)'"
@@ -1681,13 +1734,22 @@ $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         Status      = $statusLabel.Text
         StorePath   = $script:ProfileStorePath
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Auto-size grid columns when tabs switch
-$tabs.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$tabs.Add_SelectedIndexChanged({
+    try {
     [System.Windows.Forms.Application]::DoEvents()
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
+# P064: Set-StrictMode -Off before Application::Run() prevents StrictMode scope bleed into all WinForms event handlers
+Set-StrictMode -Off
 try {
     [System.Windows.Forms.Application]::Run($form)
 } catch {
@@ -1695,6 +1757,8 @@ try {
         Operation = 'Application.Run'
         StorePath = $script:ProfileStorePath
     }
+} finally {
+    Set-StrictMode -Version Latest
 }
 
 
@@ -1715,6 +1779,8 @@ try {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

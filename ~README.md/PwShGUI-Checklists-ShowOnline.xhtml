@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlRedirect -->
+<!-- Purpose: Redirector for the legacy ShowOnline checklist entry point -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PwShGUI - Checklists Redirect</title>
+  <style type="text/css">
+    body { margin: 0; font-family: Segoe UI, Tahoma, Arial, sans-serif; background: #0f172a; color: #e2e8f0; }
+    main { max-width: 900px; margin: 0 auto; padding: 28px 22px 36px; }
+    .card { background: #111827; border: 1px solid #334155; border-radius: 12px; padding: 18px 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.28); }
+    h1 { margin: 0 0 10px 0; font-size: 24px; }
+    p { margin: 0 0 10px 0; color: #cbd5e1; }
+    .muted { color: #94a3b8; font-size: 13px; }
+    .status { margin-top: 14px; background: #0b1220; border: 1px solid #1f2937; border-radius: 10px; padding: 12px; min-height: 88px; font-family: Consolas, monospace; font-size: 12px; white-space: pre-wrap; }
+    .actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+    button, a.button { display: inline-block; border-radius: 8px; border: 1px solid #2563eb; background: #1d4ed8; color: #fff; padding: 9px 14px; text-decoration: none; cursor: pointer; font-size: 13px; }
+    button.secondary, a.button.secondary { background: #0f172a; border-color: #475569; }
+    .links { margin-top: 14px; display: grid; gap: 8px; }
+    .links a { color: #7dd3fc; }
+    .badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: #0f766e; color: #fff; font-size: 11px; }
+    .probe-frame { display: none; width: 0; height: 0; border: 0; }
+  </style>
+</head>
+<body onload="launchRedirect();">
+  <main>
+    <section class="card">
+      <h1>PwShGUI Checklists Redirect<span class="badge">legacy entry</span></h1>
+      <p>
+        This redirector tries the online checklist view first, then falls back to the local file,
+        and finally opens the service endpoints in separate windows if needed.
+      </p>
+      <p class="muted">
+        Target order: 8042 online page, local XHTML copy, 8042 root, 8099 dashboard.
+      </p>
+
+      <div class="actions">
+        <button type="button" onclick="launchRedirect();">Launch redirect chain</button>
+        <a class="button secondary" href="file:///C:/PowerShellGUI/~README.md/PwShGUI-Checklists-V2-[ONLINE].xhtml" target="_blank" rel="noopener">Open local V2 online</a>
+        <a class="button secondary" href="http://127.0.0.1:8042/PwShGUI-Checklists-V2-[ONLINE].xhtml" target="_blank" rel="noopener">Open 8042 online URL</a>
+      </div>
+
+      <div id="status" class="status">Idle.</div>
+
+      <div class="links">
+        <a href="PwShGUI-Checklists-V2-[ONLINE].xhtml" target="_blank" rel="noopener">Local V2 online checklist</a>
+        <a href="PwShGUI-Checklists-V2-[ONLINE]-TEST.xhtml" target="_blank" rel="noopener">Local V2 online test copy</a>
+        <a href="PwShGUI-Checklists.xhtml" target="_blank" rel="noopener">Editable checklist manager</a>
+      </div>
+
+      <noscript>
+        <p class="muted">JavaScript is required for automatic fallback. Use the links above manually.</p>
+      </noscript>
+    </section>
+  </main>
+
+  <iframe id="probeFrame" class="probe-frame" title="probe"></iframe>
+
+  <script type="text/javascript">
+    var chain = [
+      {
+        label: 'Primary online checklist',
+        url: 'http://127.0.0.1:8042/PwShGUI-Checklists-V2-[ONLINE].xhtml'
+      },
+      {
+        label: 'Local V2 online file',
+        url: 'file:///C:/PowerShellGUI/~README.md/PwShGUI-Checklists-V2-[ONLINE].xhtml'
+      }
+    ];
+
+    function logLine(message) {
+      var status = document.getElementById('status');
+      if (status) {
+        status.textContent = status.textContent + '\n' + message;
+      }
+    }
+
+    function resetStatus() {
+      var status = document.getElementById('status');
+      if (status) {
+        status.textContent = 'Launching redirect chain...';
+      }
+    }
+
+    function openWindow(url) {
+      try {
+        return window.open(url, '_blank');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function probeTarget(index) {
+      if (index >= chain.length) {
+        logLine('Primary and local targets did not confirm. Opening service windows.');
+        openWindow('http://127.0.0.1:8042');
+        setTimeout(function () {
+          openWindow('http://127.0.0.1:8099');
+        }, 500);
+        return;
+      }
+
+      var target = chain[index];
+      logLine('Probing ' + target.label + ' ...');
+      var frame = document.getElementById('probeFrame');
+      if (!frame) {
+        logLine('Probe frame missing. Falling back to direct launch.');
+        openWindow(target.url);
+        return;
+      }
+
+      var loaded = false;
+      frame.onload = function () {
+        loaded = true;
+      };
+      frame.onerror = function () {
+        loaded = false;
+      };
+      frame.src = target.url;
+
+      setTimeout(function () {
+        if (loaded) {
+          logLine('Probe confirmed for ' + target.label + '. Opening in a separate window.');
+          openWindow(target.url);
+          return;
+        }
+        logLine(target.label + ' did not confirm. Trying next fallback.');
+        probeTarget(index + 1);
+      }, 1800);
+    }
+
+    function launchRedirect() {
+      resetStatus();
+      probeTarget(0);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,2997 @@
+{
+  "$schema": "PwShGUI-DynaManifest/2.0",
+  "meta": {
+    "version": "2607.B1.V52.0",
+    "generated": "2026-07-09T03:27:18.4709477Z",
+    "generator": "scripts/Build-DynaManifest.ps1",
+    "workspacePath": "C:\\PowerShellGUI",
+    "purpose": "Unified dynamic manifest: dependencies, security, versioning, drift guards, pipeline integration",
+    "supersedes": "config/agentic-manifest.json"
+  },
+  "counts": {
+    "modules": 55,
+    "scripts": 138,
+    "configs": 47,
+    "tests": 45,
+    "agents": 0,
+    "xhtmlTools": 0
+  },
+  "modules": [
+    {
+      "name": "_TEMPLATE-Module",
+      "path": "modules\\_TEMPLATE-Module.psm1",
+      "manifestFile": "modules\\_TEMPLATE-Module.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "tier": "tool",
+      "sizeKB": 3.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.4216929Z",
+      "sha256": "EB8C808571B6249D6A4A5EF4673A879F1C0AB89B90742086B704304BDD450DF3"
+    },
+    {
+      "name": "AssistedSASC",
+      "path": "modules\\AssistedSASC.psm1",
+      "manifestFile": "modules\\AssistedSASC.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 116.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5049012Z",
+      "sha256": "3D4DEB1EC0823DBCAAAA20340B80EECEABD23C9C6A4014CEA8642792C31E0FF6"
+    },
+    {
+      "name": "AVPN-Tracker",
+      "path": "modules\\AVPN-Tracker.psm1",
+      "manifestFile": "modules\\AVPN-Tracker.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 95.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5160736Z",
+      "sha256": "9E1E68D7393A5E617607FA2238393C8CF65539A3DCB5B0812D808000C665703E"
+    },
+    {
+      "name": "ConvoVault-BWcli",
+      "path": "modules\\ConvoVault-BWcli.psm1",
+      "manifestFile": null,
+      "version": "2607.B1.V52.0",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 14.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:40:38.0686275Z",
+      "sha256": "C68878DC964818E63E7E5CAA68DB6F8DC06EB6CD0111368E517E64FC3217F1C0"
+    },
+    {
+      "name": "CronAiAthon-BugTracker",
+      "path": "modules\\CronAiAthon-BugTracker.psm1",
+      "manifestFile": "modules\\CronAiAthon-BugTracker.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 20.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5160736Z",
+      "sha256": "337D442097AB2A97FF4AF2E0EAFD24397BF3D9E62793ECAB260CF0B60FE7A241"
+    },
+    {
+      "name": "CronAiAthon-ErrorLinker",
+      "path": "modules\\CronAiAthon-ErrorLinker.psm1",
+      "manifestFile": "modules\\CronAiAthon-ErrorLinker.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 12.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5214608Z",
+      "sha256": "478ADCB86B4D43D0BE53664A6E03F49E5D28823ABDC3773745B31AF9C2CF128E"
+    },
+    {
+      "name": "CronAiAthon-EventLog",
+      "path": "modules\\CronAiAthon-EventLog.psm1",
+      "manifestFile": "modules\\CronAiAthon-EventLog.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 19.4,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5214608Z",
+      "sha256": "8B21810B82BCACE5B218DBAC09E408EAF4E775979295607873F7F5964A756A09"
+    },
+    {
+      "name": "CronAiAthon-Pipeline",
+      "path": "modules\\CronAiAthon-Pipeline.psm1",
+      "manifestFile": "modules\\CronAiAthon-Pipeline.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 98.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5214608Z",
+      "sha256": "3923FDD793290259A082FDBF8056A43AAEBD4D5F5AEF2AD39E0BF9A3BD38021C"
+    },
+    {
+      "name": "CronAiAthon-Scheduler",
+      "path": "modules\\CronAiAthon-Scheduler.psm1",
+      "manifestFile": "modules\\CronAiAthon-Scheduler.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 74.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5214608Z",
+      "sha256": "8E8CF8C81BD5BD0232A44C753131964D07024A64A1AFB12006E0480B2A51A828"
+    },
+    {
+      "name": "Get-LaunchTelemetry",
+      "path": "modules\\Get-LaunchTelemetry.psm1",
+      "manifestFile": "modules\\Get-LaunchTelemetry.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 8.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5367764Z",
+      "sha256": "05A0EA5B8C2E697B7633E430C7BA0E91F1744D00CED21934DAB2116F03525855"
+    },
+    {
+      "name": "Import-WorkspaceModule",
+      "path": "modules\\Import-WorkspaceModule.psm1",
+      "manifestFile": "modules\\Import-WorkspaceModule.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 1.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5416152Z",
+      "sha256": "55FD1FD00C212FA93BB54B8B7DD2BC79A5083CE38831684640BC09C91C5FBF69"
+    },
+    {
+      "name": "PKIChainManager",
+      "path": "modules\\PKIChainManager.psm1",
+      "manifestFile": "modules\\PKIChainManager.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 14.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5445867Z",
+      "sha256": "4A86F4B30B2577005F8606A206666010DCDCB537B30C44F4A1E605261463112D"
+    },
+    {
+      "name": "PwSh-HelpFilesUpdateSource-ReR",
+      "path": "modules\\PwSh-HelpFilesUpdateSource-ReR.psm1",
+      "manifestFile": "modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 20.5,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5486155Z",
+      "sha256": "9E4E521F2EF74C2AB89B48EA132D3067456BD1930CAD60EA740DD0B4BC5D9043"
+    },
+    {
+      "name": "PwShGUI_AutoIssueFinder",
+      "path": "modules\\PwShGUI_AutoIssueFinder.psm1",
+      "manifestFile": "modules\\PwShGUI_AutoIssueFinder.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 20.4,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5525787Z",
+      "sha256": "B6D1BCBEC3E87FDF678AC9AC5EF8E4D71A5A75B18B5237EEB851184C8A9B6CD7"
+    },
+    {
+      "name": "PwShGUI-AgentScorecard",
+      "path": "modules\\PwShGUI-AgentScorecard.psm1",
+      "manifestFile": "modules\\PwShGUI-AgentScorecard.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5561232Z",
+      "sha256": "29E04DD6754DD068F85F106D251A61AFC64625757BFEB15547E5A27CF1856160"
+    },
+    {
+      "name": "PwShGUI-AiActionLog",
+      "path": "modules\\PwShGUI-AiActionLog.psm1",
+      "manifestFile": "modules\\PwShGUI-AiActionLog.psd1",
+      "version": "2607.B1.V52.0",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 26.2,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-09T02:11:25.0329364Z",
+      "sha256": "A59170ACD5F5B5ED3ADF1C7DBA1124FD87B0B46593882BB69CA79026BE6A2B67"
+    },
+    {
+      "name": "PwShGUI-AutoRemediate",
+      "path": "modules\\PwShGUI-AutoRemediate.psm1",
+      "manifestFile": "modules\\PwShGUI-AutoRemediate.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 5.2,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5561232Z",
+      "sha256": "4849531BA2E88D2E5BBB6E5F30E64F4B6F26CB2D3E325DAA7D3DBEB41F75DCDE"
+    },
+    {
+      "name": "PwShGUI-BreakingChange",
+      "path": "modules\\PwShGUI-BreakingChange.psm1",
+      "manifestFile": "modules\\PwShGUI-BreakingChange.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 5.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5739557Z",
+      "sha256": "6FB244417D754F7655B06EC9E27BA2F8EEDF92E3E4D31A8DCC3717967535BCC5"
+    },
+    {
+      "name": "PwShGUI-CheckpointPrune",
+      "path": "modules\\PwShGUI-CheckpointPrune.psm1",
+      "manifestFile": "modules\\PwShGUI-CheckpointPrune.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5779930Z",
+      "sha256": "74C010ED09B894E8EBDEA55D40CB8DD0CC74A28AD3D18F721F4BC1A2964E0730"
+    },
+    {
+      "name": "PwShGUI-ConvoVault",
+      "path": "modules\\PwShGUI-ConvoVault.psm1",
+      "manifestFile": "modules\\PwShGUI-ConvoVault.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 21.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5819912Z",
+      "sha256": "9EFFEB0B06C488AC63C0D6B6507E843D2E9E42E651AA845D39AA123501F1B416"
+    },
+    {
+      "name": "PwShGUI-CoverageReport",
+      "path": "modules\\PwShGUI-CoverageReport.psm1",
+      "manifestFile": "modules\\PwShGUI-CoverageReport.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 5.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5874313Z",
+      "sha256": "D550E085FE5792808E97906A89FD24609A941BDF27A8CC3691B3FC7DC13B5A62"
+    },
+    {
+      "name": "PwShGUI-DependencyMap",
+      "path": "modules\\PwShGUI-DependencyMap.psm1",
+      "manifestFile": "modules\\PwShGUI-DependencyMap.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 4.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5928789Z",
+      "sha256": "DD9AB834C896211EA2E5B9B88533D2B90E7F858288E3E97049493495FAFD16B2"
+    },
+    {
+      "name": "PwShGUI-EventLogAdapter",
+      "path": "modules\\PwShGUI-EventLogAdapter.psm1",
+      "manifestFile": "modules\\PwShGUI-EventLogAdapter.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 9.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.5968399Z",
+      "sha256": "7EA5DBE5F2C29596B60AE1246AD8ABBDE318636C79BC6E21AD080304AAC0DACE"
+    },
+    {
+      "name": "PwShGUI-EventLogReplay",
+      "path": "modules\\PwShGUI-EventLogReplay.psm1",
+      "manifestFile": "modules\\PwShGUI-EventLogReplay.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6008782Z",
+      "sha256": "6F31F553FF4D498D1F2626C5A11D2F3A0ADE2CD31FBEE636495437E4B5B3DD69"
+    },
+    {
+      "name": "PwShGUI-HistoryZip",
+      "path": "modules\\PwShGUI-HistoryZip.psm1",
+      "manifestFile": "modules\\PwShGUI-HistoryZip.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.8,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6049960Z",
+      "sha256": "4A2698A5E64FBBA6EEBB06DDFDCA50D34DE1D53F735F25E1DCA0FD510B3EB07B"
+    },
+    {
+      "name": "PwShGUI-IntegrityCore",
+      "path": "modules\\PwShGUI-IntegrityCore.psm1",
+      "manifestFile": "modules\\PwShGUI-IntegrityCore.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 24.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6091292Z",
+      "sha256": "56C8984ACD02D5C151A9FE66D2B1393000F7CA5BFD7A002B6146867BA79E3DC3"
+    },
+    {
+      "name": "PwShGUI-KillSwitch",
+      "path": "modules\\PwShGUI-KillSwitch.psm1",
+      "manifestFile": "modules\\PwShGUI-KillSwitch.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "tier": "tool",
+      "sizeKB": 14.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6131246Z",
+      "sha256": "D964E868825EB5649DB3382AD9AE922A96BA36C2024FE43DD3489EA5FDDEF4DE"
+    },
+    {
+      "name": "PwShGUI-LaunchTimingProfile",
+      "path": "modules\\PwShGUI-LaunchTimingProfile.psm1",
+      "manifestFile": "modules\\PwShGUI-LaunchTimingProfile.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.4,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6166399Z",
+      "sha256": "A568894631FE3DD9A106CA374CEDB89142E878803564CF615E856462A0FC77CA"
+    },
+    {
+      "name": "PwShGUI-LegacyEncoding",
+      "path": "modules\\PwShGUI-LegacyEncoding.psm1",
+      "manifestFile": "modules\\PwShGUI-LegacyEncoding.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.9,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6197019Z",
+      "sha256": "9625012A0041FB5C8C358D08653EA16D793FC58A80D38793F40E3D56AE9A5F92"
+    },
+    {
+      "name": "PwShGUI-ManifestDiff",
+      "path": "modules\\PwShGUI-ManifestDiff.psm1",
+      "manifestFile": "modules\\PwShGUI-ManifestDiff.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6231491Z",
+      "sha256": "03443CECEE5F0E39F8AE1844AAB1253CC02FEBB1FA24AD5BFD9810AC91DC13E6"
+    },
+    {
+      "name": "PwShGUI-NetworkTools",
+      "path": "modules\\PwShGUI-NetworkTools.psm1",
+      "manifestFile": "modules\\PwShGUI-NetworkTools.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 5.4,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6261489Z",
+      "sha256": "CCE2AC21FB49D2AA5348A78EB51D913C1FBC52E22678FC2C9AC912DF0A245F77"
+    },
+    {
+      "name": "PwShGUI-PesterParallel",
+      "path": "modules\\PwShGUI-PesterParallel.psm1",
+      "manifestFile": "modules\\PwShGUI-PesterParallel.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6291512Z",
+      "sha256": "3F8C48EF89E2AF2166D8926E025A7213FC1938FF3E6E0CFA48A53E512ED9A57B"
+    },
+    {
+      "name": "PwShGUI-PSScriptAnalyzerScan",
+      "path": "modules\\PwShGUI-PSScriptAnalyzerScan.psm1",
+      "manifestFile": "modules\\PwShGUI-PSScriptAnalyzerScan.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6341494Z",
+      "sha256": "CD90CE100DEC3B76A375B848AD77464D9D8C2CBC10230E3EC40D5635E4D45AEE"
+    },
+    {
+      "name": "PwShGUI-PSVersionStandards",
+      "path": "modules\\PwShGUI-PSVersionStandards.psm1",
+      "manifestFile": "modules\\PwShGUI-PSVersionStandards.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 13.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6382503Z",
+      "sha256": "4C10528FB39BC5B84C2A083BA53270DA39793815046F83751320CC0E58F9AE07"
+    },
+    {
+      "name": "PwShGUI-SchemaTranslator",
+      "path": "modules\\PwShGUI-SchemaTranslator.psm1",
+      "manifestFile": "modules\\PwShGUI-SchemaTranslator.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 15.4,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6423655Z",
+      "sha256": "11473F2EFCF400C1801AE0BB05D255E5636E2F38C76D62C0FA81A7F08983230D"
+    },
+    {
+      "name": "PwShGUI-SecretScan",
+      "path": "modules\\PwShGUI-SecretScan.psm1",
+      "manifestFile": "modules\\PwShGUI-SecretScan.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.2,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6465850Z",
+      "sha256": "8213D3C8C88EB52C099D9E37B38475E1A8F314D62DC04F462D257C1C83BD5A3D"
+    },
+    {
+      "name": "PwShGUI-SessionMetrics",
+      "path": "modules\\PwShGUI-SessionMetrics.psm1",
+      "manifestFile": "modules\\PwShGUI-SessionMetrics.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "tier": "tool",
+      "sizeKB": 9.5,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6495879Z",
+      "sha256": "10DAAA87C1FD54B08874C378BC33807FA3B51BFE79EDC0BCB2A4C80223357C67"
+    },
+    {
+      "name": "PwShGUI-SinDriftScan",
+      "path": "modules\\PwShGUI-SinDriftScan.psm1",
+      "manifestFile": "modules\\PwShGUI-SinDriftScan.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 4.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6525549Z",
+      "sha256": "E62255B82752C1C4DA4427C005C25A223FC563BEB9F487F3F614B648CE7D36E5"
+    },
+    {
+      "name": "PwShGUI-SinFixBranch",
+      "path": "modules\\PwShGUI-SinFixBranch.psm1",
+      "manifestFile": "modules\\PwShGUI-SinFixBranch.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6557797Z",
+      "sha256": "FCFF3AD5320F57FAB728930FC860EA66F91672ACB26EDBE473C58FF6E77F0422"
+    },
+    {
+      "name": "PwShGUI-SinFromScan",
+      "path": "modules\\PwShGUI-SinFromScan.psm1",
+      "manifestFile": "modules\\PwShGUI-SinFromScan.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 4.2,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6557797Z",
+      "sha256": "2E174DA3288EBC635012BBDFC580F1901950FB14C311867F847E6931E61A9E67"
+    },
+    {
+      "name": "PwShGUI-SinHeatmap",
+      "path": "modules\\PwShGUI-SinHeatmap.psm1",
+      "manifestFile": "modules\\PwShGUI-SinHeatmap.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6557797Z",
+      "sha256": "1BE5EA8701A3E939BE2CB71757D30B1216C5A48C044B8E0A2220F9D16E131060"
+    },
+    {
+      "name": "PwShGUI-Theme",
+      "path": "modules\\PwShGUI-Theme.psm1",
+      "manifestFile": "modules\\PwShGUI-Theme.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 24.1,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6557797Z",
+      "sha256": "438E54A5839A34C318DC3B0EC2D17FB73DB35F9B2E27869EEB9333A14A1C6E1B"
+    },
+    {
+      "name": "PwShGUI-TrayHost",
+      "path": "modules\\PwShGUI-TrayHost.psm1",
+      "manifestFile": "modules\\PwShGUI-TrayHost.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 23.1,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6853555Z",
+      "sha256": "D5142BE631777AF14628A44C894206A1FA02F7B2EAAE7E9C20FEF419A959C85B"
+    },
+    {
+      "name": "PwShGUI-TrayServiceRoutes",
+      "path": "modules\\PwShGUI-TrayServiceRoutes.psm1",
+      "manifestFile": null,
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "tier": "tool",
+      "sizeKB": 13.1,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6889800Z",
+      "sha256": "3F4A3BEBD7611DD359780EE68FA1B3F400A7E7F76574B470636EBB38038DE85C"
+    },
+    {
+      "name": "PwShGUI-VersionManager",
+      "path": "modules\\PwShGUI-VersionManager.psm1",
+      "manifestFile": "modules\\PwShGUI-VersionManager.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 22.6,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6930043Z",
+      "sha256": "CCB8716C93F14CC97447FB978F68E2ADF5724AAC2970D812748995FBB676315F"
+    },
+    {
+      "name": "PwShGUI-VersionTag",
+      "path": "modules\\PwShGUI-VersionTag.psm1",
+      "manifestFile": "modules\\PwShGUI-VersionTag.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 1.9,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.6980109Z",
+      "sha256": "29534D74B40B9DDFFF7824707AB838254DA5A7D18C9540193EAA493902883966"
+    },
+    {
+      "name": "PwShGUI-WebEngineServices",
+      "path": "modules\\PwShGUI-WebEngineServices.psm1",
+      "manifestFile": null,
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 11.9,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7020536Z",
+      "sha256": "B152F43537F1B9E3FB32FD997CAA8EF7942682907E32222ECEC26BBBFBC347BF"
+    },
+    {
+      "name": "PwShGUI-WorkspaceSeed",
+      "path": "modules\\PwShGUI-WorkspaceSeed.psm1",
+      "manifestFile": null,
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "tier": "tool",
+      "sizeKB": 11.0,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7056193Z",
+      "sha256": "488243C2EE2FA73A4CDE5D80885287E8A6C493FF1918E676D8EA1A23946005B6"
+    },
+    {
+      "name": "PwShGUI-XhtmlReportTester",
+      "path": "modules\\PwShGUI-XhtmlReportTester.psm1",
+      "manifestFile": "modules\\PwShGUI-XhtmlReportTester.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7095845Z",
+      "sha256": "C350FC765DB2E9460D94060B9303BCEC2D6228841848018281EE9761DA686D49"
+    },
+    {
+      "name": "PwShGUICore",
+      "path": "modules\\PwShGUICore.psm1",
+      "manifestFile": "modules\\PwShGUICore.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 45.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T20:39:08.0564711Z",
+      "sha256": "0F1FB1F5C8C38F08357D0756C2751BE2C4D6D27B56C65DC1C8AF674614DEFEEB"
+    },
+    {
+      "name": "RE-memorAiZ",
+      "path": "modules\\RE-memorAiZ.psm1",
+      "manifestFile": "modules\\RE-memorAiZ.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 34.9,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7139798Z",
+      "sha256": "560E64D8EFE102E4D3E5D3F8A51934C4DB91A69D5B84BC6D887169A8EB682505"
+    },
+    {
+      "name": "SASC-Adapters",
+      "path": "modules\\SASC-Adapters.psm1",
+      "manifestFile": "modules\\SASC-Adapters.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 24.7,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7185025Z",
+      "sha256": "F69B440E1D972D053B119C331D67B4D1E7AA98026FE7E70A4C3F05F171AA5D43"
+    },
+    {
+      "name": "SINGovernance",
+      "path": "modules\\SINGovernance.psm1",
+      "manifestFile": "modules\\SINGovernance.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 13.5,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7230980Z",
+      "sha256": "57AE353E28742167009BBA955F2BE96DE28F087C5DC7CE0B0C0D08EEC2FF60BC"
+    },
+    {
+      "name": "UserProfileManager",
+      "path": "modules\\UserProfileManager.psm1",
+      "manifestFile": "modules\\UserProfileManager.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 94.3,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7273646Z",
+      "sha256": "EA04C0B99E2F6F6DE5925E048156583D38198CC2EC3F94E7EB11E5522DABF724"
+    },
+    {
+      "name": "WorkspaceIntentReview",
+      "path": "modules\\WorkspaceIntentReview.psm1",
+      "manifestFile": "modules\\WorkspaceIntentReview.psd1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Module",
+      "tier": "tool",
+      "sizeKB": 21.2,
+      "functionCount": 0,
+      "exportedCount": 0,
+      "functions": [],
+      "lastModified": "2026-07-08T22:31:50.7313625Z",
+      "sha256": "DE91A89D78F8EC54EB899CE507A2BB6A77AADBDF2D95AA75EF00134907B0650E"
+    }
+  ],
+  "scripts": [
+    {
+      "name": "Add-VersionTag",
+      "path": "scripts\\Add-VersionTag.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 6.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7079249Z",
+      "sha256": "19E689BD3155209F91C6372A21D4E892E352C745F1BD47B84FD5FBF2AEC2E16F"
+    },
+    {
+      "name": "Add-XhtmlVersionLink",
+      "path": "scripts\\Add-XhtmlVersionLink.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 8.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7109258Z",
+      "sha256": "8CBB0BF1B1E9F31C9EDBE52F7EFD1E066A6933290C74843DDBFE73FB128D5286"
+    },
+    {
+      "name": "Apply-CanonicalVersion",
+      "path": "scripts\\Apply-CanonicalVersion.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 4.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7134600Z",
+      "sha256": "0EDA9E1471C7D2045ADD4CE21DD32B8AEE0317D58C4F791FE85DA18A19BFFBA2"
+    },
+    {
+      "name": "Build-AgenticManifest",
+      "path": "scripts\\Build-AgenticManifest.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Builder",
+      "sizeKB": 58.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7165067Z",
+      "sha256": "D0BDF8006CDC49F960FD219F60095D8A27999A0EDB0EA2E1F473EB81B02D2600"
+    },
+    {
+      "name": "Build-DirectoryTree",
+      "path": "scripts\\Build-DirectoryTree.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Builder",
+      "sizeKB": 4.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7185018Z",
+      "sha256": "50975E7F4840D85FE00FCC82BDCE284119D2B4C4623F74713C17DF3C1C336287"
+    },
+    {
+      "name": "Build-DynaManifest",
+      "path": "scripts\\Build-DynaManifest.ps1",
+      "version": "2607.B1.V52.0",
+      "fileRole": "Builder",
+      "sizeKB": 15.8,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T22:25:24.2295671Z",
+      "sha256": "302973E959C156C307915C988C07EAF97F3A0986864F091C43DFD498C6281AB1"
+    },
+    {
+      "name": "Build-SandboxTestingPlan",
+      "path": "scripts\\Build-SandboxTestingPlan.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "TestPlanBuilder",
+      "sizeKB": 6.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7215017Z",
+      "sha256": "66A17FEE7F5EFF055CEF5BD3FE173BF275E3DF3C58DBA4D80BB0A2B5CDCBAEE6"
+    },
+    {
+      "name": "Build-ScanToolsManifest",
+      "path": "scripts\\Build-ScanToolsManifest.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 17.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7234691Z",
+      "sha256": "022B77C8059F32DFCC11D4F992480F6EB387FC6FB33D6E095D147FFD7821CCA6"
+    },
+    {
+      "name": "Build-ToolsInventory",
+      "path": "scripts\\Build-ToolsInventory.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Builder",
+      "sizeKB": 13.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7264689Z",
+      "sha256": "563A213D31673471D19ADE8292C3B9C8F6B19005C1D8BDF4846F99BF3F59844F"
+    },
+    {
+      "name": "Build-XhtmlVersionFeed",
+      "path": "scripts\\Build-XhtmlVersionFeed.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7284680Z",
+      "sha256": "E37E32A014E6B49EB1AE0539556221B8B704C77E5503C98EF3DEAE5B6043AF07"
+    },
+    {
+      "name": "Convert-SinScanToBugs",
+      "path": "scripts\\Convert-SinScanToBugs.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 9.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7304967Z",
+      "sha256": "839C04C93DCEF1E2EE57080F4F871DBCBA1E6F09AA7969CC495DC21A16A3268D"
+    },
+    {
+      "name": "ConvertTo-FeatureToDo",
+      "path": "scripts\\ConvertTo-FeatureToDo.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 9.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7334709Z",
+      "sha256": "E1D677F57F93A1CFB7C0FAC2C73E06C4AC981CC7B847F2518BA77B925C3C7891"
+    },
+    {
+      "name": "Export-SystemReport",
+      "path": "scripts\\Export-SystemReport.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Guide",
+      "sizeKB": 19.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7364704Z",
+      "sha256": "320762C07CA207336CB7AC6CF205F15BF590C3FA17198ABE02E04DAA22C638F9"
+    },
+    {
+      "name": "Find-ModuleReferences",
+      "path": "scripts\\Find-ModuleReferences.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7394954Z",
+      "sha256": "1CE9BC3E5446283743AD718E0266DF7468C1504F2CF577E727D087CE0B39990A"
+    },
+    {
+      "name": "fix_check_version",
+      "path": "scripts\\fix_check_version.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Maintenance",
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7414658Z",
+      "sha256": "449E86CE9F7CA9AED1775AF9A826B7E33208BB6841CB4406BA88DE9A814E5C8C"
+    },
+    {
+      "name": "fix_update_version",
+      "path": "scripts\\fix_update_version.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Maintenance",
+      "sizeKB": 3.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7444949Z",
+      "sha256": "8C53E66D870D5A1CD9381990A6CD433739FB47E17956DC42F7DB29DA6FFF67E5"
+    },
+    {
+      "name": "Fix-P006-EncodingViolations",
+      "path": "scripts\\Fix-P006-EncodingViolations.ps1",
+      "version": "2607.B1.V52.0",
+      "fileRole": "Utility",
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T22:32:16.2691566Z",
+      "sha256": "A60FC83C9D39C1011998EDEC3CBDB127E44D50A983D453DDAA892B6C24E7E631"
+    },
+    {
+      "name": "Install-BitwardenLite",
+      "path": "scripts\\Install-BitwardenLite.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Setup",
+      "sizeKB": 25.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7464911Z",
+      "sha256": "B47979CF7205DD8A15071FE01070F6FF973A93D5D32B86B311178FD1466AD2D1"
+    },
+    {
+      "name": "Install-PreCommitHook",
+      "path": "scripts\\Install-PreCommitHook.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 2.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7484667Z",
+      "sha256": "0212C8FB823513B2E7B0EA964F3DFFFD70915190D8D1F4028C7C1BA56D7BE9CC"
+    },
+    {
+      "name": "Invoke-AgentCallStats",
+      "path": "scripts\\Invoke-AgentCallStats.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 7.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7514675Z",
+      "sha256": "468E0BC83B6F0EF9A6E3061B5796662E0F94A4F70833EF6434F557B2A2FA21CF"
+    },
+    {
+      "name": "Invoke-AiActionLogReport",
+      "path": "scripts\\Invoke-AiActionLogReport.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 6.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7544670Z",
+      "sha256": "32D03DE61264D3D8263D07F5EBA9847882650CFE596E44CB56F14D239D1057B8"
+    },
+    {
+      "name": "Invoke-AutoApprovalWriter",
+      "path": "scripts\\Invoke-AutoApprovalWriter.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 8.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7574672Z",
+      "sha256": "736FD54926CE72D22AD5A09273348D82EA6AFA6667553F649493370EFAE95745"
+    },
+    {
+      "name": "Invoke-BacklogReconcile",
+      "path": "scripts\\Invoke-BacklogReconcile.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 7.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7594921Z",
+      "sha256": "01AD044F511F9CA304E47309B09114D828E3C7234BA7DE1E0C76D8D4FE51F810"
+    },
+    {
+      "name": "Invoke-ChangelogDiff",
+      "path": "scripts\\Invoke-ChangelogDiff.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 16.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7614654Z",
+      "sha256": "14EB8C35FE6B0B1365BA02BEE492D87594C734FC38DDFBD1795F8C38AB1EB43A"
+    },
+    {
+      "name": "Invoke-ChatIssueSinBatch",
+      "path": "scripts\\Invoke-ChatIssueSinBatch.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UtilityScript",
+      "sizeKB": 2.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7644928Z",
+      "sha256": "FF25DF1951DACE54E0C409FEE624CF85C1D881DD5FCEEE12909A63D1B332446E"
+    },
+    {
+      "name": "Invoke-ChecklistActions",
+      "path": "scripts\\Invoke-ChecklistActions.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 18.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7664672Z",
+      "sha256": "DDFC8BE861D42BDC040E8CEA4D329A67B5481FDD91EB2A0DF6213DCAD488A3C6"
+    },
+    {
+      "name": "Invoke-CodeStandardsAssessment",
+      "path": "scripts\\Invoke-CodeStandardsAssessment.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "AssessmentScript",
+      "sizeKB": 5.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7694654Z",
+      "sha256": "3E6B8A52050C2ABA68C7693811164342DEF3016914A90684345D95430C92FC66"
+    },
+    {
+      "name": "Invoke-CodRhiPear",
+      "path": "scripts\\Invoke-CodRhiPear.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 14.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7724657Z",
+      "sha256": "62F0B059AA674EAB58DF1EEBC2135827BE54B9FCA5B08C00D8715426BBA28C0D"
+    },
+    {
+      "name": "Invoke-ConfigCoverageAudit",
+      "path": "scripts\\Invoke-ConfigCoverageAudit.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Diagnostics",
+      "sizeKB": 14.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7744672Z",
+      "sha256": "E04D1BE1E6E8995B20E71ED3E93A59285FD5D9AB47380C46038B8ECBF1F5EE5B"
+    },
+    {
+      "name": "Invoke-CronProcessor",
+      "path": "scripts\\Invoke-CronProcessor.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 54.8,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.6056808Z",
+      "sha256": "2C21708567BEB38AD899FC06A4D67B386C0E913002B7EEEFF64EF7F2FB2857F0"
+    },
+    {
+      "name": "Invoke-CyclicRenameCheck",
+      "path": "scripts\\Invoke-CyclicRenameCheck.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 3.9,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.7010480Z",
+      "sha256": "34677A51E240247FC594DA508C42C7D9E5EE3077D80342DADA571967BE8FFFD2"
+    },
+    {
+      "name": "Invoke-DataMigration",
+      "path": "scripts\\Invoke-DataMigration.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 16.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7824663Z",
+      "sha256": "7F115B1D0AB2F7E658FE3D8730CD4DCEAF97D5F080DB3B6C0153A509D5244075"
+    },
+    {
+      "name": "Invoke-DeduplicationAssessment",
+      "path": "scripts\\Invoke-DeduplicationAssessment.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 21.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7855025Z",
+      "sha256": "657398B35C0E351F8F89E97FF46F00FD9468E8DE00B437C4DC3EE681982959A8"
+    },
+    {
+      "name": "Invoke-DependencyScanManager",
+      "path": "scripts\\Invoke-DependencyScanManager.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 22.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7874660Z",
+      "sha256": "2FCECA4C1FFA705DBE5A4D432A7414090C363ECE52CDDCBCE96CAE839AFB0DB7"
+    },
+    {
+      "name": "Invoke-DiagnosticDryRunPipeline",
+      "path": "scripts\\Invoke-DiagnosticDryRunPipeline.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 12.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7904677Z",
+      "sha256": "0187DB2B7B35C65A8E4B690D52818561BEB7E4B1673F4A8B55A3A317D60185CD"
+    },
+    {
+      "name": "Invoke-DiffScheduler",
+      "path": "scripts\\Invoke-DiffScheduler.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 8.8,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.6853620Z",
+      "sha256": "20CE5ED2E638E568EF9970318801A969EC8C377336F2752ABE110EA1FE8956C2"
+    },
+    {
+      "name": "Invoke-DynaManifestValidation",
+      "path": "scripts\\Invoke-DynaManifestValidation.ps1",
+      "version": "2607.B1.V52.0",
+      "fileRole": "Validator",
+      "sizeKB": 11.2,
+      "functionCount": 0,
+      "lastModified": "2026-07-09T02:15:19.4888281Z",
+      "sha256": "4C903D5404696D347E1925C2BCDEE543A7C6F4940A6C8A7025D97B814223A228"
+    },
+    {
+      "name": "Invoke-EngineCrashCleanup",
+      "path": "scripts\\Invoke-EngineCrashCleanup.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "CrashHandler",
+      "sizeKB": 17.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7955030Z",
+      "sha256": "4A398FAD9FA355707405C25776DB6DDA6DE5FC2368B62AF82A0988C1189622C9"
+    },
+    {
+      "name": "Invoke-EngineServiceMonitor",
+      "path": "scripts\\Invoke-EngineServiceMonitor.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "ServiceMonitor",
+      "sizeKB": 95.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.7995450Z",
+      "sha256": "AB14EF7B00C3B141C6FFF0984ED37C72C5BD1FD694287225BCF6185119C31D0D"
+    },
+    {
+      "name": "Invoke-ErrorHandlingContinuousLoop",
+      "path": "scripts\\Invoke-ErrorHandlingContinuousLoop.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 6.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8015442Z",
+      "sha256": "B1C4CF1EC356A94AB4474D24A738D79AE9069AC0A323AC8C3B7851EDEBFCD52A"
+    },
+    {
+      "name": "Invoke-ErrorHandlingRemediation",
+      "path": "scripts\\Invoke-ErrorHandlingRemediation.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 10.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8035430Z",
+      "sha256": "F7F52EB2101A131FB5D17B2DFAC6FD28879AC45DF7C52C700F4E3C21D8355BE0"
+    },
+    {
+      "name": "Invoke-EventLogStandardSweep",
+      "path": "scripts\\Invoke-EventLogStandardSweep.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 5.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8055101Z",
+      "sha256": "6C72BBD20191C1C78C1FE7543E2C39835788F0B65EBBD75590816D16FE89608B"
+    },
+    {
+      "name": "Invoke-EventLogViewInject",
+      "path": "scripts\\Invoke-EventLogViewInject.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 5.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8085078Z",
+      "sha256": "EF764AC846D2A68B931E60F36C1B2C23354B67AAC33AFB8B0B1271EC84CB846B"
+    },
+    {
+      "name": "Invoke-FileChangeTracker",
+      "path": "scripts\\Invoke-FileChangeTracker.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 13.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8105437Z",
+      "sha256": "BC12A3AD6CE45B51A87793CCA40803F7E33641AB80405D9255B0E860F1E94DD3"
+    },
+    {
+      "name": "Invoke-FullSystemsScan",
+      "path": "scripts\\Invoke-FullSystemsScan.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 23.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8135363Z",
+      "sha256": "BEC1829EC2CF01B47559899B281E049BE32F8A66E5AAAE528CA5DFE71F110477"
+    },
+    {
+      "name": "Invoke-GeneratedCandidateCleanup",
+      "path": "scripts\\Invoke-GeneratedCandidateCleanup.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 5.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8159654Z",
+      "sha256": "8B2A7EBABA1AE788AF0EBE71C713F266AE32F2D36210F39B2499B790AF50CEC2"
+    },
+    {
+      "name": "Invoke-HelpMenuCompliance",
+      "path": "scripts\\Invoke-HelpMenuCompliance.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "PipelineStep",
+      "sizeKB": 10.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8179642Z",
+      "sha256": "8DF6D26F990C48390672BDC672A8089DB77CE3293C5E440C8F002E0BB20DABAC"
+    },
+    {
+      "name": "Invoke-HistoryRotation",
+      "path": "scripts\\Invoke-HistoryRotation.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 2.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8209681Z",
+      "sha256": "899DB576A5276266254BBD4B7D4B5FA2013376D112CFF7B7C34F5D7954E54964"
+    },
+    {
+      "name": "Invoke-InteropDriftIteration",
+      "path": "scripts\\Invoke-InteropDriftIteration.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 20.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8230063Z",
+      "sha256": "132F976C4C75D56DB61B07362D3C16312641F0133C02EACA47F690CABB74C0A0"
+    },
+    {
+      "name": "Invoke-ModuleManagement",
+      "path": "scripts\\Invoke-ModuleManagement.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 47.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8260028Z",
+      "sha256": "3667D6D9C8FD518E8909E97E0E5798DBD983E2973715DF8083F3A19CACA9ED28"
+    },
+    {
+      "name": "Invoke-ObjectivePipelineCycle",
+      "path": "scripts\\Invoke-ObjectivePipelineCycle.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 9.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8280022Z",
+      "sha256": "A6FD923BC7D48C2E2E3DAB8F18B64CD727A27786D083A3911E02F2779138686B"
+    },
+    {
+      "name": "Invoke-OrphanAudit",
+      "path": "scripts\\Invoke-OrphanAudit.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 8.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8310030Z",
+      "sha256": "5BAD2F88C80C9A367899C3321593E3BB22CC72545D81FD1AA03D01EDF647E260"
+    },
+    {
+      "name": "Invoke-OrphanCleanup",
+      "path": "scripts\\Invoke-OrphanCleanup.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8330017Z",
+      "sha256": "CB3F0F8994F694D1189782355BFB0BCC83402650CDE4BB59CF65E8E4D59781F7"
+    },
+    {
+      "name": "Invoke-OrphanedFileAudit",
+      "path": "scripts\\Invoke-OrphanedFileAudit.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scanner",
+      "sizeKB": 18.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8350021Z",
+      "sha256": "84971642D12F1FA5A3E1B24EC7779D84D071A5A735E2A01F1377D0E434591841"
+    },
+    {
+      "name": "Invoke-PesterSingleFile",
+      "path": "scripts\\Invoke-PesterSingleFile.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 4.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8379703Z",
+      "sha256": "6954DCEC0262CD8DE8C36F6A365D36938884ACC069F0544AD9CBC5C3635FB963"
+    },
+    {
+      "name": "Invoke-PesterTriage",
+      "path": "scripts\\Invoke-PesterTriage.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 7.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8399883Z",
+      "sha256": "B29F37C648F6571293A6661F5D333EB148126656121684724F9BED9624298DE4"
+    },
+    {
+      "name": "Invoke-PipeGAP",
+      "path": "scripts\\Invoke-PipeGAP.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 32.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8440025Z",
+      "sha256": "18C23BE1576F3BD2DDBDF626D65A9EE7A89DE0B095D362C127D1029E0DD58D0F"
+    },
+    {
+      "name": "Invoke-PipelineIntegrityCheck",
+      "path": "scripts\\Invoke-PipelineIntegrityCheck.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 17.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8460019Z",
+      "sha256": "215A582DD48AC790C9572B043D7B8282D45ED18C047E16B23CF6D6E7EF3B5FD0"
+    },
+    {
+      "name": "Invoke-PipelineProcess20",
+      "path": "scripts\\Invoke-PipelineProcess20.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 14.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8480015Z",
+      "sha256": "D89673C9984DDC801141833F88377D3A3A057A17537700AAAE1942A518E8E0B7"
+    },
+    {
+      "name": "Invoke-PSEnvironmentScanner",
+      "path": "scripts\\Invoke-PSEnvironmentScanner.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 119.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8509653Z",
+      "sha256": "3CC660ABD679F85077D5B6FAD53245EC2AF6577739F9CFAA956A126F6FBAB7F1"
+    },
+    {
+      "name": "Invoke-ReferenceIntegrityCheck",
+      "path": "scripts\\Invoke-ReferenceIntegrityCheck.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 7.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8529646Z",
+      "sha256": "52A05F5A0691D6E3D44689C982CA0A041E8AD5335C833A68EA398ED3E4819206"
+    },
+    {
+      "name": "Invoke-ReleasePreFlight",
+      "path": "scripts\\Invoke-ReleasePreFlight.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 6.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8559658Z",
+      "sha256": "69318837AAB1E2C1DDE648F0B3CAF9F4DBC11BD9D3DF680F0D942E5EECC8DA46"
+    },
+    {
+      "name": "Invoke-RenameProposal",
+      "path": "scripts\\Invoke-RenameProposal.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 11.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8589644Z",
+      "sha256": "BB9BC7FC1FA733C4FCA2EB518E6EBF8ECD97EE1655EE8B2987B2B7B2ECB710D6"
+    },
+    {
+      "name": "Invoke-ReportRetention",
+      "path": "scripts\\Invoke-ReportRetention.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 10.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8609646Z",
+      "sha256": "2D562AF3E1CB99CCE3DB687134B22A9007A5ED93EFD36C619EE31F893EBD0091"
+    },
+    {
+      "name": "Invoke-SASCIntegrityPreflight",
+      "path": "scripts\\Invoke-SASCIntegrityPreflight.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Preflight",
+      "sizeKB": 1.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8639683Z",
+      "sha256": "18665CA56DC60FB86467688143205F70B080BCBBDFBB9F54783D9EC769C93537"
+    },
+    {
+      "name": "Invoke-ScriptDependencyMatrix",
+      "path": "scripts\\Invoke-ScriptDependencyMatrix.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 59.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8659684Z",
+      "sha256": "D1649A0840BB02031E14687AD4EB4DC1AC827287DD8B7139206BCD8DEE3E4CFA"
+    },
+    {
+      "name": "Invoke-SecretLeakScanner",
+      "path": "scripts\\Invoke-SecretLeakScanner.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 2.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8689660Z",
+      "sha256": "A27786C80DAE505B4358EF86A1E8B91567B26E74402DFEE9A3C248398375DB7F"
+    },
+    {
+      "name": "Invoke-SelfReviewCycle",
+      "path": "scripts\\Invoke-SelfReviewCycle.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 46.1,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.6853620Z",
+      "sha256": "9CC45DD326CEE0D5A4EA09544566BA0C9AF18073718F88B9F7003B57107CACDA"
+    },
+    {
+      "name": "Invoke-SINRegistryReindex",
+      "path": "scripts\\Invoke-SINRegistryReindex.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 10.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8739684Z",
+      "sha256": "4E811471F625AF078A0E9DE7BEB3B9A26BCB2A3B1A581E540534498F8E458F01"
+    },
+    {
+      "name": "Invoke-SINRemedyEngine",
+      "path": "scripts\\Invoke-SINRemedyEngine.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 17.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8759680Z",
+      "sha256": "C127FFC7948A882784BF7CEE9D3A8F5C3C449AC50C33674F041ECB1A994F09D9"
+    },
+    {
+      "name": "Invoke-StaticWorkspaceScan",
+      "path": "scripts\\Invoke-StaticWorkspaceScan.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scanner",
+      "sizeKB": 30.4,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.7092452Z",
+      "sha256": "9FC0C74541ADD397C14B57826D07D874524378F6616C2A6E307FB53F530986F3"
+    },
+    {
+      "name": "Invoke-TestCoverageGateCheck",
+      "path": "scripts\\Invoke-TestCoverageGateCheck.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 6.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8809649Z",
+      "sha256": "CDD05CB07437C3F781843764063D4177ED0F73A3A3E060D25B0DC71469A45A7C"
+    },
+    {
+      "name": "Invoke-TestRoutine",
+      "path": "scripts\\Invoke-TestRoutine.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 18.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8849645Z",
+      "sha256": "DB508BD3FB34D6C9CDF59EAAE312BA43D4785D348B99E66B4BB9374AA478B824"
+    },
+    {
+      "name": "Invoke-TodoArchiver",
+      "path": "scripts\\Invoke-TodoArchiver.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 12.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8879695Z",
+      "sha256": "E408375273D9D71B96B21A57EA22AAC91CC6A4B34775E7C3298BE60116BDDFDD"
+    },
+    {
+      "name": "Invoke-TodoBacklogPlanner",
+      "path": "scripts\\Invoke-TodoBacklogPlanner.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 10.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8899661Z",
+      "sha256": "975249446BB082F85FABCEF9C78CCE7C8DCF95983271B6BC5D9553A45D748DA4"
+    },
+    {
+      "name": "Invoke-TodoBundleRebuild",
+      "path": "scripts\\Invoke-TodoBundleRebuild.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8929666Z",
+      "sha256": "731E5125FC96C66BBF4C0AE803C16F6DBE6DBDDF3319D1977D4E92A8ECD8BCB5"
+    },
+    {
+      "name": "Invoke-TodoManager",
+      "path": "scripts\\Invoke-TodoManager.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 20.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8950058Z",
+      "sha256": "1572B77FFF5C0C1C68650829F6CD086FFBF6CDAF15384A98608343150AAF1A61"
+    },
+    {
+      "name": "Invoke-TodoQueueGateway",
+      "path": "scripts\\Invoke-TodoQueueGateway.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.8980022Z",
+      "sha256": "218DB2217D39143FD6892926E8DA87CDFF683E86935D44E5C86F86D784546606"
+    },
+    {
+      "name": "Invoke-Top15IssueSinBatch",
+      "path": "scripts\\Invoke-Top15IssueSinBatch.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UtilityScript",
+      "sizeKB": 3.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9000088Z",
+      "sha256": "70D9CAB22F46B702941993AE5744B56822AD4F55A1B8FA5B4F92D7032395015D"
+    },
+    {
+      "name": "Invoke-UniversalListGene",
+      "path": "scripts\\Invoke-UniversalListGene.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Data",
+      "sizeKB": 15.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9020069Z",
+      "sha256": "1ABC5AA43A80DCBC7D9EB935BC0D5235C60EAF66EEE740C3A0504CA2654DF73A"
+    },
+    {
+      "name": "Invoke-VersionAlignmentTool",
+      "path": "scripts\\Invoke-VersionAlignmentTool.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 26.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9050085Z",
+      "sha256": "D86D69B77AFF9916E2A815615A423141429BA5D796ACA0F792D22D7B5CCC2AC0"
+    },
+    {
+      "name": "Invoke-WorkspaceDependencyMap",
+      "path": "scripts\\Invoke-WorkspaceDependencyMap.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scanner",
+      "sizeKB": 61.6,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9080394Z",
+      "sha256": "FD81181D0107BE5EF87890AAB69A68A6EAE17F180EFA0C0E5C3CBC514824F69B"
+    },
+    {
+      "name": "Invoke-WorkspaceIntegrityCheck",
+      "path": "scripts\\Invoke-WorkspaceIntegrityCheck.ps1",
+      "version": "2607.B1.V52.0",
+      "fileRole": "Script",
+      "sizeKB": 12.0,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T22:41:50.1519653Z",
+      "sha256": "669B4BB432BD3577B2D0558A41D595150C44746B6073B5353275FB8DCB0A0722"
+    },
+    {
+      "name": "Invoke-WorkspaceRollback",
+      "path": "scripts\\Invoke-WorkspaceRollback.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 34.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9110085Z",
+      "sha256": "F46B5CF9F3B0D66BFC023D935B97D6EB467C3105A1E1371E992F11B95C630FFC"
+    },
+    {
+      "name": "Invoke-XhtmlReportTriage",
+      "path": "scripts\\Invoke-XhtmlReportTriage.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9135666Z",
+      "sha256": "921C9446947C0E5B2286B7E97E26DCE4E862A834C8DFCDDC4B65E61A20A1AB4C"
+    },
+    {
+      "name": "New-InstallerScript",
+      "path": "scripts\\New-InstallerScript.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Builder",
+      "sizeKB": 20.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9165731Z",
+      "sha256": "0E54647BA169915AAAC2E247E20C6CFB630336D09F5C4D3F49DBA360FDFA3D17"
+    },
+    {
+      "name": "New-PwShGUIModule",
+      "path": "scripts\\New-PwShGUIModule.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Builder",
+      "sizeKB": 6.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9195996Z",
+      "sha256": "530FAC4CE7F2D2D760803151AFCF0BAD64DBAC9EB39A70B43249CA74365DEDF9"
+    },
+    {
+      "name": "Normalize-TodoStatusVocabulary",
+      "path": "scripts\\Normalize-TodoStatusVocabulary.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 5.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9215737Z",
+      "sha256": "14FC98D4F13ECB6CC78646AB9A5437A60782B5B32F325BD89F4E05FCB7AEED25"
+    },
+    {
+      "name": "PS-CheatSheet-EXAMPLES-V2",
+      "path": "scripts\\PS-CheatSheet-EXAMPLES-V2.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 80.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9275985Z",
+      "sha256": "033912C9B71614B549DA423B151483C3A50F457837D067765F1B71CC69D50C03"
+    },
+    {
+      "name": "PS-CheatSheet-EXAMPLES",
+      "path": "scripts\\PS-CheatSheet-EXAMPLES.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 21.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9305718Z",
+      "sha256": "372F2B6DD992195E8FA482EEEE9FCE0426264C804EF8922D0625E962350EDC57"
+    },
+    {
+      "name": "Publish-WorkspaceModules",
+      "path": "scripts\\Publish-WorkspaceModules.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Publisher",
+      "sizeKB": 3.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9325753Z",
+      "sha256": "704F354B3535B60A46DAB54D36F89FB9DE617DAEBD8DB4EBD598FDBBE4E4BC4A"
+    },
+    {
+      "name": "R3-StressTest",
+      "path": "scripts\\R3-StressTest.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Test",
+      "sizeKB": 1.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9345852Z",
+      "sha256": "88D37AEDD791D08B2C917D6330BCF4736326E6BCE79BD3B560118840DF987F06"
+    },
+    {
+      "name": "Raise-AllVersionTags",
+      "path": "scripts\\Raise-AllVersionTags.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 5.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9365916Z",
+      "sha256": "57F2E2696C98F1C1387A70DDB0CE77DF756DE1377B60979DCEF60793809C3CF0"
+    },
+    {
+      "name": "Register-CronTask",
+      "path": "scripts\\Register-CronTask.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Setup",
+      "sizeKB": 4.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9405751Z",
+      "sha256": "E088D322C6BB9D228F4822281B5CCC418849FFBE3AB3379AEA03FAFEDE807A96"
+    },
+    {
+      "name": "Register-CyclicRenameTask",
+      "path": "scripts\\Register-CyclicRenameTask.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Setup",
+      "sizeKB": 4.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9436005Z",
+      "sha256": "CFD21F16BC2327C503AE446BF47C58ECB1FFBFFD1B3015725B048D4786773F59"
+    },
+    {
+      "name": "Register-DiffSchedulerTask",
+      "path": "scripts\\Register-DiffSchedulerTask.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 4.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9465734Z",
+      "sha256": "67E55DBE15ACC62A8A7EC2095AAF2408635DA1C923F95C90EE2859787CD87EDE"
+    },
+    {
+      "name": "Register-WorkspaceRepository",
+      "path": "scripts\\Register-WorkspaceRepository.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 2.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9485735Z",
+      "sha256": "6D7927E0544E230294763CFBD04B304B47C37D65AF923985C6E989813F2E56E1"
+    },
+    {
+      "name": "Repair-ModulePaths",
+      "path": "scripts\\Repair-ModulePaths.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Guide",
+      "sizeKB": 10.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9505727Z",
+      "sha256": "C237DB4A340D8B91D3BE7CC6E051B7B4D4013DE140BBEA1925A35BEA5B0C0CD0"
+    },
+    {
+      "name": "Report-Taggable",
+      "path": "scripts\\Report-Taggable.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 2.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9536076Z",
+      "sha256": "A5E3FA7641710399797C2376D796243A7A261DC583CCDAA4E6CE73E25FB75AF0"
+    },
+    {
+      "name": "Run-FullPipeline",
+      "path": "scripts\\Run-FullPipeline.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 6.8,
+      "functionCount": 0,
+      "lastModified": "2026-07-09T03:26:43.1924607Z",
+      "sha256": "E1D55E03486D237ACD0ECC7D8DD61EE4F0FAAEA6111ED0A80E1D328842DF6E68"
+    },
+    {
+      "name": "Run-PipelineChurn35",
+      "path": "scripts\\Run-PipelineChurn35.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 14.4,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9585737Z",
+      "sha256": "A9CF1F6EAD52C80D156CE056E2E6C8376ECF47D7E073551F96295F0CAA220984"
+    },
+    {
+      "name": "Scan-WorkspaceVersions",
+      "path": "scripts\\Scan-WorkspaceVersions.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 1.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9606098Z",
+      "sha256": "D2B45A82DC8D20B1E0B4978D9D1A49C73A062E560462F1ECD30C70ABBFB2B3A1"
+    },
+    {
+      "name": "Script-A",
+      "path": "scripts\\Script-A.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9626087Z",
+      "sha256": "3755AFB2991909C181C8A33300934A5CBB764E5931B143CC13B85229F243D18E"
+    },
+    {
+      "name": "Script-B",
+      "path": "scripts\\Script-B.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9645740Z",
+      "sha256": "71CFB748016D96BF28F5E730C501075265552654B70C505EB7C49D49A281AF09"
+    },
+    {
+      "name": "Script-C",
+      "path": "scripts\\Script-C.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9675743Z",
+      "sha256": "2C9FCFC3623600175B2186CF95B9E595B46449B6D62BC503F8923124D3747BEB"
+    },
+    {
+      "name": "Script-D",
+      "path": "scripts\\Script-D.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9695724Z",
+      "sha256": "A35EB409F1C61FB613751F5B88E8086FF352CA69CAFBEDB58FDD71A472F56299"
+    },
+    {
+      "name": "Script-E",
+      "path": "scripts\\Script-E.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 3.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9746090Z",
+      "sha256": "30F7C9AAC95BC47A722E84EF4C6F287F98238B9276CC729E3C158FCA4A31AB6C"
+    },
+    {
+      "name": "Script-F - LinkToConfigJson",
+      "path": "scripts\\Script-F - LinkToConfigJson.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Validator",
+      "sizeKB": 6.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9765721Z",
+      "sha256": "1BD1C385413C5B1B1D10DE5B50EE7053A353A7C91578AAF2211EE05EF28C7AA7"
+    },
+    {
+      "name": "Script-F-LinkToConfigJson",
+      "path": "scripts\\Script-F-LinkToConfigJson.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 6.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9786081Z",
+      "sha256": "5CA839432E4889839344A90E8F38DE513903F867CEBA858362BF1CF983D81D4B"
+    },
+    {
+      "name": "Script-F",
+      "path": "scripts\\Script-F.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": null,
+      "sizeKB": 7.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9805748Z",
+      "sha256": "CB616537FB8AC659488FC80921FF61BB1E279D6419DFE13578D688A48F66C707"
+    },
+    {
+      "name": "Script1",
+      "path": "scripts\\Script1.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 41.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9836092Z",
+      "sha256": "F3609B66659693C531F49BD11B9BD7B964DEB5468F2DB728C2ED2A37042CD690"
+    },
+    {
+      "name": "Script2",
+      "path": "scripts\\Script2.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 2.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9856082Z",
+      "sha256": "53BE9EBDED3910AFC2DCC1AA7373D4BB64B35651E49780E1BFC6A42838524165"
+    },
+    {
+      "name": "Script3",
+      "path": "scripts\\Script3.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 2.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9886093Z",
+      "sha256": "A47D9D37459FA10BA020D748450A764311B21502E8F11FB931210D3C78ABA00A"
+    },
+    {
+      "name": "Script4",
+      "path": "scripts\\Script4.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 2.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9906093Z",
+      "sha256": "CE902442C966D7DD1D940E11CD96010FB706313478AC4B6ED674E4534C23B655"
+    },
+    {
+      "name": "Script5",
+      "path": "scripts\\Script5.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 2.1,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9936084Z",
+      "sha256": "13AB7D383089971CD7CB4DA0E81D24EB941F42931BE8022A51FCB8CA954CECCA"
+    },
+    {
+      "name": "Script6",
+      "path": "scripts\\Script6.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Scaffolding",
+      "sizeKB": 31.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9956111Z",
+      "sha256": "BA0D16DDA4142C7C9F97F37A49F15B63006E31D526AF6BF364682F8BC4DF73A8"
+    },
+    {
+      "name": "Set-WorkspaceModulePath",
+      "path": "scripts\\Set-WorkspaceModulePath.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Environment",
+      "sizeKB": 1.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:24.9975735Z",
+      "sha256": "A47AF4AC9F93AE60A33E065E27333A793D0007CFFD772984C851F84DD655CBFC"
+    },
+    {
+      "name": "Setup-ModuleEnvironment",
+      "path": "scripts\\Setup-ModuleEnvironment.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Environment",
+      "sizeKB": 11.7,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.7030594Z",
+      "sha256": "9AE90431494CE2BEB0B4E6CC00BFA8C3A2635F2980430657C37AE2945DA79DDC"
+    },
+    {
+      "name": "Show-AppTemplateManager",
+      "path": "scripts\\Show-AppTemplateManager.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 28.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0025794Z",
+      "sha256": "D5CDA7FB92C9CAFDF06EB38299592D71CAC11FBA3564A326487A18E5FF404D93"
+    },
+    {
+      "name": "Show-CertificateManager",
+      "path": "scripts\\Show-CertificateManager.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 37.3,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T22:32:56.7941300Z",
+      "sha256": "BA289ACC5F761841907E6004E0A99E7A13FCDAE34F3B886BAA6E123C25A6B920"
+    },
+    {
+      "name": "Show-CronAiAthonTool",
+      "path": "scripts\\Show-CronAiAthonTool.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 173.4,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T22:32:56.8148122Z",
+      "sha256": "A150599A1C7729A41D2FA3C2B90138B11A0868EA59DDC0D628DAA2FD49AC3729"
+    },
+    {
+      "name": "Show-EventLogViewer",
+      "path": "scripts\\Show-EventLogViewer.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 10.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0116112Z",
+      "sha256": "6272C9BC778A55929F2F06005CE3A1297ADEC9015B48DF1A6FB001966B6102AA"
+    },
+    {
+      "name": "Show-MCPServiceConfig",
+      "path": "scripts\\Show-MCPServiceConfig.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 28.7,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0135762Z",
+      "sha256": "CC358BFBD5B366EBC8E81BA7651F7EEDB007EE000AC7CEFA0A9DD95CC3402F52"
+    },
+    {
+      "name": "Show-SandboxTestTool",
+      "path": "scripts\\Show-SandboxTestTool.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 21.8,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0168632Z",
+      "sha256": "92545B6F0A96E397BEA68A8BCE744B563958D22F385C94F3A9C03E0948BBE79B"
+    },
+    {
+      "name": "Show-ScanDashboard",
+      "path": "scripts\\Show-ScanDashboard.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 44.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0198383Z",
+      "sha256": "DEDEE3B82DD19F08E8D63FAC2D6C0AC106BDCA6ADA13D4C01E1A5740EBE9250B"
+    },
+    {
+      "name": "Show-WorkspaceIntentReview",
+      "path": "scripts\\Show-WorkspaceIntentReview.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "UIForm",
+      "sizeKB": 41.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0228746Z",
+      "sha256": "7743E92B70293B4B7CBD4ADCF01310D98122AD5910FC32D8BE64E8A43DC58BCF"
+    },
+    {
+      "name": "Start-BWServe",
+      "path": "scripts\\Start-BWServe.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Launcher",
+      "sizeKB": 10.9,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0248755Z",
+      "sha256": "FE1459E1D156C509C1C6CEC904D35EA2DE67ADAA7CCB171500C0D7AEEB765B4E"
+    },
+    {
+      "name": "Start-Engines",
+      "path": "scripts\\Start-Engines.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Launcher",
+      "sizeKB": 6.0,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0278732Z",
+      "sha256": "FD31689BD5C0E10B7DCCC6A4D82BDEB11223ABD8C774DE334BCFC157D189992D"
+    },
+    {
+      "name": "Start-LocalWebEngine",
+      "path": "scripts\\Start-LocalWebEngine.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Launcher",
+      "sizeKB": 151.5,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.6418391Z",
+      "sha256": "71CF43D4C9C179CDF4EF714E082A324924C265A4D6634ED01B676FD4E79E3CB4"
+    },
+    {
+      "name": "Start-LocalWebEngineService",
+      "path": "scripts\\Start-LocalWebEngineService.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Launcher",
+      "sizeKB": 81.5,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.6853620Z",
+      "sha256": "6DC68A2BF06FAD6E421C36C6045ADF328B095B4B0725BECD9F9C85FE13B1F3CA"
+    },
+    {
+      "name": "Sync-ChangelogViewerData",
+      "path": "scripts\\Sync-ChangelogViewerData.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 7.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0358742Z",
+      "sha256": "5629C422FDEA10F8A9A4A05D1D52C1FC47C0B4197876C454E63401DC8EB7AD14"
+    },
+    {
+      "name": "Sync-LogIndexToViewer",
+      "path": "scripts\\Sync-LogIndexToViewer.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 8.1,
+      "functionCount": 0,
+      "lastModified": "2026-07-08T20:39:08.0564711Z",
+      "sha256": "D4F9401AFE4CC8E602BA8BB5252324F099DE51F3CA9A08CB915C94922995771B"
+    },
+    {
+      "name": "Sync-PipelineRegistryFromDisk",
+      "path": "scripts\\Sync-PipelineRegistryFromDisk.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Script",
+      "sizeKB": 9.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0458403Z",
+      "sha256": "C604A0F4E7D6C1414C46595A003B5AAFB60199D9A0B672855C07A344568EFDFF"
+    },
+    {
+      "name": "Test-ModuleDependencies",
+      "path": "scripts\\Test-ModuleDependencies.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Test",
+      "sizeKB": 3.5,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0488403Z",
+      "sha256": "823A4E336F84D6F48E6D3F38969FF047D9BCE48CCBF8C49BF3D0A46523158B85"
+    },
+    {
+      "name": "Test-Prerequisites",
+      "path": "scripts\\Test-Prerequisites.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Guide",
+      "sizeKB": 9.3,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0508359Z",
+      "sha256": "0D8FEB01CE4A080B47D3CF0BFAFDE5992B13A5C1A3E03344B10F68F598E5818D"
+    },
+    {
+      "name": "UserProfile-Manager",
+      "path": "scripts\\UserProfile-Manager.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Pipeline",
+      "sizeKB": 86.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0548395Z",
+      "sha256": "84C48CC673E6C2F927183EE00C685243C5BDC1C2CE782C391B543E1064693927"
+    },
+    {
+      "name": "Validate-ModuleImports",
+      "path": "scripts\\Validate-ModuleImports.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Validator",
+      "sizeKB": 2.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0578371Z",
+      "sha256": "235B9F3E3D8D9605B6E0626B810B3266F4722F88597225D53AE96E137F7AECD9"
+    },
+    {
+      "name": "WinRemote-PSTool",
+      "path": "scripts\\WinRemote-PSTool.ps1",
+      "version": "2606.B5.V51.4",
+      "fileRole": "Utility",
+      "sizeKB": 111.2,
+      "functionCount": 0,
+      "lastModified": "2026-06-18T00:35:25.0618383Z",
+      "sha256": "A5962CD8724E9E4871DF82EAE20A0D46961345477CE815969FC789F93A9ED3C6"
+    }
+  ],
+  "configs": [
+    {
+      "name": "agent-call-stats",
+      "path": "config\\agent-call-stats.json",
+      "sizeKB": 6.7,
+      "lastModified": "2026-07-08T20:39:08.7092452Z",
+      "sha256": "5968AD8D4B8E13FA6F54EF58DB8DC7CE2A94E97271F1690C09F51A90163C51BC"
+    },
+    {
+      "name": "agentic-manifest",
+      "path": "config\\agentic-manifest.json",
+      "sizeKB": 842.1,
+      "lastModified": "2026-05-25T12:29:13.5245637Z",
+      "sha256": "AA3C0E1F1664769B4D5488E6BD5258088CA45AD6C2DF1A0486BBF55ABC71A795"
+    },
+    {
+      "name": "AVPN_device-types",
+      "path": "config\\AVPN_device-types.json",
+      "sizeKB": 6.5,
+      "lastModified": "2026-04-09T20:07:32.0188186Z",
+      "sha256": "C7676AB24321BA599FC7EE923A06F8574CF01919F9DBC5E4A2518189EA42DFC7"
+    },
+    {
+      "name": "AVPN-devices",
+      "path": "config\\AVPN-devices.json",
+      "sizeKB": 11.3,
+      "lastModified": "2026-04-09T20:07:32.0108089Z",
+      "sha256": "22029A2BE8EB1B5E1A037454CB967863888B244C947D224A27BB059873D474D4"
+    },
+    {
+      "name": "bootstrap-menu.config",
+      "path": "config\\bootstrap-menu.config.json",
+      "sizeKB": 4.8,
+      "lastModified": "2026-05-24T11:36:47.9977688Z",
+      "sha256": "D67A55A411C6412F9D77E247F06C4EE0CC913126CE0B295C07A0234C37C5B55F"
+    },
+    {
+      "name": "browser-test-config",
+      "path": "config\\browser-test-config.json",
+      "sizeKB": 2.4,
+      "lastModified": "2026-05-06T09:49:59.1634844Z",
+      "sha256": "53D91548F9BF2029B4002CACE1E1352982AC02EB17CAB65A8B0C32B429D1232C"
+    },
+    {
+      "name": "cert-store-baseline",
+      "path": "config\\cert-store-baseline.json",
+      "sizeKB": 60.2,
+      "lastModified": "2026-05-22T12:11:14.9326088Z",
+      "sha256": "718A63AB3399C6D07403C351A3E1F23E3F1608F86680DC92C9361BC93A24DD13"
+    },
+    {
+      "name": "chief-approvals",
+      "path": "config\\chief-approvals.json",
+      "sizeKB": 0.2,
+      "lastModified": "2026-05-06T09:49:59.1634844Z",
+      "sha256": "B74E60B6217DA0FF35804F96082AB9EFE530A548527AEE9C7AB553F8B315E9A2"
+    },
+    {
+      "name": "cron-aiathon-pipeline",
+      "path": "config\\cron-aiathon-pipeline.json",
+      "sizeKB": 10707.2,
+      "lastModified": "2026-07-07T17:09:11.9920158Z",
+      "sha256": "1AF10711607BD28EFAEED2F6BBA282DC37D9377E236F4C058D3152402341FAE1"
+    },
+    {
+      "name": "cron-aiathon-schedule",
+      "path": "config\\cron-aiathon-schedule.json",
+      "sizeKB": 16.3,
+      "lastModified": "2026-05-22T20:13:54.8186381Z",
+      "sha256": "98A881CC69EFC0088FE9E91BFDE25E4DCFC935786E913FF367F7F2709B4FB67F"
+    },
+    {
+      "name": "css-layout-index",
+      "path": "config\\css-layout-index.json",
+      "sizeKB": 5.8,
+      "lastModified": "2026-05-06T09:49:59.2189905Z",
+      "sha256": "0785387BCD172C32EBCC27BA5BA5483E5A4CF26C9A30D20E50EA4308A640A50C"
+    },
+    {
+      "name": "cyclic-tasks",
+      "path": "config\\cyclic-tasks.json",
+      "sizeKB": 0.4,
+      "lastModified": "2026-03-27T22:02:36.4864051Z",
+      "sha256": "C00C564E95F1641A3D2355F183C608C74D33D25CE41DB3A3EB1D3FD5FAC9C067"
+    },
+    {
+      "name": "dependency-scan-config",
+      "path": "config\\dependency-scan-config.json",
+      "sizeKB": 1.8,
+      "lastModified": "2026-04-07T22:56:58.8993720Z",
+      "sha256": "B1825A2E8B3FFC5D8AE7C827D464EA0D695CAA68E46218E7A5348D6214CB31FA"
+    },
+    {
+      "name": "diff-scheduler",
+      "path": "config\\diff-scheduler.json",
+      "sizeKB": 0.5,
+      "lastModified": "2026-05-06T09:49:59.2210137Z",
+      "sha256": "D28CA9ED57B27C0757D2842004D96A7A97152330E0AEB5DCEAF5ECFB8DD0FE6C"
+    },
+    {
+      "name": "dynamic-manifest",
+      "path": "config\\dynamic-manifest.json",
+      "sizeKB": 105.4,
+      "lastModified": "2026-07-09T02:10:00.5310731Z",
+      "sha256": "9467AFA8F18D12ABF94A69BB9E8AE2C259BE55D14E1CA6275B475F7B0D7F7ACF"
+    },
+    {
+      "name": "engine-client-controls",
+      "path": "config\\engine-client-controls.json",
+      "sizeKB": 0.3,
+      "lastModified": "2026-05-06T09:49:59.2220247Z",
+      "sha256": "7BB088209278B4680F8B7DB54CE0B676F54FAB12911F6E7876E2258341819FBA"
+    },
+    {
+      "name": "engine-cluster-trust",
+      "path": "config\\engine-cluster-trust.json",
+      "sizeKB": 0.4,
+      "lastModified": "2026-05-06T09:49:59.2230238Z",
+      "sha256": "D8BA310780D6A1C1C5040B5AC2EDED966FC782058180F264A202DC60A2F764AD"
+    },
+    {
+      "name": "engine-monitor.targets",
+      "path": "config\\engine-monitor.targets.json",
+      "sizeKB": 5.8,
+      "lastModified": "2026-05-20T17:04:17.4607999Z",
+      "sha256": "2577A979B4346CF6B054C9208DEA41AA0C0CF61D74F1EDE605A8EF6E2AB7E6DA"
+    },
+    {
+      "name": "help-menu-registry",
+      "path": "config\\help-menu-registry.json",
+      "sizeKB": 8.3,
+      "lastModified": "2026-05-06T09:49:59.2260213Z",
+      "sha256": "19A352051B62C5B5DD97A2B9C0152039181EAA8579503E03998605A647A6FC54"
+    },
+    {
+      "name": "manifest-cache",
+      "path": "config\\manifest-cache.json",
+      "sizeKB": 3036.8,
+      "lastModified": "2026-06-18T01:01:27.8219352Z",
+      "sha256": "4AC095200D923C7FE523ECAAA62D89CFBEBBBF96EB7E50649E004D6178792A5B"
+    },
+    {
+      "name": "menu-layout",
+      "path": "config\\menu-layout.json",
+      "sizeKB": 7.9,
+      "lastModified": "2026-05-06T09:49:59.2300236Z",
+      "sha256": "CC0A729511353DA35B2BC8DB5A5EBE6404F010F270DB758F8E257A5D04D6DBD1"
+    },
+    {
+      "name": "module-function-index",
+      "path": "config\\module-function-index.json",
+      "sizeKB": 35.9,
+      "lastModified": "2026-03-28T15:59:07.3291696Z",
+      "sha256": "BAA44DCEEBD753F4A80494EAF97F3B85DAFFC8E9C6E518881A4C18950E096A27"
+    },
+    {
+      "name": "My-LookupLocationsConfig",
+      "path": "config\\My-LookupLocationsConfig.json",
+      "sizeKB": 2.5,
+      "lastModified": "2026-04-03T02:14:37.9385884Z",
+      "sha256": "77F9DA81A5FE90282885F91AE9082A4BD8858DF02BB19074F15BBE7609DEEE30"
+    },
+    {
+      "name": "prerequisites-baseline",
+      "path": "config\\prerequisites-baseline.json",
+      "sizeKB": 2.6,
+      "lastModified": "2026-03-05T01:21:30.8490343Z",
+      "sha256": "F21B4B97340DA5EF7572AF04C6BA0C077F47E0CD0873246499F88F6B35831C40"
+    },
+    {
+      "name": "ps5-compat-flags",
+      "path": "config\\ps5-compat-flags.json",
+      "sizeKB": 3.5,
+      "lastModified": "2026-03-29T06:34:44.8572606Z",
+      "sha256": "89A521811FD16D01C55A8F9B1DD49675BB4EDA3A953AFB77B700BBC96D68A4E6"
+    },
+    {
+      "name": "pwsh-app-config-BASE",
+      "path": "config\\pwsh-app-config-BASE.json",
+      "sizeKB": 15.1,
+      "lastModified": "2026-05-06T09:49:59.2320241Z",
+      "sha256": "505E1782AAF6B9C7FB9C341BB6B52BC8F025B8593A214F5984EBEFE3C8CC01B0"
+    },
+    {
+      "name": "pwsh-scriptfolders-config",
+      "path": "config\\pwsh-scriptfolders-config.json",
+      "sizeKB": 1.1,
+      "lastModified": "2026-04-09T20:07:32.0304337Z",
+      "sha256": "93AB2C98363E3AD60656FE1483F85C86E338C1CA52B65B8CFC8B0C65C21F9BF5"
+    },
+    {
+      "name": "sasc-integrity.sha256",
+      "path": "config\\sasc-integrity.sha256.json",
+      "sizeKB": 3.7,
+      "lastModified": "2026-06-18T01:01:41.6986178Z",
+      "sha256": "C6E63F5D02F4D675519C9454C2E73128150176D7DDF528DD47037DAC351746C9"
+    },
+    {
+      "name": "sasc-tuning",
+      "path": "config\\sasc-tuning.json",
+      "sizeKB": 0.2,
+      "lastModified": "2026-03-08T19:18:16.8128663Z",
+      "sha256": "496B521B89A3D705B442456A31A95F579C40891F63A47901BAA8F373AA8CBF8F"
+    },
+    {
+      "name": "sasc-vault-config",
+      "path": "config\\sasc-vault-config.json",
+      "sizeKB": 0.9,
+      "lastModified": "2026-03-08T23:11:27.3414644Z",
+      "sha256": "23AE890E3F993A9570CC673F333B67A0FD150548DC8D2C109CDD1648D80299AF"
+    },
+    {
+      "name": "scan-schema-version-map",
+      "path": "config\\scan-schema-version-map.json",
+      "sizeKB": 2.8,
+      "lastModified": "2026-04-08T01:00:21.3913359Z",
+      "sha256": "7E2FE4B8630410D61BE6AEF54F694B7E356B7E154F709C73DACE2E7CB50743A1"
+    },
+    {
+      "name": "schema-transforms",
+      "path": "config\\schema-transforms.json",
+      "sizeKB": 5.4,
+      "lastModified": "2026-05-06T09:49:59.2340216Z",
+      "sha256": "F9EEFF2E1040462699B57840E756A164766E50749C53E51E5D3303AAB34187D3"
+    },
+    {
+      "name": "self-review-config",
+      "path": "config\\self-review-config.json",
+      "sizeKB": 3.4,
+      "lastModified": "2026-05-22T12:57:54.4455620Z",
+      "sha256": "DAA0AB2B38D0EEF62943418FF117BCA30FF6D74A8C1E4A829B1FE233122BEAA5"
+    },
+    {
+      "name": "self-review-history",
+      "path": "config\\self-review-history.json",
+      "sizeKB": 74.9,
+      "lastModified": "2026-05-22T21:08:24.0325038Z",
+      "sha256": "885AC0EFC09564839F49D55C7854621F4043ECD43A85BBAC0C0699AAE7DC607C"
+    },
+    {
+      "name": "sin-baseline",
+      "path": "config\\sin-baseline.json",
+      "sizeKB": 0.7,
+      "lastModified": "2026-05-06T09:49:59.2382429Z",
+      "sha256": "B0D497C4FF88C41DCDF048C17F69CB972173C615A4E851A4126D78BB35305110"
+    },
+    {
+      "name": "style-remediation-inventory",
+      "path": "config\\style-remediation-inventory.json",
+      "sizeKB": 95.3,
+      "lastModified": "2026-03-30T12:27:09.5438583Z",
+      "sha256": "9A0C7EBE956A9A35A5E325EE188909D45676002A792CB5D09D3018E138E5552F"
+    },
+    {
+      "name": "tray-service-config",
+      "path": "config\\tray-service-config.json",
+      "sizeKB": 3.2,
+      "lastModified": "2026-05-24T11:36:47.9935465Z",
+      "sha256": "62398BFA7365545DFEBAA148258C32EFB72A5C63A51F0E51313E05C826686385"
+    },
+    {
+      "name": "waiting-jokes",
+      "path": "config\\waiting-jokes.json",
+      "sizeKB": 5.9,
+      "lastModified": "2026-05-06T09:49:59.2404711Z",
+      "sha256": "815BD2784970BD445BD1C849B89EBB70218B47C6C6036BBC19B643C67B645F72"
+    },
+    {
+      "name": "webengine-services.components",
+      "path": "config\\webengine-services.components.json",
+      "sizeKB": 2.1,
+      "lastModified": "2026-05-25T15:48:26.8883316Z",
+      "sha256": "A4046965A18E18DDE9003655ADD4B118DCDE9ED49366FAB073D4DAFE62CCF27F"
+    },
+    {
+      "name": "widget-tools-inventory",
+      "path": "config\\widget-tools-inventory.json",
+      "sizeKB": 13.5,
+      "lastModified": "2026-04-04T09:49:44.7995538Z",
+      "sha256": "915C535D396390CD191484AEAE127330A7B13FB45B5E78B986710F4584B64316"
+    },
+    {
+      "name": "winremote-hosts",
+      "path": "config\\winremote-hosts.json",
+      "sizeKB": 0.0,
+      "lastModified": "2026-03-08T22:47:51.6332752Z",
+      "sha256": "A5338D955B09046EC0B16F3A9625B7955C763AAE07DC722E474E6078745F932F"
+    },
+    {
+      "name": "workspace-change-log",
+      "path": "config\\workspace-change-log.json",
+      "sizeKB": 1.9,
+      "lastModified": "2026-05-18T08:45:31.7197377Z",
+      "sha256": "8F73E1C2338AFEECBC19489E546717A7C836E5CE03CE3A17A90A75947F285429"
+    },
+    {
+      "name": "workspace-hub-data-sources",
+      "path": "config\\workspace-hub-data-sources.json",
+      "sizeKB": 0.5,
+      "lastModified": "2026-05-06T09:49:59.2434722Z",
+      "sha256": "E6C1D42B1C2D7CFA6B769E881296898604A9B9103ED3D15423CEC231CE452351"
+    },
+    {
+      "name": "workspace-hub-offline-cache",
+      "path": "config\\workspace-hub-offline-cache.json",
+      "sizeKB": 2.5,
+      "lastModified": "2026-05-06T09:49:59.2444764Z",
+      "sha256": "DAB82074CF572BF0D02A7BF357E0BB66252D279C5E8EA910C4693B2AACA26FE9"
+    },
+    {
+      "name": "workspace-hub.config",
+      "path": "config\\workspace-hub.config.json",
+      "sizeKB": 2.9,
+      "lastModified": "2026-05-22T10:13:59.1450895Z",
+      "sha256": "D8AC72781779957BC9DBC6B8D31105945DCAFF4C816254D0B333FC25BE5CE480"
+    },
+    {
+      "name": "workspace-intent-registry",
+      "path": "config\\workspace-intent-registry.json",
+      "sizeKB": 6.8,
+      "lastModified": "2026-05-18T08:46:15.1348653Z",
+      "sha256": "9C7E444741F97AAF348BBE0AAEA708D10BD24448C6DB19CCD134C9650E0CC2E8"
+    },
+    {
+      "name": "workspace-memory-summary",
+      "path": "config\\workspace-memory-summary.json",
+      "sizeKB": 4.8,
+      "lastModified": "2026-04-07T16:56:43.5777664Z",
+      "sha256": "820E10ECAB9B4A354954AC5337AE719CEF267F9C5BE729CBCB185870FD21DFCF"
+    }
+  ],
+  "tests": [
+    {
+      "name": "AssistedSASC.Tests",
+      "path": "tests\\AssistedSASC.Tests.ps1",
+      "sizeKB": 2.9,
+      "lastModified": "2026-06-18T00:35:26.3635707Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "06255FB3B240ADE27E11621052D0760935EB0B75B7F6CC73C6E408B67159A400"
+    },
+    {
+      "name": "AVPN-Tracker.Tests",
+      "path": "tests\\AVPN-Tracker.Tests.ps1",
+      "sizeKB": 6.9,
+      "lastModified": "2026-06-18T00:35:26.3665703Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "6E9D3B0588DF627EA233FBC66C0047254F6E161692878F0270778AF16805E574"
+    },
+    {
+      "name": "CronAiAthon-BugTracker.Tests",
+      "path": "tests\\CronAiAthon-BugTracker.Tests.ps1",
+      "sizeKB": 3.1,
+      "lastModified": "2026-06-18T00:35:26.3775699Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "72326AA7EAAC78687D29147E32E45706EE6787BB49030DFF6B0C69BECDC8D2FE"
+    },
+    {
+      "name": "CronAiAthon-EventLog.Tests",
+      "path": "tests\\CronAiAthon-EventLog.Tests.ps1",
+      "sizeKB": 2.6,
+      "lastModified": "2026-06-18T00:35:26.3825714Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "88D7334222C252B365AB6B20F753FC41D418D3ABAE27FC87C61B7894768C5E8F"
+    },
+    {
+      "name": "CronAiAthon-Pipeline.Tests",
+      "path": "tests\\CronAiAthon-Pipeline.Tests.ps1",
+      "sizeKB": 12.6,
+      "lastModified": "2026-06-18T00:35:26.3845710Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "339A4BB5CE37D42D169DB92DF33EB501A44E07DAA2AD1258E89B7D466824040A"
+    },
+    {
+      "name": "CronAiAthon-Scheduler.Tests",
+      "path": "tests\\CronAiAthon-Scheduler.Tests.ps1",
+      "sizeKB": 1.9,
+      "lastModified": "2026-06-18T00:35:26.3875704Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "08C3A9B2CE8F54FC94DC348DD15576B2DB7F5CD9AEC6415718CC15B054AD64AC"
+    },
+    {
+      "name": "Invoke-AgentCallStats.Tests",
+      "path": "tests\\Invoke-AgentCallStats.Tests.ps1",
+      "sizeKB": 5.9,
+      "lastModified": "2026-06-18T00:35:26.4105829Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "DC6D30E8B7B31ACE506417F28F8C91BA0A83FDD394E0CE741349FD3277051651"
+    },
+    {
+      "name": "Invoke-ConventionComplianceSuite.Tests",
+      "path": "tests\\Invoke-ConventionComplianceSuite.Tests.ps1",
+      "sizeKB": 30.7,
+      "lastModified": "2026-06-18T00:35:26.4271693Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "0AD231D83B322ECBCDE4C91975C179D66D4BF04F04E660896ABE33B8D7B6B17E"
+    },
+    {
+      "name": "Invoke-EngineCrashCleanup.Tests",
+      "path": "tests\\Invoke-EngineCrashCleanup.Tests.ps1",
+      "sizeKB": 3.1,
+      "lastModified": "2026-06-18T00:35:26.4291351Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "C44003B7E2E7C85FB815E0DD72E502899785FCAB0B1DA0A9EDF5C27C4CD66FB6"
+    },
+    {
+      "name": "Invoke-PipelineChurnLifecycle.Tests",
+      "path": "tests\\Invoke-PipelineChurnLifecycle.Tests.ps1",
+      "sizeKB": 9.7,
+      "lastModified": "2026-06-18T00:35:26.4431344Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "897F9821AC574C9493E5BFB6A5FCD702B3F5E895A23D1E673D7CA414D04AC1CA"
+    },
+    {
+      "name": "Invoke-PipelineIntegration.Tests",
+      "path": "tests\\Invoke-PipelineIntegration.Tests.ps1",
+      "sizeKB": 6.2,
+      "lastModified": "2026-06-18T00:35:26.4451375Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "A7F87A81EACF551BA176E319A82D3D651390C7D7BA6C23D98B545AF65A7CAC5C"
+    },
+    {
+      "name": "Invoke-RegressionSuite.Tests",
+      "path": "tests\\Invoke-RegressionSuite.Tests.ps1",
+      "sizeKB": 8.6,
+      "lastModified": "2026-06-18T00:35:26.4531333Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "CC259AEB3415A00298F3C8E428EA2775CB1DDBD8B9726D6E7A0DA21B09656349"
+    },
+    {
+      "name": "Invoke-ScriptLoadability.Tests",
+      "path": "tests\\Invoke-ScriptLoadability.Tests.ps1",
+      "sizeKB": 4.7,
+      "lastModified": "2026-06-18T00:35:26.4601346Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "3CAE4CD042D98693F26A88E722B11D6EA4E660C1CF16732439C451547D611632"
+    },
+    {
+      "name": "Invoke-SINPatternScanner.Tests",
+      "path": "tests\\Invoke-SINPatternScanner.Tests.ps1",
+      "sizeKB": 5.0,
+      "lastModified": "2026-06-18T00:35:26.4791335Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "CB729540BA2BF2FC84FBDAC2272BEC2F8D2A0414F971DA40BB8F83D621970F8E"
+    },
+    {
+      "name": "Invoke-StaticWorkspaceScan.Tests",
+      "path": "tests\\Invoke-StaticWorkspaceScan.Tests.ps1",
+      "sizeKB": 3.8,
+      "lastModified": "2026-06-18T00:35:26.4811351Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "A380DD240232ECD3B2CB46DA0B5F6EB77D6DC65BDD6B46BD93AE7104EB430F04"
+    },
+    {
+      "name": "Invoke-WidgetSmokeTests.Tests",
+      "path": "tests\\Invoke-WidgetSmokeTests.Tests.ps1",
+      "sizeKB": 72.8,
+      "lastModified": "2026-06-18T00:35:26.4881375Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "C10CEDD8D498919F9416DE2A026E49E61CD9FF64420A09F24C65C12581A8BAFA"
+    },
+    {
+      "name": "ModuleEnvironment-NineScripts.Tests",
+      "path": "tests\\ModuleEnvironment-NineScripts.Tests.ps1",
+      "sizeKB": 7.3,
+      "lastModified": "2026-06-18T00:35:26.6522269Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "08D7B21D4FBAB97E7539E8784DF7D547E9D9EFE63B56B714AAE330DE31C0D83B"
+    },
+    {
+      "name": "ModuleMaintenance-Targeted.Tests",
+      "path": "tests\\ModuleMaintenance-Targeted.Tests.ps1",
+      "sizeKB": 3.9,
+      "lastModified": "2026-06-18T00:35:26.6552300Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "7DDDB3ABCA0A30B2E29C5766754F22C4FB08664AD8D6347DD31A02F3893FE1C2"
+    },
+    {
+      "name": "PKIChainManager.Tests",
+      "path": "tests\\PKIChainManager.Tests.ps1",
+      "sizeKB": 17.5,
+      "lastModified": "2026-06-18T00:35:26.6592280Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "CF55F878786FB03F1F78E4F22455F10A1DCC2C4D98E75E97583BBDAA26998B68"
+    },
+    {
+      "name": "PwSh-HelpFilesUpdateSource-ReR.Tests",
+      "path": "tests\\PwSh-HelpFilesUpdateSource-ReR.Tests.ps1",
+      "sizeKB": 1.3,
+      "lastModified": "2026-06-18T00:35:26.6632265Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "494D0649A6F5DB9BC0BD14D02B10730B0011B2BD68E3D8D8CB698382950B26AE"
+    },
+    {
+      "name": "PwShGUI_AutoIssueFinder.Tests",
+      "path": "tests\\PwShGUI_AutoIssueFinder.Tests.ps1",
+      "sizeKB": 1.8,
+      "lastModified": "2026-06-18T00:35:26.6662271Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "1D2FA4B8FB1DF8BCCBB2142D209EBB856C813EFB12471A1249B18F562143B44E"
+    },
+    {
+      "name": "PwShGUI-ConvoVault.Tests",
+      "path": "tests\\PwShGUI-ConvoVault.Tests.ps1",
+      "sizeKB": 2.9,
+      "lastModified": "2026-06-18T00:35:26.6682261Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "1817AF8BB4A6EDA59D4810CA6C27D007BC9DB7DC2E630A6CC2A50464EB7027EE"
+    },
+    {
+      "name": "PwShGUI-EventLogAdapter.Tests",
+      "path": "tests\\PwShGUI-EventLogAdapter.Tests.ps1",
+      "sizeKB": 5.8,
+      "lastModified": "2026-06-18T00:35:26.6722259Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "7F58D6A547DC9F4DB4198A288F81D8855CD93141A1E2F9AC67807F0C258D3099"
+    },
+    {
+      "name": "PwShGUI-IntegrityCore.Tests",
+      "path": "tests\\PwShGUI-IntegrityCore.Tests.ps1",
+      "sizeKB": 2.9,
+      "lastModified": "2026-06-18T00:35:26.6742252Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "228530D7E5184FA0192E1D6DEF66A50F143931734A11C8627AC1F34C692A18C2"
+    },
+    {
+      "name": "PwShGUI-KillSwitch.Tests",
+      "path": "tests\\PwShGUI-KillSwitch.Tests.ps1",
+      "sizeKB": 7.0,
+      "lastModified": "2026-06-18T00:35:26.6772231Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "BF9DBD63200A6E6A46E67455AE2581122D1884B34C760E8ED66BEEBE7E4DCB27"
+    },
+    {
+      "name": "PwShGUI-LaunchTelemetry.Tests",
+      "path": "tests\\PwShGUI-LaunchTelemetry.Tests.ps1",
+      "sizeKB": 2.2,
+      "lastModified": "2026-06-18T00:35:26.6802230Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "DB4CBFEA1D85E809DEF1CE2FAD8D925CE4F5CC68DD3573B2E35A896E09289B60"
+    },
+    {
+      "name": "PwShGUI-PSVersionStandards.Tests",
+      "path": "tests\\PwShGUI-PSVersionStandards.Tests.ps1",
+      "sizeKB": 1.5,
+      "lastModified": "2026-06-18T00:35:26.6822260Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "803117519BB5FE3A3C7FF9E6A07276025C1781422944E910D6F10E3577EE7BB6"
+    },
+    {
+      "name": "PwShGUI-Theme.Tests",
+      "path": "tests\\PwShGUI-Theme.Tests.ps1",
+      "sizeKB": 1.2,
+      "lastModified": "2026-06-18T00:35:26.6852272Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "C73DF718A4D26A62931237F65F69D48A187DAD721997A8D30BF1BE3AA567C476"
+    },
+    {
+      "name": "PwShGUI-TrayHost.Tests",
+      "path": "tests\\PwShGUI-TrayHost.Tests.ps1",
+      "sizeKB": 3.0,
+      "lastModified": "2026-06-18T00:35:26.6872249Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "7AEA077AEB833010BC90EA1BAC58F15CBA29B60F8E0E9902BCC63EA247F3D808"
+    },
+    {
+      "name": "PwShGUI-VersionManager.Tests",
+      "path": "tests\\PwShGUI-VersionManager.Tests.ps1",
+      "sizeKB": 6.9,
+      "lastModified": "2026-06-18T00:35:26.6902265Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "E4D5A22F69FDADAEAFAF48970F54578815B03BDAB39B579191FB26829EA53119"
+    },
+    {
+      "name": "PwShGUI-WebEngineServices.Tests",
+      "path": "tests\\PwShGUI-WebEngineServices.Tests.ps1",
+      "sizeKB": 3.8,
+      "lastModified": "2026-06-18T00:35:26.6922245Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "7C5B338E834007210C46483BE734A2F34F6385CE5FD1C8FA504767DED9E5F9DF"
+    },
+    {
+      "name": "PwShGUICore.Tests",
+      "path": "tests\\PwShGUICore.Tests.ps1",
+      "sizeKB": 5.0,
+      "lastModified": "2026-06-18T00:35:26.6952264Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "22209625A629D1FB54798A3D2C7520D06C36D70C961D5F387FD4431FA0A26238"
+    },
+    {
+      "name": "SASC-Adapters.Tests",
+      "path": "tests\\SASC-Adapters.Tests.ps1",
+      "sizeKB": 1.7,
+      "lastModified": "2026-06-18T00:35:26.7112371Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "8992E55E085E632F6C86E2E43D7A7EC8747372DFB762C40F7BA5D37481CB8D3E"
+    },
+    {
+      "name": "Show-CronAiAthonTool.Tests",
+      "path": "tests\\Show-CronAiAthonTool.Tests.ps1",
+      "sizeKB": 3.9,
+      "lastModified": "2026-06-18T00:35:26.7132335Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "02B9169BC02D1C936A7E3A8D13EF7D1AA99BD51143502CD1F28336597C66931D"
+    },
+    {
+      "name": "Show-ScriptLoadability.Tests",
+      "path": "tests\\Show-ScriptLoadability.Tests.ps1",
+      "sizeKB": 2.9,
+      "lastModified": "2026-06-18T00:35:26.7157529Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "C34CB0D60D82343A3847233F0BDA3F8C40CA46ABDEDD278EE2E98FFE7B60FD94"
+    },
+    {
+      "name": "SIN-P027-NullArrayIndex.Tests",
+      "path": "tests\\SIN-P027-NullArrayIndex.Tests.ps1",
+      "sizeKB": 35.3,
+      "lastModified": "2026-06-18T00:35:26.7217502Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "CC6212A4E3FD51A653A8A6BEAC18F965E6C1E3147AB8341CB5FFB55FDC013222"
+    },
+    {
+      "name": "SIN-P041-JsonSchemaPropertyDrift.Tests",
+      "path": "tests\\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1",
+      "sizeKB": 2.0,
+      "lastModified": "2026-06-18T00:35:26.7247499Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "010989D0D1BEC12E36836A9DCEDA0556E1DC739E5836A50B0AE85A0D0954D068"
+    },
+    {
+      "name": "SINGovernance.Tests",
+      "path": "tests\\SINGovernance.Tests.ps1",
+      "sizeKB": 1.3,
+      "lastModified": "2026-06-18T00:35:26.7277534Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "9C97BC81C7C48B33B86050B22EA4EDA96D5F1B5E5FF6936C80A77C75785E5F89"
+    },
+    {
+      "name": "Start-LocalWebEngine.BootstrapGovernance.Tests",
+      "path": "tests\\Start-LocalWebEngine.BootstrapGovernance.Tests.ps1",
+      "sizeKB": 9.2,
+      "lastModified": "2026-06-18T00:35:26.7377513Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "A19CA7BFCD395CC87264052BBE46C24F601D4C6DB8AF32DC5640C2DAD977B0F9"
+    },
+    {
+      "name": "Start-LocalWebEngine.Tests",
+      "path": "tests\\Start-LocalWebEngine.Tests.ps1",
+      "sizeKB": 8.5,
+      "lastModified": "2026-06-18T00:35:26.7407528Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "6214DB29E5AFD53090A6C651FE0A863B0FE588647EB9C44FF99A3402B0A9A6B6"
+    },
+    {
+      "name": "Start-LocalWebEngineIntegration.Tests",
+      "path": "tests\\Start-LocalWebEngineIntegration.Tests.ps1",
+      "sizeKB": 21.0,
+      "lastModified": "2026-07-08T22:32:56.8643305Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "D7EBD0A91C903F7CA26D882213B136338C3E8C258FFE03EA90B3FCDDA0C6DDF7"
+    },
+    {
+      "name": "Start-LocalWebEngineService.BootstrapMenu.Tests",
+      "path": "tests\\Start-LocalWebEngineService.BootstrapMenu.Tests.ps1",
+      "sizeKB": 18.3,
+      "lastModified": "2026-06-18T00:35:26.7477493Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "F926B1DE236D0483F1F01E1CFC2D312BB4A53261188A17B7FF8785751DAB6BBD"
+    },
+    {
+      "name": "SyntaxGuard.Tests",
+      "path": "tests\\SyntaxGuard.Tests.ps1",
+      "sizeKB": 7.2,
+      "lastModified": "2026-06-18T00:35:26.7527533Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "D28308B375BE99A455F8AD4EE0C4CAED9CB1F6023F7D0533DD3142604144B147"
+    },
+    {
+      "name": "UserProfileManager.Tests",
+      "path": "tests\\UserProfileManager.Tests.ps1",
+      "sizeKB": 1.2,
+      "lastModified": "2026-06-18T00:35:26.7837507Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "282BDD2E169A4A11C8E091344B3956043D72308F67206E52BE4692255E1E3BCE"
+    },
+    {
+      "name": "VersionTag-Canonical.Tests",
+      "path": "tests\\VersionTag-Canonical.Tests.ps1",
+      "sizeKB": 2.7,
+      "lastModified": "2026-06-18T00:35:26.7967498Z",
+      "testTarget": null,
+      "testCount": 0,
+      "sha256": "A550C19D6984089622B50393F44C2D902AB4A2CC6EE066F79FCBBA443394D682"
+    }
+  ],
+  "agents": [],
+  "xhtmlTools": [],
+  "dependencyGraph": {
+    "nodes": [],
+    "edges": []
+  },
+  "securityEnvelope": {
+    "folderPermissions": [],
+    "fileHashes": [],
+    "accessControlList": []
+  },
+  "driftGuards": {
+    "versionAlignment": [],
+    "encodingCompliance": [],
+    "sinPatternCompliance": [],
+    "testRecency": [],
+    "timestamps": []
+  },
+  "pipelineIntegration": {
+    "preTestBlockers": [
+      {
+        "id": "ENCODING_NON_UTF8_BOM",
+        "severity": "HIGH",
+        "count": 53,
+        "items": [
+          "_TEMPLATE-Module",
+          "AssistedSASC",
+          "AVPN-Tracker",
+          "CronAiAthon-BugTracker",
+          "CronAiAthon-ErrorLinker",
+          "CronAiAthon-EventLog",
+          "CronAiAthon-Pipeline",
+          "CronAiAthon-Scheduler",
+          "Get-LaunchTelemetry",
+          "Import-WorkspaceModule",
+          "PKIChainManager",
+          "PwSh-HelpFilesUpdateSource-ReR",
+          "PwShGUI_AutoIssueFinder",
+          "PwShGUI-AgentScorecard",
+          "PwShGUI-AiActionLog",
+          "PwShGUI-AutoRemediate",
+          "PwShGUI-BreakingChange",
+          "PwShGUI-CheckpointPrune",
+          "PwShGUI-ConvoVault",
+          "PwShGUI-CoverageReport",
+          "PwShGUI-DependencyMap",
+          "PwShGUI-EventLogAdapter",
+          "PwShGUI-EventLogReplay",
+          "PwShGUI-HistoryZip",
+          "PwShGUI-IntegrityCore",
+          "PwShGUI-KillSwitch",
+          "PwShGUI-LaunchTimingProfile",
+          "PwShGUI-LegacyEncoding",
+          "PwShGUI-ManifestDiff",
+          "PwShGUI-NetworkTools",
+          "PwShGUI-PesterParallel",
+          "PwShGUI-PSScriptAnalyzerScan",
+          "PwShGUI-PSVersionStandards",
+          "PwShGUI-SchemaTranslator",
+          "PwShGUI-SecretScan",
+          "PwShGUI-SessionMetrics",
+          "PwShGUI-SinDriftScan",
+          "PwShGUI-SinFixBranch",
+          "PwShGUI-SinFromScan",
+          "PwShGUI-SinHeatmap",
+          "PwShGUI-Theme",
+          "PwShGUI-TrayHost",
+          "PwShGUI-TrayServiceRoutes",
+          "PwShGUI-VersionManager",
+          "PwShGUI-VersionTag",
+          "PwShGUI-WebEngineServices",
+          "PwShGUI-WorkspaceSeed",
+          "PwShGUI-XhtmlReportTester",
+          "RE-memorAiZ",
+          "SASC-Adapters",
+          "SINGovernance",
+          "UserProfileManager",
+          "WorkspaceIntentReview"
+        ],
+        "message": "Encoding compliance: 53 file(s) with Unicode content lack UTF-8 BOM (P006 violation)",
+        "remediation": "Convert files to UTF-8 with BOM. Use PowerShell: $content | Set-Content -Encoding UTF8"
+      }
+    ],
+    "productionReadyGates": [],
+    "stampRecords": []
+  }
+}

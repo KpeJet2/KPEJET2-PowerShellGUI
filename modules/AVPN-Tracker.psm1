@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -11,6 +11,13 @@
 
 # ── DPAPI credential helpers ────────────────────────────────────────────────
 $script:_DpapiPrefix = 'DPAPI:'
+
+if (-not (Get-Command Write-AppLog -ErrorAction SilentlyContinue)) {
+    function Write-AppLog {
+        param([string]$Message, [string]$Level = 'Info')
+        Write-Verbose "[$Level] $Message"
+    }
+}
 
 function Protect-AVPNCredential {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Caller-supplied plaintext is the API contract; immediately wrapped via ConvertFrom-SecureString (DPAPI) for at-rest storage. Removing -AsPlainText is impossible for this conversion direction.')]
@@ -43,19 +50,19 @@ function Invoke-AVPNLog {
         [string]$Message,
         [string]$Level = "Info"
     )
+
+    $appLogLevel = switch ($Level) {
+        'Error' { 'Error' }
+        'Warning' { 'Warning' }
+        'Event' { 'Info' }
+        default { 'Info' }
+    }
+
     if ($LogCallback) {
         & $LogCallback $Message $Level
-    } else {
-        # Use Write-Warning for all non-info levels so errors surface to caller
-        # (the error-swallowing pattern that was previously here silently bypassed callers' -ErrorAction Stop)
-        if ($Level -eq "Error") {
-            Write-AppLog -Message "[AVPN][ERROR] $Message" -Level Warning
-        } elseif ($Level -eq "Warning") {
-            Write-AppLog -Message "[AVPN][$Level] $Message" -Level Warning
-        } else {
-            Write-Verbose "[AVPN][$Level] $Message"
-        }
     }
+
+    Write-AppLog -Message "[AVPN][$Level] $Message" -Level $appLogLevel
 }
 
 function Get-AVPNDefaultTemplateList {
@@ -432,13 +439,25 @@ function Show-AVPNDeviceTypeDialog {
     $okBtn = New-Object System.Windows.Forms.Button
     $okBtn.Text = "Save"
     $okBtn.Location = New-Object System.Drawing.Point(160, 340)
-    $okBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dialog.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $okBtn.Add_Click({
+        try {
+            $dialog.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dialog.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $dialog.Controls.Add($okBtn)
 
     $cancelBtn = New-Object System.Windows.Forms.Button
     $cancelBtn.Text = "Cancel"
     $cancelBtn.Location = New-Object System.Drawing.Point(250, 340)
-    $cancelBtn.Add_Click({ $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $dialog.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $cancelBtn.Add_Click({
+        try {
+            $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel; $dialog.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     $dialog.Controls.Add($cancelBtn)
 
     if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { $dialog.Dispose(); return $null }
@@ -535,7 +554,8 @@ function Show-AVPNDeviceTypeEditor {
         }
     }
 
-    $addBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $addBtn.Add_Click({
+        try {
         $nextId = if ($Templates.Count -gt 0) { ($Templates | Measure-Object -Property id -Maximum).Maximum + 1 } else { 1 }
         $newTemplate = Show-AVPNDeviceTypeDialog -NextId $nextId
         if ($newTemplate) {
@@ -543,9 +563,13 @@ function Show-AVPNDeviceTypeEditor {
             Invoke-AVPNLog -LogCallback $deviceTypeLogCallback -Message "Added device template: $($newTemplate.type)" -Level "Info"
             & $refresh
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $editBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $editBtn.Add_Click({
+        try {
         if ($list.SelectedItems.Count -eq 0) { return }
         $id = [int]$list.SelectedItems[0].Text
         $template = $Templates | Where-Object { $_.id -eq $id } | Select-Object -First 1
@@ -556,17 +580,30 @@ function Show-AVPNDeviceTypeEditor {
             Invoke-AVPNLog -LogCallback $deviceTypeLogCallback -Message "Updated device template: $($updated.type)" -Level "Info"
             & $refresh
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $removeBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $removeBtn.Add_Click({
+        try {
         if ($list.SelectedItems.Count -eq 0) { return }
         $id = [int]$list.SelectedItems[0].Text
         $Templates = @($Templates | Where-Object { $_.id -ne $id })
         Invoke-AVPNLog -LogCallback $deviceTypeLogCallback -Message "Removed device template id $id" -Level "Warning"
         & $refresh
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $closeBtn.Add_Click({ $form.Close() })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $closeBtn.Add_Click({
+        try {
+            $form.Close()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     & $refresh
     $form.ShowDialog() | Out-Null
@@ -678,7 +715,13 @@ function Show-AVPNConnectionTracker {
         }
     }
 
-    $typeCombo.Add_SelectedIndexChanged({ & $refreshTemplateList })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $typeCombo.Add_SelectedIndexChanged({
+        try {
+            & $refreshTemplateList
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     & $refreshTypeCombo
     & $refreshTemplateList
 
@@ -1181,19 +1224,28 @@ function Show-AVPNConnectionTracker {
                 }
             }
 
-            $box.Add_MouseDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $box.Add_MouseDown({
+                try {
                 $dragState.Active = $true
                 $dragState.Control = $this
                 $dragState.Offset = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
             })
-            $box.Add_MouseMove({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $box.Add_MouseMove({
+                try {
                 if (-not $dragState.Active) { return }
                 $newX = $this.Left + ($args[1].X - $dragState.Offset.X)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
                 $newY = $this.Top + ($args[1].Y - $dragState.Offset.Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
                 $this.Location = New-Object System.Drawing.Point($newX, $newY)
                 $canvas.Invalidate()
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+                }
             })
-            $box.Add_MouseUp({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $box.Add_MouseUp({
+                try {
                 $dragState.Active = $false
                 $dragState.Control = $null
                 $dragState.Offset = $null
@@ -1209,6 +1261,9 @@ function Show-AVPNConnectionTracker {
                     } else {
                         $targetDevice | Add-Member -NotePropertyName 'location' -NotePropertyValue $newLocation -Force
                     }
+                }
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
                 }
             })
 
@@ -1229,7 +1284,8 @@ function Show-AVPNConnectionTracker {
         }
     }
 
-    $canvas.Add_Paint({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $canvas.Add_Paint({
+        try {
         $g = $args[1].Graphics  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
 
@@ -1370,6 +1426,9 @@ function Show-AVPNConnectionTracker {
                 }
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Helper: find all matching available input connectors for a given output ──
@@ -1405,7 +1464,8 @@ function Show-AVPNConnectionTracker {
 
 
     # Canvas mouse handlers for connector drag-and-drop
-    $canvas.Add_MouseDown({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $canvas.Add_MouseDown({
+        try {
         $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $mouseY = $args[1].Y  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
         $btn    = $args[1].Button  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
@@ -1439,7 +1499,7 @@ function Show-AVPNConnectionTracker {
                             DstInst = $m.Device.instanceId
                             DstConn = "$($m.Type):$($m.Index)"
                         }
-                        $mi.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+                        $mi.Add_Click({
                             $t = $this.Tag
                             $newConn = [pscustomobject]@{
                                 SourceInstance  = $t.SrcInst
@@ -1492,16 +1552,24 @@ function Show-AVPNConnectionTracker {
                 }
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $canvas.Add_MouseMove({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $canvas.Add_MouseMove({
+        try {
         if ($connectorDragState.Active) {
             $connectorDragState.MousePos = [System.Drawing.Point]::new($args[1].X, $args[1].Y)  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
             $canvas.Invalidate()
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $canvas.Add_MouseUp({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $canvas.Add_MouseUp({
+        try {
         if (-not $connectorDragState.Active) { return }
 
         $mouseX = $args[1].X  # SIN-EXEMPT: P027 - $args[N] in ScriptBlock/event-handler delegate (always populated by caller)
@@ -1586,9 +1654,13 @@ function Show-AVPNConnectionTracker {
         $connectorDragState.SourceIsInput = $null
         $connectorDragState.MousePos = $null
         $canvas.Invalidate()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $manageTypesBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $manageTypesBtn.Add_Click({
+        try {
         $templates = Show-AVPNDeviceTypeEditor -Templates $templates -LogCallback $LogCallback
         & $refreshTypeCombo
         & $refreshTemplateList
@@ -1602,9 +1674,13 @@ function Show-AVPNConnectionTracker {
             Save-AVPNDeviceTypeList -Templates $templates -DeviceTypesPath $deviceTypesPath
         }
         Save-AVPNConfig -ConfigData $config -ConfigPath $ConfigPath
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $addBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $addBtn.Add_Click({
+        try {
         if ($templateList.SelectedIndex -lt 0) {
             [System.Windows.Forms.MessageBox]::Show("Select a device template.", "AVPN") | Out-Null
             return
@@ -1645,9 +1721,13 @@ function Show-AVPNConnectionTracker {
         $qtyUpDown.Value = 1
         & $refreshInventoryUI
         $canvas.Invalidate()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $removeBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $removeBtn.Add_Click({
+        try {
         if ($inventoryList.SelectedItems.Count -eq 0) { return }
         $selectedItemTag = $inventoryList.SelectedItems[0].Tag
         $device = $inventory | Where-Object { $_.instanceId -eq $selectedItemTag } | Select-Object -First 1
@@ -1660,9 +1740,13 @@ function Show-AVPNConnectionTracker {
         foreach ($c in $toRemove) { [void]$connections.Remove($c) }
         & $refreshInventoryUI
         $canvas.Invalidate()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $editBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $editBtn.Add_Click({
+        try {
         if ($inventoryList.SelectedItems.Count -eq 0) { return }
         $selectedItemTag = $inventoryList.SelectedItems[0].Tag
         $device = $inventory | Where-Object { $_.instanceId -eq $selectedItemTag } | Select-Object -First 1
@@ -1738,7 +1822,7 @@ function Show-AVPNConnectionTracker {
         $showPassCheck.Text = "Show Password"
         $showPassCheck.Location = New-Object System.Drawing.Point(120, 130)
         $showPassCheck.Size = New-Object System.Drawing.Size(140, 20)
-        $showPassCheck.Add_CheckedChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $showPassCheck.Add_CheckedChanged({
             $passTextBox.UseSystemPasswordChar = -not $showPassCheck.Checked
         })
         $propForm.Controls.Add($showPassCheck)
@@ -1787,9 +1871,13 @@ function Show-AVPNConnectionTracker {
         }
 
         $propForm.Dispose()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $resetBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $resetBtn.Add_Click({
+        try {
         $script:placementIndex = 0
         foreach ($device in $inventory) {
             $pos = & $getNextPosition
@@ -1801,9 +1889,13 @@ function Show-AVPNConnectionTracker {
             }
         }
         & $refreshInventoryUI
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $alignBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $alignBtn.Add_Click({
+        try {
         foreach ($ctrl in $canvas.Controls) {
             & $snapToGrid $ctrl
         }
@@ -1819,10 +1911,14 @@ function Show-AVPNConnectionTracker {
             }
         }
         $canvas.Invalidate()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Auto Plug All: connect every unconnected Power Input to an unused Power Output socket ──
-    $autoPlugBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $autoPlugBtn.Add_Click({
+        try {
         # Build list of available Power Output ports
         $availOutputs = New-Object System.Collections.ArrayList
         foreach ($dev in $inventory) {
@@ -1879,16 +1975,24 @@ function Show-AVPNConnectionTracker {
         }
         [System.Windows.Forms.MessageBox]::Show($msg, "AVPN Auto Plug", [System.Windows.Forms.MessageBoxButtons]::OK,
             $(if ($unpowered.Count -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } else { [System.Windows.Forms.MessageBoxIcon]::Information })) | Out-Null
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $saveBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveBtn.Add_Click({
+        try {
         $defaultPath = Join-Path (Split-Path $ConfigPath -Parent) "AVPN-inventory.csv"
         Export-AVPNCsv -Inventory $inventory -Connections $connections -Path $defaultPath
         Invoke-AVPNLog -LogCallback $LogCallback -Message "Exported AVPN CSV to $defaultPath" -Level "Info"
         [System.Windows.Forms.MessageBox]::Show("Exported CSV to $defaultPath", "AVPN") | Out-Null
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $saveAsBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $saveAsBtn.Add_Click({
+        try {
         $dialog = New-Object System.Windows.Forms.SaveFileDialog
         $dialog.Filter = "CSV files (*.csv)|*.csv"
         $dialog.FileName = "AVPN-inventory.csv"
@@ -1896,9 +2000,13 @@ function Show-AVPNConnectionTracker {
             Export-AVPNCsv -Inventory $inventory -Connections $connections -Path $dialog.FileName
             Invoke-AVPNLog -LogCallback $LogCallback -Message "Exported AVPN CSV to $($dialog.FileName)" -Level "Info"
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $loadBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $loadBtn.Add_Click({
+        try {
         $dialog = New-Object System.Windows.Forms.OpenFileDialog
         $dialog.Filter = "CSV files (*.csv)|*.csv"
         if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
@@ -1915,37 +2023,57 @@ function Show-AVPNConnectionTracker {
                 [System.Windows.Forms.MessageBox]::Show("Failed to load AVPN CSV: $($_.Exception.Message)", "AVPN") | Out-Null
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $srcDeviceCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $srcDeviceCombo.Add_SelectedIndexChanged({
+        try {
         if ($srcDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$srcDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $srcTypeCombo $srcIndexUpDown
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $destDeviceCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $destDeviceCombo.Add_SelectedIndexChanged({
+        try {
         if ($destDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$destDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $destTypeCombo $destIndexUpDown
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $srcTypeCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $srcTypeCombo.Add_SelectedIndexChanged({
+        try {
         if ($srcDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$srcDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $srcTypeCombo $srcIndexUpDown
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $destTypeCombo.Add_SelectedIndexChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $destTypeCombo.Add_SelectedIndexChanged({
+        try {
         if ($destDeviceCombo.SelectedIndex -ge 0) {
             $device = $inventory[$destDeviceCombo.SelectedIndex]
             & $updateConnectorBounds $device $destTypeCombo $destIndexUpDown
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $addConnBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $addConnBtn.Add_Click({
+        try {
         if ($srcDeviceCombo.SelectedIndex -lt 0 -or $destDeviceCombo.SelectedIndex -lt 0) {
             [System.Windows.Forms.MessageBox]::Show("Select source and destination devices.", "AVPN") | Out-Null
             return
@@ -1988,9 +2116,13 @@ function Show-AVPNConnectionTracker {
         [void]$connections.Add($conn)
         & $refreshInventoryUI
         $canvas.Invalidate()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $connRemoveBtn.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $connRemoveBtn.Add_Click({
+        try {
         if ($connList.SelectedItems.Count -eq 0) { return }
         $index = $connList.SelectedItems[0].Index
         if ($index -ge 0 -and $index -lt $connections.Count) {
@@ -1998,9 +2130,13 @@ function Show-AVPNConnectionTracker {
             & $refreshInventoryUI
             $canvas.Invalidate()
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_FormClosing({
+        try {
         foreach ($device in $inventory) {
             if ($device.PSObject.Properties['connections']) {
                 $device.connections = @()
@@ -2043,6 +2179,9 @@ function Show-AVPNConnectionTracker {
         }
 
         Save-AVPNConfig -ConfigData $config -ConfigPath $ConfigPath
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     & $refreshInventoryUI
@@ -2066,7 +2205,26 @@ function Show-AVPNConnectionTracker {
 <# ToDo:
     Stub: list pending work here.
 #>
-Export-ModuleMember -Function Show-AVPNConnectionTracker, Initialize-AVPNConfigFile, Get-AVPNConfig, Save-AVPNConfig
+Export-ModuleMember -Function @(
+    'Show-AVPNConnectionTracker',
+    'Initialize-AVPNConfigFile',
+    'Get-AVPNConfig',
+    'Save-AVPNConfig',
+    'Protect-AVPNCredential',
+    'Unprotect-AVPNCredential',
+    'Get-AVPNDefaultTemplateList',
+    'Get-AVPNDeviceTypesPath',
+    'Initialize-AVPNDeviceTypesFile',
+    'Get-AVPNDeviceTypeList',
+    'Save-AVPNDeviceTypeList',
+    'Get-AVPNConnectorCount',
+    'Test-AVPNConnectionValid',
+    'Export-AVPNCsv',
+    'Import-AVPNCsv'
+)
+
+
+
 
 
 

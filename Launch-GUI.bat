@@ -1,6 +1,8 @@
 @echo off
-REM VersionTag: 2605.B5.V46.0
+chcp 65001 >nul
+REM VersionTag: 2606.B5.V46.1
 REM VersionBuildHistory:
+REM   2606.B5.V46.1  2026-06-18  Add chcp 65001 so box-drawing banners render correctly (SIN-PATTERN-082)
 REM   2604.B2.V31.1  2026-04-12  Bootstrap PSModulePath so all child PowerShell processes find modules
 REM   2604.B2.V31.0  2026-04-04  Added switch parameters (/usepsv:5|7, /scriptsec:1-6, /skipps7, /skippolicy), cleaned echo output
 REM   2604.B2.V31.0  2026-04-04  PS7 detection, exec policy diagnostics, launch logging, CFRMenu
@@ -105,7 +107,7 @@ if exist "%scriptDir%scripts\Invoke-SASCIntegrityPreflight.ps1" (
     set "SASC_PREFLIGHT_SHELL=powershell"
     for /f "tokens=*" %%A in ('pwsh -NoProfile -Command "$PSVersionTable.PSVersion.Major" 2^>nul') do set "SASC_PWSH_VERSION=%%A"
     if defined SASC_PWSH_VERSION set "SASC_PREFLIGHT_SHELL=pwsh"
-    !SASC_PREFLIGHT_SHELL! -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%scripts\Invoke-SASCIntegrityPreflight.ps1" -WorkspacePath "%scriptDir%" -Interactive -Quiet
+    !SASC_PREFLIGHT_SHELL! -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%scripts\Invoke-SASCIntegrityPreflight.ps1" -WorkspacePath "%scriptDir:~0,-1%" -Interactive -Quiet
     set "SASC_PREFLIGHT_EXIT=!errorlevel!"
     if "!SASC_PREFLIGHT_EXIT!"=="0" (
         echo [OK] SASC integrity preflight passed.
@@ -376,7 +378,7 @@ if %errorlevel%==1 (
     echo This may take a few minutes. Please wait...
     echo.
     winget install --id Microsoft.Powershell --source winget --silent --accept-package-agreements --accept-source-agreements
-    
+
     if %errorlevel%==0 (
         echo.
         echo ╔═══════════════════════════════════════════════════════════════╗
@@ -539,15 +541,16 @@ REM ============================================================
 :LogLaunch
 REM Ensure logs directory exists
 if not exist "%scriptDir%logs\" mkdir "%scriptDir%logs\" 2>nul
+if not exist "%scriptDir%logs\script-exec\" mkdir "%scriptDir%logs\script-exec\" 2>nul
 
 REM Check if this is first launch (log file doesn't exist)
-if not exist "%scriptDir%logs\Main-GUI_BATCH-LOG.log" (
+if not exist "%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log" (
     set "FIRST_LAUNCH=TRUE"
     REM Create CSV header
-    echo Timestamp,BatchName,VersionTag,MachineName,Username,IPAddress,BatchPath,SystemVolume,SystemVolFreeSpace,MemoryUsedOfTotal,CPULoad,GPULoad,TotalProcesses,IsAdmin > "%scriptDir%logs\Main-GUI_BATCH-LOG.log"
+    echo Timestamp,BatchName,VersionTag,MachineName,Username,IPAddress,BatchPath,SystemVolume,SystemVolFreeSpace,MemoryUsedOfTotal,CPULoad,GPULoad,TotalProcesses,IsAdmin > "%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log"
 )
 
 REM Collect and append telemetry
-powershell -ExecutionPolicy Bypass -NoProfile -Command "Import-Module '%scriptDir%modules\Get-LaunchTelemetry.psm1' -Force; Get-LaunchTelemetry -BatchName 'Launch-GUI.bat' -VersionTag '2604.B2.V31.0' -BatchPath '%~f0' | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Out-File '%scriptDir%logs\Main-GUI_BATCH-LOG.log' -Append -Encoding UTF8"
+powershell -ExecutionPolicy Bypass -NoProfile -Command "Import-Module '%scriptDir%modules\Get-LaunchTelemetry.psm1' -Force; Get-LaunchTelemetry -BatchName 'Launch-GUI.bat' -VersionTag '2604.B2.V31.0' -BatchPath '%~f0' | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Out-File '%scriptDir%logs\script-exec\Main-GUI_BATCH-LOG.log' -Append -Encoding UTF8"
 
 goto :eof

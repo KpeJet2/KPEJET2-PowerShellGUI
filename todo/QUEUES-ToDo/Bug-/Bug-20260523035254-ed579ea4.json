@@ -1,0 +1,57 @@
+﻿{
+    "id":  "Bug-20260523035254-ed579ea4",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Scanner-detected violations of SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS in tests\\Invoke-PipelineChurnLifecycle.Tests.ps1 (3 hits).\nTitle: Hyphenated IN-PROGRESS status token drift\nSeverity: HIGH\n\nSample matches:\nline 70: It \u0027decomposes feature into TODO-PA items and moves OPEN bugs to IN-PROGRESS\u0027 {\nline 108: $feature.status | Should -Be \u0027IN-PROGRESS\u0027\nline 114: if ($bug.status -eq \u0027IN-PROGRESS\u0027) { $inProgressCount++ }",
+    "lastSeenAt":  "2026-05-22T19:52:54.4606015Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "[SIN-SCAN] SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS :: Hyphenated IN-PROGRESS status token drift",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-22T19:52:54.4606015Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "SIN-Scanner",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "tests\\Invoke-PipelineChurnLifecycle.Tests.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "executionAgent":  "",
+    "implementedAt":  null,
+    "notes":  "Created by Convert-SinScanToBugs from SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS hotspot (3 line hits).",
+    "bugReferrals":  [
+
+                     ],
+    "category":  "sin-scan",
+    "reopenedAt":  null,
+    "created":  "2026-05-22T19:52:54.4595529Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "sinPattern":  "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+    "modified":  "2026-05-22T19:52:54.4595529Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

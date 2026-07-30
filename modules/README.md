@@ -1,6 +1,6 @@
 # modules/ Directory
 
-> VersionTag: 2605.B5.V46.0 | Auto-generated index of all modules
+> VersionTag: 2605.B5.V50.2 | Auto-generated index of all modules
 
 ## Core Infrastructure
 
@@ -18,12 +18,12 @@
 
 | Module | Description | Approx Lines |
 |--------|-------------|-------------|
-| CronAiAthon-Pipeline.psm1 | Unified pipeline registry for Features, Bugs, Todos | ~1500 |
+| CronAiAthon-Pipeline.psm1 | Unified pipeline registry for Features, Bugs, Todos with queue gateway alignment | ~1500 |
 | CronAiAthon-Scheduler.psm1 | Cyclic job execution, history, and scheduling | ~800 |
 | CronAiAthon-EventLog.psm1 | EventLog & SYSLOG -- Windows Event Log integration | ~600 |
 | CronAiAthon-BugTracker.psm1 | Bug detection, classification, and tracking | ~700 |
 | SINGovernance.psm1 | SIN pattern governance and enforcement | ~500 |
-| RE-memorAiZ.psm1 | Pipeline completeness enforcement, agent handback, workspace memory | ~520 |
+| RE-memorAiZ.psm1 | Pipeline completeness enforcement, queue handback integrity, workspace memory | ~520 |
 
 ## Workspace Governance
 
@@ -112,4 +112,4 @@ Show-WorkspaceIntentReview.ps1
 | PwShGUICore.psm1 | ~1800 | Logging vs lifecycle vs UI helpers |
 
 ---
-*24 modules total. Generated for CronProcessor pipeline step 7b.*
+*Manifest currently reports >50 module entries (including generated and specialization surfaces); this README remains a curated operator index and should be reconciled with config/agentic-manifest.json for exact counts.*

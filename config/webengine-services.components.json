@@ -1,0 +1,84 @@
+{
+  "VersionTag": "2607.B6.V53.0",
+  "schema": "WebEngineServicesConfig/1.0",
+  "_versionTag": "2605.B5.V51.2",
+  "hotReload": {
+    "enabled": true,
+    "pollSeconds": 20
+  },
+  "components": [
+    {
+      "componentId": "svc-cluster-dashboard",
+      "name": "ServiceClusterDashboard",
+      "path": "scripts/service-cluster-dashboard/Launch-ServiceClusterDashboard.bat",
+      "startArgs": [],
+      "statusHints": [
+        "Launch-ServiceClusterDashboard.bat",
+        "uvicorn server:app",
+        "--port 8099"
+      ],
+      "enabled": true,
+      "controlMode": "toggle",
+      "objectVersion": "1.0.0",
+      "upgradeScript": ""
+    },
+    {
+      "componentId": "engine-bootstrap",
+      "name": "EngineBootstrap",
+      "path": "scripts/Start-Engines.ps1",
+      "startArgs": [
+        "-Quiet"
+      ],
+      "statusHints": [
+        "Start-Engines.ps1"
+      ],
+      "enabled": true,
+      "controlMode": "toggle",
+      "objectVersion": "1.0.0",
+      "upgradeScript": ""
+    },
+    {
+      "componentId": "engine-monitor",
+      "name": "Start-EngineServiceMonitor",
+      "path": "scripts/Invoke-EngineServiceMonitor.ps1",
+      "startArgs": [
+        "/AUTO",
+        "-Quiet"
+      ],
+      "statusHints": [
+        "Invoke-EngineServiceMonitor.ps1",
+        "engine-monitor"
+      ],
+      "enabled": true,
+      "controlMode": "toggle",
+      "objectVersion": "1.0.0",
+      "upgradeScript": ""
+    },
+    {
+      "componentId": "cron-processor-1",
+      "name": "Invoke-CronProcessor.ps1 #1",
+      "path": "scripts/Invoke-CronProcessor.ps1",
+      "startArgs": [],
+      "statusHints": [
+        "Invoke-CronProcessor.ps1"
+      ],
+      "enabled": true,
+      "controlMode": "toggle",
+      "objectVersion": "1.0.0",
+      "upgradeScript": ""
+    },
+    {
+      "componentId": "cron-processor-2",
+      "name": "Invoke-CronProcessor.ps1 #2",
+      "path": "scripts/Invoke-CronProcessor.ps1",
+      "startArgs": [],
+      "statusHints": [
+        "Invoke-CronProcessor.ps1"
+      ],
+      "enabled": true,
+      "controlMode": "toggle",
+      "objectVersion": "1.0.0",
+      "upgradeScript": ""
+    }
+  ]
+}

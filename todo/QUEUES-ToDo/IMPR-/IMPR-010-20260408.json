@@ -1,0 +1,24 @@
+{
+  "id": "IMPR-010-20260408",
+  "title": "AI Bug Triage via Foundry Agent",
+  "description": "Wire bug-parse-*.json into Foundry agent for auto-classification, severity rating, and IMPL todo creation.",
+  "status": "PLANNED",
+  "priority": "LOW",
+  "effort": "8-12h",
+  "affectedFiles": "agents/bug-triage-agent",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": "Chief-AutoApproval-Batch",
+  "decision": "APPROVED",
+  "approvedAt": "2026-05-21T03:53:51.0204167+08:00",
+  "modified": "2026-05-21T03:53:51.0204167+08:00",
+  "modifiedAt": "2026-05-21T03:53:51.0204167+08:00",
+  "status_history": [
+    {
+      "timestamp": "2026-05-21T03:53:51.0204167+08:00",
+      "by": "Chief-AutoApproval-Batch",
+      "status": "PLANNED",
+      "note": "Auto-approved from PENDING_APPROVAL"
+    }
+  ]
+}

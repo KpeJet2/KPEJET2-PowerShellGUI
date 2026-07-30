@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 <#
 .SYNOPSIS
   Windows Terminal Layout & Profile Manager with GUI, layout memory, ping grid, ARP, and config backup/restore.
@@ -376,9 +376,27 @@ $miShow    = New-Object System.Windows.Forms.ToolStripMenuItem("Check & Show")
 $miSave    = New-Object System.Windows.Forms.ToolStripMenuItem("Save Config")
 $miRestore = New-Object System.Windows.Forms.ToolStripMenuItem("Restore Config")
 
-$miShow.Add_Click({ Show-TerminalConfigInfo })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-$miSave.Add_Click({ Save-TerminalConfig })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-$miRestore.Add_Click({ Restore-TerminalConfig })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$miShow.Add_Click({
+    try {
+        Show-TerminalConfigInfo
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
+$miSave.Add_Click({
+    try {
+        Save-TerminalConfig
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
+$miRestore.Add_Click({
+    try {
+        Restore-TerminalConfig
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
+})
 
 $terminalMenu.DropDownItems.AddRange(@($miShow, $miSave, $miRestore))
 $menuStrip.Items.Add($terminalMenu)
@@ -418,7 +436,8 @@ $btnOpenLayouts.Location = New-Object System.Drawing.Point(10, 350)
 $btnOpenLayouts.Size = New-Object System.Drawing.Size(200, 30)
 $form.Controls.Add($btnOpenLayouts)
 
-$btnOpenLayouts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnOpenLayouts.Add_Click({
+    try {
     # Save current selections to memory
     foreach ($row in $profilesGrid.Rows) {
         $profileName = $row.Cells[0].Value  # SIN-EXEMPT: P022 - false positive: DataGridView column/cell index on populated grid
@@ -454,6 +473,9 @@ $btnOpenLayouts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
     }
 
     Start-Process $cmd -ArgumentList $args
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # Ping targets grid
@@ -481,8 +503,12 @@ $btnPing.Location = New-Object System.Drawing.Point(680, 270)
 $btnPing.Size = New-Object System.Drawing.Size(150, 30)
 $form.Controls.Add($btnPing)
 
-$btnPing.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnPing.Add_Click({
+    try {
     Start-PingLayout -PingGrid $pingGrid
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # ARP checkbox and grid
@@ -520,25 +546,37 @@ $btnArpHtml.Location = New-Object System.Drawing.Point(180, 350)
 $btnArpHtml.Size = New-Object System.Drawing.Size(200, 30)
 $form.Controls.Add($btnArpHtml)
 
-$btnRunArp.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnRunArp.Add_Click({
+    try {
     if ($chkArp.Checked) {
         Run-ArpScan -OutputGrid $arpGrid
     } else {
         [System.Windows.Forms.MessageBox]::Show("ARP checkbox is not ticked.")
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$btnArpHtml.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$btnArpHtml.Add_Click({
+    try {
     if ($chkArp.Checked) {
         Export-ArpToHtml -OutputGrid $arpGrid
     } else {
         [System.Windows.Forms.MessageBox]::Show("Enable ARP local subnet first.")
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # On form closing, ensure baseline config exists
-$form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$form.Add_FormClosing({
+    try {
     Ensure-HostBaselineConfig
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 [void]$form.ShowDialog()
@@ -554,5 +592,7 @@ $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 

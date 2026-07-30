@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-29
@@ -45,7 +45,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$logDir = Join-Path $WorkspacePath 'logs'
+$logDir = Join-Path (Join-Path $WorkspacePath 'logs') 'pipeline'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir ("diffscheduler-" + (Get-Date -Format 'yyyyMMdd-HHmmss') + ".log")
 
@@ -203,4 +203,6 @@ if ($Continuous) {
 }
 Write-DsLog 'DiffScheduler complete'
 exit 0
+
+
 

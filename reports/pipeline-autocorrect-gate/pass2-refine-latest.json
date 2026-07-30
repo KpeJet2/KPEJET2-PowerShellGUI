@@ -1,0 +1,844 @@
+{
+  "summary": {
+    "scanId": "PIPE-REFINE-PASS2-SNAPSHOT",
+    "workspace": "C:\\PowerShellGUI",
+    "timestamp": "2026-07-28T01:14:09.7352245+08:00",
+    "requiredPathChecks": 16,
+    "pathRegistryLoaded": true,
+    "pathRegistry": "config/pipeline-canonical-paths.json",
+    "pathRegistryMissing": 0,
+    "deprecatedReferenceHits": 1,
+    "stagedOnly": false,
+    "stagedFileCount": 0,
+    "baselineProfile": "nightly",
+    "duplicateFunctionGroups": 69,
+    "duplicateFunctionAllowlisted": 7,
+    "versionTagIssues": 0,
+    "dotfilePlacementIssues": 0,
+    "readmeManagedMarkers": true,
+    "findingsBySeverity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 21,
+      "LOW": 0
+    },
+    "countsByKey": {
+      "MEDIUM:deprecated-reference": 1,
+      "MEDIUM:duplicate-function": 20
+    },
+    "baselinePath": "./config/pipeline-refine-baseline-nightly.json",
+    "baselineApplied": true,
+    "regressions": [],
+    "improvements": [],
+    "blockingSeverities": [
+      "CRITICAL",
+      "HIGH",
+      "MEDIUM"
+    ],
+    "totalFindings": 21
+  },
+  "findings": [
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "config/pipeline-canonical-paths.json"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Write-Log",
+      "path": "scripts/Build-DynaManifest.ps1:L95"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-RelativePath",
+      "path": "scripts/Add-XhtmlVersionLink.ps1:L73"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Save-LayoutMemory",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L53"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Export-ArpToHtml",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L206"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-WTConfigFiles",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L234"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Save-TerminalConfig",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L242"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Emit-Event",
+      "path": "scripts/Invoke-AutoApprovalWriter.ps1:L72"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Ensure-HostBaselineConfig",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L345"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-WTLayoutArgs",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L129"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-WTProfiles",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L100"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-WTSettingsPath",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L78"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Load-LayoutMemory",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L38"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Show-TerminalConfigInfo",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L327"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Run-ArpScan",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L186"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Get-ProfileLayoutSelection",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L57"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Set-ProfileLayoutSelection",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L69"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Read-DatFile",
+      "path": "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector0/FileInspector.ps1:L15"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Start-PingLayout",
+      "path": "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L149"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Send-Error",
+      "path": "scripts/Start-LocalWebEngine.ps1:L996"
+    },
+    {
+      "category": "duplicate-function",
+      "severity": "MEDIUM",
+      "message": "Function appears across multiple files: Write-ServiceLog",
+      "path": "scripts/Start-LocalWebEngineService.ps1:L127"
+    }
+  ],
+  "duplicateFunctions": [
+    {
+      "functionName": "Wait-KeyOrTimeout",
+      "filesCount": 9,
+      "locations": [
+        "modules/PwShGUICore.psm1:L456",
+        "scripts/Script-A.ps1:L53",
+        "scripts/Script-B.ps1:L53",
+        "scripts/Script-C.ps1:L53",
+        "scripts/Script-D.ps1:L53",
+        "scripts/Script-E.ps1:L53",
+        "scripts/Script-F - LinkToConfigJson.ps1:L108",
+        "scripts/Script-F-LinkToConfigJson.ps1:L110",
+        "scripts/Script-F.ps1:L158"
+      ]
+    },
+    {
+      "functionName": "Write-AppLog",
+      "filesCount": 9,
+      "locations": [
+        "modules/AVPN-Tracker.psm1:L16",
+        "modules/CronAiAthon-Pipeline.psm1:L45",
+        "modules/PwShGUI_AutoIssueFinder.psm1:L13",
+        "modules/PwShGUI-ConvoVault.psm1:L45",
+        "modules/PwShGUICore.psm1:L281",
+        "modules/UserProfileManager.psm1:L35",
+        "scripts/Build-AgenticManifest.ps1:L70",
+        "scripts/Invoke-AgentCallStats.ps1:L26",
+        "scripts/Script6.ps1:L52"
+      ]
+    },
+    {
+      "functionName": "Write-Log",
+      "filesCount": 5,
+      "locations": [
+        "scripts/Build-DynaManifest.ps1:L95",
+        "scripts/Install-BitwardenLite.ps1:L61",
+        "scripts/Invoke-ChangelogDiff.ps1:L73",
+        "scripts/Invoke-DynaManifestValidation.ps1:L73",
+        "scripts/Run-FullPipeline.ps1:L28"
+      ]
+    },
+    {
+      "functionName": "New-StyledButton",
+      "filesCount": 4,
+      "locations": [
+        "scripts/Show-CronAiAthonTool.ps1:L96",
+        "scripts/Show-WorkspaceIntentReview.ps1:L108",
+        "scripts/UserProfile-Manager.ps1:L164",
+        "UPM/UserProfile-Manager.ps1:L219"
+      ]
+    },
+    {
+      "functionName": "Get-RelativePath",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Add-XhtmlVersionLink.ps1:L73",
+        "scripts/Build-SandboxTestingPlan.ps1:L31",
+        "scripts/Invoke-RenameProposal.ps1:L72"
+      ]
+    },
+    {
+      "functionName": "Save-LayoutMemory",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L53",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L49",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L51"
+      ]
+    },
+    {
+      "functionName": "Export-ArpToHtml",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L206",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L225",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L222"
+      ]
+    },
+    {
+      "functionName": "Get-WTConfigFiles",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L234",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L251",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L245"
+      ]
+    },
+    {
+      "functionName": "Save-TerminalConfig",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L242",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L258",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L269"
+      ]
+    },
+    {
+      "functionName": "Emit-Event",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Invoke-AutoApprovalWriter.ps1:L72",
+        "scripts/Invoke-DiffScheduler.ps1:L66",
+        "scripts/Invoke-EventLogStandardSweep.ps1:L39"
+      ]
+    },
+    {
+      "functionName": "Ensure-HostBaselineConfig",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L345",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L364",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L354"
+      ]
+    },
+    {
+      "functionName": "Get-WTLayoutArgs",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L129",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L114",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L120"
+      ]
+    },
+    {
+      "functionName": "Get-FileEncodingInfo",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Add-VersionTag.ps1:L37",
+        "scripts/Apply-CanonicalVersion.ps1:L28",
+        "scripts/Raise-AllVersionTags.ps1:L34"
+      ]
+    },
+    {
+      "functionName": "Get-WTProfiles",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L100",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L87",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L91"
+      ]
+    },
+    {
+      "functionName": "Get-WTSettingsPath",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L78",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L71",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L294",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L73",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L303"
+      ]
+    },
+    {
+      "functionName": "Load-LayoutMemory",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L38",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L34",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L33"
+      ]
+    },
+    {
+      "functionName": "Show-TerminalConfigInfo",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L327",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L349",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L253"
+      ]
+    },
+    {
+      "functionName": "Write-CleanupLog",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Invoke-EngineCrashCleanup.ps1:L69",
+        "scripts/Invoke-GeneratedCandidateCleanup.ps1:L28",
+        "scripts/Script6.ps1:L62"
+      ]
+    },
+    {
+      "functionName": "Run-ArpScan",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L186",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L197",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L198"
+      ]
+    },
+    {
+      "functionName": "Get-ProfileLayoutSelection",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L57",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L53",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L57"
+      ]
+    },
+    {
+      "functionName": "Set-ProfileLayoutSelection",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L69",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L62",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L66"
+      ]
+    },
+    {
+      "functionName": "Read-DatFile",
+      "filesCount": 3,
+      "locations": [
+        "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector0/FileInspector.ps1:L15",
+        "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector1/FileInspector.ps1:L15",
+        "scripts/QUICK-APP/FOLDER-ROOT/FileInspector/fileInspector1/FileInspector1.ps1:L37"
+      ]
+    },
+    {
+      "functionName": "Start-PingLayout",
+      "filesCount": 3,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r.ps1:L149",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L133",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L135"
+      ]
+    },
+    {
+      "functionName": "Send-Error",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngine.ps1:L996",
+        "tests/Start-LocalWebEngine.BootstrapGovernance.Tests.ps1:L55"
+      ]
+    },
+    {
+      "functionName": "Write-ServiceLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngineService.ps1:L127",
+        "tests/Start-LocalWebEngineService.BootstrapMenu.Tests.ps1:L50"
+      ]
+    },
+    {
+      "functionName": "New-RestoreCheckbox",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1507",
+        "UPM/UserProfile-Manager.ps1:L1701"
+      ]
+    },
+    {
+      "functionName": "Read-JsonFile",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-EngineCrashCleanup.ps1:L130",
+        "tests/Invoke-PipelineChurnLifecycle.Tests.ps1:L53"
+      ]
+    },
+    {
+      "functionName": "Append-RestLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1568",
+        "UPM/UserProfile-Manager.ps1:L1762"
+      ]
+    },
+    {
+      "functionName": "Load-RestoreList",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1577",
+        "UPM/UserProfile-Manager.ps1:L1771"
+      ]
+    },
+    {
+      "functionName": "New-LabelledTextBox",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L189",
+        "UPM/UserProfile-Manager.ps1:L244"
+      ]
+    },
+    {
+      "functionName": "Add-Col",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L634",
+        "UPM/UserProfile-Manager.ps1:L822"
+      ]
+    },
+    {
+      "functionName": "Get-CapturedDateDisplay",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L141",
+        "UPM/UserProfile-Manager.ps1:L167"
+      ]
+    },
+    {
+      "functionName": "Invoke-WithProgress",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L259",
+        "UPM/UserProfile-Manager.ps1:L314"
+      ]
+    },
+    {
+      "functionName": "New-StyledLabel",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Show-CronAiAthonTool.ps1:L85",
+        "scripts/Show-WorkspaceIntentReview.ps1:L96"
+      ]
+    },
+    {
+      "functionName": "Write-PipeLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-PipeGAP.ps1:L87",
+        "scripts/Invoke-PipelineProcess20.ps1:L35"
+      ]
+    },
+    {
+      "functionName": "Export-LogBuffer",
+      "filesCount": 2,
+      "locations": [
+        "modules/PwShGUICore.psm1:L432",
+        "scripts/Script6.ps1:L54"
+      ]
+    },
+    {
+      "functionName": "Load-Checkpoint",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-DependencyScanManager.ps1:L67",
+        "scripts/Invoke-StaticWorkspaceScan.ps1:L151"
+      ]
+    },
+    {
+      "functionName": "Invoke-ElevatedArp",
+      "filesCount": 2,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L166",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L166"
+      ]
+    },
+    {
+      "functionName": "Show-UPMError",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L123",
+        "UPM/UserProfile-Manager.ps1:L147"
+      ]
+    },
+    {
+      "functionName": "Write-ScriptLog",
+      "filesCount": 2,
+      "locations": [
+        "modules/PwShGUICore.psm1:L393",
+        "scripts/Script6.ps1:L53"
+      ]
+    },
+    {
+      "functionName": "Get-BootstrapMenuConfig",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngine.ps1:L1506",
+        "scripts/Start-LocalWebEngineService.ps1:L887"
+      ]
+    },
+    {
+      "functionName": "Write-BootstrapLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngine.ps1:L313",
+        "tests/Start-LocalWebEngine.BootstrapGovernance.Tests.ps1:L46"
+      ]
+    },
+    {
+      "functionName": "Add-LegendItem",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1213",
+        "UPM/UserProfile-Manager.ps1:L1406"
+      ]
+    },
+    {
+      "functionName": "Get-ProfileDisplayText",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L149",
+        "UPM/UserProfile-Manager.ps1:L175"
+      ]
+    },
+    {
+      "functionName": "Show-PasswordDialog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L210",
+        "UPM/UserProfile-Manager.ps1:L265"
+      ]
+    },
+    {
+      "functionName": "Populate-ViewTree",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L423",
+        "UPM/UserProfile-Manager.ps1:L611"
+      ]
+    },
+    {
+      "functionName": "Test-ExcludedPath",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-RenameProposal.ps1:L64",
+        "scripts/Invoke-WorkspaceDependencyMap.ps1:L181"
+      ]
+    },
+    {
+      "functionName": "Write-CronLog",
+      "filesCount": 2,
+      "locations": [
+        "modules/CronAiAthon-EventLog.psm1:L295",
+        "modules/CronAiAthon-Scheduler.psm1:L217"
+      ]
+    },
+    {
+      "functionName": "Save-Checkpoint",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-DependencyScanManager.ps1:L53",
+        "scripts/Invoke-StaticWorkspaceScan.ps1:L163"
+      ]
+    },
+    {
+      "functionName": "Show-Section",
+      "filesCount": 2,
+      "locations": [
+        "scripts/PS-CheatSheet-EXAMPLES-V2.ps1:L56",
+        "scripts/PS-CheatSheet-EXAMPLES.ps1:L32"
+      ]
+    },
+    {
+      "functionName": "Load-ProfilesGrid",
+      "filesCount": 2,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L560",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L544"
+      ]
+    },
+    {
+      "functionName": "Add-Node",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L430",
+        "UPM/UserProfile-Manager.ps1:L618"
+      ]
+    },
+    {
+      "functionName": "Write-DiagnosticDump",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L93",
+        "UPM/UserProfile-Manager.ps1:L110"
+      ]
+    },
+    {
+      "functionName": "Write-ScanLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-FullSystemsScan.ps1:L61",
+        "tests/Invoke-SINPatternScanner.ps1:L123"
+      ]
+    },
+    {
+      "functionName": "Resolve-PowerShellHost",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-EngineServiceMonitor.ps1:L163",
+        "scripts/Start-LocalWebEngineService.ps1:L190"
+      ]
+    },
+    {
+      "functionName": "Invoke-EngineAction",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngineService.ps1:L312",
+        "tests/Start-LocalWebEngineService.BootstrapMenu.Tests.ps1:L56"
+      ]
+    },
+    {
+      "functionName": "Count-Safe",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1425",
+        "UPM/UserProfile-Manager.ps1:L1619"
+      ]
+    },
+    {
+      "functionName": "Invoke-ConfiguredScript",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngineService.ps1:L912",
+        "tests/Start-LocalWebEngineService.BootstrapMenu.Tests.ps1:L53"
+      ]
+    },
+    {
+      "functionName": "New-CmpGrid",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1236",
+        "UPM/UserProfile-Manager.ps1:L1429"
+      ]
+    },
+    {
+      "functionName": "Send-Json",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Start-LocalWebEngine.ps1:L930",
+        "tests/Start-LocalWebEngine.BootstrapGovernance.Tests.ps1:L50"
+      ]
+    },
+    {
+      "functionName": "Compare-ByteArrayConstantTime",
+      "filesCount": 2,
+      "locations": [
+        "modules/AssistedSASC.psm1:L433",
+        "sovereign-kernel/core/CryptoEngine.psm1:L491"
+      ]
+    },
+    {
+      "functionName": "Write-RainbowProgress",
+      "filesCount": 2,
+      "locations": [
+        "modules/PwShGUICore.psm1:L888",
+        "scripts/Invoke-FullSystemsScan.ps1:L104"
+      ]
+    },
+    {
+      "functionName": "Add-Result",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-ReferenceIntegrityCheck.ps1:L46",
+        "scripts/Invoke-TestRoutine.ps1:L96"
+      ]
+    },
+    {
+      "functionName": "Write-UPMLog",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L77",
+        "UPM/UserProfile-Manager.ps1:L85"
+      ]
+    },
+    {
+      "functionName": "Load-ProfileList",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1302",
+        "UPM/UserProfile-Manager.ps1:L1495"
+      ]
+    },
+    {
+      "functionName": "Get-RainbowColor",
+      "filesCount": 2,
+      "locations": [
+        "modules/PwShGUICore.psm1:L868",
+        "scripts/Invoke-PSEnvironmentScanner.ps1:L190"
+      ]
+    },
+    {
+      "functionName": "Invoke-ElevatedRestore",
+      "filesCount": 2,
+      "locations": [
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2_TerminalLayoutManager.ps1:L288",
+        "scripts/windguits/Qik-TERMInet0r/Windguit_Qik-TERMInet0r2-B_TerminalLayoutManager.ps1:L296"
+      ]
+    },
+    {
+      "functionName": "Add-CmpRow",
+      "filesCount": 2,
+      "locations": [
+        "scripts/UserProfile-Manager.ps1:L1284",
+        "UPM/UserProfile-Manager.ps1:L1477"
+      ]
+    },
+    {
+      "functionName": "Write-PercentRow",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Invoke-ModuleManagement.ps1:L108",
+        "scripts/Invoke-ScriptDependencyMatrix.ps1:L35"
+      ]
+    }
+  ],
+  "duplicateFunctionsAllowlisted": [
+    {
+      "functionName": "Wait-KeyOrTimeout",
+      "filesCount": 9,
+      "locations": [
+        "modules/PwShGUICore.psm1:L456",
+        "scripts/Script-A.ps1:L53",
+        "scripts/Script-B.ps1:L53",
+        "scripts/Script-C.ps1:L53",
+        "scripts/Script-D.ps1:L53",
+        "scripts/Script-E.ps1:L53",
+        "scripts/Script-F - LinkToConfigJson.ps1:L108",
+        "scripts/Script-F-LinkToConfigJson.ps1:L110",
+        "scripts/Script-F.ps1:L158"
+      ]
+    },
+    {
+      "functionName": "Write-AppLog",
+      "filesCount": 9,
+      "locations": [
+        "modules/AVPN-Tracker.psm1:L16",
+        "modules/CronAiAthon-Pipeline.psm1:L45",
+        "modules/PwShGUI_AutoIssueFinder.psm1:L13",
+        "modules/PwShGUI-ConvoVault.psm1:L45",
+        "modules/PwShGUICore.psm1:L281",
+        "modules/UserProfileManager.psm1:L35",
+        "scripts/Build-AgenticManifest.ps1:L70",
+        "scripts/Invoke-AgentCallStats.ps1:L26",
+        "scripts/Script6.ps1:L52"
+      ]
+    },
+    {
+      "functionName": "New-StyledButton",
+      "filesCount": 4,
+      "locations": [
+        "scripts/Show-CronAiAthonTool.ps1:L96",
+        "scripts/Show-WorkspaceIntentReview.ps1:L108",
+        "scripts/UserProfile-Manager.ps1:L164",
+        "UPM/UserProfile-Manager.ps1:L219"
+      ]
+    },
+    {
+      "functionName": "Get-FileEncodingInfo",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Add-VersionTag.ps1:L37",
+        "scripts/Apply-CanonicalVersion.ps1:L28",
+        "scripts/Raise-AllVersionTags.ps1:L34"
+      ]
+    },
+    {
+      "functionName": "Write-CleanupLog",
+      "filesCount": 3,
+      "locations": [
+        "scripts/Invoke-EngineCrashCleanup.ps1:L69",
+        "scripts/Invoke-GeneratedCandidateCleanup.ps1:L28",
+        "scripts/Script6.ps1:L62"
+      ]
+    },
+    {
+      "functionName": "New-StyledLabel",
+      "filesCount": 2,
+      "locations": [
+        "scripts/Show-CronAiAthonTool.ps1:L85",
+        "scripts/Show-WorkspaceIntentReview.ps1:L96"
+      ]
+    },
+    {
+      "functionName": "Show-Section",
+      "filesCount": 2,
+      "locations": [
+        "scripts/PS-CheatSheet-EXAMPLES-V2.ps1:L56",
+        "scripts/PS-CheatSheet-EXAMPLES.ps1:L32"
+      ]
+    }
+  ],
+  "deprecatedReferenceHits": [
+    {
+      "path": "config/pipeline-canonical-paths.json",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    }
+  ]
+}

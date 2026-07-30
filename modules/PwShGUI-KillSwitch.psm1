@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 <#
 .SYNOPSIS
     PwShGUI-KillSwitch — per-version emergency kill switch governance.
@@ -349,4 +349,7 @@ function Test-KillSwitchIntegrity {
 }
 
 Export-ModuleMember -Function Get-VersionKillSwitch, Register-VersionKillSwitch, Register-KillTarget, Invoke-KillSwitch, Get-RegisteredKillTargets, Test-KillSwitchIntegrity, Protect-KillSwitchPassphrase, Unprotect-KillSwitchPassphrase, ConvertTo-ProtectedKillSwitchCsv
+
+
+
 

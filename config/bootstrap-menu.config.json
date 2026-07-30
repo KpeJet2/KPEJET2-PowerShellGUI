@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "schema": "BootstrapMenuConfig/1.0",
   "headings": [
     {
@@ -162,6 +163,31 @@
             "scripts/XHTML-Checker/XHTML-ServiceClusterController.xhtml",
             "scripts/XHTML-Checker/XHTML-MenuBuilder.xhtml"
           ]
+        }
+      ]
+    },
+    {
+      "name": "Tray Configuration",
+      "items": [
+        {
+          "label": "Configure Tray Service",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/tray-config-ui.xhtml"
+        },
+        {
+          "label": "Workspace Seeding Setup",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/workspace-seed-ui.xhtml"
+        },
+        {
+          "label": "Service Health Report",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/service-health-report.xhtml"
+        },
+        {
+          "label": "Event Viewer",
+          "type": "url",
+          "target": "http://127.0.0.1:{port}/pages/event-viewer.xhtml"
         }
       ]
     }
