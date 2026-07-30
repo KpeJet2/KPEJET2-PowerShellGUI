@@ -89,7 +89,7 @@ param(
     [ValidateSet('Standard','Omega')]
     [string]$ScanMode = 'Standard',
     # Excluded subfolders for OMEGA mode (name-only path segment matching)
-    [string[]]$OmegaExcludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry','QUICK-APP','ActionPacks-master','temp','bin','obj'),
+    [string[]]$OmegaExcludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules','~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry','QUICK-APP','ActionPacks-master','temp','bin','obj'),
     # OMEGA integration switch:
     # - Manifest-related files -> Bug + Bugs2FIX
     # - Non-manifest files -> Items2ADD + checkpoint file
@@ -508,7 +508,7 @@ Write-ScanLog ('-' * 60)
 
 # ---- File discovery --------------------------------------------------------
 $excludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules',
-                 '~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry',
+                 '~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry',
                  'QUICK-APP','ActionPacks-master','temp')
 
 # Normalize ExtraExtensions to lowercase with leading dot (e.g. '.bat').
@@ -551,8 +551,9 @@ if (@($IncludeFiles).Count -gt 0) {
             $found = Get-ChildItem -Path $WorkspacePath -Filter $ext -Recurse -File -ErrorAction SilentlyContinue
             foreach ($f in $found) {
                 $skip = $false
+                $normalizedFullName = $f.FullName -replace '/', '\'
                 foreach ($d in $excludeDirs) {
-                    if ($f.FullName -like "*\$d\*") { $skip = $true; break }
+                    if ($normalizedFullName -like "*\$d\*") { $skip = $true; break }
                 }
                 if (-not $skip) { $allFiles.Add($f) }
             }
