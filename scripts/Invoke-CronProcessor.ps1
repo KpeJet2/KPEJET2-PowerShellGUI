@@ -989,6 +989,49 @@ function Invoke-IntegrityGate {
     }
 }
 
+# ── Step 7.95: Stuck-in-the-Pipe self-healing gate ─────────
+function Invoke-StuckInPipeGate {
+    Write-CronProcessorLog 'Step 7.95: Stuck-in-the-Pipe self-healing gate'
+    $gateScript = Join-Path $script:Root 'scripts\Invoke-StuckInPipeGate.ps1'
+    if (-not (Test-Path $gateScript)) {
+        $script:Results.Steps['StuckInPipeGate'] = 'SKIPPED - gate script not found'
+        Write-CronProcessorLog '  Invoke-StuckInPipeGate.ps1 not found, skipping' 'Warning'
+        return
+    }
+
+    if ($DryRun) {
+        $script:Results.Steps['StuckInPipeGate'] = 'DRY-RUN skipped'
+        return
+    }
+
+    try {
+        $raw = & $gateScript -WorkspacePath $script:Root -MaxPasses 3
+        $gateResult = $null
+        if ($raw) {
+            $gateResult = $raw | ConvertFrom-Json -ErrorAction Stop
+        }
+
+        if ($null -eq $gateResult) {
+            $script:Results.Steps['StuckInPipeGate'] = 'WARNING - no result payload'
+            Write-CronProcessorLog '  StuckInPipe gate returned no payload' 'Warning'
+            return
+        }
+
+        if ($gateResult.selfHealed) {
+            $msg = "PASSED - passes=$($gateResult.passesAttempted), requeued=$($gateResult.repair.itemsRequeued), corruptCleared=$($gateResult.repair.corruptArtifactsCleared)"
+            $script:Results.Steps['StuckInPipeGate'] = $msg
+            Write-CronProcessorLog "  $msg"
+        } else {
+            $msg = "FAILED - passes=$($gateResult.passesAttempted), unresolved interruptions may remain"
+            $script:Results.Steps['StuckInPipeGate'] = $msg
+            Write-CronProcessorLog "  $msg" 'Warning'
+        }
+    } catch {
+        $script:Results.Steps['StuckInPipeGate'] = "ERROR: $_"
+        Write-CronProcessorLog "  StuckInPipe gate error: $_" 'Error'
+    }
+}
+
 # ── Step 3.7: Error Handling Compliance Scan ───────────────
 function Invoke-ErrorHandlingComplianceScan {
     Write-CronProcessorLog 'Step 3.7: Error handling compliance scan'
@@ -1196,6 +1239,7 @@ Invoke-DirectoryTreeRebuild
 Invoke-ManifestRebuild
 Invoke-VersionAlignmentCrossValidate
 Invoke-TodoBundleRebuild
+Invoke-StuckInPipeGate
 Invoke-SelfReviewCheck
 Invoke-IntegrityGate
 Invoke-ReferenceIntegrityValidation
@@ -1207,12 +1251,16 @@ Write-CronProcessorLog "Cycle summary: $summary"
 Write-CronProcessorLog '=== Cron Processor Cycle END ==='
 $script:_CronCycleSw.Stop()
 $integrityStep = [string]($script:Results.Steps['IntegrityGate'])
+$stuckGateStep = [string]($script:Results.Steps['StuckInPipeGate'])
 $sinStep = [string]($script:Results.Steps['SINPatternScan'])
 $pesterStep = [string]($script:Results.Steps['PesterSuiteGate'])
 $metricStep = [string]($script:Results.Steps['PipelineMetricHarness'])
 if (Get-Command Write-ProcessBanner -ErrorAction SilentlyContinue) {
-    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*' -or $sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*' -or $pesterStep -like 'FAILED*' -or $metricStep -like 'FAILED*')
+    $cronSuccess = -not ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*' -or $stuckGateStep -like 'FAILED*' -or $stuckGateStep -like 'ERROR*' -or $sinStep -like 'BLOCKED*' -or $sinStep -like 'ERROR*' -or $pesterStep -like 'FAILED*' -or $metricStep -like 'FAILED*')
     Write-ProcessBanner -ProcessName 'Cron Processor Cycle' -Stopwatch $script:_CronCycleSw -Success $cronSuccess
+}
+if ($stuckGateStep -like 'FAILED*' -or $stuckGateStep -like 'ERROR*') {
+    throw "Stuck-in-the-Pipe gate FAILED: $stuckGateStep"
 }
 if ($integrityStep -like 'FAILED*' -or $integrityStep -like 'ERROR*') {
     throw "Integrity gate FAILED: $integrityStep"

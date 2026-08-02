@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-27)
 # SupportsPS7.6: YES(As of: 2026-04-27)
 # SupportPS5.1TestedDate: 2026-04-27
@@ -29,6 +29,39 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
 # ========================== ERROR LINKING FUNCTIONS ==========================
+
+function Get-NextTestPesterOrdinal {
+    <#
+    .SYNOPSIS  Return the next TEST-PEST ordinal and persist it for deterministic test IDs.
+    #>
+    [OutputType([System.Int32])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath
+    )
+
+    $tempDir = Join-Path $WorkspacePath 'temp'
+    if (-not (Test-Path $tempDir)) {
+        New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+    }
+
+    $seqPath = Join-Path $tempDir 'test-pester-sequence.txt'
+    $next = 1
+    if (Test-Path $seqPath) {
+        try {
+            $raw = (Get-Content -LiteralPath $seqPath -Raw -Encoding UTF8 -ErrorAction Stop).Trim()
+            $current = 0
+            if ([int]::TryParse($raw, [ref]$current) -and $current -ge 1) {
+                $next = $current + 1
+            }
+        } catch {
+            $next = 1
+        }
+    }
+
+    Set-Content -LiteralPath $seqPath -Value ([string]$next) -Encoding UTF8 -Force
+    return $next
+}
 
 function New-ErrorBugItem {
     <#
@@ -77,9 +110,12 @@ function New-ErrorBugItem {
         "$($Exception.ScriptStackTrace)"
     ) -join "`n"
 
+    $safeMessage = [string]$Exception.Exception.Message
+    $safeMessageClip = $safeMessage.Substring(0, [Math]::Min(60, $safeMessage.Length))
+
     return @{
         type             = 'Bug'
-        title            = "Error in ${FunctionName}: $($Exception.Exception.Message.Substring(0, 60))"
+        title            = "Error in ${FunctionName}: $safeMessageClip"
         description      = $description
         priority         = $severity
         source           = $Source
@@ -116,9 +152,12 @@ function New-ErrorBugs2FIXItem {
     $bugTitle = if ($BugItem -is [hashtable]) { $BugItem.title } else { 'Unknown Bug' }
     Write-Verbose "Creating Bugs2FIX child for Bug ID: $bugId"
 
+    $safeBugTitle = [string]$bugTitle
+    $safeBugTitleClip = $safeBugTitle.Substring(0, [Math]::Min(60, $safeBugTitle.Length))
+
     return @{
         type            = 'Bugs2FIX'
-        title           = "FIX: $($bugTitle.Substring(0, 60))"
+        title           = "FIX: $safeBugTitleClip"
         description     = $SuggestedFix
         priority        = 'HIGH'
         source          = 'BugTracker'
@@ -154,7 +193,8 @@ function Add-ErrorToPipeline {
         [Parameter(Mandatory)] [string]$FunctionName,
         [Parameter(Mandatory)] [string]$WorkspacePath,
         [string[]]$AffectedFiles = @(),
-        [string]$ErrorSource = 'RuntimeError'
+        [string]$ErrorSource = 'RuntimeError',
+        [switch]$UseTestPesterNaming
     )
 
     try {
@@ -175,7 +215,12 @@ function Add-ErrorToPipeline {
         $bugs2fixItem.modified = $bugs2fixItem.created
         $bugs2fixItem.status = 'OPEN'
         $bugs2fixItem.sessionModCount = 1
-        $bugs2fixItem.id = "Bugs2FIX-$(Get-Date -Format 'yyyyMMddHHmmss')-$(([guid]::NewGuid()).ToString().Substring(0,8))"
+        if ($UseTestPesterNaming) {
+            $testOrdinal = Get-NextTestPesterOrdinal -WorkspacePath $WorkspacePath
+            $bugs2fixItem.id = "TEST-PEST$testOrdinal"
+        } else {
+            $bugs2fixItem.id = "Bugs2FIX-$(Get-Date -Format 'yyyyMMddHHmmss')-$(([guid]::NewGuid()).ToString().Substring(0,8))"
+        }
 
         # 3. Add both to pipeline (requires CronAiAthon-Pipeline module)
         if (Get-Command -Name 'Add-PipelineItem' -ErrorAction SilentlyContinue) {

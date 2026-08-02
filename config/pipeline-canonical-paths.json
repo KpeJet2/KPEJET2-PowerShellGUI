@@ -22,6 +22,15 @@
   "deprecatedPathLiterals": [
     "config/pipeline-refine-baseline.json",
     ".\\config\\pipeline-refine-baseline.json",
-    "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    "${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+    "config/pipeline-refine-baseline-full.json",
+    ".\\config\\pipeline-refine-baseline-full.json",
+    "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+    "config/pipeline-refine-baseline-staged.json",
+    ".\\config\\pipeline-refine-baseline-staged.json",
+    "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+    "config/pipeline-refine-baseline-nightly.json",
+    ".\\config\\pipeline-refine-baseline-nightly.json",
+    "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
   ]
 }

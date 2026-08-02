@@ -1,51 +1,59 @@
-﻿{
-    "lastFullScan":  "2026-07-09T19:14:33",
-    "dataFile":  "workspace-dependency-map-20260709-191347.json",
-    "phases":  {
-                   "folders":  {
-                                   "status":  "done",
-                                   "completedAt":  "2026-07-28T01:27:25.6513066+08:00",
-                                   "durationMs":  917,
-                                   "count":  135
-                               },
-                   "modules":  {
-                                   "status":  "done",
-                                   "completedAt":  "2026-07-28T01:27:28.9512472+08:00",
-                                   "durationMs":  3300,
-                                   "functionCount":  621,
-                                   "count":  122
-                               },
-                   "scripts":  {
-                                   "status":  "done",
-                                   "completedAt":  "2026-07-28T01:27:34.4005659+08:00",
-                                   "durationMs":  5449,
-                                   "functionCount":  364,
-                                   "count":  364
-                               },
-                   "configs":  {
-                                   "status":  "done",
-                                   "completedAt":  "2026-07-28T01:27:39.1558126+08:00",
-                                   "durationMs":  4755,
-                                   "count":  918
-                               },
-                   "urls_ips":  {
-                                    "status":  "done",
-                                    "completedAt":  "2026-07-28T01:27:51.2951082+08:00",
-                                    "uniqueIPs":  35,
-                                    "durationMs":  12136,
-                                    "urlFileCount":  219
-                                },
-                   "dns_resolution":  {
-                                          "hostsChecked":  139,
-                                          "completedAt":  "2026-07-28T01:28:26.7578938+08:00",
-                                          "status":  "done",
-                                          "durationMs":  35459,
-                                          "resolved":  124
-                                      }
-               },
-    "currentScanMode":  "Full",
-    "currentScanPid":  35876,
-    "version":  "2604.B1.V32.0",
-    "generated":  "2026-07-28T01:28:26.8175563+08:00",
-    "mode":  "Static"
+{
+  "dataFile": "workspace-dependency-map-20260728-044234.json",
+  "lastFullScan": "2026-07-28T04:43:04",
+  "version": "2604.B1.V32.0",
+  "generated": "2026-07-28T03:08:46.3465284+08:00",
+  "currentScanMode": "Full",
+  "currentScanPid": 34940,
+  "mode": "Static",
+  "phases": {
+    "folders": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    },
+    "modules": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    },
+    "scripts": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    },
+    "configs": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    },
+    "urls_ips": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    },
+    "dns_resolution": {
+      "status": "done",
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
+    }
+  }
 }

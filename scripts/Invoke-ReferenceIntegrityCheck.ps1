@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -34,7 +34,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$RootPath = (Split-Path -Parent $PSScriptRoot),
+    [string]$RootPath = $(if ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot } elseif ($PSCommandPath) { Split-Path -Parent $PSCommandPath } else { (Get-Location).Path }),
     [switch]$Strict
 )
 
