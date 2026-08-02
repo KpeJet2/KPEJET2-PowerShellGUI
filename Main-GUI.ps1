@@ -8207,22 +8207,22 @@ function New-GUI {
     $servicesMenu.Text = "Script &Services"
 
     $startEngineItem = New-Object System.Windows.Forms.ToolStripMenuItem
-    $startEngineItem.Text = "&#x25B6; Start Local Web Engine"
     $startEngineItem.Text = "Start Local Web Engine"
     $startEngineItem.Add_Click({
         try {
-        Write-AppLog "User selected Tools > Script Services > Start Local Web Engine" "Audit"
-        $engineScript = Join-Path $PSScriptRoot 'scripts\Start-LocalWebEngine.ps1'
-        if (-not (Test-Path -LiteralPath $engineScript)) {
-            [System.Windows.Forms.MessageBox]::Show("Engine launcher not found:`n$engineScript","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Warning)
-            return
-        }
-        try {
+            Write-AppLog "User selected Tools > Script Services > Start Local Web Engine" "Audit"
+            $engineScript = Join-Path $PSScriptRoot 'scripts\Start-LocalWebEngine.ps1'
+            if (-not (Test-Path -LiteralPath $engineScript)) {
+                [System.Windows.Forms.MessageBox]::Show("Engine launcher not found:`n$engineScript", "Script Services", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+                return
+            }
+
             Start-Process -FilePath 'powershell.exe' `
-                -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"`"$engineScript`"",'-Action','Start','-WorkspacePath',"`"$PSScriptRoot`"",'-NoLaunchBrowser') `
+                -ArgumentList @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', "`"$engineScript`"", '-Action', 'Start', '-WorkspacePath', "`"$PSScriptRoot`"", '-NoLaunchBrowser') `
                 -WindowStyle Hidden
+
             Write-AppLog "LocalWebEngine start requested via $engineScript" "Info"
-            # Trigger a quick status check after 2s
+
             $kickTimer = New-Object System.Windows.Forms.Timer
             $kickTimer.Interval = 2000
             $kickTimer.Add_Tick({
@@ -8232,19 +8232,24 @@ function New-GUI {
                     $req.Timeout = 2000
                     $resp = $req.GetResponse()
                     $resp.Close()
-                    if ($null -ne $script:_EngineStatusLabel) { $script:_EngineStatusLabel.Text = 'Engine: running' ; $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::LimeGreen }
+                    if ($null -ne $script:_EngineStatusLabel) {
+                        $script:_EngineStatusLabel.Text = 'Engine: running'
+                        $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+                    }
                 } catch {
-                    if ($null -ne $script:_EngineStatusLabel) { $script:_EngineStatusLabel.Text = 'Engine: starting…' ; $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Goldenrod }
+                    if ($null -ne $script:_EngineStatusLabel) {
+                        $script:_EngineStatusLabel.Text = 'Engine: starting…'
+                        $script:_EngineStatusLabel.ForeColor = [System.Drawing.Color]::Goldenrod
+                    }
+                } finally {
+                    $kickTimer.Stop()
+                    $kickTimer.Dispose()
                 }
-                $kickTimer.Dispose()
             }.GetNewClosure())
             $kickTimer.Start()
         } catch {
             Write-AppLog "Failed to start LocalWebEngine: $_" "Error"
-            [System.Windows.Forms.MessageBox]::Show("Failed to start engine:`n$_","Script Services",[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Error)
-        }
-        } catch {
-            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            [System.Windows.Forms.MessageBox]::Show("Failed to start engine:`n$_", "Script Services", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
     })
     $servicesMenu.DropDownItems.Add($startEngineItem) | Out-Null
@@ -8313,138 +8318,185 @@ function New-GUI {
     $depMatrixItem.Text = "Script &Dependency Matrix"
     $depMatrixItem.Add_Click({
         try {
-        Write-AppLog "User selected Tools > Script Dependency Matrix" "Audit"
+            Write-AppLog "User selected Tools > Script Dependency Matrix" "Audit"
 
-        $matrixScript = Join-Path $PSScriptRoot 'scripts\Invoke-ScriptDependencyMatrix.ps1'
-        if (-not (Test-Path $matrixScript)) {
-            [System.Windows.Forms.MessageBox]::Show(
-                "Matrix generator not found:`n$matrixScript",
-                "Dependency Matrix",
-                [System.Windows.Forms.MessageBoxButtons]::OK,
-                [System.Windows.Forms.MessageBoxIcon]::Warning
-            )
-            return
-        }
-
-        $dlg = New-Object System.Windows.Forms.Form
-        $dlg.Text = 'Script Dependency Matrix'
-        $dlg.Size = New-Object System.Drawing.Size(780, 600)
-        $dlg.StartPosition = 'CenterParent'
-        $dlg.FormBorderStyle = 'Sizable'
-        $dlg.MinimumSize = New-Object System.Drawing.Size(520, 380)
-
-        $statusLabel = New-Object System.Windows.Forms.Label
-        $statusLabel.Dock = 'Top'
-        $statusLabel.Height = 24
-        $statusLabel.Text = 'Ready -- click Generate to scan workspace dependencies.'
-        $statusLabel.Padding = New-Object System.Windows.Forms.Padding(4,4,4,0)
-        $dlg.Controls.Add($statusLabel)
-
-        $progressPanel = New-Object System.Windows.Forms.Panel
-        $progressPanel.Dock = 'Top'
-        $progressPanel.Height = 28
-        $dlg.Controls.Add($progressPanel)
-
-        $progressBar = New-Object System.Windows.Forms.ProgressBar
-        $progressBar.Location = New-Object System.Drawing.Point(6, 4)
-        $progressBar.Size = New-Object System.Drawing.Size(560, 18)
-        $progressBar.Minimum = 0
-        $progressBar.Maximum = 100
-        $progressPanel.Controls.Add($progressBar)
-
-        $progressLabel = New-Object System.Windows.Forms.Label
-        $progressLabel.Location = New-Object System.Drawing.Point(575, 5)
-        $progressLabel.Size = New-Object System.Drawing.Size(180, 18)
-        $progressLabel.Text = '0%'
-        $progressPanel.Controls.Add($progressLabel)
-
-        $setProgressUi = {
-            param([int]$p)
-            $p2 = [Math]::Max(0, [Math]::Min(100, $p))
-            $progressBar.Value = $p2
-            $progressLabel.Text = "$p2%"
-            if ($p2 -lt 35) {
-                $progressLabel.ForeColor = [System.Drawing.Color]::OrangeRed
-            } elseif ($p2 -lt 70) {
-                $progressLabel.ForeColor = [System.Drawing.Color]::Goldenrod
-            } else {
-                $progressLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+            $matrixScript = Join-Path $PSScriptRoot 'scripts\Invoke-ScriptDependencyMatrix.ps1'
+            if (-not (Test-Path $matrixScript)) {
+                [System.Windows.Forms.MessageBox]::Show(
+                    "Matrix generator not found:`n$matrixScript",
+                    "Dependency Matrix",
+                    [System.Windows.Forms.MessageBoxButtons]::OK,
+                    [System.Windows.Forms.MessageBoxIcon]::Warning
+                )
+                return
             }
-        }
 
-        $resultsBox = New-Object System.Windows.Forms.RichTextBox
-        $resultsBox.Dock = 'Fill'
-        $resultsBox.ReadOnly = $true
-        $resultsBox.Font = New-Object System.Drawing.Font('Consolas', 9)
-        $resultsBox.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
-        $resultsBox.ForeColor = [System.Drawing.Color]::White
-        $resultsBox.WordWrap = $false
-        $dlg.Controls.Add($resultsBox)
+            $dlg = New-Object System.Windows.Forms.Form
+            $dlg.Text = 'Script Dependency Matrix'
+            $dlg.Size = New-Object System.Drawing.Size(780, 600)
+            $dlg.StartPosition = 'CenterParent'
+            $dlg.FormBorderStyle = 'Sizable'
+            $dlg.MinimumSize = New-Object System.Drawing.Size(520, 380)
 
-        $btnPanel = New-Object System.Windows.Forms.FlowLayoutPanel
-        $btnPanel.Dock = 'Bottom'
-        $btnPanel.Height = 42
-        $btnPanel.FlowDirection = 'RightToLeft'
-        $btnPanel.Padding = New-Object System.Windows.Forms.Padding(4)
+            $statusLabel = New-Object System.Windows.Forms.Label
+            $statusLabel.Dock = 'Top'
+            $statusLabel.Height = 24
+            $statusLabel.Text = 'Ready -- click Generate to scan workspace dependencies.'
+            $statusLabel.Padding = New-Object System.Windows.Forms.Padding(4,4,4,0)
+            $dlg.Controls.Add($statusLabel)
 
-        $closeBtn2 = New-Object System.Windows.Forms.Button
-        $closeBtn2.Text = 'Close'
-        $closeBtn2.Width = 90
-        $btnPanel.Controls.Add($closeBtn2)
+            $progressPanel = New-Object System.Windows.Forms.Panel
+            $progressPanel.Dock = 'Top'
+            $progressPanel.Height = 28
+            $dlg.Controls.Add($progressPanel)
 
-        $openVizBtn = New-Object System.Windows.Forms.Button
-        $openVizBtn.Text = 'Open Visualisation'
-        $openVizBtn.Width = 130
-        $openVizBtn.Enabled = $false
-        $btnPanel.Controls.Add($openVizBtn)
+            $progressBar = New-Object System.Windows.Forms.ProgressBar
+            $progressBar.Location = New-Object System.Drawing.Point(6, 4)
+            $progressBar.Size = New-Object System.Drawing.Size(560, 18)
+            $progressBar.Minimum = 0
+            $progressBar.Maximum = 100
+            $progressPanel.Controls.Add($progressBar)
 
-        $openReportBtn = New-Object System.Windows.Forms.Button
-        $openReportBtn.Text = 'Open Report'
-        $openReportBtn.Width = 110
-        $openReportBtn.Enabled = $false
-        $btnPanel.Controls.Add($openReportBtn)
+            $progressLabel = New-Object System.Windows.Forms.Label
+            $progressLabel.Location = New-Object System.Drawing.Point(575, 5)
+            $progressLabel.Size = New-Object System.Drawing.Size(180, 18)
+            $progressLabel.Text = '0%'
+            $progressPanel.Controls.Add($progressLabel)
 
-        $generateBtn = New-Object System.Windows.Forms.Button
-        $generateBtn.Text = 'Generate'
-        $generateBtn.Width = 90
-        $btnPanel.Controls.Add($generateBtn)
+            $setProgressUi = {
+                param([int]$p)
+                $p2 = [Math]::Max(0, [Math]::Min(100, $p))
+                $progressBar.Value = $p2
+                $progressLabel.Text = "$p2%"
+                if ($p2 -lt 35) {
+                    $progressLabel.ForeColor = [System.Drawing.Color]::OrangeRed
+                } elseif ($p2 -lt 70) {
+                    $progressLabel.ForeColor = [System.Drawing.Color]::Goldenrod
+                } else {
+                    $progressLabel.ForeColor = [System.Drawing.Color]::LimeGreen
+                }
+            }
 
-        $dlg.Controls.Add($btnPanel)
+            $resultsBox = New-Object System.Windows.Forms.RichTextBox
+            $resultsBox.Dock = 'Fill'
+            $resultsBox.ReadOnly = $true
+            $resultsBox.Font = New-Object System.Drawing.Font('Consolas', 9)
+            $resultsBox.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+            $resultsBox.ForeColor = [System.Drawing.Color]::White
+            $resultsBox.WordWrap = $false
+            $dlg.Controls.Add($resultsBox)
 
+<<<<<<< HEAD
         $generateBtn.Add_Click({
             $resultsBox.Clear()
             $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
             & $setProgressUi 10
             $dlg.Refresh()
+=======
+            $btnPanel = New-Object System.Windows.Forms.FlowLayoutPanel
+            $btnPanel.Dock = 'Bottom'
+            $btnPanel.Height = 42
+            $btnPanel.FlowDirection = 'RightToLeft'
+            $btnPanel.Padding = New-Object System.Windows.Forms.Padding(4)
+
+            $closeBtn2 = New-Object System.Windows.Forms.Button
+            $closeBtn2.Text = 'Close'
+            $closeBtn2.Width = 90
+            $btnPanel.Controls.Add($closeBtn2)
+
+            $openVizBtn = New-Object System.Windows.Forms.Button
+            $openVizBtn.Text = 'Open Visualisation'
+            $openVizBtn.Width = 130
+>>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
             $openVizBtn.Enabled = $false
+            $btnPanel.Controls.Add($openVizBtn)
+
+            $openReportBtn = New-Object System.Windows.Forms.Button
+            $openReportBtn.Text = 'Open Report'
+            $openReportBtn.Width = 110
             $openReportBtn.Enabled = $false
+            $btnPanel.Controls.Add($openReportBtn)
 
-            try {
-                Write-AppLog "Running dependency matrix generator" "Info"
-                $output = & $matrixScript -WorkspacePath $PSScriptRoot -ReportPath (Join-Path $PSScriptRoot '~REPORTS') 2>&1 | Out-String
-                & $setProgressUi 80
-                $resultsBox.Text = $output
+            $generateBtn = New-Object System.Windows.Forms.Button
+            $generateBtn.Text = 'Generate'
+            $generateBtn.Width = 90
+            $btnPanel.Controls.Add($generateBtn)
 
-                $vizMatch = [regex]::Match($output, 'Visualisation (?:HTML|XHTML):\s*(.+\.(?:html|xhtml))')
-                if (-not $vizMatch.Success) {
-                    $vizMatch = [regex]::Match($output, 'Visualisation Canonical XHTML:\s*(.+\.xhtml)')
+            $dlg.Controls.Add($btnPanel)
+
+            $generateBtn.Add_Click({
+                $resultsBox.Clear()
+                $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
+                & $setProgressUi 10
+                $dlg.Refresh()
+                $openVizBtn.Enabled = $false
+                $openReportBtn.Enabled = $false
+
+                try {
+                    Write-AppLog "Running dependency matrix generator" "Info"
+                    $output = & $matrixScript -WorkspacePath $PSScriptRoot -ReportPath (Join-Path $PSScriptRoot '~REPORTS') 2>&1 | Out-String
+                    & $setProgressUi 80
+                    $resultsBox.Text = $output
+
+                    $vizMatch = [regex]::Match($output, 'Visualisation (?:HTML|XHTML):\s*(.+\.(?:html|xhtml))')
+                    if (-not $vizMatch.Success) {
+                        $vizMatch = [regex]::Match($output, 'Visualisation Canonical XHTML:\s*(.+\.xhtml)')
+                    }
+                    $mdMatch = [regex]::Match($output, 'Matrix Markdown:\s*(.+\.md)')
+
+                    if ($vizMatch.Success -and (Test-Path $vizMatch.Groups[1].Value.Trim())) {
+                        $openVizBtn.Tag = $vizMatch.Groups[1].Value.Trim()
+                        $openVizBtn.Enabled = $true
+                    }
+                    if ($mdMatch.Success -and (Test-Path $mdMatch.Groups[1].Value.Trim())) {
+                        $openReportBtn.Tag = $mdMatch.Groups[1].Value.Trim()
+                        $openReportBtn.Enabled = $true
+                    }
+
+                    $edgeMatch = [regex]::Match($output, 'Edges:\s*(\d+)')
+                    $moduleMatch = [regex]::Match($output, 'Distinct modules:\s*(\d+)')
+                    $statusLabel.Text = ('Scan complete -- Edges: {0}  |  Modules: {1}' -f $(if($edgeMatch.Success){$edgeMatch.Groups[1].Value}else{'?'}), $(if($moduleMatch.Success){$moduleMatch.Groups[1].Value}else{'?'}))
+                    & $setProgressUi 100
+
+                    Write-AppLog "Dependency matrix generation complete" "Info"
+                } catch {
+                    $resultsBox.Text = "Error: $($_.Exception.Message)"
+                    $statusLabel.Text = 'Generation failed'
+                    & $setProgressUi 0
+                    Write-AppLog "Dependency matrix error: $($_.Exception.Message)" "Error"
                 }
-                $mdMatch = [regex]::Match($output, 'Matrix Markdown:\s*(.+\.md)')
+            })
 
-                if ($vizMatch.Success -and (Test-Path $vizMatch.Groups[1].Value.Trim())) {
-                    $openVizBtn.Tag = $vizMatch.Groups[1].Value.Trim()
-                    $openVizBtn.Enabled = $true
+            $closeBtn2.Add_Click({
+                $dlg.Close()
+            })
+
+            $openVizBtn.Add_Click({
+                if ($openVizBtn.Tag -and (Test-Path $openVizBtn.Tag)) {
+                    Write-AppLog "Opening dependency visualisation: $($openVizBtn.Tag)" "Audit"
+                    Start-Process $openVizBtn.Tag
                 }
-                if ($mdMatch.Success -and (Test-Path $mdMatch.Groups[1].Value.Trim())) {
-                    $openReportBtn.Tag = $mdMatch.Groups[1].Value.Trim()
-                    $openReportBtn.Enabled = $true
+            })
+
+            $openReportBtn.Add_Click({
+                if ($openReportBtn.Tag -and (Test-Path $openReportBtn.Tag)) {
+                    Write-AppLog "Opening dependency report: $($openReportBtn.Tag)" "Audit"
+                    Invoke-Item $openReportBtn.Tag
                 }
+            })
 
-                $edgeMatch = [regex]::Match($output, 'Edges:\s*(\d+)')
-                $moduleMatch = [regex]::Match($output, 'Distinct modules:\s*(\d+)')
-                $statusLabel.Text = ('Scan complete -- Edges: {0}  |  Modules: {1}' -f $(if($edgeMatch.Success){$edgeMatch.Groups[1].Value}else{'?'}), $(if($moduleMatch.Success){$moduleMatch.Groups[1].Value}else{'?'}))
-                & $setProgressUi 100
+            # ── Cross-launch: open Module Dependency Check from Script Matrix ──
+            $modCheckBtn = New-Object System.Windows.Forms.Button
+            $modCheckBtn.Text = 'Module Check ⇨'
+            $modCheckBtn.Width = 120
+            $modCheckBtn.Add_Click({
+                Write-AppLog "Cross-launch: Script Matrix -> Module Dependency Check" "Audit"
+                $dlg.Close()
+                $moduleCheckItem.PerformClick()
+            })
+            $btnPanel.Controls.Add($modCheckBtn)
 
+<<<<<<< HEAD
                 Write-AppLog "Dependency matrix generation complete" "Info"
             } catch {
                 $resultsBox.Text = "Error: $($_.Exception.Message)"
@@ -8481,6 +8533,10 @@ function New-GUI {
 
         $dlg.ShowDialog($form) | Out-Null
         $dlg.Dispose()
+=======
+            $dlg.ShowDialog($form) | Out-Null
+            $dlg.Dispose()
+>>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         } catch {
             Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
@@ -8643,7 +8699,10 @@ function New-GUI {
             }
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         $installBtn.Add_Click({
             $confirm = [System.Windows.Forms.MessageBox]::Show(
                 "Install missing public modules (CurrentUser scope)?`n`nThis will try LOCAL first, then PSGallery as a fallback.",
@@ -8662,6 +8721,13 @@ function New-GUI {
             & $runModMgmt @{ AutoInstallMissing = $true; UseWorkspaceModules = $true }
         })
 
+<<<<<<< HEAD
+=======
+        $refreshBtn.Add_Click({
+            & $runModMgmt @{}
+        })
+
+>>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         $exportInstallerBtn.Add_Click({
             Write-AppLog "User selected Export Installer" "Audit"
             $statusLabel.Text = 'Generating installer script...'
@@ -8676,7 +8742,12 @@ function New-GUI {
             & $runModMgmt @{ ExportInventory = $true }
         })
 
+        $closeBtn.Add_Click({
+            $dlg.Close()
+        })
+
         # initial scan on dialog open
+        & $runModMgmt @{}
 
         $dlg.ShowDialog($form) | Out-Null
         $dlg.Dispose()

@@ -5,6 +5,8 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
 
+- **2026-08-02 21:00:35** Baseline refresh (`./config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 1 -> 60
+
 - **2026-07-23 23:39:26** Baseline refresh (`./config/pipeline-refine-baseline-nightly.json`, profile=nightly): MEDIUM:deprecated-reference: 0 -> 1; MEDIUM:duplicate-function: 0 -> 20
 
 - **2026-07-23 23:38:39** Baseline refresh (`./config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 0 -> 1
@@ -71,6 +73,7 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## How to Regenerate
 Run tools/Generate-Changelog.ps1 to update this file from VersionTag and git log.
+
 
 
 

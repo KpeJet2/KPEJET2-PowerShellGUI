@@ -1,32 +1,29 @@
-<!-- VersionTag: 2606.B5.V51.4 -->
 <SystemVariables>
-  <ProcessorCount>
-  </ProcessorCount>
-  <PSVersion>7.6.1</PSVersion>
+  <PSVersion>7.6.4</PSVersion>
+  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
+  <PowerShellVersion>7</PowerShellVersion>
   <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
-  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ExecutionDate>2026-07-28 03:13:16</ExecutionDate>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
   <ProgramFiles>C:\Program Files</ProgramFiles>
-  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <UserName>msaib</UserName>
   <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
   <AppData>C:\Users\msaib\AppData\Roaming</AppData>
-  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
-  <UserName>msaib</UserName>
-  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
   <SystemRoot>C:\WINDOWS</SystemRoot>
   <Windows>
   </Windows>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
   <UserDomain>XPS15-MS</UserDomain>
-  <ExecutionDate>2026-05-26 11:37:18</ExecutionDate>
   <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
   <ComputerName>XPS15-MS</ComputerName>
-  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
-  <PowerShellVersion>7</PowerShellVersion>
+  <ProcessorCount>
+  </ProcessorCount>
   <Version>
-    <Major>2606</Major>
-    <Minor>B5</Minor>
-    <Build>6</Build>
-    <VMajor>51</VMajor>
-    <VMinor>4</VMinor>
+    <Major>2607</Major>
+    <Minor>B0</Minor>
+    <Build>0</Build>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>
