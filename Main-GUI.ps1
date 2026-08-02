@@ -8386,28 +8386,6 @@ function New-GUI {
             $resultsBox.WordWrap = $false
             $dlg.Controls.Add($resultsBox)
 
-<<<<<<< HEAD
-        $generateBtn.Add_Click({
-            $resultsBox.Clear()
-            $statusLabel.Text = 'Scanning workspace -- this may take a moment...'
-            & $setProgressUi 10
-            $dlg.Refresh()
-=======
-            $btnPanel = New-Object System.Windows.Forms.FlowLayoutPanel
-            $btnPanel.Dock = 'Bottom'
-            $btnPanel.Height = 42
-            $btnPanel.FlowDirection = 'RightToLeft'
-            $btnPanel.Padding = New-Object System.Windows.Forms.Padding(4)
-
-            $closeBtn2 = New-Object System.Windows.Forms.Button
-            $closeBtn2.Text = 'Close'
-            $closeBtn2.Width = 90
-            $btnPanel.Controls.Add($closeBtn2)
-
-            $openVizBtn = New-Object System.Windows.Forms.Button
-            $openVizBtn.Text = 'Open Visualisation'
-            $openVizBtn.Width = 130
->>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
             $openVizBtn.Enabled = $false
             $btnPanel.Controls.Add($openVizBtn)
 
@@ -8495,48 +8473,6 @@ function New-GUI {
                 $moduleCheckItem.PerformClick()
             })
             $btnPanel.Controls.Add($modCheckBtn)
-
-<<<<<<< HEAD
-                Write-AppLog "Dependency matrix generation complete" "Info"
-            } catch {
-                $resultsBox.Text = "Error: $($_.Exception.Message)"
-                $statusLabel.Text = 'Generation failed'
-                & $setProgressUi 0
-                Write-AppLog "Dependency matrix error: $($_.Exception.Message)" "Error"
-            }
-        })
-
-        $openVizBtn.Add_Click({
-            if ($openVizBtn.Tag -and (Test-Path $openVizBtn.Tag)) {
-                Write-AppLog "Opening dependency visualisation: $($openVizBtn.Tag)" "Audit"
-                Start-Process $openVizBtn.Tag
-            }
-        })
-
-        $openReportBtn.Add_Click({
-            if ($openReportBtn.Tag -and (Test-Path $openReportBtn.Tag)) {
-                Write-AppLog "Opening dependency report: $($openReportBtn.Tag)" "Audit"
-                Invoke-Item $openReportBtn.Tag
-            }
-        })
-
-        # ── Cross-launch: open Module Dependency Check from Script Matrix ──
-        $modCheckBtn = New-Object System.Windows.Forms.Button
-        $modCheckBtn.Text = 'Module Check \u21E8'
-        $modCheckBtn.Width = 120
-        $modCheckBtn.Add_Click({
-            Write-AppLog "Cross-launch: Script Matrix -> Module Dependency Check" "Audit"
-            $dlg.Close()
-            $moduleCheckItem.PerformClick()
-        })
-        $btnPanel.Controls.Add($modCheckBtn)
-
-        $dlg.ShowDialog($form) | Out-Null
-        $dlg.Dispose()
-=======
-            $dlg.ShowDialog($form) | Out-Null
-            $dlg.Dispose()
->>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         } catch {
             Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
@@ -8699,10 +8635,6 @@ function New-GUI {
             }
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         $installBtn.Add_Click({
             $confirm = [System.Windows.Forms.MessageBox]::Show(
                 "Install missing public modules (CurrentUser scope)?`n`nThis will try LOCAL first, then PSGallery as a fallback.",
@@ -8721,13 +8653,9 @@ function New-GUI {
             & $runModMgmt @{ AutoInstallMissing = $true; UseWorkspaceModules = $true }
         })
 
-<<<<<<< HEAD
-=======
         $refreshBtn.Add_Click({
             & $runModMgmt @{}
         })
-
->>>>>>> ac069307 (Add pre-commit recovery loop and gate hardening)
         $exportInstallerBtn.Add_Click({
             Write-AppLog "User selected Export Installer" "Audit"
             $statusLabel.Text = 'Generating installer script...'
