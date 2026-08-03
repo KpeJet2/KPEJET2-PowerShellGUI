@@ -150,6 +150,42 @@ function Get-DeprecatedLiteralVariants {
     return @($variants)
 }
 
+function Test-IsActiveRefScanCandidate {
+    param(
+        [string]$Root,
+        [string]$FullPath
+    )
+    if ([string]::IsNullOrWhiteSpace($FullPath)) { return $false }
+    $rel = Convert-ToWorkspaceRelative -Root $Root -FullPath $FullPath
+    if ([string]::IsNullOrWhiteSpace($rel)) { return $false }
+
+    $ignoredRegistryFiles = @(
+        'config/pipeline-canonical-paths.json',
+        'config/pipeline-refine-allowlist.json',
+        'config/pipeline-refine-severity-policy.json',
+        'config/pipeline-refine-baseline-full.json',
+        'config/pipeline-refine-baseline-staged.json',
+        'config/pipeline-refine-baseline-nightly.json',
+        'config/pipeline-refine-baseline.json'
+    )
+    if ($ignoredRegistryFiles -contains $rel) { return $false }
+
+    $generatedHistoryRoots = @('config/agentic-manifest-history', 'config/dynamic-manifest-history', 'config/manifest-history', 'config/manifest-cache.json')
+    if ($generatedHistoryRoots -contains $rel) { return $false }
+    if ($rel -like 'config/agentic-manifest-history/*' -or $rel -like 'config/dynamic-manifest-history/*' -or $rel -like 'config/manifest-history/*') { return $false }
+    if ($ignoredRegistryFiles -contains $rel) { return $false }
+
+    $segments = @($rel -split '[\\/]')
+    if (@($segments).Count -eq 0) { return $false }
+
+    $rootSegment = [string]$segments[0]
+    $activeRootSegments = @('modules','scripts','tests','pages','docs','config','.github','.vscode')
+    if ($activeRootSegments -contains $rootSegment) { return $true }
+
+    $allowedRootFiles = @('README.md','README-delete.md','CHANGELOG.md','Main-GUI.ps1','Launch-AllServices.bat','Launch-GUI.bat','Launch-ServiceClusterTabs.bat')
+    return (@($segments).Count -eq 1 -and $allowedRootFiles -contains $rootSegment)
+}
+
 $root = (Resolve-Path -LiteralPath $WorkspacePath).Path
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path (Join-Path $root 'reports') 'pipeline-refine'
@@ -346,8 +382,23 @@ foreach ($rel in $requiredPaths) {
 # 1b) Deprecated canonical path reference scan.
 $deprecatedHits = New-Object System.Collections.Generic.List[object]
 if (@($deprecatedRefs).Count -gt 0) {
-    $refScanFiles = @(Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1,*.bat,*.cmd,*.md,*.json,*.yml,*.yaml,*.xhtml,*.html -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notmatch '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|temp)\\' })
+    $refScanFilesAll = @(Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1,*.bat,*.cmd,*.md,*.json,*.yml,*.yaml,*.xhtml,*.html -ErrorAction SilentlyContinue |
+        Where-Object {
+            $_.FullName -notmatch '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|temp)\\' -and
+            (Test-IsActiveRefScanCandidate -Root $root -FullPath $_.FullName)
+        })
+
+    $refScanFiles = @()
+    if ($StagedOnly) {
+        foreach ($rf in @($refScanFilesAll)) {
+            $relRfCandidate = Convert-ToWorkspaceRelative -Root $root -FullPath $rf.FullName
+            if ($stagedSet.Contains($relRfCandidate)) {
+                $refScanFiles += $rf
+            }
+        }
+    } else {
+        $refScanFiles = $refScanFilesAll
+    }
 
     $canonicalRegistryRel = Convert-ToWorkspaceRelative -Root $root -FullPath $CanonicalPathRegistry
     $canonicalRegistryFull = [System.IO.Path]::GetFullPath($CanonicalPathRegistry)
@@ -566,10 +617,13 @@ if (Test-Path -LiteralPath $BaselineJson) {
 }
 
 foreach ($k in $countsByKey.Keys) {
-    $current = [int]$countsByKey[$k]
+    $current = 0
+    if ($countsByKey.Contains($k)) {
+        $current = [int]$countsByKey.Item($k)
+    }
     $base = 0
     if ($baselineCounts.Contains($k)) {
-        $base = [int]$baselineCounts[$k]
+        $base = [int]$baselineCounts.Item($k)
     }
     if ($current -gt $base) {
         $regressions += [pscustomobject]@{ key = $k; baseline = $base; current = $current; delta = ($current - $base) }
@@ -580,7 +634,8 @@ foreach ($k in $countsByKey.Keys) {
 
 foreach ($k in $baselineCounts.Keys) {
     if (-not $countsByKey.Contains($k)) {
-        $improvements += [pscustomobject]@{ key = $k; baseline = [int]$baselineCounts[$k]; current = 0; delta = [int]$baselineCounts[$k] }
+        $baselineOnly = [int]$baselineCounts.Item($k)
+        $improvements += [pscustomobject]@{ key = $k; baseline = $baselineOnly; current = 0; delta = $baselineOnly }
     }
 }
 

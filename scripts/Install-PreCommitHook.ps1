@@ -58,7 +58,11 @@ exec pwsh -NoProfile -ExecutionPolicy Bypass -Command "
     \$staged = @(\$stagedAll | Where-Object { \$_ -match '\.(ps1|psm1|psd1)\$' });
     if (@(\$staged).Count -eq 0) { exit 0 }
     Write-Host '[pre-commit] Running pre-commit validation gates...' -ForegroundColor Cyan;
-    & .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath . -StagedFiles \$staged;
+    if (@(\$staged).Count -gt 0) {
+      & .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath . -AutoRemediateLogDrift -StagedFiles ([string]::Join([Environment]::NewLine, @(\$staged)));
+    } else {
+      & .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath . -AutoRemediateLogDrift;
+    }
   exit \$LASTEXITCODE
 "
 '@

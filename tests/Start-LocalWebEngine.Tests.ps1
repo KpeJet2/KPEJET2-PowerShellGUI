@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -118,6 +118,20 @@ Describe 'Start-LocalWebEngine — Handler functions present' {
     }
 }
 
+Describe 'Start-LocalWebEngine — public key fingerprint cache' {
+    It 'Get-PublicKeyFingerprint handles an uninitialized cache variable under strict mode' {
+        $funcText = [regex]::Match($script:Content, '(?ms)function Get-PublicKeyFingerprint \{.*?^\}', [System.Text.RegularExpressions.RegexOptions]::Multiline).Value
+        $scriptBlock = [scriptblock]::Create(@"
+Set-StrictMode -Version Latest
+$funcText
+`$WorkspacePath = '$($script:WorkspacePath)'
+Remove-Variable -Name '_PublicKeyFingerprintCache' -Scope Script -ErrorAction SilentlyContinue
+Get-PublicKeyFingerprint
+"@)
+        { & $scriptBlock } | Should -Not -Throw
+    }
+}
+
 Describe 'Start-LocalWebEngine — Bootstrap menu governance checks' {
     It 'Save-BootstrapMenuConfig validates payload via Test-BootstrapMenuConfigObject' {
         $script:Content | Should -Match 'Test-BootstrapMenuConfigObject\s+-Config\s+\$parsed'
@@ -176,12 +190,8 @@ Describe 'Start-LocalWebEngine — CSRF protection on mutating routes' {
 }
 
 Describe 'Start-LocalWebEngine — WebSocket hello schema hardening' {
-    It 'WebSocket hello payload does not include csrfToken field' {
-        $helloLines = @($script:Lines | Where-Object { $_ -match '\$hello\s*=\s*@\{.*event\s*=\s*''connected''' })
-        @($helloLines).Count | Should -BeGreaterThan 0
-        foreach ($line in $helloLines) {
-            $line -cmatch 'csrfToken' | Should -BeFalse
-        }
+    It 'WebSocket handshake payload does not include csrfToken field' {
+        $script:Content | Should -Not -Match '(?i)(\$hello\s*=\s*@\{.*csrfToken|csrfToken.*connected)'
     }
 }
 

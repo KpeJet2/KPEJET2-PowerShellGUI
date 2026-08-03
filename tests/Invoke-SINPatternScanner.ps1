@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -96,7 +96,10 @@ param(
     [switch]$OmegaPipelineAutoRoute,
     # Upper bound per OMEGA pipeline write/status operation. On timeout/error,
     # scanner writes a lightweight fallback artifact under checkpoints/omega.
-    [int]$OmegaRouteOpTimeoutMs = 4000
+    [int]$OmegaRouteOpTimeoutMs = 4000,
+    # When set, return only the summary object instead of the full findings array.
+    # The JSON output file still contains the complete scan payload.
+    [switch]$SummaryOnly
 )
 
 Set-StrictMode -Version Latest
@@ -1051,6 +1054,37 @@ if ($omegaEnabled -and $omegaModeSelected -and $omegaHasFindings) {
 }
 
 ConvertTo-Json $resultObj -Depth 8 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
+
+if ($SummaryOnly) {
+    $resultObj = [ordered]@{
+        runtime         = $resultObj.runtime
+        scanMode        = $resultObj.scanMode
+        scanId          = $resultObj.scanId
+        timestamp       = $resultObj.timestamp
+        workspace       = $resultObj.workspace
+        patternsLoaded  = $resultObj.patternsLoaded
+        filesScanned    = $resultObj.filesScanned
+        totalFindings   = $resultObj.totalFindings
+        critical        = $resultObj.critical
+        high            = $resultObj.high
+        medium          = $resultObj.medium
+        low             = $resultObj.low
+        blockedById     = $resultObj.blockedById
+        blockedCount    = $resultObj.blockedCount
+        regexTimeoutMs  = $resultObj.regexTimeoutMs
+        regexTimeoutAbortThreshold = $resultObj.regexTimeoutAbortThreshold
+        regexTimeouts   = $resultObj.regexTimeouts
+        totalRawMatches = $resultObj.totalRawMatches
+        totalSuppressed = $resultObj.totalSuppressed
+        elapsedMs       = $resultObj.elapsedMs
+        countsBySinId   = $resultObj.countsBySinId
+        baselinePath    = $resultObj.baselinePath
+        baselineApplied = $resultObj.baselineApplied
+        ratchetMode     = $resultObj.ratchetMode
+        regressions     = $resultObj.regressions
+        improvements    = $resultObj.improvements
+    }
+}
 
 if (-not $Quiet) { Write-ScanLog "Results  : $OutputJson" }
 

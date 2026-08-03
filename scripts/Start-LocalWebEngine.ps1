@@ -747,6 +747,9 @@ function Send-Response {
 function Get-PublicKeyFingerprint {
     [CmdletBinding()]
     param()
+    if (-not (Get-Variable -Name '_PublicKeyFingerprintCache' -Scope Script -ErrorAction SilentlyContinue)) {
+        Set-Variable -Name '_PublicKeyFingerprintCache' -Scope Script -Value ''
+    }
     if (-not [string]::IsNullOrWhiteSpace([string]$script:_PublicKeyFingerprintCache)) {
         return [string]$script:_PublicKeyFingerprintCache
     }
@@ -1424,12 +1427,17 @@ function Get-NetMonConnections {
         if (-not $protocolMap.ContainsKey($proto)) {
             $protocolMap[$proto] = [ordered]@{ attempts = 0; success = 0; failed = 0 }
         }
-        $protocolMap[$proto].attempts++
+        $protocolStats = $protocolMap[$proto]
+        if ($null -eq $protocolStats) {
+            $protocolStats = [ordered]@{ attempts = 0; success = 0; failed = 0 }
+            $protocolMap[$proto] = $protocolStats
+        }
+        $protocolStats.attempts++
         if (([string]$r.status).ToUpperInvariant() -eq 'SUCCESS') {
-            $protocolMap[$proto].success++
+            $protocolStats.success++
             $successCount++
         } else {
-            $protocolMap[$proto].failed++
+            $protocolStats.failed++
         }
 
         $ip = [string]$r.ip
@@ -1442,8 +1450,19 @@ function Get-NetMonConnections {
                 totalCount = 0
             }
         }
-        $ipMap[$ip].totalCount++
-        $ipMap[$ip].lastSeen = [string]$r.ts
+        $ipStats = $ipMap[$ip]
+        if ($null -eq $ipStats) {
+            $ipStats = [ordered]@{
+                ip = $ip
+                country = [string]$r.country
+                firstSeen = [string]$r.ts
+                lastSeen = [string]$r.ts
+                totalCount = 0
+            }
+            $ipMap[$ip] = $ipStats  # SIN-EXEMPT:P027 -- guarded by ContainsKey and null fallback above
+        }
+        $ipStats.totalCount++
+        $ipStats.lastSeen = [string]$r.ts
     }
 
     Send-Json -Context $Context -Object @{

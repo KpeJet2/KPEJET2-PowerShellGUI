@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B6.V53.0
 <#
 .SYNOPSIS
     Pester integration tests for Invoke-SINPatternScanner.ps1
@@ -22,7 +22,7 @@ BeforeAll {
 
     # One full Permissive scan; the rest of the suite consumes its output.
     $global:LASTEXITCODE = 0
-    & $script:Scanner -RatchetMode Permissive -BaselineJson $script:Baseline -OutputJson $script:OutJson -FailOnCritical -Quiet *>$null
+    & $script:Scanner -RatchetMode Permissive -BaselineJson $script:Baseline -OutputJson $script:OutJson -FailOnCritical -Quiet -SummaryOnly *>$null
     $script:PrimaryExit = $LASTEXITCODE
     $script:PrimaryJson = if (Test-Path -LiteralPath $script:OutJson) {
         Get-Content -LiteralPath $script:OutJson -Raw | ConvertFrom-Json
