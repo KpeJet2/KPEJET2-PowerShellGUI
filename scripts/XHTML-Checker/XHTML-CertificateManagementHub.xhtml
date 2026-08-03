@@ -1,0 +1,777 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- VersionTag: 2607.B7.V53.0 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PwShGUI Certificate Management Hub</title>
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;600&amp;display=swap');
+    :root{
+      --bg0:#f6f8f2;
+      --bg1:#e8edf3;
+      --ink:#112031;
+      --ink-sub:#34506a;
+      --accent:#0f766e;
+      --accent-2:#c2410c;
+      --card:#ffffff;
+      --line:#bfd0df;
+      --ok:#166534;
+      --warn:#9a3412;
+      --mono:'IBM Plex Mono',Consolas,monospace;
+      --head:'Space Grotesk','Segoe UI',sans-serif;
+      --body:'Segoe UI',Tahoma,Arial,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:linear-gradient(140deg,var(--bg0),var(--bg1));
+      font-family:var(--body);
+    }
+    .wrap{max-width:1320px;margin:0 auto;padding:20px 20px 28px}
+    .hero{
+      background:linear-gradient(120deg,#1c3646,#14532d 68%,#7c2d12);
+      color:#f8fafc;
+      border-radius:16px;
+      padding:18px 20px;
+      box-shadow:0 20px 42px rgba(15,23,42,0.22);
+      border:1px solid rgba(255,255,255,0.16);
+    }
+    .hero h1{margin:0;font:700 28px/1.2 var(--head);letter-spacing:.2px}
+    .hero p{margin:10px 0 0;color:rgba(248,250,252,0.9);font-size:14px}
+    .hero .meta{margin-top:10px;font:600 12px/1.3 var(--mono);opacity:.88}
+
+    .layout{display:grid;grid-template-columns:1.2fr .9fr;gap:14px;margin-top:14px}
+    .stack{display:grid;gap:14px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      box-shadow:0 8px 22px rgba(30,64,83,0.10);
+    }
+    .card h2{margin:0 0 8px;font:700 18px/1.2 var(--head);color:#12344b}
+    .card h3{margin:0 0 6px;font:700 14px/1.2 var(--head);color:#0f3c55}
+    .card p{margin:0 0 8px;color:var(--ink-sub);font-size:13px;line-height:1.45}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    label{display:block;margin:0 0 4px;font:600 12px/1.2 var(--head);color:#0f3c55}
+    .mt8{margin-top:8px}
+    input[type="text"],input[type="number"],select,textarea{
+      width:100%;
+      border:1px solid #9db4c8;
+      border-radius:8px;
+      background:#fcfeff;
+      color:#0f1f30;
+      padding:8px 10px;
+      font:400 13px/1.35 var(--body);
+    }
+    textarea{min-height:86px;resize:vertical}
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    button{
+      border:1px solid #2a5a79;
+      border-radius:8px;
+      padding:8px 12px;
+      cursor:pointer;
+      background:#1f4f6d;
+      color:#f9fcff;
+      font:600 12px/1.2 var(--head);
+    }
+    button.alt{background:#0f766e;border-color:#115e59}
+    button.warn{background:#b45309;border-color:#92400e}
+    button.ghost{background:#eef6fb;color:#103047;border-color:#aac2d6}
+
+    .help-list{margin:0;padding:0 0 0 16px;color:#23445f;font-size:13px;line-height:1.45}
+    .help-list li{margin:0 0 4px}
+    .kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .kpi div{border:1px solid #d1dde8;border-radius:10px;padding:8px;background:#f8fbff}
+    .kpi b{display:block;font:700 15px/1.2 var(--head);color:#0f3d57}
+    .kpi span{display:block;font-size:11px;color:#45637a}
+
+    .status{margin-top:8px;padding:8px 10px;border-radius:8px;background:#eef6fb;border:1px solid #c9ddeb;color:#164863;font-size:12px}
+    .status.ok{background:#ecfdf3;border-color:#b7e9c9;color:var(--ok)}
+    .status.warn{background:#fff7ed;border-color:#f8d3b5;color:var(--warn)}
+
+    .out-wrap{margin-top:14px}
+    .out-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+    .out-head h2{margin:0;font:700 17px/1.2 var(--head);color:#12344b}
+    .out-actions{display:flex;gap:8px;flex-wrap:wrap}
+    pre{
+      margin:0;
+      border:1px solid #9fb6ca;
+      border-radius:12px;
+      background:#0f1720;
+      color:#dbeafe;
+      padding:12px;
+      min-height:280px;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      font:400 12px/1.45 var(--mono);
+      overflow:auto;
+    }
+
+    .tag{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid #b7cddd;
+      background:#f3f9ff;
+      color:#12405d;
+      font:600 11px/1.2 var(--head);
+      margin:0 6px 6px 0;
+    }
+    .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .inline input[type="checkbox"]{margin-right:4px}
+
+    @media (max-width:1080px){
+      .layout{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr 1fr}
+      .kpi{grid-template-columns:1fr}
+    }
+    @media (max-width:700px){
+      .grid-2,.grid-3{grid-template-columns:1fr}
+      .hero h1{font-size:22px}
+      .wrap{padding:14px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Certificate Management Hub</h1>
+      <p>Setup and guidance center for request creation, secure backup and restore, chain and root governance, ACME workflows, browser trust integration, and secrets-backed operations.</p>
+      <div class="meta">Workspace Profile: PowerShellGUI | Build Target: 2607.B7 | Runtime Focus: PS 5.1 safe + PS 7.6 enhanced paths</div>
+    </div>
+
+    <div class="layout">
+      <div class="stack">
+        <div class="card">
+          <h2>1) Environment Profile</h2>
+          <div class="grid-2">
+            <div>
+              <label for="workspacePath">Workspace Path</label>
+              <input type="text" id="workspacePath" value="C:\\PowerShellGUI" />
+            </div>
+            <div>
+              <label for="certStoreScope">Preferred Cert Store Scope</label>
+              <select id="certStoreScope">
+                <option value="Cert:\\LocalMachine\\My">LocalMachine/My (service certs)</option>
+                <option value="Cert:\\CurrentUser\\My">CurrentUser/My (user certs)</option>
+              </select>
+            </div>
+            <div>
+              <label for="pkiRoot">PKI Working Folder</label>
+              <input type="text" id="pkiRoot" value="C:\\PowerShellGUI\\pki" />
+            </div>
+            <div>
+              <label for="backupRoot">Backup Vault Folder</label>
+              <input type="text" id="backupRoot" value="C:\\PowerShellGUI\\pki\\backups" />
+            </div>
+            <div>
+              <label for="secretProvider">Secrets Integration</label>
+              <select id="secretProvider">
+                <option value="bitwarden">Bitwarden + AssistedSASC</option>
+                <option value="credman">Windows Credential Manager</option>
+                <option value="keyvault">Azure Key Vault</option>
+              </select>
+            </div>
+            <div>
+              <label for="acmeDirectory">Primary ACME Directory URL</label>
+              <input type="text" id="acmeDirectory" value="https://acme-v02.api.letsencrypt.org/directory" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="alt" id="btnSaveProfile" type="button">Save Profile</button>
+            <button class="ghost" id="btnLoadProfile" type="button">Reload Profile</button>
+            <button class="ghost" id="btnBuildProfileCheck" type="button">Build Prereq Check Commands</button>
+          </div>
+          <div class="status" id="profileStatus">Profile is loaded with defaults. Save to keep your preferred paths and providers.</div>
+        </div>
+
+        <div class="card">
+          <h2>2) Certificate Request Creation</h2>
+          <div class="grid-3">
+            <div>
+              <label for="reqCN">Common Name (CN)</label>
+              <input type="text" id="reqCN" value="api.local.power" />
+            </div>
+            <div>
+              <label for="reqOrg">Organization</label>
+              <input type="text" id="reqOrg" value="PowerShellGUI" />
+            </div>
+            <div>
+              <label for="reqCountry">Country</label>
+              <input type="text" id="reqCountry" value="AU" />
+            </div>
+            <div>
+              <label for="reqSans">SAN entries (comma separated)</label>
+              <input type="text" id="reqSans" value="api.local.power,localhost,127.0.0.1" />
+            </div>
+            <div>
+              <label for="reqKeyAlgo">Key Algorithm</label>
+              <select id="reqKeyAlgo">
+                <option value="rsa">RSA</option>
+                <option value="ecdsa">ECDSA</option>
+              </select>
+            </div>
+            <div>
+              <label for="reqKeyBits">Key Size</label>
+              <input type="number" id="reqKeyBits" min="2048" max="8192" value="4096" />
+            </div>
+            <div>
+              <label for="reqDays">Validity Days (self-signed)</label>
+              <input type="number" id="reqDays" min="1" max="825" value="397" />
+            </div>
+            <div>
+              <label for="reqFriendly">Friendly Name</label>
+              <input type="text" id="reqFriendly" value="PwShGUI Local API Cert" />
+            </div>
+            <div>
+              <label for="reqOutputSlug">Output Slug</label>
+              <input type="text" id="reqOutputSlug" value="api-local-power" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="btnBuildRequest" type="button">Build Request Commands</button>
+            <button class="alt" id="btnBuildSelfSigned" type="button">Build Self-Signed Commands</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>3) Secure Backup and Restore</h2>
+          <div class="grid-2">
+            <div>
+              <label for="backupThumbprints">Thumbprints (comma separated)</label>
+              <textarea id="backupThumbprints">THUMBPRINT_A,THUMBPRINT_B</textarea>
+            </div>
+            <div>
+              <label for="restoreFile">Restore PFX File</label>
+              <input type="text" id="restoreFile" value="C:\\PowerShellGUI\\pki\\backups\\cert-THUMBPRINT_A.pfx" />
+              <label for="restoreStore" class="mt8">Restore Target Store</label>
+              <select id="restoreStore">
+                <option value="Cert:\\LocalMachine\\My">Cert:\\LocalMachine\\My</option>
+                <option value="Cert:\\CurrentUser\\My">Cert:\\CurrentUser\\My</option>
+                <option value="Cert:\\LocalMachine\\Root">Cert:\\LocalMachine\\Root</option>
+                <option value="Cert:\\LocalMachine\\CA">Cert:\\LocalMachine\\CA</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="btnBuildBackup" type="button">Build Backup Commands</button>
+            <button class="warn" id="btnBuildRestore" type="button">Build Restore Commands</button>
+          </div>
+          <p>Backup guidance integrates with existing vault tooling from <a href="../../BW-Vault-Checklist.xhtml" target="_blank" rel="noopener">BW-Vault-Checklist.xhtml</a> and <a href="../../XHTML-invoke-secrets.xhtml" target="_blank" rel="noopener">XHTML-invoke-secrets.xhtml</a>.</p>
+        </div>
+
+        <div class="card">
+          <h2>4) Bulk and Chain Management</h2>
+          <div class="grid-2">
+            <div>
+              <label for="bulkImportDir">Certificate Import Directory</label>
+              <input type="text" id="bulkImportDir" value="C:\\PowerShellGUI\\pki\\import" />
+              <label for="bulkStore" class="mt8">Import Destination Store</label>
+              <select id="bulkStore">
+                <option value="Cert:\\LocalMachine\\CA">Intermediate CA (LocalMachine/CA)</option>
+                <option value="Cert:\\LocalMachine\\Root">Root CA (LocalMachine/Root)</option>
+                <option value="Cert:\\LocalMachine\\My">Leaf certs (LocalMachine/My)</option>
+              </select>
+            </div>
+            <div>
+              <label for="chainLeafFile">Leaf Certificate File</label>
+              <input type="text" id="chainLeafFile" value="C:\\PowerShellGUI\\pki\\import\\leaf.cer" />
+              <label for="chainRootFile" class="mt8">Root Certificate File</label>
+              <input type="text" id="chainRootFile" value="C:\\PowerShellGUI\\pki\\import\\root.cer" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="btnBuildBulk" type="button">Build Bulk Import Commands</button>
+            <button class="alt" id="btnBuildChain" type="button">Build Chain Validation Commands</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h2>5) ACME and Let's Encrypt Integration</h2>
+          <div>
+            <span class="tag">Let's Encrypt Prod</span>
+            <span class="tag">Let's Encrypt Staging</span>
+            <span class="tag">ZeroSSL</span>
+            <span class="tag">Buypass</span>
+            <span class="tag">step-ca ACME</span>
+          </div>
+          <p>Discover ACME capabilities and build account bootstrap commands for your selected provider.</p>
+          <div class="btn-row">
+            <button id="btnDiscoverAcme" type="button">Discover ACME Endpoints</button>
+            <button class="ghost" id="btnBuildAcmeEnroll" type="button">Build ACME Enrollment Commands</button>
+          </div>
+          <div class="status" id="acmeStatus">ACME discovery is idle.</div>
+        </div>
+
+        <div class="card">
+          <h2>6) Root Cert Checks and Monitoring</h2>
+          <div class="grid-2">
+            <div>
+              <label for="rootWarnDays">Warn if expiring in (days)</label>
+              <input type="number" id="rootWarnDays" min="1" max="365" value="45" />
+            </div>
+            <div>
+              <label for="monitorLog">Monitor Log File</label>
+              <input type="text" id="monitorLog" value="C:\\PowerShellGUI\\logs\\cert-monitor.jsonl" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button id="btnBuildRootMonitor" type="button">Build Root Monitor Commands</button>
+            <button class="ghost" id="btnBuildRootBaseline" type="button">Build Baseline + Diff Commands</button>
+          </div>
+          <p>For GUI-based review use <code>scripts/Show-CertificateManager.ps1</code> and maintain a baseline under <code>config/cert-store-baseline.json</code>.</p>
+        </div>
+
+        <div class="card">
+          <h2>7) CA Service Setup</h2>
+          <label for="caMode">CA Deployment Mode</label>
+          <select id="caMode">
+            <option value="adcs">Windows AD CS (enterprise)</option>
+            <option value="stepca">Smallstep step-ca (modern internal PKI)</option>
+            <option value="acmeproxy">Reverse proxy with ACME challenge automation</option>
+          </select>
+          <div class="btn-row">
+            <button id="btnBuildCASetup" type="button">Build CA Setup Commands</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>8) Browser Cert Store Hooks</h2>
+          <p>Sync trust roots to browser stores, with dedicated Firefox NSS import guidance.</p>
+          <div class="inline">
+            <label><input type="checkbox" id="hookEdge" checked="checked" />Edge</label>
+            <label><input type="checkbox" id="hookChrome" checked="checked" />Chrome</label>
+            <label><input type="checkbox" id="hookFirefox" checked="checked" />Firefox</label>
+          </div>
+          <label for="hookRootFile" class="mt8">Root cert file to hook</label>
+          <input type="text" id="hookRootFile" value="C:\\PowerShellGUI\\pki\\import\\root.cer" />
+          <label for="firefoxProfile" class="mt8">Firefox profile path (sql DB)</label>
+          <input type="text" id="firefoxProfile" value="%APPDATA%\\Mozilla\\Firefox\\Profiles\\YOURPROFILE" />
+          <div class="btn-row">
+            <button id="btnBuildBrowserHooks" type="button">Build Browser Hook Commands</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>9) Secrets Management Integration</h2>
+          <p>Build commands to escrow PFX, passphrases, and rotation metadata using your selected secret provider.</p>
+          <div class="kpi">
+            <div><b>DPAPI + Bitwarden</b><span>Best for workstation-managed vault flow.</span></div>
+            <div><b>Credential Manager</b><span>Best for local service accounts.</span></div>
+            <div><b>Azure Key Vault</b><span>Best for cloud workloads and managed identities.</span></div>
+          </div>
+          <div class="btn-row">
+            <button class="alt" id="btnBuildSecretsFlow" type="button">Build Secret Escrow Commands</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>10) Quick Tool Checklist</h2>
+          <ul class="help-list">
+            <li>OpenSSL and certutil available in PATH.</li>
+            <li>PowerShell modules present: AssistedSASC, PKIChainManager, PwShGUICore.</li>
+            <li>If using ACME challenge automation, confirm DNS/API credentials are stored in secrets vault, never plaintext.</li>
+            <li>Use separate staging and production ACME accounts.</li>
+            <li>Monitor root store drift and schedule recurring trust review.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card out-wrap">
+      <div class="out-head">
+        <h2>Command Builder Output</h2>
+        <div class="out-actions">
+          <button class="ghost" id="btnCopyCommands" type="button">Copy Output</button>
+          <button class="warn" id="btnClearCommands" type="button">Clear Output</button>
+        </div>
+      </div>
+      <pre id="cmdOutput">Ready. Choose an action above to generate setup or operational commands.</pre>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+//<![CDATA[
+(function(){
+  'use strict';
+
+  var PROFILE_KEY='PwShGUI_CertHub_Profile_v1';
+
+  function q(id){ return document.getElementById(id); }
+  function asText(v){ return String(v||'').trim(); }
+  function parseCsv(v){
+    var raw=String(v||'').split(',');
+    var out=[];
+    for(var i=0;i<raw.length;i++){
+      var item=asText(raw[i]);
+      if(item){ out.push(item); }
+    }
+    return out;
+  }
+
+  function getProfile(){
+    return {
+      workspacePath: asText(q('workspacePath').value),
+      certStoreScope: asText(q('certStoreScope').value),
+      pkiRoot: asText(q('pkiRoot').value),
+      backupRoot: asText(q('backupRoot').value),
+      secretProvider: asText(q('secretProvider').value),
+      acmeDirectory: asText(q('acmeDirectory').value)
+    };
+  }
+
+  function setStatus(id,msg,kind){
+    var el=q(id);
+    if(!el){ return; }
+    el.className='status'+(kind?(' '+kind):'');
+    el.textContent=msg;
+  }
+
+  function saveProfile(){
+    try{
+      localStorage.setItem(PROFILE_KEY,JSON.stringify(getProfile()));
+      setStatus('profileStatus','Profile saved locally for this browser.','ok');
+    }catch(ex){
+      setStatus('profileStatus','Profile save failed: '+ex.message,'warn');
+    }
+  }
+
+  function loadProfile(){
+    var raw='';
+    try{ raw=localStorage.getItem(PROFILE_KEY)||''; }catch(ex){ raw=''; }
+    if(!raw){
+      setStatus('profileStatus','No saved profile found. Using current fields.','warn');
+      return;
+    }
+    try{
+      var p=JSON.parse(raw);
+      if(p.workspacePath){ q('workspacePath').value=p.workspacePath; }
+      if(p.certStoreScope){ q('certStoreScope').value=p.certStoreScope; }
+      if(p.pkiRoot){ q('pkiRoot').value=p.pkiRoot; }
+      if(p.backupRoot){ q('backupRoot').value=p.backupRoot; }
+      if(p.secretProvider){ q('secretProvider').value=p.secretProvider; }
+      if(p.acmeDirectory){ q('acmeDirectory').value=p.acmeDirectory; }
+      setStatus('profileStatus','Profile loaded from browser storage.','ok');
+    }catch(ex2){
+      setStatus('profileStatus','Saved profile is invalid JSON. Reset manually.','warn');
+    }
+  }
+
+  function appendBlock(title,lines){
+    var out=q('cmdOutput');
+    if(!out){ return; }
+    var head='\n\n## '+title+'\n';
+    var body='';
+    for(var i=0;i<lines.length;i++){
+      body+=lines[i]+'\n';
+    }
+    if(out.textContent.indexOf('Ready. Choose an action above')===0){
+      out.textContent='';
+    }
+    out.textContent += head + body;
+    out.scrollTop=out.scrollHeight;
+  }
+
+  function mapSecretProviderLabel(v){
+    if(v==='bitwarden'){ return 'Bitwarden + AssistedSASC'; }
+    if(v==='credman'){ return 'Windows Credential Manager'; }
+    if(v==='keyvault'){ return 'Azure Key Vault'; }
+    return 'Unknown';
+  }
+
+  function buildProfileChecks(){
+    var p=getProfile();
+    var lines=[
+      '$workspace = "'+p.workspacePath+'"',
+      '$pkiRoot = "'+p.pkiRoot+'"',
+      '$backupRoot = "'+p.backupRoot+'"',
+      '$secretProvider = "'+mapSecretProviderLabel(p.secretProvider)+'"',
+      'Test-Path -LiteralPath $workspace',
+      'Test-Path -LiteralPath $pkiRoot',
+      'Test-Path -LiteralPath $backupRoot',
+      'Get-Command openssl,certutil,pwsh,powershell -ErrorAction SilentlyContinue',
+      'Get-Module -ListAvailable AssistedSASC,PKIChainManager,PwShGUICore | Select-Object Name,Version'
+    ];
+    appendBlock('Environment precheck',lines);
+  }
+
+  function buildRequestCommands(selfSigned){
+    var p=getProfile();
+    var cn=asText(q('reqCN').value);
+    var org=asText(q('reqOrg').value);
+    var ctry=asText(q('reqCountry').value);
+    var sans=parseCsv(q('reqSans').value);
+    var algo=asText(q('reqKeyAlgo').value).toLowerCase();
+    var bits=asText(q('reqKeyBits').value)||'4096';
+    var days=asText(q('reqDays').value)||'397';
+    var friendly=asText(q('reqFriendly').value);
+    var slug=asText(q('reqOutputSlug').value)||'cert-request';
+    var reqDir=p.pkiRoot+'\\requests';
+
+    var sanOpenSsl=[];
+    for(var i=0;i<sans.length;i++){ sanOpenSsl.push('DNS:'+sans[i]); }
+    var sanPs=[];
+    for(var j=0;j<sans.length;j++){ sanPs.push('"'+sans[j]+'"'); }
+
+    var lines=[
+      '$reqDir = "'+reqDir+'"',
+      'New-Item -Path $reqDir -ItemType Directory -Force | Out-Null',
+      'openssl req -new -newkey '+(algo==='ecdsa'?'ec -pkeyopt ec_paramgen_curve:P-256':'rsa:'+bits)+' -nodes -keyout "'+reqDir+'\\'+slug+'.key" -out "'+reqDir+'\\'+slug+'.csr" -subj "/CN='+cn+'/O='+org+'/C='+ctry+'" -addext "subjectAltName='+sanOpenSsl.join(',')+'"'
+    ];
+
+    if(selfSigned){
+      lines.push('New-SelfSignedCertificate -DnsName @('+sanPs.join(',')+') -CertStoreLocation "'+p.certStoreScope+'" -FriendlyName "'+friendly+'" -NotAfter (Get-Date).AddDays('+days+')');
+      appendBlock('Self-signed request + local issue',lines);
+    }else{
+      lines.push('# Submit '+slug+'.csr to your internal CA or ACME client flow');
+      appendBlock('CSR + keypair generation',lines);
+    }
+  }
+
+  function buildBackupCommands(){
+    var p=getProfile();
+    var thumbs=parseCsv(q('backupThumbprints').value);
+    var lines=[
+      '$backupRoot = "'+p.backupRoot+'"',
+      'New-Item -Path $backupRoot -ItemType Directory -Force | Out-Null'
+    ];
+    for(var i=0;i<thumbs.length;i++){
+      var t=thumbs[i];
+      lines.push('Export-PfxCertificate -Cert "'+p.certStoreScope+'\\'+t+'" -FilePath "$backupRoot\\cert-'+t+'.pfx" -Password (Read-Host "PFX password" -AsSecureString)');
+      lines.push('# Escrow metadata in '+mapSecretProviderLabel(p.secretProvider));
+    }
+    if(thumbs.length===0){ lines.push('# Add one or more thumbprints to generate export commands.'); }
+    appendBlock('Secure backup workflow',lines);
+  }
+
+  function buildRestoreCommands(){
+    var restoreFile=asText(q('restoreFile').value);
+    var restoreStore=asText(q('restoreStore').value);
+    var lines=[
+      '$pfxPath = "'+restoreFile+'"',
+      '$destStore = "'+restoreStore+'"',
+      'Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation $destStore -Password (Read-Host "PFX password" -AsSecureString)',
+      '# Validate post-restore chain',
+      'certutil -verify $pfxPath'
+    ];
+    appendBlock('Restore workflow',lines);
+  }
+
+  function buildBulkCommands(){
+    var importDir=asText(q('bulkImportDir').value);
+    var store=asText(q('bulkStore').value);
+    var lines=[
+      '$importDir = "'+importDir+'"',
+      '$store = "'+store+'"',
+      'Get-ChildItem -Path $importDir -Filter *.cer -File | ForEach-Object { Import-Certificate -FilePath $_.FullName -CertStoreLocation $store | Out-Null }',
+      'Get-ChildItem -Path $importDir -Filter *.crt -File | ForEach-Object { Import-Certificate -FilePath $_.FullName -CertStoreLocation $store | Out-Null }'
+    ];
+    appendBlock('Bulk import workflow',lines);
+  }
+
+  function buildChainCommands(){
+    var leaf=asText(q('chainLeafFile').value);
+    var root=asText(q('chainRootFile').value);
+    var lines=[
+      '$leaf = "'+leaf+'"',
+      '$root = "'+root+'"',
+      'certutil -verify $leaf',
+      'certutil -verify -urlfetch $leaf',
+      '# Optional explicit root check',
+      'certutil -dump $root'
+    ];
+    appendBlock('Chain validation workflow',lines);
+  }
+
+  function buildAcmeEnrollCommands(){
+    var p=getProfile();
+    var lines=[
+      '$acmeDir = "'+p.acmeDirectory+'"',
+      '# Directory discovery',
+      'Invoke-RestMethod -Uri $acmeDir | ConvertTo-Json -Depth 6',
+      '# Example acme.sh account registration (adapt email and key path)',
+      'acme.sh --register-account -m admin@example.com --server $acmeDir',
+      'acme.sh --issue -d '+asText(q('reqCN').value)+' --standalone --server $acmeDir'
+    ];
+    appendBlock('ACME enrollment workflow',lines);
+  }
+
+  function discoverAcme(){
+    var url=asText(q('acmeDirectory').value);
+    if(!url){
+      setStatus('acmeStatus','Set an ACME directory URL first.','warn');
+      return;
+    }
+    setStatus('acmeStatus','Discovering ACME directory metadata...','');
+    fetch(url,{method:'GET'})
+      .then(function(r){
+        if(!r.ok){ throw new Error('HTTP '+r.status); }
+        return r.json();
+      })
+      .then(function(data){
+        var lines=['# ACME directory: '+url];
+        var keys=Object.keys(data||{});
+        for(var i=0;i<keys.length;i++){
+          var k=keys[i];
+          lines.push(k+': '+String(data[k]));
+        }
+        appendBlock('ACME discovery response',lines);
+        setStatus('acmeStatus','ACME directory discovery succeeded.','ok');
+      })
+      .catch(function(err){
+        setStatus('acmeStatus','ACME discovery failed in browser context. Use PowerShell fallback command.','warn');
+        appendBlock('ACME discovery fallback',[
+          '$acmeDir = "'+url+'"',
+          'Invoke-RestMethod -Uri $acmeDir | ConvertTo-Json -Depth 8',
+          '# Browser error: '+err.message
+        ]);
+      });
+  }
+
+  function buildRootMonitorCommands(){
+    var days=asText(q('rootWarnDays').value)||'45';
+    var log=asText(q('monitorLog').value);
+    var lines=[
+      '$warnDays = '+days,
+      '$logPath = "'+log+'"',
+      '$roots = Get-ChildItem Cert:\\LocalMachine\\Root',
+      '$limit = (Get-Date).AddDays($warnDays)',
+      '$expiring = @($roots | Where-Object { $_.NotAfter -lt $limit })',
+      '$record = [ordered]@{ ts=(Get-Date).ToUniversalTime().ToString("o"); warnDays=$warnDays; rootCount=@($roots).Count; expiringCount=@($expiring).Count } | ConvertTo-Json -Depth 4 -Compress',
+      'Add-Content -LiteralPath $logPath -Value $record -Encoding UTF8',
+      '$expiring | Select-Object Subject,Thumbprint,NotAfter | Format-Table -AutoSize'
+    ];
+    appendBlock('Root trust monitoring',lines);
+  }
+
+  function buildRootBaselineCommands(){
+    var p=getProfile();
+    var baseline=p.workspacePath+'\\config\\cert-store-baseline.json';
+    var lines=[
+      '$baseline = "'+baseline+'"',
+      '$roots = Get-ChildItem Cert:\\LocalMachine\\Root | Select-Object Thumbprint,Subject,Issuer,NotAfter',
+      '@{ capturedAt=(Get-Date).ToUniversalTime().ToString("o"); certs=@($roots) } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $baseline -Encoding UTF8',
+      '$current = Get-ChildItem Cert:\\LocalMachine\\Root | Select-Object Thumbprint,Subject,Issuer,NotAfter',
+      '$prior = (Get-Content -LiteralPath $baseline -Raw -Encoding UTF8 | ConvertFrom-Json).certs',
+      'Compare-Object -ReferenceObject $prior -DifferenceObject $current -Property Thumbprint,Subject,Issuer'
+    ];
+    appendBlock('Root baseline and drift comparison',lines);
+  }
+
+  function buildCASetupCommands(){
+    var mode=asText(q('caMode').value);
+    var lines=[];
+    if(mode==='adcs'){
+      lines=[
+        '# AD CS baseline setup (run elevated on CA host)',
+        'Install-WindowsFeature ADCS-Cert-Authority -IncludeManagementTools',
+        'Install-AdcsCertificationAuthority -CAType EnterpriseRootCA -CryptoProviderName "RSA#Microsoft Software Key Storage Provider" -HashAlgorithmName SHA256 -KeyLength 4096 -ValidityPeriod Years -ValidityPeriodUnits 10'
+      ];
+    }else if(mode==='stepca'){
+      lines=[
+        '# step-ca baseline setup',
+        'choco install step-cli -y',
+        'step ca init --name "PwShGUI Internal CA" --deployment-type standalone --provisioner admin@example.com',
+        'step-ca $(Join-Path $env:USERPROFILE ".step\\config\\ca.json")'
+      ];
+    }else{
+      lines=[
+        '# ACME reverse-proxy pattern',
+        'acme.sh --issue -d '+asText(q('reqCN').value)+' --dns dns_provider_name --server "'+asText(q('acmeDirectory').value)+'"',
+        '# Hook certificate deployment to IIS/NGINX/Service restart after renewal'
+      ];
+    }
+    appendBlock('CA service setup ('+mode+')',lines);
+  }
+
+  function buildBrowserHookCommands(){
+    var rootFile=asText(q('hookRootFile').value);
+    var ff=asText(q('firefoxProfile').value);
+    var lines=['$rootFile = "'+rootFile+'"'];
+    if(q('hookEdge').checked){
+      lines.push('# Edge trusts Windows root store. Import root there:');
+      lines.push('Import-Certificate -FilePath $rootFile -CertStoreLocation Cert:\\LocalMachine\\Root | Out-Null');
+    }
+    if(q('hookChrome').checked){
+      lines.push('# Chrome on Windows trusts Windows root store (same import command applies).');
+    }
+    if(q('hookFirefox').checked){
+      lines.push('$ffProfile = "'+ff+'"');
+      lines.push('certutil -A -n "PwShGUI Root" -t "C,," -i $rootFile -d sql:$ffProfile');
+    }
+    appendBlock('Browser trust hooks',lines);
+  }
+
+  function buildSecretsFlow(){
+    var p=getProfile();
+    var lines=['$provider = "'+p.secretProvider+'"'];
+    if(p.secretProvider==='bitwarden'){
+      lines.push('# Bitwarden + AssistedSASC flow');
+      lines.push('Import-Module "'+p.workspacePath+'\\modules\\AssistedSASC.psm1" -Force');
+      lines.push('Set-VaultSecret -Name "cert-pfx-api" -Value "<BASE64_PFX_PAYLOAD>"');
+      lines.push('Set-VaultSecret -Name "cert-passphrase-api" -Value "<SECURE_PASS_PHRASE>"');
+    }else if(p.secretProvider==='credman'){
+      lines.push('# Windows Credential Manager flow');
+      lines.push('cmdkey /generic:PwShGUI-CertPassphrase /user:svc-cert /pass:<VALUE>');
+    }else{
+      lines.push('# Azure Key Vault flow');
+      lines.push('az keyvault secret set --vault-name <kv-name> --name cert-pfx-api --value "<BASE64_PFX_PAYLOAD>"');
+      lines.push('az keyvault secret set --vault-name <kv-name> --name cert-passphrase-api --value "<SECURE_PASS_PHRASE>"');
+    }
+    lines.push('# Keep secrets flow aligned with XHTML-invoke-secrets.xhtml and BW-Vault-Checklist.xhtml operations.');
+    appendBlock('Secret escrow and retrieval patterns',lines);
+  }
+
+  function copyOutput(){
+    var txt=q('cmdOutput').textContent;
+    if(!txt){ return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){
+        setStatus('profileStatus','Output copied to clipboard.','ok');
+      }).catch(function(){
+        setStatus('profileStatus','Clipboard copy failed. Select text manually.','warn');
+      });
+      return;
+    }
+    setStatus('profileStatus','Clipboard API unavailable. Select text manually.','warn');
+  }
+
+  function clearOutput(){
+    q('cmdOutput').textContent='Ready. Choose an action above to generate setup or operational commands.';
+  }
+
+  q('btnSaveProfile').addEventListener('click',saveProfile);
+  q('btnLoadProfile').addEventListener('click',loadProfile);
+  q('btnBuildProfileCheck').addEventListener('click',buildProfileChecks);
+  q('btnBuildRequest').addEventListener('click',function(){ buildRequestCommands(false); });
+  q('btnBuildSelfSigned').addEventListener('click',function(){ buildRequestCommands(true); });
+  q('btnBuildBackup').addEventListener('click',buildBackupCommands);
+  q('btnBuildRestore').addEventListener('click',buildRestoreCommands);
+  q('btnBuildBulk').addEventListener('click',buildBulkCommands);
+  q('btnBuildChain').addEventListener('click',buildChainCommands);
+  q('btnDiscoverAcme').addEventListener('click',discoverAcme);
+  q('btnBuildAcmeEnroll').addEventListener('click',buildAcmeEnrollCommands);
+  q('btnBuildRootMonitor').addEventListener('click',buildRootMonitorCommands);
+  q('btnBuildRootBaseline').addEventListener('click',buildRootBaselineCommands);
+  q('btnBuildCASetup').addEventListener('click',buildCASetupCommands);
+  q('btnBuildBrowserHooks').addEventListener('click',buildBrowserHookCommands);
+  q('btnBuildSecretsFlow').addEventListener('click',buildSecretsFlow);
+  q('btnCopyCommands').addEventListener('click',copyOutput);
+  q('btnClearCommands').addEventListener('click',clearOutput);
+
+  loadProfile();
+})();
+//]]>
+  </script>
+</body>
+</html>

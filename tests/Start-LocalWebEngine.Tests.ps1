@@ -1,4 +1,4 @@
-﻿# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,6 +57,9 @@ Describe 'Start-LocalWebEngine — API Route declarations' {
     It 'Has /api/engine/logs/list route' {
         $script:Content | Should -Match '/api/engine/logs/list'
     }
+    It 'Has /api/pipeline/feature-submit route' {
+        $script:Content | Should -Match '/api/pipeline/feature-submit'
+    }
     It 'Has /api/engine/stop route' {
         $script:Content | Should -Match '/api/engine/stop'
     }
@@ -83,6 +86,9 @@ Describe 'Start-LocalWebEngine — Handler functions present' {
     }
     It 'Has Get-EngineEvents function' {
         $script:Content | Should -Match 'function Get-EngineEvents'
+    }
+    It 'Has New-PipelineFeatureSubmit function' {
+        $script:Content | Should -Match 'function New-PipelineFeatureSubmit'
     }
 
     It 'Has request client class helper function' {
@@ -186,6 +192,20 @@ Describe 'Start-LocalWebEngine — CSRF protection on mutating routes' {
 
     It '/api/csrf-token includes clientClass metadata' {
         $script:Content | Should -Match 'clientClass\s*=\s*\$clientClass'
+    }
+
+    It 'New-PipelineFeatureSubmit validates CSRF token' {
+        $content = $script:Content
+        $fIdx = $content.IndexOf('function New-PipelineFeatureSubmit')
+        $fBlock = $content.Substring($fIdx, [Math]::Min(2200, $content.Length - $fIdx))
+        $fBlock | Should -Match "Headers\['X-CSRF-Token'\]"
+        $fBlock | Should -Match 'CSRF token mismatch'
+    }
+}
+
+Describe 'Start-LocalWebEngine — Approvals payload compatibility' {
+    It 'Get-PipelineApprovals emits both items and pending aliases' {
+        $script:Content | Should -Match 'items\s*=\s*\$sorted;\s*pending\s*=\s*\$sorted;\s*count\s*=\s*@\(\$sorted\)\.Count'
     }
 }
 
