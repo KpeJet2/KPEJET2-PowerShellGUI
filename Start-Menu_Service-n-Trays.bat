@@ -1,7 +1,8 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-REM VersionTag: 2608.B1.V54.0
+REM VersionTag: 2608.B1.V54.1
 REM VersionBuildHistory:
+REM   2608.B1.V54.1  2026-08-04  Added option T to launch LocalWebEngine, ClusterTabController, and MainGui in minimized color-coded WT tabs.
 REM   2608.B1.V54.0  2026-08-03  Added unified Services+Trays menu taxonomy launcher.
 REM ==================================================================
 REM  Start-Menu_Service-n-Trays.bat
@@ -41,6 +42,7 @@ echo     C  Start-LocalWebEngineService.ps1 -Action Start
 echo     c  Start-LocalWebEngineService.ps1 -Action Start -NoTray
 echo     D  Start-LocalWebEngineService.ps1 -Action RunTray
 echo     d  Start-LocalWebEngineService.ps1 -Action Status
+echo     T  Tray trio in WT ^(LocalWebEngine + ClusterTabController + MainGui^)
 echo.
 echo   [Setup and GUI]
 echo     E  Launch-GUI.bat
@@ -69,7 +71,7 @@ echo     R  README.md
 echo     r  scripts\README.md
 echo     S  tests\README-SmokeTest.md
 echo     s  tests\sandbox\README.md
-echo     T  tools\README-SIN-Scan.md
+echo     V  tools\README-SIN-Scan.md
 echo     t  modules\README.md
 echo     U  Switch matrix reference
 echo     u  Taxonomy map for query references
@@ -88,6 +90,7 @@ if "%OPT%"=="C" start "WebEngine-Start" "%PS_EXE%" -NoProfile -ExecutionPolicy B
 if "%OPT%"=="c" start "WebEngine-Headless" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action Start -WorkspacePath "%WS%" -Port 8042 -NoTray & goto POST
 if "%OPT%"=="D" start "WebEngine-RunTray" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action RunTray -WorkspacePath "%WS%" -Port 8042 & goto POST
 if "%OPT%"=="d" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action Status -WorkspacePath "%WS%" -Port 8042 & goto POST
+if "%OPT%"=="T" call :LaunchTrayTrioWT & goto POST
 
 if "%OPT%"=="E" call "%WS%\Launch-GUI.bat" & goto POST
 if "%OPT%"=="e" call "%WS%\Launch-GUI.bat" /TASKTRAY & goto POST
@@ -112,7 +115,7 @@ if "%OPT%"=="R" start "" "%WS%\README.md" & goto POST
 if "%OPT%"=="r" start "" "%WS%\scripts\README.md" & goto POST
 if "%OPT%"=="S" start "" "%WS%\tests\README-SmokeTest.md" & goto POST
 if "%OPT%"=="s" start "" "%WS%\tests\sandbox\README.md" & goto POST
-if "%OPT%"=="T" start "" "%WS%\tools\README-SIN-Scan.md" & goto POST
+if "%OPT%"=="V" start "" "%WS%\tools\README-SIN-Scan.md" & goto POST
 if "%OPT%"=="t" start "" "%WS%\modules\README.md" & goto POST
 if "%OPT%"=="U" goto SWITCH_HELP
 if "%OPT%"=="u" goto TAXONOMY
@@ -159,6 +162,7 @@ echo    A/a -> Launch-AllServices.bat
 echo    B/b -> Launch-ServiceClusterTabs.bat
 echo    C/c -> scripts\Start-LocalWebEngineService.ps1 Start variants
 echo    D/d -> scripts\Start-LocalWebEngineService.ps1 tray/status
+echo    T   -> Minimized WT tray trio launcher
 echo.
 echo  setup.gui
 echo    E/e -> Launch-GUI.bat normal/tasktray
@@ -175,13 +179,38 @@ echo    K/k -> Pipeline refine staged + canonical path validation
 echo    L/l -> NetMon collector + Cron dry-run
 echo.
 echo  docs.readme
-echo    R/r/S/s/T/t -> README links by domain
+echo    R/r/S/s/V/t -> README links by domain
 echo.
 echo  references
 echo    U -> switch matrix
 echo ================================================================
 pause
 goto MENU
+
+:LaunchTrayTrioWT
+where wt.exe >nul 2>&1
+if errorlevel 1 (
+        echo [WARN] Windows Terminal ^(wt.exe^) not found in PATH.
+        echo [INFO] Falling back to minimized direct launches.
+        start "WebEngine-RunTray" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action RunTray -WorkspacePath "%WS%" -Port 8042
+    start "ClusterTabController" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-ServiceClusterTabs.bat' /AUTO standard"
+    start "MainGUI-TaskTray" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-GUI-quik_jnr.bat' /TASKTRAY /SUPPRESSFOOTER"
+        goto :eof
+)
+
+echo [INFO] Launching tray trio in minimized WT tabs...
+start "WT-TrayTrio" /min wt -w new ^
+    nt --title "[ROSE] LocalWebEngine Tray" --tabColor "#BE123C" --startingDirectory "%WS%" -- %PS_EXE% -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action RunTray -WorkspacePath "%WS%" -Port 8042 ^
+    ; nt --title "[AZUR] ClusterTabController" --tabColor "#1D4ED8" --startingDirectory "%WS%" -- %PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-ServiceClusterTabs.bat' /AUTO standard" ^
+    ; nt --title "[GRN] MainGui Tray" --tabColor "#15803D" --startingDirectory "%WS%" -- %PS_EXE% -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-GUI-quik_jnr.bat' /TASKTRAY /SUPPRESSFOOTER"
+
+if errorlevel 1 (
+        echo [WARN] WT tray trio launch failed. Falling back to minimized direct launches.
+        start "WebEngine-RunTray" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Start-LocalWebEngineService.ps1" -Action RunTray -WorkspacePath "%WS%" -Port 8042
+    start "ClusterTabController" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-ServiceClusterTabs.bat' /AUTO standard"
+    start "MainGUI-TaskTray" /min "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -NoExit -Command "& '%WS%\Launch-GUI-quik_jnr.bat' /TASKTRAY /SUPPRESSFOOTER"
+)
+goto :eof
 
 :POST
 echo.
