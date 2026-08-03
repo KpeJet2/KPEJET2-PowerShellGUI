@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Module
 # Module: PwShGUI-LegacyEncoding
 # Purpose: Detect and repair P006 (no-BOM UTF-8 with Unicode) and P023 (double-encoded UTF-8).

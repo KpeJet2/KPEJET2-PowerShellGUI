@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 <#
 .SYNOPSIS
     PwShGUI-KillSwitch — per-version emergency kill switch governance.

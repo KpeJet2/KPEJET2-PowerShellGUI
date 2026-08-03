@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Script
 # Insert a VersionTag header into specified files. Encoding-preserving.
 # Skips files that already have a VersionTag.

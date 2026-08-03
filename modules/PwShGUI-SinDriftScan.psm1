@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Module
 # Module: PwShGUI-SinDriftScan
 # Purpose: Detect SINs that re-appear in code after their registry status was set to RESOLVED.
