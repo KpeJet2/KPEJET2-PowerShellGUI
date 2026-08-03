@@ -1,59 +1,59 @@
 {
-  "dataFile": "workspace-dependency-map-20260803-085840.json",
-  "currentScanMode": "Full",
-  "mode": "Static",
   "phases": {
     "folders": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     },
     "modules": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     },
     "scripts": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     },
     "configs": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     },
     "urls_ips": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     },
     "dns_resolution": {
       "status": "done",
-      "timestamp": "2026-08-03T08:59:19",
+      "timestamp": "2026-08-03T22:58:56",
       "hash": null,
       "itemCount": 0,
       "error": null,
-      "durationMs": 39381
+      "durationMs": 21064
     }
   },
-  "generated": "2026-07-28T03:08:46.3465284+08:00",
+  "dataFile": "workspace-dependency-map-20260803-225835.json",
   "version": "2604.B1.V32.0",
-  "currentScanPid": 45552,
-  "lastFullScan": "2026-08-03T08:59:19"
+  "currentScanPid": 77356,
+  "currentScanMode": "Full",
+  "lastFullScan": "2026-08-03T22:58:56",
+  "generated": "2026-07-28T03:08:46.3465284+08:00",
+  "mode": "Static"
 }
