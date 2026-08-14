@@ -1,5 +1,5 @@
 {
-  "VersionTag": "2607.B1.V52.1",
+  "VersionTag": "2608.B1.V54.2",
   "description": "Canonical pipeline paths used by runtime, CI, pre-commit, and governance loops.",
   "requiredPaths": [
     "tests/Invoke-SINPatternScanner.ps1",
@@ -15,6 +15,16 @@
     "config/pipeline-refine-baseline-full.json",
     "config/pipeline-refine-baseline-staged.json",
     "config/pipeline-refine-baseline-nightly.json",
+    "config/pipeline-flow-sources.json",
+    "config/pipeline-flow-baseline.json",
+    "config/pipeline-flow-graph.json",
+    "modules/PwShGUI-PipelineFlowGraph.psm1",
+    "scripts/Invoke-PipelineFlowGraphGate.ps1",
+    "scripts/Sync-CronPipeFlowViewerData.ps1",
+    "tests/PipelineFlowGraph.Tests.ps1",
+    "tests/CronPipeFlowViewer.Tests.ps1",
+    "XHTML-Cron-Pipe-Flow.xhtml",
+    "docs/CRON-PIPE-FLOW-PLAN.md",
     ".github/workflows/sin-scan.yml",
     ".vscode/tasks.json",
     "README.md"

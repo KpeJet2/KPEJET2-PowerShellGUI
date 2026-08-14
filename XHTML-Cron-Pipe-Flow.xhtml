@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2608.B1.V54.2 -->
+<!-- FileRole: XhtmlTool -->
+<!-- SchemaVersion: CronPipeFlow/1.0 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cron Pipe Flow - PwShGUI</title>
+  <style type="text/css">
+    :root {
+      --bg: #1e1e1e;
+      --panel: #252526;
+      --panel-alt: #2d2d30;
+      --fg: #d4d4d4;
+      --sub: #9f9f9f;
+      --border: #3f3f46;
+      --accent: #007acc;
+      --pass: #4ec9b0;
+      --warn: #dcdcaa;
+      --fail: #f44747;
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --mono: 'Cascadia Code', Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 14px 16px;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .version { font-size: 12px; opacity: 0.85; }
+
+    .toolbar {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-alt);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input, .toolbar select {
+      background: var(--panel);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+
+    .layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 260px 1fr 340px;
+      min-height: 0;
+    }
+
+    .panel {
+      border-right: 1px solid var(--border);
+      overflow: auto;
+      background: var(--panel);
+      padding: 12px;
+    }
+
+    .panel:last-child {
+      border-right: 0;
+      border-left: 1px solid var(--border);
+      background: #202123;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .blade-item { margin: 4px 0; }
+    .blade-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .blade-btn:hover,
+    .blade-btn.active {
+      border-color: var(--border);
+      background: #303036;
+    }
+
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+    }
+
+    .tree-toggle {
+      width: 22px;
+      border: 1px solid var(--border);
+      background: #2b2b31;
+      color: var(--fg);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .tree-label {
+      background: transparent;
+      color: var(--fg);
+      border: 0;
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+
+    .tree-children {
+      margin-left: 18px;
+      border-left: 1px dashed var(--border);
+      padding-left: 8px;
+    }
+
+    .status {
+      font-size: 11px;
+      border-radius: 12px;
+      padding: 1px 7px;
+      border: 1px solid var(--border);
+      color: var(--sub);
+    }
+
+    .status-PASS { color: var(--pass); }
+    .status-WARN { color: var(--warn); }
+    .status-FAIL { color: var(--fail); }
+
+    .detail-block { margin-bottom: 14px; }
+    .detail-label { color: var(--sub); font-size: 12px; }
+    .detail-value { word-break: break-word; }
+
+    .links a {
+      color: #74b7ff;
+      text-decoration: none;
+    }
+
+    .links a:hover { text-decoration: underline; }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 220px 1fr; }
+      .panel:last-child { grid-column: 1 / span 2; border-left: 0; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span>Cron Pipe Flow Viewer</span>
+    <span class="version" id="versionTag">VersionTag: 2608.B1.V54.2</span>
+  </div>
+
+  <div class="toolbar">
+    <input id="searchInput" type="text" placeholder="Search node id, label, source, or term" />
+    <select id="statusFilter" title="Filter nodes by status">
+      <option value="">All Status</option>
+      <option value="PASS">PASS</option>
+      <option value="WARN">WARN</option>
+      <option value="FAIL">FAIL</option>
+      <option value="UNKNOWN">UNKNOWN</option>
+    </select>
+    <span id="resultCount" class="detail-label">0 nodes</span>
+  </div>
+
+  <div class="layout">
+    <div class="panel" id="bladePanel">
+      <h2>Blades</h2>
+      <ul id="bladeList"></ul>
+    </div>
+
+    <div class="panel" id="treePanel">
+      <h2>Process Tree</h2>
+      <div id="treeRoot"></div>
+    </div>
+
+    <div class="panel" id="detailPanel">
+      <h2>Details</h2>
+      <div id="detailRoot">Select a node to view details.</div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
+  <script type="text/javascript">
+    //<![CDATA[
+    var FLOW_GRAPH_DATA = '{\\r\\n  "SchemaVersion": "CronPipeFlow/1.0",\\r\\n  "VersionTag": "2608.B1.V54.2",\\r\\n  "generatedAtUtc": "2026-08-14T04:05:53.7428701Z",\\r\\n  "generatedBy": "modules/PwShGUI-PipelineFlowGraph.psm1",\\r\\n  "graphHash": "97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507",\\r\\n  "sourceHashes": {\\r\\n    "config/dynamic-manifest.json": "227edf42780246b2f92c234ca5ec85a706f03e6534e2fbf0b99d4d892303bedf",\\r\\n    "config/pipeline-canonical-paths.json": "2eca6db8d02f8c465da795c7335f80cd6135f0e649600a66908050f03fb2b699",\\r\\n    "scripts/Invoke-CronProcessor.ps1": "755bf81c6a16bcf04305ab3ad5f3bdec3f1bf069973aab1c3316d5791dc4408c",\\r\\n    "scripts/Invoke-PipelineContinuousRefine.ps1": "0084b017b3c77d6962e93d2823558c2f5d3367fd8cc7120d06c75f4c0fc88af4",\\r\\n    "scripts/Run-FullPipeline.ps1": "62ba86c620730daad5286f2fa4e65187d62d5e70d9036f14c2c5db5579235c2d",\\r\\n    "tests/Invoke-PreCommitValidation.ps1": "5337448816bd20dd98d519930bad237131c22f5b2a982761a97ce8767c18a7b1",\\r\\n    "tests/Invoke-SINPatternScanner.ps1": "8df99dcf32bdef7bac19a4f9809f5298b49ff2692f5d501dfeb1ebb727c691d4"\\r\\n  },\\r\\n  "blades": [\\r\\n    {\\r\\n      "id": "blade.pipeline",\\r\\n      "title": "Pipeline",\\r\\n      "icon": "\\u0026#x2699;",\\r\\n      "order": 10,\\r\\n      "parent": null\\r\\n    },\\r\\n    {\\r\\n      "id": "blade.gates",\\r\\n      "title": "Test Gates",\\r\\n      "icon": "\\u0026#x1F6A6;",\\r\\n      "order": 20,\\r\\n      "parent": "blade.pipeline"\\r\\n    },\\r\\n    {\\r\\n      "id": "blade.cron",\\r\\n      "title": "Cron",\\r\\n      "icon": "\\u0026#x23F1;",\\r\\n      "order": 30,\\r\\n      "parent": null\\r\\n    },\\r\\n    {\\r\\n      "id": "blade.artifacts",\\r\\n      "title": "Artifacts",\\r\\n      "icon": "\\u0026#x1F4E6;",\\r\\n      "order": 40,\\r\\n      "parent": null\\r\\n    },\\r\\n    {\\r\\n      "id": "blade.glossary",\\r\\n      "title": "Glossary",\\r\\n      "icon": "\\u0026#x1F4D6;",\\r\\n      "order": 90,\\r\\n      "parent": null\\r\\n    }\\r\\n  ],\\r\\n  "nodes": [\\r\\n    {\\r\\n      "id": "node.source.config-dynamic-manifest-json",\\r\\n      "label": "config/dynamic-manifest.json",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.artifacts",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "config/dynamic-manifest.json",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.config-pipeline-canonical-paths-json",\\r\\n      "label": "config/pipeline-canonical-paths.json",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.artifacts",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "config/pipeline-canonical-paths.json",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.scripts-invoke-cronprocessor-ps1",\\r\\n      "label": "scripts/Invoke-CronProcessor.ps1",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.cron",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "scripts/Invoke-CronProcessor.ps1",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",\\r\\n      "label": "scripts/Invoke-PipelineContinuousRefine.ps1",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.pipeline",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "scripts/Invoke-PipelineContinuousRefine.ps1",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.scripts-run-fullpipeline-ps1",\\r\\n      "label": "scripts/Run-FullPipeline.ps1",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.pipeline",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "scripts/Run-FullPipeline.ps1",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.tests-invoke-precommitvalidation-ps1",\\r\\n      "label": "tests/Invoke-PreCommitValidation.ps1",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.gates",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "tests/Invoke-PreCommitValidation.ps1",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    },\\r\\n    {\\r\\n      "id": "node.source.tests-invoke-sinpatternscanner-ps1",\\r\\n      "label": "tests/Invoke-SINPatternScanner.ps1",\\r\\n      "kind": "script",\\r\\n      "blade": "blade.gates",\\r\\n      "parent": null,\\r\\n      "order": 0,\\r\\n      "sourceFile": "tests/Invoke-SINPatternScanner.ps1",\\r\\n      "sourceLine": 1,\\r\\n      "functionName": "",\\r\\n      "blocking": false,\\r\\n      "status": "UNKNOWN",\\r\\n      "terms": [\\r\\n        "pipeline",\\r\\n        "flow"\\r\\n      ],\\r\\n      "links": [\\r\\n        {\\r\\n          "rel": "readme",\\r\\n          "href": "README.md",\\r\\n          "title": "Workspace README"\\r\\n        }\\r\\n      ]\\r\\n    }\\r\\n  ],\\r\\n  "edges": [\\r\\n    {\\r\\n      "from": "node.source.config-dynamic-manifest-json",\\r\\n      "to": "node.source.config-pipeline-canonical-paths-json",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    },\\r\\n    {\\r\\n      "from": "node.source.config-pipeline-canonical-paths-json",\\r\\n      "to": "node.source.scripts-invoke-cronprocessor-ps1",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    },\\r\\n    {\\r\\n      "from": "node.source.scripts-invoke-cronprocessor-ps1",\\r\\n      "to": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    },\\r\\n    {\\r\\n      "from": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",\\r\\n      "to": "node.source.scripts-run-fullpipeline-ps1",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    },\\r\\n    {\\r\\n      "from": "node.source.scripts-run-fullpipeline-ps1",\\r\\n      "to": "node.source.tests-invoke-precommitvalidation-ps1",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    },\\r\\n    {\\r\\n      "from": "node.source.tests-invoke-precommitvalidation-ps1",\\r\\n      "to": "node.source.tests-invoke-sinpatternscanner-ps1",\\r\\n      "kind": "sequence",\\r\\n      "condition": "scaffold-order",\\r\\n      "blocking": false\\r\\n    }\\r\\n  ],\\r\\n  "glossary": [],\\r\\n  "crossRefs": {\\r\\n    "canonicalPaths": "config/pipeline-canonical-paths.json",\\r\\n    "tasks": ".vscode/tasks.json"\\r\\n  },\\r\\n  "stats": {\\r\\n    "nodeCount": 7,\\r\\n    "edgeCount": 6,\\r\\n    "gateCount": 0,\\r\\n    "orphanNodeCount": 0\\r\\n  }\\r\\n}\\r\\n';
+    var FLOW_GRAPH_HASH = '97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507';
+
+    function getDefaultModel() {
+      return {
+        SchemaVersion: 'CronPipeFlow/1.0',
+        VersionTag: 'unknown',
+        blades: [],
+        nodes: [],
+        edges: [],
+        glossary: []
+      };
+    }
+
+    function parseModel() {
+      if (!FLOW_GRAPH_DATA) { return getDefaultModel(); }
+      try {
+        var model = JSON.parse(FLOW_GRAPH_DATA);
+        if (!model || typeof model !== 'object') { return getDefaultModel(); }
+        return model;
+      } catch (e) {
+        return getDefaultModel();
+      }
+    }
+
+    var state = {
+      model: getDefaultModel(),
+      selectedBlade: '',
+      selectedNodeId: '',
+      search: '',
+      status: ''
+    };
+
+    function byId(id) { return document.getElementById(id); }
+
+    function escapeText(value) {
+      if (value === null || value === undefined) { return ''; }
+      return String(value);
+    }
+
+    function buildBladeTree() {
+      var list = byId('bladeList');
+      list.innerHTML = '';
+
+      var blades = Array.isArray(state.model.blades) ? state.model.blades.slice() : [];
+      blades.sort(function (a, b) {
+        var ao = Number(a.order || 0);
+        var bo = Number(b.order || 0);
+        if (ao !== bo) { return ao - bo; }
+        return String(a.id || '').localeCompare(String(b.id || ''));
+      });
+
+      var byParent = {};
+      for (var i = 0; i < blades.length; i++) {
+        var parent = blades[i].parent || '__root__';
+        if (!byParent[parent]) { byParent[parent] = []; }
+        byParent[parent].push(blades[i]);
+      }
+
+      function appendBranch(parentKey, host, depth) {
+        var children = byParent[parentKey] || [];
+        for (var j = 0; j < children.length; j++) {
+          var blade = children[j];
+          var li = document.createElement('li');
+          li.className = 'blade-item';
+          var btn = document.createElement('button');
+          btn.className = 'blade-btn' + (state.selectedBlade === blade.id ? ' active' : '');
+          btn.style.paddingLeft = String(8 + (depth * 12)) + 'px';
+          btn.textContent = (blade.icon ? blade.icon + ' ' : '') + escapeText(blade.title || blade.id);
+          btn.addEventListener('click', (function (id) {
+            return function () {
+              state.selectedBlade = id;
+              state.selectedNodeId = '';
+              render();
+            };
+          }(blade.id)));
+          li.appendChild(btn);
+          host.appendChild(li);
+          appendBranch(blade.id, host, depth + 1);
+        }
+      }
+
+      var all = document.createElement('li');
+      all.className = 'blade-item';
+      var allBtn = document.createElement('button');
+      allBtn.className = 'blade-btn' + (state.selectedBlade === '' ? ' active' : '');
+      allBtn.textContent = 'All Blades';
+      allBtn.addEventListener('click', function () {
+        state.selectedBlade = '';
+        state.selectedNodeId = '';
+        render();
+      });
+      all.appendChild(allBtn);
+      list.appendChild(all);
+
+      appendBranch('__root__', list, 0);
+    }
+
+    function nodeMatches(node) {
+      if (state.selectedBlade && String(node.blade || '') !== state.selectedBlade) { return false; }
+      if (state.status && String(node.status || 'UNKNOWN') !== state.status) { return false; }
+      if (!state.search) { return true; }
+
+      var hay = [
+        String(node.id || ''),
+        String(node.label || ''),
+        String(node.sourceFile || ''),
+        String(node.functionName || ''),
+        Array.isArray(node.terms) ? node.terms.join(' ') : ''
+      ].join(' ').toLowerCase();
+
+      return hay.indexOf(state.search.toLowerCase()) !== -1;
+    }
+
+    function buildTree() {
+      var root = byId('treeRoot');
+      root.innerHTML = '';
+
+      var nodes = Array.isArray(state.model.nodes) ? state.model.nodes.slice() : [];
+      var filtered = [];
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodeMatches(nodes[i])) { filtered.push(nodes[i]); }
+      }
+
+      byId('resultCount').textContent = String(filtered.length) + ' nodes';
+
+      var byParent = {};
+      var byIdMap = {};
+      for (var j = 0; j < filtered.length; j++) {
+        var n = filtered[j];
+        byIdMap[String(n.id)] = n;
+        var p = n.parent ? String(n.parent) : '__root__';
+        if (!byParent[p]) { byParent[p] = []; }
+        byParent[p].push(n);
+      }
+
+      function appendNodes(parentKey, host) {
+        var items = byParent[parentKey] || [];
+        items.sort(function (a, b) {
+          return String(a.id || '').localeCompare(String(b.id || ''));
+        });
+
+        for (var k = 0; k < items.length; k++) {
+          var item = items[k];
+          var id = String(item.id || '');
+          var hasChildren = Array.isArray(byParent[id]) && byParent[id].length > 0;
+
+          var line = document.createElement('div');
+          line.className = 'tree-row';
+
+          var toggle = document.createElement('button');
+          toggle.className = 'tree-toggle';
+          toggle.textContent = hasChildren ? '-' : '·';
+          toggle.disabled = !hasChildren;
+
+          var status = document.createElement('span');
+          var statusName = String(item.status || 'UNKNOWN');
+          status.className = 'status status-' + statusName;
+          status.textContent = statusName;
+
+          var btn = document.createElement('button');
+          btn.className = 'tree-label';
+          btn.textContent = escapeText(item.label || id);
+          btn.addEventListener('click', (function (nodeId, nodeObj) {
+            return function () {
+              state.selectedNodeId = nodeId;
+              renderDetails(nodeObj);
+            };
+          }(id, item)));
+
+          line.appendChild(toggle);
+          line.appendChild(status);
+          line.appendChild(btn);
+          host.appendChild(line);
+
+          var childrenWrap = document.createElement('div');
+          childrenWrap.className = 'tree-children';
+          host.appendChild(childrenWrap);
+
+          if (hasChildren) {
+            toggle.addEventListener('click', (function (el, t) {
+              return function () {
+                var open = el.style.display !== 'none';
+                el.style.display = open ? 'none' : 'block';
+                t.textContent = open ? '+' : '-';
+              };
+            }(childrenWrap, toggle)));
+          } else {
+            childrenWrap.style.display = 'none';
+          }
+
+          appendNodes(id, childrenWrap);
+        }
+      }
+
+      appendNodes('__root__', root);
+    }
+
+    function renderDetails(node) {
+      var root = byId('detailRoot');
+      root.innerHTML = '';
+
+      if (!node) {
+        root.textContent = 'Select a node to view details.';
+        return;
+      }
+
+      function addField(label, value) {
+        var block = document.createElement('div');
+        block.className = 'detail-block';
+
+        var key = document.createElement('div');
+        key.className = 'detail-label';
+        key.textContent = label;
+
+        var val = document.createElement('div');
+        val.className = 'detail-value';
+        val.textContent = escapeText(value);
+
+        block.appendChild(key);
+        block.appendChild(val);
+        root.appendChild(block);
+      }
+
+      addField('ID', node.id || '');
+      addField('Label', node.label || '');
+      addField('Kind', node.kind || '');
+      addField('Blade', node.blade || '');
+      addField('Source', node.sourceFile || '');
+      addField('Function', node.functionName || '');
+      addField('Status', node.status || '');
+
+      if (Array.isArray(node.links) && node.links.length > 0) {
+        var linksBlock = document.createElement('div');
+        linksBlock.className = 'detail-block links';
+
+        var linkLabel = document.createElement('div');
+        linkLabel.className = 'detail-label';
+        linkLabel.textContent = 'Cross Links';
+        linksBlock.appendChild(linkLabel);
+
+        var list = document.createElement('ul');
+        for (var i = 0; i < node.links.length; i++) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = String(node.links[i].href || '#');
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = String(node.links[i].title || node.links[i].href || 'link');
+          li.appendChild(a);
+          list.appendChild(li);
+        }
+        linksBlock.appendChild(list);
+        root.appendChild(linksBlock);
+      }
+    }
+
+    function render() {
+      buildBladeTree();
+      buildTree();
+      renderDetails(null);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      state.model = parseModel();
+      var v = String(state.model.VersionTag || 'unknown');
+      byId('versionTag').textContent = 'VersionTag: ' + v + ' | Hash: ' + String(FLOW_GRAPH_HASH || 'pending');
+
+      byId('searchInput').addEventListener('input', function () {
+        state.search = String(this.value || '');
+        render();
+      });
+
+      byId('statusFilter').addEventListener('change', function () {
+        state.status = String(this.value || '');
+        render();
+      });
+
+      render();
+    });
+    //]]>
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+

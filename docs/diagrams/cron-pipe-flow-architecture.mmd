@@ -1,0 +1,56 @@
+%% VersionTag: 2608.B1.V54.0
+%% FileRole: Diagram
+%% Source plan: ~README.md/CRON-PIPE-FLOW-PLAN.md
+flowchart TD
+    subgraph SRC["1 - Sources on disk"]
+        A1["scripts/Run-FullPipeline.ps1"]
+        A2["tests/Invoke-PreCommitValidation.ps1"]
+        A3["scripts/Invoke-PipelineContinuousRefine.ps1"]
+        A4["scripts/Invoke-CronProcessor.ps1"]
+        A5["tests/Invoke-SINPatternScanner.ps1"]
+        A6["config/pipeline-canonical-paths.json"]
+        A7["config/dynamic-manifest.json"]
+        A8["sin_registry/SIN-PATTERN-*.json"]
+    end
+
+    subgraph EXT["2 - Extractor"]
+        B1["modules/PwShGUI-PipelineFlowGraph.psm1<br/>AST walk + registry merge"]
+    end
+
+    subgraph MODEL["3 - Canonical model"]
+        C1["config/pipeline-flow-graph.json<br/>nodes / edges / blades / glossary"]
+        C2["config/pipeline-flow-baseline.json<br/>drift baseline"]
+    end
+
+    subgraph GATE["4 - Gate 8 - FlowGraph"]
+        D1["scripts/Invoke-PipelineFlowGraphGate.ps1"]
+        D2{"Drift vs baseline?"}
+    end
+
+    subgraph GEN["5 - Generator"]
+        E1["scripts/Sync-CronPipeFlowViewerData.ps1<br/>JS-safe inject P032/P033"]
+    end
+
+    subgraph UI["6 - Viewer"]
+        F1["XHTML-Cron-Pipe-Flow.xhtml<br/>blades + collapsible tree + search"]
+        F2["XHTML-WorkspaceHub.xhtml TOOLS entry"]
+    end
+
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+    A4 --> B1
+    A5 --> B1
+    A6 --> B1
+    A7 --> B1
+    A8 --> B1
+
+    B1 --> C1
+    C1 --> D1
+    C2 --> D1
+    D1 --> D2
+    D2 -- "drift + FailOnDrift" --> X1["Exit 1 - block commit"]
+    D2 -- "clean or UpdateBaseline" --> E1
+    E1 --> F1
+    F1 -.-> F2
+    C1 -.-> E1
