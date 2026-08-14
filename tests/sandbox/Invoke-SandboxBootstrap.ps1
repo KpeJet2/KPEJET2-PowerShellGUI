@@ -1,4 +1,4 @@
-﻿# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2608.B1.V54.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -21,7 +21,9 @@ param(
     [string]$CommandPath  = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Cmd',
     [string]$OutputPath   = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Output',
     [int]$PollInterval    = 2,
-    [int]$MaxIdleMinutes  = 120
+    [int]$MaxIdleMinutes  = 120,
+    [ValidateSet('Enable', 'Disable')]
+    [string]$Networking    = 'Disable'
 )
 
 $ErrorActionPreference = 'Continue'
@@ -77,6 +79,71 @@ if (Test-Path $SourcePath) {
     Write-SBLog "Source path not found: $SourcePath" -Level 'ERROR'
     Set-SandboxStatus -Status 'ERROR' -Detail 'Source path not found'
     return
+}
+
+# ========================== RUNTIME PREFLIGHT ==========================
+# Windows Sandbox always includes Windows PowerShell 5.1, but pwsh, wt, Python,
+# and dotnet are optional. Resolve what exists once and keep command arguments as
+# arrays so script switches are passed as switches rather than reparsed text.
+$script:PowerShellExe = 'powershell.exe'
+$pwshCommand = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+if ($null -ne $pwshCommand) {
+    $script:PowerShellExe = $pwshCommand.Source
+}
+$modulePath = Join-Path $LocalPath 'modules'
+if (Test-Path -LiteralPath $modulePath) {
+    $env:PSModulePath = "$modulePath;$env:PSModulePath"
+}
+$windowsPowerShellCommand = Get-Command powershell.exe -ErrorAction SilentlyContinue
+$windowsTerminalCommand = Get-Command wt.exe -ErrorAction SilentlyContinue
+$pythonCommand = Get-Command python.exe -ErrorAction SilentlyContinue
+$dotnetCommand = Get-Command dotnet.exe -ErrorAction SilentlyContinue
+$guestRuntimeRows = @(
+    @{ Name = 'PowerShell'; Command = $script:PowerShellExe },
+    @{ Name = 'Windows PowerShell'; Command = if ($null -ne $windowsPowerShellCommand) { $windowsPowerShellCommand.Source } else { '' } },
+    @{ Name = 'Windows Terminal'; Command = if ($null -ne $windowsTerminalCommand) { $windowsTerminalCommand.Source } else { '' } },
+    @{ Name = 'Python'; Command = if ($null -ne $pythonCommand) { $pythonCommand.Source } else { '' } },
+    @{ Name = 'dotnet'; Command = if ($null -ne $dotnetCommand) { $dotnetCommand.Source } else { '' } }
+)
+foreach ($runtime in $guestRuntimeRows) {
+    if ([string]::IsNullOrWhiteSpace([string]$runtime.Command)) {
+        Write-SBLog "Guest runtime not available: $($runtime.Name)" -Level 'WARN'
+    } else {
+        Write-SBLog "Guest runtime available: $($runtime.Name) -> $($runtime.Command)" -Level 'OK'
+    }
+}
+$setupEnvScript = Join-Path (Join-Path $LocalPath 'scripts') 'Setup-ModuleEnvironment.ps1'
+if (Test-Path -LiteralPath $setupEnvScript) {
+    try {
+        Write-SBLog 'Preloading workspace PowerShell modules without interactive prompts...'
+        $setupArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$setupEnvScript,'-Action','Install','-Scope','CurrentUser','-WorkspacePath',$LocalPath)
+        $setupPreload = Start-Process -FilePath $script:PowerShellExe -ArgumentList $setupArgs -Wait -PassThru -NoNewWindow
+        if ($setupPreload.ExitCode -eq 0) {
+            Write-SBLog 'Workspace PowerShell module preload completed.' -Level 'OK'
+        } else {
+            Write-SBLog "Workspace module preload returned exit code $($setupPreload.ExitCode); continuing with local modules." -Level 'WARN'
+        }
+    } catch {
+        Write-SBLog "Workspace module preload skipped: $($_.Exception.Message)" -Level 'WARN'
+    }
+}
+
+$preReqSetupScript = Join-Path (Join-Path $LocalPath 'scripts') 'Invoke-WorkspacePreReqs.ps1'
+if ($Networking -eq 'Enable' -and (Test-Path -LiteralPath $preReqSetupScript)) {
+    try {
+        Write-SBLog 'Network enabled: running non-interactive workspace prerequisite setup...'
+        $preReqSetupArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$preReqSetupScript,'-WorkspacePath',$LocalPath,'-Action','SetupAll')
+        $preReqSetup = Start-Process -FilePath $script:PowerShellExe -ArgumentList $preReqSetupArgs -Wait -PassThru -NoNewWindow
+        if ($preReqSetup.ExitCode -eq 0) {
+            Write-SBLog 'Workspace prerequisite setup completed.' -Level 'OK'
+        } else {
+            Write-SBLog "Workspace prerequisite setup returned exit code $($preReqSetup.ExitCode); continuing with available guest runtimes." -Level 'WARN'
+        }
+    } catch {
+        Write-SBLog "Workspace prerequisite setup skipped: $($_.Exception.Message)" -Level 'WARN'
+    }
+} elseif ($Networking -eq 'Disable') {
+    Write-SBLog 'Network disabled: skipping online runtime installation; using preloaded/local guest tools.' -Level 'WARN'
 }
 
 # ========================== COMMAND HANDLERS ==========================
@@ -177,8 +244,9 @@ function Invoke-PrepareSandboxRuntimeStack {
         }
 
         Write-SBLog 'Running pipeline precheck script (Test-Prerequisites.ps1)...'
-        $preReqProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+        $preReqProc = Start-Process -FilePath $script:PowerShellExe -ArgumentList @(
             '-NoProfile',
+            '-NonInteractive',
             '-ExecutionPolicy','Bypass',
             '-File',$preReqScript
         ) -Wait -PassThru -NoNewWindow
@@ -203,11 +271,11 @@ function Invoke-PrepareSandboxRuntimeStack {
         }
 
         # 2) Install required frameworks and modules
-        $setupEnvScript = Join-Path (Join-Path $LocalPath 'scripts') 'Setup-ModuleEnvironment.ps1'
         if (Test-Path -LiteralPath $setupEnvScript) {
             Write-SBLog 'Installing required PowerShell module framework (Setup-ModuleEnvironment -Action Install)...'
-            $setupProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+            $setupProc = Start-Process -FilePath $script:PowerShellExe -ArgumentList @(
                 '-NoProfile',
+                '-NonInteractive',
                 '-ExecutionPolicy','Bypass',
                 '-File',$setupEnvScript,
                 '-Action','Install',
@@ -273,8 +341,9 @@ function Invoke-PrepareSandboxRuntimeStack {
         if (Test-Path -LiteralPath $mainGuiScript) {
             if ($null -eq $script:mainGuiProcess -or $script:mainGuiProcess.HasExited) {
                 Write-SBLog 'Loading MainGUI in TaskTray mode...'
-                $script:mainGuiProcess = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                $script:mainGuiProcess = Start-Process -FilePath $script:PowerShellExe -ArgumentList @(
                     '-NoProfile',
+                    '-NonInteractive',
                     '-ExecutionPolicy','Bypass',
                     '-File',$mainGuiScript,
                     '-StartupMode','quik_jnr',
@@ -307,8 +376,9 @@ function Invoke-PrepareSandboxRuntimeStack {
         if (Test-Path -LiteralPath $cronScript) {
             if ($null -eq $script:cronProcess -or $script:cronProcess.HasExited) {
                 Write-SBLog 'Starting CronAiAthon process...'
-                $script:cronProcess = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                $script:cronProcess = Start-Process -FilePath $script:PowerShellExe -ArgumentList @(
                     '-NoProfile',
+                    '-NonInteractive',
                     '-ExecutionPolicy','Bypass',
                     '-File',$cronScript,
                     '-WorkspacePath',$LocalPath
@@ -329,8 +399,9 @@ function Invoke-PrepareSandboxRuntimeStack {
 
         if (-not (Test-HttpEndpoint -Url 'http://127.0.0.1:8042/api/engine/status' -TimeoutSec 5 -PollSec 1)) {
             Write-SBLog 'Launching local webservice on port 8042...'
-            $script:webEngine8042Process = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+            $script:webEngine8042Process = Start-Process -FilePath $script:PowerShellExe -ArgumentList @(
                 '-NoProfile',
+                '-NonInteractive',
                 '-ExecutionPolicy','Bypass',
                 '-File',$engineServiceScript,
                 '-Action','Start',
@@ -394,17 +465,13 @@ function Invoke-RunTests {
         return @{ exitCode = -1; error = 'Script not found' }
     }
 
-    $headless = if ($Params -and $Params.headless) { '-HeadlessOnly' } else { '' }
-    $skipPhase = ''
-    if ($Params -and $Params.skipPhase) {
-        $skipPhase = "-SkipPhase $($Params.skipPhase -join ',')"
-    }
-
-    $args = "-NoProfile -ExecutionPolicy Bypass -File `"$testScript`" $headless $skipPhase"
-    Write-SBLog "Running smoke test: powershell.exe $args"
+    $testArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$testScript)
+    if ($Params -and $Params.headless) { $testArgs += '-HeadlessOnly' }
+    if ($Params -and $Params.skipPhase) { $testArgs += @('-SkipPhase',($Params.skipPhase -join ',')) }
+    Write-SBLog "Running smoke test: $script:PowerShellExe $($testArgs -join ' ')"
 
     $testLogDir = Join-Path $LocalPath 'logs'
-    $proc = Start-Process powershell.exe -ArgumentList $args -Wait -PassThru -NoNewWindow
+    $proc = Start-Process -FilePath $script:PowerShellExe -ArgumentList $testArgs -Wait -PassThru -NoNewWindow
     Write-SBLog "Smoke test exit code: $($proc.ExitCode)" -Level $(if ($proc.ExitCode -eq 0) { 'OK' } else { 'WARN' })
 
     # Copy result logs to output
@@ -435,9 +502,9 @@ function Invoke-LaunchGUI {
     }
 
     $mode = if ($Params -and $Params.mode) { $Params.mode } else { 'quik_jnr' }
-    $guiArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$mainScript`" -StartupMode $mode"
-    Write-SBLog "Launching GUI: powershell.exe $guiArgs"
-    $script:guiProcess = Start-Process powershell.exe -ArgumentList $guiArgs -PassThru
+    $guiArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$mainScript,'-StartupMode',$mode)
+    Write-SBLog "Launching GUI: $script:PowerShellExe $($guiArgs -join ' ')"
+    $script:guiProcess = Start-Process -FilePath $script:PowerShellExe -ArgumentList $guiArgs -PassThru
     Write-SBLog "GUI PID: $($script:guiProcess.Id)" -Level 'OK'
     return @{ pid = $script:guiProcess.Id; mode = $mode }
 }
@@ -482,6 +549,46 @@ function Invoke-ExecCommand {
     }
 }
 
+function Resolve-SandboxPath {
+    param([Parameter(Mandatory)][string]$Path)
+
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return $Path
+    }
+    return (Join-Path $LocalPath $Path)
+}
+
+function Invoke-OpenScript {
+    param([hashtable]$Params)
+
+    if (-not $Params -or [string]::IsNullOrWhiteSpace([string]$Params.path)) {
+        return @{ exitCode = 1; error = 'OpenScript requires path' }
+    }
+    $scriptPath = Resolve-SandboxPath -Path ([string]$Params.path)
+    if (-not (Test-Path -LiteralPath $scriptPath)) {
+        return @{ exitCode = 1; error = "Script not found: $scriptPath" }
+    }
+    $script:guiProcess = Start-Process -FilePath $script:PowerShellExe -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',$scriptPath) -PassThru
+    Write-SBLog "Opened script: $scriptPath (PID $($script:guiProcess.Id))" -Level 'OK'
+    return @{ exitCode = 0; pid = $script:guiProcess.Id; path = $scriptPath }
+}
+
+function Invoke-OpenText {
+    param([hashtable]$Params)
+
+    if (-not $Params -or [string]::IsNullOrWhiteSpace([string]$Params.path)) {
+        return @{ exitCode = 1; error = 'OpenText requires path' }
+    }
+    $textPath = Resolve-SandboxPath -Path ([string]$Params.path)
+    if (-not (Test-Path -LiteralPath $textPath)) {
+        return @{ exitCode = 1; error = "Text file not found: $textPath" }
+    }
+    $notepad = Join-Path $env:WINDIR 'System32\notepad.exe'
+    $textProcess = Start-Process -FilePath $notepad -ArgumentList @($textPath) -PassThru
+    Write-SBLog "Opened text file: $textPath (PID $($textProcess.Id))" -Level 'OK'
+    return @{ exitCode = 0; pid = $textProcess.Id; path = $textPath }
+}
+
 function Invoke-ChaosTest {
     <# Runs chaos test conditions inside sandbox #>
     param([hashtable]$Params)
@@ -490,9 +597,9 @@ function Invoke-ChaosTest {
         Write-SBLog "Chaos script not found" -Level 'ERROR'
         return @{ error = 'Chaos script not found' }
     }
-    $chaosArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$chaosScript`" -WorkspacePath $LocalPath -RunSmokeTest -HeadlessOnly"
+    $chaosArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$chaosScript,'-WorkspacePath',$LocalPath,'-RunSmokeTest','-HeadlessOnly')
     Write-SBLog "Running chaos test..."
-    $proc = Start-Process powershell.exe -ArgumentList $chaosArgs -Wait -PassThru -NoNewWindow
+    $proc = Start-Process -FilePath $script:PowerShellExe -ArgumentList $chaosArgs -Wait -PassThru -NoNewWindow
     # Copy chaos logs
     $chaosLogs = Get-ChildItem (Join-Path $LocalPath 'logs') -Filter '*Chaos*' -ErrorAction SilentlyContinue
     foreach ($cl in $chaosLogs) {
@@ -522,29 +629,29 @@ function Invoke-BrowserTest {
     }
 
     Write-SBLog "Installing browser test dependencies..."
-    $installArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$installScript`" -WorkspacePath `"$LocalPath`" -OutputPath `"$OutputPath`""
-    $proc1 = Start-Process powershell.exe -ArgumentList $installArgs -Wait -PassThru -NoNewWindow
+    $installArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$installScript,'-WorkspacePath',$LocalPath,'-OutputPath',$OutputPath)
+    $proc1 = Start-Process -FilePath $script:PowerShellExe -ArgumentList $installArgs -Wait -PassThru -NoNewWindow
     if ($proc1.ExitCode -ne 0) {
         Write-SBLog "Dependency install failed: exit $($proc1.ExitCode)" -Level 'ERROR'
         return @{ exitCode = $proc1.ExitCode; stage = 'install' }
     }
 
     Write-SBLog "Running browser test suite..."
-    $suiteArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$suiteScript`" -WorkspacePath `"$LocalPath`" -OutputPath `"$OutputPath`" -IncludeReadme"
+    $suiteArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$suiteScript,'-WorkspacePath',$LocalPath,'-OutputPath',$OutputPath,'-IncludeReadme')
     if ($Params -and $Params.ContainsKey('EdgeOnly') -and $Params['EdgeOnly']) {
-        $suiteArgs += ' -EdgeOnly'
+        $suiteArgs += '-EdgeOnly'
     }
     if ($Params -and $Params.ContainsKey('SkipDataState') -and $Params['SkipDataState']) {
-        $suiteArgs += ' -SkipDataState'
+        $suiteArgs += '-SkipDataState'
     }
-    $proc2 = Start-Process powershell.exe -ArgumentList $suiteArgs -Wait -PassThru -NoNewWindow
+    $proc2 = Start-Process -FilePath $script:PowerShellExe -ArgumentList $suiteArgs -Wait -PassThru -NoNewWindow
 
     Write-SBLog "Creating test archive..."
-    $archiveArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$archiveScript`" -OutputPath `"$OutputPath`""
+    $archiveArgs = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$archiveScript,'-OutputPath',$OutputPath)
     if ($Params -and $Params.ContainsKey('CertThumbprint')) {
-        $archiveArgs += " -CertThumbprint `"$($Params['CertThumbprint'])`""
+        $archiveArgs += @('-CertThumbprint',[string]$Params['CertThumbprint'])
     }
-    $proc3 = Start-Process powershell.exe -ArgumentList $archiveArgs -Wait -PassThru -NoNewWindow
+    $proc3 = Start-Process -FilePath $script:PowerShellExe -ArgumentList $archiveArgs -Wait -PassThru -NoNewWindow
 
     Write-SBLog "Browser test complete. Suite:$($proc2.ExitCode) Archive:$($proc3.ExitCode)" -Level $(if ($proc2.ExitCode -eq 0) { 'OK' } else { 'WARN' })
     return @{ suiteExitCode = $proc2.ExitCode; archiveExitCode = $proc3.ExitCode }
@@ -605,6 +712,8 @@ while ($running) {
             'Sync'     { Invoke-SyncWorkspace -Params $params }
             'Test'     { Invoke-RunTests -Params $params }
             'GUI'      { Invoke-LaunchGUI -Params $params }
+            'OpenScript' { Invoke-OpenScript -Params $params }
+            'OpenText' { Invoke-OpenText -Params $params }
             'StopGUI'  { Invoke-StopGUI -Params $params }
             'Exec'     { Invoke-ExecCommand -Params $params }
             'Chaos'       { Invoke-ChaosTest -Params $params }
