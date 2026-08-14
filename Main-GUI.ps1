@@ -8673,7 +8673,6 @@ function New-GUI {
         $refreshBtn.Add_Click({
             & $runModMgmt @{}
         })
-
         $exportInstallerBtn.Add_Click({
             Write-AppLog "User selected Export Installer" "Audit"
             $statusLabel.Text = 'Generating installer script...'
