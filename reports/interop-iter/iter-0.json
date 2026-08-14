@@ -1,6 +1,6 @@
 {
   "iteration": 0,
-  "startedAt": "2026-08-02T17:01:09.6607309+00:00",
+  "startedAt": "2026-08-14T14:31:42.1599629+00:00",
   "workspace": ".",
   "findings": [
     {
@@ -259,5 +259,5 @@
     "bySeverity": "\nName                           Value\n----                           -----\nCRITICAL                       1\nHIGH                           15\nMEDIUM                         19\n\n",
     "byCategory": "LAUNCHBAT=15, PARSE=1, RELPATH=19"
   },
-  "completedAt": "2026-08-02T17:01:13.2802740+00:00"
+  "completedAt": "2026-08-14T14:31:46.0390225+00:00"
 }
