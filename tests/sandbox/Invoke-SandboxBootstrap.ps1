@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -82,6 +82,11 @@ if (Test-Path $SourcePath) {
 # ========================== COMMAND HANDLERS ==========================
 $script:guiProcess = $null
 $script:iterationCount = 0
+$script:mainGuiProcess = $null
+$script:cronProcess = $null
+$script:webEngine8042Process = $null
+$script:clusterDashboardProcess = $null
+$script:stackPrepared = $false
 
 function Invoke-SyncWorkspace {
     <# Re-copies changed files from read-only source to local writable copy #>
@@ -109,9 +114,280 @@ function Invoke-SyncWorkspace {
     return @{ synced = $synced; totalFiles = $after }
 }
 
+function Test-HttpEndpoint {
+    <# Wait for HTTP endpoint success within timeout window. #>
+    param(
+        [Parameter(Mandatory)] [string]$Url,
+        [int]$TimeoutSec = 60,
+        [int]$PollSec = 2
+    )
+
+    $elapsed = 0
+    while ($elapsed -lt $TimeoutSec) {
+        try {
+            $resp = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+            if ($null -ne $resp -and $resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) {
+                return $true
+            }
+        } catch { <# Intentional: endpoint may still be starting #> }
+
+        Start-Sleep -Seconds $PollSec
+        $elapsed += $PollSec
+    }
+
+    return $false
+}
+
+function Invoke-PrepareSandboxRuntimeStack {
+    <#
+    .SYNOPSIS
+        Prepare sandbox runtime stack before test execution.
+    .DESCRIPTION
+        Sequence:
+          1) Pipeline prechecks
+          2) Framework/module install
+          3) Load MainGUI (TaskTray), Cluster Dash pre-stage, Cron process
+          4) Launch local web services on 8042 then 8099
+    #>
+    param([hashtable]$Params)
+
+    if ($script:stackPrepared) {
+        return [ordered]@{
+            exitCode = 0
+            alreadyPrepared = $true
+        }
+    }
+
+    $result = [ordered]@{
+        exitCode = 0
+        prechecks = [ordered]@{}
+        install = [ordered]@{}
+        startup = [ordered]@{}
+        services = [ordered]@{}
+        errors = @()
+    }
+
+    try {
+        Write-SBLog 'Preparing sandbox runtime stack (pipeline prechecks + framework install + startup ordering)...'
+
+        # 1) Pipeline prechecks
+        $preReqScript = Join-Path (Join-Path $LocalPath 'scripts') 'Test-Prerequisites.ps1'
+        if (-not (Test-Path -LiteralPath $preReqScript)) {
+            throw "Pipeline precheck script missing: $preReqScript"
+        }
+
+        Write-SBLog 'Running pipeline precheck script (Test-Prerequisites.ps1)...'
+        $preReqProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+            '-NoProfile',
+            '-ExecutionPolicy','Bypass',
+            '-File',$preReqScript
+        ) -Wait -PassThru -NoNewWindow
+        $result.prechecks.preReqScriptExitCode = $preReqProc.ExitCode
+        if ($preReqProc.ExitCode -ne 0) {
+            throw "Test-Prerequisites.ps1 failed with exit code $($preReqProc.ExitCode)."
+        }
+
+        $schedulerModule = Join-Path (Join-Path $LocalPath 'modules') 'CronAiAthon-Scheduler.psm1'
+        if (Test-Path -LiteralPath $schedulerModule) {
+            Write-SBLog 'Running CronAiAthon pipeline precheck (Invoke-PreRequisiteCheck)...'
+            Import-Module -Name $schedulerModule -Force -DisableNameChecking -ErrorAction Stop
+            $schedulerPreReq = Invoke-PreRequisiteCheck -WorkspacePath $LocalPath
+            $result.prechecks.schedulerPassed = [bool]$schedulerPreReq.allPassed
+            $result.prechecks.schedulerFailedChecks = [int]$schedulerPreReq.failed
+            if (-not $schedulerPreReq.allPassed) {
+                throw "CronAiAthon prechecks failed ($($schedulerPreReq.failed) failing checks)."
+            }
+        } else {
+            Write-SBLog "Scheduler module not found for additional prechecks: $schedulerModule" -Level 'WARN'
+            $result.prechecks.schedulerPassed = $false
+        }
+
+        # 2) Install required frameworks and modules
+        $setupEnvScript = Join-Path (Join-Path $LocalPath 'scripts') 'Setup-ModuleEnvironment.ps1'
+        if (Test-Path -LiteralPath $setupEnvScript) {
+            Write-SBLog 'Installing required PowerShell module framework (Setup-ModuleEnvironment -Action Install)...'
+            $setupProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                '-NoProfile',
+                '-ExecutionPolicy','Bypass',
+                '-File',$setupEnvScript,
+                '-Action','Install',
+                '-Scope','CurrentUser',
+                '-WorkspacePath',$LocalPath
+            ) -Wait -PassThru -NoNewWindow
+            $result.install.moduleInstallExitCode = $setupProc.ExitCode
+            if ($setupProc.ExitCode -ne 0) {
+                throw "Setup-ModuleEnvironment install failed with exit code $($setupProc.ExitCode)."
+            }
+        } else {
+            Write-SBLog "Setup script missing: $setupEnvScript" -Level 'WARN'
+            $result.install.moduleInstallExitCode = -1
+        }
+
+        $requirementsPath = Join-Path (Join-Path (Join-Path $LocalPath 'scripts') 'service-cluster-dashboard') 'requirements.txt'
+        $venvDir = Join-Path $LocalPath '.venv'
+        $venvScripts = Join-Path $venvDir 'Scripts'
+        $venvPython = Join-Path $venvScripts 'python.exe'
+        $venvPip = Join-Path $venvScripts 'pip.exe'
+
+        if (Test-Path -LiteralPath $requirementsPath) {
+            if (-not (Test-Path -LiteralPath $venvPython)) {
+                $pythonHost = $null
+                $pyCmd = Get-Command py.exe -ErrorAction SilentlyContinue
+                if ($null -ne $pyCmd) { $pythonHost = $pyCmd.Source }
+                if ($null -eq $pythonHost) {
+                    $py3Cmd = Get-Command python.exe -ErrorAction SilentlyContinue
+                    if ($null -ne $py3Cmd) { $pythonHost = $py3Cmd.Source }
+                }
+                if ($null -eq $pythonHost) {
+                    throw 'No Python host found (py.exe/python.exe) to create virtual environment.'
+                }
+
+                Write-SBLog "Creating Python virtual environment: $venvDir"
+                if ($pythonHost.ToLowerInvariant().EndsWith('py.exe')) {
+                    & $pythonHost -3 -m venv $venvDir
+                } else {
+                    & $pythonHost -m venv $venvDir
+                }
+                if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $venvPython)) {
+                    throw 'Failed to create Python virtual environment for dashboard dependencies.'
+                }
+            }
+
+            if (-not (Test-Path -LiteralPath $venvPip)) {
+                throw "pip not found in virtual environment: $venvPip"
+            }
+
+            Write-SBLog 'Installing Service Cluster Dashboard Python requirements...'
+            & $venvPip install -r $requirementsPath --disable-pip-version-check
+            $result.install.dashboardPipExitCode = $LASTEXITCODE
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to install dashboard requirements (exit code $LASTEXITCODE)."
+            }
+        } else {
+            Write-SBLog "Dashboard requirements file missing: $requirementsPath" -Level 'WARN'
+            $result.install.dashboardPipExitCode = -1
+        }
+
+        # 3) Load MainGUI (TaskTray), Cluster Dash pre-stage, and CronAiAthon process
+        $mainGuiScript = Join-Path $LocalPath 'Main-GUI.ps1'
+        if (Test-Path -LiteralPath $mainGuiScript) {
+            if ($null -eq $script:mainGuiProcess -or $script:mainGuiProcess.HasExited) {
+                Write-SBLog 'Loading MainGUI in TaskTray mode...'
+                $script:mainGuiProcess = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                    '-NoProfile',
+                    '-ExecutionPolicy','Bypass',
+                    '-File',$mainGuiScript,
+                    '-StartupMode','quik_jnr',
+                    '-TaskTray',
+                    '-SuppressFromFooterCheckpoint'
+                ) -PassThru -WindowStyle Hidden
+            } else {
+                Write-SBLog "MainGUI already running (PID $($script:mainGuiProcess.Id))."
+            }
+            $result.startup.mainGuiPid = if ($null -ne $script:mainGuiProcess) { $script:mainGuiProcess.Id } else { $null }
+        } else {
+            throw "Main-GUI script not found: $mainGuiScript"
+        }
+
+        $clusterServer = Join-Path (Join-Path (Join-Path $LocalPath 'scripts') 'service-cluster-dashboard') 'server.py'
+        if (Test-Path -LiteralPath $clusterServer) {
+            Write-SBLog 'Pre-loading TaskTrayApps Cluster Dash dependencies...'
+            if (Test-Path -LiteralPath $venvPython) {
+                & $venvPython -c "import fastapi, uvicorn"
+                $result.startup.clusterDashPreloadExitCode = $LASTEXITCODE
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Cluster Dash dependency preload failed (exit code $LASTEXITCODE)."
+                }
+            }
+        } else {
+            throw "TaskTrayApps Cluster Dash backend not found: $clusterServer"
+        }
+
+        $cronScript = Join-Path (Join-Path $LocalPath 'scripts') 'Invoke-CronProcessor.ps1'
+        if (Test-Path -LiteralPath $cronScript) {
+            if ($null -eq $script:cronProcess -or $script:cronProcess.HasExited) {
+                Write-SBLog 'Starting CronAiAthon process...'
+                $script:cronProcess = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                    '-NoProfile',
+                    '-ExecutionPolicy','Bypass',
+                    '-File',$cronScript,
+                    '-WorkspacePath',$LocalPath
+                ) -PassThru -WindowStyle Hidden
+            } else {
+                Write-SBLog "CronAiAthon process already running (PID $($script:cronProcess.Id))."
+            }
+            $result.startup.cronPid = if ($null -ne $script:cronProcess) { $script:cronProcess.Id } else { $null }
+        } else {
+            throw "CronAiAthon script not found: $cronScript"
+        }
+
+        # 4) Launch local web services after process stack is loaded
+        $engineServiceScript = Join-Path (Join-Path $LocalPath 'scripts') 'Start-LocalWebEngineService.ps1'
+        if (-not (Test-Path -LiteralPath $engineServiceScript)) {
+            throw "Engine service script missing: $engineServiceScript"
+        }
+
+        if (-not (Test-HttpEndpoint -Url 'http://127.0.0.1:8042/api/engine/status' -TimeoutSec 5 -PollSec 1)) {
+            Write-SBLog 'Launching local webservice on port 8042...'
+            $script:webEngine8042Process = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+                '-NoProfile',
+                '-ExecutionPolicy','Bypass',
+                '-File',$engineServiceScript,
+                '-Action','Start',
+                '-Port','8042',
+                '-WorkspacePath',$LocalPath,
+                '-NoTray'
+            ) -PassThru -WindowStyle Hidden
+        } else {
+            Write-SBLog 'Local webservice 8042 already online.'
+        }
+
+        if (-not (Test-HttpEndpoint -Url 'http://127.0.0.1:8042/api/engine/status' -TimeoutSec 45 -PollSec 3)) {
+            throw 'Local webservice 8042 did not reach healthy status in time.'
+        }
+        $result.services.port8042 = 'ONLINE'
+
+        $clusterLauncher = Join-Path (Join-Path (Join-Path $LocalPath 'scripts') 'service-cluster-dashboard') 'Launch-ServiceClusterDashboard.bat'
+        if (-not (Test-Path -LiteralPath $clusterLauncher)) {
+            throw "Cluster dashboard launcher missing: $clusterLauncher"
+        }
+
+        if (-not (Test-HttpEndpoint -Url 'http://127.0.0.1:8099/api/ping' -TimeoutSec 5 -PollSec 1)) {
+            Write-SBLog 'Launching local webservice on port 8099 (Service Cluster Dashboard)...'
+            $clusterLaunchCmd = ('"{0}" /AUTO' -f $clusterLauncher)
+            $script:clusterDashboardProcess = Start-Process -FilePath 'cmd.exe' -ArgumentList @(
+                '/c',
+                $clusterLaunchCmd
+            ) -WorkingDirectory (Split-Path -Parent $clusterLauncher) -PassThru -WindowStyle Hidden
+        } else {
+            Write-SBLog 'Local webservice 8099 already online.'
+        }
+
+        if (-not (Test-HttpEndpoint -Url 'http://127.0.0.1:8099/api/ping' -TimeoutSec 60 -PollSec 3)) {
+            throw 'Local webservice 8099 did not reach healthy status in time.'
+        }
+        $result.services.port8099 = 'ONLINE'
+
+        $script:stackPrepared = $true
+        Write-SBLog 'Sandbox runtime stack preparation complete.' -Level 'OK'
+    } catch {
+        $result.exitCode = 1
+        $result.errors += $_.Exception.Message
+        Write-SBLog "Sandbox stack preparation failed: $($_.Exception.Message)" -Level 'ERROR'
+    }
+
+    return $result
+}
+
 function Invoke-RunTests {
     <# Runs the smoke test suite inside sandbox #>
     param([hashtable]$Params)
+
+    $prep = Invoke-PrepareSandboxRuntimeStack -Params $Params
+    if ($prep.exitCode -ne 0) {
+        return @{ exitCode = 1; stage = 'prepare'; prepare = $prep }
+    }
+
     $testScript = Join-Path $LocalPath 'tests\Invoke-GUISmokeTest.ps1'
     if (-not (Test-Path $testScript)) {
         Write-SBLog "Smoke test script not found: $testScript" -Level 'ERROR'
@@ -229,6 +505,12 @@ function Invoke-ChaosTest {
 function Invoke-BrowserTest {
     <# Runs full browser compatibility test suite inside sandbox #>
     param([hashtable]$Params)
+
+    $prep = Invoke-PrepareSandboxRuntimeStack -Params $Params
+    if ($prep.exitCode -ne 0) {
+        return @{ exitCode = 1; stage = 'prepare'; prepare = $prep }
+    }
+
     $sandboxDir = Join-Path $LocalPath 'tests\sandbox'
     $installScript = Join-Path $sandboxDir 'Install-BrowserTestDependencies.ps1'
     $suiteScript   = Join-Path $sandboxDir 'Invoke-SandboxBrowserTestSuite.ps1'
@@ -358,6 +640,20 @@ Write-SBLog 'Sandbox bootstrap exiting.'
 if ($script:guiProcess -and (-not $script:guiProcess.HasExited)) {
     Write-SBLog 'Killing GUI on exit...'
     try { $script:guiProcess.Kill() } catch { Write-SBLog "Kill failed: $_" -Level 'WARN' }
+}
+foreach ($tracked in @('mainGuiProcess','cronProcess','webEngine8042Process','clusterDashboardProcess')) {
+    $proc = $null
+    try { $proc = Get-Variable -Name $tracked -Scope Script -ErrorAction SilentlyContinue } catch { $proc = $null }
+    if ($null -ne $proc -and $null -ne $proc.Value) {
+        try {
+            if (-not $proc.Value.HasExited) {
+                Write-SBLog "Stopping process '$tracked' (PID $($proc.Value.Id))..."
+                $proc.Value.Kill()
+            }
+        } catch {
+            Write-SBLog "Unable to stop process '$tracked': $($_.Exception.Message)" -Level 'WARN'
+        }
+    }
 }
 Set-SandboxStatus -Status 'SHUTDOWN' -Detail "Iterations: $($script:iterationCount)"
 

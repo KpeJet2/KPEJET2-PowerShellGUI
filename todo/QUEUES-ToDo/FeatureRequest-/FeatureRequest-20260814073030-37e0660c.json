@@ -1,0 +1,72 @@
+{
+  "affectedFiles": [
+    "Launch-GUI-SmokeTest.bat",
+    "tests/Invoke-GUISmokeTest.ps1"
+  ],
+  "tags": [],
+  "modified": "2026-08-14T00:36:59.6362688Z",
+  "bugHistory": [],
+  "priority": "MEDIUM",
+  "countermeasures": [],
+  "sinId": "",
+  "decision": "APPROVED",
+  "status_history": [
+    {
+      "timestamp": "2026-08-13T23:30:30.250516Z",
+      "by": "GitHub-Copilot",
+      "status": "PENDING_APPROVAL",
+      "note": "Feature request created for user review (approve/defer/decline)."
+    },
+    {
+      "timestamp": "2026-08-13T23:43:13.3036377Z",
+      "by": "User",
+      "status": "PLANNED",
+      "note": "Approved by user (decision=APPROVE)."
+    }
+  ],
+  "reviewOptions": [
+    "APPROVE",
+    "DEFER",
+    "DECLINE"
+  ],
+  "suggestedBy": "Commander",
+  "title": "Smoke Harness: Reclassify legacy checklist targets as optional",
+  "executedAt": "2026-08-14T00:34:05.6559286Z",
+  "sessionModCount": 5,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "completedAt": "2026-08-14T00:36:59.6363540Z",
+  "filesFixedCount": 0,
+  "lastSeenAt": "2026-08-14T00:36:59.6390991Z",
+  "created": "2026-08-13T23:30:30.328729Z",
+  "reopenedAt": null,
+  "requestedAt": "2026-08-13T23:30:30.250516Z",
+  "implementedAt": "2026-08-14T00:36:59.6390991Z",
+  "requestedBy": "User",
+  "id": "FeatureRequest-20260814073030-37e0660c",
+  "bugResurfaced": false,
+  "outlineVersion": "v0",
+  "linkedBugs": [],
+  "type": "FeatureRequest",
+  "bugReferrals": [],
+  "parentId": "",
+  "description": "Adjust GUI smoke harness so missing legacy checklist targets (PwShGUI-Checklists-V1/V2 legacy test pages) are treated as optional/skip instead of FAIL, reducing false negatives while preserving actionable failures.",
+  "linkedFeatures": [],
+  "sinPattern": "",
+  "filesRemainingCount": 0,
+  "executionAgent": "",
+  "result": null,
+  "plannedAt": "2026-08-13T23:53:56.7124147Z",
+  "category": "testing",
+  "firstSeenAt": "2026-08-13T23:30:30.3305506Z",
+  "acknowledged": null,
+  "fixesImplementedCount": 0,
+  "source": "Manual",
+  "executionMethod": "",
+  "outlinePhase": "assessment",
+  "status": "DONE",
+  "notes": "Implemented and validated via dual-host parser checks + headless smoke runs (pwsh + powershell).",
+  "reviewDecision": "APPROVE",
+  "approvedBy": "User",
+  "approvedAt": "2026-08-13T23:53:56.005899Z",
+  "reviewedAt": "2026-08-13T23:53:56.005899Z"
+}

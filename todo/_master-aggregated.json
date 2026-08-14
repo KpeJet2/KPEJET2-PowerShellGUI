@@ -1,10 +1,10 @@
 {
   "meta": {
     "schema": "CronAiAthon-MasterToDo/1.0",
-    "generated": "2026-07-27T19:09:49.0246127Z",
-    "totalItems": 1723,
+    "generated": "2026-08-14T00:43:53.9062223Z",
+    "totalItems": 1725,
     "byType": {
-      "FeatureRequest": 0,
+      "FeatureRequest": 2,
       "Bug": 1031,
       "Items2ADD": 9,
       "Bugs2FIX": 679,
@@ -15,13 +15,41 @@
       "PLANNED": 0,
       "IN_PROGRESS": 357,
       "TESTING": 0,
-      "DONE": 605,
+      "DONE": 607,
       "CLOSED": 686,
       "BLOCKED": 0,
       "FAILED": 0
     }
   },
   "items": [
+    {
+      "id": "FeatureRequest-20260814073030-37e0660c",
+      "type": "FeatureRequest",
+      "title": "Smoke Harness: Reclassify legacy checklist targets as optional",
+      "description": "Adjust GUI smoke harness so missing legacy checklist targets (PwShGUI-Checklists-V1/V2 legacy test pages) are treated as optional/skip instead of FAIL, reducing false negatives while preserving actionable failures.",
+      "priority": "MEDIUM",
+      "status": "DONE",
+      "source": "Manual",
+      "category": "testing",
+      "created": "2026-08-13T23:30:30.328729Z",
+      "modified": "2026-08-14T00:36:59.6362688Z",
+      "sessionModCount": 5,
+      "origin": "pipeline"
+    },
+    {
+      "id": "FeatureRequest-20260814073355-bba8e4ef",
+      "type": "FeatureRequest",
+      "title": "Stabilize headless smoke blockers in PS5 + ConvoVault import",
+      "description": "Resolve the Phase0 blockers observed in shell-matrix smoke: (1) PS5 parse blocker in scripts/PS-CheatSheet-EXAMPLES-V2.ps1 due to PS7-only token, and (2) ConvoVault-BWcli module import argument binding failure (vault-access.log positional arg issue).",
+      "priority": "HIGH",
+      "status": "DONE",
+      "source": "Manual",
+      "category": "stability",
+      "created": "2026-08-13T23:33:55.225838Z",
+      "modified": "2026-08-14T00:42:29.2293996Z",
+      "sessionModCount": 5,
+      "origin": "pipeline"
+    },
     {
       "id": "Bug-20260328082049-f02cc276",
       "type": "Bug",
@@ -7843,7 +7871,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0442578Z",
+      "created": "2026-08-14T00:42:30.1656625Z",
       "modified": "2026-05-06T17:28:18.8542535Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -7871,7 +7899,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0447679Z",
+      "created": "2026-08-14T00:42:30.1669790Z",
       "modified": "2026-05-06T17:28:18.8542535Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -8991,7 +9019,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0696823Z",
+      "created": "2026-08-14T00:42:30.2156149Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9005,7 +9033,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0698816Z",
+      "created": "2026-08-14T00:42:30.2166479Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9019,7 +9047,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0700723Z",
+      "created": "2026-08-14T00:42:30.2174175Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9033,7 +9061,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0702664Z",
+      "created": "2026-08-14T00:42:30.2180471Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9061,7 +9089,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0706177Z",
+      "created": "2026-08-14T00:42:30.2192232Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9075,7 +9103,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0707952Z",
+      "created": "2026-08-14T00:42:30.2197294Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9089,7 +9117,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0709699Z",
+      "created": "2026-08-14T00:42:30.2202431Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9103,7 +9131,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.0712451Z",
+      "created": "2026-08-14T00:42:30.2206561Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12925,8 +12953,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1798159Z",
-      "modified": "2026-07-27T19:08:57.1798656Z",
+      "created": "2026-08-14T00:42:30.3525997Z",
+      "modified": "2026-08-14T00:42:30.3526527Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -12939,8 +12967,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1800860Z",
-      "modified": "2026-07-27T19:08:57.1801163Z",
+      "created": "2026-08-14T00:42:30.3529159Z",
+      "modified": "2026-08-14T00:42:30.3529502Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -12967,8 +12995,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1805081Z",
-      "modified": "2026-07-27T19:08:57.1805407Z",
+      "created": "2026-08-14T00:42:30.3537011Z",
+      "modified": "2026-08-14T00:42:30.3537854Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -12981,8 +13009,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1807293Z",
-      "modified": "2026-07-27T19:08:57.1807596Z",
+      "created": "2026-08-14T00:42:30.3541681Z",
+      "modified": "2026-08-14T00:42:30.3542279Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -12995,8 +13023,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1809489Z",
-      "modified": "2026-07-27T19:08:57.1809799Z",
+      "created": "2026-08-14T00:42:30.3546559Z",
+      "modified": "2026-08-14T00:42:30.3547345Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13009,8 +13037,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1811675Z",
-      "modified": "2026-07-27T19:08:57.1811972Z",
+      "created": "2026-08-14T00:42:30.3550391Z",
+      "modified": "2026-08-14T00:42:30.3550983Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13023,8 +13051,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1813825Z",
-      "modified": "2026-07-27T19:08:57.1814118Z",
+      "created": "2026-08-14T00:42:30.3553848Z",
+      "modified": "2026-08-14T00:42:30.3554462Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13037,8 +13065,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1816118Z",
-      "modified": "2026-07-27T19:08:57.1816429Z",
+      "created": "2026-08-14T00:42:30.3559580Z",
+      "modified": "2026-08-14T00:42:30.3559942Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13051,8 +13079,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1818277Z",
-      "modified": "2026-07-27T19:08:57.1818569Z",
+      "created": "2026-08-14T00:42:30.3562166Z",
+      "modified": "2026-08-14T00:42:30.3562499Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13065,8 +13093,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-07-27T19:08:57.1820363Z",
-      "modified": "2026-07-27T19:08:57.1820655Z",
+      "created": "2026-08-14T00:42:30.3565045Z",
+      "modified": "2026-08-14T00:42:30.3565379Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14465,8 +14493,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-07-27T19:08:57.2099988Z",
-      "modified": "2026-07-27T19:08:57.2100447Z",
+      "created": "2026-08-14T00:42:30.3997594Z",
+      "modified": "2026-08-14T00:42:30.3998964Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14479,8 +14507,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-07-27T19:08:57.2102296Z",
-      "modified": "2026-07-27T19:08:57.2102583Z",
+      "created": "2026-08-14T00:42:30.4005342Z",
+      "modified": "2026-08-14T00:42:30.4006063Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14493,8 +14521,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-07-27T19:08:57.2104363Z",
-      "modified": "2026-07-27T19:08:57.2104762Z",
+      "created": "2026-08-14T00:42:30.4011679Z",
+      "modified": "2026-08-14T00:42:30.4012465Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14507,8 +14535,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Coverage",
-      "created": "2026-07-27T19:08:57.2106758Z",
-      "modified": "2026-07-27T19:08:57.2107112Z",
+      "created": "2026-08-14T00:42:30.4017744Z",
+      "modified": "2026-08-14T00:42:30.4018490Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14521,8 +14549,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-07-27T19:08:57.2143248Z",
-      "modified": "2026-07-27T19:08:57.2143884Z",
+      "created": "2026-08-14T00:42:30.4024157Z",
+      "modified": "2026-08-14T00:42:30.4025089Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14535,8 +14563,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Performance",
-      "created": "2026-07-27T19:08:57.2147124Z",
-      "modified": "2026-07-27T19:08:57.2147436Z",
+      "created": "2026-08-14T00:42:30.4030219Z",
+      "modified": "2026-08-14T00:42:30.4030741Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14549,8 +14577,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-07-27T19:08:57.2149389Z",
-      "modified": "2026-07-27T19:08:57.2149673Z",
+      "created": "2026-08-14T00:42:30.4033908Z",
+      "modified": "2026-08-14T00:42:30.4034340Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18693,8 +18721,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "BugFix",
-      "created": "2026-07-27T19:08:57.3323510Z",
-      "modified": "2026-07-27T19:08:57.3324165Z",
+      "created": "2026-08-14T00:42:30.6038096Z",
+      "modified": "2026-08-14T00:42:30.6038726Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18707,8 +18735,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-07-27T19:08:57.3327281Z",
-      "modified": "2026-07-27T19:08:57.3327726Z",
+      "created": "2026-08-14T00:42:30.6041784Z",
+      "modified": "2026-08-14T00:42:30.6042257Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18721,8 +18749,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "BugFix",
-      "created": "2026-07-27T19:08:57.3330640Z",
-      "modified": "2026-07-27T19:08:57.3331068Z",
+      "created": "2026-08-14T00:42:30.6045060Z",
+      "modified": "2026-08-14T00:42:30.6045414Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },

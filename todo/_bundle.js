@@ -1,7 +1,6 @@
-# VersionTag: 2606.B5.V51.4
 /* Auto-generated todo data bundle
-   Generated: 2026-05-26T00:57:20.5999628Z
-   Items: 864
+   Generated: 2026-08-14T00:43:56.4330148Z
+   Items: 866
    Regenerate: Import-Module modules/CronAiAthon-Pipeline.psm1; Update-TodoBundle -WorkspacePath . */
 var _todoBundle = [
   {
@@ -27306,6 +27305,151 @@ var _todoBundle = [
     "createdAt": "2026-03-29T00:00:00Z"
   },
   {
+    "affectedFiles": [
+      "Launch-GUI-SmokeTest.bat",
+      "tests/Invoke-GUISmokeTest.ps1"
+    ],
+    "tags": [],
+    "modified": "2026-08-14T00:36:59.6362688Z",
+    "bugHistory": [],
+    "priority": "MEDIUM",
+    "countermeasures": [],
+    "sinId": "",
+    "decision": "APPROVED",
+    "status_history": [
+      {
+        "timestamp": "2026-08-13T23:30:30.250516Z",
+        "by": "GitHub-Copilot",
+        "status": "PENDING_APPROVAL",
+        "note": "Feature request created for user review (approve/defer/decline)."
+      },
+      {
+        "timestamp": "2026-08-13T23:43:13.3036377Z",
+        "by": "User",
+        "status": "PLANNED",
+        "note": "Approved by user (decision=APPROVE)."
+      }
+    ],
+    "reviewOptions": [
+      "APPROVE",
+      "DEFER",
+      "DECLINE"
+    ],
+    "suggestedBy": "Commander",
+    "title": "Smoke Harness: Reclassify legacy checklist targets as optional",
+    "executedAt": "2026-08-14T00:34:05.6559286Z",
+    "sessionModCount": 5,
+    "outlineTag": "OUTLINE-PROTO-v0",
+    "completedAt": "2026-08-14T00:36:59.636354Z",
+    "filesFixedCount": 0,
+    "lastSeenAt": "2026-08-14T00:36:59.6390991Z",
+    "created": "2026-08-13T23:30:30.328729Z",
+    "reopenedAt": null,
+    "requestedAt": "2026-08-13T23:30:30.250516Z",
+    "implementedAt": "2026-08-14T00:36:59.6390991Z",
+    "requestedBy": "User",
+    "id": "FeatureRequest-20260814073030-37e0660c",
+    "bugResurfaced": false,
+    "outlineVersion": "v0",
+    "linkedBugs": [],
+    "type": "FeatureRequest",
+    "bugReferrals": [],
+    "parentId": "",
+    "description": "Adjust GUI smoke harness so missing legacy checklist targets (PwShGUI-Checklists-V1/V2 legacy test pages) are treated as optional/skip instead of FAIL, reducing false negatives while preserving actionable failures.",
+    "linkedFeatures": [],
+    "sinPattern": "",
+    "filesRemainingCount": 0,
+    "executionAgent": "",
+    "result": null,
+    "plannedAt": "2026-08-13T23:53:56.7124147Z",
+    "category": "testing",
+    "firstSeenAt": "2026-08-13T23:30:30.3305506Z",
+    "acknowledged": null,
+    "fixesImplementedCount": 0,
+    "source": "Manual",
+    "executionMethod": "",
+    "outlinePhase": "assessment",
+    "status": "DONE",
+    "notes": "Implemented and validated via dual-host parser checks + headless smoke runs (pwsh + powershell).",
+    "reviewDecision": "APPROVE",
+    "approvedBy": "User",
+    "approvedAt": "2026-08-13T23:53:56.005899Z",
+    "reviewedAt": "2026-08-13T23:53:56.005899Z"
+  },
+  {
+    "affectedFiles": [
+      "scripts/PS-CheatSheet-EXAMPLES-V2.ps1",
+      "modules/ConvoVault-BWcli.psm1",
+      "tests/Invoke-GUISmokeTest.ps1"
+    ],
+    "tags": [],
+    "modified": "2026-08-14T00:42:29.2293996Z",
+    "bugHistory": [],
+    "priority": "HIGH",
+    "countermeasures": [],
+    "sinId": "",
+    "decision": "APPROVED",
+    "status_history": [
+      {
+        "timestamp": "2026-08-13T23:30:30.250516Z",
+        "by": "GitHub-Copilot",
+        "status": "PENDING_APPROVAL",
+        "note": "Feature request created for user review (approve/defer/decline)."
+      },
+      {
+        "timestamp": "2026-08-13T23:43:13.3036377Z",
+        "by": "User",
+        "status": "PLANNED",
+        "note": "Approved by user (decision=APPROVE)."
+      }
+    ],
+    "reviewOptions": [
+      "APPROVE",
+      "DEFER",
+      "DECLINE"
+    ],
+    "suggestedBy": "Commander",
+    "title": "Stabilize headless smoke blockers in PS5 + ConvoVault import",
+    "executedAt": "2026-08-14T00:39:36.8700763Z",
+    "sessionModCount": 5,
+    "outlineTag": "OUTLINE-PROTO-v0",
+    "completedAt": "2026-08-14T00:42:29.229479Z",
+    "filesFixedCount": 0,
+    "lastSeenAt": "2026-08-14T00:42:29.22952Z",
+    "created": "2026-08-13T23:33:55.225838Z",
+    "reopenedAt": null,
+    "requestedAt": "2026-08-13T23:30:30.250516Z",
+    "implementedAt": "2026-08-14T00:42:29.22952Z",
+    "requestedBy": "User",
+    "id": "FeatureRequest-20260814073355-bba8e4ef",
+    "bugResurfaced": false,
+    "outlineVersion": "v0",
+    "linkedBugs": [],
+    "type": "FeatureRequest",
+    "bugReferrals": [],
+    "parentId": "",
+    "description": "Resolve the Phase0 blockers observed in shell-matrix smoke: (1) PS5 parse blocker in scripts/PS-CheatSheet-EXAMPLES-V2.ps1 due to PS7-only token, and (2) ConvoVault-BWcli module import argument binding failure (vault-access.log positional arg issue).",
+    "linkedFeatures": [],
+    "sinPattern": "",
+    "filesRemainingCount": 0,
+    "executionAgent": "",
+    "result": null,
+    "plannedAt": "2026-08-13T23:57:39.1771758Z",
+    "category": "stability",
+    "firstSeenAt": "2026-08-13T23:33:55.2259914Z",
+    "acknowledged": null,
+    "fixesImplementedCount": 0,
+    "source": "Manual",
+    "executionMethod": "",
+    "outlinePhase": "assessment",
+    "status": "DONE",
+    "notes": "Implemented and validated via dual-host parser checks + headless smoke runs (pwsh + powershell).",
+    "reviewDecision": "APPROVE",
+    "approvedBy": "User",
+    "approvedAt": "2026-08-13T23:53:56.005899Z",
+    "reviewedAt": "2026-08-13T23:53:56.005899Z"
+  },
+  {
     "id": "IMPR-001-20260408",
     "title": "Context-Aware SIN Scanner",
     "description": "Reduce false positives by adding 2-line context window guards before flagging P021/P022/P008. Target: <50 actionable findings from 702 matches.",
@@ -28464,9 +28608,9 @@ var _todoBundle = [
     "created": "2026-03-24T08:00:00Z",
     "category": "optimization",
     "priority": "high",
-    "status": "PLANNED",
+    "status": "DONE",
     "title": "Unify module logging to Write-AppLog (eliminate custom loggers)",
-    "description": "3 modules use non-standard logging: AVPN-Tracker uses Invoke-AVPNLog, PwShGUI_AutoIssueFinder uses Write-AIFLog, UserProfileManager uses Write-Warning. All should route through PwShGUICore.Write-AppLog for consistent audit trail.",
+    "description": "Completed logging convergence across the targeted modules: AVPN-Tracker and PwShGUI_AutoIssueFinder route their wrapper logging through Write-AppLog, UserProfileManager was verified as already Write-AppLog-based, and AutoIssueFinder direct stream mirroring was removed so Write-AppLog is the sole logging contract.",
     "files": [
       "modules/AVPN-Tracker.psm1",
       "modules/PwShGUI_AutoIssueFinder.psm1",
@@ -28474,8 +28618,9 @@ var _todoBundle = [
     ],
     "createdAt": "2026-03-24T08:00:00Z",
     "plannedAt": "2026-03-31T01:25:48.3877203+08:00",
+    "notes": "Completed 2026-05-26: AVPN-Tracker and PwShGUI_AutoIssueFinder now route wrapper logging through Write-AppLog, UserProfileManager was reviewed and already used a Write-AppLog shim, and direct stream mirroring was removed from AutoIssueFinder. master-006 is complete.",
     "type": "ToDo",
-    "modified": "2026-04-03T07:12:40.6063602Z"
+    "modified": "2026-05-26T09:21:00Z"
   },
   {
     "id": "master-008",
@@ -34499,4 +34644,3 @@ var _todoBundle = [
     "triageReason": "Auto-triage: PLANNED > 30 days — review needed"
   }
 ];
-

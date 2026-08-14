@@ -262,6 +262,25 @@ function Get-LaunchGuiMenuTargets {
     return @($targets | Sort-Object Path -Unique)
 }
 
+function Test-IsOptionalLegacyChecklistTarget {
+    <#
+    .SYNOPSIS
+        Return true for legacy checklist file targets that are allowed to be absent.
+    #>
+    param(
+        [string]$Path,
+        [string]$Label = ''
+    )
+
+    $name = [IO.Path]::GetFileName([string]$Path)
+    if ([string]::IsNullOrWhiteSpace($name) -and -not [string]::IsNullOrWhiteSpace($Label)) {
+        $name = [IO.Path]::GetFileName([string]$Label)
+    }
+    if ([string]::IsNullOrWhiteSpace($name)) { return $false }
+
+    return $name -match '^(?i)PwShGUI-Checklists(?:-V1-\[LEGACY\](?:-TEST)?|-V2-\[ONLINE\](?:-TEST)?)?\.xhtml$'
+}
+
 # ── UI-Automation helpers ─────────────────────────────────────────────────────
 # Load the UIAutomationClient assembly (ships with .NET Framework / .NET 6+)
 try {
@@ -589,7 +608,11 @@ if ($runPhase0) {
             $name = Split-Path -Leaf $t.Path
             $ext = [IO.Path]::GetExtension($t.Path).ToLowerInvariant()
             if (-not (Test-Path $t.Path)) {
-                Write-TestLog 'FAIL' 'Phase0' 'LaunchMenuTarget' "$name missing"
+                if (Test-IsOptionalLegacyChecklistTarget -Path $t.Path -Label $name) {
+                    Write-TestLog 'SKIP' 'Phase0' 'LaunchMenuTarget' "$name missing (legacy optional target)"
+                } else {
+                    Write-TestLog 'FAIL' 'Phase0' 'LaunchMenuTarget' "$name missing"
+                }
                 continue
             }
 
@@ -1079,19 +1102,32 @@ if ($runPhase0) {
             @{ Label='PwShGUI App Help (Webpage Index)'; Path='~README.md\PwShGUI-Help-Index.html' }
             @{ Label='Dependency Visualisation';         Path='~README.md\Dependency-Visualisation.html' }
             @{ Label='PS-Cheatsheet V2';                 Path='scripts\PS-CheatSheet-EXAMPLES-V2.ps1' }
+            @{ Label='PwShGUI Checklists (Legacy V1)';   Path='~README.md\PwShGUI-Checklists-V1-[LEGACY].xhtml'; OptionalLegacy=$true }
+            @{ Label='PwShGUI Checklists (Legacy V2)';   Path='~README.md\PwShGUI-Checklists-V2-[ONLINE].xhtml'; OptionalLegacy=$true }
         )
-        $helpFilePass = 0; $helpFileFail = 0
+        $helpFilePass = 0; $helpFileFail = 0; $helpFileSkip = 0
         foreach ($ht in $helpMenuFileTargets) {
             $fullPath = Join-Path $scriptRoot $ht.Path
+            $isOptionalLegacy = $false
+            if ($ht.PSObject.Properties.Name -contains 'OptionalLegacy') {
+                $isOptionalLegacy = [bool]$ht.OptionalLegacy
+            }
+            if (-not $isOptionalLegacy) {
+                $isOptionalLegacy = Test-IsOptionalLegacyChecklistTarget -Path $ht.Path -Label $ht.Label
+            }
+
             if (Test-Path $fullPath) {
                 Write-TestLog 'PASS' 'Phase0' 'HelpFileCheck' "$($ht.Label) -- $($ht.Path) exists"
                 $helpFilePass++
+            } elseif ($isOptionalLegacy) {
+                Write-TestLog 'SKIP' 'Phase0' 'HelpFileCheck' "$($ht.Label) -- $($ht.Path) missing (legacy optional target)"
+                $helpFileSkip++
             } else {
                 Write-TestLog 'FAIL' 'Phase0' 'HelpFileCheck' "$($ht.Label) -- $($ht.Path) MISSING"
                 $helpFileFail++
             }
         }
-        Write-TestLog 'INFO' 'Phase0' 'HelpFileSum' "Help menu file targets: $helpFilePass exist, $helpFileFail missing"
+        Write-TestLog 'INFO' 'Phase0' 'HelpFileSum' "Help menu file targets: $helpFilePass exist, $helpFileFail missing, $helpFileSkip optional-missing"
 
         # Verify HelpIndex path is registered in PwShGUICore path registry
         $coreModForHelp = Join-Path $modulesDir 'PwShGUICore.psm1'

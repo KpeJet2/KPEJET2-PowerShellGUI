@@ -1,4 +1,4 @@
-# VersionTag: 2607.B7.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -1022,12 +1022,17 @@ Describe 'Get-Greeting' {
 ###################################################
 Show-Section "22. Miscellaneous Tips"
 
-Show-Example "Null coalescing (??) and null conditional (?.) -- PS7+" {
+Show-Example "Null fallback patterns (PS5.1-safe)" {
+    $val = $null
+    $result = if ($null -ne $val) { $val } else { "default value" }
+    Write-Host "Null fallback: $result"
+
+    $obj = [PSCustomObject]@{ Name = "Test" }
+    $safe = if ($null -ne $obj) { $obj.Name } else { $null }
+    Write-Host "Null-guard property access: $safe"
+
     if ($PSVersionTable.PSVersion.Major -ge 7) {
-        $val = $null; $result = $val ?? "default value"; Write-Host "Null coalesce: $result"
-        $obj = [PSCustomObject]@{ Name = "Test" }; $safe = $obj?.Name; Write-Host "Null conditional: $safe"
-    } else {
-        Write-Host "(Skipped -- requires PowerShell 7+)"
+        Write-Host "PowerShell 7 also supports the shorthand operators '??' and '?.'."
     }
 }
 
