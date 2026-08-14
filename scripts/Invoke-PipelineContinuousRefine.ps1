@@ -384,7 +384,7 @@ $deprecatedHits = New-Object System.Collections.Generic.List[object]
 if (@($deprecatedRefs).Count -gt 0) {
     $refScanFilesAll = @(Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1,*.bat,*.cmd,*.md,*.json,*.yml,*.yaml,*.xhtml,*.html -ErrorAction SilentlyContinue |
         Where-Object {
-            $_.FullName -notmatch '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|temp)\\' -and
+            $_.FullName -notmatch '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|sin_registry|temp)\\' -and
             (Test-IsActiveRefScanCandidate -Root $root -FullPath $_.FullName)
         })
 
@@ -399,7 +399,6 @@ if (@($deprecatedRefs).Count -gt 0) {
     } else {
         $refScanFiles = $refScanFilesAll
     }
-
     $canonicalRegistryRel = Convert-ToWorkspaceRelative -Root $root -FullPath $CanonicalPathRegistry
     $canonicalRegistryFull = [System.IO.Path]::GetFullPath($CanonicalPathRegistry)
 
@@ -435,7 +434,7 @@ if (@($deprecatedRefs).Count -gt 0) {
 }
 
 # 2) Duplicate function names across scripts/modules.
-$excludePathRegex = '(?i)\\(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|sin_registry|temp)\\|\\scripts\\QUICK-APP\\~BACKUPS\\'
+$excludePathRegex = '(?i)(^|[\\/])(\.git|\.history|~ARCHIVED|~DOWNLOADS|node_modules|\.venv|checkpoints|logs|reports|~REPORTS|sin_registry|temp)([\\/]|$)|([\\/])scripts([\\/])QUICK-APP([\\/])~BACKUPS([\\/]|$)'
 $psFilesAll = @(Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1 -ErrorAction SilentlyContinue |
     Where-Object { $_.FullName -notmatch $excludePathRegex })
 
