@@ -194,11 +194,19 @@ function Get-ToolVersionByKey {
         'python' {
             $cmd = Get-Command python -ErrorAction SilentlyContinue
             if ($null -ne $cmd) {
-                try { return ((& $cmd.Source --version 2>&1 | Out-String).Trim()) } catch { }
+                try {
+                    return ((& $cmd.Source --version 2>&1 | Out-String).Trim())
+                } catch {
+                    Write-Verbose "Unable to determine python version from $($cmd.Source): $($_.Exception.Message)"
+                }
             }
             $py = Get-Command py -ErrorAction SilentlyContinue
             if ($null -ne $py) {
-                try { return ((& $py.Source -V 2>&1 | Out-String).Trim()) } catch { }
+                try {
+                    return ((& $py.Source -V 2>&1 | Out-String).Trim())
+                } catch {
+                    Write-Verbose "Unable to determine python version from $($py.Source): $($_.Exception.Message)"
+                }
             }
             return ''
         }
