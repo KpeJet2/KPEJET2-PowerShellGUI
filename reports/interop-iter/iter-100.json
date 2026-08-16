@@ -1,0 +1,1658 @@
+{
+  "iteration": 100,
+  "startedAt": "2026-08-16T21:01:02.5873471+08:00",
+  "workspace": "C:\\PowerShellGUI",
+  "findings": [
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Convert-PlainTextToSecureString' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Convert-PlainTextToSecureString",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'New-VaultKey' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "New-VaultKey",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Compare-ByteArrayConstantTime' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-ByteArrayConstantTime",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Get-BWStatus' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-BWStatus",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Invoke-BWCommand' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-BWCommand",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Get-WindowsHelloPassword' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-WindowsHelloPassword",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Get-VaultConfig' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-VaultConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Save-VaultConfig' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-VaultConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Assert-VaultUnlocked' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Assert-VaultUnlocked",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Show-SecretsInvokerFallback' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-SecretsInvokerFallback",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AssistedSASC.psd1",
+      "detail": "Function 'Show-SecretsInvokerWebView2' in AssistedSASC.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-SecretsInvokerWebView2",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Write-AppLog' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AppLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Protect-AVPNCredential' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Protect-AVPNCredential",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Unprotect-AVPNCredential' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Unprotect-AVPNCredential",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Invoke-AVPNLog' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-AVPNLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Get-AVPNDefaultTemplateList' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AVPNDefaultTemplateList",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Get-AVPNDeviceTypesPath' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AVPNDeviceTypesPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Initialize-AVPNDeviceTypesFile' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Initialize-AVPNDeviceTypesFile",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Get-AVPNDeviceTypeList' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AVPNDeviceTypeList",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Save-AVPNDeviceTypeList' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-AVPNDeviceTypeList",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Get-AVPNConnectorCount' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AVPNConnectorCount",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Test-AVPNConnectionValid' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-AVPNConnectionValid",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Export-AVPNCsv' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Export-AVPNCsv",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Import-AVPNCsv' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Import-AVPNCsv",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Show-AVPNDeviceTypeDialog' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-AVPNDeviceTypeDialog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\AVPN-Tracker.psd1",
+      "detail": "Function 'Show-AVPNDeviceTypeEditor' in AVPN-Tracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-AVPNDeviceTypeEditor",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-BugTracker.psd1",
+      "detail": "Function 'Write-BugTrackerLog' in CronAiAthon-BugTracker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-BugTrackerLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-ErrorLinker.psd1",
+      "detail": "Function 'Get-NextTestPesterOrdinal' in CronAiAthon-ErrorLinker.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-NextTestPesterOrdinal",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psd1",
+      "detail": "Function 'Write-EventLogInternalMessage' in CronAiAthon-EventLog.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-EventLogInternalMessage",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-EventLog.psd1",
+      "detail": "Function 'Show-EventLogHelp' in CronAiAthon-EventLog.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-EventLogHelp",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Write-AppLog' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AppLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineDescriptionValue' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineDescriptionValue",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'ConvertTo-PipelineItemType' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertTo-PipelineItemType",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'ConvertTo-PipelineStatus' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertTo-PipelineStatus",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineTodoRootPath' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineTodoRootPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineTodoQueueRootPath' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineTodoQueueRootPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineTodoQueueKeyFromFileName' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineTodoQueueKeyFromFileName",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Resolve-PipelineTodoItemPath' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Resolve-PipelineTodoItemPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineTodoJsonFiles' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineTodoJsonFiles",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Move-PipelineTodoFilesToQueues' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Move-PipelineTodoFilesToQueues",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineActiveTodoFiles' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineActiveTodoFiles",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Write-PipelineItemFile' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-PipelineItemFile",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Invoke-PipelineItemRecycle' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-PipelineItemRecycle",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Update-PipelineIndex' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Update-PipelineIndex",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Get-PipelineInterruptions' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-PipelineInterruptions",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Test-PipelineArtifactIntegrity' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-PipelineArtifactIntegrity",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Invoke-PipelineBatchCycle' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-PipelineBatchCycle",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Invoke-PipelineArtifactRefresh' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-PipelineArtifactRefresh",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Invoke-PipelineRegistryCompact' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-PipelineRegistryCompact",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Invoke-BugStatusRollup' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-BugStatusRollup",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Pipeline.psd1",
+      "detail": "Function 'Show-PipelineHelp' in CronAiAthon-Pipeline.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-PipelineHelp",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "detail": "Function 'Get-CronSchedule' in CronAiAthon-Scheduler.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-CronSchedule",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "detail": "Function 'Initialize-CronLogging' in CronAiAthon-Scheduler.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Initialize-CronLogging",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "detail": "Function 'Write-CronLog' in CronAiAthon-Scheduler.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-CronLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "detail": "Function 'Invoke-VersionConsistencyCheck' in CronAiAthon-Scheduler.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-VersionConsistencyCheck",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\CronAiAthon-Scheduler.psd1",
+      "detail": "Function 'Show-SchedulerHelp' in CronAiAthon-Scheduler.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Show-SchedulerHelp",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "detail": "Function 'Invoke-UpdatePowerShellHelp' in PwSh-HelpFilesUpdateSource-ReR.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-UpdatePowerShellHelp",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "detail": "Function 'Update-HelpStatus' in PwSh-HelpFilesUpdateSource-ReR.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Update-HelpStatus",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "detail": "Function 'Update-HelpSource' in PwSh-HelpFilesUpdateSource-ReR.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Update-HelpSource",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwSh-HelpFilesUpdateSource-ReR.psd1",
+      "detail": "Function 'Sync-HelpFiles' in PwSh-HelpFilesUpdateSource-ReR.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Sync-HelpFiles",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Write-AppLog' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AppLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Write-AIFLog' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AIFLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Save-AIFCheckpoint' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-AIFCheckpoint",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFCheckpoint' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFCheckpoint",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFDefaultPathList' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFDefaultPathList",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFPriority' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFPriority",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFScanFileList' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFScanFileList",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Save-AIFBaseline' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-AIFBaseline",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFBaseline' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFBaseline",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Get-AIFSnapshotPath' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AIFSnapshotPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Export-AIFDeltaXhtmlReport' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Export-AIFDeltaXhtmlReport",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI_AutoIssueFinder.psd1",
+      "detail": "Function 'Export-AIFXhtmlReport' in PwShGUI_AutoIssueFinder.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Export-AIFXhtmlReport",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Resolve-AutoCorrectGateConfigPath' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Resolve-AutoCorrectGateConfigPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Read-AutoCorrectGateConfig' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Read-AutoCorrectGateConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'ConvertTo-AutoCorrectGateConfig' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertTo-AutoCorrectGateConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Get-FirstPresentPropertyValue' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-FirstPresentPropertyValue",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'ConvertTo-WorkspaceRelativePath' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertTo-WorkspaceRelativePath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Resolve-AffectedPath' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Resolve-AffectedPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'ConvertTo-NormalizedFailItem' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertTo-NormalizedFailItem",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Get-NormalizedItemKey' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-NormalizedItemKey",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Get-UniqueNormalizedItems' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-UniqueNormalizedItems",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Test-AutoCorrectTargetSupported' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-AutoCorrectTargetSupported",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Get-ParserValidationResult' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-ParserValidationResult",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Invoke-ResultantSinScan' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-ResultantSinScan",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Import-OptionalModuleFile' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Import-OptionalModuleFile",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Invoke-CorrectorStep' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-CorrectorStep",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'New-ItemCheckpoint' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "New-ItemCheckpoint",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Restore-FromItemCheckpoint' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Restore-FromItemCheckpoint",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Test-ProtectedPathViolation' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-ProtectedPathViolation",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Write-AutoCorrectAttemptActionLog' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AutoCorrectAttemptActionLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Resolve-AutoCorrectScopeItems' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Resolve-AutoCorrectScopeItems",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoCorrectGate.psd1",
+      "detail": "Function 'Invoke-AutoCorrectPreCommitValidation' in PwShGUI-AutoCorrectGate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-AutoCorrectPreCommitValidation",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-AutoRemediate.psd1",
+      "detail": "Function 'Test-IsRemediable' in PwShGUI-AutoRemediate.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-IsRemediable",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "detail": "Function 'Write-AppLog' in PwShGUI-ConvoVault.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AppLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "detail": "Function 'Get-ConvoSessionKey' in PwShGUI-ConvoVault.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-ConvoSessionKey",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "detail": "Function 'Protect-ConvoData' in PwShGUI-ConvoVault.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Protect-ConvoData",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "detail": "Function 'Unprotect-ConvoData' in PwShGUI-ConvoVault.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Unprotect-ConvoData",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-ConvoVault.psd1",
+      "detail": "Function 'Protect-ConvoEntry' in PwShGUI-ConvoVault.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Protect-ConvoEntry",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-IntegrityCore.psd1",
+      "detail": "Function 'Write-IntegrityLog' in PwShGUI-IntegrityCore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-IntegrityLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-SchemaTranslator.psd1",
+      "detail": "Function 'Get-SchemaMap' in PwShGUI-SchemaTranslator.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-SchemaMap",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-SinFromScan.psd1",
+      "detail": "Function 'Get-SinHashId' in PwShGUI-SinFromScan.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-SinHashId",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "detail": "Function 'Get-ThemeColour' in PwShGUI-Theme.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-ThemeColour",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "detail": "Function 'Set-MenuItemColor' in PwShGUI-Theme.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Set-MenuItemColor",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "detail": "Function 'Set-ControlProperty' in PwShGUI-Theme.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Set-ControlProperty",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "detail": "Function 'Set-ControlForeColor' in PwShGUI-Theme.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Set-ControlForeColor",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-Theme.psd1",
+      "detail": "Function 'Set-ControlBackColor' in PwShGUI-Theme.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Set-ControlBackColor",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "detail": "Function 'Restore-TrayHostForm' in PwShGUI-TrayHost.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Restore-TrayHostForm",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "detail": "Function 'Get-TrayServiceConfig' in PwShGUI-TrayHost.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-TrayServiceConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "detail": "Function 'Get-VerbFolderShortcuts' in PwShGUI-TrayHost.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-VerbFolderShortcuts",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "detail": "Function 'Get-DocumentShortcuts' in PwShGUI-TrayHost.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-DocumentShortcuts",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-TrayHost.psd1",
+      "detail": "Function 'Get-SystemToolsConfig' in PwShGUI-TrayHost.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-SystemToolsConfig",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psd1",
+      "detail": "Function 'ConvertFrom-VersionTag' in PwShGUI-VersionManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "ConvertFrom-VersionTag",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUI-VersionManager.psd1",
+      "detail": "Function 'Add-AgentEditLedgerEntry' in PwShGUI-VersionManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Add-AgentEditLedgerEntry",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Get-AllProjectFiles' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AllProjectFiles",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Test-ConfigPaths' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-ConfigPaths",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Resolve-CoreLogOutputPath' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Resolve-CoreLogOutputPath",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Set-LogMinLevel' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Set-LogMinLevel",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Get-LogMinLevel' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-LogMinLevel",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Write-ProcessBanner' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-ProcessBanner",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\PwShGUICore.psd1",
+      "detail": "Function 'Write-CrashDump' in PwShGUICore.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-CrashDump",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "detail": "Function 'Write-RELog' in RE-memorAiZ.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-RELog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "detail": "Function 'Get-DirectoriesWithChanges' in RE-memorAiZ.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-DirectoriesWithChanges",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "detail": "Function 'Test-ReadmeExists' in RE-memorAiZ.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Test-ReadmeExists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\RE-memorAiZ.psd1",
+      "detail": "Function 'Build-ReadmeContent' in RE-memorAiZ.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Build-ReadmeContent",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psd1",
+      "detail": "Function 'Assert-AdapterReady' in SASC-Adapters.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Assert-AdapterReady",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\SASC-Adapters.psd1",
+      "detail": "Function 'Find-Executable' in SASC-Adapters.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Find-Executable",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Write-AppLog' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Write-AppLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'New-AesKey' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "New-AesKey",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Get-AutoRollbackPassword' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Get-AutoRollbackPassword",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Invoke-Progress' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-Progress",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-FlatMap' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-FlatMap",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-WingetLists' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-WingetLists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-PSModuleLists' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-PSModuleLists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-SimpleLists' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-SimpleLists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-MimeLists' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-MimeLists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Compare-ConfigFileLists' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Compare-ConfigFileLists",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\UserProfileManager.psd1",
+      "detail": "Function 'Invoke-Progress' in UserProfileManager.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-Progress",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "detail": "Function 'Save-IntentStore' in WorkspaceIntentReview.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-IntentStore",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "detail": "Function 'Save-ChangeLog' in WorkspaceIntentReview.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Save-ChangeLog",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "detail": "Function 'Update-DevelopmentIntent' in WorkspaceIntentReview.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Update-DevelopmentIntent",
+      "subType": "unexported"
+    },
+    {
+      "category": "MANIFEST",
+      "severity": "LOW",
+      "file": "C:\\PowerShellGUI\\modules\\WorkspaceIntentReview.psd1",
+      "detail": "Function 'Invoke-AIImproveIntent' in WorkspaceIntentReview.psm1 not listed in FunctionsToExport",
+      "autoFixable": false,
+      "functionName": "Invoke-AIImproveIntent",
+      "subType": "unexported"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Test-Prerequisites.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Repair-ModulePaths.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptsDir%\\Export-SystemReport.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-CFRMenu.bat",
+      "detail": "Script not found: '%testsDir%\\Invoke-SINPatternScanner.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-CFRMenu.bat",
+      "detail": "Script not found: '%scriptDir%View-Config.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-BUILD-VER.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-BUILD-VER.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-quik_jnr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-quik_jnr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-slow_snr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI-slow_snr.bat",
+      "detail": "Script not found: '%scriptDir%Main-GUI.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI.bat",
+      "detail": "Script not found: '%scriptDir%scripts\\Set-WorkspaceModulePath.ps1'"
+    },
+    {
+      "category": "LAUNCHBAT",
+      "severity": "HIGH",
+      "file": "C:\\PowerShellGUI\\Launch-GUI.bat",
+      "detail": "Script not found: '%scriptDir%scripts\\Register-WorkspaceRepository.ps1'"
+    }
+  ],
+  "fixes": [],
+  "verify": {
+    "issueInventory": {
+      "gate": "PipelineIssueInventory",
+      "staleInProgressDays": 3,
+      "staleOpenDays": 14,
+      "issueCount": 6,
+      "protectedPreserved": 0,
+      "bugsCreated": 6,
+      "noFix": true,
+      "issues": [
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412135922-858f5246.json",
+          "fullPath": "todo/Bug-20260412135922-858f5246.json",
+          "detail": "[FAIL] 8 file(s) with parse errors --; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        },
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412140121-89cd2483.json",
+          "fullPath": "todo/Bug-20260412140121-89cd2483.json",
+          "detail": "7 functions with no try/catch blocks; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        },
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412140318-9ff2fc51.json",
+          "fullPath": "todo/Bug-20260412140318-9ff2fc51.json",
+          "detail": "7 functions with no try/catch blocks; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        },
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260504194026-a939a684.json",
+          "fullPath": "todo/Bug-20260504194026-a939a684.json",
+          "detail": "Missing module reference: path/to/module/updateMods; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        },
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/BUG-SCHED-6FC9435E.json",
+          "fullPath": "todo/BUG-SCHED-6FC9435E.json",
+          "detail": "Scheduler task failure: TASK-DocRebuild; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        },
+        {
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/BUG-SCHED-0D26B6FF.json",
+          "fullPath": "todo/BUG-SCHED-0D26B6FF.json",
+          "detail": "Scheduler task failure: TASK-TabErrorFix; status=IN_PROGRESS; ageDays=71.8; threshold=3",
+          "severity": "HIGH"
+        }
+      ],
+      "protected": [],
+      "created": [
+        {
+          "id": "Bug-20260816210116-3da3993b",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412135922-858f5246.json",
+          "mode": "WHATIF"
+        },
+        {
+          "id": "Bug-20260816210116-e9c9e00c",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412140121-89cd2483.json",
+          "mode": "WHATIF"
+        },
+        {
+          "id": "Bug-20260816210116-07ea2e2b",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260412140318-9ff2fc51.json",
+          "mode": "WHATIF"
+        },
+        {
+          "id": "Bug-20260816210116-e928b79a",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/Bug-20260504194026-a939a684.json",
+          "mode": "WHATIF"
+        },
+        {
+          "id": "Bug-20260816210117-5e79d36b",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/BUG-SCHED-6FC9435E.json",
+          "mode": "WHATIF"
+        },
+        {
+          "id": "Bug-20260816210117-32cbf16c",
+          "kind": "STALE_PIPELINE_ITEM",
+          "path": "todo/BUG-SCHED-0D26B6FF.json",
+          "mode": "WHATIF"
+        }
+      ]
+    },
+    "gateBouncerPre": {
+      "gate": "TheGateBouncer",
+      "phase": "PreRemediation",
+      "target": "todo/Bug-20260412135922-858f5246.json",
+      "validationMode": "RELAXED_WITH_NOTICE",
+      "relaxedValidationNotice": true,
+      "routeKnown": true,
+      "manifestKnown": false,
+      "protectedPath": false,
+      "signatureRequired": false,
+      "signatureValid": false,
+      "subagentHashRequired": false,
+      "subagentHashValid": false,
+      "detourRequested": true,
+      "detourAllowed": true,
+      "reason": "SAFE_BOUNDED_ROUTE"
+    },
+    "gateBouncerPost": {
+      "gate": "TheGateBouncer",
+      "phase": "PostRemediation",
+      "target": "todo/Bug-20260412135922-858f5246.json",
+      "validationMode": "RELAXED_WITH_NOTICE",
+      "relaxedValidationNotice": true,
+      "routeKnown": true,
+      "manifestKnown": false,
+      "protectedPath": false,
+      "signatureRequired": false,
+      "signatureValid": false,
+      "subagentHashRequired": false,
+      "subagentHashValid": false,
+      "detourRequested": true,
+      "detourAllowed": true,
+      "reason": "SAFE_BOUNDED_ROUTE"
+    },
+    "deanB": {
+      "stage": "Digital Effluence and nauance blender",
+      "gate": "DeanB",
+      "iteration": 100,
+      "batchSize": 7,
+      "eligibleFindings": 141,
+      "selectedFindings": 7,
+      "createdFixItems": 0,
+      "skippedExisting": 7,
+      "gateInvoked": false,
+      "gateResult": null,
+      "created": [],
+      "skipped": [
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        },
+        {
+          "path": "modules\\AssistedSASC.psd1",
+          "reason": "existing-active-fix-item"
+        }
+      ],
+      "stopReason": "NO_NEW_FIX_ITEMS"
+    },
+    "parse": {
+      "parseErrors": []
+    },
+    "sin": {
+      "skipped": true
+    },
+    "randomSinBatch": {
+      "skipped": true,
+      "reason": "disabled"
+    },
+    "pipelineIntegrity": {
+      "skipped": true
+    },
+    "completionAudit": {
+      "checked": 11,
+      "active": 6,
+      "invalid": 0,
+      "invalidIds": [],
+      "passed": true
+    }
+  },
+  "summary": {
+    "findingsTotal": 154,
+    "findingsAtDiscovery": 154,
+    "fixesApplied": 0,
+    "bySeverity": "\nName                           Value\n----                           -----\nHIGH                           13\nLOW                            141\n\n",
+    "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+    "stageCount": 11,
+    "stageBreakdown": "iter-100.1:COMPLETE, iter-100.2:COMPLETE, iter-100.3:RELAXED_DETOUR, iter-100.4:SKIPPED, iter-100.5:RELAXED_DETOUR, iter-100.6:COMPLETE, iter-100.7:PASS, iter-100.8:SKIPPED, iter-100.9:SKIPPED, iter-100.10:SKIPPED, iter-100.11:PASS"
+  },
+  "stages": [
+    {
+      "id": "iter-100.1",
+      "name": "discovery",
+      "status": "COMPLETE",
+      "findingsBefore": 0,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Collected 154 findings across interop and manifest checks."
+    },
+    {
+      "id": "iter-100.2",
+      "name": "issue-inventory",
+      "status": "COMPLETE",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 6,
+      "detail": "Inventory found 6 issue(s), created 6 Bug item(s), preserved 0 protected item(s)."
+    },
+    {
+      "id": "iter-100.3",
+      "name": "TheGateBouncer-pre",
+      "status": "RELAXED_DETOUR",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Pre-remediation route=todo/Bug-20260412135922-858f5246.json; reason=SAFE_BOUNDED_ROUTE; validation=RELAXED_WITH_NOTICE."
+    },
+    {
+      "id": "iter-100.4",
+      "name": "auto-fix",
+      "status": "SKIPPED",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Applied 0 safe mechanical fixes."
+    },
+    {
+      "id": "iter-100.5",
+      "name": "TheGateBouncer-post",
+      "status": "RELAXED_DETOUR",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Post-remediation route=todo/Bug-20260412135922-858f5246.json; reason=SAFE_BOUNDED_ROUTE; validation=RELAXED_WITH_NOTICE."
+    },
+    {
+      "id": "iter-100.6",
+      "name": "Digital Effluence and nauance blender",
+      "status": "COMPLETE",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "DeanB gate created 0 bounded fix item(s); stopReason=NO_NEW_FIX_ITEMS."
+    },
+    {
+      "id": "iter-100.7",
+      "name": "verify-parse",
+      "status": "PASS",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Parse verification found 0 error files."
+    },
+    {
+      "id": "iter-100.8",
+      "name": "verify-sin",
+      "status": "SKIPPED",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "SIN findings: total=0, critical=0, high=0."
+    },
+    {
+      "id": "iter-100.9",
+      "name": "random-sin-batch",
+      "status": "SKIPPED",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Random 1-in-5 batch: selected 2 file(s)."
+    },
+    {
+      "id": "iter-100.10",
+      "name": "verify-pipeline-integrity",
+      "status": "SKIPPED",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Completed the read-only pipeline integrity check."
+    },
+    {
+      "id": "iter-100.11",
+      "name": "completion-audit",
+      "status": "PASS",
+      "findingsBefore": 154,
+      "findingsAfter": 154,
+      "fixesApplied": 0,
+      "detail": "Checked 11 ToDo/feature item(s); invalid completion records=0."
+    }
+  ],
+  "completedAt": "2026-08-16T21:01:21.9703878+08:00"
+}
