@@ -1,0 +1,56 @@
+{
+  "failOnDrift": true,
+  "exitCode": 0,
+  "baselinePath": "C:\\PowerShellGUI\\config\\pipeline-flow-baseline.json",
+  "workspacePath": "C:\\PowerShellGUI",
+  "generatedAtUtc": "2026-08-14T04:09:18.2733636Z",
+  "updateBaseline": false,
+  "graphPath": "C:\\PowerShellGUI\\config\\pipeline-flow-graph.json",
+  "checks": [
+    {
+      "Name": "SourcesConfigPresent",
+      "Status": "PASS",
+      "Detail": "C:\\PowerShellGUI\\config\\pipeline-flow-sources.json"
+    },
+    {
+      "Name": "GraphBuilt",
+      "Status": "PASS",
+      "Detail": "nodes=7; edges=6"
+    },
+    {
+      "Name": "BaselinePresent",
+      "Status": "PASS",
+      "Detail": "C:\\PowerShellGUI\\config\\pipeline-flow-baseline.json"
+    },
+    {
+      "Name": "BaselineDrift",
+      "Status": "PASS",
+      "Detail": "No drift detected"
+    },
+    {
+      "Name": "GraphArtifactWritten",
+      "Status": "PASS",
+      "Detail": "C:\\PowerShellGUI\\config\\pipeline-flow-graph.json"
+    }
+  ],
+  "graph": {
+    "SchemaVersion": "CronPipeFlow/1.0",
+    "VersionTag": "2608.B1.V54.2",
+    "graphHash": "97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507",
+    "stats": {
+      "nodeCount": 7,
+      "edgeCount": 6,
+      "gateCount": 0,
+      "orphanNodeCount": 0
+    }
+  },
+  "drift": {
+    "driftDetected": false,
+    "expectedHash": "97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507",
+    "actualHash": "97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507",
+    "expectedNodeCount": 7,
+    "actualNodeCount": 7
+  },
+  "verifyOnly": false,
+  "sourcesConfigPath": "C:\\PowerShellGUI\\config\\pipeline-flow-sources.json"
+}

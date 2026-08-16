@@ -11,7 +11,8 @@
     Catches the most common, high-impact issues without the full SIN scanner runtime:
 
       Gate 1 - PowerShell parse errors (all .ps1/.psm1 files in scope)
-      Gate 2 - Critical SIN patterns (P001/P009/P010): hardcoded creds, IEX, path injection
+      Gate 2 - Critical SIN patterns: inline P001/P009/P010 fast path plus a
+               sin_registry-driven sweep of every CRITICAL-severity pattern
       Gate 3 - P027 null-array-index findings from the SIN scanner
       Gate 4 - Encoding violations: UTF-8 BOM required for .ps1/.psm1 (P006)
     Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
@@ -308,7 +309,11 @@ function Invoke-ParseGate {
 }
 
 function Invoke-CriticalSINGate {
-    param([System.IO.FileInfo[]]$Files)
+    param(
+        [System.IO.FileInfo[]]$Files,
+        [string]$Root = '',
+        [switch]$SkipRegistrySweep
+    )
     $patterns = @(
         [PSCustomObject]@{
             Id = 'P001'
@@ -371,6 +376,39 @@ function Invoke-CriticalSINGate {
             }
         }
     }
+
+    # Registry-driven sweep: the three inline regexes above cover only P001/P009/P010.
+    # Delegate the remaining CRITICAL sin_registry patterns to the canonical scanner so
+    # this gate cannot drift from sin_registry definitions.
+    if (-not $SkipRegistrySweep -and -not [string]::IsNullOrWhiteSpace($Root) -and @($Files).Count -gt 0) {
+        $scanner = Join-Path $Root 'tests\Invoke-SINPatternScanner.ps1'
+        if (Test-Path -LiteralPath $scanner) {
+            $sweepJson = Join-Path (Join-Path $Root 'temp') ('precommit-critical-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
+            try {
+                $sweep = & $scanner -WorkspacePath $Root -IncludeFiles @($Files.FullName) -Runtime Both -Quiet -OutputJson $sweepJson
+                $seen = @{}
+                foreach ($f in @($findings)) { $seen["$($f.File)|$($f.Line)|$($f.Pattern)"] = $true }
+                if ($null -ne $sweep -and $sweep.PSObject.Properties.Name -contains 'findings') {
+                    foreach ($hit in @($sweep.findings | Where-Object { "$($_.severity)" -eq 'CRITICAL' })) {
+                        $full = Join-Path $Root $hit.file
+                        if ($seen.ContainsKey("$full|$($hit.line)|$($hit.sinId)")) { continue }
+                        [void]$findings.Add([PSCustomObject]@{
+                            Gate     = 'CriticalSIN'
+                            Severity = 'ERROR'
+                            File     = $full
+                            Line     = $hit.line
+                            Pattern  = $hit.sinId
+                            PatName  = 'REGISTRY'
+                            Message  = "$($hit.sinId): $($hit.content)"
+                        })
+                    }
+                }
+            } catch {
+                Write-Gate "  [WARN] Registry CRITICAL sweep failed: $($_.Exception.Message)" 'Warn'
+            }
+        }
+    }
+
     return @($findings)
 }
 
@@ -1147,8 +1185,8 @@ $parseHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($parseHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
 else { Write-Gate ("  Failed: {0} parse error(s)" -f @($parseHits).Count) 'Fail' }
 
-Write-Gate '[Gate 2] Critical SIN patterns (P001/P009/P010)...' 'Info'
-$sinHits = @(Invoke-CriticalSINGate -Files $files)
+Write-Gate '[Gate 2] Critical SIN patterns (inline P001/P009/P010 + sin_registry CRITICAL sweep)...' 'Info'
+$sinHits = @(Invoke-CriticalSINGate -Files $files -Root $WorkspacePath)
 $sinHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($sinHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
 else { Write-Gate ("  Failed: {0} critical SIN finding(s)" -f @($sinHits).Count) 'Fail' }
