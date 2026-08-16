@@ -1,0 +1,35 @@
+{
+  "VersionTag": "2608.B1.V54.2",
+  "SchemaVersion": "CronPipeFlow/1.0",
+  "description": "Phase 0 source map for cron pipeline flow graph extraction.",
+  "sourceFiles": [
+    "scripts/Run-FullPipeline.ps1",
+    "tests/Invoke-PreCommitValidation.ps1",
+    "scripts/Invoke-PipelineContinuousRefine.ps1",
+    "scripts/Invoke-CronProcessor.ps1",
+    "tests/Invoke-SINPatternScanner.ps1",
+    "config/pipeline-canonical-paths.json",
+    "config/dynamic-manifest.json"
+  ],
+  "sourceGlobs": [],
+  "bladeDefinitions": [
+    { "id": "blade.pipeline", "title": "Pipeline", "icon": "&#x2699;", "order": 10, "parent": null },
+    { "id": "blade.gates", "title": "Test Gates", "icon": "&#x1F6A6;", "order": 20, "parent": "blade.pipeline" },
+    { "id": "blade.cron", "title": "Cron", "icon": "&#x23F1;", "order": 30, "parent": null },
+    { "id": "blade.artifacts", "title": "Artifacts", "icon": "&#x1F4E6;", "order": 40, "parent": null },
+    { "id": "blade.glossary", "title": "Glossary", "icon": "&#x1F4D6;", "order": 90, "parent": null }
+  ],
+  "crossLinkTemplates": {
+    "readme": ["README.md"],
+    "tools": [
+      "XHTML-PipelineManager.xhtml",
+      "XHTML-SIN-Scoreboard-LIVE.xhtml",
+      "XHTML-DependencyMapR2-CORTIX.xhtml",
+      "XHTML-ChangelogViewer.xhtml"
+    ],
+    "standards": ["~README.md/DOC-ICON-STANDARD.md"],
+    "manifests": ["config/dynamic-manifest.json", "config/agentic-manifest.json"],
+    "history": ["~README.md/CHANGELOG.md", "~README.md/ENHANCEMENTS-LOG.md"],
+    "logs": ["logs/pipeline-flow-gate.log", "reports/pipeline-flow-gate/latest.json"]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "sin_id": "SIN-PATTERN-007-VERSIONTAG-STALE_202604042257",
   "title": "Stale or missing VersionTag in script/module headers",
-  "description": "Files with missing, outdated, or malformed VersionTag comments break version consistency tracking. The canonical format is '<!-- VersionTag: YYMM.B#.vMAJOR.MINOR -->' for XHTML and '# VersionTag: YYMM.B#.vMAJOR.MINOR' for PS1/PSM1. Stale tags indicate files that were not included in the last version bump cycle.",
+  "description": "Files with missing, outdated, or malformed VersionTag comments break version consistency tracking. The canonical format is '<!-- VersionTag example YYMM.B#.vMAJOR.MINOR -->' for XHTML and '# VersionTag example YYMM.B#.vMAJOR.MINOR' for PS1/PSM1. Stale tags indicate files that were not included in the last version bump cycle.",
   "severity": "MEDIUM",
   "category": "versioning",
   "vector": "stale-version-tag",

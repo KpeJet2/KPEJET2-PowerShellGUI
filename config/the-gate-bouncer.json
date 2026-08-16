@@ -1,0 +1,40 @@
+{
+  "VersionTag": "2608.B0.V53.0",
+  "schema": "TheGateBouncer/1.0",
+  "validationMode": "RELAXED_WITH_NOTICE",
+  "allowedRouteRoots": [
+    "scripts",
+    "modules",
+    "tests",
+    "config",
+    "todo",
+    "Pipeline"
+  ],
+  "allowedExtensions": [
+    ".ps1",
+    ".psm1",
+    ".psd1",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".md",
+    ".xhtml",
+    ".html"
+  ],
+  "protectedPathPatterns": [
+    "^sovereign-kernel($|[\\\\/])",
+    "^pki($|[\\\\/])",
+    "^checkpoints($|[\\\\/])",
+    "^config[\\\\/]agentic-manifest(?:-history)?($|[\\\\/])",
+    "^config[\\\\/]sasc-integrity\\.sha256\\.json$",
+    "(^|[\\\\/])(?:cache|caches|snapshots?|immutable|kernel)($|[\\\\/])"
+  ],
+  "trustedManifestPaths": [
+    "config/agentic-manifest.json",
+    "config/pipeline-canonical-paths.json",
+    "config/the-gate-bouncer.json"
+  ],
+  "requireCodeSignature": false,
+  "requireSubagentHash": false,
+  "allowDetour": true
+}

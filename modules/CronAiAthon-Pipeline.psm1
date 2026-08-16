@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -191,6 +191,11 @@ function New-PipelineItem {
         filesRemainingCount      = 0
         countermeasures          = @()
         bugHistory               = @()
+        recyclable               = $false
+        recycleCount             = 0
+        recycleHistory           = @()
+        approvalState            = 'NOT_REQUIRED'
+        reapprovedAt             = $null
     }
 }
 
@@ -345,6 +350,8 @@ function ConvertTo-PipelineStatus {
         'BETA_TESTING' { return 'OPEN' }
         'OPEN' { return 'OPEN' }
         'PENDING' { return 'PLANNED' }
+        'PENDING_APPROVAL' { return 'PENDING_APPROVAL' }
+        'AUTO_APPROVED' { return 'AUTO_APPROVED' }
         'PLANNED' { return 'PLANNED' }
         'PLAN' { return 'PLANNED' }
         'INPROGRESS' { return 'IN_PROGRESS' }
@@ -698,9 +705,11 @@ function Test-StatusTransition {
         'IN_PROGRESS' = @('TESTING','DONE','BLOCKED','FAILED')
         'TESTING'     = @('DONE','IN_PROGRESS','FAILED')
         'DONE'        = @('CLOSED','IN_PROGRESS')
-        'CLOSED'      = @('OPEN')
+        'CLOSED'      = @('OPEN','PENDING_APPROVAL')
         'BLOCKED'     = @('OPEN','PLANNED','IN_PROGRESS','CLOSED')
-        'FAILED'      = @('OPEN','IN_PROGRESS','CLOSED')
+        'FAILED'      = @('OPEN','IN_PROGRESS','CLOSED','PENDING_APPROVAL')
+        'PENDING_APPROVAL' = @('PLANNED','OPEN','AUTO_APPROVED','CLOSED')
+        'AUTO_APPROVED' = @('PLANNED','IN_PROGRESS','PENDING_APPROVAL','CLOSED')
     }
 
     if (-not $validTransitions.ContainsKey($CurrentStatus)) { return $true }
@@ -725,7 +734,7 @@ function Update-PipelineItemStatus {
     )
 
     $NewStatus = ConvertTo-PipelineStatus -Status $NewStatus
-    if ($NewStatus -notin @('OPEN','PLANNED','IN_PROGRESS','TESTING','DONE','CLOSED','BLOCKED','FAILED')) {
+    if ($NewStatus -notin @('OPEN','PLANNED','IN_PROGRESS','TESTING','DONE','CLOSED','BLOCKED','FAILED','PENDING_APPROVAL','AUTO_APPROVED')) {
         Write-AppLog -Message "Unsupported target status '$NewStatus' for item $ItemId." -Level Warning
         return $false
     }
@@ -763,6 +772,8 @@ function Update-PipelineItemStatus {
                 $listRef[$i].status = $NewStatus  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $listRef[$i].modified = (Get-Date).ToUniversalTime().ToString('o')  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 $listRef[$i].sessionModCount++  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                if (-not $listRef[$i].PSObject.Properties['recyclable']) { $listRef[$i] | Add-Member -NotePropertyName recyclable -NotePropertyValue $false -Force }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+                $listRef[$i].recyclable = ($NewStatus -in @('DONE','CLOSED','FAILED'))  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($Notes) { $listRef[$i].notes = $Notes }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($NewStatus -eq 'PLANNED') { $listRef[$i].plannedAt = (Get-Date).ToUniversalTime().ToString('o') }  # SIN-EXEMPT:P027 -- index access, context-verified safe
                 if ($NewStatus -eq 'IN_PROGRESS') { $listRef[$i].executedAt = (Get-Date).ToUniversalTime().ToString('o') }  # SIN-EXEMPT:P027 -- index access, context-verified safe
@@ -846,6 +857,75 @@ function Update-PipelineItemStatus {
         }
     }
 
+    return $found
+}
+
+function Invoke-PipelineItemRecycle {
+    <#
+    .SYNOPSIS  Return a terminal pipeline item to approval or planning.
+    .DESCRIPTION
+      Records durable recycle history so stale work can be reviewed,
+      re-approved, and measured without creating duplicate item identities.
+    #>
+    [OutputType([System.Object])]
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)] [string]$WorkspacePath,
+        [Parameter(Mandatory)] [string]$ItemId,
+        [string]$Reason = 'Reconsider for a future pipeline cycle',
+        [switch]$Reapprove
+    )
+
+    $regPath = Get-PipelineRegistryPath -WorkspacePath $WorkspacePath
+    if (-not (Test-Path -LiteralPath $regPath)) { return $null }
+    try {
+        $registry = Get-Content -LiteralPath $regPath -Raw -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        Write-AppLog -Message "Failed to load pipeline registry for recycle: $_" -Level Error
+        return $null
+    }
+
+    $found = $null
+    foreach ($listName in @('featureRequests','bugs','items2ADD','bugs2FIX','todos')) {
+        foreach ($candidate in @($registry.$listName)) {
+            if ($null -ne $candidate -and [string]$candidate.id -eq $ItemId) { $found = $candidate; break }
+        }
+        if ($null -ne $found) { break }
+    }
+    if ($null -eq $found) { Write-AppLog -Message "Pipeline item not found for recycle: $ItemId" -Level Warning; return $null }
+
+    $rawCurrent = 'OPEN'
+    if ($found.PSObject.Properties['status']) { $rawCurrent = [string]$found.status }
+    $current = ConvertTo-PipelineStatus -Status $rawCurrent
+    $allowed = @('DONE','CLOSED','FAILED','BLOCKED','AUTO_APPROVED','PENDING_APPROVAL')
+    if ($current -notin $allowed) {
+        Write-AppLog -Message "Item $ItemId is not recyclable from status $current." -Level Warning
+        return $null
+    }
+    $target = 'PENDING_APPROVAL'
+    if ($Reapprove) { $target = 'PLANNED' }
+    if (-not $PSCmdlet.ShouldProcess($ItemId, "Recycle $current to $target")) { return $null }
+
+    $now = (Get-Date).ToUniversalTime().ToString('o')
+    if (-not $found.PSObject.Properties['recycleCount']) { $found | Add-Member -NotePropertyName recycleCount -NotePropertyValue 0 -Force }
+    if (-not $found.PSObject.Properties['recycleHistory']) { $found | Add-Member -NotePropertyName recycleHistory -NotePropertyValue @() -Force }
+    if (-not $found.PSObject.Properties['approvalState']) { $found | Add-Member -NotePropertyName approvalState -NotePropertyValue 'NOT_REQUIRED' -Force }
+    if (-not $found.PSObject.Properties['reapprovedAt']) { $found | Add-Member -NotePropertyName reapprovedAt -NotePropertyValue $null -Force }
+    if (-not $found.PSObject.Properties['recyclable']) { $found | Add-Member -NotePropertyName recyclable -NotePropertyValue $false -Force }
+
+    $history = @($found.recycleHistory)
+    $history += [ordered]@{ fromStatus = $current; toStatus = $target; reason = $Reason; timestamp = $now }
+    $found.recycleHistory = $history
+    $found.recycleCount = [int]$found.recycleCount + 1
+    $found.status = $target
+    if ($found.PSObject.Properties['modified']) { $found.modified = $now } else { $found | Add-Member -NotePropertyName modified -NotePropertyValue $now -Force }
+    $found.recyclable = $false
+    $found.approvalState = if ($Reapprove) { 'APPROVED' } else { 'PENDING' }
+    if ($Reapprove) { $found.reapprovedAt = $now }
+    $null = Write-PipelineItemFile -WorkspacePath $WorkspacePath -Item $found
+    $registry.meta.lastModified = $now
+    $registry | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $regPath -Encoding UTF8
+    try { $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath } catch { Write-AppLog -Message "Artifact refresh failed after recycle ${ItemId}: $_" -Level Warning }
     return $found
 }
 
@@ -2249,6 +2329,7 @@ Export-ModuleMember -Function @(
     'Initialize-PipelineRegistry',
     'Add-PipelineItem',
     'Update-PipelineItemStatus',
+    'Invoke-PipelineItemRecycle',
     'Test-StatusTransition',
     'Get-PipelineItems',
     'Get-PipelineStatistics',

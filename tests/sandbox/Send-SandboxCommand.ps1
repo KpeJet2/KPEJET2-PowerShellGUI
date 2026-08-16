@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2608.B1.V54.3
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -19,7 +19,9 @@
       Exec     - Execute a custom PowerShell command
       Iterate  - Full cycle: Sync + Test + GUI
       Status   - Check sandbox status (no command sent)
-      Shutdown - Gracefully shut down the sandbox
+    Shutdown - Gracefully shut down the sandbox
+    OpenScript - Open a .ps1 file in the guest PowerShell host
+    OpenText - Open a .txt file in guest Notepad
 
 .PARAMETER SessionDir
     Path to the sandbox session directory (printed by Start-InteractiveSandbox).
@@ -53,10 +55,11 @@ param(
     [string]$SessionDir,
 
     [Parameter(Mandatory)]
-    [ValidateSet('Sync', 'Test', 'GUI', 'StopGUI', 'Chaos', 'Exec', 'Iterate', 'Status', 'Shutdown')]
+    [ValidateSet('Sync', 'Test', 'GUI', 'StopGUI', 'Chaos', 'Exec', 'Iterate', 'Status', 'Shutdown', 'OpenScript', 'OpenText')]
     [string]$Action,
 
     [string]$Command,
+    [string]$Path,
     [ValidateSet('quik_jnr', 'slow_snr')]
     [string]$GUIMode = 'quik_jnr',
     [switch]$Headless,
@@ -246,6 +249,20 @@ switch ($Action) {
             exit 1
         }
         $params = @{ command = $Command }
+    }
+    'OpenScript' {
+        if ([string]::IsNullOrWhiteSpace($Path)) {
+            Write-Host "[FAIL] -Path required for OpenScript action." -ForegroundColor Red
+            exit 1
+        }
+        $params = @{ path = $Path }
+    }
+    'OpenText' {
+        if ([string]::IsNullOrWhiteSpace($Path)) {
+            Write-Host "[FAIL] -Path required for OpenText action." -ForegroundColor Red
+            exit 1
+        }
+        $params = @{ path = $Path }
     }
 }
 

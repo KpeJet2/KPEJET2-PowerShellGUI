@@ -1,0 +1,899 @@
+{
+  "summary": {
+    "scanId": "PIPE-REFINE-20260803-024438",
+    "workspace": "C:\\PowerShellGUI",
+    "timestamp": "2026-08-03T02:43:25.8966599+08:00",
+    "requiredPathChecks": 16,
+    "pathRegistryLoaded": true,
+    "pathRegistry": "config/pipeline-canonical-paths.json",
+    "pathRegistryMissing": 0,
+    "deprecatedReferenceHits": 84,
+    "stagedOnly": true,
+    "stagedFileCount": 0,
+    "baselineProfile": "staged",
+    "duplicateFunctionGroups": 0,
+    "duplicateFunctionAllowlisted": 0,
+    "versionTagIssues": 0,
+    "dotfilePlacementIssues": 0,
+    "readmeManagedMarkers": true,
+    "findingsBySeverity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 84,
+      "LOW": 0
+    },
+    "countsByKey": {
+      "MEDIUM:deprecated-reference": 84
+    },
+    "baselinePath": "config/pipeline-refine-baseline-staged.json",
+    "baselineApplied": true,
+    "regressions": [
+      {
+        "key": "MEDIUM:deprecated-reference",
+        "baseline": 60,
+        "current": 84,
+        "delta": 24
+      }
+    ],
+    "improvements": [],
+    "blockingSeverities": [
+      "CRITICAL",
+      "HIGH"
+    ],
+    "totalFindings": 84,
+    "autoCorrectEnabled": false,
+    "autoCorrectWhatIf": false,
+    "autoCorrectScope": "KnowSafeRemidiations",
+    "autoCorrectFocusTargets": [],
+    "autoCorrectRecentDays": 14,
+    "autoCorrectExecutionFailed": false,
+    "autoCorrectExecutionError": ""
+  },
+  "findings": [
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": ".github/workflows/sin-scan.yml"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": ".vscode/tasks.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "config/agentic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "config/dynamic-manifest.json"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "scripts/Install-PreCommitHook.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Install-PreCommitHook.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Install-PreCommitHook.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-full.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-full.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-staged.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-staged.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: config/pipeline-refine-baseline-nightly.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: .\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "README.md"
+    },
+    {
+      "category": "deprecated-reference",
+      "severity": "MEDIUM",
+      "message": "Deprecated path literal referenced: ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+      "path": "README.md"
+    }
+  ],
+  "duplicateFunctions": [],
+  "duplicateFunctionsAllowlisted": [],
+  "deprecatedReferenceHits": [
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".github/workflows/sin-scan.yml",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/agentic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "config/dynamic-manifest.json",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "modules/PwShGUI-AutoCorrectGate.psm1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Install-PreCommitHook.ps1",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Install-PreCommitHook.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Install-PreCommitHook.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "config/pipeline-refine-baseline.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "scripts/Sync-ReadmeFeatureIndex.ps1",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "config/pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-full.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "config/pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "config/pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": ".\\config\\pipeline-refine-baseline-nightly.json"
+    },
+    {
+      "path": "README.md",
+      "deprecated": "${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json"
+    }
+  ],
+  "autoCorrect": null
+}

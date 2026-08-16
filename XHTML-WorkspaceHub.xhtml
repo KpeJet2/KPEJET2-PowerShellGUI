@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- VersionTag: 2607.B7.V51.4 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -423,6 +423,7 @@
     <button type="button" class="scan-btn full" onclick="return doScan('full', this, event)" data-tip="Full 6-phase rescan via engine. Requires LocalWebEngine running.">&#x1F504; Full Scan</button>
     <button type="button" class="scan-btn static" onclick="return doStaticScan(this, event)" data-tip="Full 6-phase static scan&#xa;Works from engine-hosted or file-opened page when local engine is available&#xa;Falls back to terminal command guidance when engine is unavailable">&#x1F5C2; Full Scan (Static)</button>
     <button class="scan-btn" onclick="return createTestCrashDump(this, event)" data-tip="Create a synthetic crash dump entry and refresh Crash Dumps">&#x1F9EA; Test Crash Dump</button>
+    <button class="scan-btn" onclick="return createTestCrashDumpBatch(this, event)" data-tip="Create five synthetic crash dump entries and refresh Crash Dumps">&#x1F4A5; Test Crash x5</button>
     <button class="scan-btn" onclick="return createTestEventLog(this, event)" data-tip="Write a synthetic engine event log entry and refresh Event Logs">&#x1F4DD; Test Event Log</button>
     <button class="scan-btn" onclick="return createTestHistory(this, event)" data-tip="Write a synthetic runtime history entry, plus event log marker, and refresh History">&#x1F551; Test History</button>
     <button class="scan-btn" onclick="return createTestPipeline(this, event)" data-tip="Run a pipeline processing test and write a production event log marker">&#x1F9EA; Test Pipeline</button>
@@ -827,6 +828,7 @@
   var ENGINE_BASE = LOCAL_ENGINE_BASE;
   var _wsConn     = null;
   var _wsRetries  = 0;
+  var _wsPolicy   = { checked: false, enabled: true, reason: '', noticeShown: false };
   var WS_MAX_RETRY = 6;
   var _csrfToken  = '';
   var _csrfBase   = '';
@@ -1019,6 +1021,7 @@
     { title:'MCP Service Config',     icon:'&#x2699;',  desc:'Configure, manage and start MCP server endpoints',            href:'scripts/XHTML-Checker/XHTML-MCPServiceConfig.xhtml',   section:'tools', groups:['Config'] },
     { title:'Testing Routine Builder',icon:'&#x1F9EA;', desc:'Build and execute automated test routines',                   href:'scripts/XHTML-Checker/XHTML-TestingRoutineBuilder.xhtml', section:'tools', groups:['Testing'] },
     { title:'BW Vault Checklist',     icon:'&#x1F512;', desc:'Bitwarden vault health and unlock workflow',                  href:'BW-Vault-Checklist.xhtml',                              section:'tools', groups:['Security','Checklists'] },
+    { title:'Certificate Management Hub', icon:'&#x1F4DC;', desc:'Certificate request, ACME discovery, root trust checks, backup/restore, and secret-integrated PKI operations guide', href:'scripts/XHTML-Checker/XHTML-CertificateManagementHub.xhtml', section:'tools', badge:'NEW', groups:['Security','Monitoring','DevOps'] },
     { title:'Shop Listed Items',      icon:'&#x1F6D2;', desc:'Compare and track item prices across online stores',          href:'Shop-ListedItems-Entry.xhtml',                          section:'tools', groups:['Shopping'] },
     { title:'Secrets Invoke',         icon:'&#x1F511;', desc:'XHTML front-end for DPAPI-secured vault operations',          href:'XHTML-invoke-secrets.xhtml',                            section:'tools', groups:['Security'] },
     { title:'Data Relational Viz',    icon:'&#x1F578;', desc:'Interrelational data visualization with AI wizard and foresight modelling', href:'XHTML-DataRelationalViz.xhtml', section:'tools', badge:'NEW', groups:['Data','Reporting'] },
@@ -1521,6 +1524,7 @@
     }
     if (section === 'pipelineApprovals') {
       if (payload && Array.isArray(payload.pending)) { return payload; }
+      if (payload && Array.isArray(payload.items))   { return { pending: payload.items, count: payload.count || payload.items.length }; }
       if (Array.isArray(payload)) { return { pending: payload, count: payload.length }; }
       return { pending: [], count: 0 };
     }
@@ -3083,7 +3087,7 @@
     if (msg) { msg.style.color = 'var(--fg-sub)'; msg.textContent = 'Loading approval queue...'; }
     fetchSectionData('pipelineApprovals', '/api/pipeline/approvals', { method: 'GET' }, false).then(function(res) {
       var data = res.data || {};
-      _approvalItems = Array.isArray(data.pending) ? data.pending : [];
+      _approvalItems = Array.isArray(data.pending) ? data.pending : (Array.isArray(data.items) ? data.items : []);
       _approvalItems = _sortApprovalItems(_approvalItems);
       _approvalSelected = {};
       _renderApprovalTable();
@@ -3215,10 +3219,11 @@
     btn.textContent = label || baseLabel;
   }
 
-  function _postTestEndpoint(path, successMsg, onDone, btn) {
+  function _postTestEndpoint(path, successMsg, onDone, btn, payload) {
     _setActionButtonState(btn, 'busy', 'Running...');
     return _runMutation('postTestEndpoint-' + path, function() {
       return new Promise(function(resolveOuter, rejectOuter) {
+        var requestBody = (payload && typeof payload === 'object') ? JSON.stringify(payload) : '{}';
         fetchCsrf(function(tok) {
           if (!tok) {
             setStatus('Engine offline or token unavailable', 'warn', 'right');
@@ -3228,7 +3233,7 @@
           fetch(ENGINE_BASE + path, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tok },
-            body: '{}'
+            body: requestBody
           }).then(function(r){
             if (!r.ok) { throw new Error('HTTP ' + r.status); }
             return r.json();
@@ -3258,6 +3263,18 @@
     return false;
   }
   window.createTestCrashDump = createTestCrashDump;
+
+  function createTestCrashDumpBatch(btn, evt) {
+    if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
+    if (evt && typeof evt.stopPropagation === 'function') { evt.stopPropagation(); }
+    _postTestEndpoint('/api/test/crashdump/batch', '5 test crash dumps created', function(){
+      loadCrashes();
+      loadEventLogs();
+      syncLiveDataToOfflineCache();
+    }, btn, { count: 5 });
+    return false;
+  }
+  window.createTestCrashDumpBatch = createTestCrashDumpBatch;
 
   function createTestEventLog(btn, evt) {
     if (evt && typeof evt.preventDefault === 'function') { evt.preventDefault(); }
@@ -4318,8 +4335,41 @@
     return '';
   }
 
+  function _primeWsPolicy() {
+    if (_wsPolicy.checked) { return Promise.resolve(_wsPolicy); }
+    return _safeFetchJson(_joinSourceUrl(ENGINE_BASE, '/api/hub/schema'), { method: 'GET' }, 3500).then(function(schema) {
+      var wsCfg = schema && schema.realtime && schema.realtime.webSocket ? schema.realtime.webSocket : null;
+      if (wsCfg && wsCfg.enabled === false) {
+        _wsPolicy.enabled = false;
+        _wsPolicy.reason = String(wsCfg.reason || 'Realtime stream disabled on engine; HTTP polling is active.');
+      } else {
+        _wsPolicy.enabled = true;
+        _wsPolicy.reason = '';
+      }
+      _wsPolicy.checked = true;
+      return _wsPolicy;
+    }).catch(function() {
+      _wsPolicy.checked = true;
+      _wsPolicy.enabled = true;
+      _wsPolicy.reason = '';
+      return _wsPolicy;
+    });
+  }
+
   function connectWs() {
     if (typeof WebSocket === 'undefined') { return; }
+    if (!_wsPolicy.checked) {
+      _primeWsPolicy().then(function() { connectWs(); });
+      return;
+    }
+    if (!_wsPolicy.enabled) {
+      setWsDot('warn');
+      if (!_wsPolicy.noticeShown) {
+        setStatus((_wsPolicy.reason || 'Realtime stream disabled on engine; HTTP polling is active.'), 'warn', 'right');
+        _wsPolicy.noticeShown = true;
+      }
+      return;
+    }
     var wsUrl = _toWsUrl(ENGINE_BASE);
     if (!wsUrl) { return; }
     try {
@@ -4345,6 +4395,9 @@
            serves everything over HTTP and the page falls back to polling, so do
            NOT report a false "Engine offline" here — real liveness is driven by
            the /api/engine/status poll below. */
+        if (_wsRetries === 0) {
+          setStatus('Realtime stream not ready; polling mode active while service starts.', 'warn', 'right');
+        }
         if (_wsRetries < WS_MAX_RETRY) { _wsRetries++; setWsDot('warn'); setTimeout(connectWs, 3000); }
         else { setWsDot('off'); }
       };
@@ -4868,6 +4921,7 @@
     _loadOfflineCacheBootstrap()
       .then(function(){ return _loadDataSourceBootstrap(); })
       .then(function(){ return _loadWorkspaceHubConfig(); })
+      .then(function(){ return _primeWsPolicy(); })
       .then(function(){
         connectWs();
         startPoll();

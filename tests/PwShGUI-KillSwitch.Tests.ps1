@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 <#
 .SYNOPSIS
     Pester smoke tests for PwShGUI-KillSwitch module.

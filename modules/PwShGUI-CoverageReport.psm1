@@ -1,5 +1,5 @@
 <#
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Module
 # SupportPS5.1: YES(As of: 2026-04-30)
 # SupportsPS7.6: YES(As of: 2026-04-30)

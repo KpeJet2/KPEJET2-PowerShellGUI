@@ -1,4 +1,4 @@
-﻿# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # FileRole: Module
 # SupportPS5.1: true
 # SupportsPS7.6: true
@@ -67,7 +67,7 @@ $script:BwExePath = $null
 $script:BwVersion = $null
 $script:VaultUnlocked = $false
 $script:SessionToken = $env:BW_SESSION
-$script:VaultAccessLog = Join-Path (Split-Path -Parent $PSScriptRoot) 'logs' 'vault-access.log'
+$script:VaultAccessLog = Join-Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'logs') 'vault-access.log'
 
 if (-not (Test-Path (Split-Path -Parent $script:VaultAccessLog))) {
     New-Item -ItemType Directory -Path (Split-Path -Parent $script:VaultAccessLog) -Force | Out-Null

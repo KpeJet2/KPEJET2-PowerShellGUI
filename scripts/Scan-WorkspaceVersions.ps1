@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ws = Split-Path -Parent $scriptDir
 $exts = @('.ps1','.psm1','.psd1','.bat','.cmd','.json','.yaml','.yml','.md','.xhtml','.html','.js','.ts','.css','.py','.txt','.xml','.csv')

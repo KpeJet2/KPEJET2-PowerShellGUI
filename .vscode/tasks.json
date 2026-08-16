@@ -152,6 +152,38 @@
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
         },
+        {
+            "label": "Pipeline: Flow Graph Gate",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineFlowGraphGate.ps1 -WorkspacePath ${workspaceFolder} -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Flow Graph Baseline",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineFlowGraphGate.ps1 -WorkspacePath ${workspaceFolder} -UpdateBaseline",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Sync Cron Pipe Flow Viewer",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Sync-CronPipeFlowViewerData.ps1 -WorkspacePath ${workspaceFolder}",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "GUI: Open Cron Pipe Flow",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Start-Process -FilePath '${workspaceFolder}\\XHTML-Cron-Pipe-Flow.xhtml'\"",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
         // ── GUI ──────────────────────────────────────────────────────────────
         {
             "label": "GUI: Launch Main",

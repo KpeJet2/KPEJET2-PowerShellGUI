@@ -1,4 +1,4 @@
-﻿# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -747,6 +747,9 @@ function Send-Response {
 function Get-PublicKeyFingerprint {
     [CmdletBinding()]
     param()
+    if (-not (Get-Variable -Name '_PublicKeyFingerprintCache' -Scope Script -ErrorAction SilentlyContinue)) {
+        Set-Variable -Name '_PublicKeyFingerprintCache' -Scope Script -Value ''
+    }
     if (-not [string]::IsNullOrWhiteSpace([string]$script:_PublicKeyFingerprintCache)) {
         return [string]$script:_PublicKeyFingerprintCache
     }
@@ -1424,12 +1427,17 @@ function Get-NetMonConnections {
         if (-not $protocolMap.ContainsKey($proto)) {
             $protocolMap[$proto] = [ordered]@{ attempts = 0; success = 0; failed = 0 }
         }
-        $protocolMap[$proto].attempts++
+        $protocolStats = $protocolMap[$proto]
+        if ($null -eq $protocolStats) {
+            $protocolStats = [ordered]@{ attempts = 0; success = 0; failed = 0 }
+            $protocolMap[$proto] = $protocolStats
+        }
+        $protocolStats.attempts++
         if (([string]$r.status).ToUpperInvariant() -eq 'SUCCESS') {
-            $protocolMap[$proto].success++
+            $protocolStats.success++
             $successCount++
         } else {
-            $protocolMap[$proto].failed++
+            $protocolStats.failed++
         }
 
         $ip = [string]$r.ip
@@ -1442,8 +1450,19 @@ function Get-NetMonConnections {
                 totalCount = 0
             }
         }
-        $ipMap[$ip].totalCount++
-        $ipMap[$ip].lastSeen = [string]$r.ts
+        $ipStats = $ipMap[$ip]
+        if ($null -eq $ipStats) {
+            $ipStats = [ordered]@{
+                ip = $ip
+                country = [string]$r.country
+                firstSeen = [string]$r.ts
+                lastSeen = [string]$r.ts
+                totalCount = 0
+            }
+            $ipMap[$ip] = $ipStats  # SIN-EXEMPT:P027 -- guarded by ContainsKey and null fallback above
+        }
+        $ipStats.totalCount++
+        $ipStats.lastSeen = [string]$r.ts
     }
 
     Send-Json -Context $Context -Object @{
@@ -3251,6 +3270,15 @@ function Get-HubSchema {
     Send-Json -Context $Context -Object @{
         schemaVersion = 'PwShGUI-Hub/1.0'
         supportedSchemas = @('PwShGUI-Hub/1.0', 'legacy/scan-v1')
+        realtime = @{
+            webSocket = @{
+                enabled = $false
+                endpoint = '/ws'
+                statusCode = 501
+                fallback = 'polling'
+                reason = 'WebSocket stream is intentionally disabled while single-listener safety mode is active.'
+            }
+        }
         serverTime = (Get-Date -Format 'o')
     }
 }
@@ -3388,7 +3416,8 @@ function Get-PipelineApprovals {
     }
 
     $sorted = @($approvals | Sort-Object { $_.priority; $_.created } -Descending)
-    Send-Json -Context $Context -Object @{ items = $sorted; count = @($sorted).Count }
+    # Emit both items and pending aliases for frontend compatibility.
+    Send-Json -Context $Context -Object @{ items = $sorted; pending = $sorted; count = @($sorted).Count }
 }
 
 # ─── Route: POST /api/pipeline/approvals ─────────────────────────────────────
@@ -3483,6 +3512,152 @@ function Set-PipelineApprovals {
     }
 }
 
+# ─── Route: POST /api/pipeline/feature-submit ───────────────────────────────
+<#
+.SYNOPSIS
+Submit or update a FeatureRequest item for the pipeline approvals flow.
+.DESCRIPTION
+Accepts feature metadata from the XHTML Feature Requests tool and writes a
+normalized feature item into todo/QUEUES-ToDo/FEATURE-/ so the pipeline process
+can decompose it into PENDING_APPROVAL ToDo items.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function New-PipelineFeatureSubmit {
+    [CmdletBinding()]
+    param($Context)
+
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    $bodyReader = [System.IO.StreamReader]::new($Context.Request.InputStream)
+    $body = ''
+    try {
+        $body = $bodyReader.ReadToEnd()
+    } finally {
+        $bodyReader.Close()
+    }
+
+    $payload = $null
+    try { $payload = $body | ConvertFrom-Json } catch { <# Intentional: invalid JSON #> }
+    if ($null -eq $payload) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Invalid JSON body'
+        return
+    }
+
+    $title = if ($payload.PSObject.Properties.Name -contains 'title') { [string]$payload.title } else { '' }
+    if ([string]::IsNullOrWhiteSpace($title)) {
+        Send-Error -Context $Context -StatusCode 400 -Message 'Feature title is required'
+        return
+    }
+
+    $inputId = if ($payload.PSObject.Properties.Name -contains 'id' -and -not [string]::IsNullOrWhiteSpace([string]$payload.id)) {
+        [string]$payload.id
+    } else {
+        'F' + (Get-Date -Format 'yyyyMMddHHmmss')
+    }
+    $safeId = [regex]::Replace($inputId, '[^A-Za-z0-9\.\-]', '')
+    if ([string]::IsNullOrWhiteSpace($safeId)) {
+        $safeId = 'F' + (Get-Date -Format 'yyyyMMddHHmmss')
+    }
+
+    $rawStatus = if ($payload.PSObject.Properties.Name -contains 'status') { [string]$payload.status } else { 'Proposed' }
+    $statusLookup = @{
+        'PROPOSED'      = 'Proposed'
+        'ALPHA'         = 'ALPHA Testing'
+        'ALPHA TESTING' = 'ALPHA Testing'
+        'BETA'          = 'BETA Testing'
+        'BETA TESTING'  = 'BETA Testing'
+        'RELEASED'      = 'Released'
+        'DEFERRED'      = 'Deferred'
+    }
+    $statusKey = $rawStatus.ToUpperInvariant()
+    $sourceStatus = if ($statusLookup.ContainsKey($statusKey)) { $statusLookup[$statusKey] } else { 'Proposed' }
+
+    $todoStatus = switch ($sourceStatus) {
+        'Released' { 'IMPLEMENTED' }
+        'Deferred' { 'CLOSED' }
+        default    { 'OPEN' }
+    }
+    $priority = switch ($sourceStatus) {
+        'ALPHA Testing' { 'HIGH' }
+        'BETA Testing'  { 'HIGH' }
+        'Released'      { 'LOW' }
+        'Deferred'      { 'LOW' }
+        default         { 'MEDIUM' }
+    }
+
+    $description = if ($payload.PSObject.Properties.Name -contains 'description') { [string]$payload.description } else { '' }
+    $reviewedBy = if ($payload.PSObject.Properties.Name -contains 'reviewedBy' -and -not [string]::IsNullOrWhiteSpace([string]$payload.reviewedBy)) {
+        [string]$payload.reviewedBy
+    } else {
+        'XHTML-FeatureRequests'
+    }
+
+    $queueRoot = Join-Path (Join-Path $WorkspacePath 'todo') 'QUEUES-ToDo'
+    $featureDir = Join-Path $queueRoot 'FEATURE-'
+    if (-not (Test-Path -LiteralPath $featureDir)) {
+        $null = New-Item -Path $featureDir -ItemType Directory -Force
+    }
+
+    $fileName = 'feature-' + $safeId + '.json'
+    $filePath = Join-Path $featureDir $fileName
+    $existing = $null
+    if (Test-Path -LiteralPath $filePath) {
+        try { $existing = Get-Content -LiteralPath $filePath -Raw -Encoding UTF8 | ConvertFrom-Json } catch { <# Intentional: overwrite invalid JSON #> }
+    }
+
+    $nowIso = Get-Date -Format 'o'
+    $history = @()
+    if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'status_history' -and $null -ne $existing.status_history) {
+        $history = @($existing.status_history)
+    }
+    $history += @([ordered]@{ status = $todoStatus; timestamp = $nowIso; by = 'feature-submit-api' })
+
+    $notes = 'Submitted for pipeline approvals via /api/pipeline/feature-submit'
+    if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'notes' -and -not [string]::IsNullOrWhiteSpace([string]$existing.notes)) {
+        $notes = ([string]$existing.notes).Trim() + ' | ' + $notes
+    }
+
+    $todoObj = [ordered]@{
+        todo_id        = 'feature-' + $safeId
+        id             = $inputId
+        type           = 'FeatureRequest'
+        category       = 'feature'
+        title          = $title
+        description    = $description
+        priority       = $priority
+        status         = $todoStatus
+        source_id      = $inputId
+        source_status  = $sourceStatus
+        created_at     = if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'created_at' -and -not [string]::IsNullOrWhiteSpace([string]$existing.created_at)) { [string]$existing.created_at } else { $nowIso }
+        created        = if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'created' -and -not [string]::IsNullOrWhiteSpace([string]$existing.created)) { [string]$existing.created } else { $nowIso }
+        modified       = $nowIso
+        suggested_by   = $reviewedBy
+        file_refs      = @()
+        notes          = $notes
+        status_history = @($history)
+    }
+
+    $json = $todoObj | ConvertTo-Json -Depth 8
+    Set-Content -LiteralPath $filePath -Value $json -Encoding UTF8 -Force
+
+    Send-Json -Context $Context -Object @{
+        queued = $true
+        created = ($null -eq $existing)
+        featureId = $inputId
+        todoId = ('feature-' + $safeId)
+        sourceStatus = $sourceStatus
+        status = $todoStatus
+        filePath = $filePath
+        timestamp = $nowIso
+    } -StatusCode 202
+}
+
 # ─── Route: POST /api/pipeline/process ──────────────────────────────────────
 <#
 .SYNOPSIS
@@ -3526,6 +3701,63 @@ function Invoke-PipelineProcess {
 # ─── Route: POST /api/test/crashdump ────────────────────────────────────────
 <#
 .SYNOPSIS
+Write synthetic crash-dump entries for UI testing.
+.DESCRIPTION
+Writes one or more deterministic TEST_CRASH rows into engine-crash.log.
+.PARAMETER Count
+Number of entries to create.
+#>
+function Write-TestCrashDumpEntries {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [ValidateRange(1, 25)]
+        [int]$Count
+    )
+
+    $crashSub = if ($null -ne $cfg -and $null -ne $cfg.paths -and
+                    $cfg.paths.PSObject.Properties.Name -contains 'crashDumpDir') {
+                    $cfg.paths.crashDumpDir
+                } else { Join-Path 'logs' 'crash-dumps' }
+    $crashDir = Join-Path $WorkspacePath $crashSub
+    if (-not (Test-Path -LiteralPath $crashDir)) {
+        $null = New-Item -Path $crashDir -ItemType Directory -Force
+    }
+
+    $markers = [System.Collections.ArrayList]@()
+    for ($i = 1; $i -le $Count; $i++) {
+        $marker = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
+        $nowIso = (Get-Date -Format 'o')
+        $dumpObj = [ordered]@{
+            timestamp     = $nowIso
+            phase         = 'TEST_CRASH'
+            error         = 'Synthetic crash dump generated via /api/test/crashdump'
+            isRepeating   = $false
+            exitKind      = 'TEST_CRASH'
+            pid           = $PID
+            port          = $Port
+            workspacePath = $WorkspacePath
+            reason        = 'Test crash dump created via /api/test/crashdump'
+            testMarker    = $marker
+            ordinal       = $i
+            total         = $Count
+        }
+
+        $dumpJson = $dumpObj | ConvertTo-Json -Depth 4
+        $dumpFileName = ('crash-{0}-{1}.json' -f (Get-Date -Format 'yyyyMMdd-HHmmssfff'), $marker)
+        $dumpFilePath = Join-Path $crashDir $dumpFileName
+
+        Set-Content -LiteralPath $dumpFilePath -Value $dumpJson -Encoding UTF8
+        Add-Content -LiteralPath $script:CrashLogFile -Value $dumpJson -Encoding UTF8
+        [void]$markers.Add($marker)
+    }
+
+    return @($markers)
+}
+
+# ─── Route: POST /api/test/crashdump ────────────────────────────────────────
+<#
+.SYNOPSIS
 Create a test crash dump entry.
 .DESCRIPTION
 Writes a deterministic test crash dump to engine-crash.log for testing.
@@ -3543,20 +3775,51 @@ function New-TestCrashDump {
     }
 
     try {
-        $testCrash = @{
-            exitKind      = 'TEST_CRASH'
-            timestamp     = (Get-Date -Format 'o')
-            pid           = $PID
-            port          = $Port
-            workspacePath = $WorkspacePath
-            reason        = 'Test crash dump created via /api/test/crashdump'
-            testMarker    = 'TEST-' + [guid]::NewGuid().ToString().Substring(0, 8)
-        } | ConvertTo-Json -Depth 4
-
-        Add-Content -LiteralPath $script:CrashLogFile -Value $testCrash -Encoding UTF8
-        Send-Json -Context $Context -Object @{ created = $true; type = 'crash'; timestamp = (Get-Date -Format 'o') }
+        $markers = @(Write-TestCrashDumpEntries -Count 1)
+        $marker = if (@($markers).Count -gt 0) { $markers[0] } else { '' }
+        Send-Json -Context $Context -Object @{
+            created = $true
+            type = 'crash'
+            createdCount = 1
+            marker = $marker
+            timestamp = (Get-Date -Format 'o')
+        }
     } catch {
         Send-Error -Context $Context -StatusCode 500 -Message "Failed to create test crash: $_"
+    }
+}
+
+# ─── Route: POST /api/test/crashdump/batch ──────────────────────────────────
+<#
+.SYNOPSIS
+Create a batch of test crash dump entries.
+.DESCRIPTION
+Writes five deterministic test crash entries for quick crash-table testing.
+.PARAMETER Context
+The HttpListenerContext for the request.
+#>
+function New-TestCrashDumpBatch {
+    [CmdletBinding()]
+    param($Context)
+    # CSRF validation
+    $csrfToken = $Context.Request.Headers['X-CSRF-Token']
+    if ($null -eq $csrfToken -or $csrfToken -ne $SessionToken) {
+        Send-Error -Context $Context -StatusCode 403 -Message 'CSRF token mismatch'
+        return
+    }
+
+    try {
+        $batchCount = 5
+        $markers = @(Write-TestCrashDumpEntries -Count $batchCount)
+        Send-Json -Context $Context -Object @{
+            created = $true
+            type = 'crash-batch'
+            createdCount = @($markers).Count
+            markers = $markers
+            timestamp = (Get-Date -Format 'o')
+        }
+    } catch {
+        Send-Error -Context $Context -StatusCode 500 -Message "Failed to create crash batch: $_"
     }
 }
 
@@ -3785,6 +4048,12 @@ try {
             '/pages/xhtml-dependencyvis'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
             '/permalink/dependency-venn'                        = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
             '/venn'                                              = '/scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml'
+            '/pwshgui-checklists-showonline.xhtml'              = '/~README.md/PwShGUI-Checklists-ShowOnline.xhtml'
+            '/pwshgui-checklists-v2-[online].xhtml'             = '/~README.md/PwShGUI-Checklists-V2-[ONLINE].xhtml'
+            '/pwshgui-checklists-v2-[online]-test.xhtml'        = '/~README.md/PwShGUI-Checklists-V2-[ONLINE]-TEST.xhtml'
+            '/pwshgui-checklists-v1-[legacy].xhtml'             = '/~README.md/PwShGUI-Checklists-V1-[LEGACY].xhtml'
+            '/pwshgui-checklists-v1-[legacy]-test.xhtml'        = '/~README.md/PwShGUI-Checklists-V1-[LEGACY]-TEST.xhtml'
+            '/pwshgui-checklists.xhtml'                         = '/~README.md/PwShGUI-Checklists.xhtml'
         }
         $urlKey = $url.ToLowerInvariant()
         if ($null -ne $legacyRedirects -and $legacyRedirects.Count -gt 0 -and $legacyRedirects.ContainsKey($urlKey)) {
@@ -3975,12 +4244,20 @@ try {
                 else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
+            '^/api/pipeline/feature-submit$' {
+                if ($method -eq 'POST') { New-PipelineFeatureSubmit -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
             '^/api/pipeline/process$' {
                 if ($method -eq 'POST') { Invoke-PipelineProcess -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/test/crashdump$' {
                 if ($method -eq 'POST') { New-TestCrashDump -Context $context } else { Send-Error -Context $context -StatusCode 405 }
+                break
+            }
+            '^/api/test/crashdump/batch$' {
+                if ($method -eq 'POST') { New-TestCrashDumpBatch -Context $context } else { Send-Error -Context $context -StatusCode 405 }
                 break
             }
             '^/api/test/eventlog$' {

@@ -1,6 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-REM VersionTag: 2607.B1.V51.8
+REM VersionTag: 2608.B1.V51.9
+REM   2608.B1.V51.9  2026-08-14  Replaced wt shorthand tab command alias with explicit wt.exe new-tab calls to avoid help dialog fallbacks.
 REM ==============================================================
 REM  Launch-ServiceClusterTabs.bat
 REM  Opens Windows Terminal (wt.exe) with one tab per service.
@@ -467,13 +468,13 @@ set "TS=%date% %time%"
 if "%WT_ROOT_CREATED%"=="0" (
   call :OpenSummaryAndLogTabs
   timeout /t 1 /nobreak >nul
-  start "" wt -w 0 nt --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  start "" wt.exe -w 0 new-tab --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
   set "TS=%date% %time%"
   >> "%WT_LOG_FILE%" echo [!TS!][LAUNCH][!TAB_COLOR!] !TAB_DECORATED_TITLE!
   set "WT_ROOT_CREATED=1"
   timeout /t 1 /nobreak >nul
 ) else (
-  start "" wt -w 0 nt --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
+  start "" wt.exe -w 0 new-tab --title "!TAB_DECORATED_TITLE!" --tabColor "!TAB_COLOR!" --startingDirectory "%TAB_DIR%" -- %TAB_CMD%
   set "TS=%date% %time%"
   >> "%WT_LOG_FILE%" echo [!TS!][LAUNCH][!TAB_COLOR!] !TAB_DECORATED_TITLE!
 )
@@ -489,12 +490,12 @@ exit /b 0
 
 :OpenSummaryAndLogTabs
 set "SUMMARY_CMD=%PS_EXE% -NoProfile -NoExit -Command Write-Host 'Service Cluster Launch Summary' -ForegroundColor Black -BackgroundColor Cyan; Write-Host 'Workspace: %WS%'; Write-Host 'Profile: %PROFILE%'; Write-Host 'Mode: %MODE%  StepMode: !STEP_MODE!'; Write-Host 'Selected steps: S1=%STEP1% S2=%STEP2% S3=%STEP3% S4=%STEP4% S5=%STEP5% S6=%STEP6%'; Write-Host ''; Write-Host 'This summary tab remains open.' -ForegroundColor Yellow; Write-Host 'Live launch log file:' -ForegroundColor DarkGray; Write-Host '%WT_LOG_FILE%' -ForegroundColor Gray"
-start "" wt -w new nt --title "%WT_SUMMARY_TITLE%" --tabColor "#0369A1" --startingDirectory "%WS%" -- %SUMMARY_CMD%
+start "" wt.exe -w new new-tab --title "%WT_SUMMARY_TITLE%" --tabColor "#0369A1" --startingDirectory "%WS%" -- %SUMMARY_CMD%
 set "TS=%date% %time%"
 >> "%WT_LOG_FILE%" echo [!TS!][TAB] Summary tab opened
 
 set "LOG_CMD=%PS_EXE% -NoProfile -NoExit -Command Write-Host 'Service Cluster Launch Action Log' -ForegroundColor Black -BackgroundColor DarkGreen; Write-Host 'Live tail:' -ForegroundColor Gray; Write-Host '%WT_LOG_FILE%' -ForegroundColor Gray; Write-Host ''; if(Test-Path -LiteralPath '%WT_LOG_FILE%'){ Get-Content -LiteralPath '%WT_LOG_FILE%' -Wait -Tail 120 } else { Write-Host 'Log file not found.' -ForegroundColor Red }"
-start "" wt -w 0 nt --title "%WT_LOG_TITLE%" --tabColor "#0F766E" --startingDirectory "%WS%" -- %LOG_CMD%
+start "" wt.exe -w 0 new-tab --title "%WT_LOG_TITLE%" --tabColor "#0F766E" --startingDirectory "%WS%" -- %LOG_CMD%
 set "TS=%date% %time%"
 >> "%WT_LOG_FILE%" echo [!TS!][TAB] Log tab opened
 set "WT_LOG_TAB_CREATED=1"

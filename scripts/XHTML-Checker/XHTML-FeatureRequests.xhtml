@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- VersionTag: 2607.B7.V51.4 -->
 <!-- FileRole: XhtmlTool -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PwShGUI — Feature Requests &amp; Documentation Hub</title>
   <!-- External CSS: base → responsive → layout → accent -->
   <link rel="stylesheet" href="../../styles/pwshgui-base.css" />
@@ -67,6 +68,8 @@
     .tb-btn.success:hover{background:#1e8a4e}
     .tb-btn.warning{background:#e67e22}
     .tb-btn.warning:hover{background:#c76b15}
+    .tb-btn.approvals{background:#0f766e;color:#fff}
+    .tb-btn.approvals:hover{background:#0b5e57}
     .tb-sep{border-left:1px solid #ccc;height:22px;align-self:center}
     select.tb-select{padding:4px 6px;border:1px solid #aab;border-radius:4px;font-size:12px;background:#fff}
     .action-log{background:#1e1e1e;border:1px solid #3c3c3c;border-radius:6px;margin:8px 14px;padding:8px 12px;max-height:160px;overflow-y:auto;font-family:'Cascadia Code','Consolas',monospace;font-size:11px;color:#d4d4d4;display:none}
@@ -219,6 +222,7 @@
       <li><a href="XHTML-code-analysis.xhtml">XHTML-code-analysis.xhtml</a></li>
       <li><a href="XHTML-MasterToDo.xhtml" style="font-weight:700;color:#4ec9b0">Central Master To-Do</a></li>
       <li><a href="XHTML-MCPServiceConfig.xhtml">MCP Service Config</a></li>
+      <li><a href="XHTML-CertificateManagementHub.xhtml">XHTML-CertificateManagementHub.xhtml</a></li>
       <li><a href="XHTML-TestingRoutineBuilder.xhtml">Testing Routine Builder</a></li>
       <li><a href="../../~README.md/PwShGUI-Checklists.xhtml">Checklists Dashboard</a></li>
       <li><a href="../../~README.md/PwShGUI-Checklists.xhtml" style="font-weight:700;color:#ce9140">Items2Do / Bugs2FIX / Feature2ADD</a></li>
@@ -277,6 +281,7 @@
         <button type="button" class="tb-btn" id="btnExportToDo" title="Export Proposed/ALPHA features as ToDo JSON for scripts/ConvertTo-FeatureToDo.ps1">&#x2705; Export-ToDo</button>
         <button type="button" class="tb-btn success" id="btnConvertToTodo" title="Convert selected feature to an individual todo item">&#x1F4CB; Convert to ToDo</button>
         <button type="button" class="tb-btn" id="btnSyncFeatures" style="background:#8e44ad" title="Sync features to central todo/ as individual JSON files">&#x21C4; Sync to Central</button>
+        <button type="button" class="tb-btn approvals" id="btnSendToApprovals" title="Submit selected feature to pipeline approvals and trigger decomposition">&#x1F4E8; Send to Approvals</button>
         <span id="pendingSyncFeatures" style="display:none;color:#e67e22;font-size:11px;font-weight:600">&#x26A0; Unsaved changes</span>
         <button type="button" class="tb-btn secondary" id="btnReload">&#x21BB; Reload</button>
       </div>
@@ -450,6 +455,7 @@
 var FEATURE_JSON = 'PsGUI-FeatureRequests.json';
 var BUG_JSON     = 'PsGUI-BugTracker.json';
 var TODO_FOLDER  = '../../todo/';
+var ENGINE_BASE  = 'http://127.0.0.1:8042';
 var LS_FEAT      = 'PsGUI_FeatureRequests';
 var LS_BUGS      = 'PsGUI_BugTracker';
 
@@ -534,6 +540,68 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function pad2(n){ return n<10?'0'+n:''+n; }
 function stamp(){var d=new Date();return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'_'+pad2(d.getHours())+pad2(d.getMinutes())+pad2(d.getSeconds());}
 function iso(){ return new Date().toISOString(); }
+
+var FEATURE_STATUS_TO_TODO_STATUS = {
+  'Proposed':'OPEN',
+  'ALPHA Testing':'OPEN',
+  'BETA Testing':'OPEN',
+  'Released':'IMPLEMENTED',
+  'Deferred':'CLOSED'
+};
+var FEATURE_STATUS_TO_PRIORITY = {
+  'Proposed':'MEDIUM',
+  'ALPHA Testing':'HIGH',
+  'BETA Testing':'HIGH',
+  'Released':'LOW',
+  'Deferred':'LOW'
+};
+
+function normalizeFeatureStatus(status){
+  var s=String(status||'Proposed');
+  if(s==='ALPHA') return 'ALPHA Testing';
+  if(s==='BETA') return 'BETA Testing';
+  if(FEATURE_STATUS_TO_TODO_STATUS[s]) return s;
+  return 'Proposed';
+}
+function mapFeatureStatusToTodoStatus(status){
+  var s=normalizeFeatureStatus(status);
+  return FEATURE_STATUS_TO_TODO_STATUS[s]||'OPEN';
+}
+function mapFeatureStatusToPriority(status){
+  var s=normalizeFeatureStatus(status);
+  return FEATURE_STATUS_TO_PRIORITY[s]||'MEDIUM';
+}
+function getSelectedFeatureRow(){
+  if(selectedIdx<0||selectedIdx>=flatRows.length) return null;
+  return flatRows[selectedIdx];
+}
+function fetchCsrfToken(done){
+  var x=new XMLHttpRequest();
+  x.open('GET',ENGINE_BASE+'/api/csrf-token',true);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    if(x.status<200||x.status>=300){done('',new Error('HTTP '+x.status));return;}
+    try{
+      var obj=JSON.parse(x.responseText||'{}');
+      var tok=String(obj.csrfToken||'');
+      if(!tok){done('',new Error('missing csrf token'));return;}
+      done(tok,null);
+    }catch(ex){done('',ex);}
+  };
+  x.send(null);
+}
+function runPipelineProcessFromFeature(token,done){
+  var x=new XMLHttpRequest();
+  x.open('POST',ENGINE_BASE+'/api/pipeline/process',true);
+  x.setRequestHeader('Content-Type','application/json');
+  x.setRequestHeader('X-CSRF-Token',token);
+  x.onreadystatechange=function(){
+    if(x.readyState!==4)return;
+    if(x.status<200||x.status>=300){done(false,'HTTP '+x.status);return;}
+    done(true,'ok');
+  };
+  x.send('{}');
+}
 
 function flash(){
   var el=document.getElementById('autosaveIndicator');
@@ -801,10 +869,9 @@ document.getElementById('btnExportToDo').addEventListener('click',function(){
 document.getElementById('btnConvertToTodo').addEventListener('click',function(){
   if(selectedIdx<0||selectedIdx>=flatRows.length){alert('Select a feature row first.');return;}
   var n=flatRows[selectedIdx];
-  var statusMap={'Proposed':'OPEN','ALPHA Testing':'OPEN','BETA Testing':'OPEN','Released':'IMPLEMENTED','Deferred':'CLOSED'};
-  var priMap={'Proposed':'MEDIUM','ALPHA Testing':'HIGH','BETA Testing':'HIGH','Released':'LOW','Deferred':'LOW'};
-  var mapped=statusMap[n.status]||'OPEN';
-  var pri=priMap[n.status]||'MEDIUM';
+  var srcStatus=normalizeFeatureStatus(n.status||'Proposed');
+  var mapped=mapFeatureStatusToTodoStatus(srcStatus);
+  var pri=mapFeatureStatusToPriority(srcStatus);
   var item={
     todo_id:'feature-'+esc(n.id||('F'+stamp())),
     category:'feature',
@@ -814,15 +881,65 @@ document.getElementById('btnConvertToTodo').addEventListener('click',function(){
     priority:pri,
     status:mapped,
     source_id:n.id||'',
-    source_status:n.status||'Proposed',
+    source_status:srcStatus,
     created_at:n.created||iso(),
     suggested_by:'XHTML-FeatureRequests',
     file_refs:[],
-    notes:'Converted from individual FeatureRequests row ('+n.status+')',
+    notes:'Converted from individual FeatureRequests row ('+srcStatus+')',
     status_history:[{status:mapped,timestamp:iso(),by:'ConvertToTodo'}]
   };
   dlBlob(JSON.stringify(item,null,2),'feature-'+esc(n.id||stamp())+'.json');
   alert('Exported feature "'+esc(n.title)+'" as todo JSON.\n\nSave the file to the todo/ folder and run:\n  .\\scripts\\Invoke-TodoManager.ps1 -Reindex');
+});
+
+/* ── Submit selected feature to pipeline approvals and trigger process ── */
+document.getElementById('btnSendToApprovals').addEventListener('click',function(){
+  var n=getSelectedFeatureRow();
+  if(!n){alert('Select a feature row first.');return;}
+  var title=String(n.title||'').trim();
+  if(!title){alert('Selected feature is missing a title.');return;}
+
+  var safeId=String(n.id||('F'+stamp())).replace(/[^A-Za-z0-9\.\-]/g,'');
+  if(!safeId){safeId='F'+stamp();}
+  var payload={
+    id:safeId,
+    title:title,
+    description:String(n.description||''),
+    status:normalizeFeatureStatus(n.status||'Proposed'),
+    reviewedBy:'XHTML-FeatureRequests'
+  };
+
+  var btn=this;
+  btn.disabled=true;
+  fetchCsrfToken(function(token,tokenErr){
+    if(tokenErr||!token){
+      btn.disabled=false;
+      alert('Unable to get engine token. Start the local web engine on '+ENGINE_BASE+' and retry.');
+      return;
+    }
+
+    var req=new XMLHttpRequest();
+    req.open('POST',ENGINE_BASE+'/api/pipeline/feature-submit',true);
+    req.setRequestHeader('Content-Type','application/json');
+    req.setRequestHeader('X-CSRF-Token',token);
+    req.onreadystatechange=function(){
+      if(req.readyState!==4)return;
+      if(req.status<200||req.status>=300){
+        btn.disabled=false;
+        alert('Feature submit failed (HTTP '+req.status+'). Ensure engine is running and origin is allowed.');
+        return;
+      }
+      runPipelineProcessFromFeature(token,function(ok,msg){
+        btn.disabled=false;
+        if(!ok){
+          alert('Feature queued successfully, but pipeline processing failed: '+msg+'\n\nRun pipeline manually from Workspace Hub > Approvals.');
+          return;
+        }
+        alert('Feature submitted and pipeline processing started.\n\nOpen Workspace Hub > Approvals and click Refresh Queue.');
+      });
+    };
+    req.send(JSON.stringify(payload));
+  });
 });
 
 document.getElementById('btnUploadRestore').addEventListener('click',function(){
@@ -1133,10 +1250,9 @@ document.getElementById('btnSyncFeatures').addEventListener('click',function(){
   function walkSync(nodes,parentId){
     for(var i=0;i<nodes.length;i++){
       var n=nodes[i];
-      var statusMap={'Proposed':'OPEN','ALPHA Testing':'OPEN','BETA Testing':'OPEN','Released':'IMPLEMENTED','Deferred':'CLOSED'};
-      var mapped=statusMap[n.status]||'OPEN';
-      var priMap={'Proposed':'MEDIUM','ALPHA Testing':'HIGH','BETA Testing':'HIGH','Released':'LOW','Deferred':'LOW'};
-      var pri=priMap[n.status]||'MEDIUM';
+      var srcStatus=normalizeFeatureStatus(n.status||'Proposed');
+      var mapped=mapFeatureStatusToTodoStatus(srcStatus);
+      var pri=mapFeatureStatusToPriority(srcStatus);
       items.push({
         todo_id:'feature-'+esc(n.id||('F'+stamp())),
         category:'feature',
@@ -1146,12 +1262,12 @@ document.getElementById('btnSyncFeatures').addEventListener('click',function(){
         priority:pri,
         status:mapped,
         source_id:n.id||'',
-        source_status:n.status||'Proposed',
+        source_status:srcStatus,
         parent_id:parentId||'',
         created_at:n.created||iso(),
         suggested_by:n.reviewedBy||'XHTML-FeatureRequests',
         file_refs:[],
-        notes:'Synced from FeatureRequests XHTML ('+n.status+')',
+        notes:'Synced from FeatureRequests XHTML ('+srcStatus+')',
         status_history:[{status:mapped,timestamp:iso(),by:'SyncToCenter'}]
       });
       if(n.children)walkSync(n.children,n.id);
@@ -1618,6 +1734,7 @@ window.onerror = function(msg, url, line) {
     'btnRefreshTodos': 'Refresh ToDos',
     'btnRenameProposal': 'View Rename Proposals',
     'btnConvertToTodo': 'Convert Feature to ToDo',
+    'btnSendToApprovals': 'Send Feature to Approvals',
     'btnSyncFeatures': 'Sync Features to Central',
     'btnSyncBugs': 'Sync Bugs to Central',
     'btnExportToDo': 'Export Features as ToDo'
@@ -1650,7 +1767,7 @@ initBugs();
 
 //]]>
 </script>
-  <div class="pwshgui-version" data-pwshgui-version="2605.B5.V46.0" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2605.B5.V46.0</div>
+  <div class="pwshgui-version" data-pwshgui-version="2607.B7.V51.4" style="position:fixed;bottom:6px;right:8px;font-size:11px;background:rgba(13,17,23,0.8);color:#58a6ff;padding:2px 8px;border:1px solid #30363d;border-radius:4px;z-index:9999;">v2607.B7.V51.4</div>
 </body>
 </html>
 

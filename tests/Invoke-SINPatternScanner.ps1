@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -89,14 +89,17 @@ param(
     [ValidateSet('Standard','Omega')]
     [string]$ScanMode = 'Standard',
     # Excluded subfolders for OMEGA mode (name-only path segment matching)
-    [string[]]$OmegaExcludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry','QUICK-APP','ActionPacks-master','temp','bin','obj'),
+    [string[]]$OmegaExcludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules','~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry','QUICK-APP','ActionPacks-master','temp','bin','obj'),
     # OMEGA integration switch:
     # - Manifest-related files -> Bug + Bugs2FIX
     # - Non-manifest files -> Items2ADD + checkpoint file
     [switch]$OmegaPipelineAutoRoute,
     # Upper bound per OMEGA pipeline write/status operation. On timeout/error,
     # scanner writes a lightweight fallback artifact under checkpoints/omega.
-    [int]$OmegaRouteOpTimeoutMs = 4000
+    [int]$OmegaRouteOpTimeoutMs = 4000,
+    # When set, return only the summary object instead of the full findings array.
+    # The JSON output file still contains the complete scan payload.
+    [switch]$SummaryOnly
 )
 
 Set-StrictMode -Version Latest
@@ -508,7 +511,7 @@ Write-ScanLog ('-' * 60)
 
 # ---- File discovery --------------------------------------------------------
 $excludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules',
-                 '~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry',
+                 '~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry',
                  'QUICK-APP','ActionPacks-master','temp')
 
 # Normalize ExtraExtensions to lowercase with leading dot (e.g. '.bat').
@@ -551,8 +554,9 @@ if (@($IncludeFiles).Count -gt 0) {
             $found = Get-ChildItem -Path $WorkspacePath -Filter $ext -Recurse -File -ErrorAction SilentlyContinue
             foreach ($f in $found) {
                 $skip = $false
+                $normalizedFullName = $f.FullName -replace '/', '\'
                 foreach ($d in $excludeDirs) {
-                    if ($f.FullName -like "*\$d\*") { $skip = $true; break }
+                    if ($normalizedFullName -like "*\$d\*") { $skip = $true; break }
                 }
                 if (-not $skip) { $allFiles.Add($f) }
             }
@@ -1050,6 +1054,37 @@ if ($omegaEnabled -and $omegaModeSelected -and $omegaHasFindings) {
 }
 
 ConvertTo-Json $resultObj -Depth 8 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
+
+if ($SummaryOnly) {
+    $resultObj = [ordered]@{
+        runtime         = $resultObj.runtime
+        scanMode        = $resultObj.scanMode
+        scanId          = $resultObj.scanId
+        timestamp       = $resultObj.timestamp
+        workspace       = $resultObj.workspace
+        patternsLoaded  = $resultObj.patternsLoaded
+        filesScanned    = $resultObj.filesScanned
+        totalFindings   = $resultObj.totalFindings
+        critical        = $resultObj.critical
+        high            = $resultObj.high
+        medium          = $resultObj.medium
+        low             = $resultObj.low
+        blockedById     = $resultObj.blockedById
+        blockedCount    = $resultObj.blockedCount
+        regexTimeoutMs  = $resultObj.regexTimeoutMs
+        regexTimeoutAbortThreshold = $resultObj.regexTimeoutAbortThreshold
+        regexTimeouts   = $resultObj.regexTimeouts
+        totalRawMatches = $resultObj.totalRawMatches
+        totalSuppressed = $resultObj.totalSuppressed
+        elapsedMs       = $resultObj.elapsedMs
+        countsBySinId   = $resultObj.countsBySinId
+        baselinePath    = $resultObj.baselinePath
+        baselineApplied = $resultObj.baselineApplied
+        ratchetMode     = $resultObj.ratchetMode
+        regressions     = $resultObj.regressions
+        improvements    = $resultObj.improvements
+    }
+}
 
 if (-not $Quiet) { Write-ScanLog "Results  : $OutputJson" }
 
