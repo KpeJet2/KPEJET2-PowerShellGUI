@@ -215,7 +215,10 @@ function Get-LaunchTelemetry {
     None — current scope (single-shot startup telemetry) is complete. Continuous telemetry
     streaming is intentionally out-of-scope and tracked under FEATURE-REQUEST entries.
 #>
-Export-ModuleMember -Function Get-LaunchTelemetry
+$launchTelemetryExportArgs = @{
+    Function = @('Get-LaunchTelemetry')
+}
+Export-ModuleMember @launchTelemetryExportArgs
 
 
 

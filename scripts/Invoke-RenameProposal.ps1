@@ -271,7 +271,7 @@ if (Test-Path $todoMgrScript) {
 }
 
 if ($Execute) {
-    Write-Host "`n[Execute] Executing approved renames is not yet implemented." -ForegroundColor Yellow
+    Write-Host "`n[Execute] Executing approved renames is not yet completed." -ForegroundColor Yellow
     Write-Host "[Execute] Review proposals in todo/ and manually approve before running -Execute." -ForegroundColor Yellow
 }
 
