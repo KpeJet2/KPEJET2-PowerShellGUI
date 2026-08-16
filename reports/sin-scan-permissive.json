@@ -1,24 +1,24 @@
 {
   "runtime": "Both",
   "scanMode": "Standard",
-  "scanId": "SINSCAN-20260802165241",
-  "timestamp": "2026-08-02T16:54:17.0179435+00:00",
+  "scanId": "SINSCAN-20260816155815",
+  "timestamp": "2026-08-16T15:59:48.6924617+00:00",
   "workspace": "/home/runner/work/KPEJET2-PowerShellGUI/KPEJET2-PowerShellGUI",
   "patternsLoaded": 74,
-  "filesScanned": 302,
-  "totalFindings": 888,
+  "filesScanned": 320,
+  "totalFindings": 882,
   "critical": 436,
-  "high": 204,
-  "medium": 245,
+  "high": 189,
+  "medium": 254,
   "low": 3,
   "blockedById": {},
   "blockedCount": 0,
   "regexTimeoutMs": 200,
   "regexTimeoutAbortThreshold": 8,
   "regexTimeouts": 0,
-  "totalRawMatches": 2904,
-  "totalSuppressed": 2016,
-  "elapsedMs": 95913,
+  "totalRawMatches": 2992,
+  "totalSuppressed": 2110,
+  "elapsedMs": 93391,
   "patternSummary": [
     {
       "sinId": "SIN-PATTERN-001-HARDCODED-CREDENTIALS_202604042257",
@@ -30,9 +30,9 @@
     {
       "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
       "severity": "HIGH",
-      "rawMatches": 7,
+      "rawMatches": 9,
       "suppressed": 0,
-      "findings": 7
+      "findings": 9
     },
     {
       "sinId": "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257",
@@ -58,9 +58,9 @@
     {
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
-      "rawMatches": 103,
+      "rawMatches": 95,
       "suppressed": 0,
-      "findings": 103
+      "findings": 95
     },
     {
       "sinId": "SIN-PATTERN-007-VERSIONTAG-STALE_202604042257",
@@ -93,9 +93,9 @@
     {
       "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
       "severity": "MEDIUM",
-      "rawMatches": 1490,
+      "rawMatches": 1563,
       "suppressed": 0,
-      "findings": 1490
+      "findings": 1563
     },
     {
       "sinId": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING_202604042257",
@@ -163,15 +163,15 @@
     {
       "sinId": "SIN-PATTERN-021-DIVZERO-UNGUARDED_202601040000",
       "severity": "HIGH",
-      "rawMatches": 49,
-      "suppressed": 49,
+      "rawMatches": 53,
+      "suppressed": 53,
       "findings": 0
     },
     {
       "sinId": "SIN-PATTERN-022-NULL-METHOD-CALL_202603040000",
       "severity": "HIGH",
-      "rawMatches": 68,
-      "suppressed": 68,
+      "rawMatches": 70,
+      "suppressed": 70,
       "findings": 0
     },
     {
@@ -205,9 +205,9 @@
     {
       "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
       "severity": "HIGH",
-      "rawMatches": 185,
-      "suppressed": 167,
-      "findings": 18
+      "rawMatches": 198,
+      "suppressed": 190,
+      "findings": 8
     },
     {
       "sinId": "SIN-PATTERN-028-INLINE-SWITCH-EXPRESSION_202604120000",
@@ -226,9 +226,9 @@
     {
       "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
       "severity": "MEDIUM",
-      "rawMatches": 24,
+      "rawMatches": 23,
       "suppressed": 0,
-      "findings": 24
+      "findings": 23
     },
     {
       "sinId": "SIN-PATTERN-035-NESTED-BLOCK-COMMENT",
@@ -296,9 +296,9 @@
     {
       "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
       "severity": "MEDIUM",
-      "rawMatches": 68,
+      "rawMatches": 69,
       "suppressed": 0,
-      "findings": 68
+      "findings": 69
     },
     {
       "sinId": "SIN-PATTERN-047-SIN-SCHEMA-DRIFT",
@@ -324,16 +324,16 @@
     {
       "sinId": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
       "severity": "MEDIUM",
-      "rawMatches": 11,
+      "rawMatches": 12,
       "suppressed": 3,
-      "findings": 8
+      "findings": 9
     },
     {
       "sinId": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
       "severity": "HIGH",
-      "rawMatches": 13,
+      "rawMatches": 14,
       "suppressed": 0,
-      "findings": 13
+      "findings": 14
     },
     {
       "sinId": "SIN-PATTERN-054-REPORT-ROOT-DRIFT",
@@ -561,7 +561,7 @@
       "severity": "HIGH",
       "title": "Empty catch block swallows errors silently",
       "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 768,
+      "line": 822,
       "content": "try { $trendEntries += ($line | ConvertFrom-Json) } catch { }"
     },
     {
@@ -569,8 +569,24 @@
       "severity": "HIGH",
       "title": "Empty catch block swallows errors silently",
       "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 770,
+      "line": 824,
       "content": "} catch { }"
+    },
+    {
+      "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+      "severity": "HIGH",
+      "title": "Empty catch block swallows errors silently",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 197,
+      "content": "try { return ((& $cmd.Source --version 2>&1 | Out-String).Trim()) } catch { }"
+    },
+    {
+      "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+      "severity": "HIGH",
+      "title": "Empty catch block swallows errors silently",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 201,
+      "content": "try { return ((& $py.Source -V 2>&1 | Out-String).Trim()) } catch { }"
     },
     {
       "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
@@ -632,6 +648,22 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
+      "file": "/agents/focalpoint-null/Chat-FocalPoint.ps1",
+      "line": 1,
+      "content": "[NO BOM but non-ASCII bytes detected]"
+    },
+    {
+      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+      "severity": "HIGH",
+      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
+      "file": "/agents/focalpoint-null/Start-FocalPoint.ps1",
+      "line": 1,
+      "content": "[NO BOM but non-ASCII bytes detected]"
+    },
+    {
+      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+      "severity": "HIGH",
+      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/tests/AssistedSASC.Tests.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
@@ -657,14 +689,6 @@
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/tests/Invoke-EngineCrashCleanup.Tests.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/tests/Invoke-PipelineChurnLifecycle.Tests.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -736,22 +760,6 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/tests/Start-LocalWebEngine.Tests.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/tests/Start-LocalWebEngineIntegration.Tests.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/tests/Test-ErrorHandlingCompliance.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
@@ -760,15 +768,7 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/tests/sandbox/Start-InteractiveSandbox.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/sovereign-kernel/Initialize-SovereignKernel.ps1",
+      "file": "/config/error-handling-templates.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -928,14 +928,6 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/scripts/Invoke-InteropDriftIteration.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/scripts/Invoke-ModuleManagement.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
@@ -961,14 +953,6 @@
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/scripts/Invoke-PipelineAutoRepair.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/scripts/Invoke-PipelineMultiPass.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -1081,14 +1065,6 @@
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
       "file": "/scripts/New-PwShGUIModule.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/scripts/PS-CheatSheet-EXAMPLES-V2.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -1280,7 +1256,7 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/config/error-handling-templates.ps1",
+      "file": "/sovereign-kernel/Initialize-SovereignKernel.ps1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -1288,7 +1264,7 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/agents/focalpoint-null/Chat-FocalPoint.ps1",
+      "file": "/agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -1296,15 +1272,7 @@
       "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
       "severity": "HIGH",
       "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/agents/focalpoint-null/Start-FocalPoint.ps1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/modules/CronAiAthon-Pipeline.psm1",
+      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
       "line": 1,
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
@@ -1437,22 +1405,6 @@
       "content": "[NO BOM but non-ASCII bytes detected]"
     },
     {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "severity": "HIGH",
-      "title": "UTF-8 without BOM files containing multi-byte Unicode cause PS 5.1 parse errors",
-      "file": "/agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
-      "line": 1,
-      "content": "[NO BOM but non-ASCII bytes detected]"
-    },
-    {
       "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
@@ -1465,7 +1417,7 @@
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
       "file": "/tests/Invoke-PreCommitValidation.ps1",
-      "line": 110,
+      "line": 112,
       "content": "function Get-WorkspaceRelativePath {"
     },
     {
@@ -1648,6 +1600,38 @@
       "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1401,
+      "content": "function Get-ComparableVersion {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1412,
+      "content": "function Test-VersionAtLeast {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1423,
+      "content": "function Get-HighestModuleVersion {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-PSEnvironmentScanner.ps1",
+      "line": 1433,
+      "content": "function Get-ToolVersionByKey {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
       "file": "/scripts/Invoke-RenameProposal.ps1",
       "line": 72,
       "content": "function Get-RelativePath {"
@@ -1659,6 +1643,38 @@
       "file": "/scripts/Invoke-StuckInPipeGate.ps1",
       "line": 40,
       "content": "function Write-AppLog {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 97,
+      "content": "function Get-ComparableVersion {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 110,
+      "content": "function Test-VersionAtLeast {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 161,
+      "content": "function Get-ToolVersionByKey {"
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "severity": "MEDIUM",
+      "title": "Duplicate function definition in same file or across loaded modules",
+      "file": "/scripts/Invoke-WorkspacePreReqs.ps1",
+      "line": 223,
+      "content": "function Get-HighestModuleVersion {"
     },
     {
       "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
@@ -1689,7 +1705,7 @@
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
       "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 930,
+      "line": 933,
       "content": "function Send-Json {"
     },
     {
@@ -1697,7 +1713,7 @@
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
       "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 996,
+      "line": 999,
       "content": "function Send-Error {"
     },
     {
@@ -1705,7 +1721,7 @@
       "severity": "MEDIUM",
       "title": "Duplicate function definition in same file or across loaded modules",
       "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1969,
+      "line": 1988,
       "content": "function Get-BootstrapMenuConfig {"
     },
     {
@@ -2064,94 +2080,6 @@
       "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
       "severity": "HIGH",
       "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineAutoRepair.ps1",
-      "line": 149,
-      "content": "$gate    = $gates[$gateName]"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 413,
-      "content": "$fnMap[$name].Add($relFile + ':L' + ($i + 1))"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 544,
-      "content": "$countsByKey[$key] = [int]$countsByKey[$key] + 1"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 569,
-      "content": "$current = [int]$countsByKey[$k]"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 572,
-      "content": "$base = [int]$baselineCounts[$k]"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 583,
-      "content": "$improvements += [pscustomobject]@{ key = $k; baseline = [int]$baselineCounts[$k]; current = 0; delta = [int]$baselineCounts[$k] }"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1429,
-      "content": "$protocolMap[$proto].success++"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1432,
-      "content": "$protocolMap[$proto].failed++"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1437,
-      "content": "$ipMap[$ip] = [ordered]@{"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1445,
-      "content": "$ipMap[$ip].totalCount++"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
-      "file": "/scripts/Start-LocalWebEngine.ps1",
-      "line": 1446,
-      "content": "$ipMap[$ip].lastSeen = [string]$r.ts"
-    },
-    {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "severity": "HIGH",
-      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
       "file": "/scripts/Sync-ChangelogViewerData.ps1",
       "line": 80,
       "content": "YearMonth = [int]$Matches[1]"
@@ -2179,6 +2107,14 @@
       "file": "/scripts/Sync-ChangelogViewerData.ps1",
       "line": 83,
       "content": "Minor     = [int]$Matches[4]"
+    },
+    {
+      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "severity": "HIGH",
+      "title": "Cannot index into a null array — RuntimeException from unguarded array subscript on null or empty collection",
+      "file": "/modules/PwShGUI-PipelineFlowGraph.psm1",
+      "line": 159,
+      "content": "$sourceHashes[$src] = Get-HashHex -Text $raw"
     },
     {
       "sinId": "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000",
@@ -3049,7 +2985,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8677,
+      "line": 8676,
       "content": "$exportInstallerBtn.Add_Click({"
     },
     {
@@ -3057,7 +2993,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8684,
+      "line": 8683,
       "content": "$exportInventoryBtn.Add_Click({"
     },
     {
@@ -3065,7 +3001,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8691,
+      "line": 8690,
       "content": "$closeBtn.Add_Click({"
     },
     {
@@ -3073,7 +3009,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8708,
+      "line": 8707,
       "content": "$envScannerItem.Add_Click({"
     },
     {
@@ -3081,7 +3017,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8724,
+      "line": 8723,
       "content": "$upmItem.Add_Click({"
     },
     {
@@ -3089,7 +3025,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8739,
+      "line": 8738,
       "content": "$eventLogItem.Add_Click({"
     },
     {
@@ -3097,7 +3033,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8798,
+      "line": 8797,
       "content": "$scanDashModeItem.Add_CheckedChanged({"
     },
     {
@@ -3105,7 +3041,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8823,
+      "line": 8822,
       "content": "$scanDashItem.Add_Click({"
     },
     {
@@ -3113,7 +3049,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8859,
+      "line": 8858,
       "content": "$winRemoteItem.Add_Click({"
     },
     {
@@ -3121,7 +3057,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8875,
+      "line": 8874,
       "content": "$cronAiAthonItem.Add_Click({"
     },
     {
@@ -3129,7 +3065,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8904,
+      "line": 8903,
       "content": "$mcpConfigItem.Add_Click({"
     },
     {
@@ -3137,7 +3073,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8933,
+      "line": 8932,
       "content": "$sandboxTestItem.Add_Click({"
     },
     {
@@ -3145,7 +3081,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8965,
+      "line": 8964,
       "content": "$xhtmlCodeAnalysisItem.Add_Click({"
     },
     {
@@ -3153,7 +3089,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8978,
+      "line": 8977,
       "content": "$xhtmlFeatureReqItem.Add_Click({"
     },
     {
@@ -3161,7 +3097,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 8991,
+      "line": 8990,
       "content": "$xhtmlMCPConfigItem.Add_Click({"
     },
     {
@@ -3169,7 +3105,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9004,
+      "line": 9003,
       "content": "$xhtmlMasterToDoItem.Add_Click({"
     },
     {
@@ -3177,7 +3113,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9019,
+      "line": 9018,
       "content": "$startupShortcutItem.Add_Click({"
     },
     {
@@ -3185,7 +3121,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9031,
+      "line": 9030,
       "content": "$remoteBuildItem.Add_Click({"
     },
     {
@@ -3193,7 +3129,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9432,
+      "line": 9431,
       "content": "$securityChecklistItem.Add_Click({"
     },
     {
@@ -3201,7 +3137,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9446,
+      "line": 9445,
       "content": "$sascWizardItem.Add_Click({"
     },
     {
@@ -3209,7 +3145,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9464,
+      "line": 9463,
       "content": "$vaultStatusItem.Add_Click({"
     },
     {
@@ -3217,7 +3153,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9493,
+      "line": 9492,
       "content": "$unlockVaultItem.Add_Click({"
     },
     {
@@ -3225,7 +3161,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9516,
+      "line": 9515,
       "content": "$lockVaultItem.Add_Click({"
     },
     {
@@ -3233,7 +3169,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9561,
+      "line": 9560,
       "content": "$saveSecretItem.Add_Click({"
     },
     {
@@ -3241,7 +3177,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9621,
+      "line": 9620,
       "content": "$retrieveSecretItem.Add_Click({"
     },
     {
@@ -3249,7 +3185,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9671,
+      "line": 9670,
       "content": "$clipTimer.Add_Tick({"
     },
     {
@@ -3257,7 +3193,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9692,
+      "line": 9691,
       "content": "$createSecretItem.Add_Click({"
     },
     {
@@ -3265,7 +3201,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9717,
+      "line": 9716,
       "content": "$btnRand.Add_Click({"
     },
     {
@@ -3273,7 +3209,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9774,
+      "line": 9773,
       "content": "$randomPwItem.Add_Click({"
     },
     {
@@ -3281,7 +3217,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9786,
+      "line": 9785,
       "content": "$clipTimer.Add_Tick({"
     },
     {
@@ -3289,7 +3225,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9810,
+      "line": 9809,
       "content": "$bwServeItem.Add_Click({"
     },
     {
@@ -3297,7 +3233,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9830,
+      "line": 9829,
       "content": "$importSecretsItem.Add_Click({"
     },
     {
@@ -3305,7 +3241,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9902,
+      "line": 9901,
       "content": "$importCertsItem.Add_Click({"
     },
     {
@@ -3313,7 +3249,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9935,
+      "line": 9934,
       "content": "$secAuditItem.Add_Click({"
     },
     {
@@ -3321,7 +3257,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 9964,
+      "line": 9963,
       "content": "$integrityItem.Add_Click({"
     },
     {
@@ -3329,7 +3265,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10004,
+      "line": 10003,
       "content": "$lanSharingItem.Add_Click({"
     },
     {
@@ -3337,7 +3273,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10038,
+      "line": 10037,
       "content": "$helloItem.Add_Click({"
     },
     {
@@ -3345,7 +3281,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10066,
+      "line": 10065,
       "content": "$invokeSecretsItem.Add_Click({"
     },
     {
@@ -3353,7 +3289,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10089,
+      "line": 10088,
       "content": "$exportBackupItem.Add_Click({"
     },
     {
@@ -3361,7 +3297,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10126,
+      "line": 10125,
       "content": "$updateHelpItem.Add_Click({"
     },
     {
@@ -3369,7 +3305,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10137,
+      "line": 10136,
       "content": "$helpIndexItem.Add_Click({"
     },
     {
@@ -3377,7 +3313,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10150,
+      "line": 10149,
       "content": "$packageItem.Add_Click({"
     },
     {
@@ -3385,7 +3321,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10165,
+      "line": 10164,
       "content": "$depVizHelpItem.Add_Click({"
     },
     {
@@ -3393,7 +3329,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10200,
+      "line": 10199,
       "content": "$cheatSheetItem.Add_Click({"
     },
     {
@@ -3401,7 +3337,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10240,
+      "line": 10239,
       "content": "$mrsItem.Add_Click({"
     },
     {
@@ -3409,7 +3345,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10255,
+      "line": 10254,
       "content": "$aboutItem.Add_Click({"
     },
     {
@@ -3417,7 +3353,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10267,
+      "line": 10266,
       "content": "$aboutSysItem.Add_Click({"
     },
     {
@@ -3425,7 +3361,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10279,
+      "line": 10278,
       "content": "$aboutAppItem.Add_Click({"
     },
     {
@@ -3433,7 +3369,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10358,
+      "line": 10357,
       "content": "$button.Add_Click({"
     },
     {
@@ -3441,7 +3377,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10399,
+      "line": 10398,
       "content": "$rightButton.Add_Click({"
     },
     {
@@ -3449,7 +3385,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10628,
+      "line": 10627,
       "content": "$script:_ServiceTimer.Add_Tick({"
     },
     {
@@ -3457,7 +3393,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10876,
+      "line": 10875,
       "content": "$script:_EngineStatusLabel.Add_Click({"
     },
     {
@@ -3465,7 +3401,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10916,
+      "line": 10915,
       "content": "$statusLabel.Add_Click({"
     },
     {
@@ -3473,7 +3409,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10933,
+      "line": 10932,
       "content": "$statusRightRow1.Add_Click({"
     },
     {
@@ -3481,7 +3417,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10950,
+      "line": 10949,
       "content": "$script:_NetInfoLabel.Add_Click({"
     },
     {
@@ -3489,7 +3425,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10971,
+      "line": 10970,
       "content": "$statusRightRow2.Add_Click({"
     },
     {
@@ -3497,7 +3433,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 10988,
+      "line": 10987,
       "content": "$script:_DhcpDnsLabel.Add_Click({"
     },
     {
@@ -3505,7 +3441,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11004,
+      "line": 11003,
       "content": "$script:_SysInfoLabel.Add_Click({"
     },
     {
@@ -3513,7 +3449,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11020,
+      "line": 11019,
       "content": "$vaultStatusLabel.Add_Click({"
     },
     {
@@ -3521,7 +3457,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11035,
+      "line": 11034,
       "content": "$vaultDetailLabel.Add_Click({"
     },
     {
@@ -3529,7 +3465,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11046,
+      "line": 11045,
       "content": "$script:_WanRefreshTimer.Add_Tick({"
     },
     {
@@ -3537,7 +3473,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11081,
+      "line": 11080,
       "content": "$vaultTimer.Add_Tick({"
     },
     {
@@ -3545,7 +3481,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11176,
+      "line": 11175,
       "content": "$script:_EngineTimer.Add_Tick({"
     },
     {
@@ -3553,7 +3489,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11216,
+      "line": 11215,
       "content": "$form.Add_Shown({"
     },
     {
@@ -3561,7 +3497,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11227,
+      "line": 11226,
       "content": "$form.Add_KeyDown({"
     },
     {
@@ -3569,7 +3505,7 @@
       "severity": "CRITICAL",
       "title": "WinForms event handler without try/catch — PipelineStoppedException crash",
       "file": "/Main-GUI.ps1",
-      "line": 11258,
+      "line": 11257,
       "content": "$form.Add_FormClosing({"
     },
     {
@@ -5672,6 +5608,14 @@
       "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
       "severity": "MEDIUM",
       "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
+      "file": "/agents/focalpoint-null/Chat-FocalPoint.ps1",
+      "line": 89,
+      "content": "$input = Read-Host"
+    },
+    {
+      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
+      "severity": "MEDIUM",
+      "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
       "file": "/tests/CronAiAthon-Pipeline.Tests.ps1",
       "line": 321,
       "content": "$args = @("
@@ -5683,22 +5627,6 @@
       "file": "/tests/ModuleEnvironment-NineScripts.Tests.ps1",
       "line": 143,
       "content": "$matches = [regex]::Matches($script:BamContent, '(?m)^\\s*function\\s+Extract-FunctionDefs\\b')"
-    },
-    {
-      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
-      "severity": "MEDIUM",
-      "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
-      "file": "/tests/sandbox/Invoke-SandboxBootstrap.ps1",
-      "line": 127,
-      "content": "$args = \"-NoProfile -ExecutionPolicy Bypass -File `\"$testScript`\" $headless $skipPhase\""
-    },
-    {
-      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
-      "severity": "MEDIUM",
-      "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
-      "file": "/sovereign-kernel/Start-SovereignKernel.ps1",
-      "line": 124,
-      "content": "$input = Read-Host"
     },
     {
       "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
@@ -5840,17 +5768,9 @@
       "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
       "severity": "MEDIUM",
       "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
-      "file": "/agents/focalpoint-null/Chat-FocalPoint.ps1",
-      "line": 89,
+      "file": "/sovereign-kernel/Start-SovereignKernel.ps1",
+      "line": 124,
       "content": "$input = Read-Host"
-    },
-    {
-      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
-      "severity": "MEDIUM",
-      "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
-      "file": "/modules/PwShGUI-AutoCorrectGate.psm1",
-      "line": 683,
-      "content": "$args = @("
     },
     {
       "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
@@ -5859,6 +5779,14 @@
       "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
       "line": 413,
       "content": "$matches = [regex]::Matches($content, '(?im)\\b(Import-Module|Using\\s+module|#Requires\\s+-Modules?)\\b.+')"
+    },
+    {
+      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
+      "severity": "MEDIUM",
+      "title": "Assignment to PowerShell automatic variable ($matches, $args, $input, $error, $foreach, $this, $_)",
+      "file": "/modules/PwShGUI-AutoCorrectGate.psm1",
+      "line": 683,
+      "content": "$args = @("
     },
     {
       "sinId": "SIN-PATTERN-038",
@@ -5969,7 +5897,7 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/Invoke-PreCommitValidation.ps1",
-      "line": 138,
+      "line": 226,
       "content": "$candidateFiles = @(Get-ChildItem -LiteralPath $Root -Recurse -File -ErrorAction SilentlyContinue |"
     },
     {
@@ -5977,7 +5905,7 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/Invoke-SINPatternScanner.ps1",
-      "line": 543,
+      "line": 546,
       "content": "$omegaFound = Get-ChildItem -Path $WorkspacePath -Recurse -File -ErrorAction SilentlyContinue"
     },
     {
@@ -5985,7 +5913,7 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/sandbox/Invoke-SandboxBootstrap.ps1",
-      "line": 74,
+      "line": 76,
       "content": "$fileCount = @(Get-ChildItem $LocalPath -Recurse -File -ErrorAction SilentlyContinue).Count"
     },
     {
@@ -5993,7 +5921,7 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/sandbox/Invoke-SandboxBootstrap.ps1",
-      "line": 90,
+      "line": 162,
       "content": "$before = @(Get-ChildItem $LocalPath -Recurse -File -ErrorAction SilentlyContinue).Count"
     },
     {
@@ -6001,7 +5929,7 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/sandbox/Invoke-SandboxBootstrap.ps1",
-      "line": 92,
+      "line": 164,
       "content": "$sourceFiles = Get-ChildItem $SourcePath -Recurse -File -ErrorAction SilentlyContinue"
     },
     {
@@ -6009,8 +5937,24 @@
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
       "file": "/tests/sandbox/Invoke-SandboxBootstrap.ps1",
-      "line": 107,
+      "line": 179,
       "content": "$after = @(Get-ChildItem $LocalPath -Recurse -File -ErrorAction SilentlyContinue).Count"
+    },
+    {
+      "sinId": "SIN-PATTERN-038",
+      "severity": "MEDIUM",
+      "title": "Unbounded recursive file scan can crash terminal under PS7",
+      "file": "/tools/Check-BOM.ps1",
+      "line": 11,
+      "content": "$files = Get-ChildItem -Path $Root -Recurse -File | Where-Object { $extensions -contains $_.Extension.ToLower() }"
+    },
+    {
+      "sinId": "SIN-PATTERN-038",
+      "severity": "MEDIUM",
+      "title": "Unbounded recursive file scan can crash terminal under PS7",
+      "file": "/tools/Package-HistoryFilesByMajorVersion.ps1",
+      "line": 12,
+      "content": "$historyFiles = Get-ChildItem -Path $HistoryDir -File -Recurse"
     },
     {
       "sinId": "SIN-PATTERN-038",
@@ -6264,17 +6208,17 @@
       "sinId": "SIN-PATTERN-038",
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
-      "file": "/tools/Check-BOM.ps1",
-      "line": 11,
-      "content": "$files = Get-ChildItem -Path $Root -Recurse -File | Where-Object { $extensions -contains $_.Extension.ToLower() }"
+      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
+      "line": 397,
+      "content": "$files = Get-ChildItem -Path $WorkspacePath -Recurse -File -ErrorAction SilentlyContinue |"
     },
     {
       "sinId": "SIN-PATTERN-038",
       "severity": "MEDIUM",
       "title": "Unbounded recursive file scan can crash terminal under PS7",
-      "file": "/tools/Package-HistoryFilesByMajorVersion.ps1",
-      "line": 12,
-      "content": "$historyFiles = Get-ChildItem -Path $HistoryDir -File -Recurse"
+      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
+      "line": 614,
+      "content": "$dirs    = Get-ChildItem -Path $WorkspacePath -Recurse -Directory -ErrorAction SilentlyContinue |"
     },
     {
       "sinId": "SIN-PATTERN-038",
@@ -6317,28 +6261,36 @@
       "content": "$files = Get-ChildItem -Path $HelpPath -Recurse -File -ErrorAction SilentlyContinue"
     },
     {
-      "sinId": "SIN-PATTERN-038",
-      "severity": "MEDIUM",
-      "title": "Unbounded recursive file scan can crash terminal under PS7",
-      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
-      "line": 397,
-      "content": "$files = Get-ChildItem -Path $WorkspacePath -Recurse -File -ErrorAction SilentlyContinue |"
-    },
-    {
-      "sinId": "SIN-PATTERN-038",
-      "severity": "MEDIUM",
-      "title": "Unbounded recursive file scan can crash terminal under PS7",
-      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
-      "line": 614,
-      "content": "$dirs    = Get-ChildItem -Path $WorkspacePath -Recurse -Directory -ErrorAction SilentlyContinue |"
-    },
-    {
       "sinId": "SIN-PATTERN-039",
       "severity": "HIGH",
       "title": "BOM round-trip via Win-1252 corrupts first character to '?'",
       "file": "/modules/PwShGUI-LegacyEncoding.psm1",
       "line": 72,
       "content": "$win1252Bytes = [System.Text.Encoding]::GetEncoding(1252).GetBytes($utf8)"
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "title": "Module exports a public function with no Pester smoke test",
+      "file": "/agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
+      "line": 500,
+      "content": "Export-ModuleMember -Function @("
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "title": "Module exports a public function with no Pester smoke test",
+      "file": "/agents/koe-RumA/core/koe-RumA.psm1",
+      "line": 357,
+      "content": "Export-ModuleMember -Function @("
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "title": "Module exports a public function with no Pester smoke test",
+      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
+      "line": 937,
+      "content": "Export-ModuleMember -Function @("
     },
     {
       "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
@@ -6401,7 +6353,7 @@
       "severity": "MEDIUM",
       "title": "Module exports a public function with no Pester smoke test",
       "file": "/modules/CronAiAthon-Pipeline.psm1",
-      "line": 2245,
+      "line": 2325,
       "content": "Export-ModuleMember -Function @("
     },
     {
@@ -6608,6 +6560,14 @@
       "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
       "severity": "MEDIUM",
       "title": "Module exports a public function with no Pester smoke test",
+      "file": "/modules/PwShGUI-PipelineFlowGraph.psm1",
+      "line": 245,
+      "content": "Export-ModuleMember -Function @("
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "title": "Module exports a public function with no Pester smoke test",
       "file": "/modules/PwShGUI-PSScriptAnalyzerScan.psm1",
       "line": 81,
       "content": "Export-ModuleMember -Function Invoke-PSScriptAnalyzerScan"
@@ -6792,6 +6752,14 @@
       "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
       "severity": "MEDIUM",
       "title": "Module exports a public function with no Pester smoke test",
+      "file": "/reports/iter17/HEAD-helpfiles.psm1",
+      "line": 471,
+      "content": "Export-ModuleMember -Function @("
+    },
+    {
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "severity": "MEDIUM",
+      "title": "Module exports a public function with no Pester smoke test",
       "file": "/sovereign-kernel/core/AgentRegistry.psm1",
       "line": 457,
       "content": "Export-ModuleMember -Function @("
@@ -6850,38 +6818,6 @@
       "title": "Module exports a public function with no Pester smoke test",
       "file": "/sovereign-kernel/core/WatchdogSupervisor.psm1",
       "line": 469,
-      "content": "Export-ModuleMember -Function @("
-    },
-    {
-      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
-      "severity": "MEDIUM",
-      "title": "Module exports a public function with no Pester smoke test",
-      "file": "/reports/iter17/HEAD-helpfiles.psm1",
-      "line": 471,
-      "content": "Export-ModuleMember -Function @("
-    },
-    {
-      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
-      "severity": "MEDIUM",
-      "title": "Module exports a public function with no Pester smoke test",
-      "file": "/agents/PipelineSteering/core/PipelineSteering.psm1",
-      "line": 937,
-      "content": "Export-ModuleMember -Function @("
-    },
-    {
-      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
-      "severity": "MEDIUM",
-      "title": "Module exports a public function with no Pester smoke test",
-      "file": "/agents/H-Ai-Nikr-Agi/core/H-Ai-Nikr-Agi.psm1",
-      "line": 500,
-      "content": "Export-ModuleMember -Function @("
-    },
-    {
-      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
-      "severity": "MEDIUM",
-      "title": "Module exports a public function with no Pester smoke test",
-      "file": "/agents/koe-RumA/core/koe-RumA.psm1",
-      "line": 357,
       "content": "Export-ModuleMember -Function @("
     },
     {
@@ -7049,7 +6985,7 @@
       "severity": "HIGH",
       "title": "Hyphenated IN-PROGRESS status token drift",
       "file": "/modules/CronAiAthon-Pipeline.psm1",
-      "line": 1466,
+      "line": 1546,
       "content": "[ValidateSet('assessment','planned','in-progress','review','accepted')]"
     },
     {
@@ -7088,8 +7024,16 @@
       "sinId": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
       "severity": "MEDIUM",
       "title": "Legacy IMPLEMENTED status token drift",
+      "file": "/scripts/Start-LocalWebEngine.ps1",
+      "line": 3582,
+      "content": "'Released' { 'IMPLEMENTED' }"
+    },
+    {
+      "sinId": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
+      "severity": "MEDIUM",
+      "title": "Legacy IMPLEMENTED status token drift",
       "file": "/modules/CronAiAthon-Pipeline.psm1",
-      "line": 271,
+      "line": 276,
       "content": "implemented = 0"
     },
     {
@@ -7097,7 +7041,7 @@
       "severity": "MEDIUM",
       "title": "Legacy IMPLEMENTED status token drift",
       "file": "/modules/CronAiAthon-Pipeline.psm1",
-      "line": 358,
+      "line": 365,
       "content": "'IMPLEMENTED' { return 'DONE' }"
     },
     {
@@ -7169,15 +7113,23 @@
       "severity": "HIGH",
       "title": "Non-canonical reports root usage (reports/)",
       "file": "/scripts/Invoke-PipelineContinuousRefine.ps1",
-      "line": 155,
+      "line": 191,
       "content": "$OutputRoot = Join-Path (Join-Path $root 'reports') 'pipeline-refine'"
     },
     {
       "sinId": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
       "severity": "HIGH",
       "title": "Non-canonical reports root usage (reports/)",
+      "file": "/scripts/Invoke-PipelineFlowGraphGate.ps1",
+      "line": 39,
+      "content": "$OutputJson = Join-Path (Join-Path (Join-Path $root 'reports') 'pipeline-flow-gate') 'latest.json'"
+    },
+    {
+      "sinId": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
+      "severity": "HIGH",
+      "title": "Non-canonical reports root usage (reports/)",
       "file": "/scripts/Invoke-PipelineMultiPass.ps1",
-      "line": 106,
+      "line": 111,
       "content": "$iterDir = Join-Path $WorkspacePath 'reports'"
     },
     {
@@ -7593,7 +7545,7 @@
       "severity": "HIGH",
       "title": "Script-scope WinForms Controls.Add call without nearby null guard",
       "file": "/Main-GUI.ps1",
-      "line": 10449,
+      "line": 10448,
       "content": "$script:_FooterDock.Controls.Add($footerAccent)"
     },
     {
@@ -7601,7 +7553,7 @@
       "severity": "HIGH",
       "title": "Script-scope WinForms Controls.Add call without nearby null guard",
       "file": "/Main-GUI.ps1",
-      "line": 10456,
+      "line": 10455,
       "content": "$script:_FooterDock.Controls.Add($servicePanel)"
     },
     {
@@ -7646,60 +7598,61 @@
     }
   ],
   "countsBySinId": {
-    "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000": 436,
-    "SIN-PATTERN-060-WORKSPACE-FILE-URI-TEMPLATE": 16,
-    "SIN-PATTERN-038": 59,
-    "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257": 7,
-    "SIN-PATTERN-077-SINSCAN-RUNTIME-NOT-EXPLICIT_20260524": 3,
-    "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257": 103,
-    "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257": 1,
-    "SIN-PATTERN-039": 1,
-    "SIN-PATTERN-068-SCRIPTSCOPE-CONTROLSADD-NOGUARD_20260523": 2,
-    "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS": 21,
-    "SIN-PATTERN-064-APPLICATION-RUN-NO-STRICTMODE-OFF_20260522": 1,
+    "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW": 23,
+    "SIN-PATTERN-054-REPORT-ROOT-DRIFT": 2,
+    "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504": 69,
     "SIN-PATTERN-003-SILENTCONTINUE-IMPORT_202604042257": 4,
     "SIN-PATTERN-056-TODO-DESCRIPTION-PLACEHOLDER": 1,
-    "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257": 7,
-    "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED": 8,
-    "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522": 25,
-    "SIN-PATTERN-069-UNICODE-REPLACEMENT-CHAR-SOURCE_20260523": 2,
-    "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW": 24,
-    "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504": 68,
-    "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000": 18,
-    "SIN-PATTERN-054-REPORT-ROOT-DRIFT": 2,
+    "SIN-PATTERN-064-APPLICATION-RUN-NO-STRICTMODE-OFF_20260522": 1,
+    "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS": 21,
     "SIN-PATTERN-061-CHECKLIST-COPY-DRIFT": 1,
-    "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257": 11,
-    "SIN-PATTERN-053-REPORTS-ROOT-DRIFT": 13,
-    "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257": 54
+    "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED": 9,
+    "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522": 25,
+    "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257": 1,
+    "SIN-PATTERN-069-UNICODE-REPLACEMENT-CHAR-SOURCE_20260523": 2,
+    "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000": 436,
+    "SIN-PATTERN-039": 1,
+    "SIN-PATTERN-053-REPORTS-ROOT-DRIFT": 14,
+    "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000": 8,
+    "SIN-PATTERN-038": 59,
+    "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257": 9,
+    "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257": 62,
+    "SIN-PATTERN-060-WORKSPACE-FILE-URI-TEMPLATE": 16,
+    "SIN-PATTERN-068-SCRIPTSCOPE-CONTROLSADD-NOGUARD_20260523": 2,
+    "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257": 95,
+    "SIN-PATTERN-077-SINSCAN-RUNTIME-NOT-EXPLICIT_20260524": 3,
+    "SIN-PATTERN-018-JOINPATH-3PLUS-ARGS_202604042257": 7,
+    "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257": 11
   },
-  "baselinePath": "./config/sin-baseline.json",
+  "baselinePath": "config/sin-baseline.json",
   "baselineApplied": true,
   "ratchetMode": "Permissive",
-  "regressions": [],
-  "improvements": [
+  "regressions": [
     {
-      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
-      "baseline": 125,
-      "current": 103,
-      "delta": 22
+      "sinId": "SIN-PATTERN-044-MODULE-EXPORT-UNTESTED_20260504",
+      "baseline": 68,
+      "current": 69,
+      "delta": 1
     },
+    {
+      "sinId": "SIN-PATTERN-052-STATUS-LEGACY-IMPLEMENTED",
+      "baseline": 8,
+      "current": 9,
+      "delta": 1
+    },
+    {
+      "sinId": "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+      "baseline": 7,
+      "current": 9,
+      "delta": 2
+    }
+  ],
+  "improvements": [
     {
       "sinId": "SIN-PATTERN-019-ADDCONTENT-NO-ENCODING_202604040000",
       "baseline": 2,
       "current": 0,
       "delta": 2
-    },
-    {
-      "sinId": "SIN-PATTERN-070-POWERSHELL-WEBREQUEST-NO-TIMEOUTSEC_20260523",
-      "baseline": 11,
-      "current": 0,
-      "delta": 11
-    },
-    {
-      "sinId": "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
-      "baseline": 22,
-      "current": 21,
-      "delta": 1
     },
     {
       "sinId": "SIN-PATTERN-014-CONVERTJSON-NO-DEPTH_202604042257",
@@ -7708,28 +7661,16 @@
       "delta": 6
     },
     {
-      "sinId": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257",
-      "baseline": 114,
-      "current": 11,
-      "delta": 103
-    },
-    {
-      "sinId": "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522",
-      "baseline": 26,
-      "current": 25,
-      "delta": 1
-    },
-    {
-      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
-      "baseline": 138,
-      "current": 54,
-      "delta": 84
-    },
-    {
       "sinId": "SIN-PATTERN-038",
       "baseline": 61,
       "current": 59,
       "delta": 2
+    },
+    {
+      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
+      "baseline": 237,
+      "current": 8,
+      "delta": 229
     },
     {
       "sinId": "SIN-PATTERN-012-SETCONTENT-NO-ENCODING_202604042257",
@@ -7738,28 +7679,52 @@
       "delta": 6
     },
     {
+      "sinId": "SIN-PATTERN-006-UTF8-NOBOM-UNICODE_202604042257",
+      "baseline": 125,
+      "current": 95,
+      "delta": 30
+    },
+    {
       "sinId": "SIN-PATTERN-029-UNPROTECTED-EVENT-HANDLER_202604150000",
       "baseline": 454,
       "current": 436,
       "delta": 18
     },
     {
-      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
-      "baseline": 28,
-      "current": 24,
-      "delta": 4
-    },
-    {
-      "sinId": "SIN-PATTERN-053-REPORTS-ROOT-DRIFT",
-      "baseline": 14,
-      "current": 13,
+      "sinId": "SIN-PATTERN-065-DOUBLE-EVENT-HANDLER-REGISTRATION_20260522",
+      "baseline": 26,
+      "current": 25,
       "delta": 1
     },
     {
-      "sinId": "SIN-PATTERN-027-NULL-ARRAY-INDEX_202604080000",
-      "baseline": 237,
-      "current": 18,
-      "delta": 219
+      "sinId": "SIN-PATTERN-034-AUTOMATIC-VAR-SHADOW",
+      "baseline": 28,
+      "current": 23,
+      "delta": 5
+    },
+    {
+      "sinId": "SIN-PATTERN-070-POWERSHELL-WEBREQUEST-NO-TIMEOUTSEC_20260523",
+      "baseline": 11,
+      "current": 0,
+      "delta": 11
+    },
+    {
+      "sinId": "SIN-PATTERN-011-DUPLICATE-FUNCTION-DEF_202604042257",
+      "baseline": 138,
+      "current": 62,
+      "delta": 76
+    },
+    {
+      "sinId": "SIN-PATTERN-015-HARDCODED-ABSOLUTE-PATH_202604042257",
+      "baseline": 114,
+      "current": 11,
+      "delta": 103
+    },
+    {
+      "sinId": "SIN-PATTERN-051-STATUS-HYPHENATED-IN-PROGRESS",
+      "baseline": 22,
+      "current": 21,
+      "delta": 1
     }
   ]
 }
