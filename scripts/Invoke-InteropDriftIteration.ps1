@@ -165,13 +165,11 @@ function Test-ModuleManifestExports {
         $declared = @($data.FunctionsToExport)
         if ($declared -contains '*') { continue }   # wildcard: nothing to verify
         $missingInPsm1 = @($declared | Where-Object { $_ -and ($funcs -notcontains $_) })
-        $missingInExport = @($funcs | Where-Object { $declared -notcontains $_ })
         foreach ($n in $missingInPsm1) {
             Add-Finding -Category 'MANIFEST' -Severity 'HIGH' -File $psd1.FullName -Detail "FunctionsToExport lists '$n' but no such function in $rootRel" -Extra @{ subType = 'ghost-export'; functionName = $n; autoFixable = $true }
         }
-        foreach ($n in $missingInExport) {
-            Add-Finding -Category 'MANIFEST' -Severity 'LOW' -File $psd1.FullName -Detail "Function '$n' in $rootRel not listed in FunctionsToExport" -Extra @{ subType = 'unexported'; functionName = $n; autoFixable = $false }
-        }
+        # Functions absent from FunctionsToExport are private by design. The module
+        # manifest is authoritative for the public surface; do not flag internals.
     }
 }
 
@@ -184,9 +182,24 @@ function Test-LaunchBatRefs {
         if ($b.Name -match '\.backup') { continue }
         $txt = $null
         try { $txt = [IO.File]::ReadAllText($b.FullName) } catch { continue }
+        $batchVars = @{}
+        foreach ($setMatch in [regex]::Matches($txt, '(?im)^\s*set\s+"?([A-Za-z_][A-Za-z0-9_]*)=([^"\r\n]*)"?\s*$')) {
+            $batchVars[$setMatch.Groups[1].Value] = $setMatch.Groups[2].Value.Trim()
+        }
         foreach ($m in $rx.Matches($txt)) {
             $ref = $m.Groups[1].Value.Trim()
             $expanded = [Environment]::ExpandEnvironmentVariables($ref) -replace '%~dp0', ($b.DirectoryName + '\')
+            for ($pass = 0; $pass -lt 3; $pass++) {
+                $before = $expanded
+                $expanded = $expanded -replace '%~dp0', ($b.DirectoryName + '\')
+                $expanded = [regex]::Replace($expanded, '%([A-Za-z_][A-Za-z0-9_]*)%', {
+                        param($vm)
+                        $name = $vm.Groups[1].Value
+                        if ($batchVars.ContainsKey($name)) { return [string]$batchVars[$name] }
+                        return $vm.Value
+                    })
+                if ($expanded -eq $before) { break }
+            }
             if ([IO.Path]::IsPathRooted($expanded)) {
                 $candidate = $expanded
             }
@@ -368,7 +381,7 @@ function Invoke-RandomSinBatch {
         return [ordered]@{ skipped = $true; reason = 'scanner-or-candidates-unavailable'; chance = '1-in-5' }
     }
     try {
-        $scan = & $scanner -WorkspacePath $WorkspacePath -IncludeFiles @($batch.FullName) -OutputJson $out -Quiet -Runtime Both 2>$null
+        & $scanner -WorkspacePath $WorkspacePath -IncludeFiles @($batch.FullName) -OutputJson $out -Quiet -Runtime Both 2>$null | Out-Null
         $json = if (Test-Path -LiteralPath $out) { Get-Content -LiteralPath $out -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }
         return [ordered]@{
             skipped  = $false

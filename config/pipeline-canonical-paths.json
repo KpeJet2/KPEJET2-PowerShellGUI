@@ -21,6 +21,8 @@
     "modules/PwShGUI-PipelineFlowGraph.psm1",
     "scripts/Invoke-PipelineFlowGraphGate.ps1",
     "scripts/Sync-CronPipeFlowViewerData.ps1",
+    "scripts/Invoke-HostPrereqFix.ps1",
+    "scripts/Invoke-SinHardcodedPathRemediation.ps1",
     "tests/PipelineFlowGraph.Tests.ps1",
     "tests/CronPipeFlowViewer.Tests.ps1",
     "XHTML-Cron-Pipe-Flow.xhtml",

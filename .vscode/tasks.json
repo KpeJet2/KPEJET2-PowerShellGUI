@@ -177,6 +177,54 @@
             "problemMatcher": []
         },
         {
+            "label": "Prereqs: Check All",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action CheckAll",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Prereqs: Setup and Upgrade",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action SetupAll",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Prereqs: Master Check Setup Recheck",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action Master",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Host Fix: Generate Instance Manifest",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-HostPrereqFix.ps1 -WorkspacePath ${workspaceFolder} -Action Generate",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "SIN: P015 Path Remediation Report",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SinHardcodedPathRemediation.ps1 -WorkspacePath ${workspaceFolder}",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sandbox: Smoke Test (keep instance)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SandboxSmokeTest.ps1 -WorkspacePath ${workspaceFolder} -KeepSandbox",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
             "label": "GUI: Open Cron Pipe Flow",
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Start-Process -FilePath '${workspaceFolder}\\XHTML-Cron-Pipe-Flow.xhtml'\"",

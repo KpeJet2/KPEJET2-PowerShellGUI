@@ -28,7 +28,11 @@ pki/vault-backups/
 agents/*/pki/*.key
 # local report exports and checkpoints that should not be published
 Report/
+reports/
 reports/pipeline-refine/
+reports/interop-iter/
+reports/sin-hardcoded-path-remediation.json
+temp/host-fixes/
 checkpoints/
 sovereign-kernel/**/*.jsonl
 sovereign-kernel/**/*.log

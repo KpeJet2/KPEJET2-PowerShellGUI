@@ -819,13 +819,41 @@ function Invoke-MasterFlow {
 
     Reset-Results
     Invoke-AllChecks
-    $null = Write-Report -ReportAction 'master-before'
+    $before = Write-Report -ReportAction 'master-before'
 
     Invoke-AllSetup
 
     Reset-Results
     Invoke-AllChecks
     $after = Write-Report -ReportAction 'master-after'
+
+    $masterPath = Join-Path $script:LogDir 'prereq-master-latest.json'
+    $master = [ordered]@{
+        timestamp = (Get-Date).ToString('o')
+        workspace = $WorkspacePath
+        action = 'Master'
+        before = [ordered]@{
+            summaryPath = [string]$before.Path
+            csvPath = [string]$before.CsvPath
+            pass = [int]$before.Pass
+            warn = [int]$before.Warn
+            fail = [int]$before.Fail
+            info = [int]$before.Info
+            total = [int]$before.Total
+        }
+        after = [ordered]@{
+            summaryPath = [string]$after.Path
+            csvPath = [string]$after.CsvPath
+            pass = [int]$after.Pass
+            warn = [int]$after.Warn
+            fail = [int]$after.Fail
+            info = [int]$after.Info
+            total = [int]$after.Total
+        }
+        status = if ($after.Fail -gt 0) { 'FAIL' } else { 'PASS' }
+    }
+    $master | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $masterPath -Encoding UTF8
+    Write-Host ('Master report written: ' + $masterPath) -ForegroundColor Cyan
 
     if ($after.Fail -gt 0) { return 1 }
     return 0

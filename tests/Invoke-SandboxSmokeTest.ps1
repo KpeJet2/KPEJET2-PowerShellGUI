@@ -60,10 +60,10 @@ Write-Host ''
 
 $networking = 'Enable'
 $startParams = @{
-    WorkspacePath = $WorkspacePath
-    SessionName = 'smoke'
-    Networking = $networking
-    MemoryMB = 4096
+    WorkspacePath  = $WorkspacePath
+    SessionName    = 'smoke'
+    Networking     = $networking
+    MemoryMB       = 4096
     MaxIdleMinutes = 120
 }
 
@@ -79,8 +79,8 @@ if (-not (Test-Path -LiteralPath $sendScript)) {
 
 $testAction = if ($ChaosMode) { 'Chaos' } else { 'Test' }
 $sendParams = @{
-    SessionDir = [string]$session.SessionDir
-    Action = $testAction
+    SessionDir  = [string]$session.SessionDir
+    Action      = $testAction
     WaitTimeout = $Timeout
 }
 if ($HeadlessOnly) {
@@ -93,7 +93,8 @@ $actionExit = $LASTEXITCODE
 
 if ($KeepSandbox) {
     Write-Host "Sandbox retained for manual inspection: $($session.SessionDir)" -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host 'Shutting down sandbox session...' -ForegroundColor DarkGray
     & $sendScript -SessionDir ([string]$session.SessionDir) -Action Shutdown -NoWait | Out-Null
 }
@@ -105,7 +106,8 @@ if (Test-Path -LiteralPath $sessionOut) {
     New-Item -ItemType Directory -Path $stampDir -Force | Out-Null
     Copy-Item -Path (Join-Path $sessionOut '*') -Destination $stampDir -Recurse -Force -ErrorAction SilentlyContinue
     Write-Host "Sandbox artifacts copied to: $stampDir" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "No sandbox output folder found at: $sessionOut" -ForegroundColor Yellow
 }
 
