@@ -385,7 +385,7 @@ function Invoke-CriticalSINGate {
         if (Test-Path -LiteralPath $scanner) {
             $sweepJson = Join-Path (Join-Path $Root 'temp') ('precommit-critical-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
             try {
-                $sweep = & $scanner -WorkspacePath $Root -IncludeFiles @($Files.FullName) -Runtime Both -Quiet -OutputJson $sweepJson
+                $sweep = & $scanner -WorkspacePath $Root -IncludeFiles @($Files.FullName) -Runtime Both -FailOnInvalidRegistry -Quiet -OutputJson $sweepJson
                 $seen = @{}
                 foreach ($f in @($findings)) { $seen["$($f.File)|$($f.Line)|$($f.Pattern)"] = $true }
                 if ($null -ne $sweep -and $sweep.PSObject.Properties.Name -contains 'findings') {
@@ -447,7 +447,7 @@ function Invoke-P027Gate {
     if (@($eligible).Count -eq 0) { return @($findings) }
 
     $scanOutputJson = Join-Path (Join-Path $Root 'temp') ('precommit-p027-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
-    $scanResult = & $scanner -WorkspacePath $Root -IncludeFiles @($eligible.FullName) -Quiet -OutputJson $scanOutputJson
+    $scanResult = & $scanner -WorkspacePath $Root -IncludeFiles @($eligible.FullName) -FailOnInvalidRegistry -Quiet -OutputJson $scanOutputJson
     if ($null -eq $scanResult) {
         return @($findings)
     }

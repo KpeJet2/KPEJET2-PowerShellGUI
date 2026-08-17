@@ -1,0 +1,31 @@
+flowchart TD
+    A[Start Cycle Runner] --> B{Single-flight lock free?}
+    B -- No --> Z[Exit: another cycle active]
+    B -- Yes --> C[Run ONE chat session]
+    C --> D[Capture transcript + exit code + duration]
+    D --> E{Outcome classifier}
+    E -- Success: all todos done + tests pass --> F[Stage + report COMMITTABLE]
+    F --> Z2[Exit 0]
+    E -- Incomplete todos / test fail / crash / hang --> G[Record failure to ledger]
+    G --> H{Attempt <= 6?}
+    H -- Yes --> I[Immediate retry, no steering]
+    I --> C
+    H -- No --> J{Attempt == 7?}
+    J -- Yes --> K[Immediate retry + steering comment]
+    K --> C
+    J -- No --> L{Near-immediate failure?}
+    L -- No --> M[Reset ladder to Phase 0]
+    M --> C
+    L -- Yes --> N[Advance backoff ladder]
+    N --> O[P2: 15s x 5min]
+    O --> P[P3: 60s x 45min]
+    P --> Q[P4: 120s x 2h]
+    Q --> R[P5: 180s x 3h]
+    R --> S[P6: 300s x 48h]
+    S --> T[Exhausted: write final report]
+    T --> Z3[Exit 1]
+    O --> C
+    P --> C
+    Q --> C
+    R --> C
+    S --> C

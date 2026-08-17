@@ -209,6 +209,9 @@ Describe 'Pipeline recycler lifecycle' {
         $pending.status | Should -Be 'PENDING_APPROVAL'
         $pending.approvalState | Should -Be 'PENDING'
         $pending.recycleCount | Should -Be 1
+        $pending.recycleVersion | Should -Be 1
+        $pending.currentAttemptId | Should -Not -BeNullOrEmpty
+        $pending.planMetadata.version | Should -Be 'plan-v1'
         @($pending.recycleHistory).Count | Should -Be 1
 
         $approved = Invoke-PipelineItemRecycle -WorkspacePath $ws -ItemId 'TODO-RECYCLE-001' -Reason 'Reviewed by owner' -Reapprove
@@ -216,6 +219,10 @@ Describe 'Pipeline recycler lifecycle' {
         $approved.status | Should -Be 'PLANNED'
         $approved.approvalState | Should -Be 'APPROVED'
         $approved.recycleCount | Should -Be 2
+        $approved.recycleVersion | Should -Be 2
+        $approved.currentAttemptId | Should -Not -Be $pending.currentAttemptId
+        $approved.planMetadata.version | Should -Be 'plan-v2'
+        @($approved.recycleAttempts).Count | Should -Be 2
         @($approved.recycleHistory).Count | Should -Be 2
         $approved.reapprovedAt | Should -Not -BeNullOrEmpty
     }

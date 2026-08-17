@@ -193,7 +193,13 @@ function New-PipelineItem {
         bugHistory               = @()
         recyclable               = $false
         recycleCount             = 0
+        recycleVersion           = 0
         recycleHistory           = @()
+        recycleAttempts          = @()
+        currentAttemptId         = $null
+        planMetadata             = $null
+        implementationMetadata     = $null
+        approvalHistory          = @()
         approvalState            = 'NOT_REQUIRED'
         reapprovedAt             = $null
     }
@@ -907,16 +913,35 @@ function Invoke-PipelineItemRecycle {
     if (-not $PSCmdlet.ShouldProcess($ItemId, "Recycle $current to $target")) { return $null }
 
     $now = (Get-Date).ToUniversalTime().ToString('o')
+    $attemptId = 'recycle-' + ([guid]::NewGuid().ToString('N'))
     if (-not $found.PSObject.Properties['recycleCount']) { $found | Add-Member -NotePropertyName recycleCount -NotePropertyValue 0 -Force }
+    if (-not $found.PSObject.Properties['recycleVersion']) { $found | Add-Member -NotePropertyName recycleVersion -NotePropertyValue ([int]$found.recycleCount) -Force }
     if (-not $found.PSObject.Properties['recycleHistory']) { $found | Add-Member -NotePropertyName recycleHistory -NotePropertyValue @() -Force }
+    if (-not $found.PSObject.Properties['recycleAttempts']) { $found | Add-Member -NotePropertyName recycleAttempts -NotePropertyValue @() -Force }
+    if (-not $found.PSObject.Properties['currentAttemptId']) { $found | Add-Member -NotePropertyName currentAttemptId -NotePropertyValue $null -Force }
+    if (-not $found.PSObject.Properties['planMetadata']) { $found | Add-Member -NotePropertyName planMetadata -NotePropertyValue $null -Force }
+    if (-not $found.PSObject.Properties['implementationMetadata']) { $found | Add-Member -NotePropertyName implementationMetadata -NotePropertyValue $null -Force }
+    if (-not $found.PSObject.Properties['approvalHistory']) { $found | Add-Member -NotePropertyName approvalHistory -NotePropertyValue @() -Force }
     if (-not $found.PSObject.Properties['approvalState']) { $found | Add-Member -NotePropertyName approvalState -NotePropertyValue 'NOT_REQUIRED' -Force }
     if (-not $found.PSObject.Properties['reapprovedAt']) { $found | Add-Member -NotePropertyName reapprovedAt -NotePropertyValue $null -Force }
     if (-not $found.PSObject.Properties['recyclable']) { $found | Add-Member -NotePropertyName recyclable -NotePropertyValue $false -Force }
 
     $history = @($found.recycleHistory)
-    $history += [ordered]@{ fromStatus = $current; toStatus = $target; reason = $Reason; timestamp = $now }
+    $nextRecycleVersion = [int]$found.recycleVersion + 1
+    $planVersion = 'plan-v' + $nextRecycleVersion
+    $history += [ordered]@{ fromStatus = $current; toStatus = $target; reason = $Reason; timestamp = $now; recycleVersion = $nextRecycleVersion; attemptId = $attemptId; planVersion = $planVersion }
     $found.recycleHistory = $history
     $found.recycleCount = [int]$found.recycleCount + 1
+    $found.recycleVersion = $nextRecycleVersion
+    $attempts = @($found.recycleAttempts)
+    $attempts += [ordered]@{ attemptId = $attemptId; recycleVersion = $nextRecycleVersion; planVersion = $planVersion; state = if ($Reapprove) { 'APPROVED' } else { 'PENDING_APPROVAL' }; createdAt = $now; reason = $Reason }
+    $found.recycleAttempts = $attempts
+    $found.currentAttemptId = $attemptId
+    $found.planMetadata = [ordered]@{ version = $planVersion; attemptId = $attemptId; approved = [bool]$Reapprove; updatedAt = $now }
+    $found.implementationMetadata = [ordered]@{ version = 'implementation-v' + $nextRecycleVersion; attemptId = $attemptId; state = 'NOT_STARTED'; updatedAt = $now }
+    $approvalHistory = @($found.approvalHistory)
+    $approvalHistory += [ordered]@{ state = if ($Reapprove) { 'APPROVED' } else { 'PENDING' }; attemptId = $attemptId; recycleVersion = $nextRecycleVersion; timestamp = $now }
+    $found.approvalHistory = $approvalHistory
     $found.status = $target
     if ($found.PSObject.Properties['modified']) { $found.modified = $now } else { $found | Add-Member -NotePropertyName modified -NotePropertyValue $now -Force }
     $found.recyclable = $false

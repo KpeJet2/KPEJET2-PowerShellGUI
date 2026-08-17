@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-085-UNSAFE-PROCESS-ARGUMENT-CONSTRUCTION_20260817",
+  "title": "Process arguments assembled from untrusted interpolation",
+  "description": "Detects process argument strings built by direct interpolation.",
+  "severity": "HIGH",
+  "category": "security",
+  "scan_regex": "(?i)(?:ArgumentList|Arguments|-Command)\\s*[=:]\\s*[\\\"'][^\\\"']*\\$[A-Za-z_][A-Za-z0-9_]*",
+  "scan_file_pattern": "*.ps1;*.psm1;*.js;*.ts",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "Validate|AllowList|ValidateSet|ArgumentList",
+  "context_guard_lines": 2,
+  "context_guard_direction": "above",
+  "preventionRule": "Validate each argument and pass structured argument arrays to process APIs.",
+  "remedy": "Use an allow-list and separate argument elements instead of interpolated command text.",
+  "tags": ["security", "process", "injection"]
+}

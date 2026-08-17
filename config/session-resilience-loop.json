@@ -1,0 +1,121 @@
+{
+  "versionTag": "2608.B1.V1.0",
+  "description": "Session Resilience Loop - retry ladder, thresholds and detection rules.",
+  "steeringComment": "get over the issues, fix or forge on to complete all todos and testing",
+  "steeringFromAttempt": 7,
+  "immediateFailSeconds": 20,
+  "hangSeconds": 900,
+  "identicalFailureAbortCount": 20,
+  "decisionPromptTimeoutSeconds": 900,
+  "ladder": [
+    {
+      "phase": 0,
+      "name": "Immediate",
+      "delaySeconds": 0,
+      "windowSeconds": 0,
+      "maxAttempts": 6,
+      "steering": false,
+      "description": "First six Try Again presses, fired back to back with no delay."
+    },
+    {
+      "phase": 1,
+      "name": "SteeredImmediate",
+      "delaySeconds": 0,
+      "windowSeconds": 0,
+      "maxAttempts": 1,
+      "steering": true,
+      "description": "Seventh Try Again, fired immediately with the steering comment attached."
+    },
+    {
+      "phase": 2,
+      "name": "Rapid15s",
+      "delaySeconds": 15,
+      "windowSeconds": 300,
+      "maxAttempts": 20,
+      "steering": true,
+      "description": "Retry every 15 seconds for 5 minutes."
+    },
+    {
+      "phase": 3,
+      "name": "OneMinute",
+      "delaySeconds": 60,
+      "windowSeconds": 2700,
+      "maxAttempts": 45,
+      "steering": true,
+      "description": "Retry once a minute for 45 minutes."
+    },
+    {
+      "phase": 4,
+      "name": "TwoMinute",
+      "delaySeconds": 120,
+      "windowSeconds": 7200,
+      "maxAttempts": 60,
+      "steering": true,
+      "description": "Retry every 2 minutes for 2 hours."
+    },
+    {
+      "phase": 5,
+      "name": "ThreeMinute",
+      "delaySeconds": 180,
+      "windowSeconds": 10800,
+      "maxAttempts": 60,
+      "steering": true,
+      "description": "Retry every 3 minutes for 3 hours."
+    },
+    {
+      "phase": 6,
+      "name": "FiveMinute",
+      "delaySeconds": 300,
+      "windowSeconds": 172800,
+      "maxAttempts": 576,
+      "steering": true,
+      "description": "Final band - retry every 5 minutes for 48 hours."
+    }
+  ],
+  "failureRegex": {
+    "crash": [
+      "unhandled exception",
+      "stack overflow",
+      "fatal error",
+      "access violation",
+      "process terminated unexpectedly",
+      "the application crashed"
+    ],
+    "quit": [
+      "session (aborted|cancelled|canceled)",
+      "user cancelled",
+      "operation was canceled",
+      "request was aborted",
+      "premature end of session"
+    ],
+    "error": [
+      "\\bFAILED\\b",
+      "(?m)^\\s*ERROR:",
+      "Exception calling",
+      "ParserError",
+      "Unexpected token"
+    ],
+    "tryAgain": [
+      "try again",
+      "tryagain",
+      "retry",
+      "rerun request"
+    ]
+  },
+  "sessionScanRoots": [
+    "logs",
+    "logs\\session-loop",
+    "~REPORTS",
+    "reports",
+    "temp"
+  ],
+  "sessionScanExtensions": [
+    ".log",
+    ".json",
+    ".txt",
+    ".jsonl",
+    ".md"
+  ],
+  "sessionScanMaxFiles": 400,
+  "sessionScanMaxFileSizeKB": 4096
+}

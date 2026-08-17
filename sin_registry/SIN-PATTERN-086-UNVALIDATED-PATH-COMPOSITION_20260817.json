@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-086-UNVALIDATED-PATH-COMPOSITION_20260817",
+  "title": "Path composition uses external input without validation",
+  "description": "Detects Join-Path and path concatenation involving request-like input.",
+  "severity": "HIGH",
+  "category": "security",
+  "scan_regex": "(?i)Join-Path\\s+[^\\r\\n]*(?:Request|Query|Input|Body|PathParam|User)[A-Za-z0-9_]*|(?:LiteralPath|FilePath)\\s*[=:]\\s*[^\\r\\n]*\\$(?:Request|Query|Input|Body|PathParam|User)[A-Za-z0-9_]*",
+  "scan_file_pattern": "*.ps1;*.psm1;*.js;*.ts",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "Assert-SafePath|Validate.*Path|Resolve-Path|AllowedRoots",
+  "context_guard_lines": 4,
+  "context_guard_direction": "above",
+  "preventionRule": "Validate and constrain external paths before composition.",
+  "remedy": "Resolve the candidate and enforce an approved root boundary before use.",
+  "tags": ["security", "path", "traversal"]
+}

@@ -224,6 +224,47 @@
             "presentation": { "reveal": "always", "panel": "new" },
             "problemMatcher": []
         },
+        // ── Session Resilience Loop ─────────────────────────────────────────
+        {
+            "label": "Session Loop: Start (resume today)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -ResumeToday",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Dry Run (resume today)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -ResumeToday -DryRun",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Detect Today's Retryable Session",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -DetectOnly",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Status",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -Status",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Stop",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -Stop",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
         {
             "label": "GUI: Open Cron Pipe Flow",
             "type": "shell",

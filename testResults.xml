@@ -1,15 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-05-06" time="15:59:41">
-  <environment cwd="C:\PowerShellGUI" os-version="10.0.26100" user="msaib" user-domain="XPS15-MS" machine-name="XPS15-MS" nunit-version="2.5.8.0" platform="Microsoft Windows 11 Pro for Workstations|C:\WINDOWS|\Device\Harddisk0\Partition3" clr-version="10.0.6" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="8" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-08-17" time="21:53:29">
+  <environment platform="Microsoft Windows 11 Pro for Workstations|C:\WINDOWS|\Device\Harddisk0\Partition3" user="msaib" clr-version="10.0.10" user-domain="XPS15-MS" cwd="C:\PowerShellGUI" nunit-version="2.5.8.0" os-version="10.0.26100" machine-name="XPS15-MS" />
   <culture-info current-culture="en-AU" current-uiculture="en-GB" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.2431" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="328.2635" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="C:\PowerShellGUI\tests\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1" executed="True" result="Success" success="True" time="0.2431" asserts="0" description="C:\PowerShellGUI\tests\SIN-P041-JsonSchemaPropertyDrift.Tests.ps1">
+      <test-suite type="TestFixture" name="C:\PowerShellGUI\tests\Invoke-SINPatternScanner.Tests.ps1" executed="True" result="Failure" success="False" time="328.2635" asserts="0" description="C:\PowerShellGUI\tests\Invoke-SINPatternScanner.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="SIN Pattern P041" executed="True" result="Success" success="True" time="0.1634" asserts="0" description="SIN Pattern P041">
+          <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration">
             <results>
-              <test-case description="flags unguarded drift-prone JSON property access" name="SIN Pattern P041.flags unguarded drift-prone JSON property access" time="0.0743" asserts="0" success="True" result="Success" executed="True" />
-              <test-case description="suppresses guarded drift-prone JSON property access" name="SIN Pattern P041.suppresses guarded drift-prone JSON property access" time="0.0849" asserts="0" success="True" result="Success" executed="True" />
+              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline">
+                <results>
+                  <test-case description="wrote a JSON output file" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.wrote a JSON output file" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="records ratchetMode=Permissive and baselineApplied=true" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records ratchetMode=Permissive and baselineApplied=true" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="totalFindings equals sum of countsBySinId values" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.totalFindings equals sum of countsBySinId values" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="records registry validation and coverage metadata" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records registry validation and coverage metadata" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan">
+                <results>
+                  <test-case description="produces well-formed XML with testsuites root" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.produces well-formed XML with testsuites root" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="tests count is at least totalFindings (plus ratchet metadata cases)" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.tests count is at least totalFindings (plus ratchet metadata cases)" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan)" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan)">
+                <results>
+                  <test-case description="suppresses an empty-catch (P002) finding when SIN-EXEMPT:P002 is on the same line" name="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan).suppresses an empty-catch (P002) finding when SIN-EXEMPT:P002 is on the same line" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-case description="fails explicitly for an invalid registry definition" name="Invoke-SINPatternScanner integration.fails explicitly for an invalid registry definition" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
             </results>
           </test-suite>
         </results>

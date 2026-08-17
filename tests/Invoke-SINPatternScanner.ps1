@@ -60,36 +60,36 @@
 #>
 param(
     [string]$WorkspacePath = (Split-Path -Parent $PSScriptRoot),
-    [string]$OutputJson    = '',
+    [string]$OutputJson = '',
     [switch]$Quiet,
     [switch]$FailOnCritical,
     [string[]]$FailOnSinId = @(),
     [string[]]$IncludeFiles = @(),
     [string]$TargetPattern = '*',
-    [ValidateSet('PS51','PS7','Both')]
-    [string]$Runtime       = 'Both',
+    [ValidateSet('PS51', 'PS7', 'Both')]
+    [string]$Runtime = 'Both',
     # Additional file extensions to discover/scan beyond the default *.ps1/*.psm1.
     # Per-pattern routing still respects each definition's scan_file_pattern field.
     [string[]]$ExtraExtensions = @(),
     # Path to a JSON baseline of accepted SIN counts per sin_id.
     # When supplied, -FailOnCritical only blocks on REGRESSIONS (current count > baseline count for any SIN).
     # Use -UpdateBaseline to overwrite the file with current counts (ratchet down).
-    [string]$BaselineJson  = '',
+    [string]$BaselineJson = '',
     [switch]$UpdateBaseline,
     # Ratchet enforcement mode (only meaningful with -BaselineJson + -FailOnCritical):
     #   Off        - ignore baseline; -FailOnCritical blocks on any CRITICAL finding
     #   Permissive - default; block only on regressions (current > baseline)
     #   Strict     - block on any drift (regressions OR un-recorded improvements);
     #                forces team to refresh baseline after every fix
-    [ValidateSet('Off','Permissive','Strict')]
+    [ValidateSet('Off', 'Permissive', 'Strict')]
     [string]$RatchetMode = 'Permissive',
     # Scan mode:
     # Standard = current behavior (extension-filtered discovery + per-pattern file glob checks)
     # Omega    = scan all files except excluded folders; ignore per-pattern scan_file_pattern
-    [ValidateSet('Standard','Omega')]
+    [ValidateSet('Standard', 'Omega')]
     [string]$ScanMode = 'Standard',
     # Excluded subfolders for OMEGA mode (name-only path segment matching)
-    [string[]]$OmegaExcludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules','~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry','QUICK-APP','ActionPacks-master','temp','bin','obj'),
+    [string[]]$OmegaExcludeDirs = @('.git', '.history', '.venv', '.venv-pygame312', 'node_modules', '~ARCHIVED', '~DOWNLOADS', '~REPORTS', 'checkpoints', 'UPM', 'sin_registry', 'QUICK-APP', 'ActionPacks-master', 'temp', 'bin', 'obj'),
     # OMEGA integration switch:
     # - Manifest-related files -> Bug + Bugs2FIX
     # - Non-manifest files -> Items2ADD + checkpoint file
@@ -99,13 +99,16 @@ param(
     [int]$OmegaRouteOpTimeoutMs = 4000,
     # When set, return only the summary object instead of the full findings array.
     # The JSON output file still contains the complete scan payload.
-    [switch]$SummaryOnly
+    [switch]$SummaryOnly,
+    [switch]$FailOnInvalidRegistry,
+    [ValidateRange(0, 100)]
+    [int]$MinimumCoveragePercent = 0
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
 
-$sw     = [System.Diagnostics.Stopwatch]::StartNew()
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
 $scanId = "SINSCAN-$(Get-Date -Format 'yyyyMMddHHmmss')"
 $regexMatchTimeout = [TimeSpan]::FromMilliseconds(200)
 $regexTimeoutAbortThreshold = 8
@@ -123,7 +126,8 @@ if ($OutputJson -eq $PSCommandPath) {
 $tempDir = Split-Path $OutputJson -Parent
 if (-not (Test-Path $tempDir)) { $null = New-Item -ItemType Directory -Path $tempDir -Force }
 
-function Write-ScanLog {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
+function Write-ScanLog {
+    # SIN-EXEMPT: P011 - cross-file duplicate (intentional fallback/stub)
     param([string]$Msg, [string]$Color = 'Gray')
     if (-not $Quiet) { Write-Host $Msg -ForegroundColor $Color }
 }
@@ -139,7 +143,8 @@ function Test-RegexMatchSafe {
 
     try {
         return $Regex.IsMatch($InputText)
-    } catch [System.Text.RegularExpressions.RegexMatchTimeoutException] {
+    }
+    catch [System.Text.RegularExpressions.RegexMatchTimeoutException] {
         $script:RegexMatchTimeoutCount++
         if (Test-Path -LiteralPath variable:script:CurrentPatternTimeouts) {
             $script:CurrentPatternTimeouts++
@@ -169,6 +174,54 @@ function Test-SinIdMatch {
     return $false
 }
 
+function Get-SinRegistryDefinition {
+    param(
+        [Parameter(Mandatory)] [System.IO.FileInfo]$File,
+        [Parameter(Mandatory)] [string]$Json
+    )
+
+    $errors = @()
+    $usedAliases = @()
+    try { $def = $Json | ConvertFrom-Json -ErrorAction Stop }
+    catch { return [pscustomobject]@{ valid = $false; errors = @('invalid JSON: ' + $_.Exception.Message); definition = $null; usedAliases = @() } }
+    if ($null -eq $def -or $null -eq $def.PSObject) {
+        return [pscustomobject]@{ valid = $false; errors = @('definition must be a JSON object'); definition = $null; usedAliases = @() }
+    }
+
+    $props = @($def.PSObject.Properties.Name)
+    $sinId = ''
+    if ($props -contains 'sin_id') { $sinId = [string]$def.sin_id }
+    elseif ($props -contains 'id') { $sinId = [string]$def.id; $usedAliases += 'id' }
+    elseif ($props -contains 'pattern_id') {
+        $rawPatternId = [string]$def.pattern_id
+        if ($rawPatternId -match '^(?i)P\d+$') { $sinId = ('SIN-PATTERN-{0:D3}' -f [int]($rawPatternId -replace '^(?i)P', '')) }
+        else { $sinId = 'SIN-PATTERN-' + $rawPatternId }
+        $usedAliases += 'pattern_id'
+    }
+    else { $errors += 'missing sin_id (or compatible id/pattern_id)' }
+    if ([string]::IsNullOrWhiteSpace($sinId)) { $errors += 'empty sin_id' }
+
+    $scanRegex = ''
+    if ($props -contains 'scan_regex') { $scanRegex = [string]$def.scan_regex }
+    elseif ($props -contains 'scanner_pattern') { $scanRegex = [string]$def.scanner_pattern; $usedAliases += 'scanner_pattern' }
+    elseif ($props -contains 'detection_regex') { $scanRegex = [string]$def.detection_regex; $usedAliases += 'detection_regex' }
+    else { $errors += 'missing scan_regex (or compatible scanner_pattern/detection_regex)' }
+    if ([string]::IsNullOrWhiteSpace($scanRegex)) { $errors += 'empty scan_regex' }
+    if (-not ($props -contains 'title') -or [string]::IsNullOrWhiteSpace([string]$def.title)) { $errors += 'missing title' }
+    if (-not ($props -contains 'severity') -or [string]::IsNullOrWhiteSpace([string]$def.severity)) { $errors += 'missing severity' }
+    if ($props -contains 'severity' -and [string]$def.severity -notin @('CRITICAL', 'HIGH', 'MEDIUM', 'LOW')) { $errors += 'severity must be CRITICAL, HIGH, MEDIUM, or LOW' }
+    if ($scanRegex -notin @('BINARY_CHECK', 'FILE_SIZE_CHECK') -and -not [string]::IsNullOrWhiteSpace($scanRegex)) {
+        try { $null = [regex]::new($scanRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) }
+        catch { $errors += 'invalid scan_regex: ' + $_.Exception.Message }
+    }
+    return [pscustomobject]@{
+        valid       = (@($errors).Count -eq 0)
+        errors      = @($errors)
+        definition  = [ordered]@{ sinId = $sinId; scanRegex = $scanRegex; raw = $def }
+        usedAliases = @($usedAliases)
+    }
+}
+
 function Get-NormalizedRelativePath {
     param(
         [Parameter(Mandatory)] [string]$WorkspacePath,
@@ -178,7 +231,7 @@ function Get-NormalizedRelativePath {
     $full = [System.IO.Path]::GetFullPath($FullPath)
     $root = [System.IO.Path]::GetFullPath($WorkspacePath)
     if ($full.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) {
-        return $full.Substring($root.Length).TrimStart('\\','/') -replace '/', '\\'
+        return $full.Substring($root.Length).TrimStart('\\', '/') -replace '/', '\\'
     }
     return $FullPath -replace '/', '\\'
 }
@@ -207,7 +260,8 @@ function Get-ManifestPathSet {
 
     try {
         $manifestObj = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
-    } catch {
+    }
+    catch {
         return $pathSet
     }
 
@@ -249,7 +303,7 @@ function Get-ManifestPathSet {
 
     foreach ($c in $candidates) {
         if ([string]::IsNullOrWhiteSpace($c)) { continue }
-        $raw = $c.Trim().Trim('"','''')
+        $raw = $c.Trim().Trim('"', '''')
         $resolved = $raw
         if (-not [System.IO.Path]::IsPathRooted($resolved)) {
             $resolved = Join-Path $WorkspacePath $resolved
@@ -259,7 +313,8 @@ function Get-ManifestPathSet {
             if (-not [string]::IsNullOrWhiteSpace($relative)) {
                 [void]$pathSet.Add($relative)
             }
-        } catch {
+        }
+        catch {
             continue
         }
     }
@@ -278,7 +333,7 @@ function New-OmegaCheckpointEntry {
     $checkDir = Join-Path (Join-Path $WorkspacePath 'checkpoints') 'omega'
     if (-not (Test-Path -LiteralPath $checkDir)) { $null = New-Item -ItemType Directory -Path $checkDir -Force }
 
-    $safeName = ($File -replace '[^A-Za-z0-9._-]','_')
+    $safeName = ($File -replace '[^A-Za-z0-9._-]', '_')
     if ([string]::IsNullOrWhiteSpace($safeName)) { $safeName = 'unknown-file' }
     $cpPath = Join-Path $checkDir ("OMEGA-CHECKPOINT-{0}.json" -f $safeName)
 
@@ -313,7 +368,7 @@ function New-OmegaFallbackArtifact {
     $checkDir = Join-Path (Join-Path $WorkspacePath 'checkpoints') 'omega'
     if (-not (Test-Path -LiteralPath $checkDir)) { $null = New-Item -ItemType Directory -Path $checkDir -Force }
 
-    $safeName = ($File -replace '[^A-Za-z0-9._-]','_')
+    $safeName = ($File -replace '[^A-Za-z0-9._-]', '_')
     if ([string]::IsNullOrWhiteSpace($safeName)) { $safeName = 'unknown-file' }
     $cpPath = Join-Path $checkDir ("OMEGA-ROUTE-FALLBACK-{0}-{1}.json" -f $RouteType, $safeName)
 
@@ -341,7 +396,7 @@ function Invoke-OmegaPipelineBoundedOperation {
     param(
         [Parameter(Mandatory)] [string]$PipelineModulePath,
         [Parameter(Mandatory)] [string]$WorkspacePath,
-        [Parameter(Mandatory)] [ValidateSet('AddItem','UpdateStatus')] [string]$Operation,
+        [Parameter(Mandatory)] [ValidateSet('AddItem', 'UpdateStatus')] [string]$Operation,
         [int]$TimeoutMs = 4000,
         [hashtable]$Item,
         [string]$ItemId = '',
@@ -410,7 +465,8 @@ function Invoke-OmegaPipelineBoundedOperation {
             error     = ''
             result    = $parsed
         }
-    } catch {
+    }
+    catch {
         $elapsed = [int]((Get-Date) - $startedAt).TotalMilliseconds
         return [pscustomobject]@{
             ok        = $false
@@ -419,7 +475,8 @@ function Invoke-OmegaPipelineBoundedOperation {
             error     = $_.Exception.Message
             result    = $null
         }
-    } finally {
+    }
+    finally {
         try { Remove-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null } catch { <# Intentional: non-fatal #> }
     }
 }
@@ -433,39 +490,57 @@ if (-not (Test-Path $sinRegistryDir)) {
 
 $patternFiles = @(Get-ChildItem -Path $sinRegistryDir -Filter 'SIN-PATTERN-*.json' -File -ErrorAction SilentlyContinue)
 $patterns = New-Object System.Collections.Generic.List[object]
+$registryInvalidDefinitions = New-Object System.Collections.Generic.List[object]
+$registryAliasDefinitions = New-Object System.Collections.Generic.List[object]
+$registryValidFiles = 0
 
 foreach ($pf in $patternFiles) {
     try {
         $json = Get-Content -LiteralPath $pf.FullName -Raw -Encoding UTF8
         if ([string]::IsNullOrWhiteSpace($json)) {
+            $registryInvalidDefinitions.Add([ordered]@{ file = $pf.Name; errors = @('empty definition') })
             continue
         }
-        $def  = $json | ConvertFrom-Json
+        $validated = Get-SinRegistryDefinition -File $pf -Json $json
+        if (-not $validated.valid) {
+            $registryInvalidDefinitions.Add([ordered]@{ file = $pf.Name; errors = @($validated.errors) })
+            Write-ScanLog "  [WARN] Invalid SIN definition in $($pf.Name): $(@($validated.errors) -join '; ')" 'Yellow'
+            continue
+        }
+        $registryValidFiles++
+        if (@($validated.usedAliases).Count -gt 0) { $registryAliasDefinitions.Add([ordered]@{ file = $pf.Name; aliases = @($validated.usedAliases) }) }
+        $def = $validated.definition.raw
         $props = $def.PSObject.Properties.Name
 
         $sinId = $null
         if ($props -contains 'sin_id' -and -not [string]::IsNullOrWhiteSpace("$($def.sin_id)")) {
             $sinId = "$($def.sin_id)"
-        } elseif ($props -contains 'id' -and -not [string]::IsNullOrWhiteSpace("$($def.id)")) {
+        }
+        elseif ($props -contains 'id' -and -not [string]::IsNullOrWhiteSpace("$($def.id)")) {
             $sinId = "$($def.id)"
-        } elseif ($props -contains 'pattern_id' -and -not [string]::IsNullOrWhiteSpace("$($def.pattern_id)")) {
+        }
+        elseif ($props -contains 'pattern_id' -and -not [string]::IsNullOrWhiteSpace("$($def.pattern_id)")) {
             $patternIdText = "$($def.pattern_id)".Trim()
             if ($patternIdText -match '^(?i)P\d+$') {
-                $digits = [int]($patternIdText -replace '^(?i)P','')
+                $digits = [int]($patternIdText -replace '^(?i)P', '')
                 $sinId = ('SIN-PATTERN-{0:D3}' -f $digits)
-            } else {
+            }
+            else {
                 $sinId = "SIN-PATTERN-$patternIdText"
             }
-        } else {
+        }
+        else {
             $sinId = if ($pf.BaseName -match '^(SIN-PATTERN-[^_]+)') { $Matches[1] } else { $pf.BaseName }
         }
 
         $scanRegex = $null
         if ($props -contains 'scan_regex' -and -not [string]::IsNullOrWhiteSpace("$($def.scan_regex)")) {
             $scanRegex = "$($def.scan_regex)"
-        } elseif ($props -contains 'scanner_pattern' -and -not [string]::IsNullOrWhiteSpace("$($def.scanner_pattern)")) {
+        }
+        elseif ($props -contains 'scanner_pattern' -and -not [string]::IsNullOrWhiteSpace("$($def.scanner_pattern)")) {
             $scanRegex = "$($def.scanner_pattern)"
-        } elseif ($props -contains 'detection_regex' -and -not [string]::IsNullOrWhiteSpace("$($def.detection_regex)")) {
+        }
+        elseif ($props -contains 'detection_regex' -and -not [string]::IsNullOrWhiteSpace("$($def.detection_regex)")) {
             $scanRegex = "$($def.detection_regex)"
         }
 
@@ -481,24 +556,26 @@ foreach ($pf in $patternFiles) {
 
         # Determine version scope and filter against -Runtime
         $scope = if ($props -contains 'ps_version_scope') { "$($def.ps_version_scope)" } else { 'BOTH' }
-        if ($Runtime -eq 'PS7'  -and $scope -eq 'PS51') { continue }   # PS5.1-only pattern - skip for PS7 target
-        if ($Runtime -eq 'PS51' -and $scope -eq 'PS7')  { continue }   # PS7-only pattern - skip for PS5.1 target
+        if ($Runtime -eq 'PS7' -and $scope -eq 'PS51') { continue }   # PS5.1-only pattern - skip for PS7 target
+        if ($Runtime -eq 'PS51' -and $scope -eq 'PS7') { continue }   # PS7-only pattern - skip for PS5.1 target
 
         $p = [ordered]@{
-            SinId             = $sinId
-            Severity          = if ($props -contains 'severity') { "$($def.severity)" } else { 'MEDIUM' }
-            Title             = if ($props -contains 'title')    { "$($def.title)" }    else { $sinId }
-            ScanRegex         = $scanRegex
-            Scope             = $scope
-            FileExcludeRegex  = if ($props -contains 'file_exclusion_regex' -and $null -ne $def.file_exclusion_regex) { "$($def.file_exclusion_regex)" } else { $null }
-            ContextGuardRegex = if ($props -contains 'context_guard_regex'  -and $null -ne $def.context_guard_regex)  { "$($def.context_guard_regex)"  } else { $null }
-            InlineGuardRegex  = if ($props -contains 'inline_guard_regex'   -and $null -ne $def.inline_guard_regex)   { "$($def.inline_guard_regex)"   } else { $null }
-            ContextGuardLines = if ($props -contains 'context_guard_lines') { [int]$def.context_guard_lines } else { 0 }
+            SinId                 = $sinId
+            Severity              = if ($props -contains 'severity') { "$($def.severity)" } else { 'MEDIUM' }
+            Title                 = if ($props -contains 'title') { "$($def.title)" }    else { $sinId }
+            ScanRegex             = $scanRegex
+            Scope                 = $scope
+            FileExcludeRegex      = if ($props -contains 'file_exclusion_regex' -and $null -ne $def.file_exclusion_regex) { "$($def.file_exclusion_regex)" } else { $null }
+            ContextGuardRegex     = if ($props -contains 'context_guard_regex' -and $null -ne $def.context_guard_regex) { "$($def.context_guard_regex)" } else { $null }
+            InlineGuardRegex      = if ($props -contains 'inline_guard_regex' -and $null -ne $def.inline_guard_regex) { "$($def.inline_guard_regex)" } else { $null }
+            ContextGuardLines     = if ($props -contains 'context_guard_lines') { [int]$def.context_guard_lines } else { 0 }
             ContextGuardDirection = if ($props -contains 'context_guard_direction' -and $null -ne $def.context_guard_direction) { "$($def.context_guard_direction)" } else { 'above' }
-            ScanFilePattern   = if ($props -contains 'scan_file_pattern' -and -not [string]::IsNullOrWhiteSpace("$($def.scan_file_pattern)")) { "$($def.scan_file_pattern)" } else { $null }
+            ScanFilePattern       = if ($props -contains 'scan_file_pattern' -and -not [string]::IsNullOrWhiteSpace("$($def.scan_file_pattern)")) { "$($def.scan_file_pattern)" } else { $null }
         }
         $patterns.Add($p)
-    } catch {
+    }
+    catch {
+        $registryInvalidDefinitions.Add([ordered]@{ file = $pf.Name; errors = @($_.Exception.Message) })
         Write-ScanLog "  [WARN] Failed to parse $($pf.Name): $_" 'Yellow'
     }
 }
@@ -510,9 +587,9 @@ Write-ScanLog "Patterns  : $($patterns.Count) loaded from $($patternFiles.Count)
 Write-ScanLog ('-' * 60)
 
 # ---- File discovery --------------------------------------------------------
-$excludeDirs = @('.git','.history','.venv','.venv-pygame312','node_modules',
-                 '~ARCHIVED','~DOWNLOADS','~REPORTS','checkpoints','UPM','sin_registry',
-                 'QUICK-APP','ActionPacks-master','temp')
+$excludeDirs = @('.git', '.history', '.venv', '.venv-pygame312', 'node_modules',
+    '~ARCHIVED', '~DOWNLOADS', '~REPORTS', 'checkpoints', 'UPM', 'sin_registry',
+    'QUICK-APP', 'ActionPacks-master', 'temp')
 
 # Normalize ExtraExtensions to lowercase with leading dot (e.g. '.bat').
 # Tolerate CLI quirk where '.bat,.xhtml' arrives as a single string by splitting on comma/semicolon.
@@ -526,7 +603,7 @@ foreach ($raw in $ExtraExtensions) {
         $normalizedExtras += $clean
     }
 }
-$allowedExts = @('.ps1','.psm1') + $normalizedExtras | Select-Object -Unique
+$allowedExts = @('.ps1', '.psm1') + $normalizedExtras | Select-Object -Unique
 Write-ScanLog ("Allowed exts : " + ($allowedExts -join ', ')) 'Cyan'
 
 $allFiles = New-Object System.Collections.Generic.List[object]
@@ -541,15 +618,17 @@ if (@($IncludeFiles).Count -gt 0) {
             $allFiles.Add($item)
         }
     }
-} else {
+}
+else {
     if ($ScanMode -eq 'Omega') {
         $omegaFound = Get-ChildItem -Path $WorkspacePath -Recurse -File -ErrorAction SilentlyContinue
         foreach ($f in $omegaFound) {
             if (Test-PathUnderExcludedDir -FullPath $f.FullName -ExcludedNames $OmegaExcludeDirs) { continue }
             $allFiles.Add($f)
         }
-    } else {
-        $globs = @('*.ps1','*.psm1') + ($normalizedExtras | ForEach-Object { '*' + $_ })
+    }
+    else {
+        $globs = @('*.ps1', '*.psm1') + ($normalizedExtras | ForEach-Object { '*' + $_ })
         foreach ($ext in ($globs | Select-Object -Unique)) {
             $found = Get-ChildItem -Path $WorkspacePath -Filter $ext -Recurse -File -ErrorAction SilentlyContinue
             foreach ($f in $found) {
@@ -575,7 +654,8 @@ function Test-PatternFileMatch {
         if ($g -like '*/*' -or $g -like '*\*') {
             # Path-relative glob (e.g. 'tests/Foo.ps1' or 'config/*.json')
             if ($FullName -like "*$($g.Replace('/','\'))*") { return $true }
-        } else {
+        }
+        else {
             $leaf = [System.IO.Path]::GetFileName($FullName)
             if ($leaf -like $g) { return $true }
         }
@@ -589,7 +669,7 @@ $extBreakdown = $allFiles | Group-Object Extension | Sort-Object Name | ForEach-
 Write-ScanLog ("  By extension: " + ($extBreakdown -join ', '))
 
 # ---- Scan ------------------------------------------------------------------
-$findings       = New-Object System.Collections.Generic.List[object]
+$findings = New-Object System.Collections.Generic.List[object]
 $patternSummary = New-Object System.Collections.Generic.List[object]
 $totalRawMatches = 0
 $totalSuppressed = 0
@@ -611,8 +691,8 @@ foreach ($pat in $patterns) {
                 $hasNonAscii = $false
                 foreach ($b in $bytes) { if ($b -gt 127) { $hasNonAscii = $true; break } }
                 if ($hasNonAscii -and -not $hasBom) {
-                    $relPath = $file.FullName.Replace($WorkspacePath,'').TrimStart('\')
-                    $findings.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; title=$pat.Title; file=$relPath; line=1; content='[NO BOM but non-ASCII bytes detected]' })
+                    $relPath = $file.FullName.Replace($WorkspacePath, '').TrimStart('\')
+                    $findings.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; title = $pat.Title; file = $relPath; line = 1; content = '[NO BOM but non-ASCII bytes detected]' })
                     $patFinds++; $patRaw++; $totalRawMatches++
                 }
             }
@@ -622,12 +702,12 @@ foreach ($pat in $patterns) {
                 if ($bytes.Length -ge 6 -and $bytes[0] -eq 0xC3 -and $bytes[1] -eq 0xAF -and $bytes[2] -eq 0xC2 -and $bytes[3] -eq 0xBB -and $bytes[4] -eq 0xC2 -and $bytes[5] -eq 0xBF) { $doubleBom = $true }
                 $mojibake = $false
                 for ($bi = 0; $bi -lt ($bytes.Length - 3); $bi++) {
-                    if ($bytes[$bi] -eq 0xC3 -and $bytes[$bi+1] -eq 0xA2 -and $bytes[$bi+2] -eq 0xE2 -and $bytes[$bi+3] -eq 0x80) { $mojibake = $true; break }
+                    if ($bytes[$bi] -eq 0xC3 -and $bytes[$bi + 1] -eq 0xA2 -and $bytes[$bi + 2] -eq 0xE2 -and $bytes[$bi + 3] -eq 0x80) { $mojibake = $true; break }
                 }
                 if ($doubleBom -or $mojibake) {
-                    $relPath = $file.FullName.Replace($WorkspacePath,'').TrimStart('\')
+                    $relPath = $file.FullName.Replace($WorkspacePath, '').TrimStart('\')
                     $kind = if ($doubleBom) { '[Double-encoded BOM detected]' } else { '[Mojibake byte sequence C3 A2 E2 80 detected]' }
-                    $findings.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; title=$pat.Title; file=$relPath; line=1; content=$kind })
+                    $findings.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; title = $pat.Title; file = $relPath; line = 1; content = $kind })
                     $patFinds++; $patRaw++; $totalRawMatches++
                 }
             }
@@ -648,8 +728,8 @@ foreach ($pat in $patterns) {
                             $lineHasNonAscii = $false
                             foreach ($ch in $ln.ToCharArray()) { if ([int][char]$ch -gt 127) { $lineHasNonAscii = $true; break } }
                             if ($lineHasNonAscii) {
-                                $relPath = $file.FullName.Replace($WorkspacePath,'').TrimStart('\')
-                                $findings.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; title=$pat.Title; file=$relPath; line=($li + 1); content='[Displayed non-ASCII UI with no chcp 65001 -> mojibake risk]' })
+                                $relPath = $file.FullName.Replace($WorkspacePath, '').TrimStart('\')
+                                $findings.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; title = $pat.Title; file = $relPath; line = ($li + 1); content = '[Displayed non-ASCII UI with no chcp 65001 -> mojibake risk]' })
                                 $patFinds++; $patRaw++; $totalRawMatches++
                                 break  # one finding per file is sufficient
                             }
@@ -658,7 +738,7 @@ foreach ($pat in $patterns) {
                 }
             }
         }
-        $patternSummary.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; rawMatches=$patRaw; suppressed=$patSupp; findings=$patFinds })
+        $patternSummary.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; rawMatches = $patRaw; suppressed = $patSupp; findings = $patFinds })
         continue
     }
 
@@ -668,24 +748,24 @@ foreach ($pat in $patterns) {
         foreach ($file in $allFiles) {
             if (-not (Test-PatternFileMatch -FullName $file.FullName -ScanFilePattern $pat.ScanFilePattern)) { continue }
             if ($file.Length -gt $sizeLimitBytes) {
-                $relPath = $file.FullName.Replace($WorkspacePath,'').TrimStart('\')
-                $sizeMB  = [math]::Round($file.Length / 1MB, 2)
-                $findings.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; title=$pat.Title; file=$relPath; line=1; content="[File size ${sizeMB}MB exceeds 5MB limit]" })
+                $relPath = $file.FullName.Replace($WorkspacePath, '').TrimStart('\')
+                $sizeMB = [math]::Round($file.Length / 1MB, 2)
+                $findings.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; title = $pat.Title; file = $relPath; line = 1; content = "[File size ${sizeMB}MB exceeds 5MB limit]" })
                 $patFinds++; $patRaw++; $totalRawMatches++
             }
         }
-        $patternSummary.Add([ordered]@{ sinId=$pat.SinId; severity=$pat.Severity; rawMatches=$patRaw; suppressed=$patSupp; findings=$patFinds })
+        $patternSummary.Add([ordered]@{ sinId = $pat.SinId; severity = $pat.Severity; rawMatches = $patRaw; suppressed = $patSupp; findings = $patFinds })
         continue
     }
     # -- End special scan logic --
 
-    $compiledScan    = [regex]::new($pat.ScanRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout)
-    $compiledExclude = if ($null -ne $pat.FileExcludeRegex)  { [regex]::new($pat.FileExcludeRegex,  [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) } else { $null }
-    $compiledGuard   = if ($null -ne $pat.ContextGuardRegex) { [regex]::new($pat.ContextGuardRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) } else { $null }
+    $compiledScan = [regex]::new($pat.ScanRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout)
+    $compiledExclude = if ($null -ne $pat.FileExcludeRegex) { [regex]::new($pat.FileExcludeRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) } else { $null }
+    $compiledGuard = if ($null -ne $pat.ContextGuardRegex) { [regex]::new($pat.ContextGuardRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) } else { $null }
     $compiledInlineGuard = if ($null -ne $pat.InlineGuardRegex) { [regex]::new($pat.InlineGuardRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) } else { $null }
 
-    $patRaw   = 0
-    $patSupp  = 0
+    $patRaw = 0
+    $patSupp = 0
     $patFinds = 0
     $script:CurrentPatternTimeouts = 0
 
@@ -700,14 +780,14 @@ foreach ($pat in $patterns) {
         if ($null -eq $lineArr) { continue }
         $lineCount = $lineArr.Count
 
-        $inBlockComment  = $false
-        $inHereStringDQ  = $false
-        $inHereStringSQ  = $false
+        $inBlockComment = $false
+        $inHereStringDQ = $false
+        $inHereStringSQ = $false
 
         for ($i = 0; $i -lt $lineCount; $i++) {
             if ($script:CurrentPatternTimeouts -ge $regexTimeoutAbortThreshold) { break }
             $line = $lineArr[$i]
-            if ([string]::IsNullOrWhiteSpace($line))    { continue }
+            if ([string]::IsNullOrWhiteSpace($line)) { continue }
 
             # -- Track multi-line context (block comments + here-strings) --
             if ($inBlockComment) {
@@ -731,8 +811,8 @@ foreach ($pat in $patterns) {
             if ($line -match '@"') { $inHereStringDQ = $true; continue }
             if ($line -match "@'") { $inHereStringSQ = $true; continue }
 
-            if ($line -match '^\s*#')                   { continue }
-            if ($line -match '#\s*SIN-EXEMPT:')         { continue }
+            if ($line -match '^\s*#') { continue }
+            if ($line -match '#\s*SIN-EXEMPT:') { continue }
 
             if (-not (Test-RegexMatchSafe -Regex $compiledScan -InputText $line)) { continue }
             $totalRawMatches++
@@ -747,20 +827,21 @@ foreach ($pat in $patterns) {
                     # ContextGuardLines=0 means same-line guard: suppress if the guard regex
                     # also matches the current line (e.g. TODO inside a string literal)
                     if (Test-RegexMatchSafe -Regex $compiledGuard -InputText $line) { $suppressed = $true }
-                } else {
+                }
+                else {
                     $guardDirection = "$($pat.ContextGuardDirection)".ToLowerInvariant()
                     switch ($guardDirection) {
                         'below' {
                             $gStart = [Math]::Min($lineCount - 1, $i + 1)
-                            $gEnd   = [Math]::Min($lineCount - 1, $i + $pat.ContextGuardLines)
+                            $gEnd = [Math]::Min($lineCount - 1, $i + $pat.ContextGuardLines)
                         }
                         'both' {
                             $gStart = [Math]::Max(0, $i - $pat.ContextGuardLines)
-                            $gEnd   = [Math]::Min($lineCount - 1, $i + $pat.ContextGuardLines)
+                            $gEnd = [Math]::Min($lineCount - 1, $i + $pat.ContextGuardLines)
                         }
                         default {
                             $gStart = [Math]::Max(0, $i - $pat.ContextGuardLines)
-                            $gEnd   = [Math]::Max(0, $i - 1)
+                            $gEnd = [Math]::Max(0, $i - 1)
                         }
                     }
                     for ($g = $gStart; $g -le $gEnd; $g++) {
@@ -772,17 +853,17 @@ foreach ($pat in $patterns) {
             if ($suppressed) { $totalSuppressed++; $patSupp++; continue }
 
             $trimmed = $line.Trim()
-            $snip    = $trimmed.Substring(0, [Math]::Min(160, $trimmed.Length))
+            $snip = $trimmed.Substring(0, [Math]::Min(160, $trimmed.Length))
             $relPath = $file.FullName.Replace($WorkspacePath, '').TrimStart('\')
 
             $findings.Add([ordered]@{
-                sinId    = $pat.SinId
-                severity = $pat.Severity
-                title    = $pat.Title
-                file     = $relPath
-                line     = ($i + 1)
-                content  = $snip
-            })
+                    sinId    = $pat.SinId
+                    severity = $pat.Severity
+                    title    = $pat.Title
+                    file     = $relPath
+                    line     = ($i + 1)
+                    content  = $snip
+                })
             $patFinds++
         }
     }
@@ -792,12 +873,12 @@ foreach ($pat in $patterns) {
     }
 
     $patternSummary.Add([ordered]@{
-        sinId      = $pat.SinId
-        severity   = $pat.Severity
-        rawMatches = $patRaw
-        suppressed = $patSupp
-        findings   = $patFinds
-    })
+            sinId      = $pat.SinId
+            severity   = $pat.Severity
+            rawMatches = $patRaw
+            suppressed = $patSupp
+            findings   = $patFinds
+        })
 }
 
 # ---- P011 cross-file deduplication -----------------------------------------
@@ -836,9 +917,9 @@ if (@($p011Findings).Count -gt 0) {
 $sw.Stop()
 
 $critCount = @($findings | Where-Object { $_.severity -eq 'CRITICAL' }).Count
-$highCount = @($findings | Where-Object { $_.severity -eq 'HIGH'     }).Count
-$medCount  = @($findings | Where-Object { $_.severity -eq 'MEDIUM'   }).Count
-$lowCount  = @($findings | Where-Object { $_.severity -eq 'LOW'      }).Count
+$highCount = @($findings | Where-Object { $_.severity -eq 'HIGH' }).Count
+$medCount = @($findings | Where-Object { $_.severity -eq 'MEDIUM' }).Count
+$lowCount = @($findings | Where-Object { $_.severity -eq 'LOW' }).Count
 $blockedById = [ordered]@{}
 foreach ($blockId in @($FailOnSinId | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })) {
     $matchCount = @($findings | Where-Object { Test-SinIdMatch -FindingSinId $_.sinId -TargetId $blockId }).Count
@@ -899,40 +980,58 @@ if (-not [string]::IsNullOrWhiteSpace($BaselineJson) -and (Test-Path -LiteralPat
         }
         $baselineApplied = $true
         Write-ScanLog ("Baseline applied [$RatchetMode]: {0} tracked sin_ids; regressions: {1}; improvements: {2}" -f $baseCounts.Keys.Count, $regressions.Count, $improvements.Count) 'Cyan'
-    } catch {
+    }
+    catch {
         Write-ScanLog "  [WARN] Failed to load baseline: $_" 'Yellow'
     }
 }
 
 $resultObj = [ordered]@{
-    runtime         = $Runtime
-    scanMode        = $ScanMode
-    scanId          = $scanId
-    timestamp       = (Get-Date -Format 'o')
-    workspace       = $WorkspacePath
-    patternsLoaded  = $patterns.Count
-    filesScanned    = $allFiles.Count
-    totalFindings   = $findings.Count
-    critical        = $critCount
-    high            = $highCount
-    medium          = $medCount
-    low             = $lowCount
-    blockedById     = $blockedById
-    blockedCount    = $blockedCount
-    regexTimeoutMs  = [int]$regexMatchTimeout.TotalMilliseconds
+    runtime                    = $Runtime
+    scanMode                   = $ScanMode
+    scanId                     = $scanId
+    timestamp                  = (Get-Date -Format 'o')
+    workspace                  = $WorkspacePath
+    patternsLoaded             = $patterns.Count
+    filesScanned               = $allFiles.Count
+    totalFindings              = $findings.Count
+    critical                   = $critCount
+    high                       = $highCount
+    medium                     = $medCount
+    low                        = $lowCount
+    blockedById                = $blockedById
+    blockedCount               = $blockedCount
+    regexTimeoutMs             = [int]$regexMatchTimeout.TotalMilliseconds
     regexTimeoutAbortThreshold = $regexTimeoutAbortThreshold
-    regexTimeouts   = $script:RegexMatchTimeoutCount
-    totalRawMatches = $totalRawMatches
-    totalSuppressed = $totalSuppressed
-    elapsedMs       = $sw.ElapsedMilliseconds
-    patternSummary  = $patternSummary.ToArray()
-    findings        = $findings.ToArray()
-    countsBySinId   = $currentCounts
-    baselinePath    = $BaselineJson
-    baselineApplied = $baselineApplied
-    ratchetMode     = $RatchetMode
-    regressions     = $regressions
-    improvements    = $improvements
+    regexTimeouts              = $script:RegexMatchTimeoutCount
+    totalRawMatches            = $totalRawMatches
+    totalSuppressed            = $totalSuppressed
+    elapsedMs                  = $sw.ElapsedMilliseconds
+    patternSummary             = $patternSummary.ToArray()
+    findings                   = $findings.ToArray()
+    countsBySinId              = $currentCounts
+    baselinePath               = $BaselineJson
+    baselineApplied            = $baselineApplied
+    ratchetMode                = $RatchetMode
+    regressions                = $regressions
+    improvements               = $improvements
+    registry                   = [ordered]@{
+        filesDiscovered         = $patternFiles.Count
+        validDefinitions        = $registryValidFiles
+        invalidDefinitions      = $registryInvalidDefinitions.ToArray()
+        invalidCount            = $registryInvalidDefinitions.Count
+        compatibilityAliasCount = $registryAliasDefinitions.Count
+        compatibilityAliases    = $registryAliasDefinitions.ToArray()
+    }
+    coverage                   = [ordered]@{
+        staged              = (@($IncludeFiles).Count -gt 0)
+        stagedFallback      = if (@($IncludeFiles).Count -gt 0) { 'explicit-include' } else { 'workspace-discovery' }
+        discoveredFiles     = $allFiles.Count
+        applicablePatterns  = $patterns.Count
+        patternsWithMatches = @($patternSummary | Where-Object { [int]$_.rawMatches -gt 0 }).Count
+        percent             = if ($patterns.Count -gt 0) { [math]::Round((100 * @($patternSummary | Where-Object { [int]$_.rawMatches -gt 0 }).Count) / $patterns.Count, 2) } else { 0 }
+        minimumPercent      = $MinimumCoveragePercent
+    }
 }
 
 # ---- OMEGA auto-route to pipeline + checkpoints ---------------------------
@@ -982,12 +1081,13 @@ if ($omegaEnabled -and $omegaModeSelected -and $omegaHasFindings) {
                             -Priority (if ($null -ne $top -and $top.severity -eq 'CRITICAL') { 'CRITICAL' } elseif ($null -ne $top -and $top.severity -eq 'HIGH') { 'HIGH' } else { 'MEDIUM' }) `
                             -Source 'AutoCron' -Category 'manifest-omega' -AffectedFiles @($fileRel) -SuggestedBy 'OMEGA-Scanner'
                         $opBug = Invoke-OmegaPipelineBoundedOperation -PipelineModulePath $pipelineModule -WorkspacePath $WorkspacePath -Operation 'AddItem' -TimeoutMs $OmegaRouteOpTimeoutMs -Item $bug
-                        $omegaSummary.trace += ([ordered]@{ file=$fileRel; route='manifest'; operation='AddItem(Bug)'; ok=[bool]$opBug.ok; timedOut=[bool]$opBug.timedOut; elapsedMs=[int]$opBug.elapsedMs; error=[string]$opBug.error })
+                        $omegaSummary.trace += ([ordered]@{ file = $fileRel; route = 'manifest'; operation = 'AddItem(Bug)'; ok = [bool]$opBug.ok; timedOut = [bool]$opBug.timedOut; elapsedMs = [int]$opBug.elapsedMs; error = [string]$opBug.error })
                         if ($opBug.timedOut) { $omegaSummary.routeTimeouts++ }
                         if ($opBug.ok -and $null -ne $opBug.result) {
                             $omegaSummary.bugsCreated++
                             $addedBug = $opBug.result
-                        } else {
+                        }
+                        else {
                             $cpPath = New-OmegaFallbackArtifact -WorkspacePath $WorkspacePath -RouteType 'manifest' -File $fileRel -FileFindings $fileFindings -Operation 'AddItem(Bug)' -Reason $opBug.error -TimedOut ([bool]$opBug.timedOut) -ElapsedMs ([int]$opBug.elapsedMs) -TimeoutMs ([int]$OmegaRouteOpTimeoutMs)
                             if (-not [string]::IsNullOrWhiteSpace($cpPath)) { $omegaSummary.checkpointsCreated++; $omegaSummary.fallbackArtifacts++ }
                             continue
@@ -1002,40 +1102,45 @@ if ($omegaEnabled -and $omegaModeSelected -and $omegaHasFindings) {
                             -SinId (if ($addedBug.PSObject.Properties.Name -contains 'sinId') { [string]$addedBug.sinId } else { '' }) `
                             -SinPattern (if ($addedBug.PSObject.Properties.Name -contains 'sinPattern') { [string]$addedBug.sinPattern } else { '' })
                         $opFix = Invoke-OmegaPipelineBoundedOperation -PipelineModulePath $pipelineModule -WorkspacePath $WorkspacePath -Operation 'AddItem' -TimeoutMs $OmegaRouteOpTimeoutMs -Item $fix
-                        $omegaSummary.trace += ([ordered]@{ file=$fileRel; route='manifest'; operation='AddItem(Bugs2FIX)'; ok=[bool]$opFix.ok; timedOut=[bool]$opFix.timedOut; elapsedMs=[int]$opFix.elapsedMs; error=[string]$opFix.error })
+                        $omegaSummary.trace += ([ordered]@{ file = $fileRel; route = 'manifest'; operation = 'AddItem(Bugs2FIX)'; ok = [bool]$opFix.ok; timedOut = [bool]$opFix.timedOut; elapsedMs = [int]$opFix.elapsedMs; error = [string]$opFix.error })
                         if ($opFix.timedOut) { $omegaSummary.routeTimeouts++ }
                         if ($opFix.ok -and $null -ne $opFix.result) {
                             $omegaSummary.bugs2FixCreated++
                             $addedFix = $opFix.result
                             $opStatus = Invoke-OmegaPipelineBoundedOperation -PipelineModulePath $pipelineModule -WorkspacePath $WorkspacePath -Operation 'UpdateStatus' -TimeoutMs $OmegaRouteOpTimeoutMs -ItemId ([string]$addedFix.id) -NewStatus 'PLANNED' -Notes 'OMEGA auto-routed manifest issue'
-                            $omegaSummary.trace += ([ordered]@{ file=$fileRel; route='manifest'; operation='UpdateStatus(PLANNED)'; ok=[bool]$opStatus.ok; timedOut=[bool]$opStatus.timedOut; elapsedMs=[int]$opStatus.elapsedMs; error=[string]$opStatus.error })
+                            $omegaSummary.trace += ([ordered]@{ file = $fileRel; route = 'manifest'; operation = 'UpdateStatus(PLANNED)'; ok = [bool]$opStatus.ok; timedOut = [bool]$opStatus.timedOut; elapsedMs = [int]$opStatus.elapsedMs; error = [string]$opStatus.error })
                             if ($opStatus.timedOut) { $omegaSummary.routeTimeouts++ }
-                        } else {
+                        }
+                        else {
                             $cpPath = New-OmegaFallbackArtifact -WorkspacePath $WorkspacePath -RouteType 'manifest' -File $fileRel -FileFindings $fileFindings -Operation 'AddItem(Bugs2FIX)' -Reason $opFix.error -TimedOut ([bool]$opFix.timedOut) -ElapsedMs ([int]$opFix.elapsedMs) -TimeoutMs ([int]$OmegaRouteOpTimeoutMs)
                             if (-not [string]::IsNullOrWhiteSpace($cpPath)) { $omegaSummary.checkpointsCreated++; $omegaSummary.fallbackArtifacts++ }
                         }
-                    } catch {
+                    }
+                    catch {
                         $omegaSummary.errors += ("manifest-route {0}: {1}" -f $fileRel, $_.Exception.Message)
                     }
-                } else {
+                }
+                else {
                     $omegaSummary.nonManifest++
                     try {
                         $item = New-PipelineItem -Type 'Items2ADD' -Title ("FEATURES2ADD OMEGA checkpoint: {0}" -f $fileRel) `
                             -Description ("File is not represented in current manifest set. OMEGA findings: {0}. SINs: {1}. If approved, add to manifest and integrate pipeline flow." -f @($fileFindings).Count, (@($fileFindings | ForEach-Object { $_.sinId } | Sort-Object -Unique) -join ', ')) `
                             -Priority 'MEDIUM' -Source 'Subagent' -Category 'omega-checkpoint' -SuggestedBy 'OMEGA-Scanner' -AffectedFiles @($fileRel)
                         $opItem = Invoke-OmegaPipelineBoundedOperation -PipelineModulePath $pipelineModule -WorkspacePath $WorkspacePath -Operation 'AddItem' -TimeoutMs $OmegaRouteOpTimeoutMs -Item $item
-                        $omegaSummary.trace += ([ordered]@{ file=$fileRel; route='nonmanifest'; operation='AddItem(Items2ADD)'; ok=[bool]$opItem.ok; timedOut=[bool]$opItem.timedOut; elapsedMs=[int]$opItem.elapsedMs; error=[string]$opItem.error })
+                        $omegaSummary.trace += ([ordered]@{ file = $fileRel; route = 'nonmanifest'; operation = 'AddItem(Items2ADD)'; ok = [bool]$opItem.ok; timedOut = [bool]$opItem.timedOut; elapsedMs = [int]$opItem.elapsedMs; error = [string]$opItem.error })
                         if ($opItem.timedOut) { $omegaSummary.routeTimeouts++ }
                         if ($opItem.ok -and $null -ne $opItem.result) {
                             $addedItem = $opItem.result
                             $omegaSummary.items2AddCreated++
                             $cpPath = New-OmegaCheckpointEntry -WorkspacePath $WorkspacePath -File $fileRel -FileFindings $fileFindings -LinkedItemId $addedItem.id
                             if (-not [string]::IsNullOrWhiteSpace($cpPath)) { $omegaSummary.checkpointsCreated++ }
-                        } else {
+                        }
+                        else {
                             $cpPath = New-OmegaFallbackArtifact -WorkspacePath $WorkspacePath -RouteType 'nonmanifest' -File $fileRel -FileFindings $fileFindings -Operation 'AddItem(Items2ADD)' -Reason $opItem.error -TimedOut ([bool]$opItem.timedOut) -ElapsedMs ([int]$opItem.elapsedMs) -TimeoutMs ([int]$OmegaRouteOpTimeoutMs)
                             if (-not [string]::IsNullOrWhiteSpace($cpPath)) { $omegaSummary.checkpointsCreated++; $omegaSummary.fallbackArtifacts++ }
                         }
-                    } catch {
+                    }
+                    catch {
                         $omegaSummary.errors += ("nonmanifest-route {0}: {1}" -f $fileRel, $_.Exception.Message)
                     }
                 }
@@ -1043,10 +1148,12 @@ if ($omegaEnabled -and $omegaModeSelected -and $omegaHasFindings) {
 
             # OMEGA scan should not block on heavy artifact rebuilds; downstream cron can refresh artifacts.
             # try { $null = Invoke-PipelineArtifactRefresh -WorkspacePath $WorkspacePath } catch { <# Intentional: non-fatal #> }
-        } catch {
+        }
+        catch {
             $omegaSummary.errors += ("pipeline-module: " + $_.Exception.Message)
         }
-    } else {
+    }
+    else {
         $omegaSummary.errors += ("pipeline-module-missing: {0}" -f $pipelineModule)
     }
 
@@ -1057,36 +1164,45 @@ ConvertTo-Json $resultObj -Depth 8 | Set-Content -LiteralPath $OutputJson -Encod
 
 if ($SummaryOnly) {
     $resultObj = [ordered]@{
-        runtime         = $resultObj.runtime
-        scanMode        = $resultObj.scanMode
-        scanId          = $resultObj.scanId
-        timestamp       = $resultObj.timestamp
-        workspace       = $resultObj.workspace
-        patternsLoaded  = $resultObj.patternsLoaded
-        filesScanned    = $resultObj.filesScanned
-        totalFindings   = $resultObj.totalFindings
-        critical        = $resultObj.critical
-        high            = $resultObj.high
-        medium          = $resultObj.medium
-        low             = $resultObj.low
-        blockedById     = $resultObj.blockedById
-        blockedCount    = $resultObj.blockedCount
-        regexTimeoutMs  = $resultObj.regexTimeoutMs
+        runtime                    = $resultObj.runtime
+        scanMode                   = $resultObj.scanMode
+        scanId                     = $resultObj.scanId
+        timestamp                  = $resultObj.timestamp
+        workspace                  = $resultObj.workspace
+        patternsLoaded             = $resultObj.patternsLoaded
+        filesScanned               = $resultObj.filesScanned
+        totalFindings              = $resultObj.totalFindings
+        critical                   = $resultObj.critical
+        high                       = $resultObj.high
+        medium                     = $resultObj.medium
+        low                        = $resultObj.low
+        blockedById                = $resultObj.blockedById
+        blockedCount               = $resultObj.blockedCount
+        regexTimeoutMs             = $resultObj.regexTimeoutMs
         regexTimeoutAbortThreshold = $resultObj.regexTimeoutAbortThreshold
-        regexTimeouts   = $resultObj.regexTimeouts
-        totalRawMatches = $resultObj.totalRawMatches
-        totalSuppressed = $resultObj.totalSuppressed
-        elapsedMs       = $resultObj.elapsedMs
-        countsBySinId   = $resultObj.countsBySinId
-        baselinePath    = $resultObj.baselinePath
-        baselineApplied = $resultObj.baselineApplied
-        ratchetMode     = $resultObj.ratchetMode
-        regressions     = $resultObj.regressions
-        improvements    = $resultObj.improvements
+        regexTimeouts              = $resultObj.regexTimeouts
+        totalRawMatches            = $resultObj.totalRawMatches
+        totalSuppressed            = $resultObj.totalSuppressed
+        elapsedMs                  = $resultObj.elapsedMs
+        countsBySinId              = $resultObj.countsBySinId
+        baselinePath               = $resultObj.baselinePath
+        baselineApplied            = $resultObj.baselineApplied
+        ratchetMode                = $resultObj.ratchetMode
+        regressions                = $resultObj.regressions
+        improvements               = $resultObj.improvements
     }
 }
 
 if (-not $Quiet) { Write-ScanLog "Results  : $OutputJson" }
+
+if ($FailOnInvalidRegistry -and $registryInvalidDefinitions.Count -gt 0) {
+    Write-ScanLog "[PIPELINE BLOCKED] $($registryInvalidDefinitions.Count) invalid SIN registry definition(s)." 'Red'
+    exit 1
+}
+if ($MinimumCoveragePercent -gt 0 -and [double]$resultObj.coverage.percent -lt $MinimumCoveragePercent) {
+    Write-ScanLog "[PIPELINE BLOCKED] Registry scan coverage $($resultObj.coverage.percent)% is below $MinimumCoveragePercent%." 'Red'
+    exit 1
+}
 
 # Optional: write/update baseline file (must be after scan; uses $currentCounts)
 if (-not [string]::IsNullOrWhiteSpace($BaselineJson) -and $UpdateBaseline) {
@@ -1110,17 +1226,20 @@ if ($FailOnCritical -and $critCount -gt 0) {
         if ($regressions.Count -gt 0) {
             $blockNeeded = $true
             $blockReason = "$($regressions.Count) regression(s): " + (($regressions | ForEach-Object { "$($_.sinId): $($_.baseline)->$($_.current) (+$($_.delta))" }) -join '; ')
-        } elseif ($RatchetMode -eq 'Strict' -and $improvements.Count -gt 0) {
+        }
+        elseif ($RatchetMode -eq 'Strict' -and $improvements.Count -gt 0) {
             $blockNeeded = $true
             $blockReason = "Strict mode: $($improvements.Count) un-recorded improvement(s) - refresh baseline (-UpdateBaseline): " + (($improvements | ForEach-Object { "$($_.sinId): $($_.baseline)->$($_.current) (-$($_.delta))" }) -join '; ')
         }
         if ($blockNeeded) {
             Write-ScanLog "[PIPELINE BLOCKED] $blockReason" 'Red'
             exit 1
-        } else {
+        }
+        else {
             Write-ScanLog "[PIPELINE OK] $critCount CRITICAL finding(s) all within baseline tolerance. No regressions." 'Green'
         }
-    } else {
+    }
+    else {
         Write-ScanLog "[PIPELINE BLOCKED] $critCount CRITICAL SIN finding(s). Fix before proceeding (or supply -BaselineJson + run once with -UpdateBaseline to ratchet)." 'Red'
         exit 1
     }
