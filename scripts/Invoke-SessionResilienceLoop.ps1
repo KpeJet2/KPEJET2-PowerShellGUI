@@ -95,7 +95,8 @@ if (-not (Test-Path -LiteralPath $logRoot)) {
 $modulePath = Join-Path (Join-Path $WorkspacePath 'modules') 'SessionOutcomeClassifier.psm1'
 try {
     Import-Module $modulePath -Force -ErrorAction Stop
-} catch {
+}
+catch {
     throw "Failed to import SessionOutcomeClassifier: $($_.Exception.Message)"
 }
 
@@ -141,7 +142,8 @@ function Read-JsonArray {
     if (-not (Test-Path -LiteralPath $Path)) { return @() }
     try {
         $data = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
-    } catch {
+    }
+    catch {
         return @()
     }
     if ($null -eq $data) { return @() }
@@ -153,7 +155,8 @@ function Test-LockOwnerAlive {
     if (-not (Test-Path -LiteralPath $Path)) { return $false }
     try {
         $lock = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
-    } catch {
+    }
+    catch {
         return $false
     }
     if ($null -eq $lock -or $lock.PSObject.Properties.Name -notcontains 'pid') { return $false }
@@ -210,11 +213,13 @@ function Invoke-OneSession {
         if ($size -ne $lastSize) {
             $lastSize = $size
             $lastProgress = Get-Date
-        } elseif ($IdleTimeoutSeconds -gt 0 -and ((Get-Date) - $lastProgress).TotalSeconds -ge $IdleTimeoutSeconds) {
+        }
+        elseif ($IdleTimeoutSeconds -gt 0 -and ((Get-Date) - $lastProgress).TotalSeconds -ge $IdleTimeoutSeconds) {
             $timedOut = $true
             try {
                 Stop-Process -Id $proc.Id -Force -ErrorAction Stop
-            } catch {
+            }
+            catch {
                 Write-LoopLine "Could not kill hung session PID $($proc.Id): $($_.Exception.Message)" 'Yellow'
             }
             break
@@ -295,9 +300,9 @@ function Show-RepeatFailureDecision {
     )
 
     $message = "The same failure has now repeated $RepeatCount times in a row.`r`n`r`n" +
-               "Signature : $($Signature.Substring(0, [math]::Min(16, $Signature.Length)))`r`n" +
-               "Last cause: $LastReason`r`n`r`n" +
-               'Hover any button for a full description of what it does.'
+    "Signature : $($Signature.Substring(0, [math]::Min(16, $Signature.Length)))`r`n" +
+    "Last cause: $LastReason`r`n`r`n" +
+    'Hover any button for a full description of what it does.'
 
     return Show-SessionLoopDecision -Title 'Session Resilience Loop - repeated failure' `
         -Message $message -Options $options -TimeoutSeconds $TimeoutSeconds -NonInteractive:$Headless
@@ -326,7 +331,7 @@ if ($Status.IsPresent) {
     if (@($ledger).Count -gt 0) {
         @($ledger) | Select-Object -Last 10 |
             Format-Table Attempt, PhaseName, Outcome, DurationSeconds, DelaySeconds, Steering -AutoSize |
-            Out-String | Write-Host
+                Out-String | Write-Host
     }
     return
 }
@@ -342,7 +347,7 @@ if ($DetectOnly.IsPresent) {
     Write-LoopLine "Retryable sessions found today: $($found.Count)" 'Yellow'
     $found | Select-Object -First 15 |
         Format-Table SessionId, Recommendation, LastWriteTime, FailurePattern -AutoSize |
-        Out-String | Write-Host
+            Out-String | Write-Host
     Write-LoopLine "Best candidate: $($bestCandidate.Path)" 'Cyan'
     Write-LoopLine "Last action  : $($bestCandidate.LastAction)" 'Cyan'
     return
@@ -383,12 +388,12 @@ if (Test-Path -LiteralPath $stopPath) {
 }
 
 Save-Json -Path $lockPath -Data ([pscustomobject]@{
-    pid       = $PID
-    startedAt = (Get-Date).ToString('o')
-    command   = $SessionCommand
-    resumeToday = $ResumeToday.IsPresent
-    targetSessionPath = if ($null -eq $selectedRetryableSession) { '' } else { [string]$selectedRetryableSession.Path }
-})
+        pid               = $PID
+        startedAt         = (Get-Date).ToString('o')
+        command           = $SessionCommand
+        resumeToday       = $ResumeToday.IsPresent
+        targetSessionPath = if ($null -eq $selectedRetryableSession) { '' } else { [string]$selectedRetryableSession.Path }
+    })
 
 $ladder = @($config.ladder)
 $phaseIndex = 0
@@ -435,7 +440,7 @@ try {
         $phaseName = [string]$phaseItem.name
 
         Write-LoopLine ("Attempt {0} | phase {1} ({2}) | steering: {3}" -f `
-            $totalAttempts, $phaseIndex, $phaseName, [bool]$applySteering) 'White'
+                $totalAttempts, $phaseIndex, $phaseName, [bool]$applySteering) 'White'
 
         if ($DryRun.IsPresent) {
             $run = [pscustomobject]@{
@@ -445,7 +450,8 @@ try {
                 TranscriptPath  = ''
                 TranscriptText  = 'DRYRUN: simulated near-immediate failure'
             }
-        } else {
+        }
+        else {
             $run = Invoke-OneSession -Command $SessionCommand -OutDir $logRoot `
                 -AttemptNumber $totalAttempts -IdleTimeoutSeconds $HangSeconds -Steering $steeringText
         }
@@ -476,24 +482,24 @@ try {
         if ($null -ne $plan) { $plannedDelay = [int]$plan.DelaySeconds }
 
         $ledger += [pscustomobject]@{
-            Attempt         = $totalAttempts
-            PhaseIndex      = $phaseIndex
-            PhaseName       = $phaseName
-            PhaseAttempt    = $phaseAttempt
-            StartedAt       = (Get-Date).ToString('o')
-            DurationSeconds = $outcome.DurationSeconds
-            ExitCode        = $run.ExitCode
-            Outcome         = $outcome.Outcome
-            Reason          = $outcome.Reason
-            NearImmediate   = $outcome.NearImmediate
-            PendingTodos    = $pendingTodos
-            FailedTests     = $failedTests
-            Steering        = $applySteering
+            Attempt           = $totalAttempts
+            PhaseIndex        = $phaseIndex
+            PhaseName         = $phaseName
+            PhaseAttempt      = $phaseAttempt
+            StartedAt         = (Get-Date).ToString('o')
+            DurationSeconds   = $outcome.DurationSeconds
+            ExitCode          = $run.ExitCode
+            Outcome           = $outcome.Outcome
+            Reason            = $outcome.Reason
+            NearImmediate     = $outcome.NearImmediate
+            PendingTodos      = $pendingTodos
+            FailedTests       = $failedTests
+            Steering          = $applySteering
             TargetSessionPath = if ($null -eq $selectedRetryableSession) { '' } else { [string]$selectedRetryableSession.Path }
-            Signature       = $signature
-            RepeatCount     = $repeatCount
-            DelaySeconds    = $plannedDelay
-            TranscriptPath  = $run.TranscriptPath
+            Signature         = $signature
+            RepeatCount       = $repeatCount
+            DelaySeconds      = $plannedDelay
+            TranscriptPath    = $run.TranscriptPath
         }
         Save-Json -Path $ledgerPath -Data $ledger
 
@@ -553,15 +559,15 @@ try {
         }
 
         Save-Json -Path $statePath -Data ([pscustomobject]@{
-            updatedAt     = (Get-Date).ToString('o')
-            totalAttempts = $totalAttempts
-            phaseIndex    = $phaseIndex
-            phaseAttempt  = $phaseAttempt
-            steering      = $applySteering
-            lastOutcome   = $outcome.Outcome
-            lastSignature = $lastSignature
-            repeatCount   = $repeatCount
-        })
+                updatedAt     = (Get-Date).ToString('o')
+                totalAttempts = $totalAttempts
+                phaseIndex    = $phaseIndex
+                phaseAttempt  = $phaseAttempt
+                steering      = $applySteering
+                lastOutcome   = $outcome.Outcome
+                lastSignature = $lastSignature
+                repeatCount   = $repeatCount
+            })
 
         if ($DryRun.IsPresent -and $totalAttempts -ge 40) {
             Write-LoopLine 'Dry run sample complete (40 attempts simulated).' 'Yellow'
@@ -569,16 +575,17 @@ try {
             break
         }
     }
-} finally {
+}
+finally {
     Save-Json -Path $statePath -Data ([pscustomobject]@{
-        updatedAt     = (Get-Date).ToString('o')
-        totalAttempts = $totalAttempts
-        phaseIndex    = $phaseIndex
-        phaseAttempt  = $phaseAttempt
-        steering      = $applySteering
-        finalOutcome  = $finalOutcome
-        elapsedHours  = [math]::Round(((Get-Date) - $loopStart).TotalHours, 3)
-    })
+            updatedAt     = (Get-Date).ToString('o')
+            totalAttempts = $totalAttempts
+            phaseIndex    = $phaseIndex
+            phaseAttempt  = $phaseAttempt
+            steering      = $applySteering
+            finalOutcome  = $finalOutcome
+            elapsedHours  = [math]::Round(((Get-Date) - $loopStart).TotalHours, 3)
+        })
     if (Test-Path -LiteralPath $lockPath) {
         Remove-Item -LiteralPath $lockPath -Force -ErrorAction SilentlyContinue
     }
