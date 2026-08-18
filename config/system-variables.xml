@@ -1,27 +1,27 @@
 <SystemVariables>
-  <PSVersion>7.6.4</PSVersion>
+  <UserName>msaib</UserName>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
+  <ExecutionDate>2026-08-18 23:06:39</ExecutionDate>
+  <ComputerName>XPS15-MS</ComputerName>
+  <UserDomain>XPS15-MS</UserDomain>
+  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
   <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
   <PowerShellVersion>7</PowerShellVersion>
-  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
-  <ExecutionDate>2026-07-28 03:13:16</ExecutionDate>
-  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
-  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
-  <ProgramFiles>C:\Program Files</ProgramFiles>
-  <UserName>msaib</UserName>
-  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
+  <PSVersion>7.6.5</PSVersion>
   <AppData>C:\Users\msaib\AppData\Roaming</AppData>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <ProcessorCount>
+  </ProcessorCount>
+  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
   <SystemRoot>C:\WINDOWS</SystemRoot>
   <Windows>
   </Windows>
-  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
   <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
-  <UserDomain>XPS15-MS</UserDomain>
-  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
-  <ComputerName>XPS15-MS</ComputerName>
-  <ProcessorCount>
-  </ProcessorCount>
+  <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
+  <ProgramFiles>C:\Program Files</ProgramFiles>
   <Version>
-    <Major>2607</Major>
+    <Major>2608</Major>
     <Minor>B0</Minor>
     <Build>0</Build>
   </Version>

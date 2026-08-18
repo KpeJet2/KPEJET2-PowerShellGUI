@@ -1,4 +1,4 @@
-# VersionTag: 2607.B7.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # FileRole: Script
 <#
 .SYNOPSIS
@@ -79,22 +79,22 @@ $findings = if ($scanProps -contains 'findings' -and $null -ne $scan.findings) {
 } else {
     @()
 }
-Write-Host ("Loaded {0} raw findings from scanner output ({1})." -f $findings.Count, $scanGeneratedAt) -ForegroundColor Cyan
+Write-Host ("Loaded {0} raw findings from scanner output ({1})." -f @($findings).Count, $scanGeneratedAt) -ForegroundColor Cyan
 
 # Severity filter (case-insensitive). Accept canonical aliases.
 $sevSet = @{}
 foreach ($s in $SeverityFilter) { $sevSet[$s.ToUpperInvariant()] = $true }
 $keep = @($findings | Where-Object { $sevSet.ContainsKey(([string]$_.severity).ToUpperInvariant()) })
-Write-Host ("After severity filter [{0}]: {1} findings." -f ($SeverityFilter -join ','), $keep.Count) -ForegroundColor Gray
+Write-Host ("After severity filter [{0}]: {1} findings." -f ($SeverityFilter -join ','), @($keep).Count) -ForegroundColor Gray
 
 # Group by (sinId, file) so each Bug represents one violation hotspot, not one line.
-$grouped = $keep | Group-Object -Property { '{0}|{1}' -f $_.sinId, $_.file }
-Write-Host ("Distinct (sinId,file) hotspots: {0}." -f $grouped.Count) -ForegroundColor Gray
+$grouped = @($keep | Group-Object -Property { '{0}|{1}' -f $_.sinId, $_.file })
+Write-Host ("Distinct (sinId,file) hotspots: {0}." -f @($grouped).Count) -ForegroundColor Gray
 
 # Throttle.
 $toCreate = @($grouped | Select-Object -First $MaxItems)
-if ($toCreate.Count -lt $grouped.Count) {
-    Write-Warning ("MaxItems={0} caps creation; {1} additional hotspots NOT ingested this run." -f $MaxItems, ($grouped.Count - $toCreate.Count))
+if (@($toCreate).Count -lt @($grouped).Count) {
+    Write-Warning ("MaxItems={0} caps creation; {1} additional hotspots NOT ingested this run." -f $MaxItems, (@($grouped).Count - @($toCreate).Count))
 }
 
 # Skip duplicates: hotspots that already have an OPEN/IN-PROGRESS Bug-*.json with same sinPattern+file.
@@ -105,7 +105,8 @@ if (Test-Path -LiteralPath $todoDir) {
         try {
             $bj = Get-Content -LiteralPath $bf.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
             $st = if ($bj.PSObject.Properties.Name -contains 'status') { [string]$bj.status } else { '' }
-            if ($st -in 'OPEN','IN-PROGRESS','IN_PROGRESS','PLANNED') {
+            $normalizedStatus = $st.Trim().ToUpperInvariant().Replace('-', '_')
+            if ($normalizedStatus -in 'OPEN','IN_PROGRESS','PLANNED') {
                 $sp = if ($bj.PSObject.Properties.Name -contains 'sinPattern') { [string]$bj.sinPattern } else { '' }
                 $af = if ($bj.PSObject.Properties.Name -contains 'affectedFiles' -and @($bj.affectedFiles).Count -gt 0) { @($bj.affectedFiles)[0] } else { '' }
                 if ($sp -and $af) { $existing["$sp|$af"] = $true }
@@ -183,10 +184,10 @@ try { $audit.Add('generated',      (Get-Date).ToUniversalTime().ToString('o')) }
 try { $audit.Add('apply',          [bool]$Apply) } catch { Write-Host "ERR apply: $_"; throw }
 try { $audit.Add('severityFilter', $SeverityFilter) } catch { Write-Host "ERR severityFilter: $_"; throw }
 try { $audit.Add('maxItems',       $MaxItems) } catch { Write-Host "ERR maxItems: $_"; throw }
-try { $audit.Add('rawFindings',    $findings.Count) } catch { Write-Host "ERR rawFindings: $_"; throw }
-try { $audit.Add('afterFilter',    $keep.Count) } catch { Write-Host "ERR afterFilter: $_"; throw }
-try { $audit.Add('hotspots',       $grouped.Count) } catch { Write-Host "ERR hotspots: $_"; throw }
-try { $audit.Add('considered',     $toCreate.Count) } catch { Write-Host "ERR considered: $_"; throw }
+try { $audit.Add('rawFindings',    @($findings).Count) } catch { Write-Host "ERR rawFindings: $_"; throw }
+try { $audit.Add('afterFilter',    @($keep).Count) } catch { Write-Host "ERR afterFilter: $_"; throw }
+try { $audit.Add('hotspots',       @($grouped).Count) } catch { Write-Host "ERR hotspots: $_"; throw }
+try { $audit.Add('considered',     @($toCreate).Count) } catch { Write-Host "ERR considered: $_"; throw }
 try { $audit.Add('skippedDup',     $skippedDup) } catch { Write-Host "ERR skippedDup: $_"; throw }
 try { $audit.Add('created',        $created) } catch { Write-Host "ERR created: $_"; throw }
 try { $audit.Add('results',        ([object[]](@() + $results))) } catch { Write-Host "ERR results: $_"; throw }
@@ -195,7 +196,7 @@ $json = $audit | ConvertTo-Json -Depth 8
 
 Write-Host ''
 Write-Host ("Audit: {0}" -f $reportPath) -ForegroundColor Gray
-Write-Host ('  raw={0} filtered={1} hotspots={2} considered={3} skippedDup={4} created={5}' -f $findings.Count, $keep.Count, $grouped.Count, $toCreate.Count, $skippedDup, $created) -ForegroundColor Cyan
+Write-Host ('  raw={0} filtered={1} hotspots={2} considered={3} skippedDup={4} created={5}' -f @($findings).Count, @($keep).Count, @($grouped).Count, @($toCreate).Count, $skippedDup, $created) -ForegroundColor Cyan
 if (-not $Apply) { Write-Host 'DRY-RUN: pass -Apply to actually create Bug items.' -ForegroundColor Yellow }
 
 

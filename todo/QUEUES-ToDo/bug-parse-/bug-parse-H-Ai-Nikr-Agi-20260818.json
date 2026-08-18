@@ -1,0 +1,16 @@
+﻿{
+    "description":  "Parse validation failed: Unexpected token \u0027is\u0027 in expression or statement.",
+    "type":  "bug",
+    "file_refs":  [
+                      "agents\\H-Ai-Nikr-Agi\\core\\H-Ai-Nikr-Agi.psm1"
+                  ],
+    "category":  "bug",
+    "suggested_by":  "CronProcessor-DeepTest",
+    "title":  "Parse error in H-Ai-Nikr-Agi.psm1",
+    "created_at":  "2026-08-18T21:49:04.2853112+08:00",
+    "status":  "OPEN",
+    "severity":  "HIGH",
+    "todo_id":  "bug-parse-H-Ai-Nikr-Agi-20260818",
+    "priority":  "HIGH",
+    "notes":  "Auto-detected by cron deep-test cycle"
+}

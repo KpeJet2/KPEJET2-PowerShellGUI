@@ -1,4 +1,5 @@
-﻿<#
+﻿# VersionTag: 2608.B1.V54.1
+<#
 .SYNOPSIS
     Supervises ONE chat/agent session at a time and presses "Try Again" for you
     until all todo work is complete, all tests pass and the tree is commit-able.
@@ -66,6 +67,9 @@ param(
     [Parameter(ParameterSetName = 'Stop')]
     [switch]$Stop,
 
+    [Alias('2BxPrimeTimesLucky')]
+    [switch]$PrimeGate,
+
     [switch]$NonInteractive
 )
 
@@ -81,8 +85,10 @@ $WorkspacePath = (Resolve-Path -LiteralPath $WorkspacePath).Path
 if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
     $ConfigPath = Join-Path (Join-Path $WorkspacePath 'config') 'session-resilience-loop.json'
 }
+$controlProfilePath = Join-Path (Join-Path $WorkspacePath 'config') 'session-resilience-control-profile.json'
 $logRoot = Join-Path (Join-Path $WorkspacePath 'logs') 'session-loop'
 $ledgerPath = Join-Path $logRoot 'ledger.json'
+$sessionIndexPath = Join-Path $logRoot 'session-index.jsonl'
 $statePath = Join-Path $logRoot 'state.json'
 $lockPath = Join-Path $logRoot '.session-loop.lock'
 $stopPath = Join-Path $logRoot 'session-loop.stop'
@@ -101,6 +107,29 @@ catch {
 }
 
 $config = Get-SessionLoopConfig -ConfigPath $ConfigPath
+$controlProfile = $null
+if (Test-Path -LiteralPath $controlProfilePath) {
+    try {
+        $controlProfile = Get-Content -LiteralPath $controlProfilePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    }
+    catch {
+        throw "Control profile is not valid JSON ($controlProfilePath): $($_.Exception.Message)"
+    }
+}
+
+if ($PrimeGate.IsPresent) {
+    if ($null -eq $controlProfile -or $controlProfile.PSObject.Properties.Name -notcontains 'secretGate') {
+        throw 'Prime gate requested but no valid control profile secretGate is configured.'
+    }
+    $primeValue = [int]$controlProfile.secretGate.prime
+    $isPrime = $primeValue -gt 1
+    for ($factor = 2; $factor -le [math]::Sqrt($primeValue); $factor++) {
+        if (($primeValue % $factor) -eq 0) { $isPrime = $false; break }
+    }
+    if (-not $isPrime -or $primeValue -ge 13) {
+        throw "Prime gate configuration is invalid: expected a prime below 13, got $primeValue."
+    }
+}
 
 if ($ImmediateFailSeconds -gt 0) {
     $config.immediateFailSeconds = $ImmediateFailSeconds
@@ -148,6 +177,38 @@ function Read-JsonArray {
     }
     if ($null -eq $data) { return @() }
     return @($data)
+}
+
+function Add-SessionIndexRecord {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)]$Record
+    )
+    $line = $Record | ConvertTo-Json -Depth 8 -Compress
+    Add-Content -LiteralPath $Path -Value $line -Encoding UTF8
+}
+
+function Find-IndexedRetryableSession {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][datetime]$Since
+    )
+    if (-not (Test-Path -LiteralPath $Path)) { return @() }
+    $rows = @()
+    foreach ($line in @(Get-Content -LiteralPath $Path -Encoding UTF8 -ErrorAction SilentlyContinue)) {
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+        try {
+            $row = $line | ConvertFrom-Json
+            if ($null -ne $row -and [datetime]$row.startedAt -ge $Since -and
+                [string]$row.outcome -ne 'SUCCESS' -and [bool]$row.offersTryAgain) {
+                $rows += $row
+            }
+        }
+        catch {
+            Write-LoopLine "Ignoring malformed session-index record: $($_.Exception.Message)" 'Yellow'
+        }
+    }
+    return @($rows | Sort-Object -Property @{ Expression = 'startedAt'; Descending = $true })
 }
 
 function Test-LockOwnerAlive {
@@ -262,6 +323,50 @@ function Invoke-OneSession {
     }
 }
 
+function Invoke-CommitGate {
+    param(
+        [Parameter(Mandatory = $true)]$Profile,
+        [Parameter(Mandatory = $true)][string]$Workspace,
+        [Parameter(Mandatory = $true)][string]$OutputDirectory,
+        [Parameter(Mandatory = $true)][int]$AttemptNumber
+    )
+
+    if ($null -eq $Profile -or $Profile.PSObject.Properties.Name -notcontains 'commitGate' -or
+        -not [bool]$Profile.commitGate.enabled) {
+        return [pscustomobject]@{ Passed = $false; ExitCode = -1; Reason = 'Commit gate is not configured or enabled.'; TranscriptPath = '' }
+    }
+
+    $command = ([string]$Profile.commitGate.command).Replace('{{WORKSPACE}}', $Workspace)
+    $gateOutput = Join-Path $OutputDirectory ('attempt-{0:d4}.commit-gate.log' -f $AttemptNumber)
+    $gateError = Join-Path $OutputDirectory ('attempt-{0:d4}.commit-gate.err.log' -f $AttemptNumber)
+    $shell = Get-SessionShell
+    try {
+        $process = Start-Process -FilePath $shell -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $command) `
+            -PassThru -NoNewWindow -RedirectStandardOutput $gateOutput -RedirectStandardError $gateError
+        $timeoutSeconds = [int]$Profile.commitGate.timeoutSeconds
+        $waited = 0
+        while (-not $process.HasExited -and $waited -lt $timeoutSeconds) {
+            Start-Sleep -Seconds 1
+            $waited++
+        }
+        if (-not $process.HasExited) {
+            try { Stop-Process -Id $process.Id -Force -ErrorAction Stop } catch { Write-LoopLine "Commit gate timeout cleanup failed: $($_.Exception.Message)" 'Yellow' }
+            return [pscustomobject]@{ Passed = $false; ExitCode = -1; Reason = 'Commit gate timed out.'; TranscriptPath = $gateOutput }
+        }
+        $requiredCode = [int]$Profile.commitGate.requireExitCode
+        $passed = ($process.ExitCode -eq $requiredCode)
+        return [pscustomobject]@{
+            Passed         = $passed
+            ExitCode       = $process.ExitCode
+            Reason         = if ($passed) { 'Commit gate passed.' } else { "Commit gate exited with code $($process.ExitCode)." }
+            TranscriptPath = $gateOutput
+        }
+    }
+    catch {
+        return [pscustomobject]@{ Passed = $false; ExitCode = -1; Reason = "Commit gate launch failed: $($_.Exception.Message)"; TranscriptPath = $gateOutput }
+    }
+}
+
 function Show-RepeatFailureDecision {
     param(
         [Parameter(Mandatory = $true)][int]$RepeatCount,
@@ -356,13 +461,22 @@ if ($DetectOnly.IsPresent) {
 # ── Mode: Run ────────────────────────────────────────────────────────────────
 $selectedRetryableSession = $null
 if ($ResumeToday.IsPresent) {
-    $found = @(Find-RetryableSession -WorkspacePath $WorkspacePath -Config $config -Since ([datetime]::Today))
+    $found = @(Find-IndexedRetryableSession -Path $sessionIndexPath -Since ([datetime]::Today))
+    if ($found.Count -eq 0) {
+        $found = @(Find-RetryableSession -WorkspacePath $WorkspacePath -Config $config -Since ([datetime]::Today))
+    }
     if ($found.Count -eq 0) {
         throw 'ResumeToday was requested but no retryable session from today was found.'
     }
     $selectedRetryableSession = $found | Select-Object -First 1
     Write-LoopLine "Resuming top retryable session: $($selectedRetryableSession.Path)" 'Cyan'
     Write-LoopLine "Last action: $($selectedRetryableSession.LastAction)" 'Cyan'
+    if ([string]::IsNullOrWhiteSpace($SessionCommand) -and
+        $selectedRetryableSession.PSObject.Properties.Name -contains 'command' -and
+        -not [string]::IsNullOrWhiteSpace([string]$selectedRetryableSession.command)) {
+        $SessionCommand = [string]$selectedRetryableSession.command
+        Write-LoopLine 'Replaying the indexed session command contract.' 'Cyan'
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($SessionCommand)) {
@@ -465,6 +579,23 @@ try {
 
         $phaseAttempt++
 
+        $commitGate = [pscustomobject]@{ Passed = $false; ExitCode = -1; Reason = 'Commit gate not reached.'; TranscriptPath = '' }
+        if ($outcome.IsSuccess) {
+            $commitGate = Invoke-CommitGate -Profile $controlProfile -Workspace $WorkspacePath -OutputDirectory $logRoot -AttemptNumber $totalAttempts
+            if (-not $commitGate.Passed) {
+                $outcome = [pscustomobject]@{
+                    Outcome         = 'COMMIT_GATE_FAIL'
+                    IsSuccess       = $false
+                    NearImmediate   = $true
+                    DurationSeconds = $outcome.DurationSeconds
+                    ExitCode        = $commitGate.ExitCode
+                    PendingTodos    = $pendingTodos
+                    FailedTests     = $failedTests
+                    Reason          = $commitGate.Reason
+                }
+            }
+        }
+
         $plan = $null
         $signature = ''
         if (-not $outcome.IsSuccess) {
@@ -502,10 +633,38 @@ try {
             TranscriptPath    = $run.TranscriptPath
         }
         Save-Json -Path $ledgerPath -Data $ledger
+        Add-SessionIndexRecord -Path $sessionIndexPath -Record ([pscustomobject]@{
+                sessionId         = if ($null -eq $selectedRetryableSession) { "session-$PID" } else { [string]$selectedRetryableSession.SessionId }
+                command           = $SessionCommand
+                workspace         = $WorkspacePath
+                attempt           = $totalAttempts
+                startedAt         = (Get-Date).ToString('o')
+                outcome           = $outcome.Outcome
+                offersTryAgain    = (-not $outcome.IsSuccess)
+                lastAction        = $outcome.Reason
+                Path              = $run.TranscriptPath
+                transcriptPath    = $run.TranscriptPath
+                targetSessionPath = if ($null -eq $selectedRetryableSession) { '' } else { [string]$selectedRetryableSession.Path }
+            })
 
         if ($outcome.IsSuccess) {
             Write-LoopLine 'SUCCESS - all todos done, tests pass, ready to commit.' 'Green'
             $finalOutcome = 'SUCCESS'
+            if ($PrimeGate.IsPresent) {
+                if (-not (Test-Path -LiteralPath $logRoot)) {
+                    New-Item -ItemType Directory -Path $logRoot -Force | Out-Null
+                }
+                $safeLogRoot = (Resolve-Path -LiteralPath $logRoot).Path
+                $reviewEventPath = Join-Path $safeLogRoot 'recursive-review-requested.json'
+                [pscustomobject]@{
+                    event         = 'RECURSIVE_REVIEW_REQUESTED'
+                    prime         = [int]$controlProfile.secretGate.prime
+                    createdAt     = (Get-Date).ToString('o')
+                    ledgerPath    = $ledgerPath
+                    totalAttempts = $totalAttempts
+                } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $reviewEventPath -Encoding UTF8 -Force
+                Write-LoopLine "Prime-gated recursive review requested: $reviewEventPath" 'Magenta'
+            }
             break
         }
 

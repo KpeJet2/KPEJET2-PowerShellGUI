@@ -1,0 +1,16 @@
+﻿{
+    "description":  "Parse validation failed: The string is missing the terminator: \".",
+    "type":  "bug",
+    "file_refs":  [
+                      "tests\\Invoke-ScriptLoadability.Tests.ps1"
+                  ],
+    "category":  "bug",
+    "suggested_by":  "CronProcessor-DeepTest",
+    "title":  "Parse error in Invoke-ScriptLoadability.Tests.ps1",
+    "created_at":  "2026-08-18T21:49:05.6685214+08:00",
+    "status":  "OPEN",
+    "severity":  "HIGH",
+    "todo_id":  "bug-parse-Invoke-ScriptLoadability.Tests-20260818",
+    "priority":  "HIGH",
+    "notes":  "Auto-detected by cron deep-test cycle"
+}

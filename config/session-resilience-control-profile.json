@@ -1,0 +1,35 @@
+{
+  "versionTag": "2608.B1.V1.1",
+  "name": "normalized-session-control-plane",
+  "secretGate": {
+    "switch": "2BxPrimeTimesLucky",
+    "prime": 7,
+    "enabledByDefault": false,
+    "event": "RECURSIVE_REVIEW_REQUESTED"
+  },
+  "operatorOrder": [
+    "AcquireSingleFlightLock",
+    "ResolveTargetSession",
+    "RunOneSession",
+    "ClassifyOutcome",
+    "VerifyTodos",
+    "VerifyTests",
+    "VerifyCommitGate",
+    "WriteLedgerAndSessionIndex",
+    "ApplyRetryOrOperatorDecision"
+  ],
+  "commitGate": {
+    "enabled": true,
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts\\Invoke-PreCommitValidation.ps1 -WorkspacePath {{WORKSPACE}}",
+    "timeoutSeconds": 1800,
+    "requireExitCode": 0
+  },
+  "sessionIndex": {
+    "enabled": true,
+    "path": "logs\\session-loop\\session-index.jsonl",
+    "dailyShard": true,
+    "retentionDays": 14,
+    "preferStructuredRecords": true,
+    "filesystemFallback": true
+  }
+}

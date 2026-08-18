@@ -105,6 +105,23 @@
             "problemMatcher": []
         },
         {
+            "label": "Pipeline: Churn Evolution Gate",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Run-PipelineChurn35.ps1 -WorkspacePath ${workspaceFolder} -ValidateEvolutionOnly",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Alpha Commit Sync (soft fail)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-AlphaCommitSync.ps1 -WorkspacePath ${workspaceFolder} -CommitMessage \"Alpha pipeline prototype\" -AlphaSoftFail",
+            "group": "build",
+            "detail": "Opt-in prototype: records Git failures and Bug2FIX remediation while allowing the Alpha task to complete softly.",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
             "label": "Pipeline: Continuous Refine (staged)",
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json -FailOnDrift",
@@ -270,6 +287,14 @@
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Start-Process -FilePath '${workspaceFolder}\\XHTML-Cron-Pipe-Flow.xhtml'\"",
             "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Config AiNge: Export VS Code Report",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Export-VsCodeConfigCoverage.ps1 -WorkspacePath ${workspaceFolder}",
+            "group": "test",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
         },

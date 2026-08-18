@@ -1,0 +1,16 @@
+﻿{
+    "description":  "Parse validation failed: The Try statement is missing its Catch or Finally block.",
+    "type":  "bug",
+    "file_refs":  [
+                      "scripts\\Invoke-SessionResilienceLoop.ps1"
+                  ],
+    "category":  "bug",
+    "suggested_by":  "CronProcessor-DeepTest",
+    "title":  "Parse error in Invoke-SessionResilienceLoop.ps1",
+    "created_at":  "2026-08-18T21:49:05.0518500+08:00",
+    "status":  "OPEN",
+    "severity":  "HIGH",
+    "todo_id":  "bug-parse-Invoke-SessionResilienceLoop-20260818",
+    "priority":  "HIGH",
+    "notes":  "Auto-detected by cron deep-test cycle"
+}

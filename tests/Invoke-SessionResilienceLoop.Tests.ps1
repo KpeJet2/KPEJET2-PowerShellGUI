@@ -8,6 +8,7 @@ BeforeAll {
     $script:ModulePath = Join-Path $script:RepoRoot 'modules\SessionOutcomeClassifier.psm1'
     $script:ScriptPath = Join-Path $script:RepoRoot 'scripts\Invoke-SessionResilienceLoop.ps1'
     $script:ConfigPath = Join-Path $script:RepoRoot 'config\session-resilience-loop.json'
+    $script:ControlProfilePath = Join-Path $script:RepoRoot 'config\session-resilience-control-profile.json'
 
     Import-Module -Name $script:ModulePath -Force
 
@@ -23,6 +24,7 @@ BeforeAll {
         Copy-Item -LiteralPath $script:ScriptPath -Destination (Join-Path $ws 'scripts\Invoke-SessionResilienceLoop.ps1') -Force
         Copy-Item -LiteralPath $script:ModulePath -Destination (Join-Path $ws 'modules\SessionOutcomeClassifier.psm1') -Force
         Copy-Item -LiteralPath $script:ConfigPath -Destination (Join-Path $ws 'config\session-resilience-loop.json') -Force
+        Copy-Item -LiteralPath $script:ControlProfilePath -Destination (Join-Path $ws 'config\session-resilience-control-profile.json') -Force
 
         return $ws
     }
@@ -43,6 +45,18 @@ Describe 'SessionOutcomeClassifier.Get-NextRetryPlan' {
         $next = Get-NextRetryPlan -Config $cfg -PhaseIndex 3 -PhaseAttempt 3 -TotalAttempts 30 -NearImmediate $false
         $next.PhaseIndex | Should -Be 0
         $next.LadderReset | Should -BeTrue
+    }
+}
+
+Describe 'Session resilience control profile' {
+    It 'declares the normalized operator order and prime gate' {
+        $profile = Get-Content -LiteralPath $script:ControlProfilePath -Raw -Encoding UTF8 | ConvertFrom-Json
+        @($profile.operatorOrder).Count | Should -BeGreaterThan 5
+        $profile.operatorOrder | Should -Contain 'VerifyCommitGate'
+        $profile.secretGate.prime | Should -Be 7
+        $profile.secretGate.switch | Should -Be '2BxPrimeTimesLucky'
+        $profile.commitGate.enabled | Should -BeTrue
+        $profile.sessionIndex.enabled | Should -BeTrue
     }
 }
 
