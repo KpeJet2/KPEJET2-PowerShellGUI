@@ -1,11 +1,11 @@
 REM VersionTag: 2605.B5.V46.0
 REM VersionBuildHistory:
 REM   2604.B2.V31.1  2026-04-12  Inject PSModulePath for all child PowerShell processes
-REM   2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries)
+REM   2603.A0.v27.0  2026-03-24 03:28  (deduplicated from 6 entries; Alpha human-zero form)
 REM ============================================================
 REM  Launch-GUI-quik_jnr.bat  |  Fast Startup Mode
 REM  Author   : The Establishment
-REM  Version  : 2603.B0.v27.0
+REM  Version  : 2603.A0.v27.0
 REM  Modified : 24 Mar 2026
 REM  Purpose  : Launches Main-GUI.ps1 -StartupMode quik_jnr
 REM             (skips manifest generation for fast load).

@@ -1,4 +1,4 @@
-# VersionTag: 2607.B7.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -19,10 +19,13 @@
       -ApplyMajor       Write major version increment to all files
       -CrossValidate    Post-change validation against manifest
 
-    VersionTag format: YYMM.B<build>.V<major>.<minor>
+        VersionTag format: YYMM.<ReleaseLetter><releaseNumber>.V<major>.<minor>
       - V is always uppercase in canonical form
+            - Release letters are ordered A..Z (Alpha, Beta, then subsequent release classes)
+            - A human-entered zero is displayed as one digit (A0/B0); system resets use two (A00/B00)
+            - A triple zero is reserved: C000 is security-class-3 reserved, D000 implies that class
       - Minor increments per file edit
-      - Major resets minor to 0: YYMM.Bx.V<NewMajor>.0
+            - Major resets minor to 0: YYMM.<ReleaseLetter><n>.V<NewMajor>.0
 
 .NOTES
     Author   : The Establishment
@@ -62,10 +65,10 @@ if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
 # ===============================================================================
 
 # Initial defaults; superseded by Get-HighestOnDiskTag once inventory is scanned.
-$script:YearMonth       = if ($PSBoundParameters.ContainsKey('YearMonth') -and $YearMonth) { $YearMonth } else { (Get-Date).ToString('yyMM') }
-$script:CanonicalPrefix = "$($script:YearMonth).$(if ($TargetBuild) { $TargetBuild } else { 'B0' })"
-$script:VersionRegex    = '(?m)^#\s*VersionTag:\s*(\S+)'
-$script:ExcludePattern  = '\\\.git\\|\\\.history\\|\\node_modules\\|\\__pycache__|\\checkpoints\\|\\~REPORTS\\|\\~DOWNLOADS\\|\\\.venv'
+$script:YearMonth = if ($PSBoundParameters.ContainsKey('YearMonth') -and $YearMonth) { $YearMonth } else { (Get-Date).ToString('yyMM') }
+$script:CanonicalPrefix = "$($script:YearMonth).$(if ($TargetBuild) { $TargetBuild } else { 'A00' })"
+$script:VersionRegex = '(?m)^#\s*VersionTag:\s*(\S+)'
+$script:ExcludePattern = '\\\.git\\|\\\.history\\|\\node_modules\\|\\__pycache__|\\checkpoints\\|\\~REPORTS\\|\\~DOWNLOADS\\|\\\.venv'
 
 # ===============================================================================
 #  HELPER: Parse tag
@@ -73,14 +76,18 @@ $script:ExcludePattern  = '\\\.git\\|\\\.history\\|\\node_modules\\|\\__pycache_
 
 function Parse-Tag {
     param([string]$Tag)
-    if ($Tag -match '^(\d{4})\.(B\d+)\.[Vv](\d+)(?:\.(\d+))?$') {
+    if ($Tag -match '^(\d{4})\.([A-Za-z])(\d+)\.[Vv](\d+)(?:\.(\d+))?$') {
         return @{
-            ym     = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
-            build  = $Matches[2]  # SIN-EXEMPT:P027 -- index access, context-verified safe
-            major  = [int]$Matches[3]  # SIN-EXEMPT:P027 -- index access, context-verified safe
-            minor  = if ($null -ne $Matches[4] -and $Matches[4] -ne '') { [int]$Matches[4] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
-            raw    = $Tag
-            vCase  = if ($Tag -cmatch '\.[Vv]') { if ($Tag -cmatch '\.V') { 'V' } else { 'v' } } else { 'V' }
+            ym                = $Matches[1]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            build             = ($Matches[2].ToUpperInvariant() + $Matches[3])
+            releaseLetter     = $Matches[2].ToUpperInvariant()
+            releaseNumber     = [int]$Matches[3]
+            releaseDigits     = $Matches[3]
+            reservedZeroClass = ($Matches[3] -eq '000')
+            major             = [int]$Matches[4]  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            minor             = if ($null -ne $Matches[5] -and $Matches[5] -ne '') { [int]$Matches[5] } else { 0 }  # SIN-EXEMPT:P027 -- index access, context-verified safe
+            raw               = $Tag
+            vCase             = if ($Tag -cmatch '\.[Vv]') { if ($Tag -cmatch '\.V') { 'V' } else { 'v' } } else { 'V' }
         }
     }
     return $null
@@ -89,6 +96,34 @@ function Parse-Tag {
 function Format-Tag {
     param([string]$YM, [string]$Build, [int]$Major, [int]$Minor)
     return "$YM.$Build.V$Major.$Minor"
+}
+
+function Test-ReleaseBuildToken {
+    param([Parameter(Mandatory = $true)][string]$Build)
+    if ($Build -notmatch '^([A-Za-z])(\d+)$') { return $false }
+    $letter = $Matches[1].ToUpperInvariant()
+    $digits = $Matches[2]
+    if ([int][char]$letter -lt [int][char]'A' -or [int][char]$letter -gt [int][char]'Z') { return $false }
+    if ($digits -match '^0{3,}$' -and $letter -notin @('C', 'D')) { return $false }
+    return $true
+}
+
+function Normalize-ReleaseBuildToken {
+    param(
+        [Parameter(Mandatory = $true)][string]$Build,
+        [switch]$SystemReset
+    )
+    $candidate = $Build.Trim().ToUpperInvariant()
+    if ($candidate -match '^([A-Z])(\d+)$') {
+        $letter = $Matches[1]
+        $digits = $Matches[2]
+        if ($digits -match '^0+$') {
+            if ($SystemReset) { return "$letter`00" }
+            return "$letter`0"
+        }
+        return "$letter$([int]$digits)"
+    }
+    return $null
 }
 
 function Get-HighestOnDiskTag {
@@ -102,17 +137,18 @@ function Get-HighestOnDiskTag {
     $tagged = @($Inventory | Where-Object { $_.HasTag })
     if ($tagged.Count -eq 0) { return $null }
     $sorted = $tagged | Sort-Object `
-        @{Expression={[int]$_.Parsed.ym};Descending=$true}, `
-        @{Expression={[int]($_.Parsed.build -replace '[^0-9]','')};Descending=$true}, `
-        @{Expression={$_.Parsed.major};Descending=$true}, `
-        @{Expression={$_.Parsed.minor};Descending=$true}
+    @{Expression = { [int]$_.Parsed.ym }; Descending = $true }, `
+    @{Expression = { [int][char]$_.Parsed.releaseLetter }; Descending = $true }, `
+    @{Expression = { $_.Parsed.releaseNumber }; Descending = $true }, `
+    @{Expression = { $_.Parsed.major }; Descending = $true }, `
+    @{Expression = { $_.Parsed.minor }; Descending = $true }
     return $sorted[0].Parsed  # SIN-EXEMPT:P027 -- index access, context-verified safe
 }
 
 function Read-DefaultedInput {
     param(
-        [Parameter(Mandatory=$true)][string]$Prompt,
-        [Parameter(Mandatory=$true)][string]$Default
+        [Parameter(Mandatory = $true)][string]$Prompt,
+        [Parameter(Mandatory = $true)][string]$Default
     )
     $resp = Read-Host "$Prompt [$Default]"
     if ([string]::IsNullOrWhiteSpace($resp)) { return $Default }
@@ -131,17 +167,18 @@ function Invoke-InteractivePrompt {
     $currentYM = (Get-Date).ToString('yyMM')
 
     if ($highest) {
-        $defYM    = if ([int]$currentYM -gt [int]$highest.ym) { $currentYM } else { $highest.ym }
+        $defYM = if ([int]$currentYM -gt [int]$highest.ym) { $currentYM } else { $highest.ym }
         $defBuild = $highest.build
-        $defVMaj  = $highest.major + 1
-        $defVMin  = 0
+        $defVMaj = $highest.major + 1
+        $defVMin = 0
         Write-Host ""
         Write-Host "  Highest on disk : $($highest.ym).$($highest.build).V$($highest.major).$($highest.minor)" -ForegroundColor Cyan
-    } else {
-        $defYM    = $currentYM
-        $defBuild = 'B0'
-        $defVMaj  = 1
-        $defVMin  = 0
+    }
+    else {
+        $defYM = $currentYM
+        $defBuild = 'A00'
+        $defVMaj = 1
+        $defVMin = 0
         Write-Host "  No existing tags found; using fresh defaults." -ForegroundColor Yellow
     }
     Write-Host "  Press ENTER to accept the proposed default for each segment." -ForegroundColor DarkGray
@@ -155,23 +192,23 @@ function Invoke-InteractivePrompt {
 
     $build = Read-DefaultedInput -Prompt '  BUILD (B#)' -Default $defBuild
     if ($build -match '^\d+$') { $build = "B$build" }
-    while ($build -notmatch '^[Bb]\d+$') {
-        Write-Host "    Invalid -- must be B followed by digits (e.g. B2)" -ForegroundColor Red
+    while (-not (Test-ReleaseBuildToken -Build $build)) {
+        Write-Host "    Invalid -- must be a release letter A-Z followed by digits (e.g. B2; C000 is reserved)" -ForegroundColor Red
         $build = Read-DefaultedInput -Prompt '  BUILD (B#)' -Default $defBuild
         if ($build -match '^\d+$') { $build = "B$build" }
     }
-    $build = 'B' + ($build -replace '[^0-9]','')
+    $build = Normalize-ReleaseBuildToken -Build $build
 
     $vMajRaw = Read-DefaultedInput -Prompt '  MAJOR VERSION (V##)' -Default ([string]$defVMaj)
     $vMaj = 0
-    while (-not [int]::TryParse(($vMajRaw -replace '[^0-9]',''), [ref]$vMaj)) {
+    while (-not [int]::TryParse(($vMajRaw -replace '[^0-9]', ''), [ref]$vMaj)) {
         Write-Host "    Invalid -- must be a number" -ForegroundColor Red
         $vMajRaw = Read-DefaultedInput -Prompt '  MAJOR VERSION (V##)' -Default ([string]$defVMaj)
     }
 
     $vMinRaw = Read-DefaultedInput -Prompt '  MINOR VERSION (.#)' -Default ([string]$defVMin)
     $vMin = 0
-    while (-not [int]::TryParse(($vMinRaw -replace '[^0-9]',''), [ref]$vMin)) {
+    while (-not [int]::TryParse(($vMinRaw -replace '[^0-9]', ''), [ref]$vMin)) {
         Write-Host "    Invalid -- must be a number" -ForegroundColor Red
         $vMinRaw = Read-DefaultedInput -Prompt '  MINOR VERSION (.#)' -Default ([string]$defVMin)
     }
@@ -195,7 +232,7 @@ function Invoke-InteractivePrompt {
 
 function Get-AllVersionTags {
     param([string]$Root)
-    $files = Get-ChildItem -Path $Root -Recurse -File -Include '*.ps1','*.psm1','*.psd1' -ErrorAction SilentlyContinue |
+    $files = Get-ChildItem -Path $Root -Recurse -File -Include '*.ps1', '*.psm1', '*.psd1' -ErrorAction SilentlyContinue |
         Where-Object { $_.FullName -notmatch $script:ExcludePattern }
 
     $results = @()
@@ -206,11 +243,11 @@ function Get-AllVersionTags {
             $parsed = Parse-Tag -Tag $tag
             $rel = $f.FullName.Replace("$Root\", '')
             $results += [PSCustomObject]@{
-                RelPath   = $rel
-                FullPath  = $f.FullName
+                RelPath    = $rel
+                FullPath   = $f.FullName
                 CurrentTag = $tag
-                Parsed    = $parsed
-                HasTag    = ($null -ne $parsed)
+                Parsed     = $parsed
+                HasTag     = ($null -ne $parsed)
             }
         }
     }
@@ -234,9 +271,9 @@ function Compute-MinorCleanup {
 
         $needsChange = ($item.CurrentTag -cne $canonical)
         $changeReasons = @()
-        if ($p.vCase -ne 'V')                                  { $changeReasons += 'case V->uppercase' }
-        if ($p.build -ne $TargetBuild)                          { $changeReasons += "build $($p.build)->$TargetBuild" }
-        if ("$($p.ym)" -ne $script:YearMonth)                  { $changeReasons += "yearmonth $($p.ym)->$($script:YearMonth)" }
+        if ($p.vCase -ne 'V') { $changeReasons += 'case V->uppercase' }
+        if ($p.build -ne $TargetBuild) { $changeReasons += "build $($p.build)->$TargetBuild" }
+        if ("$($p.ym)" -ne $script:YearMonth) { $changeReasons += "yearmonth $($p.ym)->$($script:YearMonth)" }
         if ($item.CurrentTag -cne $canonical -and @($changeReasons).Count -eq 0) { $changeReasons += 'format normalise' }
 
         $plan += [PSCustomObject]@{
@@ -294,8 +331,8 @@ function Apply-TagChanges {
     param([array]$Plan, [string]$Mode)
 
     $applied = 0
-    $failed  = 0
-    $log     = @()
+    $failed = 0
+    $log = @()
 
     foreach ($item in $Plan) {
         if ($Mode -eq 'minor' -and $item.PSObject.Properties.Name -contains 'NeedsChange' -and -not $item.NeedsChange) { continue }
@@ -319,7 +356,8 @@ function Apply-TagChanges {
                 After  = $item.ProposedTag
                 Status = 'OK'
             }
-        } catch {
+        }
+        catch {
             $failed++
             $log += [PSCustomObject]@{
                 File   = $item.RelPath
@@ -342,7 +380,7 @@ function Cross-Validate {
 
     $manifestPath = Join-Path $Root 'config\agentic-manifest.json'
     $mismatches = @()
-    $orphans    = @()
+    $orphans = @()
 
     if (Test-Path $manifestPath) {
         try {
@@ -352,7 +390,7 @@ function Cross-Validate {
             # Collect module versions from manifest
             foreach ($m in @($manifest.modules)) {
                 if ($m.path -and $m.version) {
-                    $manifestFiles[$m.path.Replace('\\','\')] = $m.version
+                    $manifestFiles[$m.path.Replace('\\', '\')] = $m.version
                 }
             }
 
@@ -363,10 +401,10 @@ function Cross-Validate {
                     $manifestVer = $manifestFiles[$relNorm]  # SIN-EXEMPT:P027 -- index access, context-verified safe
                     if ($manifestVer -ne $item.CurrentTag) {
                         $mismatches += [PSCustomObject]@{
-                            File         = $item.RelPath
-                            FileTag      = $item.CurrentTag
-                            ManifestTag  = $manifestVer
-                            Status       = 'MISMATCH'
+                            File        = $item.RelPath
+                            FileTag     = $item.CurrentTag
+                            ManifestTag = $manifestVer
+                            Status      = 'MISMATCH'
                         }
                     }
                 }
@@ -383,10 +421,12 @@ function Cross-Validate {
                     }
                 }
             }
-        } catch {
+        }
+        catch {
             Write-Warning "Manifest parse error: $($_.Exception.Message)"
         }
-    } else {
+    }
+    else {
         Write-Warning "Manifest not found at $manifestPath"
     }
 
@@ -453,15 +493,17 @@ if ($onDiskHighest) {
 }
 $script:CanonicalPrefix = "$($script:YearMonth).$TargetBuild"
 $proposedNextMajor = if ($onDiskHighest) { $onDiskHighest.major + 1 } else { 1 }
-$proposedNextTag   = if ($onDiskHighest) {
+$proposedNextTag = if ($onDiskHighest) {
     "$($onDiskHighest.ym).$($onDiskHighest.build).V$($onDiskHighest.major).$($onDiskHighest.minor + 1)"
-} else { "$($script:YearMonth).B0.V1.0" }
+}
+else { "$($script:YearMonth).B0.V1.0" }
 
 Write-Host "  Target Build  : $($script:CanonicalPrefix)" -ForegroundColor DarkGray
 if ($onDiskHighest) {
     Write-Host "  Highest on disk: $($onDiskHighest.ym).$($onDiskHighest.build).V$($onDiskHighest.major).$($onDiskHighest.minor)" -ForegroundColor Cyan
     Write-Host "  Proposed next  : $proposedNextTag  (or major bump -> $($script:CanonicalPrefix).V$proposedNextMajor.0)" -ForegroundColor Cyan
-} else {
+}
+else {
     Write-Host "  Highest on disk: (none found)" -ForegroundColor Yellow
 }
 Write-Host ""
@@ -470,24 +512,25 @@ Write-Host ""
 # then feed the resulting values into the major-alignment plan as the new canonical tag.
 if ($Interactive) {
     $chosen = Invoke-InteractivePrompt -Inventory $inventory
-    $script:YearMonth       = $chosen.YearMonth
-    $TargetBuild            = $chosen.Build
+    $script:YearMonth = $chosen.YearMonth
+    $TargetBuild = $chosen.Build
     $script:CanonicalPrefix = "$($script:YearMonth).$TargetBuild"
-    $NewMajor               = $chosen.VMajor
+    $NewMajor = $chosen.VMajor
     $confirm = Read-DefaultedInput -Prompt '  Apply this tag to ALL files? (Y/N)' -Default 'N'
     if ($confirm -match '^[Yy]') {
         $majorResult = Compute-MajorAlignment -Inventory $inventory -TargetMajor $NewMajor
         # Override the minor portion to honour the user's chosen MINOR value
         foreach ($p in $majorResult.plan) {
             $p.ProposedTag = Format-Tag -YM $script:YearMonth -Build $TargetBuild -Major $NewMajor -Minor $chosen.VMinor
-            $p.NewMinor    = $chosen.VMinor
+            $p.NewMinor = $chosen.VMinor
         }
         Show-SideBySide -Plan $majorResult.plan -Title "INTERACTIVE APPLY -> $($chosen.Tag)"
         $result = Apply-TagChanges -Plan $majorResult.plan -Mode 'major'
         Write-Host "  Applied: $($result.applied) | Failed: $($result.failed)" -ForegroundColor $(if ($result.failed -gt 0) { 'Red' } else { 'Green' })
         Write-Host "  New canonical tag: $($chosen.Tag)" -ForegroundColor Cyan
         Write-Host ""
-    } else {
+    }
+    else {
         Write-Host "  Aborted by user (no files modified)." -ForegroundColor Yellow
     }
     return
@@ -518,7 +561,8 @@ if ($ScanOnly -or (-not $SimulateMinor -and -not $ApplyMinor -and -not $Simulate
         foreach ($mm in $xv.mismatches) {
             Write-Host "    $($mm.File): file=$($mm.FileTag) manifest=$($mm.ManifestTag)" -ForegroundColor Yellow
         }
-    } else {
+    }
+    else {
         Write-Host "  Manifest cross-check: no mismatches in mapped modules" -ForegroundColor Green
     }
     if (@($xv.orphans).Count -gt 0) {
@@ -600,7 +644,8 @@ if ($CrossValidate) {
         foreach ($cm in $caseMix) {
             Write-Host "    $($cm.RelPath): $($cm.CurrentTag)" -ForegroundColor Yellow
         }
-    } else {
+    }
+    else {
         Write-Host "  Case consistency: ALL uppercase V" -ForegroundColor Green
     }
 
@@ -609,13 +654,15 @@ if ($CrossValidate) {
         foreach ($mm in $xv.mismatches) {
             Write-Host "    $($mm.File): file=$($mm.FileTag) manifest=$($mm.ManifestTag)" -ForegroundColor Yellow
         }
-    } else {
+    }
+    else {
         Write-Host "  Manifest alignment: PASS" -ForegroundColor Green
     }
 
     if (@($xv.orphans).Count -gt 0) {
         Write-Host "  Orphan manifest entries: $(@($xv.orphans).Count)" -ForegroundColor Yellow
-    } else {
+    }
+    else {
         Write-Host "  Orphan check: PASS" -ForegroundColor Green
     }
 
