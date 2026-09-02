@@ -1,6 +1,6 @@
 ---
 description: Comprehensive workspace instruction set for SOV-Sys-zero pipeline, code refinement services, secure integration, and iterative release improvement.
-applyTo: '**/*.{ps1,psm1,psd1,bat,cmd,json,yaml,yml,md,xhtml,html,js,ts,css}'
+applyTo: '**/*.{ps1,psm1,psd1,bat,cmd,json,yaml,yml,md,xml,xhtml,html,js,ts,css,py,config,log}'
 featureTags:
 	- workspace-template
 	- sov-sys-zero

@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Script
 <#
 .SYNOPSIS
     Scan files for committed private key material and known secret markers.
@@ -74,3 +75,5 @@ if (@($findings).Count -gt 0) {
 
 Write-Host '[secret-scan] no blocked private key material detected' -ForegroundColor Green
 exit 0
+
+

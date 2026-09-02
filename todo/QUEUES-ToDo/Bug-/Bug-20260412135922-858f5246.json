@@ -1,0 +1,34 @@
+{
+  "completedAt": null,
+  "plannedAt": "2026-05-06T17:28:18.8542535Z",
+  "source": "BugTracker",
+  "executedAt": null,
+  "outlineTag": "OUTLINE-PROTO-v0",
+  "created": "2026-04-12T05:59:22.4714384Z",
+  "title": "[FAIL] 8 file(s) with parse errors --",
+  "category": "crash-log",
+  "tags": [],
+  "parentId": "",
+  "type": "Bug",
+  "linkedBugs": [],
+  "id": "Bug-20260412135922-858f5246",
+  "description": "Error pattern in log cycle-1.log:13",
+  "executionAgent": "CronAiAthon-Pipeline",
+  "outlinePhase": "assessment",
+  "linkedFeatures": [],
+  "modified": "2026-05-06T17:28:18.8542535Z",
+  "acknowledged": null,
+  "sinId": "SIN-20260412135922-cb43b25f",
+  "result": null,
+  "status": "IN_PROGRESS",
+  "suggestedBy": "CronAiAthon-BugTracker",
+  "priority": "HIGH",
+  "outlineVersion": "v0",
+  "notes": "New sin created: SIN-20260412135922-cb43b25f | Auto-transitioned to IN_PROGRESS by Invoke-PipelineProcess20 at 2026-05-06T17:28:18.8542535Z",
+  "executionMethod": "",
+  "sessionModCount": 1,
+  "affectedFiles": [
+    "C:\\PowerShellGUI\\logs\\cycle-1.log"
+  ]
+}
+

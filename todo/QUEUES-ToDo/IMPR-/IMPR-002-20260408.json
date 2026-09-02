@@ -1,0 +1,24 @@
+{
+  "id": "IMPR-002-20260408",
+  "title": "Test Coverage Enforcement Gate",
+  "description": "Add Invoke-TestCoverageGateCheck.ps1. Fail pipeline if scripts/ has >10% gap vs tests/. Output gap report.",
+  "status": "PLANNED",
+  "priority": "HIGH",
+  "effort": "2-3h",
+  "affectedFiles": "scripts/Invoke-TestCoverageGateCheck.ps1",
+  "createdAt": "2026-04-08T10:15:56",
+  "createdBy": "AI-REReFineFine22-Pipeline",
+  "approvedBy": "Chief-AutoApproval-Batch",
+  "decision": "APPROVED",
+  "approvedAt": "2026-05-21T03:53:51.0204167+08:00",
+  "modified": "2026-05-21T03:53:51.0204167+08:00",
+  "modifiedAt": "2026-05-21T03:53:51.0204167+08:00",
+  "status_history": [
+    {
+      "timestamp": "2026-05-21T03:53:51.0204167+08:00",
+      "by": "Chief-AutoApproval-Batch",
+      "status": "PLANNED",
+      "note": "Auto-approved from PENDING_APPROVAL"
+    }
+  ]
+}

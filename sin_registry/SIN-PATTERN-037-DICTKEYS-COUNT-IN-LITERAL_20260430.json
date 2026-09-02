@@ -1,1 +1,23 @@
-﻿
+﻿{
+	"id": "SIN-PATTERN-037-DICTKEYS-COUNT-IN-LITERAL",
+	"sin_id": "SIN-PATTERN-037-DICTKEYS-COUNT-IN-LITERAL",
+	"title": "Dictionary literal key-count inline check",
+	"description": "Inline .Keys.Count checks directly against freshly constructed dictionary/hashtable literals are brittle and can hide intent. Prefer assigning to a variable and then validating count with explicit null-safe semantics.",
+	"severity": "MEDIUM",
+	"status": "pattern-defined",
+	"category": "Reliability/CollectionChecks",
+	"detection_method": "Regex scan for inline dictionary literal followed by .Keys.Count.",
+	"scan_regex": "@\\{[^\\r\\n]*\\}\\s*\\.Keys\\s*\\.Count",
+	"file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\",
+	"scan_file_pattern": "*.ps1;*.psm1;*.psd1",
+	"ps_version_scope": "BOTH",
+	"remediation": "Assign the dictionary/hashtable to a variable first, then use @($dict.Keys).Count with explicit null/empty guards where needed.",
+	"examples": [
+		"# Bad\nif ((@{ A = 1; B = 2 }).Keys.Count -gt 0) { ... }",
+		"# Good\n$map = @{ A = 1; B = 2 }\nif (@($map.Keys).Count -gt 0) { ... }"
+	],
+	"tags": ["dictionary", "count", "null-safety"],
+	"occurrences_observed": 1,
+	"first_observed": "2026-04-30",
+	"date_added": "2026-05-21"
+}

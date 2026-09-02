@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: yes
 # SupportsPS7.6: yes
 <#
@@ -56,4 +56,6 @@ Describe 'VersionTag canonical format' {
         ($match.Value -cmatch '\.v\$\(') | Should -BeFalse -Because 'Lowercase v in version string is a P007 regression'
     }
 }
+
+
 

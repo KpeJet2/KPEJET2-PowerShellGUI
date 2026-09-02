@@ -1,4 +1,5 @@
 ﻿{
+  "VersionTag": "2607.B6.V53.0",
     "schemaVersion":  "LocalWebEngineClusterTrust/1.0",
     "clusterName":  "pwshgui-XPS15-MS",
     "role":  "STANDALONE",

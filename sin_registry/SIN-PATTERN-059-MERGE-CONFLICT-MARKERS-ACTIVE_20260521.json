@@ -1,0 +1,25 @@
+{
+  "id": "SIN-PATTERN-059-MERGE-CONFLICT-MARKERS-ACTIVE",
+  "sin_id": "SIN-PATTERN-059-MERGE-CONFLICT-MARKERS-ACTIVE",
+  "title": "Active merge conflict markers present in tracked files",
+  "description": "Unresolved merge markers have repeatedly broken JSON parsing and pipeline integrity checks.",
+  "severity": "CRITICAL",
+  "status": "pattern-defined",
+  "category": "Integrity/SourceControl",
+  "detection_method": "Regex scan for conflict marker lines (<<<<<<<, =======, >>>>>>>) in active source and artifact files.",
+  "scan_regex": "^(<<<<<<<|=======|>>>>>>>)",
+  "context_guard_regex": "",
+  "file_exclusion_regex": "sin_registry\\\\|~REPORTS\\\\|\\\\.history\\\\|\\\\.md$",
+  "scan_file_pattern": "*.ps1;*.psm1;*.json;*.xhtml;*.html;*.js;*.ts",
+  "ps_version_scope": "BOTH",
+  "remediation": "Resolve conflicts and re-run artifact rebuild plus integrity checks before commit.",
+  "examples": [
+    "<<<<<<< HEAD",
+    "=======",
+    ">>>>>>> branch"
+  ],
+  "tags": ["merge", "integrity", "pipeline"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

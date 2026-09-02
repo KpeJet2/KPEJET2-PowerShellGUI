@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "_meta": {
     "description": "Waiting-room jokes for long process wait loops. Displayed at 90s+ intervals.",
     "style": "Awkwardly funny IT-admin humour: slow apps, old RAM DIMMs, legacy systems.",

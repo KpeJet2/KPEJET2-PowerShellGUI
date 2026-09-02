@@ -1,0 +1,2517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlTool -->
+<!-- Codename: cortix -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XHTML Dependency Map R2 - CORTIX</title>
+  <style type="text/css">
+  /* <![CDATA[ */
+  :root{
+    --bg:#070b14;--bg2:#0d1220;--panel:#11182a;--panel2:#16203a;--line:#24314e;
+    --accent:#5bc0ff;--accent2:#76f0b2;--accent3:#ffb86b;--danger:#ff667c;--text:#e6edf7;
+    --muted:#8fa3bf;--chip:#1d2a44;--shadow:0 16px 44px rgba(0,0,0,.35);
+    --radius:10px;--font:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;--mono:"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);font-size:13px;background:
+    radial-gradient(circle at top left,rgba(91,192,255,.15),transparent 28%),
+    radial-gradient(circle at bottom right,rgba(118,240,178,.12),transparent 30%),
+    linear-gradient(180deg,var(--bg),#05070d 70%);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  a{color:var(--accent)}
+  button,input,select,textarea{font:inherit}
+  .topbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,#121a30,#0a1020);border-bottom:1px solid var(--line);flex-shrink:0}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 1px rgba(255,255,255,.08) inset}
+  .brand .title{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand .subtitle{font-size:11px;color:var(--muted)}
+  .version{margin-left:auto;font-size:11px;color:#bfe3ff;background:#0f1730;border:1px solid #2e4668;padding:4px 8px;border-radius:999px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 14px;background:rgba(10,15,28,.94);border-bottom:1px solid var(--line);flex-shrink:0}
+  .toolbar label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px}
+  .toolbar input,.toolbar select,.toolbar textarea{background:#0b1120;border:1px solid #253454;color:var(--text);border-radius:8px;padding:6px 8px}
+  .toolbar input[type="text"]{min-width:170px}
+  .toolbar .btn{background:linear-gradient(180deg,#182844,#111b31);color:var(--text);border:1px solid #29405f;border-radius:8px;padding:6px 10px;cursor:pointer}
+  .toolbar .btn.primary{background:linear-gradient(180deg,#1d4f7d,#12365a);border-color:#2f6c9a;color:#d9f4ff}
+  .toolbar .btn.warn{background:linear-gradient(180deg,#4d2e12,#321d0b);border-color:#6f4321;color:#ffd9b5}
+  .toolbar .btn:hover{filter:brightness(1.08)}
+  .tabbar{display:flex;flex-wrap:wrap;gap:2px;padding:0 14px;background:#0b1020;border-bottom:1px solid var(--line);flex-shrink:0}
+  .tabbar button{background:#111a31;color:#9ab1d2;border:1px solid #23344d;border-bottom:none;border-radius:10px 10px 0 0;padding:8px 12px;cursor:pointer}
+  .tabbar button.active{color:#fff;background:var(--bg2);border-color:#3c5b84;box-shadow:0 -2px 0 var(--accent) inset}
+  .layout{flex:1;display:flex;overflow:hidden;min-height:0}
+  .sidebar{width:290px;min-width:250px;background:linear-gradient(180deg,#0d1425,#0a1020);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+  .side-section{padding:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+  .side-section h3{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9bb4d5;margin-bottom:8px}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid #2b3a59;color:#dbe6fb;padding:5px 8px;border-radius:999px;font-size:11px;cursor:pointer}
+  .chip.on{background:#12324c;border-color:#2e6a95;color:#eaf6ff}
+  .chip small{color:#8fb1d6}
+  .stack{display:flex;flex-direction:column;gap:8px}
+  .metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .metric{background:#0b1221;border:1px solid #223351;border-radius:10px;padding:10px}
+  .metric b{display:block;font-size:18px;color:#fff}
+  .metric span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .note{font-size:11px;color:#9fb1cb;line-height:1.45}
+  .note strong{color:#fff}
+  .note-gap{margin-top:10px}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+  .panel{display:none;flex:1;overflow:auto;padding:14px}
+  .panel.active{display:block}
+  .grid-2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .card{background:linear-gradient(180deg,var(--panel),#0c1120);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px}
+  .card h2,.card h3{font-size:14px;margin-bottom:8px;color:#dce9ff}
+  .card h4{font-size:12px;margin:10px 0 6px;color:#aedbff}
+  .card p,.card li{color:#c9d7ea;line-height:1.55}
+  .card ul{padding-left:18px}
+  .canvas-wrap{background:radial-gradient(circle at 50% 0%,rgba(91,192,255,.14),transparent 40%),linear-gradient(180deg,#0a1020,#070b14);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;min-height:460px}
+  .canvas-wrap svg,.canvas-wrap canvas{display:block;width:100%;height:100%}
+  .graph-tooltip{position:absolute;z-index:12;min-width:220px;max-width:360px;background:rgba(7,13,24,.95);border:1px solid #2d4868;border-radius:10px;padding:8px 10px;color:#dce9ff;font-size:11px;line-height:1.45;pointer-events:none;box-shadow:0 12px 24px rgba(0,0,0,.35)}
+  .graph-tooltip b{color:#9be7ff}
+  .graph-tooltip .tiny{font-size:10px;color:#8fb1d5}
+  .detail{background:#0c1324;border:1px solid #223553;border-radius:12px;padding:12px;font-family:var(--mono);font-size:11px;color:#cfe3ff;white-space:pre-wrap;overflow:auto;max-height:280px}
+  .detail.expanded{max-height:500px}
+  .status-pill{display:inline-block;margin-right:6px;margin-top:4px;padding:2px 8px;border-radius:999px;border:1px solid #304c70;background:#10203a;color:#d6ebff;font-size:10px}
+  .status-pill.ok{border-color:#2c6a43;background:#0f2318;color:#9be6b8}
+  .status-pill.off{border-color:#6b2a2f;background:#251116;color:#ff9fa9}
+  .section-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .section-row .mini{font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #29405f;background:#10182d;color:#d7e6ff;cursor:pointer}
+  .section-row .mini.primary{background:#123b61;border-color:#2b6792}
+  .section-row .mini.warn{background:#35210f;border-color:#6e4522;color:#ffd8b7}
+  .split{display:grid;grid-template-columns:1fr 320px;gap:12px}
+  .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .form-grid label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#97afcc}
+  .form-grid input,.form-grid select,.form-grid textarea{background:#0b1120;border:1px solid #24334e;border-radius:8px;color:var(--text);padding:7px 8px}
+  .form-grid textarea{min-height:88px;resize:vertical}
+  .full{grid-column:1 / -1}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .jobs-list{display:flex;flex-direction:column;gap:8px;max-height:430px;overflow:auto}
+  .job{background:#0b1120;border:1px solid #21324d;border-radius:12px;padding:10px;cursor:pointer}
+  .job.active{border-color:#3b78a4;box-shadow:0 0 0 1px rgba(91,192,255,.25) inset}
+  .job-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .job-title{font-weight:700;color:#fff}
+  .job-meta{font-size:10px;color:#8fa7c5;margin-top:4px}
+  .job-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .job-tag{font-size:10px;border:1px solid #2b3f61;background:#132038;border-radius:999px;padding:2px 6px;color:#cfe3ff}
+  .job-status{font-size:10px;border-radius:999px;padding:2px 8px;border:1px solid #2a5b3d;background:#102115;color:#9de6b9}
+  .job-status.wait{border-color:#5f4a28;background:#231a0d;color:#ffd188}
+  .job-status.err{border-color:#6c2730;background:#241016;color:#ff9ca9}
+  .uml-editor{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .uml-box{background:#0b1120;border:1px solid #24344f;border-radius:12px;padding:10px;min-height:360px;display:flex;flex-direction:column;gap:8px}
+  .uml-box textarea{flex:1;min-height:300px;background:#07101f;border:1px solid #21314b;border-radius:10px;color:#dbe9ff;font-family:var(--mono);font-size:12px;padding:10px;resize:vertical}
+  .uml-preview{flex:1;background:linear-gradient(180deg,#07101f,#0a1121);border:1px solid #21314b;border-radius:10px;padding:10px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:12px;color:#d8ecff}
+  .media-grid{display:grid;grid-template-columns:1fr 340px;gap:12px}
+  .media-canvas{min-height:420px}
+  .media-panel{display:flex;flex-direction:column;gap:8px}
+  .footerbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 14px;border-top:1px solid var(--line);background:#0a1020;color:#8da6c9;font-size:10px;flex-shrink:0}
+  .hidden{display:none !important}
+  .mono{font-family:var(--mono)}
+  .summary-links a{display:inline-block;margin-right:8px;margin-top:4px}
+  /* CORTIX vector enhancements: replay transport, resize, lineage tree, view presets */
+  .vector-card{display:flex;flex-direction:column;gap:10px}
+  .vector-toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#0b1322;border:1px solid #21314b;border-radius:10px;padding:7px 9px}
+  .vector-toolbar .vt-group{display:flex;align-items:center;gap:5px;padding-right:8px;margin-right:2px;border-right:1px solid rgba(255,255,255,.06)}
+  .vector-toolbar .vt-group:last-child{border-right:none}
+  .vector-toolbar button{background:#13203a;border:1px solid #2a405f;color:#dbe9ff;border-radius:7px;padding:4px 8px;cursor:pointer;font-size:11px}
+  .vector-toolbar button:hover{filter:brightness(1.12)}
+  .vector-toolbar button.on{background:#1c5a3c;border-color:#2f8c5c;color:#d7ffe9}
+  .vector-toolbar button.live{background:#123b61;border-color:#2b6792}
+  .vector-toolbar select,.vector-toolbar input[type="number"]{background:#0b1120;border:1px solid #25344f;color:#dbe9ff;border-radius:7px;padding:3px 5px;font-size:11px}
+  .vector-toolbar input[type="number"]{width:54px}
+  .vector-toolbar input[type="range"]{width:150px}
+  .vector-toolbar label{color:#8fa7c5;font-size:10px;display:flex;align-items:center;gap:4px}
+  .vector-toolbar .vt-time{font-family:var(--mono);font-size:11px;color:#9be7ff;min-width:150px;text-align:center}
+  .canvas-wrap.resizable{min-height:300px}
+  .resize-handle{position:absolute;right:4px;bottom:4px;width:16px;height:16px;cursor:nwse-resize;z-index:14;border-radius:3px;background:linear-gradient(135deg,transparent 40%,#5bc0ff 40%,#5bc0ff 55%,transparent 55%,transparent 70%,#76f0b2 70%,#76f0b2 85%,transparent 85%)}
+  .vector-card.maximized{grid-column:1 / -1}
+  .edge-dot{cursor:pointer}
+  .lineage-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .lineage-bar input[type="text"]{background:#0b1120;border:1px solid #25344f;color:#dbe9ff;border-radius:7px;padding:5px 7px;min-width:150px}
+  .lineage-bar select{background:#0b1120;border:1px solid #25344f;color:#dbe9ff;border-radius:7px;padding:5px 7px;min-width:140px}
+  .lineage-bar button{font-size:11px;padding:5px 9px;border-radius:8px;border:1px solid #29405f;background:#10182d;color:#d7e6ff;cursor:pointer}
+  .lineage-bar button:hover{filter:brightness(1.12)}
+  .lineage-bar button.primary{background:#123b61;border-color:#2b6792}
+  .lineage-bar button.warn{background:#35210f;border-color:#6e4522;color:#ffd8b7}
+  .lineage-tree{font-family:var(--mono);font-size:12px;color:#cfe3ff;max-height:360px;overflow:auto;background:#0a1224;border:1px solid #21324d;border-radius:12px;padding:8px 6px}
+  .tree-node{padding-left:6px}
+  .tree-row{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:6px}
+  .tree-row:hover{background:rgba(91,192,255,.08)}
+  .tree-toggle{width:22px;text-align:center;color:#7fd3ff;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;user-select:none}
+  .tree-toggle.leaf{color:#46618a;cursor:default}
+  .tree-label{color:#e6edf7}
+  .tree-badge{font-size:9px;padding:1px 6px;border-radius:999px;border:1px solid #2b3f61;background:#132038;color:#bcd6f6;text-transform:uppercase;letter-spacing:.04em}
+  .tree-badge.memory{border-color:#6b4aa0;background:#1d1330;color:#d6bcff}
+  .tree-badge.xhtml{border-color:#2b6792;background:#0f2b46;color:#bfe3ff}
+  .tree-badge.md{border-color:#2f8c5c;background:#10271b;color:#c4f6da}
+  .tree-badge.py{border-color:#8a7a22;background:#262109;color:#f3e7a6}
+  .tree-badge.ps1{border-color:#6e4522;background:#2a1a0c;color:#ffd8b7}
+  .tree-children{margin-left:12px;border-left:1px dashed rgba(255,255,255,.08);padding-left:6px}
+  .tree-children.collapsed{display:none}
+  .tree-meta{color:#7e98ba;font-size:10px}
+  @media (max-width:1100px){.layout{flex-direction:column}.sidebar{width:auto;min-width:0;border-right:none;border-bottom:1px solid var(--line)}.grid-2,.grid-3,.split,.uml-editor,.media-grid{grid-template-columns:1fr}}
+  /* ]]> */
+  </style>
+  <meta name="pwshgui-version-tag" content="2605.B5.V46.3" />
+  <meta name="pwshgui-version-feed" content="~REPORTS/xhtml-version-feed.json" />
+  <script type="text/javascript" src="styles/pwshgui-version-link.js"></script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div>
+        <div class="title">XHTML Dependency Map R2 - CORTIX</div>
+        <div class="subtitle">Vector relational service for mapping, capture, jobs, UML, and pipeline handoff</div>
+      </div>
+    </div>
+    <div class="version">cortix</div>
+  </div>
+
+  <div class="toolbar">
+    <label>Profile
+      <select id="profileSelect">
+        <option value="workspace">Workspace</option>
+        <option value="netsecops">NetSecOps</option>
+        <option value="geo">Geo + Weather</option>
+        <option value="iot">IoT + Radio</option>
+        <option value="media">Media + Cipher Export</option>
+      </select>
+    </label>
+    <label>Seed
+      <input type="text" id="seedInput" value="workspace dependency map" />
+    </label>
+    <label>Max nodes
+      <input type="text" id="maxNodesInput" value="3500" />
+    </label>
+    <label>Cluster token
+      <input type="text" id="clusterTokenInput" value="" placeholder="optional" />
+    </label>
+    <button class="btn primary" id="btnSaveJob" type="button">Save Job</button>
+    <button class="btn" id="btnRestoreJob" type="button">Restore Job</button>
+    <button class="btn warn" id="btnExportJson" type="button">Export JSON</button>
+    <button class="btn" id="btnExportImage" type="button">Export Cipher Image</button>
+    <button class="btn" id="btnOpenVenn" type="button">Open Venn Reference</button>
+  </div>
+
+  <div class="tabbar" id="tabbar">
+    <button class="active" data-tab="overview" type="button">Overview</button>
+    <button data-tab="capture" type="button">Capture Wizard</button>
+    <button data-tab="jobs" type="button">Jobs</button>
+    <button data-tab="uml" type="button">UML Lab</button>
+    <button data-tab="media" type="button">Media Cipher</button>
+    <button data-tab="pipeline" type="button">Pipeline</button>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-section">
+        <h3>Source Families</h3>
+        <div class="chip-row" id="sourceChips"></div>
+      </div>
+      <div class="side-section">
+        <h3>Watermarks</h3>
+        <div class="stack">
+          <label class="note">Min desired <input type="text" id="minDesiredInput" value="500" /></label>
+          <label class="note">Reach required <input type="text" id="reachRequiredInput" value="1000" /></label>
+          <label class="note">Low watermark <input type="text" id="lowWatermarkInput" value="350" /></label>
+          <label class="note">High watermark <input type="text" id="highWatermarkInput" value="1200" /></label>
+          <label class="note">Max allowed <input type="text" id="maxAllowedInput" value="5000" /></label>
+        </div>
+      </div>
+      <div class="side-section">
+        <h3>Status</h3>
+        <div class="metric-grid">
+          <div class="metric"><b id="jobCount">0</b><span>Jobs</span></div>
+          <div class="metric"><b id="dataCount">0</b><span>Nodes</span></div>
+          <div class="metric"><b id="sourceCount">0</b><span>Sources</span></div>
+          <div class="metric"><b id="alertCount">0</b><span>Alerts</span></div>
+        </div>
+      </div>
+      <div class="side-section">
+        <h3>References</h3>
+        <div class="note summary-links">
+          <a href="XHTML-DataRelationalViz.xhtml">Data Relational Viz</a>
+          <a href="scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml">Visualisation Venn</a>
+          <a href="~README.md/Dependency-Visualisation.html">Legacy Dependency Visualisation</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="panel active" id="panel-overview">
+        <div class="grid-2">
+          <div class="card">
+            <h2>R2 Overview</h2>
+            <p>This refactor turns the dependency viewer into a modular capture and mapping surface. It keeps the existing Venn view intact while adding a release-2 lane for job storage, capture planning, UML prototyping, and export.</p>
+            <div class="controls">
+              <button class="mini primary" id="btnSeedDemo" type="button">Seed Demo Job</button>
+              <button class="mini" id="btnClearJobs" type="button">Clear Jobs</button>
+              <button class="mini" id="btnSnapshot" type="button">Snapshot State</button>
+              <button class="mini" id="btnRefreshLive" type="button">Refresh Live Paths</button>
+              <button class="mini" id="btnReplayPulse" type="button">Replay Pulse</button>
+              <button class="mini" id="btnToggleVectorExpand" type="button">Expand Details</button>
+            </div>
+            <h4>Supported mapping domains</h4>
+            <div class="chip-row" id="domainChips"></div>
+            <h4>Selected Vector</h4>
+            <div class="detail" id="vectorDetail">Select a node to inspect full source vector data.</div>
+            <h4>Pulse History</h4>
+            <div class="detail" id="historyDetail">No pulse history yet.</div>
+          </div>
+          <div class="card vector-card" id="vectorCard">
+            <div class="vector-toolbar" id="vectorToolbar">
+              <div class="vt-group">
+                <button id="btnReplayLive" class="live" type="button" title="Resume the live auto-pulse interconnect stream">Live</button>
+                <button id="btnReplayPlay" type="button" title="Play or pause the pipe-process replay">Play</button>
+              </div>
+              <div class="vt-group">
+                <button id="btnReplayToStart" type="button" title="Jump to the replay start point">|&lt;</button>
+                <button id="btnReplayStepBack" type="button" title="Step backward by the configured seconds">-step</button>
+                <button id="btnReplayStepFwd" type="button" title="Step forward by the configured seconds">+step</button>
+                <button id="btnReplayToEnd" type="button" title="Jump to the replay end point">&gt;|</button>
+              </div>
+              <div class="vt-group">
+                <input type="range" id="rngReplayScrub" min="0" max="1000" value="0" title="Scrub through the pipe-process timeline" />
+                <span class="vt-time" id="lblReplayTime">0.00s / 0.00s</span>
+              </div>
+              <div class="vt-group">
+                <label title="Playback speed multiplier">speed
+                  <select id="selReplaySpeed">
+                    <option value="0.25">0.25x</option>
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected="selected">1x</option>
+                    <option value="2">2x</option>
+                    <option value="4">4x</option>
+                  </select>
+                </label>
+                <label title="Seconds advanced per step button press">step
+                  <input type="number" id="inpReplayStep" min="0.1" max="10" step="0.1" value="1" />s
+                </label>
+                <label title="Loop replay between the start and end points"><input type="checkbox" id="chkReplayLoop" checked="checked" />loop</label>
+              </div>
+              <div class="vt-group">
+                <button id="btnSetReplayStart" type="button" title="Set the current position as the replay start point">Set Start</button>
+                <button id="btnSetReplayEnd" type="button" title="Set the current position as the replay end point">Set End</button>
+                <button id="btnClearReplayMarks" type="button" title="Clear the start and end replay points">Clear</button>
+              </div>
+              <div class="vt-group">
+                <button id="btnVecSmall" type="button" title="Resize the interconnect vector to small">S</button>
+                <button id="btnVecMed" type="button" title="Resize the interconnect vector to medium">M</button>
+                <button id="btnVecLarge" type="button" title="Resize the interconnect vector to large">L</button>
+                <button id="btnVecMax" type="button" title="Toggle full-width maximize for the interconnect vector">Max</button>
+              </div>
+            </div>
+            <div class="canvas-wrap media-canvas resizable" id="vectorCanvasWrap">
+              <svg id="graphSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" preserveAspectRatio="xMidYMid meet"></svg>
+              <div class="graph-tooltip hidden" id="graphTooltip"></div>
+              <div class="resize-handle" id="vectorResizeHandle" title="Drag to resize the interconnect vector"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="lineageCard">
+          <h2>File &amp; Memory Lineage</h2>
+          <p class="note">Expand the subtree to trace memory and xhtml / md / py / ps1 file lineage. Hover a row for its role and linkage parameters. Save the current view (selection, replay, sizing and tree state) as a reusable preset.</p>
+          <div class="lineage-bar">
+            <button class="mini" id="btnTreeExpandAll" type="button" title="Expand every lineage branch">Expand All</button>
+            <button class="mini" id="btnTreeCollapseAll" type="button" title="Collapse every lineage branch">Collapse All</button>
+            <input type="text" id="treeFilterInput" placeholder="filter lineage (e.g. ps1, vault)" title="Filter lineage rows by text" />
+          </div>
+          <div class="lineage-tree" id="lineageTree"></div>
+          <h4>View Presets</h4>
+          <div class="lineage-bar">
+            <input type="text" id="presetNameInput" placeholder="preset name" title="Name for the saved view preset" />
+            <button class="mini primary" id="btnPresetSave" type="button" title="Save the current view as a named preset">Save View</button>
+            <select id="presetSelect" title="Choose a saved view preset"></select>
+            <button class="mini" id="btnPresetRestore" type="button" title="Restore the selected view preset">Restore</button>
+            <button class="mini warn" id="btnPresetDelete" type="button" title="Delete the selected view preset">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-capture">
+        <div class="card">
+          <h2>Dataset Capture Wizard</h2>
+          <div class="form-grid">
+            <label>Job name
+              <input type="text" id="jobNameInput" value="CORTIX workspace capture" />
+            </label>
+            <label>Source type
+              <select id="captureTypeSelect">
+                <option value="workspace">Folders / Files / Metadata</option>
+                <option value="web">Websites / Wayback / Online Crawlers</option>
+                <option value="api">GET / REST / API</option>
+                <option value="net">Networks / Wi-Fi / DNS</option>
+                <option value="sec">NetSecOps / CVEs / KEV</option>
+                <option value="geo">Geo / BOM / data.gov.au / Weather</option>
+                <option value="iot">IoT / Radio / Signal Mapping</option>
+                <option value="media">Image / Spectral / Wave Mapping</option>
+                <option value="automation">Task / Cron / Pipeline / UML</option>
+              </select>
+            </label>
+            <label>Seed path / URL / query
+              <input type="text" id="captureSeedInput" value="C:\\PowerShellGUI" />
+            </label>
+            <label>REST endpoint
+              <input type="text" id="captureApiInput" value="https://api.example.local/v1" />
+            </label>
+            <label class="full">Task handoff summary
+              <textarea id="handoffInput">Capture workspace folders, hyperlinks, metadata, and pipeline artefacts; store the result as a reusable CORTIX job bundle.</textarea>
+            </label>
+          </div>
+          <h4>Collection toggles</h4>
+          <div class="chip-row" id="collectionChips"></div>
+          <div class="controls">
+            <button class="mini primary" id="btnQueueCapture" type="button">Queue Capture</button>
+            <button class="mini" id="btnSaveCapture" type="button">Save Capture Spec</button>
+            <button class="mini" id="btnRestoreCapture" type="button">Restore Capture Spec</button>
+            <button class="mini warn" id="btnExportHandoff" type="button">Export Handoff</button>
+          </div>
+          <p class="note note-gap">Network and Wi-Fi scan controls are represented as job intents here so they can be handed off to the internal pipeline safely instead of being executed directly in-browser.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-jobs">
+        <div class="split">
+          <div class="card">
+            <h2>Job Store</h2>
+            <div class="jobs-list" id="jobsList"></div>
+          </div>
+          <div class="card">
+            <h2>Job Detail</h2>
+            <div class="detail" id="jobDetail">No job selected.</div>
+            <div class="controls">
+              <button class="mini primary" id="btnRestoreSelected" type="button">Restore Selected</button>
+              <button class="mini" id="btnDeleteSelected" type="button">Delete Selected</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-uml">
+        <div class="uml-editor">
+          <div class="uml-box">
+            <h2>WYSIWYG UML Markup Editor</h2>
+            <p class="note">Use the toolbar templates to prototype workspace flow, pipeline gates, engine handoff, and Con-Ai-Athon documentation.</p>
+            <textarea id="umlEditor"></textarea>
+            <div class="section-row">
+              <button class="mini primary" data-template="flow" type="button">Insert Flow</button>
+              <button class="mini" data-template="class" type="button">Insert Class</button>
+              <button class="mini" data-template="sequence" type="button">Insert Sequence</button>
+              <button class="mini" data-template="gantt" type="button">Insert Gantt</button>
+              <button class="mini warn" id="btnSaveUml" type="button">Save UML</button>
+            </div>
+          </div>
+          <div class="uml-box">
+            <h2>Live Preview</h2>
+            <div class="uml-preview" id="umlPreview"></div>
+            <div class="controls">
+              <button class="mini primary" id="btnExportUml" type="button">Export UML Spec</button>
+              <button class="mini" id="btnResetUml" type="button">Reset UML</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-media">
+        <div class="media-grid">
+          <div class="card canvas-wrap media-canvas">
+            <canvas id="cipherCanvas" width="1600" height="900"></canvas>
+          </div>
+          <div class="card media-panel">
+            <h2>Media Cipher Export</h2>
+            <p class="note">Encodes the selected job state as high-density visual payload for image-based storage and progressive seed export.</p>
+            <label>Seed image key
+              <input type="text" id="imageSeedInput" value="glamour-city" />
+            </label>
+            <label>Payload mode
+              <select id="payloadModeSelect">
+                <option value="png">PNG</option>
+                <option value="jpg">JPG baseline</option>
+              </select>
+            </label>
+            <div class="controls">
+              <button class="mini primary" id="btnRenderCipher" type="button">Render Cipher</button>
+              <button class="mini" id="btnDownloadCipher" type="button">Download Image</button>
+            </div>
+            <div class="detail" id="cipherDetail">No render yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-pipeline">
+        <div class="grid-3">
+          <div class="card">
+            <h2>Pipeline Handoff</h2>
+            <p>Jobs can be exported as JSON, copied into a pipeline task, or restored later from local storage. The intent is to feed the internal queue rather than hard-code execution here.</p>
+            <h4>Stages</h4>
+            <ul>
+              <li>Discover: folders, files, metadata, links, endpoints</li>
+              <li>Design: profile, watermark, size ceilings, capture filters</li>
+              <li>Implement: queue job, store job, restore job, render UML</li>
+              <li>Verify: job counts, source counts, alert thresholds</li>
+              <li>Release: export JSON, export image, document results</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Alerts</h2>
+            <div class="detail" id="alertDetail">Awaiting job analysis.</div>
+          </div>
+          <div class="card">
+            <h2>Integration Notes</h2>
+            <div class="note">
+              <p><strong>Main GUI:</strong> launch tab, Tools menu, and tray mirror.</p>
+              <p><strong>Workspace Hub:</strong> tile entry for interactive navigation.</p>
+              <p><strong>Menu Builder:</strong> registry entry for navigation modelling.</p>
+              <p><strong>Legacy:</strong> the original Venn file remains untouched.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="footerbar">
+    <span id="statusText">Ready.</span>
+    <span class="mono" id="stateText">jobs=0 | active=none | profile=workspace</span>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+    'use strict';
+
+    var STORAGE_KEY = 'pwshgui.cortix.r2.state';
+    var UML_KEY = 'pwshgui.cortix.uml';
+    var SOURCE_KEYS = ['folders','files','metadata','hyperlinks','websites','api','database','networking','wifi','logic-gates','iot','radio-frequency','geo','weather','logs','price','netsecops','cves','kev','patch-versions','kill-chain','automation','cron','uml','images','spectral','wave'];
+    var DOMAIN_KEYS = ['folders','files','metadata','hyperlinks','websites','api','database','networking','wifi','logic gates','iot','radio frequency','geo','weather','logs','price analysis','netsecops','cve','kev','patch versions','kill chain','automation','cron jobs','uml'];
+    var PROFILE_SEEDS = {
+      workspace: 'folders, files, metadata, hyperlinks',
+      netsecops: 'NetSecOps, CVEs, KEV, patch versions, kill chain',
+      geo: 'BOM, data.gov.au, weather, path analysis, log analysis',
+      iot: 'wifi, radio reference, IoT, signal mapping',
+      media: 'image mapping, spectral mapping, wave mapping, barcode cipher'
+    };
+    var TEMPLATE_MAP = {
+      flow: '@startuml\nstart\n:Discover sources;\n:Validate inputs;\n:Queue pipeline handoff;\n:Render outputs;\nstop\n@enduml',
+      class: '@startuml\nclass CortixJob {\n  +id\n  +profile\n  +limits\n  +sources\n  +status\n}\nclass CaptureWizard\nclass PipelineQueue\nCortixJob --> CaptureWizard\nCortixJob --> PipelineQueue\n@enduml',
+      sequence: '@startuml\nactor User\nparticipant UI\nparticipant Pipeline\nUser -> UI: create job\nUI -> Pipeline: handoff\nPipeline --> UI: status\n@enduml',
+      gantt: '@startgantt\n[Discover] lasts 1 day\n[Design] lasts 1 day\n[Implement] lasts 2 days\n[Verify] lasts 1 day\n[Release] lasts 1 day\n@endgantt'
+    };
+    var SOURCE_COLORS = {
+      folders: '#5bc0ff', files: '#8fe5ff', metadata: '#76f0b2', hyperlinks: '#4ce0c3', websites: '#4cc9f0',
+      api: '#80ffdb', database: '#00d1b2', networking: '#ffb86b', wifi: '#ffd166', 'logic-gates': '#ffcf66',
+      iot: '#ff9f6e', 'radio-frequency': '#ff7f66', geo: '#a2d2ff', weather: '#bde0fe', logs: '#cdb4db',
+      price: '#d0f4de', netsecops: '#ff667c', cves: '#ff8fab', kev: '#ff4d6d', 'patch-versions': '#ffc6ff',
+      'kill-chain': '#f4a261', automation: '#84dcc6', cron: '#95d5b2', uml: '#bdb2ff', images: '#caffbf',
+      spectral: '#9bf6ff', wave: '#a0c4ff'
+    };
+    var SOURCE_TO_DOMAINS = {
+      folders: ['folders','files','metadata'],
+      files: ['files','metadata','hyperlinks'],
+      metadata: ['metadata','api','automation'],
+      hyperlinks: ['hyperlinks','websites','api'],
+      websites: ['websites','api','logs'],
+      api: ['api','database','automation'],
+      database: ['database','api','logs'],
+      networking: ['networking','wifi','logs'],
+      wifi: ['wifi','networking','iot'],
+      'logic-gates': ['automation','uml','cron jobs'],
+      iot: ['iot','radio frequency','networking'],
+      'radio-frequency': ['radio frequency','iot','weather'],
+      geo: ['geo','weather','logs'],
+      weather: ['weather','geo','logs'],
+      logs: ['logs','automation','netsecops'],
+      price: ['price analysis','api','logs'],
+      netsecops: ['netsecops','cve','kev'],
+      cves: ['cve','kev','patch versions'],
+      kev: ['kev','kill chain','patch versions'],
+      'patch-versions': ['patch versions','cve','kev'],
+      'kill-chain': ['kill chain','netsecops','automation'],
+      automation: ['automation','cron jobs','uml'],
+      cron: ['cron jobs','automation','logs'],
+      uml: ['uml','automation','cron jobs'],
+      images: ['uml','metadata','api'],
+      spectral: ['weather','geo','api'],
+      wave: ['weather','radio frequency','iot']
+    };
+    var LIVE_ENDPOINTS = {
+      engineStatus8042: 'http://127.0.0.1:8042/api/engine/status',
+      engineHealth8042: 'http://127.0.0.1:8042/health',
+      dashboardPing8099: 'http://127.0.0.1:8099/api/ping',
+      dashboardLite8099: 'http://127.0.0.1:8099/api/metrics/lite',
+      clusterNodes8099: 'http://127.0.0.1:8099/api/cluster/nodes'
+    };
+    var FILE_LINEAGE = [
+      { id:'ln-memory', label:'Memory', type:'memory', note:'Persistent agent memory scopes (user / repo / session)', children:[
+        { id:'ln-mem-user', label:'user / preferences.md', type:'memory', note:'Cross-workspace user preferences and conventions' },
+        { id:'ln-mem-gov', label:'user / sin-governance-rules.md', type:'memory', note:'SIN governance pattern rules P001..P081' },
+        { id:'ln-mem-repo', label:'repo / *.json + *.md', type:'memory', note:'Repository-scoped codebase facts and anti-patterns' },
+        { id:'ln-mem-session', label:'session / scratch', type:'memory', note:'Conversation-scoped working notes' }
+      ]},
+      { id:'ln-xhtml', label:'XHTML pages', type:'xhtml', note:'Operator UI surfaces served by the local web engine on :8042', children:[
+        { id:'ln-x-cortix', label:'XHTML-DependencyMapR2-CORTIX.xhtml', type:'xhtml', note:'This page: interconnect vector, capture, jobs, UML, media' },
+        { id:'ln-x-hub', label:'XHTML-WorkspaceHub.xhtml', type:'xhtml', note:'Workspace hub launcher and live service status' },
+        { id:'ln-x-pipe', label:'XHTML-PipelineManager.xhtml', type:'xhtml', note:'Pipeline run controls and payload issues' },
+        { id:'ln-x-score', label:'XHTML-SIN-Scoreboard-LIVE.xhtml', type:'xhtml', note:'Live SIN pattern scoreboard' },
+        { id:'ln-x-change', label:'XHTML-ChangelogViewer.xhtml', type:'xhtml', note:'Changelog viewer synced from CHANGELOG.md' }
+      ]},
+      { id:'ln-md', label:'Markdown docs', type:'md', note:'Guides, plans and manifests under ~README.md/', children:[
+        { id:'ln-md-change', label:'CHANGELOG.md', type:'md', note:'Canonical change history' },
+        { id:'ln-md-index', label:'~README.md/INDEX.md', type:'md', note:'Documentation index' },
+        { id:'ln-md-icon', label:'~README.md/DOC-ICON-STANDARD.md', type:'md', note:'Icon standard for SIN references' },
+        { id:'ln-md-mod', label:'~README.md/MODULE-FUNCTION-INDEX.md', type:'md', note:'Module and function cross index' }
+      ]},
+      { id:'ln-py', label:'Python tools', type:'py', note:'Auxiliary Python utilities (.venv isolated)', children:[
+        { id:'ln-py-venv', label:'.venv / site-packages', type:'py', note:'Isolated interpreter environment' },
+        { id:'ln-py-tools', label:'tools / *.py', type:'py', note:'Workspace Python helper scripts' },
+        { id:'ln-py-fing', label:'Fing-mcp / *.py', type:'py', note:'Network discovery MCP integration' }
+      ]},
+      { id:'ln-ps1', label:'PowerShell engine', type:'ps1', note:'PS 5.1 / 7.6 scripts and modules', children:[
+        { id:'ln-ps-main', label:'Main-GUI.ps1', type:'ps1', note:'Primary WinForms GUI entrypoint' },
+        { id:'ln-ps-engine', label:'scripts / Start-LocalWebEngine.ps1', type:'ps1', note:'Local web engine on :8042 serving this page' },
+        { id:'ln-ps-cron', label:'scripts / Invoke-CronProcessor.ps1', type:'ps1', note:'CronAiAthon pipeline processor' },
+        { id:'ln-ps-scan', label:'tests / Invoke-SINPatternScanner.ps1', type:'ps1', note:'SIN pattern scanner and baseline ratchet' },
+        { id:'ln-ps-mods', label:'modules / *.psm1', type:'ps1', note:'Shared module surface (logging, vault, action log)' }
+      ]}
+    ];
+
+    var state = loadState();
+    if (!state.uml) { state.uml = TEMPLATE_MAP.flow; }
+    if (!state.jobs) { state.jobs = []; }
+    if (!state.sources) { state.sources = {}; }
+    if (!state.capture) { state.capture = {}; }
+    if (!state.media) { state.media = {}; }
+    state.profile = state.profile || 'workspace';
+    state.seed = state.seed || PROFILE_SEEDS.workspace;
+
+    var tabbar = document.getElementById('tabbar');
+    var sourceChips = document.getElementById('sourceChips');
+    var collectionChips = document.getElementById('collectionChips');
+    var domainChips = document.getElementById('domainChips');
+    var jobsList = document.getElementById('jobsList');
+    var jobDetail = document.getElementById('jobDetail');
+    var alertDetail = document.getElementById('alertDetail');
+    var umlEditor = document.getElementById('umlEditor');
+    var umlPreview = document.getElementById('umlPreview');
+    var cipherCanvas = document.getElementById('cipherCanvas');
+    var cipherDetail = document.getElementById('cipherDetail');
+    var graphSvg = document.getElementById('graphSvg');
+    var graphTooltip = document.getElementById('graphTooltip');
+    var vectorDetail = document.getElementById('vectorDetail');
+    var historyDetail = document.getElementById('historyDetail');
+
+    var controls = {
+      profileSelect: document.getElementById('profileSelect'),
+      seedInput: document.getElementById('seedInput'),
+      maxNodesInput: document.getElementById('maxNodesInput'),
+      minDesiredInput: document.getElementById('minDesiredInput'),
+      reachRequiredInput: document.getElementById('reachRequiredInput'),
+      lowWatermarkInput: document.getElementById('lowWatermarkInput'),
+      highWatermarkInput: document.getElementById('highWatermarkInput'),
+      maxAllowedInput: document.getElementById('maxAllowedInput'),
+      jobNameInput: document.getElementById('jobNameInput'),
+      captureTypeSelect: document.getElementById('captureTypeSelect'),
+      captureSeedInput: document.getElementById('captureSeedInput'),
+      captureApiInput: document.getElementById('captureApiInput'),
+      handoffInput: document.getElementById('handoffInput'),
+      imageSeedInput: document.getElementById('imageSeedInput'),
+      payloadModeSelect: document.getElementById('payloadModeSelect'),
+      clusterTokenInput: document.getElementById('clusterTokenInput')
+    };
+
+    var summary = {
+      jobCount: document.getElementById('jobCount'),
+      dataCount: document.getElementById('dataCount'),
+      sourceCount: document.getElementById('sourceCount'),
+      alertCount: document.getElementById('alertCount'),
+      statusText: document.getElementById('statusText'),
+      stateText: document.getElementById('stateText')
+    };
+
+    var graphRuntime = {
+      model: null,
+      selectedNodeId: '',
+      hoverNodeId: '',
+      pulsePlan: null,
+      pulseEpoch: 0,
+      pulseLoopMs: 0,
+      replayLastNow: 0,
+      scrubDragging: false,
+      frameHandle: 0,
+      liveTimer: 0,
+      telemetry: {
+        engine8042: { online: false, source: 'engine', detail: 'Not queried yet.' },
+        dashboard8099: { online: false, source: 'service-cluster', detail: 'Not queried yet.' },
+        cluster: { online: false, source: 'service-cluster', detail: 'Not queried yet.', nodeCount: 0 },
+        cache: { online: true, source: 'cache', detail: 'Derived from local job store.', nodeCount: 0 }
+      }
+    };
+
+    function loadState() {
+      try {
+        var raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) { return defaultState(); }
+        return mergeState(defaultState(), JSON.parse(raw));
+      } catch (err) {
+        return defaultState();
+      }
+    }
+
+    function defaultState() {
+      return {
+        jobs: [],
+        sources: {},
+        capture: {},
+        media: {},
+        profile: 'workspace',
+        seed: PROFILE_SEEDS.workspace,
+        uml: TEMPLATE_MAP.flow,
+        activeJobId: '',
+        selectedSources: ['folders','files','metadata','hyperlinks'],
+        captureType: 'workspace',
+        captureSeed: 'C:\\PowerShellGUI',
+        captureApi: 'https://api.example.local/v1',
+        handoff: 'Capture workspace folders, hyperlinks, metadata, and pipeline artefacts; store the result as a reusable CORTIX job bundle.',
+        minDesired: '500',
+        reachRequired: '1000',
+        lowWatermark: '350',
+        highWatermark: '1200',
+        maxAllowed: '5000',
+        maxNodes: '3500',
+        clusterToken: '',
+        imageSeed: 'glamour-city',
+        payloadMode: 'png',
+        vectorHistory: [],
+        vectorExpanded: false,
+        graphSelection: '',
+        canvasHeight: 460,
+        vectorMaximized: false,
+        replay: { mode: 'live', speed: 1, manualMs: 0, startMs: 0, endMs: 0, stepSec: 1, loop: true },
+        treeExpanded: { 'ln-memory': true, 'ln-xhtml': true, 'ln-md': true, 'ln-py': true, 'ln-ps1': true },
+        treeFilter: '',
+        presets: {}
+      };
+    }
+
+    function mergeState(base, raw) {
+      var out = base;
+      if (!raw || typeof raw !== 'object') { return out; }
+      for (var key in raw) {
+        if (Object.prototype.hasOwnProperty.call(raw, key)) {
+          out[key] = raw[key];
+        }
+      }
+      return out;
+    }
+
+    function saveState() {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        setStatus('Local storage save failed: ' + err.message, true);
+      }
+    }
+
+    function setStatus(text, isError) {
+      summary.statusText.textContent = text;
+      if (isError) {
+        summary.statusText.style.color = '#ff8ea0';
+      } else {
+        summary.statusText.style.color = '#8da6c9';
+      }
+    }
+
+    function makeId(prefix) {
+      return prefix + '-' + (new Date().getTime()) + '-' + Math.floor(Math.random() * 100000);
+    }
+
+    function activeJob() {
+      var i;
+      for (i = 0; i < state.jobs.length; i++) {
+        if (state.jobs[i].id === state.activeJobId) {
+          return state.jobs[i];
+        }
+      }
+      return null;
+    }
+
+    function uniqueCountFromJobs() {
+      var map = {};
+      var i, j, job, sources;
+      for (i = 0; i < state.jobs.length; i++) {
+        job = state.jobs[i];
+        sources = job.sources || [];
+        for (j = 0; j < sources.length; j++) {
+          map[sources[j]] = true;
+        }
+      }
+      return Object.keys(map).length;
+    }
+
+    function totalAlerts() {
+      var alerts = 0;
+      var i;
+      var low = toNumber(state.lowWatermark, 0);
+      var high = toNumber(state.highWatermark, 0);
+      var max = toNumber(state.maxAllowed, 0);
+      for (i = 0; i < state.jobs.length; i++) {
+        if (toNumber(state.jobs[i].nodeCount, 0) < low) { alerts++; }
+        if (toNumber(state.jobs[i].nodeCount, 0) > high) { alerts++; }
+        if (toNumber(state.jobs[i].nodeCount, 0) > max) { alerts++; }
+      }
+      return alerts;
+    }
+
+    function toNumber(value, fallback) {
+      var n = parseInt(value, 10);
+      if (isNaN(n)) { return fallback; }
+      return n;
+    }
+
+    function setActiveTab(tabName) {
+      var panels = document.querySelectorAll('.panel');
+      var buttons = tabbar.querySelectorAll('button');
+      var i;
+      for (i = 0; i < panels.length; i++) {
+        panels[i].className = panels[i].className.replace(' active', '');
+      }
+      for (i = 0; i < buttons.length; i++) {
+        buttons[i].className = buttons[i].className.replace(' active', '');
+        if (buttons[i].getAttribute('data-tab') === tabName) {
+          buttons[i].className += ' active';
+        }
+      }
+      document.getElementById('panel-' + tabName).className = 'panel active';
+      if (tabName === 'media') {
+        renderCipher();
+      }
+    }
+
+    function renderChips(container, values, selectedMap, toggleFn) {
+      var html = '';
+      var i;
+      for (i = 0; i < values.length; i++) {
+        html += '<span class="chip' + (selectedMap[values[i]] ? ' on' : '') + '" data-key="' + values[i] + '">' + values[i] + '</span>';
+      }
+      container.innerHTML = html;
+      var chips = container.querySelectorAll('.chip');
+      for (i = 0; i < chips.length; i++) {
+        chips[i].addEventListener('click', function(){ toggleFn(this.getAttribute('data-key')); });
+      }
+    }
+
+    function toggleSource(key) {
+      state.sources[key] = !state.sources[key];
+      if (state.sources[key]) {
+        if (state.selectedSources.indexOf(key) === -1) { state.selectedSources.push(key); }
+      } else {
+        state.selectedSources = state.selectedSources.filter(function(item){ return item !== key; });
+      }
+      saveState();
+      renderAll();
+    }
+
+    function toggleCollection(key) {
+      state.capture[key] = !state.capture[key];
+      saveState();
+      renderAll();
+    }
+
+    function syncInputsToState() {
+      state.profile = controls.profileSelect.value;
+      state.seed = controls.seedInput.value;
+      state.maxNodes = controls.maxNodesInput.value;
+      state.minDesired = controls.minDesiredInput.value;
+      state.reachRequired = controls.reachRequiredInput.value;
+      state.lowWatermark = controls.lowWatermarkInput.value;
+      state.highWatermark = controls.highWatermarkInput.value;
+      state.maxAllowed = controls.maxAllowedInput.value;
+      state.captureType = controls.captureTypeSelect.value;
+      state.captureSeed = controls.captureSeedInput.value;
+      state.captureApi = controls.captureApiInput.value;
+      state.handoff = controls.handoffInput.value;
+      state.imageSeed = controls.imageSeedInput.value;
+      state.payloadMode = controls.payloadModeSelect.value;
+      state.clusterToken = controls.clusterTokenInput.value;
+      state.jobName = controls.jobNameInput.value;
+    }
+
+    function syncStateToInputs() {
+      controls.profileSelect.value = state.profile;
+      controls.seedInput.value = state.seed;
+      controls.maxNodesInput.value = state.maxNodes;
+      controls.minDesiredInput.value = state.minDesired;
+      controls.reachRequiredInput.value = state.reachRequired;
+      controls.lowWatermarkInput.value = state.lowWatermark;
+      controls.highWatermarkInput.value = state.highWatermark;
+      controls.maxAllowedInput.value = state.maxAllowed;
+      controls.captureTypeSelect.value = state.captureType;
+      controls.captureSeedInput.value = state.captureSeed;
+      controls.captureApiInput.value = state.captureApi;
+      controls.handoffInput.value = state.handoff;
+      controls.imageSeedInput.value = state.imageSeed;
+      controls.payloadModeSelect.value = state.payloadMode;
+      controls.clusterTokenInput.value = state.clusterToken || '';
+      controls.jobNameInput.value = state.jobName || 'CORTIX workspace capture';
+      umlEditor.value = state.uml;
+    }
+
+    function buildJobFromControls() {
+      var selected = [];
+      var key;
+      for (key in state.sources) {
+        if (Object.prototype.hasOwnProperty.call(state.sources, key) && state.sources[key]) {
+          selected.push(key);
+        }
+      }
+      if (!selected.length) {
+        selected = state.selectedSources.slice(0);
+      }
+      return {
+        id: makeId('cortix'),
+        title: controls.jobNameInput.value || 'CORTIX job',
+        profile: controls.profileSelect.value,
+        seed: controls.seedInput.value,
+        captureType: controls.captureTypeSelect.value,
+        captureSeed: controls.captureSeedInput.value,
+        captureApi: controls.captureApiInput.value,
+        handoff: controls.handoffInput.value,
+        sources: selected,
+        limits: {
+          minDesired: controls.minDesiredInput.value,
+          reachRequired: controls.reachRequiredInput.value,
+          lowWatermark: controls.lowWatermarkInput.value,
+          highWatermark: controls.highWatermarkInput.value,
+          maxAllowed: controls.maxAllowedInput.value,
+          maxNodes: controls.maxNodesInput.value
+        },
+        nodeCount: estimateNodes(selected, controls.captureTypeSelect.value),
+        alertCount: estimateAlerts(selected),
+        status: 'ready',
+        savedAt: new Date().toISOString(),
+        uml: state.uml,
+        imageSeed: controls.imageSeedInput.value,
+        payloadMode: controls.payloadModeSelect.value
+      };
+    }
+
+    function estimateNodes(selected, type) {
+      var base = 120 + (selected.length * 35);
+      if (type === 'sec') { base += 160; }
+      if (type === 'geo') { base += 140; }
+      if (type === 'media') { base += 180; }
+      if (type === 'automation') { base += 90; }
+      return base;
+    }
+
+    function estimateAlerts(selected) {
+      var alerts = 0;
+      if (selected.length > 10) { alerts++; }
+      if (toNumber(controls.maxNodesInput.value, 0) < 500) { alerts++; }
+      if (toNumber(controls.maxAllowedInput.value, 0) < toNumber(controls.highWatermarkInput.value, 0)) { alerts++; }
+      return alerts;
+    }
+
+    function saveJob() {
+      syncInputsToState();
+      var job = buildJobFromControls();
+      state.jobs.unshift(job);
+      state.activeJobId = job.id;
+      state.capture = state.capture || {};
+      state.capture.lastSaved = job.id;
+      saveState();
+      renderAll();
+      setStatus('Saved job ' + job.title + '.', false);
+      return job;
+    }
+
+    function restoreSelectedJob() {
+      var job = activeJob();
+      if (!job) { setStatus('No job selected to restore.', true); return; }
+      state.profile = job.profile;
+      state.seed = job.seed;
+      state.captureType = job.captureType;
+      state.captureSeed = job.captureSeed;
+      state.captureApi = job.captureApi;
+      state.handoff = job.handoff;
+      state.uml = job.uml || state.uml;
+      state.imageSeed = job.imageSeed || state.imageSeed;
+      state.payloadMode = job.payloadMode || state.payloadMode;
+      state.selectedSources = job.sources ? job.sources.slice(0) : [];
+      state.sources = {};
+      for (var i = 0; i < state.selectedSources.length; i++) {
+        state.sources[state.selectedSources[i]] = true;
+      }
+      state.capture.lastRestored = job.id;
+      saveState();
+      renderAll();
+      setStatus('Restored job ' + job.title + '.', false);
+    }
+
+    function deleteSelectedJob() {
+      var job = activeJob();
+      if (!job) { return; }
+      state.jobs = state.jobs.filter(function(item){ return item.id !== job.id; });
+      state.activeJobId = state.jobs.length ? state.jobs[0].id : '';
+      saveState();
+      renderAll();
+      setStatus('Deleted job ' + job.title + '.', false);
+    }
+
+    function queueCapture() {
+      var job = saveJob();
+      job.status = 'queued';
+      state.activeJobId = job.id;
+      saveState();
+      renderAll();
+      setStatus('Queued capture handoff for pipeline processing.', false);
+    }
+
+    function snapshotState() {
+      syncInputsToState();
+      saveState();
+      downloadText('cortix-state.json', JSON.stringify(state, null, 2), 'application/json');
+      setStatus('Snapshot exported.', false);
+    }
+
+    function exportJson() {
+      syncInputsToState();
+      var payload = {
+        codename: 'cortix',
+        generated: new Date().toISOString(),
+        state: state,
+        activeJob: activeJob()
+      };
+      downloadText('cortix-job.json', JSON.stringify(payload, null, 2), 'application/json');
+      setStatus('Job JSON exported.', false);
+    }
+
+    function exportHandoff() {
+      syncInputsToState();
+      var handoff = {
+        action: 'pipeline-handoff',
+        codename: 'cortix',
+        job: buildJobFromControls(),
+        recommendedStages: ['Discover','Design','Implement','Verify','Release'],
+        notes: state.handoff
+      };
+      downloadText('cortix-handoff.json', JSON.stringify(handoff, null, 2), 'application/json');
+      setStatus('Pipeline handoff exported.', false);
+    }
+
+    function downloadText(fileName, content, mimeType) {
+      var blob = new Blob([content], { type: mimeType || 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      anchor.style.display = 'none';
+      document.body.appendChild(anchor);
+      anchor.click();
+      setTimeout(function(){
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+
+    function cipherPayload() {
+      syncInputsToState();
+      var job = activeJob() || buildJobFromControls();
+      var payload = JSON.stringify({
+        codename: 'cortix',
+        seedImage: state.imageSeed,
+        job: job,
+        timestamp: new Date().toISOString()
+      });
+      return payload;
+    }
+
+    function renderCipher() {
+      var ctx = cipherCanvas.getContext('2d');
+      var payload = cipherPayload();
+      var width = cipherCanvas.width;
+      var height = cipherCanvas.height;
+      var seed = state.imageSeed || 'seed';
+      var i;
+      ctx.clearRect(0, 0, width, height);
+      var grad = ctx.createLinearGradient(0, 0, width, height);
+      grad.addColorStop(0, '#060a12');
+      grad.addColorStop(0.55, '#0c1530');
+      grad.addColorStop(1, '#05070d');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+      ctx.globalAlpha = 0.9;
+      for (i = 0; i < 72; i++) {
+        var hash = charHash(seed + payload + i);
+        var x = (hash % width);
+        var y = ((hash / 11) % height);
+        var w = 24 + (hash % 220);
+        var h = 2 + (hash % 12);
+        ctx.fillStyle = paletteFromHash(hash);
+        ctx.fillRect(x, y, w, h);
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#dcefff';
+      ctx.font = 'bold 34px Segoe UI';
+      ctx.fillText('CORTIX', 50, 72);
+      ctx.font = '20px Cascadia Code';
+      ctx.fillStyle = '#8ecbff';
+      ctx.fillText('barcoded cipher payload', 50, 106);
+      ctx.font = '16px Cascadia Code';
+      ctx.fillStyle = '#9db4d3';
+      wrapText(ctx, 'seed=' + seed + ' | mode=' + (state.payloadMode || 'png') + ' | job=' + (jobTitle(job)), 50, 150, 860, 22);
+      ctx.strokeStyle = 'rgba(255,255,255,.08)';
+      ctx.strokeRect(18, 18, width - 36, height - 36);
+      cipherDetail.textContent = 'Render complete. Payload bytes: ' + payload.length + ' | image seed: ' + seed + ' | mode: ' + (state.payloadMode || 'png');
+    }
+
+    function jobTitle(job) {
+      return job ? job.title : 'unsaved';
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      var words = String(text).split(/\s+/);
+      var line = '';
+      var i;
+      for (i = 0; i < words.length; i++) {
+        var testLine = line + words[i] + ' ';
+        if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+          ctx.fillText(line, x, y);
+          line = words[i] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    function charHash(text) {
+      var hash = 0;
+      var i;
+      for (i = 0; i < text.length; i++) {
+        hash = ((hash << 5) - hash) + text.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    function paletteFromHash(hash) {
+      var palette = ['#5bc0ff','#76f0b2','#ffb86b','#a78bfa','#ff667c','#9be7ff','#f6d365'];
+      return palette[hash % palette.length];
+    }
+
+    function exportCipherImage() {
+      renderCipher();
+      var link = document.createElement('a');
+      link.download = 'cortix-cipher.' + ((state.payloadMode || 'png') === 'jpg' ? 'jpg' : 'png');
+      link.href = cipherCanvas.toDataURL('image/' + ((state.payloadMode || 'png') === 'jpg' ? 'jpeg' : 'png'), 0.92);
+      link.click();
+      setStatus('Cipher image exported.', false);
+    }
+
+    function renderJobs() {
+      var html = '';
+      var i, job, statusClass;
+      for (i = 0; i < state.jobs.length; i++) {
+        job = state.jobs[i];
+        statusClass = job.status === 'queued' ? 'wait' : (job.alertCount > 0 ? 'err' : '');
+        html += '<div class="job' + (job.id === state.activeJobId ? ' active' : '') + '" data-id="' + job.id + '">';
+        html += '<div class="job-head"><div class="job-title">' + escapeHtml(job.title) + '</div><div class="job-status ' + statusClass + '">' + escapeHtml(job.status || 'ready') + '</div></div>';
+        html += '<div class="job-meta">' + escapeHtml(job.captureType) + ' | nodes ' + escapeHtml(String(job.nodeCount || 0)) + ' | saved ' + escapeHtml(shortDate(job.savedAt)) + '</div>';
+        html += '<div class="job-tags">';
+        html += '<span class="job-tag">profile: ' + escapeHtml(job.profile || '') + '</span>';
+        html += '<span class="job-tag">sources: ' + escapeHtml(String((job.sources || []).length)) + '</span>';
+        html += '<span class="job-tag">alerts: ' + escapeHtml(String(job.alertCount || 0)) + '</span>';
+        html += '</div></div>';
+      }
+      if (!html) {
+        html = '<p class="note">No jobs saved yet.</p>';
+      }
+      jobsList.innerHTML = html;
+      var cards = jobsList.querySelectorAll('.job');
+      for (i = 0; i < cards.length; i++) {
+        cards[i].addEventListener('click', function(){
+          state.activeJobId = this.getAttribute('data-id');
+          saveState();
+          renderAll();
+        });
+      }
+      renderJobDetail();
+    }
+
+    function renderJobDetail() {
+      var job = activeJob();
+      if (!job) {
+        jobDetail.textContent = 'No job selected.';
+        alertDetail.textContent = 'Awaiting job analysis.';
+        return;
+      }
+      jobDetail.textContent = JSON.stringify(job, null, 2);
+      alertDetail.textContent = analyzeJob(job);
+    }
+
+    function analyzeJob(job) {
+      var low = toNumber(state.lowWatermark, 0);
+      var high = toNumber(state.highWatermark, 0);
+      var max = toNumber(state.maxAllowed, 0);
+      var alerts = [];
+      if ((job.sources || []).length === 0) { alerts.push('No source families selected.'); }
+      if (job.nodeCount < low) { alerts.push('Node count is below the low watermark.'); }
+      if (job.nodeCount > high) { alerts.push('Node count exceeds the high watermark.'); }
+      if (job.nodeCount > max) { alerts.push('Node count exceeds the max allowed ceiling.'); }
+      if (!alerts.length) { alerts.push('Job is within configured bounds.'); }
+      return alerts.join('\n');
+    }
+
+    function shortDate(iso) {
+      if (!iso) { return ''; }
+      return iso.substring(0, 10);
+    }
+
+    function escapeHtml(text) {
+      return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function edgeKey(a, b) {
+      return a < b ? (a + '|' + b) : (b + '|' + a);
+    }
+
+    function graphNodeById(model, id) {
+      var i;
+      if (!model || !id) { return null; }
+      for (i = 0; i < model.nodes.length; i++) {
+        if (model.nodes[i].id === id) { return model.nodes[i]; }
+      }
+      return null;
+    }
+
+    function graphAdjacency(model) {
+      var out = {};
+      var i;
+      for (i = 0; i < model.nodes.length; i++) {
+        out[model.nodes[i].id] = [];
+      }
+      for (i = 0; i < model.edges.length; i++) {
+        out[model.edges[i].from].push(model.edges[i].to);
+        out[model.edges[i].to].push(model.edges[i].from);
+      }
+      return out;
+    }
+
+    function buildPathLengths(model, path) {
+      var segments = [];
+      var total = 0;
+      var i;
+      for (i = 0; i < path.length - 1; i++) {
+        var from = graphNodeById(model, path[i]);
+        var to = graphNodeById(model, path[i + 1]);
+        var len = 0;
+        if (from && to) {
+          len = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+        }
+        segments.push({ from: from, to: to, start: total, len: len });
+        total += len;
+      }
+      return { segments: segments, total: total };
+    }
+
+    function pointAlongTrack(track, ratio, reverse) {
+      if (!track || !track.lengths || track.lengths.total <= 0) { return null; }
+      var clamped = Math.max(0, Math.min(1, ratio));
+      var distance = track.lengths.total * (reverse ? (1 - clamped) : clamped);
+      var i;
+      for (i = 0; i < track.lengths.segments.length; i++) {
+        var seg = track.lengths.segments[i];
+        if (!seg.from || !seg.to) { continue; }
+        if (distance <= seg.start + seg.len || i === track.lengths.segments.length - 1) {
+          var inside = seg.len <= 0 ? 0 : ((distance - seg.start) / seg.len);
+          inside = Math.max(0, Math.min(1, inside));
+          return {
+            x: seg.from.x + ((seg.to.x - seg.from.x) * inside),
+            y: seg.from.y + ((seg.to.y - seg.from.y) * inside)
+          };
+        }
+      }
+      return null;
+    }
+
+    function sourceColor(key) {
+      return SOURCE_COLORS[key] || '#5bc0ff';
+    }
+
+    function prettyLabel(raw) {
+      return String(raw || '').replace(/-/g, ' ');
+    }
+
+    function domainNodeId(label) {
+      return 'dom-' + String(label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function sourceNodeId(label) {
+      return 'src-' + String(label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function buildGraphModel() {
+      var w = 960;
+      var h = 520;
+      var cx = w / 2;
+      var cy = h / 2;
+      var selected = getSelectedSources();
+      var nodes = [];
+      var edges = [];
+      var nodeMap = {};
+      var edgeMap = {};
+      var i;
+
+      if (!selected.length) {
+        selected = (state.selectedSources && state.selectedSources.length) ? state.selectedSources.slice(0) : ['folders', 'files', 'metadata', 'hyperlinks'];
+      }
+      if (selected.length > 14) {
+        selected = selected.slice(0, 14);
+      }
+
+      graphRuntime.telemetry.cache.nodeCount = state.jobs.reduce(function(sum, job){
+        return sum + toNumber(job.nodeCount, 0);
+      }, 0);
+
+      function addNode(node) {
+        if (!nodeMap[node.id]) {
+          nodeMap[node.id] = node;
+          nodes.push(node);
+        }
+      }
+
+      function addEdge(from, to, kind) {
+        var key = edgeKey(from, to);
+        if (!edgeMap[key] && nodeMap[from] && nodeMap[to]) {
+          edgeMap[key] = true;
+          edges.push({ id: key, from: from, to: to, kind: kind || 'link' });
+        }
+      }
+
+      addNode({ id: 'source-hub', label: 'SOURCE HUB', kind: 'hub', x: cx, y: cy, fill: '#162a47', stroke: '#6bc9ff', meta: { profile: state.profile, seed: state.seed } });
+      addNode({ id: 'svc-engine-8042', label: 'web-engine 8042', kind: 'service', x: cx, y: cy - 112, fill: graphRuntime.telemetry.engine8042.online ? '#163626' : '#3a1a22', stroke: graphRuntime.telemetry.engine8042.online ? '#8ce8b0' : '#ff8a9d', meta: graphRuntime.telemetry.engine8042 });
+      addNode({ id: 'svc-dashboard-8099', label: 'service-cluster 8099', kind: 'service', x: cx + 118, y: cy, fill: graphRuntime.telemetry.dashboard8099.online ? '#15352f' : '#3a1d22', stroke: graphRuntime.telemetry.dashboard8099.online ? '#9ee8d5' : '#ff9fa9', meta: graphRuntime.telemetry.dashboard8099 });
+      addNode({ id: 'svc-cluster', label: 'cluster controller', kind: 'service', x: cx, y: cy + 116, fill: graphRuntime.telemetry.cluster.online ? '#152f38' : '#322231', stroke: graphRuntime.telemetry.cluster.online ? '#8fe5ff' : '#ff8ec7', meta: graphRuntime.telemetry.cluster });
+      addNode({ id: 'cache-scan', label: 'full scan cache', kind: 'cache', x: cx - 118, y: cy, fill: '#1d2b45', stroke: '#9dd0ff', meta: graphRuntime.telemetry.cache });
+
+      addEdge('source-hub', 'svc-engine-8042', 'live');
+      addEdge('source-hub', 'svc-dashboard-8099', 'live');
+      addEdge('source-hub', 'svc-cluster', 'live');
+      addEdge('source-hub', 'cache-scan', 'cache');
+      addEdge('svc-dashboard-8099', 'svc-cluster', 'cluster');
+      addEdge('svc-engine-8042', 'cache-scan', 'cache');
+
+      var sourceRadius = 168;
+      for (i = 0; i < selected.length; i++) {
+        var sourceKey = selected[i];
+        var sourceAngle = ((Math.PI * 2 * i) / selected.length) - (Math.PI / 2);
+        addNode({
+          id: sourceNodeId(sourceKey),
+          label: prettyLabel(sourceKey),
+          kind: 'source',
+          sourceKey: sourceKey,
+          x: cx + (Math.cos(sourceAngle) * sourceRadius),
+          y: cy + (Math.sin(sourceAngle) * sourceRadius),
+          fill: '#12233f',
+          stroke: sourceColor(sourceKey),
+          meta: { selected: true }
+        });
+        addEdge('source-hub', sourceNodeId(sourceKey), 'source');
+      }
+
+      var domainRadius = 244;
+      for (i = 0; i < DOMAIN_KEYS.length; i++) {
+        var domAngle = ((Math.PI * 2 * i) / DOMAIN_KEYS.length) - (Math.PI / 2);
+        addNode({
+          id: domainNodeId(DOMAIN_KEYS[i]),
+          label: DOMAIN_KEYS[i],
+          kind: 'domain',
+          x: cx + (Math.cos(domAngle) * domainRadius),
+          y: cy + (Math.sin(domAngle) * domainRadius),
+          fill: '#152237',
+          stroke: '#4e6892',
+          meta: { domain: DOMAIN_KEYS[i] }
+        });
+      }
+
+      for (i = 0; i < selected.length; i++) {
+        var src = selected[i];
+        var targets = SOURCE_TO_DOMAINS[src] || [];
+        var j;
+        for (j = 0; j < targets.length; j++) {
+          addEdge(sourceNodeId(src), domainNodeId(targets[j]), 'vector');
+        }
+      }
+
+      addEdge('svc-engine-8042', domainNodeId('api'), 'service');
+      addEdge('svc-engine-8042', domainNodeId('websites'), 'service');
+      addEdge('svc-dashboard-8099', domainNodeId('automation'), 'service');
+      addEdge('svc-dashboard-8099', domainNodeId('cron jobs'), 'service');
+      addEdge('svc-cluster', domainNodeId('networking'), 'service');
+      addEdge('svc-cluster', domainNodeId('netsecops'), 'service');
+      addEdge('cache-scan', domainNodeId('logs'), 'cache');
+      addEdge('cache-scan', domainNodeId('folders'), 'cache');
+
+      return { nodes: nodes, edges: edges, width: w, height: h, cx: cx, cy: cy };
+    }
+
+    function buildPulsePlan(model, startId) {
+      if (!model || !startId || !graphNodeById(model, startId)) { return null; }
+      var adj = graphAdjacency(model);
+      var depth = {};
+      var parent = {};
+      var queue = [startId];
+      var q = 0;
+      var i;
+      depth[startId] = 0;
+
+      while (q < queue.length) {
+        var cur = queue[q++];
+        var neighbors = adj[cur] || [];
+        for (i = 0; i < neighbors.length; i++) {
+          if (typeof depth[neighbors[i]] === 'undefined') {
+            depth[neighbors[i]] = depth[cur] + 1;
+            parent[neighbors[i]] = cur;
+            queue.push(neighbors[i]);
+          }
+        }
+      }
+
+      var maxDepth = 0;
+      for (var key in depth) {
+        if (Object.prototype.hasOwnProperty.call(depth, key) && depth[key] > maxDepth) {
+          maxDepth = depth[key];
+        }
+      }
+
+      var leaves = [];
+      for (i = 0; i < model.nodes.length; i++) {
+        var node = model.nodes[i];
+        if (node.id === startId || typeof depth[node.id] === 'undefined') { continue; }
+        var nbs = adj[node.id] || [];
+        var hasDeeper = false;
+        var k;
+        for (k = 0; k < nbs.length; k++) {
+          if (typeof depth[nbs[k]] !== 'undefined' && depth[nbs[k]] > depth[node.id]) {
+            hasDeeper = true;
+            break;
+          }
+        }
+        if (!hasDeeper) {
+          leaves.push(node.id);
+        }
+      }
+
+      if (!leaves.length) {
+        for (i = 0; i < model.nodes.length; i++) {
+          if (depth[model.nodes[i].id] === maxDepth) {
+            leaves.push(model.nodes[i].id);
+          }
+        }
+      }
+
+      var tracks = [];
+      var maxOutward = 0;
+      for (i = 0; i < leaves.length; i++) {
+        var path = [leaves[i]];
+        var walk = leaves[i];
+        while (walk !== startId && parent[walk]) {
+          walk = parent[walk];
+          path.unshift(walk);
+        }
+        if (path[0] !== startId || path.length < 2) { continue; }
+        var hops = path.length - 1;
+        var outwardEnd = 900 + (hops * 260);
+        if (outwardEnd > maxOutward) { maxOutward = outwardEnd; }
+        tracks.push({
+          path: path,
+          depth: hops,
+          outwardEnd: outwardEnd,
+          returnStart: 0,
+          returnEnd: 0,
+          color: paletteFromHash(charHash(path.join('|'))),
+          radius: 3 + Math.min(5, hops),
+          lengths: buildPathLengths(model, path)
+        });
+      }
+
+      var convergeAt = maxOutward + 1000;
+      for (i = 0; i < tracks.length; i++) {
+        tracks[i].returnStart = tracks[i].outwardEnd + 180;
+        tracks[i].returnEnd = convergeAt;
+      }
+
+      return {
+        startId: startId,
+        depth: depth,
+        maxDepth: maxDepth,
+        tracks: tracks,
+        loopMs: convergeAt + 360,
+        convergeAt: convergeAt
+      };
+    }
+
+    function buildPathEdgeMap(plan) {
+      var out = {};
+      if (!plan || !plan.tracks) { return out; }
+      var i;
+      var j;
+      for (i = 0; i < plan.tracks.length; i++) {
+        var path = plan.tracks[i].path;
+        for (j = 0; j < path.length - 1; j++) {
+          out[edgeKey(path[j], path[j + 1])] = true;
+        }
+      }
+      return out;
+    }
+
+    function resolvePathDepth(nodeId) {
+      if (!graphRuntime.pulsePlan || !graphRuntime.pulsePlan.depth) { return -1; }
+      if (typeof graphRuntime.pulsePlan.depth[nodeId] === 'undefined') { return -1; }
+      return graphRuntime.pulsePlan.depth[nodeId];
+    }
+
+    function addVectorHistory(node, plan) {
+      if (!state.vectorHistory) { state.vectorHistory = []; }
+      state.vectorHistory.unshift({
+        ts: new Date().toISOString(),
+        nodeId: node.id,
+        label: node.label,
+        kind: node.kind,
+        paths: plan ? plan.tracks.length : 0,
+        maxDepth: plan ? plan.maxDepth : 0,
+        convergeMs: plan ? plan.convergeAt : 0,
+        selectedSources: getSelectedSources().length
+      });
+      if (state.vectorHistory.length > 60) {
+        state.vectorHistory = state.vectorHistory.slice(0, 60);
+      }
+      saveState();
+    }
+
+    function renderHistoryPanel() {
+      if (!state.vectorHistory || !state.vectorHistory.length) {
+        historyDetail.textContent = 'No pulse history yet.';
+        return;
+      }
+      var lines = [];
+      var i;
+      var max = state.vectorExpanded ? 40 : 12;
+      for (i = 0; i < state.vectorHistory.length && i < max; i++) {
+        var item = state.vectorHistory[i];
+        var stamp = (item.ts || '').replace('T', ' ').substring(0, 19);
+        lines.push((i + 1) + '. ' + stamp + ' | ' + item.label + ' | hops=' + item.maxDepth + ' | paths=' + item.paths + ' | converge=' + item.convergeMs + 'ms');
+      }
+      historyDetail.textContent = lines.join('\n');
+    }
+
+    function renderVectorPanels(model) {
+      var node = graphNodeById(model, graphRuntime.selectedNodeId);
+      if (!node) {
+        vectorDetail.textContent = 'Select a node to inspect full source vector data.';
+        renderHistoryPanel();
+        return;
+      }
+
+      var adj = graphAdjacency(model);
+      var neighbors = adj[node.id] || [];
+      var depth = resolvePathDepth(node.id);
+      var lines = [];
+      lines.push('node: ' + node.label + ' (' + node.kind + ')');
+      lines.push('id: ' + node.id);
+      lines.push('profile: ' + state.profile + ' | selected sources: ' + getSelectedSources().length);
+      lines.push('connected hops: ' + neighbors.length + ' | path depth: ' + (depth >= 0 ? depth : 'n/a'));
+      lines.push('engine 8042: ' + (graphRuntime.telemetry.engine8042.online ? 'online' : 'offline') + ' | ' + (graphRuntime.telemetry.engine8042.detail || 'n/a'));
+      lines.push('dashboard 8099: ' + (graphRuntime.telemetry.dashboard8099.online ? 'online' : 'offline') + ' | ' + (graphRuntime.telemetry.dashboard8099.detail || 'n/a'));
+      lines.push('cluster controller: ' + (graphRuntime.telemetry.cluster.online ? 'online' : 'offline') + ' | nodes=' + toNumber(graphRuntime.telemetry.cluster.nodeCount, 0));
+      lines.push('cached scan nodes: ' + toNumber(graphRuntime.telemetry.cache.nodeCount, 0) + ' | jobs=' + state.jobs.length);
+      if (graphRuntime.pulsePlan) {
+        lines.push('pulse tracks: ' + graphRuntime.pulsePlan.tracks.length + ' | max depth: ' + graphRuntime.pulsePlan.maxDepth + ' | converge: ' + graphRuntime.pulsePlan.convergeAt + 'ms');
+      }
+      vectorDetail.textContent = lines.join('\n');
+      vectorDetail.className = state.vectorExpanded ? 'detail expanded' : 'detail';
+      historyDetail.className = state.vectorExpanded ? 'detail expanded' : 'detail';
+      renderHistoryPanel();
+    }
+
+    function buildTooltipHtml(node, model) {
+      var adj = graphAdjacency(model);
+      var n = adj[node.id] || [];
+      var depth = resolvePathDepth(node.id);
+      var detail = node.meta && node.meta.detail ? String(node.meta.detail) : '';
+      var html = '';
+      html += '<b>' + escapeHtml(node.label) + '</b><br />';
+      html += '<span class="tiny">type=' + escapeHtml(node.kind) + ' | hops=' + escapeHtml(String(n.length)) + ' | depth=' + escapeHtml(depth >= 0 ? String(depth) : 'n/a') + '</span>';
+      if (detail) {
+        html += '<br />' + escapeHtml(detail);
+      }
+      if (node.kind === 'source' && node.sourceKey) {
+        html += '<br />source family: ' + escapeHtml(node.sourceKey);
+      }
+      return html;
+    }
+
+    function showGraphTooltip(nodeId, x, y) {
+      var model = graphRuntime.model;
+      var node = graphNodeById(model, nodeId);
+      if (!node || !graphTooltip) { return; }
+      graphTooltip.innerHTML = buildTooltipHtml(node, model);
+      graphTooltip.className = 'graph-tooltip';
+      var left = x + 14;
+      var top = y + 14;
+      if (left > 640) { left = x - 260; }
+      if (top > 360) { top = y - 120; }
+      graphTooltip.style.left = left + 'px';
+      graphTooltip.style.top = top + 'px';
+    }
+
+    function hideGraphTooltip() {
+      if (graphTooltip) {
+        graphTooltip.className = 'graph-tooltip hidden';
+      }
+    }
+
+    function resolveGraphTargetId(target) {
+      var ptr = target;
+      while (ptr && ptr !== graphSvg) {
+        if (ptr.getAttribute && ptr.getAttribute('data-node-id')) {
+          return ptr.getAttribute('data-node-id');
+        }
+        ptr = ptr.parentNode;
+      }
+      return '';
+    }
+
+    function selectGraphNode(nodeId, trackHistory) {
+      if (!graphRuntime.model) { graphRuntime.model = buildGraphModel(); }
+      var node = graphNodeById(graphRuntime.model, nodeId);
+      if (!node) { return; }
+      graphRuntime.selectedNodeId = nodeId;
+      state.graphSelection = nodeId;
+      graphRuntime.pulsePlan = buildPulsePlan(graphRuntime.model, nodeId);
+      graphRuntime.pulseEpoch = new Date().getTime();
+      graphRuntime.pulseLoopMs = graphRuntime.pulsePlan ? graphRuntime.pulsePlan.loopMs : 0;
+      if (trackHistory) {
+        addVectorHistory(node, graphRuntime.pulsePlan);
+      } else {
+        saveState();
+      }
+      renderGraph();
+      setStatus('Vector selected: ' + node.label + '. Pulses now converging to source hub.', false);
+    }
+
+    function bindGraphInteractions() {
+      if (!graphSvg || graphSvg.getAttribute('data-bound') === '1') { return; }
+      graphSvg.setAttribute('data-bound', '1');
+      graphSvg.addEventListener('click', function(ev){
+        var nodeId = resolveGraphTargetId(ev.target);
+        if (!nodeId) { return; }
+        selectGraphNode(nodeId, true);
+      });
+      graphSvg.addEventListener('mousemove', function(ev){
+        var nodeId = resolveGraphTargetId(ev.target);
+        if (nodeId) {
+          graphRuntime.hoverNodeId = nodeId;
+          showGraphTooltip(nodeId, ev.offsetX, ev.offsetY);
+          return;
+        }
+        var edgeId = resolveGraphEdgeId(ev.target);
+        if (edgeId) {
+          graphRuntime.hoverNodeId = '';
+          showEdgeTooltip(edgeId, ev.offsetX, ev.offsetY);
+          return;
+        }
+        graphRuntime.hoverNodeId = '';
+        hideGraphTooltip();
+      });
+      graphSvg.addEventListener('mouseleave', function(){
+        graphRuntime.hoverNodeId = '';
+        hideGraphTooltip();
+      });
+    }
+
+    function fetchJsonTimeout(url, headers, timeoutMs) {
+      return new Promise(function(resolve, reject){
+        if (typeof window.fetch !== 'function') {
+          reject(new Error('fetch-unavailable'));
+          return;
+        }
+        var settled = false;
+        var timer = window.setTimeout(function(){
+          if (!settled) {
+            settled = true;
+            reject(new Error('timeout'));
+          }
+        }, timeoutMs || 2200);
+
+        window.fetch(url, {
+          method: 'GET',
+          headers: headers || {},
+          cache: 'no-store'
+        }).then(function(resp){
+          return resp.text().then(function(text){
+            if (settled) { return; }
+            settled = true;
+            window.clearTimeout(timer);
+            var payload = null;
+            try {
+              payload = JSON.parse(text);
+            } catch (err) {
+              payload = { raw: text };
+            }
+            if (!resp.ok) {
+              reject(new Error('http-' + resp.status));
+              return;
+            }
+            resolve(payload);
+          });
+        }).catch(function(err){
+          if (settled) { return; }
+          settled = true;
+          window.clearTimeout(timer);
+          reject(err);
+        });
+      });
+    }
+
+    function refreshLiveData(isManual) {
+      var token = (state.clusterToken || '').trim();
+      var clusterHeaders = token ? { 'X-Cluster-Token': token } : {};
+      function probe(url, headers) {
+        return fetchJsonTimeout(url, headers, 2400).then(function(data){
+          return { ok: true, data: data };
+        }).catch(function(err){
+          return { ok: false, error: (err && err.message) ? err.message : 'offline' };
+        });
+      }
+
+      Promise.all([
+        probe(LIVE_ENDPOINTS.engineStatus8042, {}),
+        probe(LIVE_ENDPOINTS.engineHealth8042, {}),
+        probe(LIVE_ENDPOINTS.dashboardPing8099, {}),
+        probe(LIVE_ENDPOINTS.dashboardLite8099, {}),
+        probe(LIVE_ENDPOINTS.clusterNodes8099, clusterHeaders)
+      ]).then(function(results){
+        var engineStatus = results[0];
+        var engineHealth = results[1];
+        var dashPing = results[2];
+        var dashLite = results[3];
+        var cluster = results[4];
+
+        graphRuntime.telemetry.engine8042.online = engineStatus.ok || engineHealth.ok;
+        graphRuntime.telemetry.engine8042.detail = engineStatus.ok ? 'status endpoint responsive' : (engineHealth.ok ? 'health endpoint responsive' : ('offline (' + (engineStatus.error || engineHealth.error || 'timeout') + ')'));
+
+        graphRuntime.telemetry.dashboard8099.online = dashPing.ok || dashLite.ok;
+        graphRuntime.telemetry.dashboard8099.detail = dashPing.ok ? 'dashboard ping responsive' : (dashLite.ok ? 'metrics-lite responsive' : ('offline (' + (dashPing.error || dashLite.error || 'timeout') + ')'));
+
+        graphRuntime.telemetry.cluster.online = cluster.ok;
+        graphRuntime.telemetry.cluster.nodeCount = (cluster.ok && cluster.data && cluster.data.nodes) ? cluster.data.nodes.length : 0;
+        graphRuntime.telemetry.cluster.detail = cluster.ok ? 'cluster nodes available' : ('cluster query failed (' + (cluster.error || 'token required') + ')');
+
+        graphRuntime.telemetry.cache.online = state.jobs.length > 0;
+        graphRuntime.telemetry.cache.detail = 'cached from local jobs and scan output';
+
+        renderGraph();
+        if (isManual) {
+          setStatus('Live probe refreshed: ' + liveStatusText(), false);
+        }
+      });
+    }
+
+    function liveStatusText() {
+      return 'engine8042=' + (graphRuntime.telemetry.engine8042.online ? 'online' : 'offline') +
+        ' | dashboard8099=' + (graphRuntime.telemetry.dashboard8099.online ? 'online' : 'offline') +
+        ' | cluster=' + (graphRuntime.telemetry.cluster.online ? 'online' : 'offline') +
+        ' | cacheNodes=' + toNumber(graphRuntime.telemetry.cache.nodeCount, 0);
+    }
+
+    function renderGraph() {
+      var model = buildGraphModel();
+      var now = new Date().getTime();
+      var i;
+      var html = '';
+      var selectedId;
+      var edgeHighlightMap;
+      var elapsed = 0;
+
+      graphRuntime.model = model;
+      selectedId = graphRuntime.selectedNodeId || state.graphSelection;
+      if (!selectedId || !graphNodeById(model, selectedId)) {
+        var chosen = sourceNodeId((getSelectedSources()[0] || 'folders'));
+        selectedId = graphNodeById(model, chosen) ? chosen : 'source-hub';
+      }
+
+      if (!graphRuntime.pulsePlan || graphRuntime.pulsePlan.startId !== selectedId) {
+        graphRuntime.selectedNodeId = selectedId;
+        graphRuntime.pulsePlan = buildPulsePlan(model, selectedId);
+        graphRuntime.pulseEpoch = now;
+        graphRuntime.pulseLoopMs = graphRuntime.pulsePlan ? graphRuntime.pulsePlan.loopMs : 0;
+      }
+
+      if (graphRuntime.pulsePlan) {
+        elapsed = computeReplayElapsed(now);
+      }
+
+      edgeHighlightMap = buildPathEdgeMap(graphRuntime.pulsePlan);
+
+      html += '<defs>';
+      html += '<filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+      html += '</defs>';
+      html += '<rect x="0" y="0" width="' + model.width + '" height="' + model.height + '" fill="rgba(4,8,16,0.2)" />';
+
+      for (i = 0; i < model.edges.length; i++) {
+        var edge = model.edges[i];
+        var from = graphNodeById(model, edge.from);
+        var to = graphNodeById(model, edge.to);
+        if (!from || !to) { continue; }
+        var active = !!edgeHighlightMap[edge.id];
+        var pulseFactor = active ? (0.25 + (0.75 * Math.abs(Math.sin((now / 210) + (i * 0.2))))) : 0;
+        var stroke = active ? 'rgba(118,240,178,' + (0.25 + (pulseFactor * 0.65)).toFixed(2) + ')' : 'rgba(255,255,255,0.14)';
+        var width = active ? (1.4 + (pulseFactor * 2.2)).toFixed(2) : '1.1';
+        html += '<line x1="' + from.x.toFixed(2) + '" y1="' + from.y.toFixed(2) + '" x2="' + to.x.toFixed(2) + '" y2="' + to.y.toFixed(2) + '" stroke="' + stroke + '" stroke-width="' + width + '" />';
+        var emx = ((from.x + to.x) / 2).toFixed(2);
+        var emy = ((from.y + to.y) / 2).toFixed(2);
+        html += '<circle class="edge-dot" data-edge-id="' + escapeHtml(edge.id) + '" cx="' + emx + '" cy="' + emy + '" r="' + (active ? '4.4' : '3') + '" fill="' + (active ? '#76f0b2' : '#5bc0ff') + '" fill-opacity="' + (active ? '0.95' : '0.5') + '" stroke="#091020" stroke-width="0.8" />';
+      }
+
+      for (i = 0; i < model.nodes.length; i++) {
+        var node = model.nodes[i];
+        var isSelected = node.id === selectedId;
+        var depth = resolvePathDepth(node.id);
+        var inPulse = depth >= 0;
+        var baseR = node.kind === 'hub' ? 34 : (node.kind === 'service' || node.kind === 'cache' ? 24 : (node.kind === 'source' ? 17 : 13));
+        var pulse = 0;
+        if (isSelected) {
+          pulse = 4 + (Math.sin(now / 180) * 3);
+        } else if (inPulse) {
+          pulse = 1.2 + (Math.sin((now / 240) + depth) * 1.5);
+        }
+        var radius = Math.max(8, baseR + pulse);
+        var strokeCol = isSelected ? '#9be7ff' : node.stroke;
+        var strokeW = isSelected ? '2.6' : (inPulse ? '1.8' : '1.2');
+        var label = node.label.length > 20 ? (node.label.substring(0, 20) + '..') : node.label;
+
+        html += '<g class="graph-node" data-node-id="' + escapeHtml(node.id) + '">';
+        html += '<circle cx="' + node.x.toFixed(2) + '" cy="' + node.y.toFixed(2) + '" r="' + (radius + 4).toFixed(2) + '" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1" />';
+        html += '<circle cx="' + node.x.toFixed(2) + '" cy="' + node.y.toFixed(2) + '" r="' + radius.toFixed(2) + '" fill="' + node.fill + '" stroke="' + strokeCol + '" stroke-width="' + strokeW + '" filter="url(#glow)" />';
+        html += '<text x="' + node.x.toFixed(2) + '" y="' + (node.y - 2).toFixed(2) + '" text-anchor="middle" fill="#e6edf7" font-family="Segoe UI" font-size="10" font-weight="700">' + escapeHtml(label) + '</text>';
+        html += '<text x="' + node.x.toFixed(2) + '" y="' + (node.y + 11).toFixed(2) + '" text-anchor="middle" fill="#92aecf" font-family="Cascadia Code" font-size="9">' + escapeHtml(node.kind) + '</text>';
+        html += '</g>';
+      }
+
+      if (graphRuntime.pulsePlan && graphRuntime.pulsePlan.tracks.length) {
+        for (i = 0; i < graphRuntime.pulsePlan.tracks.length; i++) {
+          var track = graphRuntime.pulsePlan.tracks[i];
+          var pos = null;
+          var alpha = 0.85;
+          if (elapsed <= track.outwardEnd) {
+            pos = pointAlongTrack(track, elapsed / track.outwardEnd, false);
+          } else if (elapsed <= track.returnEnd) {
+            if (elapsed < track.returnStart) {
+              pos = pointAlongTrack(track, 1, false);
+            } else {
+              var returnDur = Math.max(60, (track.returnEnd - track.returnStart));
+              pos = pointAlongTrack(track, (elapsed - track.returnStart) / returnDur, true);
+            }
+            alpha = 0.75;
+          }
+          if (pos) {
+            html += '<circle cx="' + pos.x.toFixed(2) + '" cy="' + pos.y.toFixed(2) + '" r="' + track.radius + '" fill="' + track.color + '" fill-opacity="' + alpha + '" stroke="#ffffff" stroke-width="0.8" />';
+            html += '<circle cx="' + pos.x.toFixed(2) + '" cy="' + pos.y.toFixed(2) + '" r="' + (track.radius + 3) + '" fill="none" stroke="' + track.color + '" stroke-opacity="0.35" stroke-width="1" />';
+          }
+        }
+      }
+
+      html += '<rect x="16" y="16" width="310" height="86" rx="12" fill="rgba(7,11,20,0.88)" stroke="rgba(255,255,255,0.12)" />';
+      html += '<text x="30" y="40" fill="#9be7ff" font-family="Segoe UI" font-size="12" font-weight="700">CORTIX live interconnect vector</text>';
+      html += '<text x="30" y="58" fill="#dce9ff" font-family="Cascadia Code" font-size="10">selected=' + escapeHtml(selectedId) + ' | tracks=' + (graphRuntime.pulsePlan ? graphRuntime.pulsePlan.tracks.length : 0) + '</text>';
+      html += '<text x="30" y="75" fill="#8da6c9" font-family="Cascadia Code" font-size="10">engine=' + (graphRuntime.telemetry.engine8042.online ? 'online' : 'offline') + ' dashboard=' + (graphRuntime.telemetry.dashboard8099.online ? 'online' : 'offline') + ' cluster=' + (graphRuntime.telemetry.cluster.online ? 'online' : 'offline') + '</text>';
+      html += '<text x="30" y="92" fill="#8da6c9" font-family="Cascadia Code" font-size="10">cache-nodes=' + toNumber(graphRuntime.telemetry.cache.nodeCount, 0) + ' jobs=' + state.jobs.length + ' converge=' + (graphRuntime.pulsePlan ? graphRuntime.pulsePlan.convergeAt : 0) + 'ms</text>';
+
+      graphSvg.innerHTML = html;
+      renderVectorPanels(model);
+      syncReplayUi(elapsed);
+    }
+
+    function startGraphFrameLoop() {
+      if (graphRuntime.frameHandle) { return; }
+      function tick() {
+        renderGraph();
+        graphRuntime.frameHandle = window.requestAnimationFrame(tick);
+      }
+      graphRuntime.frameHandle = window.requestAnimationFrame(tick);
+    }
+
+    function renderUml() {
+      umlPreview.textContent = umlEditor.value;
+      state.uml = umlEditor.value;
+      saveState();
+      summary.stateText.textContent = 'jobs=' + state.jobs.length + ' | active=' + (activeJob() ? activeJob().id : 'none') + ' | profile=' + state.profile;
+    }
+
+    function renderAll() {
+      syncStateToInputs();
+      renderChips(sourceChips, SOURCE_KEYS, state.sources, toggleSource);
+      renderChips(collectionChips, SOURCE_KEYS.slice(0, 10), state.capture, toggleCollection);
+      renderChips(domainChips, DOMAIN_KEYS, buildDomainMap(), function(){});
+      renderGraph();
+      renderJobs();
+      renderUml();
+      renderCipher();
+      summary.jobCount.textContent = String(state.jobs.length);
+      summary.dataCount.textContent = String(estimateNodes(getSelectedSources(), state.captureType));
+      summary.sourceCount.textContent = String(uniqueCountFromJobs());
+      summary.alertCount.textContent = String(totalAlerts());
+      summary.stateText.textContent = 'jobs=' + state.jobs.length + ' | active=' + (activeJob() ? activeJob().id : 'none') + ' | profile=' + state.profile;
+      setStatus('CORTIX ready | ' + liveStatusText(), false);
+    }
+
+    function buildDomainMap() {
+      var map = {};
+      var i;
+      for (i = 0; i < DOMAIN_KEYS.length; i++) {
+        map[DOMAIN_KEYS[i]] = true;
+      }
+      return map;
+    }
+
+    function getSelectedSources() {
+      var out = [];
+      var key;
+      for (key in state.sources) {
+        if (Object.prototype.hasOwnProperty.call(state.sources, key) && state.sources[key]) {
+          out.push(key);
+        }
+      }
+      return out;
+    }
+
+    function seedDemoJob() {
+      state.profile = 'netsecops';
+      state.seed = 'CVE, KEV, kill chain, patch versions';
+      state.captureType = 'sec';
+      state.captureSeed = 'C:\\PowerShellGUI\\logs';
+      state.captureApi = 'https://services.example.local/api';
+      state.handoff = 'Gather NetSecOps signals, CVE references, patch versions, and known exploited vulnerability indicators; store as a reusable pipeline task.';
+      state.selectedSources = ['logs','netsecops','cves','kev','patch-versions','kill-chain'];
+      state.sources = {};
+      var i;
+      for (i = 0; i < state.selectedSources.length; i++) {
+        state.sources[state.selectedSources[i]] = true;
+      }
+      saveJob();
+      setStatus('Seeded demo job.', false);
+    }
+
+    function resetUml() {
+      state.uml = TEMPLATE_MAP.flow;
+      umlEditor.value = state.uml;
+      renderUml();
+    }
+
+    function openLegacyVenn() {
+      window.open('scripts/XHTML-Checker/XHTML-VisualisationVenn.xhtml', '_blank');
+    }
+
+    function bindButtons() {
+      tabbar.addEventListener('click', function(ev){
+        var target = ev.target;
+        if (target && target.getAttribute('data-tab')) {
+          setActiveTab(target.getAttribute('data-tab'));
+        }
+      });
+
+      document.getElementById('btnSaveJob').addEventListener('click', saveJob);
+      document.getElementById('btnRestoreJob').addEventListener('click', restoreSelectedJob);
+      document.getElementById('btnExportJson').addEventListener('click', exportJson);
+      document.getElementById('btnExportImage').addEventListener('click', exportCipherImage);
+      document.getElementById('btnOpenVenn').addEventListener('click', openLegacyVenn);
+      document.getElementById('btnSeedDemo').addEventListener('click', seedDemoJob);
+      document.getElementById('btnClearJobs').addEventListener('click', function(){ state.jobs = []; state.activeJobId = ''; saveState(); renderAll(); setStatus('Cleared all jobs.', false); });
+      document.getElementById('btnSnapshot').addEventListener('click', snapshotState);
+      document.getElementById('btnQueueCapture').addEventListener('click', queueCapture);
+      document.getElementById('btnSaveCapture').addEventListener('click', function(){ saveState(); setStatus('Capture spec saved.', false); });
+      document.getElementById('btnRestoreCapture').addEventListener('click', function(){ syncStateToInputs(); renderAll(); setStatus('Capture spec restored.', false); });
+      document.getElementById('btnExportHandoff').addEventListener('click', exportHandoff);
+      document.getElementById('btnRestoreSelected').addEventListener('click', restoreSelectedJob);
+      document.getElementById('btnDeleteSelected').addEventListener('click', deleteSelectedJob);
+      document.getElementById('btnSaveUml').addEventListener('click', function(){ state.uml = umlEditor.value; saveState(); renderUml(); setStatus('UML saved.', false); });
+      document.getElementById('btnExportUml').addEventListener('click', function(){ downloadText('cortix-uml.txt', umlEditor.value, 'text/plain'); setStatus('UML spec exported.', false); });
+      document.getElementById('btnResetUml').addEventListener('click', resetUml);
+      document.getElementById('btnRenderCipher').addEventListener('click', renderCipher);
+      document.getElementById('btnDownloadCipher').addEventListener('click', exportCipherImage);
+      document.getElementById('btnRefreshLive').addEventListener('click', function(){ refreshLiveData(true); });
+      document.getElementById('btnReplayPulse').addEventListener('click', function(){
+        var selected = graphRuntime.selectedNodeId || state.graphSelection || 'source-hub';
+        selectGraphNode(selected, true);
+      });
+      document.getElementById('btnToggleVectorExpand').addEventListener('click', function(){
+        state.vectorExpanded = !state.vectorExpanded;
+        this.textContent = state.vectorExpanded ? 'Compact Details' : 'Expand Details';
+        saveState();
+        renderVectorPanels(graphRuntime.model || buildGraphModel());
+      });
+      document.getElementById('btnToggleVectorExpand').textContent = state.vectorExpanded ? 'Compact Details' : 'Expand Details';
+
+      document.querySelectorAll('[data-template]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var template = TEMPLATE_MAP[this.getAttribute('data-template')];
+          if (template) {
+            umlEditor.value = template;
+            state.uml = template;
+            saveState();
+            renderUml();
+            setStatus('Inserted UML template.', false);
+          }
+        });
+      });
+
+      controls.profileSelect.addEventListener('change', function(){ state.profile = this.value; state.seed = PROFILE_SEEDS[this.value] || state.seed; syncStateToInputs(); saveState(); renderAll(); });
+      controls.seedInput.addEventListener('input', function(){ state.seed = this.value; saveState(); renderAll(); });
+      controls.maxNodesInput.addEventListener('input', function(){ state.maxNodes = this.value; saveState(); renderAll(); });
+      controls.minDesiredInput.addEventListener('input', function(){ state.minDesired = this.value; saveState(); renderAll(); });
+      controls.reachRequiredInput.addEventListener('input', function(){ state.reachRequired = this.value; saveState(); renderAll(); });
+      controls.lowWatermarkInput.addEventListener('input', function(){ state.lowWatermark = this.value; saveState(); renderAll(); });
+      controls.highWatermarkInput.addEventListener('input', function(){ state.highWatermark = this.value; saveState(); renderAll(); });
+      controls.maxAllowedInput.addEventListener('input', function(){ state.maxAllowed = this.value; saveState(); renderAll(); });
+      controls.jobNameInput.addEventListener('input', function(){ state.jobName = this.value; saveState(); });
+      controls.captureTypeSelect.addEventListener('change', function(){ state.captureType = this.value; saveState(); renderAll(); });
+      controls.captureSeedInput.addEventListener('input', function(){ state.captureSeed = this.value; saveState(); });
+      controls.captureApiInput.addEventListener('input', function(){ state.captureApi = this.value; saveState(); });
+      controls.handoffInput.addEventListener('input', function(){ state.handoff = this.value; saveState(); });
+      controls.clusterTokenInput.addEventListener('change', function(){ state.clusterToken = this.value; saveState(); refreshLiveData(true); });
+      controls.imageSeedInput.addEventListener('input', function(){ state.imageSeed = this.value; saveState(); renderCipher(); });
+      controls.payloadModeSelect.addEventListener('change', function(){ state.payloadMode = this.value; saveState(); renderCipher(); });
+      umlEditor.addEventListener('input', function(){ state.uml = this.value; renderUml(); });
+    }
+
+    function effectiveLoopMs() {
+      if (graphRuntime.pulsePlan && graphRuntime.pulsePlan.loopMs) { return graphRuntime.pulsePlan.loopMs; }
+      return graphRuntime.pulseLoopMs || 1000;
+    }
+
+    function replayEndBound() {
+      var loop = effectiveLoopMs();
+      var e = toNumber(state.replay.endMs, 0);
+      return (e > 0 && e <= loop) ? e : loop;
+    }
+
+    function replayStartBound() {
+      var s = toNumber(state.replay.startMs, 0);
+      return s > 0 ? Math.min(s, effectiveLoopMs()) : 0;
+    }
+
+    function computeReplayElapsed(now) {
+      var loop = effectiveLoopMs();
+      var r = state.replay;
+      if (!r || r.mode === 'live') {
+        var elapsed = now - graphRuntime.pulseEpoch;
+        if (elapsed > loop) { graphRuntime.pulseEpoch = now; elapsed = 0; }
+        graphRuntime.replayLastNow = now;
+        return elapsed;
+      }
+      if (r.mode === 'play') {
+        var dt = now - (graphRuntime.replayLastNow || now);
+        if (dt < 0 || dt > 1000) { dt = 16; }
+        graphRuntime.replayLastNow = now;
+        r.manualMs += dt * (toNumber(r.speed, 1) || 1);
+        var endB = replayEndBound();
+        var startB = replayStartBound();
+        if (r.manualMs >= endB) {
+          if (r.loop !== false) { r.manualMs = startB; }
+          else { r.manualMs = endB; setReplayMode('pause'); }
+        }
+        if (r.manualMs < startB) { r.manualMs = startB; }
+        return r.manualMs;
+      }
+      graphRuntime.replayLastNow = now;
+      return Math.max(0, Math.min(toNumber(r.manualMs, 0), loop));
+    }
+
+    function fmtSec(ms) {
+      return (Math.max(0, ms) / 1000).toFixed(2) + 's';
+    }
+
+    function setReplayMode(mode) {
+      state.replay.mode = mode;
+      if (mode === 'play') { graphRuntime.replayLastNow = new Date().getTime(); }
+      var btn = document.getElementById('btnReplayPlay');
+      var live = document.getElementById('btnReplayLive');
+      if (btn) { btn.textContent = (mode === 'play') ? 'Pause' : 'Play'; btn.className = (mode === 'play') ? 'on' : ''; }
+      if (live) { live.className = (mode === 'live') ? 'live on' : 'live'; }
+      saveState();
+    }
+
+    function syncReplayUi(elapsed) {
+      var loop = effectiveLoopMs();
+      var scrub = document.getElementById('rngReplayScrub');
+      var lbl = document.getElementById('lblReplayTime');
+      if (scrub && !graphRuntime.scrubDragging) {
+        var v = Math.round((loop > 0 ? (elapsed / loop) : 0) * 1000);
+        if (v < 0) { v = 0; }
+        if (v > 1000) { v = 1000; }
+        scrub.value = String(v);
+      }
+      if (lbl) {
+        var marks = '';
+        if (replayStartBound() > 0 || toNumber(state.replay.endMs, 0) > 0) {
+          marks = ' [' + fmtSec(replayStartBound()) + '..' + fmtSec(replayEndBound()) + ']';
+        }
+        lbl.textContent = fmtSec(elapsed) + ' / ' + fmtSec(loop) + marks;
+      }
+    }
+
+    function findEdgeById(model, edgeId) {
+      var i;
+      if (!model || !edgeId) { return null; }
+      for (i = 0; i < model.edges.length; i++) {
+        if (model.edges[i].id === edgeId) { return model.edges[i]; }
+      }
+      return null;
+    }
+
+    function resolveGraphEdgeId(target) {
+      var ptr = target;
+      while (ptr && ptr !== graphSvg) {
+        if (ptr.getAttribute && ptr.getAttribute('data-edge-id')) {
+          return ptr.getAttribute('data-edge-id');
+        }
+        ptr = ptr.parentNode;
+      }
+      return '';
+    }
+
+    function edgeKindParams(edge, from, to) {
+      var t = graphRuntime.telemetry;
+      var p = [];
+      p.push('kind=' + edge.kind);
+      var len = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+      p.push('span=' + len.toFixed(0) + 'px');
+      if (edge.from.indexOf('engine') >= 0 || edge.to.indexOf('engine') >= 0) {
+        p.push('engine8042=' + (t.engine8042.online ? 'online' : 'offline'));
+      }
+      if (edge.from.indexOf('dashboard') >= 0 || edge.to.indexOf('dashboard') >= 0) {
+        p.push('dashboard8099=' + (t.dashboard8099.online ? 'online' : 'offline'));
+      }
+      if (edge.from.indexOf('cluster') >= 0 || edge.to.indexOf('cluster') >= 0) {
+        p.push('cluster=' + (t.cluster.online ? 'online' : 'offline') + ' nodes=' + toNumber(t.cluster.nodeCount, 0));
+      }
+      if (edge.kind === 'cache') { p.push('cacheNodes=' + toNumber(t.cache.nodeCount, 0)); }
+      if (edge.kind === 'vector') { p.push('source to domain mapping'); }
+      var inPath = graphRuntime.pulsePlan ? !!buildPathEdgeMap(graphRuntime.pulsePlan)[edge.id] : false;
+      p.push('active=' + (inPath ? 'yes' : 'no'));
+      return p;
+    }
+
+    function buildEdgeTooltipHtml(edgeId) {
+      var model = graphRuntime.model;
+      var edge = findEdgeById(model, edgeId);
+      if (!edge) { return ''; }
+      var from = graphNodeById(model, edge.from);
+      var to = graphNodeById(model, edge.to);
+      if (!from || !to) { return ''; }
+      var params = edgeKindParams(edge, from, to);
+      var html = '<b>' + escapeHtml(from.label) + ' &#8594; ' + escapeHtml(to.label) + '</b><br />';
+      html += '<span class="tiny">interconnect vector</span>';
+      var i;
+      for (i = 0; i < params.length; i++) {
+        html += '<br />&#8226; ' + escapeHtml(params[i]);
+      }
+      return html;
+    }
+
+    function positionGraphTooltip(x, y) {
+      var left = x + 14;
+      var top = y + 14;
+      if (left > 640) { left = x - 260; }
+      if (top > 360) { top = y - 120; }
+      graphTooltip.style.left = left + 'px';
+      graphTooltip.style.top = top + 'px';
+    }
+
+    function showEdgeTooltip(edgeId, x, y) {
+      if (!graphTooltip) { return; }
+      var html = buildEdgeTooltipHtml(edgeId);
+      if (!html) { hideGraphTooltip(); return; }
+      graphTooltip.innerHTML = html;
+      graphTooltip.className = 'graph-tooltip';
+      positionGraphTooltip(x, y);
+    }
+
+    function applyCanvasHeight() {
+      var wrap = document.getElementById('vectorCanvasWrap');
+      if (wrap) { wrap.style.height = toNumber(state.canvasHeight, 460) + 'px'; }
+    }
+
+    function applyMaximized() {
+      var card = document.getElementById('vectorCard');
+      var btn = document.getElementById('btnVecMax');
+      if (card) { card.className = state.vectorMaximized ? 'card vector-card maximized' : 'card vector-card'; }
+      if (btn) { btn.className = state.vectorMaximized ? 'on' : ''; }
+    }
+
+    function setCanvasHeight(px) {
+      var h = Math.max(260, Math.min(1200, Math.round(px)));
+      state.canvasHeight = h;
+      applyCanvasHeight();
+      saveState();
+    }
+
+    function scrubToValue(raw) {
+      var loop = effectiveLoopMs();
+      var ms = (toNumber(raw, 0) / 1000) * loop;
+      if (state.replay.mode === 'live') { setReplayMode('pause'); }
+      state.replay.manualMs = ms;
+      saveState();
+    }
+
+    function stepReplay(dirSign) {
+      if (state.replay.mode === 'live') { setReplayMode('pause'); }
+      var stepMs = (toNumber(state.replay.stepSec, 1) || 1) * 1000;
+      var loop = effectiveLoopMs();
+      var ms = toNumber(state.replay.manualMs, 0) + (dirSign * stepMs);
+      if (ms < 0) { ms = 0; }
+      if (ms > loop) { ms = loop; }
+      state.replay.manualMs = ms;
+      saveState();
+    }
+
+    function bindResizeHandle() {
+      var handle = document.getElementById('vectorResizeHandle');
+      var wrap = document.getElementById('vectorCanvasWrap');
+      if (!handle || !wrap) { return; }
+      var startY = 0;
+      var startH = 0;
+      var dragging = false;
+      function onMove(ev) {
+        if (!dragging) { return; }
+        setCanvasHeight(startH + (ev.clientY - startY));
+      }
+      function onUp() {
+        dragging = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      handle.addEventListener('mousedown', function(ev){
+        dragging = true;
+        startY = ev.clientY;
+        startH = wrap.offsetHeight;
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        ev.preventDefault();
+      });
+    }
+
+    function bindVectorControls() {
+      var play = document.getElementById('btnReplayPlay');
+      var live = document.getElementById('btnReplayLive');
+      if (play) { play.addEventListener('click', function(){ setReplayMode(state.replay.mode === 'play' ? 'pause' : 'play'); }); }
+      if (live) { live.addEventListener('click', function(){ state.replay.manualMs = 0; setReplayMode('live'); setStatus('Replay returned to live auto-pulse.', false); }); }
+
+      var toStart = document.getElementById('btnReplayToStart');
+      var toEnd = document.getElementById('btnReplayToEnd');
+      if (toStart) { toStart.addEventListener('click', function(){ if (state.replay.mode === 'live') { setReplayMode('pause'); } state.replay.manualMs = replayStartBound(); saveState(); }); }
+      if (toEnd) { toEnd.addEventListener('click', function(){ if (state.replay.mode === 'live') { setReplayMode('pause'); } state.replay.manualMs = replayEndBound(); saveState(); }); }
+
+      var sb = document.getElementById('btnReplayStepBack');
+      var sf = document.getElementById('btnReplayStepFwd');
+      if (sb) { sb.addEventListener('click', function(){ stepReplay(-1); }); }
+      if (sf) { sf.addEventListener('click', function(){ stepReplay(1); }); }
+
+      var scrub = document.getElementById('rngReplayScrub');
+      if (scrub) {
+        scrub.addEventListener('mousedown', function(){ graphRuntime.scrubDragging = true; });
+        scrub.addEventListener('input', function(){ graphRuntime.scrubDragging = true; scrubToValue(this.value); });
+        scrub.addEventListener('change', function(){ scrubToValue(this.value); graphRuntime.scrubDragging = false; });
+      }
+
+      var spd = document.getElementById('selReplaySpeed');
+      if (spd) { spd.value = String(state.replay.speed || 1); spd.addEventListener('change', function(){ state.replay.speed = toNumber(this.value, 1); saveState(); }); }
+
+      var step = document.getElementById('inpReplayStep');
+      if (step) { step.value = String(state.replay.stepSec || 1); step.addEventListener('change', function(){ state.replay.stepSec = Math.max(0.1, toNumber(this.value, 1)); saveState(); }); }
+
+      var loopChk = document.getElementById('chkReplayLoop');
+      if (loopChk) { loopChk.checked = state.replay.loop !== false; loopChk.addEventListener('change', function(){ state.replay.loop = this.checked; saveState(); }); }
+
+      var setS = document.getElementById('btnSetReplayStart');
+      var setE = document.getElementById('btnSetReplayEnd');
+      var clr = document.getElementById('btnClearReplayMarks');
+      if (setS) { setS.addEventListener('click', function(){ state.replay.startMs = toNumber(state.replay.manualMs, 0); saveState(); setStatus('Replay start point set to ' + fmtSec(state.replay.startMs) + '.', false); }); }
+      if (setE) { setE.addEventListener('click', function(){ state.replay.endMs = toNumber(state.replay.manualMs, 0); saveState(); setStatus('Replay end point set to ' + fmtSec(state.replay.endMs) + '.', false); }); }
+      if (clr) { clr.addEventListener('click', function(){ state.replay.startMs = 0; state.replay.endMs = 0; saveState(); setStatus('Replay start/end points cleared.', false); }); }
+
+      var bS = document.getElementById('btnVecSmall');
+      var bM = document.getElementById('btnVecMed');
+      var bL = document.getElementById('btnVecLarge');
+      var bMax = document.getElementById('btnVecMax');
+      if (bS) { bS.addEventListener('click', function(){ setCanvasHeight(360); }); }
+      if (bM) { bM.addEventListener('click', function(){ setCanvasHeight(520); }); }
+      if (bL) { bL.addEventListener('click', function(){ setCanvasHeight(740); }); }
+      if (bMax) { bMax.addEventListener('click', function(){ state.vectorMaximized = !state.vectorMaximized; applyMaximized(); saveState(); window.setTimeout(renderGraph, 30); }); }
+
+      bindResizeHandle();
+      applyCanvasHeight();
+      applyMaximized();
+      setReplayMode(state.replay.mode || 'live');
+    }
+
+    function treeNodeHasChildren(node) {
+      return !!(node.children && node.children.length);
+    }
+
+    function nodeMatchesFilter(node, filter) {
+      if (!filter) { return true; }
+      var hay = (node.label + ' ' + (node.note || '') + ' ' + node.type).toLowerCase();
+      if (hay.indexOf(filter) >= 0) { return true; }
+      var i;
+      if (node.children) {
+        for (i = 0; i < node.children.length; i++) {
+          if (nodeMatchesFilter(node.children[i], filter)) { return true; }
+        }
+      }
+      return false;
+    }
+
+    function renderLineageNode(node, filter) {
+      if (!nodeMatchesFilter(node, filter)) { return ''; }
+      var hasKids = treeNodeHasChildren(node);
+      var expanded = filter ? true : (state.treeExpanded[node.id] === true);
+      var toggleChar = hasKids ? (expanded ? '[-]' : '[+]') : '&#183;';
+      var html = '<div class="tree-node">';
+      html += '<div class="tree-row" title="' + escapeHtml(node.note || node.label) + '">';
+      html += '<span class="tree-toggle' + (hasKids ? '' : ' leaf') + '" data-tree-id="' + escapeHtml(node.id) + '">' + toggleChar + '</span>';
+      html += '<span class="tree-badge ' + escapeHtml(node.type) + '">' + escapeHtml(node.type) + '</span>';
+      html += '<span class="tree-label">' + escapeHtml(node.label) + '</span>';
+      html += '</div>';
+      if (hasKids) {
+        html += '<div class="tree-children' + (expanded ? '' : ' collapsed') + '">';
+        var i;
+        for (i = 0; i < node.children.length; i++) {
+          html += renderLineageNode(node.children[i], filter);
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderLineageTree() {
+      var host = document.getElementById('lineageTree');
+      if (!host) { return; }
+      var filter = (state.treeFilter || '').toLowerCase();
+      var html = '';
+      var i;
+      for (i = 0; i < FILE_LINEAGE.length; i++) {
+        html += renderLineageNode(FILE_LINEAGE[i], filter);
+      }
+      if (!html) { html = '<div class="tree-meta">No lineage rows match the filter.</div>'; }
+      host.innerHTML = html;
+    }
+
+    function walkLineage(nodes, fn) {
+      var i;
+      for (i = 0; i < nodes.length; i++) {
+        fn(nodes[i]);
+        if (nodes[i].children) { walkLineage(nodes[i].children, fn); }
+      }
+    }
+
+    function setAllTree(on) {
+      walkLineage(FILE_LINEAGE, function(n){
+        if (n.children && n.children.length) { state.treeExpanded[n.id] = on; }
+      });
+      saveState();
+      renderLineageTree();
+    }
+
+    function bindLineageTree() {
+      var host = document.getElementById('lineageTree');
+      if (host) {
+        host.addEventListener('click', function(ev){
+          var t = ev.target;
+          while (t && t !== host && !(t.getAttribute && t.getAttribute('data-tree-id'))) { t = t.parentNode; }
+          if (!t || t === host) { return; }
+          var id = t.getAttribute('data-tree-id');
+          if (!id) { return; }
+          state.treeExpanded[id] = !(state.treeExpanded[id] === true);
+          saveState();
+          renderLineageTree();
+        });
+      }
+      var exp = document.getElementById('btnTreeExpandAll');
+      var col = document.getElementById('btnTreeCollapseAll');
+      if (exp) { exp.addEventListener('click', function(){ setAllTree(true); }); }
+      if (col) { col.addEventListener('click', function(){ setAllTree(false); }); }
+      var filt = document.getElementById('treeFilterInput');
+      if (filt) { filt.value = state.treeFilter || ''; filt.addEventListener('input', function(){ state.treeFilter = this.value; saveState(); renderLineageTree(); }); }
+    }
+
+    function captureViewPreset() {
+      return {
+        graphSelection: graphRuntime.selectedNodeId || state.graphSelection || '',
+        canvasHeight: toNumber(state.canvasHeight, 460),
+        vectorMaximized: !!state.vectorMaximized,
+        vectorExpanded: !!state.vectorExpanded,
+        replay: {
+          mode: state.replay.mode, speed: state.replay.speed, manualMs: state.replay.manualMs,
+          startMs: state.replay.startMs, endMs: state.replay.endMs, stepSec: state.replay.stepSec, loop: state.replay.loop
+        },
+        treeExpanded: JSON.parse(JSON.stringify(state.treeExpanded || {})),
+        treeFilter: state.treeFilter || '',
+        selectedSources: getSelectedSources(),
+        profile: state.profile,
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function applyViewPreset(p) {
+      if (!p) { return; }
+      state.canvasHeight = toNumber(p.canvasHeight, 460);
+      state.vectorMaximized = !!p.vectorMaximized;
+      state.vectorExpanded = !!p.vectorExpanded;
+      if (p.replay) {
+        state.replay.speed = toNumber(p.replay.speed, 1);
+        state.replay.manualMs = toNumber(p.replay.manualMs, 0);
+        state.replay.startMs = toNumber(p.replay.startMs, 0);
+        state.replay.endMs = toNumber(p.replay.endMs, 0);
+        state.replay.stepSec = toNumber(p.replay.stepSec, 1);
+        state.replay.loop = p.replay.loop !== false;
+        state.replay.mode = p.replay.mode || 'live';
+      }
+      state.treeExpanded = p.treeExpanded ? JSON.parse(JSON.stringify(p.treeExpanded)) : {};
+      state.treeFilter = p.treeFilter || '';
+      if (p.selectedSources && p.selectedSources.length) {
+        state.sources = {};
+        var i;
+        for (i = 0; i < p.selectedSources.length; i++) { state.sources[p.selectedSources[i]] = true; }
+      }
+      if (p.profile) { state.profile = p.profile; }
+      applyCanvasHeight();
+      applyMaximized();
+      var spd = document.getElementById('selReplaySpeed');
+      if (spd) { spd.value = String(state.replay.speed); }
+      var stp = document.getElementById('inpReplayStep');
+      if (stp) { stp.value = String(state.replay.stepSec); }
+      var lp = document.getElementById('chkReplayLoop');
+      if (lp) { lp.checked = state.replay.loop; }
+      var filt = document.getElementById('treeFilterInput');
+      if (filt) { filt.value = state.treeFilter; }
+      setReplayMode(state.replay.mode);
+      if (p.graphSelection) { selectGraphNode(p.graphSelection, false); }
+      renderAll();
+      renderLineageTree();
+      refreshPresetSelect();
+    }
+
+    function refreshPresetSelect() {
+      var sel = document.getElementById('presetSelect');
+      if (!sel) { return; }
+      var names = [];
+      var k;
+      for (k in state.presets) {
+        if (Object.prototype.hasOwnProperty.call(state.presets, k)) { names.push(k); }
+      }
+      names.sort();
+      var html = '<option value="">(select preset)</option>';
+      var i;
+      for (i = 0; i < names.length; i++) {
+        html += '<option value="' + escapeHtml(names[i]) + '">' + escapeHtml(names[i]) + '</option>';
+      }
+      sel.innerHTML = html;
+    }
+
+    function bindPresetControls() {
+      var save = document.getElementById('btnPresetSave');
+      var restore = document.getElementById('btnPresetRestore');
+      var del = document.getElementById('btnPresetDelete');
+      var nameI = document.getElementById('presetNameInput');
+      var sel = document.getElementById('presetSelect');
+      if (save) {
+        save.addEventListener('click', function(){
+          var name = (nameI && nameI.value ? nameI.value : '').trim();
+          if (!name) { setStatus('Enter a preset name before saving.', true); return; }
+          if (!state.presets) { state.presets = {}; }
+          state.presets[name] = captureViewPreset();
+          saveState();
+          refreshPresetSelect();
+          if (sel) { sel.value = name; }
+          setStatus('View preset "' + name + '" saved.', false);
+        });
+      }
+      if (restore) {
+        restore.addEventListener('click', function(){
+          var name = sel ? sel.value : '';
+          if (!name || !state.presets || !state.presets[name]) { setStatus('Select a saved preset to restore.', true); return; }
+          applyViewPreset(state.presets[name]);
+          setStatus('View preset "' + name + '" restored.', false);
+        });
+      }
+      if (del) {
+        del.addEventListener('click', function(){
+          var name = sel ? sel.value : '';
+          if (!name || !state.presets || !state.presets[name]) { setStatus('Select a saved preset to delete.', true); return; }
+          delete state.presets[name];
+          saveState();
+          refreshPresetSelect();
+          setStatus('View preset "' + name + '" deleted.', false);
+        });
+      }
+      refreshPresetSelect();
+    }
+
+    function initVectorEnhancements() {
+      if (!state.replay) { state.replay = { mode: 'live', speed: 1, manualMs: 0, startMs: 0, endMs: 0, stepSec: 1, loop: true }; }
+      if (!state.treeExpanded) { state.treeExpanded = { 'ln-memory': true, 'ln-xhtml': true, 'ln-md': true, 'ln-py': true, 'ln-ps1': true }; }
+      if (!state.presets) { state.presets = {}; }
+      bindVectorControls();
+      bindLineageTree();
+      bindPresetControls();
+      renderLineageTree();
+    }
+
+    function initialise() {
+      syncStateToInputs();
+      if (!state.jobs.length) {
+        state.jobs.push(buildJobFromControls());
+        state.activeJobId = state.jobs[0].id;
+      }
+      graphRuntime.selectedNodeId = state.graphSelection || '';
+      saveState();
+      bindButtons();
+      bindGraphInteractions();
+      initVectorEnhancements();
+      renderAll();
+      refreshLiveData(false);
+      if (!graphRuntime.liveTimer) {
+        graphRuntime.liveTimer = window.setInterval(function(){ refreshLiveData(false); }, 15000);
+      }
+      startGraphFrameLoop();
+      setActiveTab('overview');
+      window.addEventListener('resize', renderGraph);
+      window.addEventListener('beforeunload', function(){
+        if (graphRuntime.frameHandle) {
+          window.cancelAnimationFrame(graphRuntime.frameHandle);
+          graphRuntime.frameHandle = 0;
+        }
+        if (graphRuntime.liveTimer) {
+          window.clearInterval(graphRuntime.liveTimer);
+          graphRuntime.liveTimer = 0;
+        }
+      });
+      setStatus('CORTIX loaded with live interconnect vectors and pulse convergence.', false);
+    }
+
+    initialise();
+  }());
+  //]]>
+  </script>
+</body>
+</html>
+
+

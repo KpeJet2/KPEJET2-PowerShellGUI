@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "AutopilotSuggestion: A parameter cannot be found that matches parameter name \u0027Text\u0027.",
+    "description":  "AutopilotSuggestion: A parameter cannot be found that matches parameter name \u0027Text\u0027.",
+    "title":  "Scheduler task failure: TASK-AutopilotSuggestion",
+    "id":  "BUG-SCHED-3961F2EE",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-AutopilotSuggestion",
+    "lastUpdated":  "2026-05-22T17:29:38.0644666Z",
+    "createdAt":  "2026-05-22T17:29:38.0644666Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

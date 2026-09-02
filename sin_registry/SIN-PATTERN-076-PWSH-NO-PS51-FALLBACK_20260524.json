@@ -1,0 +1,38 @@
+{
+  "id": "SIN-PATTERN-076-PWSH-NO-PS51-FALLBACK_20260524",
+  "sin_id": "SIN-PATTERN-076-PWSH-NO-PS51-FALLBACK_20260524",
+  "title": "Batch launcher hardcodes pwsh without PS5.1 fallback",
+  "description": "Windows launcher scripts that call pwsh directly can fail on hosts where PowerShell 7 is missing, even though PS5.1-compatible fallback exists. This causes avoidable startup failures across mixed fleets.",
+  "severity": "MEDIUM",
+  "category": "compatibility",
+  "vector": "pwsh-no-ps51-fallback",
+  "ps_version_scope": "BOTH",
+  "status": "pattern-defined",
+  "created_at": "2026-05-24T00:00:00Z",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Regex scan for batch files invoking pwsh without a preceding where/if fallback assignment to powershell.exe",
+  "scan_regex": "\\bpwsh(\\.exe)?\\b",
+  "scan_file_pattern": "*.bat;*.cmd",
+  "file_exclusion_regex": "sin_registry|~REPORTS|\\.backup",
+  "context_guard_regex": "where\\s+pwsh\\.exe|set\\s+\"PWSH_EXE=pwsh\\.exe\"|if\\s+errorlevel\\s+1\\s+set\\s+\"PWSH_EXE=powershell\\.exe\"",
+  "context_guard_lines": 12,
+  "context_guard_direction": "above",
+  "preventionRule": "In batch launchers, resolve pwsh first and fallback to powershell.exe when unavailable.",
+  "remedy": "Add fallback guard: set PWSH_EXE=pwsh.exe; where pwsh.exe >nul 2>&1; if errorlevel 1 set PWSH_EXE=powershell.exe; then invoke %PWSH_EXE% consistently.",
+  "tags": [
+    "batch",
+    "pwsh",
+    "ps51",
+    "fallback",
+    "compatibility"
+  ],
+  "remedy_tracking": {
+    "attempts": [],
+    "last_attempt_at": null,
+    "total_attempts": 0,
+    "successful_count": 0,
+    "failed_count": 0,
+    "status": "PENDING",
+    "auto_retry": true
+  }
+}

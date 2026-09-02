@@ -1,0 +1,36 @@
+{
+  "id": "TODO-PA-20260517020435-g-docs",
+  "todo_id": "TODO-PA-20260517020435-g-docs",
+  "type": "TodoItem",
+  "category": "feature-decomposition",
+  "title": "Update SECRETS-MANAGEMENT-GUIDE.md and SECURITY-SETUP-GUIDE.xhtml cross-refs",
+  "description": "Sub-item of feature-F001 (Secrets Management)",
+  "priority": "LOW",
+  "status": "PLANNED",
+  "source_id": "feature-F001",
+  "source_status": "IN_PROGRESS",
+  "parentId": "feature-F001",
+  "created": "2026-05-16T18:04:34.8783606Z",
+  "createdAt": "2026-05-16T18:04:34.8783606Z",
+  "modified": "2026-05-21T03:53:51.0204167+08:00",
+  "suggested_by": "CronAiAthon-Pipeline",
+  "file_refs": [],
+  "notes": "Auto-decomposed from feature-F001 by Invoke-PipelineProcess20; awaiting approval before IN_PROGRESS",
+  "status_history": [
+    {
+      "timestamp": "2026-05-16T18:04:34.8783606Z",
+      "by": "CronAiAthon-Pipeline",
+      "status": "PENDING_APPROVAL"
+    },
+    {
+      "timestamp": "2026-05-21T03:53:51.0204167+08:00",
+      "by": "Chief-AutoApproval-Batch",
+      "status": "PLANNED",
+      "note": "Auto-approved from PENDING_APPROVAL"
+    }
+  ],
+  "decision": "APPROVED",
+  "approvedBy": "Chief-AutoApproval-Batch",
+  "approvedAt": "2026-05-21T03:53:51.0204167+08:00",
+  "modifiedAt": "2026-05-21T03:53:51.0204167+08:00"
+}

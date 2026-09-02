@@ -1,0 +1,9 @@
+{
+  "VersionTag": "2607.B1.V52.1",
+  "generatedAt": "2026-08-02T21:00:35.5292861+08:00",
+  "source": "scripts/Invoke-PipelineContinuousRefine.ps1",
+  "profile": "staged",
+  "counts": {
+    "MEDIUM:deprecated-reference": 60
+  }
+}

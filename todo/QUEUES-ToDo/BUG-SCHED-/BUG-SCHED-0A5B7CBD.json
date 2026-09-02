@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605230123.json)",
+    "description":  "IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605230123.json)",
+    "title":  "Scheduler task failure: TASK-DocRebuild",
+    "id":  "BUG-SCHED-0A5B7CBD",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-DocRebuild",
+    "lastUpdated":  "2026-05-22T17:23:18.2383570Z",
+    "createdAt":  "2026-05-22T17:23:18.2383570Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

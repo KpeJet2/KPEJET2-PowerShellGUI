@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "schemaVersion": "1.0",
   "description": "Rollback archive location registry. Each entry defines a local or remote archive target with per-location encryption keys and access tiers.",
   "locations": [

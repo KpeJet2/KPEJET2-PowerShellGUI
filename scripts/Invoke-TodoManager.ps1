@@ -1,7 +1,7 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 # Author: The Establishment
 # Date: 2603
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -58,6 +58,7 @@ if (-not (Test-Path $todoDir)) {
     return
 }
 $todoDir = (Resolve-Path $todoDir).Path
+$workspacePath = Split-Path -Parent $todoDir
 $pipelineModulePath = Join-Path (Split-Path -Parent $PSScriptRoot) 'modules\CronAiAthon-Pipeline.psm1'
 if (Test-Path $pipelineModulePath) {
     try {
@@ -65,6 +66,44 @@ if (Test-Path $pipelineModulePath) {
     } catch {
         Write-Warning "[TodoManager] Failed to import CronAiAthon-Pipeline.psm1: $_"
     }
+}
+
+function Get-TodoManagerFiles {
+    [OutputType([System.Object[]])]
+    [CmdletBinding()]
+    param(
+        [string]$Filter = '*.json',
+        [switch]$IncludeGenerated
+    )
+
+    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
+    $items = @()
+    if (Get-Command -Name Get-PipelineTodoJsonFiles -ErrorAction SilentlyContinue) {
+        $items = @(Get-PipelineTodoJsonFiles -WorkspacePath $workspacePath -Filter $Filter)
+    } else {
+        $items = @(Get-ChildItem -Path $todoDir -Filter $Filter -File -Recurse -ErrorAction SilentlyContinue)
+    }
+
+    if ($IncludeGenerated) {
+        return @($items | Sort-Object -Property FullName)
+    }
+
+    return @(
+        $items |
+        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
+        Sort-Object -Property Name
+    )
+}
+
+function Resolve-TodoManagerOutputPath {
+    [OutputType([System.String])]
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$FileName)
+
+    if (Get-Command -Name Resolve-PipelineTodoItemPath -ErrorAction SilentlyContinue) {
+        return (Resolve-PipelineTodoItemPath -WorkspacePath $workspacePath -FileName $FileName -CreateDirectory)
+    }
+    return (Join-Path $todoDir $FileName)
 }
 
 $validCategories = @('security','maintenance','testing','ux','optimization','regression','smoke-test','review','iteration','new_agents','feature','bug')
@@ -95,11 +134,7 @@ if ($Reindex) {
 
     if ($useFallbackReindex) {
         $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
-        $files = @(
-            Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
-            Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" } |
-            Sort-Object Name
-        )
+        $files = @(Get-TodoManagerFiles)
         # Build type summary counts
         $typeCounts = @{ todos = 0; bugs = 0; features = 0 }
         foreach ($f in $files) {
@@ -130,7 +165,6 @@ if ($Reindex) {
 
         if (Get-Command -Name Export-CentralMasterToDo -ErrorAction SilentlyContinue) {
             try {
-                $workspacePath = Split-Path -Parent $todoDir
                 $masterPath = Export-CentralMasterToDo -WorkspacePath $workspacePath
                 Write-Host "  Refreshed: $masterPath" -ForegroundColor Gray
             } catch {
@@ -143,11 +177,7 @@ if ($Reindex) {
 # ── Validate ─────────────────────────────────────────────────
 if ($Validate) {
     Write-Host "`n=== Validating todo JSON files ===" -ForegroundColor Cyan
-    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
-    $files = @(
-        Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" }
-    )
+    $files = @(Get-TodoManagerFiles)
     $errors = 0
     $warnings = 0
     foreach ($f in $files) {
@@ -205,11 +235,7 @@ if ($Validate) {
 # ── Report ───────────────────────────────────────────────────
 if ($Report) {
     Write-Host "`n=== ToDo Summary Report ===" -ForegroundColor Cyan
-    $excludeNames = @('_index.json', '_bundle.js', '_master-aggregated.json', 'action-log.json')
-    $files = @(
-        Get-ChildItem -Path $todoDir -Filter '*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $excludeNames -notcontains $_.Name -and $_.FullName -notlike "*\~*\*" }
-    )
+    $files = @(Get-TodoManagerFiles)
     $todos = @()
     foreach ($f in $files) {
         try { $todos += (Get-Content $f.FullName -Raw | ConvertFrom-Json) } catch { Write-Warning "[TodoManager] Parse error in $($f.Name): $_" }
@@ -304,9 +330,9 @@ if ($AddItem) {
     }
 
     $catSlug = $Category.ToLower() -replace '[^a-z0-9]', '-'
-    $existing = Get-ChildItem -Path $todoDir -Filter "todo-*-$catSlug-*.json" | Sort-Object Name -Descending | Select-Object -First 1
+    $existing = @(Get-TodoManagerFiles -Filter '*.json' -IncludeGenerated:$false | Where-Object { $_.Name -like "todo-*-$catSlug-*.json" } | Sort-Object Name -Descending | Select-Object -First 1)
     $seq = 1
-    if ($existing -and $existing.Name -match "$catSlug-(\d+)\.json$") {
+    if (@($existing).Count -gt 0 -and $existing[0].Name -match "$catSlug-(\d+)\.json$") {
         $seq = [int]$Matches[1] + 1  # SIN-EXEMPT: P027 - $Matches[N] accessed only after successful -match operator
     }
     $todoId = "$catSlug-$('{0:D3}' -f $seq)"
@@ -339,7 +365,7 @@ if ($AddItem) {
         $todo['bugReferrals'] = @($BugReferrals | Where-Object { $_ })
     }
 
-    $outPath = Join-Path $todoDir $fileName
+    $outPath = Resolve-TodoManagerOutputPath -FileName $fileName
     $todo | ConvertTo-Json -Depth 4 | Set-Content -Path $outPath -Encoding UTF8
     Write-Host "`nCreated: $fileName" -ForegroundColor Green
     Write-Host "ID: $todoId | Type: $Type | Category: $Category | Priority: $Priority" -ForegroundColor Cyan
@@ -354,7 +380,7 @@ if ($ListByFile) {
     if (-not $FilePath) { $FilePath = Read-Host "File path (workspace-relative)" }
     $normPath = $FilePath.Replace('\', '/').TrimStart('./')
     Write-Host "`n=== Items referencing: $normPath ===" -ForegroundColor Cyan
-    $files = Get-ChildItem -Path $todoDir -Filter 'todo-*.json'
+    $files = @(Get-TodoManagerFiles -Filter '*.json')
     $linkedItems = @()
     foreach ($f in $files) {
         try {
@@ -437,6 +463,8 @@ Examples:
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

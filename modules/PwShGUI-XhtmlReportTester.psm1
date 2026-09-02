@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # Module: PwShGUI-XhtmlReportTester
 # Purpose: Validate every ~REPORTS/*.xhtml as well-formed XML and check for P032/P033 violations.
 
@@ -61,4 +62,7 @@ function Test-XhtmlReports {
 }
 
 Export-ModuleMember -Function Test-XhtmlReports
+
+
+
 

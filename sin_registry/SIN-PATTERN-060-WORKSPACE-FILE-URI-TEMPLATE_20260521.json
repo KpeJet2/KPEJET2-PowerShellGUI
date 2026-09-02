@@ -1,0 +1,23 @@
+{
+  "id": "SIN-PATTERN-060-WORKSPACE-FILE-URI-TEMPLATE",
+  "sin_id": "SIN-PATTERN-060-WORKSPACE-FILE-URI-TEMPLATE",
+  "title": "Workspace file URI template literal persisted",
+  "description": "Hardcoded file:///{workspace}/ literals in runtime targets can fail if replacement paths diverge and have been a recurring source of dashboard launch drift.",
+  "severity": "MEDIUM",
+  "status": "pattern-defined",
+  "category": "Runtime/Pathing",
+  "detection_method": "Regex scan for unresolved workspace file URI template tokens.",
+  "scan_regex": "file:\\/\\/\\/\\{workspace\\}",
+  "context_guard_regex": "template|example|docs",
+  "file_exclusion_regex": "sin_registry|~REPORTS|history",
+  "scan_file_pattern": "*.ps1;*.psm1;*.json;*.md",
+  "ps_version_scope": "BOTH",
+  "remediation": "Construct file URIs from resolved workspace paths at runtime rather than embedding template literals.",
+  "examples": [
+    "# Bad\n'file:///{workspace}/~REPORTS/SIN-Scoreboard.xhtml'"
+  ],
+  "tags": ["uri", "path", "launch"],
+  "occurrences_observed": 1,
+  "first_observed": "2026-05-21",
+  "date_added": "2026-05-21"
+}

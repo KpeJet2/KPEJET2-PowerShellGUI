@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -30,6 +30,8 @@ Describe 'SINGovernance Module' {
 
 Describe 'Get-SINReviewQueue' {
     It 'Returns queue data without error' {
+        $registryPath = Join-Path $PSScriptRoot '..\sin_registry'
+        Initialize-SINGovernance -RegistryPath $registryPath -ReviewerID 'pester-test'
         { Get-SINReviewQueue } | Should -Not -Throw
     }
 }
@@ -46,6 +48,8 @@ Describe 'Get-SINReviewQueue' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

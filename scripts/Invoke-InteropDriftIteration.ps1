@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 <#
@@ -393,3 +393,5 @@ Write-Host ("[iter {0}] DONE  findings={1} fixes={2} parseErrFiles={3} sinTotal=
     sinCritical = ($(if ($report.verify.sin.critical) { $report.verify.sin.critical } else { 0 }))
     reportPath = $outFile
 }
+
+

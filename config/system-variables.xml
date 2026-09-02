@@ -1,32 +1,29 @@
-﻿<!-- VersionTag: 2605.B5.V46.0 -->
 <SystemVariables>
-  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <PSVersion>7.6.4</PSVersion>
+  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
+  <PowerShellVersion>7</PowerShellVersion>
   <ProgramFiles_x86>C:\Program Files (x86)</ProgramFiles_x86>
+  <ExecutionDate>2026-07-28 03:13:16</ExecutionDate>
+  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
+  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
+  <ProgramFiles>C:\Program Files</ProgramFiles>
+  <UserName>msaib</UserName>
+  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
+  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
+  <SystemRoot>C:\WINDOWS</SystemRoot>
   <Windows>
   </Windows>
-  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
-  <LogDirectory>C:\PowerShellGUI\logs</LogDirectory>
-  <SystemRoot>C:\WINDOWS</SystemRoot>
   <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <ScriptsDirectory>C:\PowerShellGUI\scripts</ScriptsDirectory>
+  <UserDomain>XPS15-MS</UserDomain>
+  <Temp>C:\Users\msaib\AppData\Local\Temp</Temp>
   <ComputerName>XPS15-MS</ComputerName>
-  <OSVersion>Microsoft Windows NT 10.0.26100.0</OSVersion>
-  <AppData>C:\Users\msaib\AppData\Roaming</AppData>
-  <ProgramFiles>C:\Program Files</ProgramFiles>
-  <ConfigDirectory>C:\PowerShellGUI\config</ConfigDirectory>
-  <ExecutionDate>2026-03-29 00:24:12</ExecutionDate>
   <ProcessorCount>
   </ProcessorCount>
-  <LocalAppData>C:\Users\msaib\AppData\Local</LocalAppData>
-  <PowerShellVersion>7</PowerShellVersion>
-  <PSVersion>7.5.5</PSVersion>
-  <UserDomain>XPS15-MS</UserDomain>
-  <UserName>msaib</UserName>
   <Version>
-    <Major>2605</Major>
-    <Minor>B5</Minor>
-    <Build>5</Build>
-    <VMajor>45</VMajor>
-    <VMinor>0</VMinor>
+    <Major>2607</Major>
+    <Minor>B0</Minor>
+    <Build>0</Build>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>

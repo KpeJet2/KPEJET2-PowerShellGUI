@@ -1,51 +1,59 @@
 {
-  "dataFile": "workspace-dependency-map-20260516-103505.json",
-  "currentScanPid": 18852,
+  "dataFile": "workspace-dependency-map-20260728-044234.json",
+  "lastFullScan": "2026-07-28T04:43:04",
   "version": "2604.B1.V32.0",
+  "generated": "2026-07-28T03:08:46.3465284+08:00",
   "currentScanMode": "Full",
+  "currentScanPid": 34940,
+  "mode": "Static",
   "phases": {
     "folders": {
       "status": "done",
-      "count": 113,
-      "durationMs": 998,
-      "completedAt": "2026-05-16T23:34:10.6910001+08:00"
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     },
     "modules": {
       "status": "done",
-      "count": 95,
-      "durationMs": 12388,
-      "functionCount": 552,
-      "completedAt": "2026-05-16T23:34:23.0935959+08:00"
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     },
     "scripts": {
       "status": "done",
-      "count": 333,
-      "durationMs": 12722,
-      "functionCount": 333,
-      "completedAt": "2026-05-16T23:34:35.8240804+08:00"
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     },
     "configs": {
       "status": "done",
-      "count": 516,
-      "durationMs": 10966,
-      "completedAt": "2026-05-16T23:34:46.7927485+08:00"
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     },
     "urls_ips": {
-      "durationMs": 19142,
       "status": "done",
-      "uniqueIPs": 37,
-      "completedAt": "2026-05-16T23:35:05.9370038+08:00",
-      "urlFileCount": 130
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     },
     "dns_resolution": {
-      "hostsChecked": 93,
-      "resolved": 82,
-      "durationMs": 31298,
       "status": "done",
-      "completedAt": "2026-05-16T23:35:37.2401431+08:00"
+      "timestamp": "2026-07-28T04:43:04",
+      "hash": null,
+      "itemCount": 0,
+      "error": null,
+      "durationMs": 30179
     }
-  },
-  "lastFullScan": "2026-05-16T10:35:19",
-  "generated": "2026-05-16T23:35:37.3011047+08:00",
-  "mode": "Static"
+  }
 }

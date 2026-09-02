@@ -1,0 +1,22 @@
+{
+  "VersionTag": "2607.B1.V52.1",
+  "description": "Policy-driven severity and blocking thresholds for refinement findings.",
+  "categorySeverity": {
+    "path-reconcile": "HIGH",
+    "path-registry": "HIGH",
+    "deprecated-reference": "MEDIUM",
+    "duplicate-function": "MEDIUM",
+    "allowlist-metadata": "MEDIUM",
+    "allowlist-expired": "HIGH",
+    "versiontag": "LOW",
+    "dotfile-placement": "MEDIUM",
+    "readme-sync": "MEDIUM",
+    "baseline": "HIGH",
+    "staged-scan": "LOW"
+  },
+  "blockingSeveritiesByProfile": {
+    "full": ["CRITICAL", "HIGH"],
+    "staged": ["CRITICAL", "HIGH"],
+    "nightly": ["CRITICAL", "HIGH", "MEDIUM"]
+  }
+}

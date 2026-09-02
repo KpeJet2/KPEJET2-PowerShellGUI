@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "meta": {
     "schema": "SelfReviewConfig/1.0",
     "created": "2026-04-04T15:15:13.2372618Z",
@@ -102,7 +103,18 @@
       "basedOnRuns": 5,
       "confidence": "LOW",
       "status": "PENDING",
-      "createdAt": "2026-04-18T07:43:12.1973030Z"
+      "createdAt": "2026-04-18T07:43:12.197303Z"
+    },
+    {
+      "id": "SRSUG-20260522205754-PipelineVelocity",
+      "field": "dimensions.PipelineVelocity.weight",
+      "currentValue": 0.15,
+      "suggestedValue": 0.2,
+      "reason": "PipelineVelocity has high score variance (stddev=0.2) suggesting it needs more monitoring weight.",
+      "basedOnRuns": 5,
+      "confidence": "MEDIUM",
+      "status": "PENDING",
+      "createdAt": "2026-05-22T12:57:54.3956114Z"
     }
   ]
 }

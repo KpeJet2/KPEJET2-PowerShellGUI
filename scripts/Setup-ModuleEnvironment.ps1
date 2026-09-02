@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-28
@@ -70,7 +70,37 @@ function Invoke-ModuleValidatorAudit {
 
     $auditJson = Join-Path (Join-Path $WorkspacePath 'temp') ("module-audit-{0}.json" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
     try {
-        & $validator -WorkspacePath $WorkspacePath -TestPS51 -TestPS7 -TestSystemContext -Quiet -OutputJson $auditJson | Out-Null
+        $validatorHost = 'powershell.exe'
+        if ($PSVersionTable.PSVersion.Major -ge 6) {
+            $validatorHost = 'pwsh.exe'
+        }
+
+        $validatorStdOut = Join-Path (Join-Path $WorkspacePath 'temp') ("module-validator-{0}-stdout.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $validatorStdErr = Join-Path (Join-Path $WorkspacePath 'temp') ("module-validator-{0}-stderr.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $validatorArgs = @(
+            '-NoProfile',
+            '-ExecutionPolicy',
+            'Bypass',
+            '-File',
+            $validator,
+            '-WorkspacePath',
+            $WorkspacePath,
+            '-TestPS51',
+            '-TestPS7',
+            '-TestSystemContext',
+            '-Quiet',
+            '-OutputJson',
+            $auditJson
+        )
+
+        $proc = Start-Process -FilePath $validatorHost -ArgumentList $validatorArgs -PassThru -Wait -NoNewWindow -RedirectStandardOutput $validatorStdOut -RedirectStandardError $validatorStdErr
+        if ($null -eq $proc) {
+            throw 'Module validator process failed to start.'
+        }
+        if ($proc.ExitCode -ne 0) {
+            throw ("Module validator exited with code {0}. stdout={1} stderr={2}" -f $proc.ExitCode, $validatorStdOut, $validatorStdErr)
+        }
+
         if (-not (Test-Path -LiteralPath $auditJson)) {
             throw 'Module validator did not produce JSON output.'
         }
@@ -114,7 +144,8 @@ function Get-ModuleTargetRoot {
 }
 
 function Invoke-Diagnose {
-    $logFile = Join-Path $logsDir ("module-environment-diag-" + (Get-Date -Format 'yyyyMMdd-HHmm') + '.log')
+    if (-not (Test-Path (Join-Path $logsDir 'diagnostics'))) { New-Item -ItemType Directory -Path (Join-Path $logsDir 'diagnostics') -Force | Out-Null }
+    $logFile = Join-Path (Join-Path $logsDir 'diagnostics') ("module-environment-diag-" + (Get-Date -Format 'yyyyMMdd-HHmm') + '.log')
     $out = [System.Collections.Generic.List[string]]::new()
 
     $out.Add((Write-DiagLog -Message "Engine: PowerShell $($PSVersionTable.PSVersion)" -Level INFO))
@@ -258,4 +289,6 @@ switch ($Action) {
 <# ToDo:
     Add optional export of machine-readable diagnostics JSON.
 #>
+
+
 

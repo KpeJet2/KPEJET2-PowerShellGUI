@@ -1,0 +1,57 @@
+﻿{
+    "id":  "Bug-20260523034909-5c1dd68b",
+    "bugHistory":  [
+
+                   ],
+    "completedAt":  null,
+    "outlineVersion":  "v0",
+    "executionMethod":  "",
+    "tags":  [
+
+             ],
+    "description":  "Scanner-detected violations of SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257 in scripts\\R3-StressTest.ps1 (1 hits).\nTitle: Empty catch block swallows errors silently\nSeverity: HIGH\n\nSample matches:\nline 27: try { Get-Item foo } catch { }",
+    "lastSeenAt":  "2026-05-22T19:49:09.2870779Z",
+    "linkedFeatures":  [
+
+                       ],
+    "fixesImplementedCount":  0,
+    "title":  "[SIN-SCAN] SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257 :: Empty catch block swallows errors silently",
+    "parentId":  "",
+    "type":  "Bug",
+    "result":  null,
+    "filesFixedCount":  0,
+    "executedAt":  null,
+    "outlineTag":  "OUTLINE-PROTO-v0",
+    "firstSeenAt":  "2026-05-22T19:49:09.2870779Z",
+    "priority":  "HIGH",
+    "suggestedBy":  "SIN-Scanner",
+    "outlinePhase":  "assessment",
+    "affectedFiles":  [
+                          "scripts\\R3-StressTest.ps1"
+                      ],
+    "plannedAt":  null,
+    "linkedBugs":  [
+
+                   ],
+    "status":  "OPEN",
+    "sinId":  "",
+    "executionAgent":  "",
+    "implementedAt":  null,
+    "notes":  "Created by Convert-SinScanToBugs from SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257 hotspot (1 line hits).",
+    "bugReferrals":  [
+
+                     ],
+    "category":  "sin-scan",
+    "reopenedAt":  null,
+    "created":  "2026-05-22T19:49:09.2870779Z",
+    "bugResurfaced":  false,
+    "source":  "BugTracker",
+    "sessionModCount":  1,
+    "sinPattern":  "SIN-PATTERN-002-EMPTYCATCH-SWALLOW_202604042257",
+    "modified":  "2026-05-22T19:49:09.2870779Z",
+    "filesRemainingCount":  0,
+    "countermeasures":  [
+
+                        ],
+    "acknowledged":  null
+}

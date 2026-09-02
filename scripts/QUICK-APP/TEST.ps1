@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -303,13 +303,14 @@ function Get-SelectedSteps {
     param([array]$Steps)
 
     while ($true) {
-        Write-Host "" 
+        Write-Host ""
         Write-Host "TEST-STEPS (all selected by default):" -ForegroundColor Cyan
-        for ($i = 0; $i -lt $Steps.Count; $i++) {
-            $step = $Steps[$i]
-            Write-Host ("  [{0}] {1}. {2}" -f "X", ($i + 1), $step.Name)
+        $displayIndex = 1
+        foreach ($step in @($Steps)) {
+            Write-Host ("  [{0}] {1}. {2}" -f "X", $displayIndex, $step.Name)
+            $displayIndex++
         }
-        Write-Host "" 
+        Write-Host ""
         $input = Read-Host "Press Enter to run all, type 'add' to add, or list numbers (e.g. 1,3)"
 
         if ([string]::IsNullOrWhiteSpace($input)) {
@@ -327,7 +328,10 @@ function Get-SelectedSteps {
             foreach ($idx in $indices) {
                 $i = [int]$idx - 1
                 if ($i -ge 0 -and $i -lt $Steps.Count) {
-                    $selected += $Steps[$i]
+                    $candidate = @($Steps) | Select-Object -Skip $i -First 1
+                    if ($null -ne $candidate) {
+                        $selected += $candidate
+                    }
                 }
             }
             if ($selected.Count -gt 0) {
@@ -529,6 +533,8 @@ Start-Process $reportPath
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

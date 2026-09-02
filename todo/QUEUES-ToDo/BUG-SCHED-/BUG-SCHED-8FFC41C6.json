@@ -1,0 +1,14 @@
+﻿{
+    "detail":  "PipelineSteer: A parameter cannot be found that matches parameter name \u0027Encoding\u0027.",
+    "description":  "PipelineSteer: A parameter cannot be found that matches parameter name \u0027Encoding\u0027.",
+    "title":  "Scheduler task failure: TASK-PipelineSteer",
+    "id":  "BUG-SCHED-8FFC41C6",
+    "source":  "CronAiAthon-Scheduler",
+    "type":  "Bug",
+    "taskId":  "TASK-PipelineSteer",
+    "lastUpdated":  "2026-05-22T17:32:57.3834845Z",
+    "createdAt":  "2026-05-22T17:32:57.3834845Z",
+    "status":  "OPEN",
+    "priority":  "High",
+    "category":  "SchedulerFailure"
+}

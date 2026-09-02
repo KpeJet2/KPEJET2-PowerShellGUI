@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # Module: PwShGUI-SinFixBranch
 # Purpose: Auto-create a checkpoint and mark a SIN as IN_PROGRESS when starting a fix.
 
@@ -49,4 +50,7 @@ function New-SinFixBranch {
 }
 
 Export-ModuleMember -Function New-SinFixBranch
+
+
+
 

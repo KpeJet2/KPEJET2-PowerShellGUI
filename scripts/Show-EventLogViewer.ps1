@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -149,14 +149,19 @@ function Show-EventLogViewer {
     $form.Controls.Add($detailPanel)
 
     # ── Row selection -> detail ──────────────────────────────────
-    $dgv.Add_SelectionChanged({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgv.Add_SelectionChanged({
+        try {
         if ($dgv.SelectedRows.Count -eq 0) { return }
         $row = $dgv.SelectedRows[0]
         $txtDetail.Text = "[$($row.Cells['Time'].Value)] [$($row.Cells['Level'].Value)] $($row.Cells['Source'].Value) (ID: $($row.Cells['EventID'].Value))`r`n`r`n$($row.Cells['Message'].Value)"
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Colour rows by level ────────────────────────────────────
-    $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $dgv.Add_CellFormatting({
+        try {
         param($sender, $e)
         if ($e.ColumnIndex -ne 1) { return }
         $val = $sender.Rows[$e.RowIndex].Cells[1].Value
@@ -164,6 +169,9 @@ function Show-EventLogViewer {
             'Error'       { $e.CellStyle.ForeColor = [System.Drawing.Color]::Red }
             'Warning'     { $e.CellStyle.ForeColor = [System.Drawing.Color]::DarkGoldenrod }
             'Information' { $e.CellStyle.ForeColor = [System.Drawing.Color]::DarkBlue }
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -218,7 +226,13 @@ function Show-EventLogViewer {
     $btnFetch.Add_Click($FetchEvents)
 
     # Auto-fetch on load
-    $form.Add_Shown({ & $FetchEvents })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
+            & $FetchEvents
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
     $form.ShowDialog() | Out-Null
     $form.Dispose()
@@ -239,6 +253,8 @@ Show-EventLogViewer
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

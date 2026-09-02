@@ -1,4 +1,5 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
+# FileRole: Script
 <#
 .SYNOPSIS
   Reconciles stale bug records in todo/ against current file parse state.
@@ -11,7 +12,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$WorkspacePath = 'C:\PowerShellGUI',
+    [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent),
     [switch]$Apply,
     [string]$ResolvedBy = 'BacklogReconcile-AutoParse'
 )
@@ -22,6 +23,15 @@ $ErrorActionPreference = 'Stop'
 $todoDir   = Join-Path $WorkspacePath 'todo'
 $reportDir = Join-Path $WorkspacePath '~REPORTS\TodoPlanning'
 if (-not (Test-Path $reportDir)) { New-Item -ItemType Directory -Path $reportDir -Force | Out-Null }
+
+$pipelineModulePath = Join-Path $WorkspacePath 'modules\CronAiAthon-Pipeline.psm1'
+if (Test-Path -LiteralPath $pipelineModulePath) {
+    try {
+        Import-Module -Name $pipelineModulePath -Force -ErrorAction Stop
+    } catch {
+        Write-Warning ("[BacklogReconcile] Failed to import pipeline module: {0}" -f $_.Exception.Message)
+    }
+}
 
 $timestamp = (Get-Date).ToString('yyyyMMdd-HHmmss')
 $auditPath = Join-Path $reportDir ("reconcile-{0}.json" -f $timestamp)
@@ -62,11 +72,30 @@ function Get-FileLeafFromTitle {
     return $null
 }
 
-$results = [System.Collections.Generic.List[object]]::new()
-$excludeNames = @('_index.json','_bundle.js','_master-aggregated.json','action-log.json')
-$candidates = Get-ChildItem $todoDir -File -Filter '*.json' | Where-Object { $excludeNames -notcontains $_.Name }
+function Get-BacklogCandidateFiles {
+    param([string]$Workspace)
 
-Write-Host "Scanning $($candidates.Count) candidate backlog records..." -ForegroundColor Cyan
+    $excludeNames = @('_index.json','_bundle.js','_master-aggregated.json','action-log.json')
+    if (Get-Command -Name Get-PipelineActiveTodoFiles -ErrorAction SilentlyContinue) {
+        return @(
+            Get-PipelineActiveTodoFiles -WorkspacePath $Workspace |
+            Where-Object { $excludeNames -notcontains $_.Name }
+        )
+    }
+
+    $scanRoot = Join-Path $Workspace 'todo'
+    return @(
+        Get-ChildItem -LiteralPath $scanRoot -File -Filter '*.json' -Recurse -ErrorAction SilentlyContinue |
+        Where-Object {
+            $excludeNames -notcontains $_.Name -and $_.FullName -notlike '*\~*\*'
+        }
+    )
+}
+
+$results = [System.Collections.Generic.List[object]]::new()
+$candidates = @(Get-BacklogCandidateFiles -Workspace $WorkspacePath)
+
+Write-Host "Scanning $(@($candidates).Count) candidate backlog records..." -ForegroundColor Cyan
 
 foreach ($file in $candidates) {
     try {
@@ -132,12 +161,14 @@ $audit = [pscustomobject]@{
     timestamp     = (Get-Date).ToString('o')
     workspace     = $WorkspacePath
     apply         = [bool]$Apply
-    candidates    = $candidates.Count
-    resolved      = $results.Count
+    candidates    = @($candidates).Count
+    resolved      = @($results).Count
     items         = $results
 }
 $audit | ConvertTo-Json -Depth 6 | Set-Content -Path $auditPath -Encoding UTF8
 
-Write-Host ("Reconcile complete. Candidates={0} Resolved={1} Apply={2}" -f $candidates.Count, $results.Count, [bool]$Apply) -ForegroundColor Green
+Write-Host ("Reconcile complete. Candidates={0} Resolved={1} Apply={2}" -f @($candidates).Count, @($results).Count, [bool]$Apply) -ForegroundColor Green
 Write-Host ("Audit: {0}" -f $auditPath) -ForegroundColor Gray
+
+
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,7 +57,7 @@ if ([string]::IsNullOrWhiteSpace($WorkspacePath)) {
     $WorkspacePath = Split-Path $PSScriptRoot -Parent
 }
 $WorkspacePath = [System.IO.Path]::GetFullPath($WorkspacePath)
-$LogsDir      = Join-Path $WorkspacePath 'logs'
+$LogsDir      = Join-Path (Join-Path $WorkspacePath 'logs') 'pipeline'
 $ReportsDir   = Join-Path $WorkspacePath '~REPORTS'
 $CheckpointDir= Join-Path $WorkspacePath 'checkpoints'
 $ProgressFile = Join-Path $LogsDir 'scan-progress.json'
@@ -550,6 +550,8 @@ Write-Host '══════════════════════�
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -15,6 +15,16 @@
     Version : 2604.B2.V31.0
     Requires: Pester 5.x, PowerShell 7+
 #>
+
+BeforeAll {
+    # Pester 5: variables set in BeforeDiscovery are NOT visible to Run-phase blocks.
+    # Mirror the paths here so It/Describe bodies can resolve $script:* during the Run phase.
+    $script:WS = (Split-Path -Parent $PSScriptRoot)
+    $script:ModDir = Join-Path $script:WS 'modules'
+    $script:ScDir  = Join-Path $script:WS 'scripts'
+    $script:CfgDir = Join-Path $script:WS 'config'
+    $script:TmpDir = Join-Path $script:WS 'temp'
+}
 
 BeforeDiscovery {
     $script:WS = (Split-Path -Parent $PSScriptRoot)
@@ -52,7 +62,8 @@ Describe 'Module Import & Export Verification' -Tag 'ModuleImport' {
             Set-ItResult -Skipped
             return
         }
-        $p = Join-Path $script:ModDir "$_.psm1"
+        $modName = $_
+        $p = Join-Path $script:ModDir "$modName.psm1"
         { Import-Module $p -Force -DisableNameChecking -ErrorAction Stop } | Should -Not -Throw
         Remove-Module $_ -Force -ErrorAction SilentlyContinue
     }
@@ -282,7 +293,7 @@ Describe 'CronAiAthon Pipeline Lifecycle' -Tag 'Pipeline' {
     }
 
     It 'Test-RegressionGuard runs without throwing' -Skip:($true) {
-        { Test-RegressionGuard -ItemId 'smoke-test-item' } | Should -Not -Throw 
+        { Test-RegressionGuard -ItemId 'smoke-test-item' } | Should -Not -Throw
     }
 
     It 'Test-SinBugLinkage runs without throwing' -Skip:($true) {
@@ -766,7 +777,13 @@ Describe 'Form Rendering (Headless WinForms)' -Tag 'FormRendering' {
         $btn = [System.Windows.Forms.Button]::new()
         $btn.Text = 'Test'
         $script:_btnClicked = $false
-        $btn.Add_Click({ $script:_btnClicked = $true })
+        $btn.Add_Click({
+            try {
+                $script:_btnClicked = $true
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $script:_btnClicked | Should -BeTrue
         $btn.Dispose()
@@ -902,7 +919,13 @@ Describe 'Button Handler Simulation' -Tag 'ButtonHandlers' {
     It 'wires and fires click handler' {
         $btn = [System.Windows.Forms.Button]::new()
         $result = [ref]$null
-        $btn.Add_Click({ $result.Value = 'clicked' })
+        $btn.Add_Click({
+            try {
+                $result.Value = 'clicked'
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $result.Value | Should -Be 'clicked'
         $btn.Dispose()
@@ -911,8 +934,20 @@ Describe 'Button Handler Simulation' -Tag 'ButtonHandlers' {
     It 'chains multiple button handlers' {
         $counter = [ref]0
         $btn = [System.Windows.Forms.Button]::new()
-        $btn.Add_Click({ $counter.Value++ })
-        $btn.Add_Click({ $counter.Value++ })
+        $btn.Add_Click({
+            try {
+                $counter.Value++
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
+        $btn.Add_Click({
+            try {
+                $counter.Value++
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
         $btn.PerformClick()
         $counter.Value | Should -Be 2
         $btn.Dispose()
@@ -1472,6 +1507,8 @@ Describe 'All Menu Items Covered by Smoke Check' -Tag 'MenuSmoke','Coverage' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

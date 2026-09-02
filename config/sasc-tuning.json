@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "PBKDF2_Iterations": 600000,
   "MaxFailedAttempts": 5,
   "LockoutDurationMinutes": 30,

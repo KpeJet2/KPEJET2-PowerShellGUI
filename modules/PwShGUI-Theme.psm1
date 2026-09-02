@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -66,6 +66,34 @@ function Get-ThemeValue {
     param([string]$Key)
     if ($script:Theme.ContainsKey($Key)) { return $script:Theme[$Key] }
     return $null
+}
+
+<#
+.SYNOPSIS
+  Get a named theme colour. Wrapper around Get-ThemeValue with -Name parameter
+  for backward-compatible API and clarity when querying colour palette entries.
+#>
+function Get-ThemeColour {
+    [CmdletBinding()]
+    [Alias('Get-ThemeColor')]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+    # Friendly-name to internal palette-key mapping for callers that use the
+    # more conversational colour vocabulary (Background, Foreground, Accent...).
+    $alias = @{
+        Background  = 'FormBack'
+        Foreground  = 'ControlFore'
+        Panel       = 'PanelBack'
+        Accent      = 'AccentBlue'
+        Heading     = 'HeadingFore'
+        Subtle      = 'SubtleFore'
+        Border      = 'BorderColor'
+        Button      = 'ButtonBack'
+    }
+    $key = if ($alias.ContainsKey($Name)) { $alias[$Name] } else { $Name }
+    return Get-ThemeValue -Key $key
 }
 
 <#
@@ -245,8 +273,20 @@ function Set-ModernButtonStyle {
         $Button.Font        = Get-ThemeFont -Size 10
         $Button.Cursor      = [System.Windows.Forms.Cursors]::Hand
         # Hover effect via MouseEnter/Leave
-        $Button.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
-        $Button.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60) })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $Button.Add_MouseEnter({
+            try {
+                $this.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 78)
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
+        $Button.Add_MouseLeave({
+            try {
+                $this.BackColor = [System.Drawing.Color]::FromArgb(55, 55, 60)
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
+        })
     } catch { try { Write-AppLog "Theme: Set-ModernButtonStyle failed - $_" 'Warning' } catch { <# Non-fatal #> Write-Verbose -Message ($_.Exception.Message) -Verbose:$false } }
 }
 
@@ -318,7 +358,8 @@ function New-RainbowProgressBar {
     $colorCount    = @($rainbowColors).Count
     $state = @{ Percent = 0; ColorIndex = 0 }
 
-    $panel.Add_Paint({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $panel.Add_Paint({
+        try {
         # P034 fix: $sender shadows PowerShell automatic; use $evtSender
         param($evtSender, $e)
         $g = $e.Graphics
@@ -338,6 +379,9 @@ function New-RainbowProgressBar {
             $brush = New-Object System.Drawing.SolidBrush($colors[$ci])  # SIN-EXEMPT:P027 -- index access, context-verified safe
             $g.FillRectangle($brush, $x, 0, $w, $evtSender.ClientSize.Height)
             $brush.Dispose()
+        }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
         }
     })
 
@@ -403,11 +447,15 @@ function New-SpinnerLabel {
 
     $timer = New-Object System.Windows.Forms.Timer
     $timer.Interval = $Interval
-    $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $timer.Add_Tick({
+        try {
         if (-not $spinState.Active) { return }
         $ch = $script:_SpinnerChars[$spinState.Index % $script:_SpinnerChars.Count]
         $label.Text = "$($spinState.Prefix) $ch"
         $spinState.Index++
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $start = {
@@ -568,6 +616,7 @@ function Set-ControlBackColor {
 #>
 Export-ModuleMember -Function @(
     'Get-ThemeValue',
+    'Get-ThemeColour',
     'Get-ThemeFont',
     'Set-ControlProperty',
     'Set-ControlForeColor',
@@ -580,7 +629,10 @@ Export-ModuleMember -Function @(
     'Set-ModernFormTheme',
     'New-RainbowProgressBar',
     'New-SpinnerLabel'
-)
+) -Alias 'Get-ThemeColor'
+
+
+
 
 
 

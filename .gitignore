@@ -1,6 +1,6 @@
 # VersionTag: 2605.B5.V46.0
 # ignore log files and temporary data
-.history/ 
+.history/
 logs/
 *.log
 temp/
@@ -20,7 +20,21 @@ scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
 scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master.zip
 # private key material (generated locally; never commit)
 pki/*.key
+pki/*.pem
+pki/*.pub
+pki/*.pfx
+pki/*.cer
+pki/vault-backups/
 agents/*/pki/*.key
+# local report exports and checkpoints that should not be published
+Report/
+reports/pipeline-refine/
+checkpoints/
+sovereign-kernel/**/*.jsonl
+sovereign-kernel/**/*.log
+sovereign-kernel/**/events/
+sovereign-kernel/**/event-*.json
+XPS15-MS-*.log*
 # ignore PowerShell generated files
 *.ps1xml
 *.psd1

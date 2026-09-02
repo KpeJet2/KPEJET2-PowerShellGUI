@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: null
@@ -46,3 +46,5 @@ if (($null -ne $item) -and ($item.PSObject.Properties.Name -contains 'created_at
         @($result.findings | Where-Object { $_.sinId -match '041' }).Count | Should -Be 0
     }
 }
+
+

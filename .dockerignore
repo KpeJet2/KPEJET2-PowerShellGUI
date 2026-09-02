@@ -1,0 +1,42 @@
+# .dockerignore — PwShGUI workspace
+# Excludes workspace-only artefacts from Docker build context
+# VersionTag: 2606.B5.V51.4
+# ── Version control ──────────────────────────────────────────────────────────
+.git/
+.githooks/
+.history/
+.snapshots/
+
+# ── Python virtual environments ──────────────────────────────────────────────
+.venv/
+.venv-pygame312/
+__pycache__/
+*.pyc
+
+# ── IDE / editor ─────────────────────────────────────────────────────────────
+.vscode/
+
+# ── Runtime logs and temp ────────────────────────────────────────────────────
+logs/
+temp/
+*.log
+*.tmp
+*.temp
+
+# ── Reports and downloads ────────────────────────────────────────────────────
+~DOWNLOADS/
+~REPORTS/
+~README.md/
+
+# ── Test artefacts ───────────────────────────────────────────────────────────
+testResults.xml
+tests/sandbox/
+
+# ── Secrets (never include) ──────────────────────────────────────────────────
+.env
+pki/*.key
+agents/*/pki/*.key
+
+# ── Large one-off folders ────────────────────────────────────────────────────
+scripts/QUICK-APP/FOLDER-ROOT/ActionPacks-master/
+

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -34,7 +34,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$RootPath = (Split-Path -Parent $PSScriptRoot),
+    [string]$RootPath = $(if ($PSScriptRoot) { Split-Path -Parent $PSScriptRoot } elseif ($PSCommandPath) { Split-Path -Parent $PSCommandPath } else { (Get-Location).Path }),
     [switch]$Strict
 )
 
@@ -62,7 +62,7 @@ function Add-Result {  # SIN-EXEMPT: P011 - cross-file duplicate (intentional fa
 
 function Test-Parse {
     param([string]$Path)
-    if (-not (Test-Path $Path)) {
+    if (-not (Test-Path -LiteralPath $Path)) {
         Add-Result -Status 'FAIL' -Check 'Parse' -Target $Path -Detail 'File missing'
         return
     }
@@ -91,12 +91,12 @@ function Test-Parse {
 
 function Test-XhtmlXml {
     param([string]$Path)
-    if (-not (Test-Path $Path)) {
+    if (-not (Test-Path -LiteralPath $Path)) {
         Add-Result -Status 'FAIL' -Check 'XhtmlXml' -Target $Path -Detail 'File missing'
         return
     }
     try {
-        [xml](Get-Content -Path $Path -Raw -ErrorAction Stop) | Out-Null
+        [xml](Get-Content -LiteralPath $Path -Raw -ErrorAction Stop) | Out-Null
         Add-Result -Status 'PASS' -Check 'XhtmlXml' -Target $Path -Detail 'Strict XML parse OK'
     } catch {
         Add-Result -Status 'FAIL' -Check 'XhtmlXml' -Target $Path -Detail $_.Exception.Message
@@ -105,12 +105,12 @@ function Test-XhtmlXml {
 
 function Test-LocalHrefLinks {
     param([string]$Path)
-    if (-not (Test-Path $Path)) {
+    if (-not (Test-Path -LiteralPath $Path)) {
         Add-Result -Status 'FAIL' -Check 'Links' -Target $Path -Detail 'File missing'
         return
     }
     $base = Split-Path -Parent $Path
-    $raw = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
+    $raw = Get-Content -LiteralPath $Path -Raw -ErrorAction SilentlyContinue
     if (-not $raw) {
         Add-Result -Status 'FAIL' -Check 'Links' -Target $Path -Detail 'Could not read file'
         return
@@ -131,7 +131,7 @@ function Test-LocalHrefLinks {
 
     foreach ($href in $hrefs) {
         $resolved = [System.IO.Path]::GetFullPath((Join-Path $base $href))
-        if (Test-Path $resolved) {
+        if (Test-Path -LiteralPath $resolved) {
             Add-Result -Status 'PASS' -Check 'Links' -Target $Path -Detail "OK: $href"
         } else {
             Add-Result -Status 'FAIL' -Check 'Links' -Target $Path -Detail "Missing target: $href"
@@ -219,6 +219,8 @@ if ($Strict -and $fail -gt 0) {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

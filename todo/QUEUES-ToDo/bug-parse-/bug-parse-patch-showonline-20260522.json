@@ -1,0 +1,18 @@
+{
+  "description": "Parse validation failed: An expression was expected after '('.",
+  "type": "bug",
+  "file_refs": [
+    "temp\\patch-showonline.ps1"
+  ],
+  "category": "bug",
+  "suggested_by": "CronProcessor-DeepTest",
+  "title": "Parse error in patch-showonline.ps1",
+  "created_at": "2026-05-22T21:04:04.0338037+08:00",
+  "status": "DONE",
+  "severity": "HIGH",
+  "todo_id": "bug-parse-patch-showonline-20260522",
+  "priority": "HIGH",
+  "notes": "Auto-detected by cron deep-test cycle\nAuto-reconciled: target file currently parses cleanly (or absent). Path=",
+  "resolved_by": "BacklogReconcile-AutoParse",
+  "resolved_at": "2026-05-26T08:53:18.5937444+08:00"
+}

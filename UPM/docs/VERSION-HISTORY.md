@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 <!-- VersionBuildHistory: 2603.B0.v27.0  2026-03-24 03:28  (deduplicated from 3 entries) -->
 <!-- FileRole: Changelog -->
 
@@ -85,6 +85,8 @@
 - SAVE tab — save snapshot to `.upjson` profile file
 - Dark-themed WinForms GUI with owner-draw TabControl
 - Module: `UserProfileManager.psm1` with `Export-ModuleMember` for all public functions
+
+
 
 
 

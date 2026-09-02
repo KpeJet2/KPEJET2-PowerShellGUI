@@ -1,0 +1,12 @@
+﻿{
+    "id":  "TASK-AutopilotSuggestion",
+    "name":  "AI Autopilot Suggestion",
+    "type":  "AutopilotSuggestion",
+    "consecutiveFailures":  3,
+    "deadLetteredAt":  "2026-05-22T17:29:38.0644666Z",
+    "lastErrors":  [
+                       "AutopilotSuggestion: A parameter cannot be found that matches parameter name \u0027Text\u0027."
+                   ],
+    "detail":  "",
+    "schedulePath":  "C:\\PowerShellGUI\\config\\cron-aiathon-schedule.json"
+}

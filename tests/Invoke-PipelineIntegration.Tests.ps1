@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -63,7 +63,7 @@ Describe 'Pipeline End-to-End Lifecycle' {
     }
 
     It 'Step 7: Verify item has completedAt timestamp' {
-        $items = Get-PipelineItems -WorkspacePath $script:wsPath -Status 'DONE'
+        $items = @(Get-PipelineItems -WorkspacePath $script:wsPath -Status 'DONE')
         $items.Count | Should -Be 1
         $items[0].completedAt | Should -Not -BeNullOrEmpty
     }
@@ -162,6 +162,8 @@ Describe 'Outline Schema Operations' {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

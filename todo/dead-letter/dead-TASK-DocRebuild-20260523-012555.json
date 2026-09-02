@@ -1,0 +1,12 @@
+﻿{
+    "id":  "TASK-DocRebuild",
+    "name":  "README \u0026 Manifest Rebuild",
+    "type":  "DocRebuild",
+    "consecutiveFailures":  3,
+    "deadLetteredAt":  "2026-05-22T17:23:18.2383570Z",
+    "lastErrors":  [
+                       "IntegrityGate: unhealthy pipeline state (see C:\\PowerShellGUI\\~REPORTS\\PipelineIntegrity\\scheduler-integrity-2605230123.json)"
+                   ],
+    "detail":  "Rebuilt: agentic-manifest.json, MODULE-FUNCTION-INDEX.md, VersionAlign-CrossValidate, DIRECTORY-TREE.md, _bundle.js",
+    "schedulePath":  "C:\\PowerShellGUI\\config\\cron-aiathon-schedule.json"
+}

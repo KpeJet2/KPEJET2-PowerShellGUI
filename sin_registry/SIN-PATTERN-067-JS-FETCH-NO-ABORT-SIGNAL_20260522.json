@@ -1,0 +1,40 @@
+{
+  "sin_id": "SIN-PATTERN-067-JS-FETCH-NO-ABORT-SIGNAL_20260522",
+  "title": "fetch() call in XHTML/JS without AbortController signal — hangs when engine is offline",
+  "description": "Browser-side fetch() calls to a local engine endpoint (e.g. http://127.0.0.1:8042) without an AbortController/signal will hang for the browser's default TCP connection timeout (60-120 seconds) when the engine is offline or unreachable. This freezes the UI section waiting on the result and blocks dependent cascade logic. In XHTML-WorkspaceHub.xhtml the engine monitor, test actions and scan cascade all use fetch() calls that should fail fast (5-10s). Without a timeout signal, the user sees a spinner for 60-120s before any fallback logic runs. This is especially important in file:// opened XHTML pages where no server-side timeout exists.",
+  "severity": "MEDIUM",
+  "category": "reliability",
+  "vector": "js-fetch-no-timeout",
+  "ps_version_scope": "JS",
+  "ps_version_scope_note": "JavaScript-side pattern. Applies to all XHTML and HTML files containing fetch() to local engine endpoints.",
+  "status": "pattern-defined",
+  "is_resolved": false,
+  "occurrence_count": 4,
+  "created_at": "2026-05-22T00:00:00Z",
+  "agent_id": "GitHub-Copilot",
+  "reported_by": "GitHub-Copilot",
+  "detection_method": "Scan XHTML/HTML/JS files for fetch( calls to local engine base URLs without AbortController or signal: or AbortSignal.timeout",
+  "is_security_related": false,
+  "is_version_related": false,
+  "is_access_violation": false,
+  "is_untrapped_error": false,
+  "preventionRule": "Wrap every fetch() to a local engine endpoint with a timeout signal:\n  const ctrl = new AbortController();\n  const tid = setTimeout(() => ctrl.abort(), 8000);\n  try {\n    const resp = await fetch(url, { signal: ctrl.signal });\n    // ...\n  } catch (e) {\n    if (e.name === 'AbortError') { /* timeout */ }\n    else throw e;\n  } finally {\n    clearTimeout(tid);\n  }\nOr use AbortSignal.timeout(8000) if targeting modern browsers only.",
+  "remedy": "Add AbortController wrapper to all fetch() calls that target LOCAL_ENGINE_BASE or ENGINE_BASE URLs. Set a timeout of 5000-10000ms. Update the scan/test cascade functions to abort and fall through to the next cascade mode on timeout.",
+  "scan_regex": "fetch\\s*\\(",
+  "scan_file_pattern": "*.xhtml;*.html;*.js",
+  "file_exclusion_regex": "CheatSheet|EXAMPLES|node_modules|~BACKUPS|\\.min\\.js",
+  "context_guard_regex": "AbortController|AbortSignal\\.timeout|signal\\s*:",
+  "context_guard_lines": 8,
+  "context_guard_direction": "below",
+  "known_instances": [
+    {
+      "file": "XHTML-WorkspaceHub.xhtml",
+      "context": "_postTestEndpoint, createTestLocalWebEngine, doScan cascade fetch calls",
+      "status": "OPEN",
+      "risk": "MEDIUM — 60s hang per fetch when engine offline"
+    }
+  ],
+  "related_sins": ["P029"],
+  "tags": ["javascript", "fetch", "abort", "timeout", "xhtml", "engine", "offline"],
+  "date_added": "2026-05-22"
+}

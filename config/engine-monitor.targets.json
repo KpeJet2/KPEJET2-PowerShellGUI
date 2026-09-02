@@ -1,4 +1,5 @@
 {
+  "VersionTag": "2607.B6.V53.0",
   "schema": "EngineMonitorTargets/1.0",
   "description": "Static core targets plus wildcard discovery for current and future engine/service launchers.",
   "includePatterns": [
@@ -36,7 +37,7 @@
     "Launch-SandboxBrowserTest.bat",
     "Launch-SandboxInteractive.bat",
     "Launch-SandboxSmokeTest.bat",
-    "scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat",
+    "scripts/service-cluster-dashboard/Launch-ServiceClusterDashboard.bat",
     "scripts/windguits/Qik-TERMInet0r/Launch-TERMInet0r2B.bat",
     "SmokeTest-HTML-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat",
     "SmokeTest-Batch-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat",
@@ -97,7 +98,7 @@
     },
     {
       "name": "ServiceClusterDashboard",
-      "path": "scripts/service-cluster-dashboard/Launch-ServiceDashboard.bat",
+      "path": "scripts/service-cluster-dashboard/Launch-ServiceClusterDashboard.bat",
       "kind": "BatchFile",
       "runModel": "background",
       "enabled": true,
@@ -106,7 +107,7 @@
       "startArgs": [],
       "stopArgs": [],
       "restartArgs": [],
-      "statusHints": ["Launch-ServiceDashboard.bat", "XHTML-ServiceClusterController.xhtml"]
+      "statusHints": ["Launch-ServiceClusterDashboard.bat", "XHTML-ServiceClusterController.xhtml"]
     }
   ],
   "webServiceReportPorts": [7042, 7771, 7772, 7773, 7774, 7775, 7776, 7777, 7778, 7779, 7080, 8042, 9042, 10042, 11042, 22042],

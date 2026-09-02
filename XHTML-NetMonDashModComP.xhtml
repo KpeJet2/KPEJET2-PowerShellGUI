@@ -1,0 +1,1578 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2607.B6.V53.0 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XHTML-NetMonDashModComP</title>
+  <style type="text/css">
+    :root{
+      --bg:#0e151b;
+      --bg-soft:#16212b;
+      --panel:#1f2f3b;
+      --panel-2:#263b4a;
+      --fg:#d9e7ef;
+      --muted:#8aa1b1;
+      --line:#365166;
+      --accent:#37b6a8;
+      --accent-2:#e3a64a;
+      --ok:#34d399;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --info:#60a5fa;
+      --radius:10px;
+      --gap:12px;
+      --font-ui:"Trebuchet MS","Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+      --font-mono:"Cascadia Code","Consolas",monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;height:100%}
+    body{
+      font-family:var(--font-ui);
+      color:var(--fg);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(55,182,168,0.15), transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(227,166,74,0.14), transparent 35%),
+        linear-gradient(140deg, #0b1218, #0f1a22 40%, #121f2a);
+      overflow:hidden;
+    }
+
+    .app-shell{display:flex;flex-direction:column;height:100%}
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      background:linear-gradient(90deg, #1f2f3b, #243947);
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+    .topbar-title{font-size:18px;font-weight:700;letter-spacing:.2px}
+    .topbar-sub{font-size:11px;color:var(--muted)}
+    .spacer{flex:1}
+
+    .btn,.input,.select,.textarea{
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:#152430;
+      color:var(--fg);
+      font-family:var(--font-ui);
+      font-size:12px;
+      padding:6px 10px;
+    }
+    .btn{cursor:pointer}
+    .btn:hover{background:#1d3343}
+    .btn-accent{border-color:#2cc8b7;background:#17413d}
+    .btn-warn{border-color:#e3a64a;background:#4a3415}
+    .btn-bad{border-color:#ef4444;background:#4b1b1b}
+
+    .status-strip{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:7px 14px;
+      border-bottom:1px solid var(--line);
+      background:rgba(7,12,16,0.55);
+      font-size:11px;
+      color:var(--muted);
+      flex-wrap:wrap;
+    }
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:5px}
+    .dot.ok{background:var(--ok)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+
+    .main-wrap{display:grid;grid-template-columns:300px 1fr;height:100%;min-height:0}
+
+    .sidebar{
+      border-right:1px solid var(--line);
+      background:rgba(8,15,21,0.6);
+      padding:10px;
+      overflow:auto;
+    }
+
+    .sidebar h2{margin:8px 0 8px 0;font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.9px}
+
+    .group{margin-bottom:12px;padding:10px;background:#172633;border:1px solid var(--line);border-radius:var(--radius)}
+    .group-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:7px}
+    .group-row:last-child{margin-bottom:0}
+    .group label{font-size:11px;color:var(--muted)}
+
+    .widget-check{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}
+    .widget-check input{accent-color:var(--accent)}
+
+    .workspace{
+      padding:12px;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .grid{display:grid;gap:var(--gap);grid-template-columns:repeat(12,1fr);align-items:start}
+    .widget{
+      background:linear-gradient(180deg, rgba(35,55,70,0.92), rgba(20,33,44,0.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      min-height:120px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.22);
+      overflow:hidden;
+    }
+    .widget.hidden{display:none}
+    .w-hdr{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 10px;
+      border-bottom:1px solid var(--line);
+      background:#183041;
+    }
+    .w-title{font-weight:700;font-size:13px}
+    .w-body{padding:10px}
+
+    .span-12{grid-column:span 12}
+    .span-8{grid-column:span 8}
+    .span-6{grid-column:span 6}
+    .span-4{grid-column:span 4}
+
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+    .kpi{background:#14222d;border:1px solid #2d4d62;border-radius:8px;padding:8px}
+    .kpi-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+    .kpi-v{font-size:24px;font-weight:700;margin-top:4px}
+    .kpi-v.ok{color:var(--ok)}
+    .kpi-v.warn{color:var(--warn)}
+    .kpi-v.bad{color:var(--bad)}
+    .kpi-v.info{color:var(--info)}
+
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:6px;border-bottom:1px solid #2b4658;text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:#1a3242;color:#cfe2ef;z-index:1}
+    tbody tr:hover td{background:#1b3140}
+
+    .scroll{max-height:300px;overflow:auto;border:1px solid #2b4658;border-radius:8px}
+    .muted{color:var(--muted)}
+    .mono{font-family:var(--font-mono)}
+
+    .util-bar{height:12px;border:1px solid #2d4d62;border-radius:999px;background:#101a22;overflow:hidden}
+    .util-fill{height:100%;width:0;background:linear-gradient(90deg,var(--ok),var(--warn),var(--bad));transition:width .4s ease}
+
+    .cloud{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:#12202b;border:1px solid #2b4658;border-radius:8px;min-height:80px}
+    .cloud span{display:inline-block;line-height:1;padding:2px 4px;color:#9fd3ff}
+
+    .event-pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:999px;border:1px solid #2b4658;color:#bdd7e8;background:#152936}
+    .is-hidden{display:none}
+    .w-100{width:100%}
+    .h-90{height:90px}
+    .mt-10{margin-top:10px}
+    .mb-5{margin-bottom:5px}
+    .mt-4{margin-top:4px}
+    .uptime-scroll{max-height:250px}
+    .news-scroll{max-height:220px}
+    .news-terms{min-width:220px}
+    .news-categories{min-width:180px}
+    .news-sites{min-width:250px}
+    .collector-status{font-size:11px;color:var(--muted)}
+    .toast-wrap{position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:360px}
+    .toast{border:1px solid #33546a;border-left-width:4px;border-radius:8px;padding:10px 12px;background:#132430;color:#d9e7ef;box-shadow:0 8px 20px rgba(0,0,0,0.35);font-size:12px;line-height:1.35;opacity:0;transform:translateY(8px);transition:opacity .2s ease, transform .2s ease}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.info{border-left-color:var(--info)}
+    .toast.ok{border-left-color:var(--ok)}
+    .toast.warn{border-left-color:var(--warn)}
+    .toast.bad{border-left-color:var(--bad)}
+    .toast-head{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:3px}
+    .toast-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;font-size:11px;border:1px solid #2f4d62;background:#0f1f2a;color:#d9e7ef}
+    .history-list{max-height:180px;overflow:auto;border:1px solid #2b4658;border-radius:8px;background:#12202b;padding:6px}
+    .history-item{padding:6px 4px;border-bottom:1px solid #243d50;font-size:11px;line-height:1.35}
+    .history-item:last-child{border-bottom:none}
+    .history-meta{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:2px}
+    .history-empty{font-size:11px;color:var(--muted);padding:8px 4px}
+    .history-filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .filter-chip{border:1px solid #35556b;background:#0f1f2a;color:#a6c2d4;border-radius:999px;padding:2px 8px;font-size:10px;cursor:pointer;line-height:1.3}
+    .filter-chip:hover{background:#173142;color:#d9e7ef}
+    .filter-chip.active{border-color:#5fb6ff;color:#d9f0ff;box-shadow:0 0 0 1px rgba(95,182,255,0.4) inset}
+
+    @media (max-width: 1180px){
+      .main-wrap{grid-template-columns:1fr}
+      .sidebar{border-right:none;border-bottom:1px solid var(--line)}
+    }
+    @media (max-width: 840px){
+      .span-8,.span-6,.span-4{grid-column:span 12}
+      .topbar-title{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">XHTML-NetMonDashModComP</div>
+        <div class="topbar-sub">Modular local network and webservice monitoring dashboard</div>
+      </div>
+      <div class="spacer"></div>
+      <button type="button" class="btn btn-accent" id="btnSaveState">Save Session</button>
+      <button type="button" class="btn" id="btnRestoreState">Restore Session</button>
+      <button type="button" class="btn btn-warn" id="btnExportState">Export Layout</button>
+      <input type="file" id="fileImportState" class="is-hidden" />
+      <button type="button" class="btn" id="btnImportState">Import Layout</button>
+    </div>
+
+    <div class="status-strip">
+      <span><span id="engineDot" class="dot warn"></span><span id="engineStatus">Feed idle</span></span>
+      <span>Total events: <strong id="stTotal">0</strong></span>
+      <span>Success events: <strong id="stSuccess">0</strong></span>
+      <span>Unique IPs: <strong id="stIps">0</strong></span>
+      <span>Utilization: <strong id="stUtil">0%</strong></span>
+      <span>Last refresh: <strong id="stRefresh">never</strong></span>
+    </div>
+
+    <div class="main-wrap">
+      <aside class="sidebar">
+        <h2>Data Feed</h2>
+        <div class="group">
+          <div class="group-row">
+            <label for="feedEndpoint">Connection feed endpoint</label>
+            <input id="feedEndpoint" class="input w-100" value="http://127.0.0.1:8042/api/netmon/connections" />
+          </div>
+          <div class="group-row">
+            <label for="feedInterval">Poll every (sec)</label>
+            <input id="feedInterval" class="input" type="number" min="2" max="600" value="10" />
+            <button type="button" id="btnFeedStart" class="btn btn-accent">Start Poll</button>
+            <button type="button" id="btnFeedStop" class="btn">Stop</button>
+          </div>
+          <div class="group-row">
+            <button type="button" id="btnSimSuccess" class="btn">Simulate Success</button>
+            <button type="button" id="btnSimFailed" class="btn">Simulate Failed</button>
+            <button type="button" id="btnClearEvents" class="btn btn-bad">Clear Events</button>
+          </div>
+          <div class="group-row">
+            <label for="collectorSampleLimit">Collector sample limit</label>
+            <input id="collectorSampleLimit" class="input" type="number" min="1" max="1000" value="120" />
+            <label for="collectorIncludeLoopback">Loopback</label>
+            <input id="collectorIncludeLoopback" type="checkbox" />
+          </div>
+          <div class="group-row">
+            <button type="button" id="btnCollectorStart" class="btn btn-accent">Start Collector</button>
+            <button type="button" id="btnCollectorStop" class="btn">Stop Collector</button>
+            <button type="button" id="btnCollectorStatus" class="btn">Status</button>
+          </div>
+          <div class="group-row collector-status" id="collectorStatus">Collector: unknown</div>
+        </div>
+
+        <h2>Dashboard Mode</h2>
+        <div class="group">
+          <div class="group-row">
+            <label for="cycleProfiles">Profiles in cycle</label>
+            <select id="cycleProfiles" class="select w-100 h-90" multiple="multiple"></select>
+          </div>
+          <div class="group-row">
+            <label for="cycleSeconds">Seconds per layout</label>
+            <input id="cycleSeconds" class="input" type="number" min="5" max="900" value="20" />
+          </div>
+          <div class="group-row">
+            <label for="cycleTotalSeconds">Optional total cycle seconds</label>
+            <input id="cycleTotalSeconds" class="input" type="number" min="0" max="86400" value="0" />
+          </div>
+          <div class="group-row">
+            <button type="button" id="btnCycleStart" class="btn btn-accent">Start Cycle</button>
+            <button type="button" id="btnCycleStop" class="btn">Stop Cycle</button>
+          </div>
+          <div class="group-row muted" id="cycleStatus">Cycle: stopped</div>
+        </div>
+
+        <h2>Alert History</h2>
+        <div class="group">
+          <div class="group-row history-filters" id="toastFilterRow">
+            <button type="button" class="filter-chip active" data-toast-filter="all">All</button>
+            <button type="button" class="filter-chip" data-toast-filter="info">INFO</button>
+            <button type="button" class="filter-chip" data-toast-filter="ok">OK</button>
+            <button type="button" class="filter-chip" data-toast-filter="warn">WARN</button>
+            <button type="button" class="filter-chip" data-toast-filter="bad">BAD</button>
+          </div>
+          <div class="group-row">
+            <button type="button" id="btnClearToastHistory" class="btn">Clear Alerts</button>
+          </div>
+          <div id="toastHistoryList" class="history-list"></div>
+        </div>
+
+        <h2>Layout Profiles</h2>
+        <div class="group">
+          <div class="group-row">
+            <label for="profileName">Profile name</label>
+            <input id="profileName" class="input" value="Default-Layout" />
+            <button type="button" id="btnProfileSave" class="btn btn-accent">Save</button>
+          </div>
+          <div class="group-row">
+            <select id="savedProfiles" class="select w-100" title="Saved layout profiles"></select>
+          </div>
+          <div class="group-row">
+            <button type="button" id="btnProfileLoad" class="btn">Load</button>
+            <button type="button" id="btnProfileDelete" class="btn btn-bad">Delete</button>
+            <button type="button" id="btnDefaultLayout" class="btn">Reset Default</button>
+          </div>
+        </div>
+
+        <h2>Widget Controls</h2>
+        <div class="group" id="widgetControls"></div>
+      </aside>
+
+      <main class="workspace">
+        <div id="grid" class="grid">
+          <section class="widget span-12" data-widget="overview">
+            <div class="w-hdr"><span class="w-title">Overview and Utilization</span><span class="event-pill" id="liveRisk">risk: low</span></div>
+            <div class="w-body">
+              <div class="kpis">
+                <div class="kpi"><div class="kpi-l">Inbound attempts</div><div id="kpiAttempts" class="kpi-v info">0</div></div>
+                <div class="kpi"><div class="kpi-l">Successful access</div><div id="kpiSuccess" class="kpi-v ok">0</div></div>
+                <div class="kpi"><div class="kpi-l">Blocked or failed</div><div id="kpiFailed" class="kpi-v bad">0</div></div>
+                <div class="kpi"><div class="kpi-l">Distinct protocols</div><div id="kpiProtocols" class="kpi-v warn">0</div></div>
+                <div class="kpi"><div class="kpi-l">Peak events per min</div><div id="kpiPeak" class="kpi-v info">0</div></div>
+              </div>
+              <div class="mt-10">
+                <div class="muted mb-5">Network utilization estimate</div>
+                <div class="util-bar"><div id="utilFill" class="util-fill"></div></div>
+                <div id="utilText" class="muted mt-4">0% utilization based on recent event density</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-8" data-widget="ip-intel">
+            <div class="w-hdr"><span class="w-title">Inbound IP Intelligence</span><span class="muted" id="ipIntelStamp">no data</span></div>
+            <div class="w-body">
+              <div class="scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>IP</th>
+                      <th>Country</th>
+                      <th>First seen</th>
+                      <th>Total count</th>
+                      <th>Protocols attempted</th>
+                      <th>Successful</th>
+                      <th>Risk</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ipTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-4" data-widget="uptime">
+            <div class="w-hdr"><span class="w-title">Website and Webservice Uptime</span><span id="uptimeStamp" class="muted">idle</span></div>
+            <div class="w-body">
+              <div class="group-row">
+                <input id="uptimeUrl" class="input w-100" title="Website or webservice URL" placeholder="https://example.com" value="https://example.com" />
+                <button type="button" id="btnAddUptime" class="btn">Add</button>
+              </div>
+              <div class="group-row">
+                <button type="button" id="btnRunUptime" class="btn btn-accent">Run Checks</button>
+              </div>
+              <div class="scroll uptime-scroll">
+                <table>
+                  <thead><tr><th>Target</th><th>State</th><th>Latency</th><th>Checks</th></tr></thead>
+                  <tbody id="uptimeTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-6" data-widget="event-log">
+            <div class="w-hdr"><span class="w-title">Successful Access Event Log</span><span class="muted">audit-ready</span></div>
+            <div class="w-body">
+              <div class="group-row">
+                <label for="eventFilterProtocol">Protocol</label>
+                <select id="eventFilterProtocol" class="select"></select>
+                <label for="eventFilterIp">IP contains</label>
+                <input id="eventFilterIp" class="input" />
+                <button type="button" id="btnApplyFilter" class="btn">Apply</button>
+              </div>
+              <div class="scroll">
+                <table>
+                  <thead>
+                    <tr><th>When</th><th>IP</th><th>Country</th><th>Protocol</th><th>Service</th><th>Status</th><th>Bytes in/out</th></tr>
+                  </thead>
+                  <tbody id="eventTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-6" data-widget="protocol-heat">
+            <div class="w-hdr"><span class="w-title">Protocol Attempt Counts</span><span class="muted">inbound telemetry</span></div>
+            <div class="w-body">
+              <div class="scroll">
+                <table>
+                  <thead><tr><th>Protocol</th><th>Attempts</th><th>Successful</th><th>Failed</th><th>Last attempt</th></tr></thead>
+                  <tbody id="protocolTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-8" data-widget="news-aggregator">
+            <div class="w-hdr"><span class="w-title">Dynamic News Aggregator</span><span id="newsStatus" class="muted">ready</span></div>
+            <div class="w-body">
+              <div class="group-row">
+                <label for="newsTerms">Terms</label>
+                <input id="newsTerms" class="input news-terms" value="network monitoring, uptime, zero trust" />
+                <label for="newsCategories">Categories</label>
+                <input id="newsCategories" class="input news-categories" value="security, cloud, devops" />
+              </div>
+              <div class="group-row">
+                <label for="newsSites">Sites filter (hostnames)</label>
+                <input id="newsSites" class="input news-sites" value="news.ycombinator.com" />
+                <button type="button" id="btnRefreshNews" class="btn btn-accent">Refresh News</button>
+              </div>
+              <div class="scroll news-scroll">
+                <table>
+                  <thead><tr><th>Published</th><th>Title</th><th>Source</th><th>Term</th></tr></thead>
+                  <tbody id="newsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget span-4" data-widget="word-cloud">
+            <div class="w-hdr"><span class="w-title">Trending Word Cloud</span><span class="muted">from aggregated headlines</span></div>
+            <div class="w-body">
+              <div id="wordCloud" class="cloud"></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div id="toastWrap" class="toast-wrap"></div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+    'use strict';
+
+    var STORAGE_KEY = 'XHTML-NetMonDashModComP.state.v1';
+    var PROFILE_KEY = 'XHTML-NetMonDashModComP.profiles.v1';
+    var CYCLE_TIMER = null;
+    var FEED_TIMER = null;
+    var COUNTRY_CACHE = {};
+    var COLLECTOR_TIMER = null;
+    var LAST_COLLECTOR_RUNNING = null;
+    var LAST_FEED_ERROR = '';
+    var TOAST_HISTORY = [];
+    var TOAST_HISTORY_LIMIT = 30;
+    var TOAST_FILTER = 'all';
+
+    var DEFAULT_WIDGET_ORDER = ['overview','ip-intel','uptime','event-log','protocol-heat','news-aggregator','word-cloud'];
+
+    var state = {
+      events: [],
+      uptimeTargets: [
+        { url: 'https://example.com', checks: 0, up: 0, lastLatency: 0, state: 'unknown' }
+      ],
+      layout: {
+        order: DEFAULT_WIDGET_ORDER.slice(0),
+        hidden: {},
+        span: {
+          'overview':'span-12',
+          'ip-intel':'span-8',
+          'uptime':'span-4',
+          'event-log':'span-6',
+          'protocol-heat':'span-6',
+          'news-aggregator':'span-8',
+          'word-cloud':'span-4'
+        }
+      },
+      profiles: {},
+      news: [],
+      filter: { protocol: 'all', ipContains: '' }
+    };
+
+    function byId(id){ return document.getElementById(id); }
+
+    function nowIso(){ return new Date().toISOString(); }
+
+    function setText(id, text){
+      var el = byId(id);
+      if (el) { el.textContent = text; }
+    }
+
+    function safeParse(json, fallback){
+      try { return JSON.parse(json); } catch (e) { return fallback; }
+    }
+
+    function persistState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        events: state.events,
+        uptimeTargets: state.uptimeTargets,
+        layout: state.layout,
+        news: state.news,
+        filter: state.filter
+      }));
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profiles));
+      setText('stRefresh', new Date().toLocaleString());
+    }
+
+    function restoreState(){
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var profRaw = localStorage.getItem(PROFILE_KEY);
+      if (raw) {
+        var parsed = safeParse(raw, null);
+        if (parsed) {
+          state.events = Array.isArray(parsed.events) ? parsed.events : [];
+          state.uptimeTargets = Array.isArray(parsed.uptimeTargets) ? parsed.uptimeTargets : state.uptimeTargets;
+          if (parsed.layout) { state.layout = parsed.layout; }
+          state.news = Array.isArray(parsed.news) ? parsed.news : [];
+          if (parsed.filter) { state.filter = parsed.filter; }
+        }
+      }
+      if (profRaw) {
+        var p = safeParse(profRaw, {});
+        if (p && typeof p === 'object') { state.profiles = p; }
+      }
+      renderAll();
+    }
+
+    function getWidgets(){
+      return Array.prototype.slice.call(document.querySelectorAll('.widget[data-widget]'));
+    }
+
+    function applyLayout(){
+      var grid = byId('grid');
+      var widgets = getWidgets();
+      var order = Array.isArray(state.layout.order) ? state.layout.order : DEFAULT_WIDGET_ORDER.slice(0);
+      var i;
+      for (i = 0; i < order.length; i++) {
+        var key = order[i];
+        var node = grid.querySelector('.widget[data-widget="' + key + '"]');
+        if (node) { grid.appendChild(node); }
+      }
+      for (i = 0; i < widgets.length; i++) {
+        var w = widgets[i];
+        var id = w.getAttribute('data-widget');
+        var hidden = !!(state.layout.hidden && state.layout.hidden[id]);
+        var span = (state.layout.span && state.layout.span[id]) ? state.layout.span[id] : 'span-6';
+        w.className = 'widget ' + span + (hidden ? ' hidden' : '');
+      }
+      renderWidgetControls();
+    }
+
+    function cloneLayout(){
+      return JSON.parse(JSON.stringify(state.layout));
+    }
+
+    function setEngineStatus(kind, text){
+      var dot = byId('engineDot');
+      dot.className = 'dot ' + kind;
+      setText('engineStatus', text);
+    }
+
+    function toastSymbol(kind){
+      if (kind === 'ok') { return 'OK'; }
+      if (kind === 'warn') { return '!!'; }
+      if (kind === 'bad') { return 'X'; }
+      return 'i';
+    }
+
+    function renderToastHistory(){
+      var host = byId('toastHistoryList');
+      if (!host) { return; }
+      host.innerHTML = '';
+      var visible = TOAST_HISTORY;
+      if (TOAST_FILTER !== 'all') {
+        visible = TOAST_HISTORY.filter(function(x){ return x.kind === TOAST_FILTER; });
+      }
+
+      if (visible.length < 1) {
+        var empty = document.createElement('div');
+        empty.className = 'history-empty';
+        empty.textContent = (TOAST_HISTORY.length < 1) ? 'No alerts captured yet.' : ('No alerts for filter: ' + TOAST_FILTER.toUpperCase());
+        host.appendChild(empty);
+        return;
+      }
+
+      var i;
+      for (i = 0; i < visible.length; i++) {
+        var item = visible[i];
+        var row = document.createElement('div');
+        row.className = 'history-item';
+
+        var meta = document.createElement('div');
+        meta.className = 'history-meta';
+        meta.textContent = item.time + ' [' + item.kind.toUpperCase() + ']';
+
+        var body = document.createElement('div');
+        body.textContent = item.message;
+
+        row.appendChild(meta);
+        row.appendChild(body);
+        host.appendChild(row);
+      }
+    }
+
+    function setToastFilter(kind){
+      TOAST_FILTER = kind || 'all';
+      var row = byId('toastFilterRow');
+      if (row) {
+        var buttons = row.querySelectorAll('[data-toast-filter]');
+        var i;
+        for (i = 0; i < buttons.length; i++) {
+          var b = buttons[i];
+          var k = b.getAttribute('data-toast-filter') || 'all';
+          if (k === TOAST_FILTER) {
+            if (b.className.indexOf('active') < 0) { b.className += ' active'; }
+          } else {
+            b.className = b.className.replace(' active', '');
+          }
+        }
+      }
+      renderToastHistory();
+    }
+
+    function pushToastHistory(message, kind){
+      TOAST_HISTORY.unshift({
+        time: new Date().toLocaleTimeString(),
+        kind: kind || 'info',
+        message: message
+      });
+      if (TOAST_HISTORY.length > TOAST_HISTORY_LIMIT) {
+        TOAST_HISTORY = TOAST_HISTORY.slice(0, TOAST_HISTORY_LIMIT);
+      }
+      renderToastHistory();
+    }
+
+    function showToast(message, kind, timeoutMs){
+      var host = byId('toastWrap');
+      if (!host) { return; }
+      var t = document.createElement('div');
+      t.className = 'toast ' + (kind || 'info');
+      var head = document.createElement('div');
+      head.className = 'toast-head';
+      var ic = document.createElement('span');
+      ic.className = 'toast-icon';
+      ic.textContent = toastSymbol(kind || 'info');
+      var title = document.createElement('span');
+      title.textContent = (kind || 'info').toUpperCase();
+      head.appendChild(ic);
+      head.appendChild(title);
+
+      var body = document.createElement('div');
+      body.textContent = message;
+
+      t.appendChild(head);
+      t.appendChild(body);
+      host.appendChild(t);
+      pushToastHistory(message, kind || 'info');
+      setTimeout(function(){ t.className += ' show'; }, 10);
+      var ttl = Number(timeoutMs || 3800);
+      if (!(ttl > 0)) { ttl = 3800; }
+      setTimeout(function(){
+        t.className = t.className.replace(' show', '');
+        setTimeout(function(){
+          if (t.parentNode) { t.parentNode.removeChild(t); }
+        }, 220);
+      }, ttl);
+    }
+
+    function getEngineBaseFromFeed(){
+      var endpoint = (byId('feedEndpoint').value || '').trim();
+      if (!endpoint) { return 'http://127.0.0.1:8042'; }
+      try {
+        var u = new URL(endpoint, window.location.href);
+        return u.origin;
+      } catch (e) {
+        return 'http://127.0.0.1:8042';
+      }
+    }
+
+    function fetchCsrfToken(base){
+      return fetchWithTimeout(base + '/api/csrf-token', 6000)
+        .then(function(r){ if (!r.ok) { throw new Error('CSRF HTTP ' + r.status); } return r.json(); })
+        .then(function(j){
+          var tok = j.csrfToken || j.token || '';
+          if (!tok) { throw new Error('Missing csrf token'); }
+          return tok;
+        });
+    }
+
+    function readCollectorSettings(){
+      var p = Number(byId('feedInterval').value || 10);
+      var s = Number(byId('collectorSampleLimit').value || 120);
+      if (!(p > 1)) { p = 10; }
+      if (!(s > 0)) { s = 120; }
+      if (s > 1000) { s = 1000; }
+      return {
+        pollSeconds: p,
+        sampleLimit: s,
+        includeLoopback: !!byId('collectorIncludeLoopback').checked
+      };
+    }
+
+    function refreshCollectorStatus(silent){
+      var base = getEngineBaseFromFeed();
+      return fetchWithTimeout(base + '/api/netmon/collector/status', 6000)
+        .then(function(r){ if (!r.ok) { throw new Error('Status HTTP ' + r.status); } return r.json(); })
+        .then(function(j){
+          var isRunning = !!j.running;
+          if (j.running) {
+            setText('collectorStatus', 'Collector: running (PID ' + j.pid + ')');
+          } else {
+            setText('collectorStatus', 'Collector: stopped');
+          }
+          if (LAST_COLLECTOR_RUNNING === null) {
+            LAST_COLLECTOR_RUNNING = isRunning;
+          } else if (LAST_COLLECTOR_RUNNING !== isRunning) {
+            if (!silent) {
+              if (isRunning) {
+                showToast('Collector started and is now running.', 'ok', 3200);
+              } else {
+                showToast('Collector stopped.', 'warn', 3200);
+              }
+            }
+            LAST_COLLECTOR_RUNNING = isRunning;
+          }
+        })
+        .catch(function(err){
+          setText('collectorStatus', 'Collector: status error - ' + err.message);
+          if (!silent) {
+            showToast('Collector status error: ' + err.message, 'bad', 5200);
+          }
+        });
+    }
+
+    function startCollector(){
+      var base = getEngineBaseFromFeed();
+      var cfg = readCollectorSettings();
+      fetchCsrfToken(base)
+        .then(function(tok2){
+          return fetch(base + '/api/netmon/collector/start', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': tok2
+            },
+            body: JSON.stringify(cfg)
+          });
+        })
+        .then(function(r2){
+          if (!r2.ok) { throw new Error('Start HTTP ' + r2.status); }
+          return r2.json();
+        })
+        .then(function(){
+          refreshCollectorStatus();
+          showToast('Collector start requested.', 'info', 2500);
+        })
+        .catch(function(err2){
+          setText('collectorStatus', 'Collector: start failed - ' + err2.message);
+          showToast('Collector start failed: ' + err2.message, 'bad', 5200);
+        });
+    }
+
+    function stopCollector(){
+      var base = getEngineBaseFromFeed();
+      fetchCsrfToken(base)
+        .then(function(tok){
+          return fetch(base + '/api/netmon/collector/stop', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': tok
+            },
+            body: '{}'
+          });
+        })
+        .then(function(r){
+          if (!r.ok) { throw new Error('Stop HTTP ' + r.status); }
+          return r.json();
+        })
+        .then(function(){
+          setText('collectorStatus', 'Collector: stop requested');
+          refreshCollectorStatus();
+          showToast('Collector stop requested.', 'warn', 2500);
+        })
+        .catch(function(err){
+          setText('collectorStatus', 'Collector: stop failed - ' + err.message);
+          showToast('Collector stop failed: ' + err.message, 'bad', 5200);
+        });
+    }
+
+    function isPrivateIp(ip){
+      return /^10\./.test(ip) || /^127\./.test(ip) || /^192\.168\./.test(ip) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(ip);
+    }
+
+    function normalizeEvent(raw){
+      var evt = {
+        ts: raw.ts || nowIso(),
+        ip: raw.ip || '0.0.0.0',
+        country: raw.country || '',
+        protocol: (raw.protocol || 'unknown').toUpperCase(),
+        service: raw.service || 'n/a',
+        status: (raw.status || 'SUCCESS').toUpperCase(),
+        bytesIn: Number(raw.bytesIn || 0),
+        bytesOut: Number(raw.bytesOut || 0),
+        latencyMs: Number(raw.latencyMs || 0)
+      };
+      if (!evt.country) {
+        evt.country = isPrivateIp(evt.ip) ? 'PRIVATE' : 'LOOKUP';
+      }
+      return evt;
+    }
+
+    function randomIp(){
+      var pool = ['10.0.0.12','192.168.1.52','172.16.4.90','8.8.8.8','1.1.1.1','203.0.113.7','198.51.100.45'];
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function addEvent(evt){
+      state.events.push(normalizeEvent(evt));
+      if (state.events.length > 5000) {
+        state.events = state.events.slice(state.events.length - 5000);
+      }
+      renderAll();
+      persistState();
+    }
+
+    function simulateEvent(success){
+      var protocols = ['HTTP','HTTPS','SSH','RDP','SMB','DNS','ICMP'];
+      var p = protocols[Math.floor(Math.random() * protocols.length)];
+      addEvent({
+        ts: nowIso(),
+        ip: randomIp(),
+        protocol: p,
+        service: p + '-service',
+        status: success ? 'SUCCESS' : 'FAILED',
+        bytesIn: Math.floor(Math.random() * 64000),
+        bytesOut: Math.floor(Math.random() * 30000),
+        latencyMs: Math.floor(Math.random() * 500)
+      });
+    }
+
+    function computeStats(){
+      var attempts = state.events.length;
+      var success = 0;
+      var failed = 0;
+      var byIp = {};
+      var byProtocol = {};
+      var attemptsPerMin = {};
+      var i;
+
+      for (i = 0; i < state.events.length; i++) {
+        var e = state.events[i];
+        if (e.status === 'SUCCESS') { success++; } else { failed++; }
+        if (!byIp[e.ip]) {
+          byIp[e.ip] = {
+            ip: e.ip,
+            country: e.country || 'UNKNOWN',
+            firstSeen: e.ts,
+            count: 0,
+            protocols: {},
+            success: 0,
+            failed: 0,
+            lastSeen: e.ts
+          };
+        }
+        var ipr = byIp[e.ip];
+        ipr.count++;
+        ipr.protocols[e.protocol] = (ipr.protocols[e.protocol] || 0) + 1;
+        ipr.lastSeen = e.ts;
+        if (e.status === 'SUCCESS') { ipr.success++; } else { ipr.failed++; }
+
+        if (!byProtocol[e.protocol]) {
+          byProtocol[e.protocol] = { protocol:e.protocol, attempts:0, success:0, failed:0, lastSeen:e.ts };
+        }
+        byProtocol[e.protocol].attempts++;
+        byProtocol[e.protocol].lastSeen = e.ts;
+        if (e.status === 'SUCCESS') { byProtocol[e.protocol].success++; } else { byProtocol[e.protocol].failed++; }
+
+        var minuteKey = e.ts.substring(0,16);
+        attemptsPerMin[minuteKey] = (attemptsPerMin[minuteKey] || 0) + 1;
+      }
+
+      var peak = 0;
+      var keys = Object.keys(attemptsPerMin);
+      for (i = 0; i < keys.length; i++) {
+        if (attemptsPerMin[keys[i]] > peak) { peak = attemptsPerMin[keys[i]]; }
+      }
+
+      var protoCount = Object.keys(byProtocol).length;
+      var util = peak > 0 ? Math.min(100, Math.round((peak / 120) * 100)) : 0;
+      var riskScore = Math.min(100, Math.round((failed * 2 + protoCount * 6 + Math.max(0, attempts - success) * 0.2)));
+
+      return {
+        attempts: attempts,
+        success: success,
+        failed: failed,
+        ipMap: byIp,
+        protocolMap: byProtocol,
+        protocolCount: protoCount,
+        peakPerMinute: peak,
+        utilization: util,
+        riskScore: riskScore
+      };
+    }
+
+    function riskLabel(score){
+      if (score >= 75) { return 'high'; }
+      if (score >= 40) { return 'medium'; }
+      return 'low';
+    }
+
+    function escapeHtml(text){
+      return String(text)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    function renderOverview(stats){
+      setText('kpiAttempts', String(stats.attempts));
+      setText('kpiSuccess', String(stats.success));
+      setText('kpiFailed', String(stats.failed));
+      setText('kpiProtocols', String(stats.protocolCount));
+      setText('kpiPeak', String(stats.peakPerMinute));
+
+      var utilFill = byId('utilFill');
+      utilFill.style.width = stats.utilization + '%';
+      setText('utilText', stats.utilization + '% utilization based on recent event density');
+      setText('stUtil', stats.utilization + '%');
+
+      var risk = riskLabel(stats.riskScore);
+      setText('liveRisk', 'risk: ' + risk + ' (' + stats.riskScore + ')');
+
+      setText('stTotal', String(stats.attempts));
+      setText('stSuccess', String(stats.success));
+      setText('stIps', String(Object.keys(stats.ipMap).length));
+    }
+
+    function renderIpTable(stats){
+      var rows = Object.keys(stats.ipMap).map(function(k){ return stats.ipMap[k]; });
+      rows.sort(function(a,b){ return b.count - a.count; });
+      var html = '';
+      var i;
+      for (i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var prot = Object.keys(r.protocols).map(function(p){ return p + ':' + r.protocols[p]; }).join(', ');
+        var score = Math.min(100, Math.round((r.failed * 8) + (Object.keys(r.protocols).length * 5) + Math.max(0, r.count - r.success) * 0.5));
+        html += '<tr>' +
+          '<td class="mono">' + escapeHtml(r.ip) + '</td>' +
+          '<td>' + escapeHtml(r.country || 'UNKNOWN') + '</td>' +
+          '<td>' + escapeHtml(new Date(r.firstSeen).toLocaleString()) + '</td>' +
+          '<td>' + escapeHtml(String(r.count)) + '</td>' +
+          '<td>' + escapeHtml(prot || 'none') + '</td>' +
+          '<td>' + escapeHtml(String(r.success)) + '</td>' +
+          '<td>' + escapeHtml(riskLabel(score) + ' (' + score + ')') + '</td>' +
+        '</tr>';
+      }
+      byId('ipTable').innerHTML = html || '<tr><td colspan="7" class="muted">No inbound data yet</td></tr>';
+      setText('ipIntelStamp', rows.length + ' tracked IPs');
+    }
+
+    function renderProtocolTable(stats){
+      var rows = Object.keys(stats.protocolMap).map(function(k){ return stats.protocolMap[k]; });
+      rows.sort(function(a,b){ return b.attempts - a.attempts; });
+      var html = '';
+      var i;
+      for (i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        html += '<tr>' +
+          '<td>' + escapeHtml(r.protocol) + '</td>' +
+          '<td>' + escapeHtml(String(r.attempts)) + '</td>' +
+          '<td>' + escapeHtml(String(r.success)) + '</td>' +
+          '<td>' + escapeHtml(String(r.failed)) + '</td>' +
+          '<td>' + escapeHtml(new Date(r.lastSeen).toLocaleString()) + '</td>' +
+        '</tr>';
+      }
+      byId('protocolTable').innerHTML = html || '<tr><td colspan="5" class="muted">No protocol attempts yet</td></tr>';
+
+      var sel = byId('eventFilterProtocol');
+      var prev = sel.value || 'all';
+      var opt = '<option value="all">all</option>';
+      for (i = 0; i < rows.length; i++) {
+        opt += '<option value="' + escapeHtml(rows[i].protocol) + '">' + escapeHtml(rows[i].protocol) + '</option>';
+      }
+      sel.innerHTML = opt;
+      sel.value = prev;
+      if (sel.value !== prev) { sel.value = 'all'; }
+    }
+
+    function renderEventTable(){
+      var protocol = state.filter.protocol || 'all';
+      var ipFilter = (state.filter.ipContains || '').toLowerCase();
+      var rows = [];
+      var i;
+      for (i = 0; i < state.events.length; i++) {
+        var e = state.events[i];
+        if (e.status !== 'SUCCESS') { continue; }
+        if (protocol !== 'all' && e.protocol !== protocol) { continue; }
+        if (ipFilter && e.ip.toLowerCase().indexOf(ipFilter) < 0) { continue; }
+        rows.push(e);
+      }
+      rows.sort(function(a,b){ return a.ts < b.ts ? 1 : -1; });
+
+      var html = '';
+      for (i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        html += '<tr>' +
+          '<td>' + escapeHtml(new Date(r.ts).toLocaleString()) + '</td>' +
+          '<td class="mono">' + escapeHtml(r.ip) + '</td>' +
+          '<td>' + escapeHtml(r.country || 'UNKNOWN') + '</td>' +
+          '<td>' + escapeHtml(r.protocol) + '</td>' +
+          '<td>' + escapeHtml(r.service) + '</td>' +
+          '<td>' + escapeHtml(r.status) + '</td>' +
+          '<td>' + escapeHtml(String(r.bytesIn) + '/' + String(r.bytesOut)) + '</td>' +
+        '</tr>';
+      }
+      byId('eventTable').innerHTML = html || '<tr><td colspan="7" class="muted">No successful events in current filter</td></tr>';
+    }
+
+    function renderUptime(){
+      var html = '';
+      var i;
+      for (i = 0; i < state.uptimeTargets.length; i++) {
+        var t = state.uptimeTargets[i];
+        var label = t.state === 'up' ? 'UP' : t.state === 'down' ? 'DOWN' : 'UNKNOWN';
+        html += '<tr>' +
+          '<td>' + escapeHtml(t.url) + '</td>' +
+          '<td>' + escapeHtml(label) + '</td>' +
+          '<td>' + escapeHtml(String(t.lastLatency || 0) + 'ms') + '</td>' +
+          '<td>' + escapeHtml(String(t.up || 0) + '/' + String(t.checks || 0)) + '</td>' +
+        '</tr>';
+      }
+      byId('uptimeTable').innerHTML = html || '<tr><td colspan="4" class="muted">No uptime targets configured</td></tr>';
+    }
+
+    function renderNews(){
+      var rows = state.news.slice(0);
+      rows.sort(function(a,b){ return a.published < b.published ? 1 : -1; });
+      var html = '';
+      var i;
+      for (i = 0; i < rows.length; i++) {
+        var n = rows[i];
+        var t = '<a href="' + escapeHtml(n.url) + '" target="_blank" rel="noopener">' + escapeHtml(n.title) + '</a>';
+        html += '<tr>' +
+          '<td>' + escapeHtml(new Date(n.published).toLocaleString()) + '</td>' +
+          '<td>' + t + '</td>' +
+          '<td>' + escapeHtml(n.source) + '</td>' +
+          '<td>' + escapeHtml(n.term) + '</td>' +
+        '</tr>';
+      }
+      byId('newsTable').innerHTML = html || '<tr><td colspan="4" class="muted">No news data</td></tr>';
+      renderWordCloud(rows);
+    }
+
+    function renderWordCloud(newsRows){
+      var host = byId('wordCloud');
+      var stop = {
+        'the':1,'and':1,'for':1,'with':1,'that':1,'from':1,'into':1,'your':1,'this':1,
+        'about':1,'have':1,'has':1,'are':1,'new':1,'how':1,'why':1,'what':1,'its':1,'you':1
+      };
+      var freq = {};
+      var i;
+      for (i = 0; i < newsRows.length; i++) {
+        var words = String(newsRows[i].title || '').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/);
+        var j;
+        for (j = 0; j < words.length; j++) {
+          var w = words[j];
+          if (!w || w.length < 3 || stop[w]) { continue; }
+          freq[w] = (freq[w] || 0) + 1;
+        }
+      }
+      var top = Object.keys(freq).map(function(k){ return {w:k,c:freq[k]}; });
+      top.sort(function(a,b){ return b.c - a.c; });
+      top = top.slice(0, 42);
+
+      var html = '';
+      for (i = 0; i < top.length; i++) {
+        var f = top[i];
+        var size = 11 + Math.min(30, f.c * 3);
+        html += '<span style="font-size:' + size + 'px" title="' + escapeHtml(String(f.c)) + '">' + escapeHtml(f.w) + '</span>';
+      }
+      host.innerHTML = html || '<span class="muted">No trends yet. Refresh news to build cloud.</span>';
+    }
+
+    function renderWidgetControls(){
+      var host = byId('widgetControls');
+      var order = state.layout.order.slice(0);
+      var html = '';
+      var i;
+      for (i = 0; i < order.length; i++) {
+        var id = order[i];
+        var hidden = !!state.layout.hidden[id];
+        var span = state.layout.span[id] || 'span-6';
+        html += '<div class="widget-check">' +
+          '<input type="checkbox" data-act="toggle" data-id="' + id + '" ' + (hidden ? '' : 'checked="checked"') + ' />' +
+          '<span>' + escapeHtml(id) + '</span>' +
+          '<select data-act="span" data-id="' + id + '" class="select">' +
+            '<option value="span-4"' + (span === 'span-4' ? ' selected="selected"' : '') + '>1/3</option>' +
+            '<option value="span-6"' + (span === 'span-6' ? ' selected="selected"' : '') + '>1/2</option>' +
+            '<option value="span-8"' + (span === 'span-8' ? ' selected="selected"' : '') + '>2/3</option>' +
+            '<option value="span-12"' + (span === 'span-12' ? ' selected="selected"' : '') + '>full</option>' +
+          '</select>' +
+          '<button type="button" class="btn" data-act="up" data-id="' + id + '">Up</button>' +
+          '<button type="button" class="btn" data-act="down" data-id="' + id + '">Down</button>' +
+        '</div>';
+      }
+      host.innerHTML = html;
+    }
+
+    function renderProfileLists(){
+      var sel = byId('savedProfiles');
+      var cycle = byId('cycleProfiles');
+      var names = Object.keys(state.profiles).sort();
+      var html = '';
+      var i;
+      for (i = 0; i < names.length; i++) {
+        html += '<option value="' + escapeHtml(names[i]) + '">' + escapeHtml(names[i]) + '</option>';
+      }
+      sel.innerHTML = html;
+      cycle.innerHTML = html;
+    }
+
+    function renderAll(){
+      var stats = computeStats();
+      renderOverview(stats);
+      renderIpTable(stats);
+      renderProtocolTable(stats);
+      renderEventTable();
+      renderUptime();
+      renderNews();
+      applyLayout();
+      renderProfileLists();
+      setText('stRefresh', new Date().toLocaleString());
+    }
+
+    function fetchWithTimeout(url, ms){
+      var ctrl = new AbortController();
+      var timer = setTimeout(function(){ ctrl.abort(); }, ms);
+      return fetch(url, { signal: ctrl.signal }).finally(function(){ clearTimeout(timer); });
+    }
+
+    function resolveCountry(ip){
+      if (!ip || isPrivateIp(ip)) { return Promise.resolve('PRIVATE'); }
+      if (COUNTRY_CACHE[ip]) { return Promise.resolve(COUNTRY_CACHE[ip]); }
+      var url = 'https://ipwho.is/' + encodeURIComponent(ip);
+      return fetchWithTimeout(url, 4500)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var c = (d && d.success && d.country_code) ? d.country_code : 'UNKNOWN';
+          COUNTRY_CACHE[ip] = c;
+          return c;
+        })
+        .catch(function(){ return 'UNKNOWN'; });
+    }
+
+    function pollFeedOnce(){
+      var endpoint = byId('feedEndpoint').value;
+      setEngineStatus('warn', 'Polling feed...');
+      return fetchWithTimeout(endpoint, 6000)
+        .then(function(resp){
+          if (!resp.ok) { throw new Error('HTTP ' + resp.status); }
+          return resp.json();
+        })
+        .then(function(payload){
+          var records = [];
+          if (Array.isArray(payload)) { records = payload; }
+          else if (payload && Array.isArray(payload.connections)) { records = payload.connections; }
+
+          var work = records.slice(0, 100).map(function(row){
+            var evt = normalizeEvent(row);
+            return resolveCountry(evt.ip).then(function(country){
+              evt.country = evt.country === 'LOOKUP' ? country : evt.country;
+              state.events.push(evt);
+            });
+          });
+
+          return Promise.all(work).then(function(){
+            if (records.length > 0) {
+              if (state.events.length > 5000) {
+                state.events = state.events.slice(state.events.length - 5000);
+              }
+              setEngineStatus('ok', 'Feed active: ' + records.length + ' events');
+              renderAll();
+              persistState();
+            } else {
+              setEngineStatus('warn', 'Feed active: no new records');
+            }
+          });
+        })
+        .catch(function(err){
+          setEngineStatus('bad', 'Feed error: ' + err.message);
+          if (LAST_FEED_ERROR !== err.message) {
+            showToast('Feed ingest error: ' + err.message, 'bad', 5200);
+            LAST_FEED_ERROR = err.message;
+          }
+        });
+    }
+
+    function startFeedPoll(){
+      stopFeedPoll();
+      var seconds = Number(byId('feedInterval').value || 10);
+      if (!(seconds > 1)) { seconds = 10; }
+      pollFeedOnce();
+      FEED_TIMER = setInterval(pollFeedOnce, seconds * 1000);
+      setEngineStatus('ok', 'Feed polling every ' + seconds + ' sec');
+    }
+
+    function stopFeedPoll(){
+      if (FEED_TIMER) {
+        clearInterval(FEED_TIMER);
+        FEED_TIMER = null;
+      }
+      setEngineStatus('warn', 'Feed idle');
+    }
+
+    function runUptimeChecks(){
+      var idx = 0;
+      setText('uptimeStamp', 'checking...');
+
+      function next(){
+        if (idx >= state.uptimeTargets.length) {
+          setText('uptimeStamp', 'last run ' + new Date().toLocaleTimeString());
+          renderUptime();
+          persistState();
+          return;
+        }
+
+        var t = state.uptimeTargets[idx];
+        idx++;
+        var start = new Date().getTime();
+        fetchWithTimeout(t.url, 7000)
+          .then(function(r){
+            t.checks = (t.checks || 0) + 1;
+            t.lastLatency = new Date().getTime() - start;
+            if (r.ok) {
+              t.up = (t.up || 0) + 1;
+              t.state = 'up';
+            } else {
+              t.state = 'down';
+            }
+          })
+          .catch(function(){
+            t.checks = (t.checks || 0) + 1;
+            t.lastLatency = new Date().getTime() - start;
+            t.state = 'down';
+          })
+          .finally(next);
+      }
+      next();
+    }
+
+    function addUptimeTarget(){
+      var url = (byId('uptimeUrl').value || '').trim();
+      if (!url) { return; }
+      state.uptimeTargets.push({ url:url, checks:0, up:0, lastLatency:0, state:'unknown' });
+      byId('uptimeUrl').value = '';
+      renderUptime();
+      persistState();
+    }
+
+    function parseCsv(input){
+      return input.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return !!s; });
+    }
+
+    function refreshNews(){
+      var terms = parseCsv(byId('newsTerms').value);
+      var categories = parseCsv(byId('newsCategories').value).map(function(s){ return s.toLowerCase(); });
+      var sites = parseCsv(byId('newsSites').value).map(function(s){ return s.toLowerCase(); });
+      if (!terms.length) {
+        setText('newsStatus', 'No terms supplied');
+        return;
+      }
+
+      setText('newsStatus', 'Loading...');
+      var all = [];
+
+      var requests = terms.slice(0,6).map(function(term){
+        var url = 'https://hn.algolia.com/api/v1/search?tags=story&hitsPerPage=20&query=' + encodeURIComponent(term);
+        return fetchWithTimeout(url, 7000)
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            var hits = d && Array.isArray(d.hits) ? d.hits : [];
+            hits.forEach(function(h){
+              var articleUrl = h.url || ('https://news.ycombinator.com/item?id=' + h.objectID);
+              var host = '';
+              try { host = (new URL(articleUrl)).hostname.toLowerCase(); } catch (e) { host = 'unknown'; }
+
+              if (sites.length) {
+                var keep = false;
+                var si;
+                for (si = 0; si < sites.length; si++) {
+                  if (host.indexOf(sites[si]) >= 0) { keep = true; break; }
+                }
+                if (!keep) { return; }
+              }
+
+              if (categories.length) {
+                var text = ((h.title || '') + ' ' + (h.story_text || '')).toLowerCase();
+                var catHit = false;
+                var ci;
+                for (ci = 0; ci < categories.length; ci++) {
+                  if (text.indexOf(categories[ci]) >= 0) { catHit = true; break; }
+                }
+                if (!catHit) { return; }
+              }
+
+              all.push({
+                published: h.created_at || nowIso(),
+                title: h.title || '(untitled)',
+                source: host || 'unknown',
+                term: term,
+                url: articleUrl
+              });
+            });
+          })
+          .catch(function(){ return null; });
+      });
+
+      Promise.all(requests).then(function(){
+        state.news = all.slice(0,120);
+        renderNews();
+        persistState();
+        setText('newsStatus', 'Loaded ' + state.news.length + ' items');
+      });
+    }
+
+    function saveProfile(){
+      var name = (byId('profileName').value || '').trim();
+      if (!name) { return; }
+      state.profiles[name] = cloneLayout();
+      renderProfileLists();
+      persistState();
+    }
+
+    function loadProfile(){
+      var sel = byId('savedProfiles');
+      var name = sel.value;
+      if (!name || !state.profiles[name]) { return; }
+      state.layout = JSON.parse(JSON.stringify(state.profiles[name]));
+      applyLayout();
+      persistState();
+    }
+
+    function deleteProfile(){
+      var sel = byId('savedProfiles');
+      var name = sel.value;
+      if (!name) { return; }
+      delete state.profiles[name];
+      renderProfileLists();
+      persistState();
+    }
+
+    function resetDefaultLayout(){
+      state.layout = {
+        order: DEFAULT_WIDGET_ORDER.slice(0),
+        hidden: {},
+        span: {
+          'overview':'span-12','ip-intel':'span-8','uptime':'span-4','event-log':'span-6',
+          'protocol-heat':'span-6','news-aggregator':'span-8','word-cloud':'span-4'
+        }
+      };
+      applyLayout();
+      persistState();
+    }
+
+    function shiftWidget(id, dir){
+      var arr = state.layout.order;
+      var i = arr.indexOf(id);
+      if (i < 0) { return; }
+      var j = i + dir;
+      if (j < 0 || j >= arr.length) { return; }
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      applyLayout();
+      persistState();
+    }
+
+    function startCycle(){
+      stopCycle();
+      var cycleSel = byId('cycleProfiles');
+      var names = [];
+      var i;
+      for (i = 0; i < cycleSel.options.length; i++) {
+        if (cycleSel.options[i].selected) { names.push(cycleSel.options[i].value); }
+      }
+      if (!names.length) {
+        setText('cycleStatus', 'Cycle: no profile selected');
+        return;
+      }
+
+      var perLayoutSec = Number(byId('cycleSeconds').value || 20);
+      if (!(perLayoutSec > 0)) { perLayoutSec = 20; }
+
+      var totalSec = Number(byId('cycleTotalSeconds').value || 0);
+      var startedAt = new Date().getTime();
+      var idx = 0;
+
+      function tick(){
+        var elapsed = Math.floor((new Date().getTime() - startedAt) / 1000);
+        if (totalSec > 0 && elapsed >= totalSec) {
+          stopCycle();
+          setText('cycleStatus', 'Cycle: completed total duration');
+          return;
+        }
+        var profileName = names[idx % names.length];
+        idx++;
+        if (state.profiles[profileName]) {
+          state.layout = JSON.parse(JSON.stringify(state.profiles[profileName]));
+          applyLayout();
+          persistState();
+          setText('cycleStatus', 'Cycle: profile ' + profileName + ' (elapsed ' + elapsed + 's)');
+        }
+      }
+
+      tick();
+      CYCLE_TIMER = setInterval(tick, perLayoutSec * 1000);
+    }
+
+    function stopCycle(){
+      if (CYCLE_TIMER) {
+        clearInterval(CYCLE_TIMER);
+        CYCLE_TIMER = null;
+      }
+      setText('cycleStatus', 'Cycle: stopped');
+    }
+
+    function exportState(){
+      var payload = {
+        exportedAt: nowIso(),
+        state: {
+          events: state.events,
+          uptimeTargets: state.uptimeTargets,
+          layout: state.layout,
+          profiles: state.profiles,
+          news: state.news,
+          filter: state.filter
+        }
+      };
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'XHTML-NetMonDashModComP-layout-export.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function importStateFromFile(file){
+      if (!file) { return; }
+      var reader = new FileReader();
+      reader.onload = function(){
+        var data = safeParse(reader.result, null);
+        if (!data || !data.state) { return; }
+        var s = data.state;
+        if (Array.isArray(s.events)) { state.events = s.events; }
+        if (Array.isArray(s.uptimeTargets)) { state.uptimeTargets = s.uptimeTargets; }
+        if (s.layout) { state.layout = s.layout; }
+        if (s.profiles && typeof s.profiles === 'object') { state.profiles = s.profiles; }
+        if (Array.isArray(s.news)) { state.news = s.news; }
+        if (s.filter) { state.filter = s.filter; }
+        renderAll();
+        persistState();
+      };
+      reader.readAsText(file);
+    }
+
+    function bindEvents(){
+      byId('btnSimSuccess').addEventListener('click', function(){ simulateEvent(true); });
+      byId('btnSimFailed').addEventListener('click', function(){ simulateEvent(false); });
+      byId('btnClearEvents').addEventListener('click', function(){ state.events = []; renderAll(); persistState(); });
+
+      byId('btnFeedStart').addEventListener('click', startFeedPoll);
+      byId('btnFeedStop').addEventListener('click', stopFeedPoll);
+      byId('btnCollectorStart').addEventListener('click', startCollector);
+      byId('btnCollectorStop').addEventListener('click', stopCollector);
+      byId('btnCollectorStatus').addEventListener('click', refreshCollectorStatus);
+      byId('btnClearToastHistory').addEventListener('click', function(){
+        TOAST_HISTORY = [];
+        renderToastHistory();
+      });
+      byId('toastFilterRow').addEventListener('click', function(e){
+        var t = e.target;
+        if (!t || !t.getAttribute) { return; }
+        var f = t.getAttribute('data-toast-filter');
+        if (!f) { return; }
+        setToastFilter(f);
+      });
+
+      byId('btnAddUptime').addEventListener('click', addUptimeTarget);
+      byId('btnRunUptime').addEventListener('click', runUptimeChecks);
+
+      byId('btnApplyFilter').addEventListener('click', function(){
+        state.filter.protocol = byId('eventFilterProtocol').value;
+        state.filter.ipContains = byId('eventFilterIp').value || '';
+        renderEventTable();
+        persistState();
+      });
+
+      byId('btnRefreshNews').addEventListener('click', refreshNews);
+
+      byId('btnProfileSave').addEventListener('click', saveProfile);
+      byId('btnProfileLoad').addEventListener('click', loadProfile);
+      byId('btnProfileDelete').addEventListener('click', deleteProfile);
+      byId('btnDefaultLayout').addEventListener('click', resetDefaultLayout);
+
+      byId('btnCycleStart').addEventListener('click', startCycle);
+      byId('btnCycleStop').addEventListener('click', stopCycle);
+
+      byId('widgetControls').addEventListener('click', function(e){
+        var t = e.target;
+        if (!t || !t.getAttribute) { return; }
+        var act = t.getAttribute('data-act');
+        var id = t.getAttribute('data-id');
+        if (!act || !id) { return; }
+        if (act === 'up') { shiftWidget(id, -1); }
+        if (act === 'down') { shiftWidget(id, 1); }
+      });
+
+      byId('widgetControls').addEventListener('change', function(e){
+        var t = e.target;
+        if (!t || !t.getAttribute) { return; }
+        var act = t.getAttribute('data-act');
+        var id = t.getAttribute('data-id');
+        if (!act || !id) { return; }
+
+        if (act === 'toggle') {
+          state.layout.hidden[id] = !t.checked;
+          applyLayout();
+          persistState();
+        }
+        if (act === 'span') {
+          state.layout.span[id] = t.value;
+          applyLayout();
+          persistState();
+        }
+      });
+
+      byId('btnSaveState').addEventListener('click', persistState);
+      byId('btnRestoreState').addEventListener('click', restoreState);
+      byId('btnExportState').addEventListener('click', exportState);
+      byId('btnImportState').addEventListener('click', function(){ byId('fileImportState').click(); });
+      byId('fileImportState').addEventListener('change', function(ev){
+        var f = ev.target.files && ev.target.files[0] ? ev.target.files[0] : null;
+        importStateFromFile(f);
+      });
+    }
+
+    function init(){
+      bindEvents();
+      restoreState();
+      renderAll();
+      setEngineStatus('warn', 'Feed idle');
+      setText('stRefresh', new Date().toLocaleString());
+      renderToastHistory();
+      setToastFilter('all');
+      refreshCollectorStatus(true);
+      if (COLLECTOR_TIMER) {
+        clearInterval(COLLECTOR_TIMER);
+      }
+      COLLECTOR_TIMER = setInterval(refreshCollectorStatus, 15000);
+    }
+
+    init();
+  })();
+  //]]>
+  </script>
+</body>
+</html>

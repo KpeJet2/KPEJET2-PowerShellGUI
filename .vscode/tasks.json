@@ -1,0 +1,165 @@
+{
+    // .vscode/tasks.json — PwShGUI shared workspace tasks
+    // VersionTag: 2606.B5.V51.2
+    "version": "2.0.0",
+    "tasks": [
+        // ── Launch & Service ─────────────────────────────────────────────────
+        {
+            "label": "Launch: All Services (full stack)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-AllServices.bat",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch: All Services (no tray)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-AllServices.bat notray",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch: Service Cluster Tabs (full)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-ServiceClusterTabs.bat full",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        // ── CronAiAthon ──────────────────────────────────────────────────────
+        {
+            "label": "Cron: Run Processor (dry-run)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-CronProcessor.ps1 -WorkspacePath ${workspaceFolder} -DryRun",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Cron: Stop Engine",
+            "type": "shell",
+            "command": "Set-Content -LiteralPath '${workspaceFolder}\\logs\\engine.stop' -Value '1' -Encoding UTF8 -Force",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "NetMon: Collector (one-shot)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-NetMonCollector.ps1 -WorkspacePath ${workspaceFolder} -EngineBaseUrl http://127.0.0.1:8042 -SampleLimit 120",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "NetMon: Collector (continuous)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-NetMonCollector.ps1 -WorkspacePath ${workspaceFolder} -EngineBaseUrl http://127.0.0.1:8042 -Continuous -PollSeconds 10 -SampleLimit 120",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        // ── Tests ────────────────────────────────────────────────────────────
+        {
+            "label": "Test: Run All Pester (pwsh)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Invoke-Pester -Path '${workspaceFolder}\\tests' -Output Detailed\"",
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Run All Pester (powershell 5.1)",
+            "type": "shell",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Invoke-Pester -Path '${workspaceFolder}\\tests' -Output Detailed\"",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ── SIN Scan ─────────────────────────────────────────────────────────
+        {
+            "label": "SIN: Pattern Scan",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SINPatternScanner.ps1 -WorkspacePath ${workspaceFolder} -Runtime Both",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "SIN: Launcher Lint (.bat/.cmd)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SINPatternScanner.ps1 -WorkspacePath ${workspaceFolder} -Runtime Both -ExtraExtensions .bat,.cmd",
+            "detail": "Opt-in lint of .bat/.cmd launchers; activates P081 (WorkspacePath not forwarded) and other batch-aware patterns.",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -UpdateReadme -BaselineProfile full -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine (staged)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile full -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-full.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline (staged)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Continuous Refine (nightly)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile nightly -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Refine Baseline (nightly)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -BaselineProfile nightly -UpdateBaseline -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-nightly.json",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Validate Canonical Paths",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-ValidateCanonicalPaths.ps1 -WorkspacePath ${workspaceFolder} -RegistryPath ${workspaceFolder}\\config\\pipeline-canonical-paths.json -FailOnMissing",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        // ── GUI ──────────────────────────────────────────────────────────────
+        {
+            "label": "GUI: Launch Main",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Launch-GUI.bat",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        }
+    ]
+}

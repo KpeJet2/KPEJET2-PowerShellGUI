@@ -1,5 +1,6 @@
 @echo off
-REM VersionTag: 2605.B5.V46.0
+chcp 65001 >nul
+REM VersionTag: 2606.B5.V46.1
 REM Test-LaunchGUI-Switches.bat - Validate switch parameter parsing in Launch-GUI.bat
 REM Tests: /usepsv:5, /usepsv7, /scriptsec:1-6, /skipps7, /skippolicy
 

@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -184,7 +184,10 @@ $arp | Set-Content -LiteralPath $OutPath -Encoding UTF8
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("ARP elevation timed out after 120 seconds.")
+        }
     } catch {
         [System.Windows.MessageBox]::Show("ARP elevation cancelled or failed: $_")
     } finally {
@@ -336,7 +339,10 @@ Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
 
     try {
         $p = [System.Diagnostics.Process]::Start($psi)
-        $p.WaitForExit()
+        if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            [System.Windows.MessageBox]::Show("Restore operation timed out after 120 seconds.")
+        }
         [System.Windows.MessageBox]::Show("Restore complete. Restart Windows Terminal to apply.")
     } catch {
         [System.Windows.MessageBox]::Show("Restore cancelled or failed: $_")
@@ -556,11 +562,16 @@ $TxtHostName.Text   = $HostName
 $TxtWTPath.Text     = (Get-WTSettingsPath)
 
 # -------------------- Event Handlers --------------------
-$BtnReloadProfiles.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnReloadProfiles.Add_Click({
+    try {
     Load-ProfilesGrid
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnOpenLayouts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnOpenLayouts.Add_Click({
+    try {
     foreach ($row in $ProfilesGrid.Items) {
         if ($row.Name -and $row.Layout) {
             Set-ProfileLayoutSelection -ProfileName $row.Name -LayoutKey $row.Layout
@@ -582,37 +593,61 @@ $BtnOpenLayouts.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
         return
     }
     Start-Process "wt.exe" -ArgumentList $wtArgs
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnOpenPingLayout.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnOpenPingLayout.Add_Click({
+    try {
     Start-PingLayout -PingGrid $PingGrid
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnRunArp.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnRunArp.Add_Click({
+    try {
     if ($ChkArp.IsChecked -ne $true) {
         [System.Windows.MessageBox]::Show("Tick 'ARP local subnet' first.")
         return
     }
     Run-ArpScan -ArpGrid $ArpGrid
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnArpHtml.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnArpHtml.Add_Click({
+    try {
     if ($ChkArp.IsChecked -ne $true) {
         [System.Windows.MessageBox]::Show("Enable ARP local subnet first.")
         return
     }
     Export-ArpToHtml -ArpGrid $ArpGrid
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnShowConfig.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnShowConfig.Add_Click({
+    try {
     Show-TerminalConfigInfo
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnSaveConfig.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnSaveConfig.Add_Click({
+    try {
     Save-TerminalConfig
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$BtnRestoreConfig.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$BtnRestoreConfig.Add_Click({
+    try {
     $ofd = New-Object Microsoft.Win32.OpenFileDialog
     $ofd.InitialDirectory = $ScriptDir
     $ofd.Filter           = "Zip files (*.zip)|*.zip|All files (*.*)|*.*"
@@ -620,10 +655,17 @@ $BtnRestoreConfig.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wr
     if ($ofd.ShowDialog() -eq $true) {
         Invoke-ElevatedRestore -ZipPath $ofd.FileName
     }
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
-$window.Add_Closing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+$window.Add_Closing({
+    try {
     Ensure-HostBaselineConfig
+    } catch {
+        Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+    }
 })
 
 # -------------------- Launch --------------------
@@ -640,6 +682,8 @@ $window.ShowDialog() | Out-Null
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

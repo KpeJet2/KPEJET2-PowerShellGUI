@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- VersionTag: 2606.B5.V51.4 -->
+<!-- FileRole: XhtmlTool -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XHTML-SIN-Scoreboard-LIVE - PwShGUI</title>
+  <style type="text/css">
+    :root{
+      --bg:#1e1e1e;--bg-alt:#2d2d30;--panel:#252526;
+      --control:#333337;--control-fg:#dcdcdc;
+      --accent:#007acc;--pass:#4ec9b0;--warn:#dcdcaa;--fail:#f44747;--info:#569cd6;
+      --fg:#d4d4d4;--fg-sub:#969696;--border:#3f3f46;
+      --btn:#37373c;--btn-hover:#46464e;--btn-fg:#e6e6e6;
+      --radius:5px;--gap:10px;--pad:14px;
+      --font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      --font-mono:'Cascadia Code','Consolas',monospace;
+      --fs:13px;--fs-sm:11px;--fs-hdr:15px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font);font-size:var(--fs);
+         background:var(--bg);color:var(--fg);
+         min-height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .app-header{
+      background:var(--accent);color:#fff;flex-shrink:0;
+      padding:8px var(--pad);display:flex;align-items:center;gap:var(--gap);
+      font-size:var(--fs-hdr);font-weight:600;
+    }
+    .app-header .hdr-icon{font-size:18px}
+    .app-header .hdr-title{flex:1}
+    .app-header .hdr-ver{font-size:var(--fs-sm);opacity:.65}
+    .ws-dot{
+      width:10px;height:10px;border-radius:50%;background:#666;
+      flex-shrink:0;transition:background .4s;
+    }
+    .ws-dot.ok{background:var(--pass)}
+    .ws-dot.warn{background:var(--warn)}
+    .ws-dot.err{background:var(--fail)}
+    .app-nav{
+      background:var(--panel);border-bottom:1px solid var(--border);
+      padding:4px var(--pad);display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;
+      min-height:34px;
+    }
+    .nav-item{
+      padding:4px 12px;border-radius:var(--radius);font-size:var(--fs-sm);
+      cursor:pointer;border:1px solid var(--border);
+      background:var(--btn);color:var(--btn-fg);text-decoration:none;
+      display:inline-block;
+    }
+    .nav-item:hover{background:var(--btn-hover)}
+    .app-content{flex:1;overflow:auto;padding:var(--pad)}
+    table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+    thead th{
+      background:var(--control);color:var(--fg);padding:6px 10px;
+      text-align:left;font-weight:600;border-bottom:2px solid var(--border);
+      position:sticky;top:0;
+    }
+    tbody td{padding:5px 10px;border-bottom:1px solid var(--border)}
+    tbody tr:nth-child(even){background:var(--bg-alt)}
+    tbody tr:hover{background:var(--control)}
+    .btn{
+      font-family:var(--font);font-size:var(--fs-sm);
+      background:var(--btn);color:var(--btn-fg);
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:5px 12px;cursor:pointer;
+    }
+    .btn:hover{background:var(--btn-hover)}
+    .btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn-pass{background:var(--pass);color:#1e1e1e;border-color:var(--pass)}
+    .btn-fail{background:var(--fail);color:#fff;border-color:var(--fail)}
+    .card{
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap);
+    }
+    .badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+    .badge-ok{background:var(--pass);color:#1e1e1e}
+    .badge-warn{background:var(--warn);color:#1e1e1e}
+    .badge-err{background:var(--fail);color:#fff}
+    .badge-info{background:var(--info);color:#fff}
+    .badge-grey{background:#444;color:#ccc}
+    .nodata{color:var(--fg-sub);font-size:var(--fs-sm);padding:20px;text-align:center}
+    input.txt,select.sel,textarea.ta{
+      font-family:var(--font);font-size:var(--fs);
+      background:var(--control);color:var(--control-fg);
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:6px 9px;
+    }
+    input.txt:focus,select.sel:focus,textarea.ta:focus{
+      outline:none;border-color:var(--accent);
+    }
+    select.sel option{background:var(--control);color:var(--control-fg)}
+    .app-status{
+      background:var(--panel);border-top:1px solid var(--border);
+      padding:4px var(--pad);font-size:var(--fs-sm);color:var(--fg-sub);
+      display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+    }
+    .st-ok{color:var(--pass)}
+    .st-warn{color:var(--warn)}
+    .st-err{color:var(--fail)}
+
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+    .toolbar-label{font-size:11px;color:var(--fg-sub)}
+    .toolbar-spacer{flex:1}
+    .toolbar-link{font-size:11px;color:var(--info);text-decoration:none;border-bottom:1px dotted var(--info)}
+    .toolbar-link:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+    .kpi{background:var(--bg-alt);border:1px solid var(--border);border-radius:6px;padding:10px}
+    .kpi-label{font-size:10px;color:var(--fg-sub);text-transform:uppercase;letter-spacing:0.4px}
+    .kpi-value{font-size:24px;font-weight:700;margin-top:4px}
+    .kpi-red{color:var(--fail)}
+    .kpi-green{color:var(--pass)}
+    .kpi-amber{color:var(--warn)}
+    .kpi-blue{color:var(--info)}
+
+    details.sin-section{border:1px solid var(--border);border-radius:6px;background:var(--bg-alt);margin-bottom:8px}
+    details.sin-section > summary{cursor:pointer;padding:10px 12px;font-weight:600;color:var(--accent)}
+    .section-body{padding:0 12px 12px 12px}
+    .section-note{font-size:11px;color:var(--fg-sub);margin-bottom:8px}
+    .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .mono{font-family:var(--font-mono)}
+  </style>
+</head>
+<body>
+  <div class="app-header">
+    <span class="hdr-icon">&#x1F4CA;</span>
+    <span class="hdr-title">SIN Scoreboard LIVE Hub</span>
+    <span class="hdr-ver">2605.B5.V47.0</span>
+    <div class="ws-dot" id="wsDot" title="LocalWebEngine: checking"></div>
+  </div>
+
+  <nav class="app-nav" id="appNav"></nav>
+
+  <div class="app-content" id="appContent">
+    <div class="card">
+      <div class="toolbar">
+        <span class="toolbar-label">Data Mode</span>
+        <select id="modeSelect" class="sel" title="Choose source mode">
+          <option value="auto">Auto (live then cache)</option>
+          <option value="live">Live preferred</option>
+          <option value="cache">Cached offline only</option>
+          <option value="static">Static page fallback only</option>
+        </select>
+        <button type="button" class="btn btn-accent" id="btnRefresh">Refresh Dashboard</button>
+        <button type="button" class="btn" id="btnWarmCache">Warm Full Cache</button>
+        <button type="button" class="btn" id="btnClearCache">Clear Cache</button>
+        <span class="toolbar-spacer"></span>
+        <a class="toolbar-link" href="~REPORTS/SIN-Scoreboard.xhtml" target="_blank" rel="noopener">Open Static SIN Scoreboard</a>
+        <a class="toolbar-link" href="~REPORTS/scoreboard-data/index.json" target="_blank" rel="noopener">Open index.json</a>
+      </div>
+      <div class="pill-row">
+        <span id="sourceBadge" class="badge badge-info">source: startup</span>
+        <span id="cacheBadge" class="badge badge-grey">cache: 0 entries</span>
+        <span id="lastBadge" class="badge badge-grey">last refresh: never</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Total Sins</div><div id="kpi-total" class="kpi-value kpi-red">--</div></div>
+        <div class="kpi"><div class="kpi-label">Resolved</div><div id="kpi-resolved" class="kpi-value kpi-green">--</div></div>
+        <div class="kpi"><div class="kpi-label">Unresolved</div><div id="kpi-unresolved" class="kpi-value kpi-amber">--</div></div>
+        <div class="kpi"><div class="kpi-label">Critical</div><div id="kpi-critical" class="kpi-value kpi-red">--</div></div>
+        <div class="kpi"><div class="kpi-label">SIN Patterns</div><div id="kpi-patterns" class="kpi-value kpi-blue">--</div></div>
+        <div class="kpi"><div class="kpi-label">Semi-SINs</div><div id="kpi-semi" class="kpi-value kpi-blue">--</div></div>
+        <div class="kpi"><div class="kpi-label">Tools</div><div id="kpi-tools" class="kpi-value kpi-blue">--</div></div>
+      </div>
+    </div>
+
+    <details class="sin-section" id="sec1" open="open"><summary>1. Agent Scoreboard</summary><div id="sec1Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec2" open="open"><summary>2. Legacy Snapshot Registry (33 Entries)</summary><div id="sec2Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec3" open="open"><summary>3. Controls Matrix &amp; Detection Coverage</summary><div id="sec3Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec4" open="open"><summary>4. Coverage Gaps &amp; Recommendations</summary><div id="sec4Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec5" open="open"><summary>5. Per-Sin Control Map (All 33 Sins)</summary><div id="sec5Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec6" open="open"><summary>6. Sin Timeline</summary><div id="sec6Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec7" open="open"><summary>7. Agent Call Telemetry (Session 4)</summary><div id="sec7Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec8" open="open"><summary>8. Iteration Delta Summary</summary><div id="sec8Body" class="section-body"></div></details>
+    <details class="sin-section" id="sec9" open="open"><summary>9. Tools Registry (18 BUILT, 0 backlog)</summary><div id="sec9Body" class="section-body"></div></details>
+  </div>
+
+  <div class="app-status">
+    <span id="statusLeft">Ready</span>
+    <span id="statusRight" class="st-ok">&#x2714; LocalEngine: checking</span>
+  </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+  (function(){
+  'use strict';
+
+  var ENGINE_BASE = 'http://127.0.0.1:8042';
+  var _csrfToken  = '';
+  var _wsConn     = null;
+  var _wsRetries  = 0;
+  var WS_MAX_RETRY = 5;
+
+  window.BASE = {
+    setStatus:  setStatus,
+    fetchCsrf:  fetchCsrf,
+    engineBase: ENGINE_BASE
+  };
+
+  function setStatus(msg, level, side) {
+    var id = (side === 'left') ? 'statusLeft' : 'statusRight';
+    var el = document.getElementById(id);
+    if (!el) { return; }
+    el.innerHTML = msg;
+    el.className = level === 'err' ? 'st-err' : level === 'warn' ? 'st-warn' : 'st-ok';
+  }
+  window.setStatus = setStatus;
+
+  function fetchCsrf(cb) {
+    if (_csrfToken) { cb(_csrfToken); return; }
+    fetch(ENGINE_BASE + '/api/csrf-token').then(function(r){ return r.json(); })
+      .then(function(d){ _csrfToken = d.token || ''; cb(_csrfToken); })
+      .catch(function(){ cb(''); });
+  }
+  window.fetchCsrf = fetchCsrf;
+
+  function setWsDot(state) {
+    var dot = document.getElementById('wsDot');
+    if (!dot) { return; }
+    dot.className = 'ws-dot ' + state;
+    dot.title = 'LocalWebEngine: ' + (state === 'ok' ? 'connected' : state === 'warn' ? 'reconnecting' : 'offline');
+  }
+
+  function connectWs() {
+    if (typeof WebSocket === 'undefined') { return; }
+    try {
+      var ws = new WebSocket('ws://127.0.0.1:8042/ws');
+      _wsConn = ws;
+      ws.onopen = function() {
+        _wsRetries = 0;
+        setWsDot('ok');
+        setStatus('&#x1F7E2; LocalEngine: connected', 'ok', 'right');
+      };
+      ws.onmessage = function(ev) {
+        try {
+          var msg = JSON.parse(ev.data);
+          if (typeof window.onEngineMessage === 'function') {
+            window.onEngineMessage(msg);
+          }
+        } catch(e) { }
+      };
+      ws.onclose = function() {
+        setWsDot('warn');
+        if (_wsRetries < WS_MAX_RETRY) {
+          _wsRetries++;
+          setTimeout(connectWs, 3000);
+        } else {
+          setWsDot('err');
+          setStatus('&#x1F534; LocalEngine: offline', 'warn', 'right');
+        }
+      };
+      ws.onerror = function() { ws.close(); };
+    } catch(e) {
+      setWsDot('err');
+    }
+  }
+
+  function loadNav() {
+    fetch(ENGINE_BASE + '/api/config/menus').then(function(r){
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    }).then(function(data){
+      var menuItems = Array.isArray(data) ? data : (data.items || []);
+      var nav = document.getElementById('appNav');
+      if (!nav) { return; }
+      nav.innerHTML = '';
+      for (var i = 0; i < menuItems.length; i++) {
+        var it = menuItems[i];
+        if (!it.visible) { continue; }
+        var a = document.createElement('a');
+        a.className = 'nav-item';
+        a.href = it.href || '#';
+        if (!it.href || it.href === '#') { a.href = 'javascript:void(0)'; }
+        if (it.action) {
+          a.setAttribute('data-action', it.action);
+          a.onclick = function() {
+            var act = this.getAttribute('data-action');
+            if (act && typeof window[act.split('(')[0]] === 'function') {
+              try { eval(act); } catch(e2) { }
+            }
+            return false;
+          };
+        }
+        if (it.color) { a.style.borderColor = it.color; }
+        a.innerHTML = (it.icon ? it.icon + ' ' : '') + it.title;
+        nav.appendChild(a);
+      }
+      if (menuItems.length === 0) {
+        nav.innerHTML = '<span style="color:var(--fg-sub);font-size:11px;padding:4px 0">No menu items configured</span>';
+      }
+    }).catch(function() {
+      var nav = document.getElementById('appNav');
+      if (nav) {
+        nav.innerHTML = '<span style="color:var(--fg-sub);font-size:11px;padding:4px 0">Engine offline - menu unavailable</span>';
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    connectWs();
+    loadNav();
+    if (typeof window.onBaseReady === 'function') {
+      window.onBaseReady();
+    }
+  });
+
+  })();
+
+  (function(){
+    'use strict';
+
+    var DATA_BASE = '~REPORTS/scoreboard-data/';
+    var CACHE_PREFIX = 'sin-scoreboard-live.cache.';
+    var MODE_KEY = 'sin-scoreboard-live.mode';
+    var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+    var REQUIRED_KEYS = ['index','total-sins','critical','unresolved','patterns','semi-sins','tools'];
+
+    var state = {
+      manifests: {},
+      meta: {},
+      mode: 'auto',
+      lastRefreshAt: 0
+    };
+
+    function esc(s){
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/\"/g,'&quot;');
+    }
+
+    function setBadge(id, text, cls){
+      var el = document.getElementById(id);
+      if(!el){ return; }
+      el.className = 'badge ' + (cls || 'badge-grey');
+      el.textContent = text;
+    }
+
+    function setStatusLeft(msg, level){
+      if(window.BASE && typeof window.BASE.setStatus === 'function'){
+        window.BASE.setStatus(msg, level || 'ok', 'left');
+      }
+    }
+
+    function getMode(){
+      var sel = document.getElementById('modeSelect');
+      if(sel){
+        return String(sel.value || 'auto');
+      }
+      return 'auto';
+    }
+
+    function setMode(mode){
+      var sel = document.getElementById('modeSelect');
+      if(sel){
+        sel.value = mode;
+      }
+      state.mode = mode;
+      try{ localStorage.setItem(MODE_KEY, mode); }catch(e){ }
+    }
+
+    function loadSavedMode(){
+      try{
+        var m = localStorage.getItem(MODE_KEY);
+        if(m){
+          setMode(m);
+          return;
+        }
+      }catch(e){ }
+      setMode('auto');
+    }
+
+    function cachedKey(key){
+      return CACHE_PREFIX + key;
+    }
+
+    function readCache(key){
+      try{
+        var raw = localStorage.getItem(cachedKey(key));
+        if(!raw){ return null; }
+        var obj = JSON.parse(raw);
+        if(!obj || !obj.data){ return null; }
+        return {
+          data: obj.data,
+          savedAt: obj.savedAt || 0,
+          stale: (obj.savedAt ? (Date.now() - obj.savedAt > CACHE_TTL_MS) : false)
+        };
+      }catch(e){
+        return null;
+      }
+    }
+
+    function writeCache(key, data){
+      try{
+        localStorage.setItem(cachedKey(key), JSON.stringify({ savedAt: Date.now(), data: data }));
+      }catch(e){ }
+    }
+
+    function clearCache(){
+      try{
+        for(var i = localStorage.length - 1; i >= 0; i--){
+          var k = localStorage.key(i);
+          if(k && k.indexOf(CACHE_PREFIX) === 0){
+            localStorage.removeItem(k);
+          }
+        }
+      }catch(e){ }
+    }
+
+    function cacheCount(){
+      var c = 0;
+      try{
+        for(var i = 0; i < localStorage.length; i++){
+          var k = localStorage.key(i);
+          if(k && k.indexOf(CACHE_PREFIX) === 0){ c++; }
+        }
+      }catch(e){ }
+      return c;
+    }
+
+    function ageText(ts){
+      if(!ts){ return 'unknown'; }
+      var sec = Math.floor((Date.now() - ts) / 1000);
+      if(sec < 60){ return sec + 's ago'; }
+      var min = Math.floor(sec / 60);
+      if(min < 60){ return min + 'm ago'; }
+      var hr = Math.floor(min / 60);
+      if(hr < 24){ return hr + 'h ago'; }
+      return Math.floor(hr / 24) + 'd ago';
+    }
+
+    function candidateUrls(key){
+      var filePath = DATA_BASE + key + '.json';
+      var list = [filePath, './' + filePath];
+      if(window.BASE && window.BASE.engineBase){
+        list.push(window.BASE.engineBase + '/' + filePath);
+      }
+      return list;
+    }
+
+    function fetchLiveByCandidates(urls, index, onOk, onErr){
+      if(index >= urls.length){
+        onErr(new Error('all candidate URLs failed'));
+        return;
+      }
+      var url = urls[index];
+      try{
+        var x = new XMLHttpRequest();
+        x.open('GET', url, true);
+        x.onload = function(){
+          if(x.status === 200 || x.status === 0){
+            try{
+              onOk(JSON.parse(x.responseText), url);
+            }catch(parseErr){
+              fetchLiveByCandidates(urls, index + 1, onOk, onErr);
+            }
+          }else{
+            fetchLiveByCandidates(urls, index + 1, onOk, onErr);
+          }
+        };
+        x.onerror = function(){ fetchLiveByCandidates(urls, index + 1, onOk, onErr); };
+        x.send();
+      }catch(e){
+        fetchLiveByCandidates(urls, index + 1, onOk, onErr);
+      }
+    }
+
+    function loadManifest(key, opts, onOk, onErr){
+      var mode = getMode();
+      var forceLive = !!(opts && opts.forceLive);
+      var c = readCache(key);
+
+      if(mode === 'static' && !forceLive){
+        onErr(new Error('static mode only'));
+        return;
+      }
+
+      if(mode === 'cache' && !forceLive){
+        if(c){
+          onOk(c.data, { source: 'cache', savedAt: c.savedAt, stale: c.stale });
+        }else{
+          onErr(new Error('cache miss for ' + key));
+        }
+        return;
+      }
+
+      fetchLiveByCandidates(candidateUrls(key), 0, function(data, usedUrl){
+        writeCache(key, data);
+        onOk(data, { source: 'live', savedAt: Date.now(), stale: false, url: usedUrl });
+      }, function(liveErr){
+        if(c){
+          onOk(c.data, { source: 'cache', savedAt: c.savedAt, stale: c.stale, error: liveErr });
+          return;
+        }
+        onErr(liveErr);
+      });
+    }
+
+    function loadMany(keys, opts, done){
+      var remaining = keys.length;
+      var result = {};
+      var errors = [];
+      if(remaining < 1){
+        done(result, errors);
+        return;
+      }
+
+      keys.forEach(function(key){
+        loadManifest(key, opts, function(data, meta){
+          result[key] = { data: data, meta: meta };
+          remaining--;
+          if(remaining === 0){ done(result, errors); }
+        }, function(err){
+          errors.push({ key: key, error: err });
+          remaining--;
+          if(remaining === 0){ done(result, errors); }
+        });
+      });
+    }
+
+    function setText(id, value){
+      var el = document.getElementById(id);
+      if(el){ el.textContent = String(value); }
+    }
+
+    function toItems(manifest){
+      if(!manifest){ return []; }
+      if(Array.isArray(manifest.items)){ return manifest.items; }
+      return [];
+    }
+
+    function toCount(manifest){
+      if(!manifest){ return 0; }
+      if(typeof manifest.count === 'number'){ return manifest.count; }
+      return toItems(manifest).length;
+    }
+
+    function renderSimpleTable(headers, rows){
+      if(!rows || rows.length < 1){
+        return '<div class="nodata">No rows available.</div>';
+      }
+      var html = '<div class="scroll-wrap"><table><thead><tr>';
+      headers.forEach(function(h){ html += '<th>' + esc(h) + '</th>'; });
+      html += '</tr></thead><tbody>';
+      rows.forEach(function(r){
+        html += '<tr>';
+        headers.forEach(function(h){
+          html += '<td>' + esc(r[h]) + '</td>';
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function setSectionBody(id, html){
+      var el = document.getElementById(id);
+      if(el){
+        el.innerHTML = html;
+      }
+    }
+
+    function renderDashboard(){
+      var indexData = state.manifests.index || {};
+      var counts = indexData.counts || {};
+      setText('kpi-total', counts.total != null ? counts.total : '--');
+      setText('kpi-resolved', counts.resolved != null ? counts.resolved : '--');
+      setText('kpi-unresolved', counts.unresolved != null ? counts.unresolved : '--');
+      setText('kpi-critical', counts.critical != null ? counts.critical : '--');
+      setText('kpi-patterns', counts.patterns != null ? counts.patterns : toCount(state.manifests['patterns']));
+      setText('kpi-semi', counts.semiSins != null ? counts.semiSins : toCount(state.manifests['semi-sins']));
+      setText('kpi-tools', counts.tools != null ? counts.tools : toCount(state.manifests['tools']));
+
+      var unresolvedCount = toCount(state.manifests.unresolved);
+      var criticalCount = toCount(state.manifests.critical);
+      var patternCount = toCount(state.manifests['patterns']);
+      var semiCount = toCount(state.manifests['semi-sins']);
+      var toolsCount = toCount(state.manifests['tools']);
+
+      setSectionBody('sec1Body',
+        '<p class="section-note">Live/cached KPI snapshot from index.json.</p>' +
+        renderSimpleTable(['Metric','Value'], [
+          { Metric: 'Total Sins', Value: counts.total != null ? counts.total : '--' },
+          { Metric: 'Resolved', Value: counts.resolved != null ? counts.resolved : '--' },
+          { Metric: 'Unresolved', Value: counts.unresolved != null ? counts.unresolved : '--' },
+          { Metric: 'Critical', Value: counts.critical != null ? counts.critical : '--' },
+          { Metric: 'Patterns', Value: counts.patterns != null ? counts.patterns : patternCount },
+          { Metric: 'Semi-SINs', Value: counts.semiSins != null ? counts.semiSins : semiCount },
+          { Metric: 'Tools', Value: counts.tools != null ? counts.tools : toolsCount }
+        ])
+      );
+
+      var allItems = toItems(state.manifests['total-sins']);
+      var topRows = [];
+      allItems.slice(0, 25).forEach(function(it){
+        topRows.push({
+          ID: it.id,
+          Title: it.title,
+          Severity: it.severity,
+          Status: it.status,
+          Agent: it.agent
+        });
+      });
+      setSectionBody('sec2Body',
+        '<p class="section-note">Top 25 entries from total-sins.json.</p>' +
+        renderSimpleTable(['ID','Title','Severity','Status','Agent'], topRows)
+      );
+
+      setSectionBody('sec3Body',
+        '<p class="section-note">Detection coverage summary from manifests.</p>' +
+        renderSimpleTable(['Control Area','Count'], [
+          { 'Control Area': 'SIN Patterns', Count: patternCount },
+          { 'Control Area': 'Semi-SINs', Count: semiCount },
+          { 'Control Area': 'Tools', Count: toolsCount },
+          { 'Control Area': 'Critical Findings', Count: criticalCount },
+          { 'Control Area': 'Unresolved Findings', Count: unresolvedCount }
+        ])
+      );
+
+      var gaps = [];
+      if(criticalCount > 0){
+        gaps.push({ Gap: 'Critical findings remain open', Recommendation: 'Prioritize critical SIN remediation in next churn pass.' });
+      }
+      if(unresolvedCount > 0){
+        gaps.push({ Gap: 'Unresolved SINs pending', Recommendation: 'Run remediation + verify with scoreboard-data regeneration.' });
+      }
+      if(patternCount < 1){
+        gaps.push({ Gap: 'Pattern catalog is empty', Recommendation: 'Regenerate manifests using iter41-scoreboard-data-gen script.' });
+      }
+      if(gaps.length < 1){
+        gaps.push({ Gap: 'No major gaps detected from current manifests', Recommendation: 'Maintain periodic refresh and cache snapshots.' });
+      }
+      setSectionBody('sec4Body', renderSimpleTable(['Gap','Recommendation'], gaps));
+
+      var patternRows = [];
+      toItems(state.manifests['patterns']).slice(0, 33).forEach(function(it){
+        patternRows.push({ ID: it.id, Title: it.title, Severity: it.severity, Status: it.status });
+      });
+      setSectionBody('sec5Body',
+        '<p class="section-note">Pattern/control map (first 33 rows) from patterns.json.</p>' +
+        renderSimpleTable(['ID','Title','Severity','Status'], patternRows)
+      );
+
+      var timelineRows = [];
+      allItems.slice(0, 20).forEach(function(it){
+        timelineRows.push({ Date: it.discovered || it.created || it.updated || '-', Agent: it.agent || '-', Event: it.title || '-', ID: it.id || '-' });
+      });
+      setSectionBody('sec6Body',
+        '<p class="section-note">Timeline approximation from manifest item timestamps.</p>' +
+        renderSimpleTable(['Date','Agent','Event','ID'], timelineRows)
+      );
+
+      setSectionBody('sec7Body',
+        '<p class="section-note">Session telemetry is tracked in static report content. This live hub focuses on manifest-backed data and cache status.</p>' +
+        '<div class="mono">Open ~REPORTS/SIN-Scoreboard.xhtml for full static telemetry table.</div>'
+      );
+
+      setSectionBody('sec8Body',
+        '<p class="section-note">Iteration delta remains source-of-truth in static scoreboard text sections.</p>' +
+        renderSimpleTable(['Metric','Current Value'], [
+          { Metric: 'Unresolved', 'Current Value': unresolvedCount },
+          { Metric: 'Critical', 'Current Value': criticalCount },
+          { Metric: 'Patterns', 'Current Value': patternCount },
+          { Metric: 'Tools', 'Current Value': toolsCount }
+        ])
+      );
+
+      var toolRows = [];
+      toItems(state.manifests['tools']).slice(0, 50).forEach(function(it){
+        toolRows.push({ Tool: it.name || it.id || '-', Status: it.status || '-', Module: it.module || '-', Notes: it.title || it.description || '-' });
+      });
+      setSectionBody('sec9Body',
+        '<p class="section-note">Tools registry from tools.json.</p>' +
+        renderSimpleTable(['Tool','Status','Module','Notes'], toolRows)
+      );
+    }
+
+    function applyLoadedData(result){
+      Object.keys(result).forEach(function(key){
+        state.manifests[key] = result[key].data;
+        state.meta[key] = result[key].meta;
+      });
+      state.lastRefreshAt = Date.now();
+      renderDashboard();
+      setBadge('cacheBadge', 'cache: ' + cacheCount() + ' entries', 'badge-grey');
+      setBadge('lastBadge', 'last refresh: ' + ageText(state.lastRefreshAt), 'badge-grey');
+    }
+
+    function resolveSourceLabel(result){
+      var hasLive = false;
+      var hasCache = false;
+      Object.keys(result).forEach(function(key){
+        if(result[key].meta && result[key].meta.source === 'live'){ hasLive = true; }
+        if(result[key].meta && result[key].meta.source === 'cache'){ hasCache = true; }
+      });
+      if(hasLive && hasCache){ return { text: 'source: mixed', cls: 'badge-warn' }; }
+      if(hasLive){ return { text: 'source: live', cls: 'badge-ok' }; }
+      if(hasCache){ return { text: 'source: cache', cls: 'badge-warn' }; }
+      return { text: 'source: static', cls: 'badge-grey' };
+    }
+
+    function refreshDashboard(forceLive){
+      setStatusLeft('Refreshing SIN scoreboard manifests ...', 'ok');
+      loadMany(REQUIRED_KEYS, { forceLive: !!forceLive }, function(result, errors){
+        if(Object.keys(result).length > 0){
+          applyLoadedData(result);
+          var src = resolveSourceLabel(result);
+          setBadge('sourceBadge', src.text, src.cls);
+          setStatusLeft('Dashboard refreshed (' + src.text.replace('source: ','') + ')', errors.length > 0 ? 'warn' : 'ok');
+        } else {
+          setBadge('sourceBadge', 'source: static', 'badge-grey');
+          setStatusLeft('Refresh failed; using static page values.', 'warn');
+        }
+
+        if(errors.length > 0){
+          setStatusLeft('Partial refresh with ' + errors.length + ' manifest error(s).', 'warn');
+        }
+      });
+    }
+
+    function bindUi(){
+      var modeSelect = document.getElementById('modeSelect');
+      if(modeSelect){
+        modeSelect.addEventListener('change', function(){
+          setMode(modeSelect.value || 'auto');
+          refreshDashboard(false);
+        });
+      }
+
+      var btnRefresh = document.getElementById('btnRefresh');
+      if(btnRefresh){
+        btnRefresh.addEventListener('click', function(){ refreshDashboard(false); });
+      }
+
+      var btnWarmCache = document.getElementById('btnWarmCache');
+      if(btnWarmCache){
+        btnWarmCache.addEventListener('click', function(){
+          setStatusLeft('Warming cache from live sources ...', 'ok');
+          refreshDashboard(true);
+        });
+      }
+
+      var btnClearCache = document.getElementById('btnClearCache');
+      if(btnClearCache){
+        btnClearCache.addEventListener('click', function(){
+          clearCache();
+          setBadge('cacheBadge', 'cache: 0 entries', 'badge-grey');
+          setStatusLeft('Cache cleared.', 'warn');
+          if(getMode() === 'cache'){
+            refreshDashboard(false);
+          }
+        });
+      }
+    }
+
+    window.onBaseReady = function(){
+      loadSavedMode();
+      bindUi();
+      setBadge('cacheBadge', 'cache: ' + cacheCount() + ' entries', 'badge-grey');
+      refreshDashboard(false);
+    };
+
+  })();
+  //]]>
+  </script>
+</body>
+</html>
+
+

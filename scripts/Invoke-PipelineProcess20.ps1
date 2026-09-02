@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: true
 # SupportsPS7.6: true
 # SupportPS5.1TestedDate: 2026-04-29
@@ -39,6 +39,42 @@ function Write-PipeLog {
     Write-Host $line
 }
 
+function Resolve-PipeTodoPath {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$FileName,
+        [switch]$CreateDirectory
+    )
+
+    $leaf = [System.IO.Path]::GetFileName($FileName)
+    $queueRoot = Join-Path $todoDir 'QUEUES-ToDo'
+    if ($CreateDirectory -and -not (Test-Path -LiteralPath $queueRoot)) {
+        New-Item -ItemType Directory -Path $queueRoot -Force | Out-Null
+    }
+
+    $upper = $leaf.ToUpperInvariant()
+    $queueKey = if ($upper.StartsWith('TODO-PA-')) { 'TODO-PA-' }
+                elseif ($upper.StartsWith('TODO-ENG-')) { 'TODO-ENG-' }
+                elseif ($upper.StartsWith('BUGS2FIX-')) { 'Bugs2FIX-' }
+                elseif ($upper.StartsWith('ITEMS2ADD-')) { 'Items2ADD-' }
+                elseif ($upper.StartsWith('FEATUREREQUEST-')) { 'FeatureRequest-' }
+                elseif ($upper.StartsWith('FEATURE-')) { 'FEATURE-' }
+                elseif ($upper.StartsWith('BUG-SCHED-')) { 'BUG-SCHED-' }
+                elseif ($upper.StartsWith('BUG-PARSE-')) { 'bug-parse-' }
+                elseif ($upper.StartsWith('BUG-')) { 'Bug-' }
+                elseif ($upper.StartsWith('TODO-')) { 'todo-' }
+                elseif ($upper.StartsWith('CRASH-')) { 'Crash-' }
+                elseif ($upper.StartsWith('FIX-')) { 'FIX-' }
+                else { 'MISC-' }
+
+    $queueDir = Join-Path $queueRoot $queueKey
+    if ($CreateDirectory -and -not (Test-Path -LiteralPath $queueDir)) {
+        New-Item -ItemType Directory -Path $queueDir -Force | Out-Null
+    }
+
+    return (Join-Path $queueDir $leaf)
+}
+
 # Optional adapter for normalized event emission.
 $adapter = Join-Path $WorkspacePath 'modules\PwShGUI-EventLogAdapter.psm1'
 $adapterLoaded = $false
@@ -75,8 +111,11 @@ function Emit-PipeEvent {
 Write-PipeLog "Pipeline-Process20 starting (BugCount=$BugCount, DryRun=$($DryRun.IsPresent))"
 Emit-PipeEvent -Severity 'Info' -Message ("Pipeline-Process20 starting (BugCount={0}, DryRun={1})" -f $BugCount, $DryRun.IsPresent)
 
-# 1) Load all BUG-*.json
-$bugFiles = @(Get-ChildItem -Path $todoDir -Filter 'BUG-*.json' -File -ErrorAction SilentlyContinue)
+# 1) Load all BUG-*.json (root + queue folders)
+$bugFiles = @(
+    Get-ChildItem -Path $todoDir -Filter 'BUG-*.json' -File -Recurse -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -notlike '*\~*\*' }
+)
 Write-PipeLog "Loaded $($bugFiles.Count) bug files"
 
 $bugs = @()
@@ -156,7 +195,9 @@ Write-PipeLog "$promotedCount SIN candidates written to sin_registry/candidates/
 Emit-PipeEvent -Severity 'Info' -Message ("{0} SIN candidate(s) promoted from resurfacing bugs" -f $promotedCount)
 
 # 5) Convert FEATURE-F001 -> series of Items2Do under PENDING_APPROVAL
-$featureFile = Get-ChildItem -Path $todoDir -Filter 'FEATURE-*.json' -File | Select-Object -First 1
+$featureFile = Get-ChildItem -Path $todoDir -Filter 'FEATURE-*.json' -File -Recurse -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -notlike '*\~*\*' } |
+    Select-Object -First 1
 if ($featureFile) {
     $feature = Get-Content $featureFile.FullName -Raw | ConvertFrom-Json
     Write-PipeLog "Processing feature: $($feature.title) ($($feature.id))"
@@ -198,7 +239,7 @@ if ($featureFile) {
                 @{ status = 'PENDING_APPROVAL'; timestamp = $nowIso; by = $Agent }
             )
         }
-        $outFile = Join-Path $todoDir ("$tid.json")
+        $outFile = Resolve-PipeTodoPath -FileName ("$tid.json") -CreateDirectory:(-not $DryRun)
         if (-not $DryRun) {
             ($newItem | ConvertTo-Json -Depth 10) | Set-Content -Path $outFile -Encoding UTF8
         }
@@ -232,4 +273,6 @@ Emit-PipeEvent -Severity 'Info' -Message ("Pipeline-Process20 complete: bugsMove
     log                      = $logFile
     dryRun                   = $DryRun.IsPresent
 } | ConvertTo-Json -Depth 5
+
+
 

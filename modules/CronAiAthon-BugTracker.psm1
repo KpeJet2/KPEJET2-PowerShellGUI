@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -38,6 +38,30 @@
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Continue'
+
+function Write-BugTrackerLog {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$Message,
+        [ValidateSet('Warning','Debug','Info')] [string]$Level = 'Info'
+    )
+
+    $appLogger = Get-Command -Name 'Write-AppLog' -ErrorAction SilentlyContinue
+    if ($null -ne $appLogger) {
+        try {
+            Write-AppLog -Message $Message -Level $Level
+            return
+        } catch {
+            # Fallback below when host logging surface is not available in this runspace.
+        }
+    }
+
+    switch ($Level) {
+        'Warning' { Write-Warning $Message }
+        'Debug'   { Write-Verbose -Message $Message -Verbose:$false }
+        default   { Write-Verbose -Message $Message -Verbose:$false }
+    }
+}
 
 # ========================== BUG DETECTION VECTORS ==========================
 
@@ -424,10 +448,10 @@ function Invoke-BugToPipelineProcessor {
                             prevStatus = [string]$existingBug.status
                         }
                         $bugItem.bugHistory = @($bugItem.bugHistory) + @($histEntry)
-                        Write-AppLog -Message "[BugProcessor] Bug '$($bug.message)' resurfaced (prev: $($existingBug.status))" -Level Warning
+                        Write-BugTrackerLog -Message "[BugProcessor] Bug '$($bug.message)' resurfaced (prev: $($existingBug.status))" -Level Warning
                     }
                 } catch {
-                    Write-AppLog -Message "[BugProcessor] Resurfaced check error: $_" -Level Debug
+                    Write-BugTrackerLog -Message "[BugProcessor] Resurfaced check error: $_" -Level Debug
                 }
             }
         }
@@ -455,7 +479,7 @@ function Invoke-BugToPipelineProcessor {
         Update-TodoBundle -WorkspacePath $WorkspacePath | Out-Null
         Export-CentralMasterToDo -WorkspacePath $WorkspacePath | Out-Null
     } catch {
-        Write-AppLog -Message "[BugProcessor] Post-batch sync: $($_.Exception.Message)" -Level Warning
+        Write-BugTrackerLog -Message "[BugProcessor] Post-batch sync: $($_.Exception.Message)" -Level Warning
     }
 
     return $processed
@@ -485,6 +509,9 @@ Export-ModuleMember -Function @(
     'Invoke-FullBugScan',
     'Invoke-BugToPipelineProcessor'
 )
+
+
+
 
 
 

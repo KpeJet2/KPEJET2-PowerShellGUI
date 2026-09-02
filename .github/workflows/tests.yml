@@ -38,7 +38,7 @@ jobs:
         run: |
           $result = & ./tests/Run-AllTests.ps1 `
             -RequirePester $true `
-            -IncludeModuleValidation $true `
+            -IncludeModuleValidation `
             -PesterOnly
 
           if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
@@ -119,10 +119,12 @@ jobs:
         id: paths
         shell: pwsh
         run: |
-          $changed = git diff --name-only origin/${{ github.base_ref }} HEAD 2>$null
+          git fetch --depth=1 origin ${{ github.base_ref }} 2>$null
+          $changed = @(git diff --name-only FETCH_HEAD HEAD 2>$null)
           $relevant = @($changed | Where-Object { $_ -match '^(todo/|sin_registry/|reports/)' })
           "run_dedup=$($relevant.Count -gt 0)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          Write-Host "Relevant paths changed: $(@($relevant).Count)"
+          Write-Host "Relevant paths changed: $($relevant.Count)"
+          exit 0
 
       - name: Run deduplication assessment
         if: steps.paths.outputs.run_dedup == 'true'

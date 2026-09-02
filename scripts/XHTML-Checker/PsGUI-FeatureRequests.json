@@ -1,15 +1,15 @@
-{
-  "meta": {
-    "source": "CronProcessor",
-    "lastModified": "2026-05-07T01:59:24.0579562+08:00"
-  },
-  "features": [
-    {
-      "description": "Converted from individual FeatureRequests row (ALPHA Testing) | Decomposed into 7 PENDING_APPROVAL items at 2026-04-28T19:35:44.7113721Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-06T17:28:18.8542535Z",
-      "id": "F001",
-      "title": "Secrets Management",
-      "created": "03/27/2026 23:35:26",
-      "status": "ALPHA Testing"
-    }
-  ]
+﻿{
+    "meta":  {
+                 "lastModified":  "2026-05-23T05:00:07.1879880+08:00",
+                 "source":  "CronProcessor"
+             },
+    "features":  [
+                     {
+                         "status":  "Proposed",
+                         "title":  "Secrets Management",
+                         "description":  "Converted from individual FeatureRequests row (ALPHA Testing) | Decomposed into 7 PENDING_APPROVAL items at 2026-04-28T19:35:44.7113721Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-06T17:28:18.8542535Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-14T20:42:29.8231546Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-15T14:19:51.4897724Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-15T16:08:37.2403116Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-15T16:27:57.2676106Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:46:16.1645965Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:46:21.7235386Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:49:41.1266357Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:52:45.4708913Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:55:47.7339467Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T17:59:01.1297646Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:02:00.4960839Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:04:34.8783606Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:06:52.5967054Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:08:45.1364374Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:10:22.4549550Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:11:57.5082886Z | Decomposed into 7 PENDING_APPROVAL items at 2026-05-16T18:13:31.1279676Z",
+                         "created":  "2026-03-27T23:35:26.623Z",
+                         "id":  "F001"
+                     }
+                 ]
 }

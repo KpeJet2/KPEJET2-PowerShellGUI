@@ -1,7 +1,7 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "versionTag": "2603.B0.v27.0",
+    "VersionTag": "2607.B6.V53.0",
     "description": "Script folder paths configuration for PowerShell GUI Application",
     "lastModified": "2026-02-16T00:00:00Z",
     "format": "JSON"

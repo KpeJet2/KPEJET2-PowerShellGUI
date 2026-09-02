@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -326,7 +326,8 @@ function Show-MCPServiceConfig {
     $script:_OverviewFormatted = $false
     if (-not $script:_OverviewFormatted) {
         $script:_OverviewFormatted = $true
-        $dgv.Add_CellFormatting({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $dgv.Add_CellFormatting({
+            try {
             param($s, $e)
             if ($e.ColumnIndex -eq 3 -and $e.RowIndex -ge 0) {
                 $val = "$($e.Value)"
@@ -336,6 +337,9 @@ function Show-MCPServiceConfig {
                     'Missing'    { $e.CellStyle.ForeColor = [System.Drawing.Color]::OrangeRed }
                     'Unreachable'{ $e.CellStyle.ForeColor = [System.Drawing.Color]::OrangeRed }
                 }
+            }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
             }
         })
     }
@@ -407,7 +411,8 @@ function Show-MCPServiceConfig {
         $tab.Controls.Add($txt)
 
         # ── Button click handlers ─────────────────────────────────────────────
-        $btnTest.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnTest.Add_Click({
+            try {
             $name = $this.Tag
             $def  = $script:mcpConfig.servers.$name
             $test = Test-MCPServerReachable -ServerName $name -ServerDef $def
@@ -416,9 +421,13 @@ function Show-MCPServiceConfig {
                 "Server: $name`nStatus: $($test.Status)`n$($test.Detail)",
                 'MCP Test Result', [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Information)
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
 
-        $btnSave.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnSave.Add_Click({
+            try {
             $name = $this.Tag
             $tb   = $script:serverTextBoxes[$name]
             try {
@@ -432,24 +441,35 @@ function Show-MCPServiceConfig {
                     'Save Error', [System.Windows.Forms.MessageBoxButtons]::OK,
                     [System.Windows.Forms.MessageBoxIcon]::Warning)
             }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
 
-        $btnBackupSrv.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnBackupSrv.Add_Click({
+            try {
             $dest = Backup-MCPConfig -ConfigPath $configPath -BackupDir $backupDir
             if ($dest) {
                 $statusLabel.Text = "Backup created: $dest"
             } else {
                 $statusLabel.Text = 'Backup failed -- config file not found'
             }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         })
 
-        $btnReload.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnReload.Add_Click({
+            try {
             $name = $this.Tag
             $script:mcpConfig = Read-MCPConfig -ConfigPath $configPath
             if ($script:mcpConfig -and $script:mcpConfig.servers.PSObject.Properties[$name]) {
                 $tb = $script:serverTextBoxes[$name]
                 $tb.Text = ($script:mcpConfig.servers.$name | ConvertTo-Json -Depth 10)
                 $statusLabel.Text = "Reloaded config for '$name'"
+            }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
             }
         })
 
@@ -515,7 +535,8 @@ function Show-MCPServiceConfig {
     $btnAddServer.Location = New-Object System.Drawing.Point(16, 422)
     $btnAddServer.Size     = New-Object System.Drawing.Size(200, 32)
 
-    $btnAddServer.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnAddServer.Add_Click({
+        try {
         $newName = $txtName.Text.Trim()
         if (-not $newName) {
             [System.Windows.Forms.MessageBox]::Show('Enter a server name.', 'Validation',
@@ -543,6 +564,9 @@ function Show-MCPServiceConfig {
             "Server '$newName' added to mcp.json.`nRestart the MCP Config tool to see its tab.",
             'Server Added', [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Information)
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $addPanel.Controls.AddRange(@($lblName, $txtName, $lblType, $cmbType, $lblDef, $txtDef, $btnAddServer))
@@ -552,40 +576,62 @@ function Show-MCPServiceConfig {
     # ══════════════════════════════════════════════════════════════════════════
     #  OVERVIEW BUTTON HANDLERS
     # ══════════════════════════════════════════════════════════════════════════
-    $btnRefreshAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshAll.Add_Click({
+        try {
         $script:mcpConfig = Read-MCPConfig -ConfigPath $configPath
         $script:serverRows = Get-MCPServerSummary -Config $script:mcpConfig
         Populate-OverviewGrid
         Update-AllStatuses
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnBackup.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnBackup.Add_Click({
+        try {
         $dest = Backup-MCPConfig -ConfigPath $configPath -BackupDir $backupDir
         if ($dest) {
             $statusLabel.Text = "Backup saved: $dest"
             [System.Windows.Forms.MessageBox]::Show("Backup created:`n$dest", 'Backup',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnOpenJson.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenJson.Add_Click({
+        try {
         if (Test-Path $configPath) {
             Start-Process $configPath
         } else {
             [System.Windows.Forms.MessageBox]::Show('mcp.json not found.', 'Missing',
                 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnTestAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnTestAll.Add_Click({
+        try {
         Update-AllStatuses
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ══════════════════════════════════════════════════════════════════════════
     #  ASSEMBLE & SHOW
     # ══════════════════════════════════════════════════════════════════════════
     $form.Controls.Add($tabControl)
-    $form.Add_Shown({ Update-AllStatuses })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_Shown({
+        try {
+            Update-AllStatuses
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
     [void]$form.ShowDialog()
     $form.Dispose()
 }
@@ -602,6 +648,8 @@ function Show-MCPServiceConfig {
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

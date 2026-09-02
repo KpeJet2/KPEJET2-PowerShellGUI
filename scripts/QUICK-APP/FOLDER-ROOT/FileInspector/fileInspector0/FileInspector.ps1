@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+﻿# VersionTag: 2606.B5.V51.4
 # =============================================================================
 # FileInspector.ps1
 # Reads query parameters from .dat files (comma- or newline-separated values)
@@ -67,7 +67,7 @@ $allResults = foreach ($searchPath in $Paths) {
             $content = Get-Content $file.FullName -Raw
 
             # Build a dynamic property bag starting with identity columns
-            $props = [ordered]@{
+            $resultRow = [PSCustomObject][ordered]@{
                 SourcePath = $searchPath
                 Filter     = $filter
                 File       = $file.Name
@@ -78,16 +78,18 @@ $allResults = foreach ($searchPath in $Paths) {
 
             # Add one size column per requested unit  (e.g. Size_KB, Size_MB)
             foreach ($unit in $SizeUnits) {
-                $divisor = $UnitDivisor[$unit.ToUpper()]
-                if ($null -eq $divisor) {
+                $unitUpper = [string]$unit.ToUpper()
+                $divisorEntry = $UnitDivisor.GetEnumerator() | Where-Object { $_.Key -eq $unitUpper } | Select-Object -First 1
+                if ($null -eq $divisorEntry) {
                     Write-Warning "Unknown size unit '$unit' – skipping column."
                     continue
                 }
-                $colName = "Size_$($unit.ToUpper())"
-                $props[$colName] = [Math]::Round($file.Length / $divisor, 1)
+                $divisor = [double]$divisorEntry.Value
+                $colName = "Size_$unitUpper"
+                $resultRow | Add-Member -MemberType NoteProperty -Name $colName -Value ([Math]::Round($file.Length / $divisor, 1)) -Force
             }
 
-            [PSCustomObject]$props
+            $resultRow
         }
     }
 }
@@ -99,4 +101,6 @@ if ($allResults) {
 } else {
     Write-Host "No matching files found across any combination of paths and filters."
 }
+
+
 

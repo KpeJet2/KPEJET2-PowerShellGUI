@@ -1,0 +1,31 @@
+# VersionTag: 2606.B5.V51.4
+{
+  "_type": "pipeline.stage",
+  "_version": "1.0",
+  "_standard": "PwShGUI dotfile standard — marks this directory/script as a PIPELINE STAGE, PHASE, or SUBROUTINE",
+  "_usage": "Place this file alongside or inside the folder of the stage script. Fill in the fields below.",
+
+  "pipeline": "",
+  "stage_id": "",
+  "stage_name": "",
+  "phase": "",
+  "description": "A discrete stage, phase, or subroutine within a pipeline process.",
+
+  "inputs": [],
+  "outputs": [],
+
+  "upstream_stage": "",
+  "downstream_stage": "",
+
+  "flags": {
+    "is_blocking_gate": false,
+    "timeout_sec": null,
+    "has_dryrun_mode": false,
+    "skippable": false,
+    "skip_flag": ""
+  },
+
+  "on_failure": "log",
+  "notes": ""
+}
+

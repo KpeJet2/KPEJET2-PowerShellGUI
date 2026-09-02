@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -401,7 +401,8 @@ function Show-ScanDashboard {
         $tab.Controls.Add($pnlButtons)
 
         # Wire events
-        $btnRun.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnRun.Add_Click({
+            try {
             $runDef     = $this.Tag
             $defName    = $runDef.Name
             $scriptPath = Join-Path $scriptsDir $runDef.Script
@@ -435,7 +436,7 @@ function Show-ScanDashboard {
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
-            $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $timer.Add_Tick({
                 $ji = $shared.RunningJobs[$defName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State
@@ -469,18 +470,26 @@ function Show-ScanDashboard {
                 Def    = $runDef
             }
             $timer.Start()
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         }.GetNewClosure())
 
-        $btnRefresh.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnRefresh.Add_Click({
+            try {
             $refDef = $this.Tag
             if ($null -eq $refDef) { return }
             $defName = $refDef.Name
             if (-not $defName) { return }
             $grid = $scanGrids[$defName]  # SIN-EXEMPT:P027 -- index access, context-verified safe
             if ($null -ne $grid) { & $RefreshScanGrid -Grid $grid -Def $refDef }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         }.GetNewClosure())
 
-        $btnOpenReport.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+        $btnOpenReport.Add_Click({
+            try {
             $openDef = $this.Tag
             if ($null -eq $openDef) { return }
             $defName = $openDef.Name
@@ -500,11 +509,15 @@ function Show-ScanDashboard {
                     [System.Windows.Forms.MessageBox]::Show("File not found:`n$filePath", 'Missing')
                 }
             }
+            } catch {
+                Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+            }
         }.GetNewClosure())
 
         # Wire View HTML button (Workspace Dependency Map only)
         if ($btnViewHtml) {
-            $btnViewHtml.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $btnViewHtml.Add_Click({
+                try {
                 $htmlDef  = $this.Tag
                 $htmlFile = Join-Path $projectRoot $htmlDef.HtmlOutput
                 if (Test-Path $htmlFile) {
@@ -515,6 +528,9 @@ function Show-ScanDashboard {
                         'File Not Found',
                         [System.Windows.Forms.MessageBoxButtons]::OK,
                         [System.Windows.Forms.MessageBoxIcon]::Information)
+                }
+                } catch {
+                    Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
                 }
             }.GetNewClosure())
         }
@@ -671,9 +687,16 @@ function Show-ScanDashboard {
         }
     }
 
-    $btnRefreshCpsr.Add_Click({ & $RefreshCpsrGrid })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshCpsr.Add_Click({
+        try {
+            & $RefreshCpsrGrid
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnOpenCpsr.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenCpsr.Add_Click({
+        try {
         if ($null -ne $dgvCpsr -and @($dgvCpsr.SelectedRows).Count -gt 0) {
             $selectedRow = $dgvCpsr.SelectedRows[0]
             if ($null -eq $selectedRow) { return }
@@ -688,12 +711,19 @@ function Show-ScanDashboard {
             if (Test-Path $fullPath) { Invoke-Item $fullPath }
             else { [System.Windows.Forms.MessageBox]::Show("File not found:`n$fullPath", 'Missing') }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnOpenCpsrFolder.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenCpsrFolder.Add_Click({
+        try {
         $cpsrRoot = Join-Path $reportPath 'CPSR'
         if (Test-Path $cpsrRoot) { Invoke-Item $cpsrRoot }
         else { [System.Windows.Forms.MessageBox]::Show('CPSR folder not found.', 'Missing') }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     $form.Controls.Add($tabControl)
@@ -768,9 +798,16 @@ function Show-ScanDashboard {
     #  SUMMARY / REPORTS EVENT HANDLERS
     # ══════════════════════════════════════════════════════════════════════════
 
-    $btnRefreshSummary.Add_Click({ & $RefreshSummary })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshSummary.Add_Click({
+        try {
+            & $RefreshSummary
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnRunAll.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRunAll.Add_Click({
+        try {
         $confirm = [System.Windows.Forms.MessageBox]::Show(
             "Launch all scan scripts as background jobs?`nScans run in parallel -- UI remains responsive.",
             'Run All Scans', 'YesNo', 'Question')
@@ -798,7 +835,7 @@ function Show-ScanDashboard {
 
             $timer = New-Object System.Windows.Forms.Timer
             $timer.Interval = 500
-            $timer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+            $timer.Add_Tick({
                 $ji = $shared.RunningJobs[$capturedName]
                 if (-not $ji) { $this.Stop(); return }
                 $st = $ji.Job.State
@@ -828,9 +865,13 @@ function Show-ScanDashboard {
             $launched++
         }
         $statusLabel.Text = "Launched $launched background scans. UI remains responsive."
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnCleanup.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnCleanup.Add_Click({
+        try {
         # Calculate what would be removed
         $totalReclaim = 0
         $filesToRemove = @()
@@ -882,11 +923,21 @@ function Show-ScanDashboard {
         }
         & $RefreshSummary
         & $RefreshReportsTab
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
-    $btnRefreshReports.Add_Click({ & $RefreshReportsTab })  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnRefreshReports.Add_Click({
+        try {
+            & $RefreshReportsTab
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
+    })
 
-    $btnOpenSelected.Add_Click({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $btnOpenSelected.Add_Click({
+        try {
         if ($null -ne $dgvReports -and @($dgvReports.SelectedRows).Count -gt 0) {
             $selectedRow = $dgvReports.SelectedRows[0]
             if ($null -eq $selectedRow) { return }
@@ -907,6 +958,9 @@ function Show-ScanDashboard {
                 [System.Windows.Forms.MessageBox]::Show("File not found:`n$filePath", 'Missing')
             }
         }
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Initial load ──────────────────────────────────────────────────────────
@@ -919,13 +973,17 @@ function Show-ScanDashboard {
     & $RefreshCpsrGrid
 
     # ── FormClosing: stop and remove any running background jobs ─────────────
-    $form.Add_FormClosing({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $form.Add_FormClosing({
+        try {
         foreach ($jiName in @($script:RunningJobs.Keys)) {
             $ji = $script:RunningJobs[$jiName]
             if ($ji.Timer) { try { $ji.Timer.Stop() } catch { <# Intentional: non-fatal #> } }
             if ($ji.Job)   { Remove-Job $ji.Job -Force -ErrorAction SilentlyContinue }
         }
         $script:RunningJobs.Clear()
+        } catch {
+            Write-AppLog "Event handler error: $($_.Exception.Message)" -Severity 'Error' -ErrorAction SilentlyContinue
+        }
     })
 
     # ── Show ──────────────────────────────────────────────────────────────────
@@ -951,6 +1009,8 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.InvocationName -ne '
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -19,6 +19,10 @@ Function Log-Message($message) {
     Write-Output "$timestamp - $message"
 }
 
+# Timeout tiers
+$TimeoutMetadataSec = 30
+$TimeoutDownloadSec = 300
+
 # -----------------------------
 # 1. Install/latest .NET Framework
 # -----------------------------
@@ -31,7 +35,7 @@ dp_latest.exe"
 
 # Download .NET installer
 Log-Message "Downloading .NET Framework installer..."
-Invoke-WebRequest -Uri $dotNetURL -OutFile $dotNetInstaller
+Invoke-WebRequest -Uri $dotNetURL -OutFile $dotNetInstaller -TimeoutSec $TimeoutDownloadSec
 
 # Silent install .NET Framework
 Log-Message "Installing .NET Framework..."
@@ -43,7 +47,7 @@ Start-Process -FilePath $dotNetInstaller -ArgumentList "/quiet /norestart" -Wait
 Log-Message "Checking for latest PowerShell version..."
 
 # Visit GitHub API for latest PowerShell release
-$pwshLatest = Invoke-RestMethod -Uri "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
+$pwshLatest = Invoke-RestMethod -Uri "https://api.github.com/repos/PowerShell/PowerShell/releases/latest" -TimeoutSec $TimeoutMetadataSec
 
 # Construct download URL for Windows x64 MSI
 $msiAsset = $pwshLatest.assets | Where-Object { $_.name -match "win-x64.msi" }
@@ -51,7 +55,7 @@ $pwshInstaller = "$env:TEMP\$($msiAsset.name)"
 
 # Download installer
 Log-Message "Downloading PowerShell $($pwshLatest.tag_name)..."
-Invoke-WebRequest -Uri $msiAsset.browser_download_url -OutFile $pwshInstaller
+Invoke-WebRequest -Uri $msiAsset.browser_download_url -OutFile $pwshInstaller -TimeoutSec $TimeoutDownloadSec
 
 # Silent install PowerShell
 Log-Message "Installing PowerShell $($pwshLatest.tag_name)..."
@@ -74,6 +78,8 @@ Log-Message "Update process completed successfully."
 <# ToDo:
     Stub: list pending work here.
 #>
+
+
 
 
 

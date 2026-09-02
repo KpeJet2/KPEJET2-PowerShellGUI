@@ -1,5 +1,6 @@
 <#
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2607.B6.V53.0
+# FileRole: Module
 # SupportPS5.1: YES(As of: 2026-04-30)
 # SupportsPS7.6: YES(As of: 2026-04-30)
 .SYNOPSIS
@@ -8,9 +9,8 @@
     Reads a SIN inventory (BugTracker JSON or sin_registry/*.json) and
     applies safe, idempotent transforms:
       P002: empty catch becomes catch with intentional-non-fatal block-comment marker
-      P014: ConvertTo-Json missing -Depth receives ' -Depth 10'
-      P017: Out-File missing -Encoding adds ' -Encoding UTF8'
       P018: 3-arg Join-Path becomes nested 2-arg form
+      P017: Out-File missing -Encoding adds ' -Encoding UTF8'
       P019: Add-Content missing -Encoding adds ' -Encoding UTF8'
     Always run with -WhatIf first.
 .NOTES
@@ -34,16 +34,15 @@ function Invoke-AutoRemediate {
     <#
     .SYNOPSIS  Apply safe SIN remediations to PowerShell files.
     .PARAMETER Path  File or directory (recursive).
-    .PARAMETER Patterns  Which P-codes to apply (default: P002,P014,P017,P018,P019).
+    .PARAMETER Patterns  Which P-codes to apply (default: P002,P017,P018,P019).
         .DESCRIPTION
       Detailed behaviour: Invoke auto remediate.
-      P014: ConvertTo-Json calls missing -Depth receive ' -Depth 10'.
     #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory)]
         [string]$Path,
-        [string[]]$Patterns = @('P002', 'P014', 'P017', 'P018', 'P019'),
+        [string[]]$Patterns = @('P002', 'P017', 'P018', 'P019'),
         [switch]$BackupOriginal
     )
 
@@ -95,16 +94,6 @@ function Invoke-AutoRemediate {
                 $changes['P019'] = $n
             }
         }
-        if ($Patterns -contains 'P014') {
-            # ConvertTo-Json without -Depth: add ' -Depth 10'
-            # Match ConvertTo-Json not already followed by -Depth on the same logical line
-            $rx = '(?m)\bConvertTo-Json\b(?![^\r\n]*-Depth)([^\r\n]*?)(?=\s*$|\s*\||\s*\))'
-            $n = ([regex]::Matches($content, $rx)).Count
-            if ($n -gt 0) {
-                $content = [regex]::Replace($content, $rx, 'ConvertTo-Json -Depth 10$1')
-                $changes['P014'] = $n
-            }
-        }
 
         if ($content -ne $original) {
             if ($PSCmdlet.ShouldProcess($f.FullName, "Auto-remediate: $(@($changes.Keys) -join ',')")) {
@@ -143,4 +132,7 @@ function Invoke-AutoRemediate {
 }
 
 Export-ModuleMember -Function Invoke-AutoRemediate
+
+
+
 

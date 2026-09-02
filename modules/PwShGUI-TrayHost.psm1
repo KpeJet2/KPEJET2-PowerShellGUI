@@ -1,4 +1,4 @@
-﻿# VersionTag: 2605.B5.V46.0
+# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -154,10 +154,14 @@ function Start-TrayApplicationLoop {
 function Stop-TrayHost {
     <#
     .SYNOPSIS  Signal the ApplicationContext to exit, ending the message loop.
+    .PARAMETER Force  Suppress -WhatIf/-Confirm prompts and force shutdown even
+                      when no tray context is currently active (no-op safe).
     #>
     [CmdletBinding(SupportsShouldProcess)]
-    param()
-    if (-not $PSCmdlet.ShouldProcess('Stop-TrayHost', 'Halt')) { return }
+    param(
+        [switch]$Force
+    )
+    if (-not $Force -and -not $PSCmdlet.ShouldProcess('Stop-TrayHost', 'Halt')) { return }
 
 
     $logAvail = Get-Command Write-AppLog -ErrorAction SilentlyContinue
@@ -209,9 +213,16 @@ function Start-KeyboardMonitor {
 
     if ($script:_KeyboardTimer) { return }  # already running
 
+    # Ensure WinForms assembly is loaded before resolving the Timer type.
+    # (Module top-level only requests System.Drawing; standalone callers may
+    # invoke Start-KeyboardMonitor without loading Forms first.)
+    if (-not ([System.Management.Automation.PSTypeName]'System.Windows.Forms.Timer').Type) {
+        Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
+    }
+
     $script:_KeyboardTimer = New-Object System.Windows.Forms.Timer
     $script:_KeyboardTimer.Interval = $IntervalMs
-    $script:_KeyboardTimer.Add_Tick({  # SIN-EXEMPT:P029 -- handler pending try/catch wrap
+    $script:_KeyboardTimer.Add_Tick({
         try {
             if ([Console]::KeyAvailable) {
                 $key = [Console]::ReadKey($true)
@@ -423,10 +434,11 @@ function Get-TrayHostStatus {
     <#
     .SYNOPSIS  Return current TrayHost state for diagnostics.
     #>
-    [OutputType([System.Collections.Hashtable])]
+    [OutputType([pscustomobject])]
     [CmdletBinding()]
     param()
-    return @{
+    return [pscustomobject]@{
+        Running            = ($null -ne $script:_AppContext)
         AppContextActive   = ($null -ne $script:_AppContext)
         KeyboardMonitor    = ($null -ne $script:_KeyboardTimer)
         BackgroundPool     = ($null -ne $script:_BackgroundPool)
@@ -479,6 +491,142 @@ function Restore-TrayHostForm {
 <# Problems:
     Stub: list known issues here.
 #>
+function Get-TrayServiceConfig {
+    <#
+    .SYNOPSIS
+    Load the tray service configuration from config/tray-service-config.json.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent),
+        [switch]$AsHashtable
+    )
+
+    $configPath = Join-Path $WorkspacePath 'config' 'tray-service-config.json'
+    if (-not (Test-Path -LiteralPath $configPath)) {
+        return $null
+    }
+
+    try {
+        $content = Get-Content -LiteralPath $configPath -Raw -ErrorAction Stop
+        $config = ConvertFrom-Json -InputObject $content -ErrorAction Stop
+        return $config
+    } catch {
+        Write-Verbose "Failed to load tray config: $_"
+        return $null
+    }
+}
+
+function Get-VerbFolderShortcuts {
+    <#
+    .SYNOPSIS
+    Scan for verb-based script folders (RUN, INVOKE, LAUNCH, START) and return matching files.
+    
+    .PARAMETER FolderType
+    One of: RUN, INVOKE, LAUNCH, START
+    #>
+    [CmdletBinding()]
+    param(
+        [ValidateSet('RUN', 'INVOKE', 'LAUNCH', 'START')] [string]$FolderType,
+        [string]$ScriptsRoot = (Join-Path (Split-Path $PSScriptRoot -Parent) 'scripts')
+    )
+
+    $pattern = "$FolderType*.ps1"
+    $items = [System.Collections.ArrayList]@()
+
+    if (-not (Test-Path -LiteralPath $ScriptsRoot)) {
+        return @($items)
+    }
+
+    try {
+        $files = @(Get-ChildItem -LiteralPath $ScriptsRoot -Filter $pattern -File -ErrorAction SilentlyContinue)
+        foreach ($file in $files) {
+            [void]$items.Add([PSCustomObject]@{
+                Name = $file.BaseName
+                Path = $file.FullName
+                Relative = $file.Name
+                Modified = $file.LastWriteTime
+            })
+        }
+    } catch {
+        Write-Verbose "Error scanning verb folder $FolderType : $_"
+    }
+
+    return @($items | Sort-Object -Property Name)
+}
+
+function Get-DocumentShortcuts {
+    <#
+    .SYNOPSIS
+    Scan for document files (XHTML, Markdown) in configured search roots.
+    
+    .PARAMETER DocumentType
+    One of: XHTML, Markdown
+    #>
+    [CmdletBinding()]
+    param(
+        [ValidateSet('XHTML', 'Markdown')] [string]$DocumentType,
+        [string[]]$SearchRoots,
+        [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent)
+    )
+
+    if ($null -eq $SearchRoots -or @($SearchRoots).Count -eq 0) {
+        $SearchRoots = switch ($DocumentType) {
+            'XHTML' { @(
+                (Join-Path $WorkspacePath 'scripts' 'XHTML-Checker'),
+                (Join-Path $WorkspacePath '~README.md')
+            )}
+            'Markdown' { @((Join-Path $WorkspacePath '~README.md')) }
+        }
+    }
+
+    $pattern = switch ($DocumentType) {
+        'XHTML' { '*.xhtml', '*.html', '*.htm', '*.mha' }
+        'Markdown' { '*.md' }
+    }
+
+    $items = [System.Collections.ArrayList]@()
+
+    foreach ($root in $SearchRoots) {
+        if (-not (Test-Path -LiteralPath $root)) { continue }
+
+        try {
+            foreach ($pat in $pattern) {
+                $files = @(Get-ChildItem -LiteralPath $root -Filter $pat -File -Recurse -ErrorAction SilentlyContinue)
+                foreach ($file in $files) {
+                    [void]$items.Add([PSCustomObject]@{
+                        Name = $file.Name
+                        Path = $file.FullName
+                        Relative = (Resolve-Path -LiteralPath $file.FullName -Relative)
+                        Modified = $file.LastWriteTime
+                    })
+                }
+            }
+        } catch {
+            Write-Verbose "Error scanning document root $root : $_"
+        }
+    }
+
+    return @($items | Sort-Object -Property Name -Unique)
+}
+
+function Get-SystemToolsConfig {
+    <#
+    .SYNOPSIS
+    Extract system tools configuration from tray config and return as array.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$WorkspacePath = (Split-Path $PSScriptRoot -Parent)
+    )
+
+    $config = Get-TrayServiceConfig -WorkspacePath $WorkspacePath
+    if ($null -eq $config -or -not $config.systemToolsFlyout.enabled) {
+        return @()
+    }
+
+    return @($config.systemToolsFlyout.items | Sort-Object -Property order)
+}
 
 <# ToDo:
     Stub: list pending work here.
@@ -494,10 +642,17 @@ Export-ModuleMember -Function @(
     'Invoke-BackgroundTask'
     'Get-CompletedBackgroundTasks'
     'Stop-BackgroundPool'
+    'Get-TrayServiceConfig'
+    'Get-VerbFolderShortcuts'
+    'Get-DocumentShortcuts'
+    'Get-SystemToolsConfig'
     'Set-VerboseLifecycle'
     'Get-TrayHostStatus'
     'Restore-TrayHostForm'
 )
+
+
+
 
 
 

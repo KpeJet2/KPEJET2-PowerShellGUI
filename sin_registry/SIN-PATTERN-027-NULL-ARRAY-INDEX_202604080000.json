@@ -27,7 +27,8 @@
     "Invoke-ScriptDependencyMatrix.ps1 L304: $m.Groups[1].Value — regex match may fail",
     "Invoke-ScriptDependencyMatrix.ps1 L661: $parts[0] — string -split result",
     "Invoke-ScriptDependencyMatrix.ps1 L662: $parts[1] — string -split second element may not exist",
-    "Invoke-ModuleManagement.ps1 — .Count access on pipeline results without @() guard (L211, L216, L464, L471, L519)"
+    "Invoke-ModuleManagement.ps1 — .Count access on pipeline results without @() guard (L211, L216, L464, L471, L519)",
+    "Start-LocalWebEngine.ps1 Get-EngineStatus — [int]$_.pid cast threw 'Cannot convert System.Object[] to Int32' when pid was non-scalar; force scalar via @($_.pid)[0] then [int]::TryParse (engine CRASH root cause, 2026-06). See P079/P080 for the related engine HANG family."
   ],
   "known_fix_scenarios": {
     "FIX-A-FORCE-ARRAY": {

@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.0
+# VersionTag: 2606.B5.V51.4
 # Event Log Standard — PowerShellGUI
 
 > **VersionTag:** 2604.B2.V31.0  
@@ -50,7 +50,7 @@ One JSON object per line in `logs/eventlog-normalized/<scope>-<yyyyMMdd>.jsonl`:
   "corrId":  "optional correlation id",
   "host":    "XPS15-MS",
   "pid":     12345,
-  "source":  "logs/CronAiAthon-EventLog.log#L482"
+  "source":  "logs/pipeline/CronAiAthon-EventLog.log#L482"
 }
 ```
 
@@ -65,7 +65,7 @@ and stamps `cache.tier` on the response so the UI can show staleness:
 |---|---|---|
 | `live` | Direct read of running-engine in-memory ring buffer | always |
 | `disk` | `logs/eventlog-normalized/<scope>-<today>.jsonl` | `mtime` within last 5 min |
-| `replay` | Yesterday's JSONL + tail of current `logs/*.log` re-normalized on demand | always — flagged `cache.tier=replay` |
+| `replay` | Yesterday's JSONL + tail of current `logs/**/.log` re-normalized on demand | always — flagged `cache.tier=replay` |
 | `stale` | Older than the rules above | flagged; UI shows "Refresh required" |
 
 Failure mode "live data source cached offline contents in multiple locations
@@ -116,4 +116,6 @@ The JS bundle is responsible for: filter row, virtualized table, cache tier
 indicator, refresh, severity multi-select, copy-corrId, export current view,
 preset save/load via `localStorage`. All pages share one bundle; only
 `data-scope` differs.
+
+
 
