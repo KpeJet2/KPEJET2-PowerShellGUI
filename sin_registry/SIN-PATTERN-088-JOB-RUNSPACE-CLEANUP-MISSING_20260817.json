@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-088-JOB-RUNSPACE-CLEANUP-MISSING_20260817",
+  "title": "Background job or runspace lacks cleanup",
+  "description": "Detects background work creation without a nearby cleanup command.",
+  "severity": "MEDIUM",
+  "category": "reliability",
+  "scan_regex": "(?i)Start-Job\\b|BeginInvoke\\s*\\(",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "Remove-Job|Stop-Job|EndInvoke|Dispose\\s*\\(",
+  "context_guard_lines": 18,
+  "context_guard_direction": "both",
+  "preventionRule": "Background jobs and runspaces must be stopped, drained, and disposed on every exit path.",
+  "remedy": "Add finally-path cleanup for the job or runspace handle.",
+  "tags": ["job", "runspace", "cleanup"]
+}

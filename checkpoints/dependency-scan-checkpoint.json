@@ -1,59 +1,51 @@
-{
-  "dataFile": "workspace-dependency-map-20260728-044234.json",
-  "lastFullScan": "2026-07-28T04:43:04",
-  "version": "2604.B1.V32.0",
-  "generated": "2026-07-28T03:08:46.3465284+08:00",
-  "currentScanMode": "Full",
-  "currentScanPid": 34940,
-  "mode": "Static",
-  "phases": {
-    "folders": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    },
-    "modules": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    },
-    "scripts": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    },
-    "configs": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    },
-    "urls_ips": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    },
-    "dns_resolution": {
-      "status": "done",
-      "timestamp": "2026-07-28T04:43:04",
-      "hash": null,
-      "itemCount": 0,
-      "error": null,
-      "durationMs": 30179
-    }
-  }
+﻿{
+    "phases":  {
+                   "folders":  {
+                                   "status":  "done",
+                                   "completedAt":  "2026-08-18T23:00:53.3542357+08:00",
+                                   "durationMs":  1105,
+                                   "count":  369
+                               },
+                   "modules":  {
+                                   "status":  "done",
+                                   "completedAt":  "2026-08-18T23:00:57.7490892+08:00",
+                                   "durationMs":  4382,
+                                   "functionCount":  655,
+                                   "count":  130
+                               },
+                   "scripts":  {
+                                   "status":  "done",
+                                   "completedAt":  "2026-08-18T23:01:04.6139168+08:00",
+                                   "durationMs":  6865,
+                                   "functionCount":  403,
+                                   "count":  403
+                               },
+                   "configs":  {
+                                   "status":  "done",
+                                   "completedAt":  "2026-08-18T23:01:10.9508602+08:00",
+                                   "durationMs":  6337,
+                                   "count":  1041
+                               },
+                   "urls_ips":  {
+                                    "status":  "done",
+                                    "completedAt":  "2026-08-18T23:01:26.1022548+08:00",
+                                    "uniqueIPs":  35,
+                                    "durationMs":  15151,
+                                    "urlFileCount":  224
+                                },
+                   "dns_resolution":  {
+                                          "hostsChecked":  141,
+                                          "completedAt":  "2026-08-18T23:01:51.0864439+08:00",
+                                          "status":  "done",
+                                          "durationMs":  24982,
+                                          "resolved":  126
+                                      }
+               },
+    "dataFile":  "workspace-dependency-map-20260803-225835.json",
+    "version":  "2604.B1.V32.0",
+    "currentScanPid":  77356,
+    "currentScanMode":  "Full",
+    "lastFullScan":  "2026-08-03T22:58:56",
+    "generated":  "2026-08-18T23:01:51.1300781+08:00",
+    "mode":  "Static"
 }

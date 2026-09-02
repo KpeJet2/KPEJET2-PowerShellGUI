@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-091-UNSAFE-LISTENER-BIND_20260817",
+  "title": "Listener binds broadly without an explicit host boundary",
+  "description": "Detects listeners configured to bind all interfaces without an allow-list rationale.",
+  "severity": "HIGH",
+  "category": "security",
+  "scan_regex": "(?i)(?:Prefixes\\.Add|listen\\s*\\(|host\\s*[=:])[^\\r\\n]*(?:0\\.0\\.0\\.0|\\*|\\+)",
+  "scan_file_pattern": "*.ps1;*.psm1;*.py;*.js;*.ts;*.json",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "127\\.0\\.0\\.1|localhost|AllowRemote|TrustedHosts",
+  "context_guard_lines": 3,
+  "context_guard_direction": "both",
+  "preventionRule": "Local services must bind loopback unless remote exposure is explicitly approved and authenticated.",
+  "remedy": "Bind to loopback or document and enforce the approved network boundary.",
+  "tags": ["listener", "bind", "network"]
+}

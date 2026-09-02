@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: YES
 # SupportsPS7.6: YES
 # SupportPS5.1TestedDate: 2026-05-07
@@ -95,7 +95,7 @@ Describe 'Invoke-PipelineProcess20 churn lifecycle' {
         $result.featureItemsCreated | Should -Be 7
         Test-Path -LiteralPath $result.log | Should -BeTrue
 
-        $todoPaFiles = @(Get-ChildItem -LiteralPath $todoDir -Filter 'TODO-PA-*.json' -File)
+        $todoPaFiles = @(Get-ChildItem -LiteralPath $todoDir -Filter 'TODO-PA-*.json' -File -Recurse)
         @($todoPaFiles).Count | Should -Be 7
 
         $sampleTodo = Read-JsonFile -Path $todoPaFiles[0].FullName
@@ -188,6 +188,56 @@ Describe 'Invoke-AutoApprovalWriter lifecycle' {
         @($rows | Where-Object { $_.PSObject.Properties.Name -contains 'agentId' -and $_.agentId -eq 'auto-approval-writer' }).Count | Should -BeGreaterOrEqual 1
         @($rows | Where-Object { $_.PSObject.Properties.Name -contains 'editor' -and -not [string]::IsNullOrWhiteSpace([string]$_.editor) }).Count | Should -BeGreaterOrEqual 1
         @($rows | Where-Object { $_.PSObject.Properties.Name -contains 'eventId' -and $_.eventId }).Count | Should -BeGreaterOrEqual 1
+    }
+}
+
+Describe 'Pipeline recycler lifecycle' {
+    It 'recycles a completed item into approval and re-approves the same item into planning' {
+        $ws = New-ChurnWorkspace -Name 'ws-recycler'
+        $modulePath = Join-Path $script:RepoRoot 'modules\CronAiAthon-Pipeline.psm1'
+        Import-Module -Name $modulePath -Force
+        $null = Initialize-PipelineRegistry -WorkspacePath $ws
+
+        $item = [hashtable]@{
+            id = 'TODO-RECYCLE-001'; type = 'ToDo'; title = 'Revisit pipeline hardening';
+            description = 'Recycler regression item'; priority = 'HIGH'; status = 'DONE';
+            source = 'Manual'; category = 'stability'; created = (Get-Date).ToUniversalTime().ToString('o')
+        }
+        $null = Add-PipelineItem -WorkspacePath $ws -Item $item
+
+        $pending = Invoke-PipelineItemRecycle -WorkspacePath $ws -ItemId 'TODO-RECYCLE-001' -Reason 'Scope changed'
+        $pending.status | Should -Be 'PENDING_APPROVAL'
+        $pending.approvalState | Should -Be 'PENDING'
+        $pending.recycleCount | Should -Be 1
+        $pending.recycleVersion | Should -Be 1
+        $pending.currentAttemptId | Should -Not -BeNullOrEmpty
+        $pending.planMetadata.version | Should -Be 'plan-v1'
+        @($pending.recycleHistory).Count | Should -Be 1
+
+        $approved = Invoke-PipelineItemRecycle -WorkspacePath $ws -ItemId 'TODO-RECYCLE-001' -Reason 'Reviewed by owner' -Reapprove
+        $approved.id | Should -Be 'TODO-RECYCLE-001'
+        $approved.status | Should -Be 'PLANNED'
+        $approved.approvalState | Should -Be 'APPROVED'
+        $approved.recycleCount | Should -Be 2
+        $approved.recycleVersion | Should -Be 2
+        $approved.currentAttemptId | Should -Not -Be $pending.currentAttemptId
+        $approved.planMetadata.version | Should -Be 'plan-v2'
+        @($approved.recycleAttempts).Count | Should -Be 2
+        @($approved.recycleHistory).Count | Should -Be 2
+        $approved.reapprovedAt | Should -Not -BeNullOrEmpty
+    }
+
+    It 'rejects recycling an active item without mutating the registry' {
+        $ws = New-ChurnWorkspace -Name 'ws-recycler-active'
+        Import-Module -Name (Join-Path $script:RepoRoot 'modules\CronAiAthon-Pipeline.psm1') -Force
+        $null = Initialize-PipelineRegistry -WorkspacePath $ws
+        $null = Add-PipelineItem -WorkspacePath $ws -Item ([hashtable]@{
+            id = 'TODO-RECYCLE-002'; type = 'ToDo'; title = 'Active item'; description = '';
+            priority = 'MEDIUM'; status = 'IN_PROGRESS'; source = 'Manual'; category = 'general'
+        })
+
+        Invoke-PipelineItemRecycle -WorkspacePath $ws -ItemId 'TODO-RECYCLE-002' | Should -BeNullOrEmpty
+        (Get-PipelineItems -WorkspacePath $ws -Status 'IN_PROGRESS').Count | Should -Be 1
     }
 }
 

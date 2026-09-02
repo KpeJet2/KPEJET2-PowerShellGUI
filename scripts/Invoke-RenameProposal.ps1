@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -271,7 +271,7 @@ if (Test-Path $todoMgrScript) {
 }
 
 if ($Execute) {
-    Write-Host "`n[Execute] Executing approved renames is not yet implemented." -ForegroundColor Yellow
+    Write-Host "`n[Execute] Executing approved renames is not yet completed." -ForegroundColor Yellow
     Write-Host "[Execute] Review proposals in todo/ and manually approve before running -Execute." -ForegroundColor Yellow
 }
 

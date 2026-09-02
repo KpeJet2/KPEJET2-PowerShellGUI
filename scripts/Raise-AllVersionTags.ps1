@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # Deep version-tag detection + raise-to-canonical pass.
 # Scans every file (no extension filter, full content) excluding historical/vendor zones.
 # Groups by detected version, optionally rewrites every non-canonical match to TargetVersion.

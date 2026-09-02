@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Module
 # Module: PwShGUI-SecretScan
 # Purpose: Regex sweep for accidentally-committed secrets (extends P001).

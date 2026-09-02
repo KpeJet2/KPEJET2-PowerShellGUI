@@ -1,0 +1,16 @@
+﻿{
+    "description":  "Parse validation failed: Unexpected token \u0027\u0027 }\r\n\r\n        if ($item.PSIsContainer) {\r\n            $childCount = @(Get-ChildItem -Path $item.FullName -Force -ErrorAction SilentlyContinue |\r\n                Where-Object { $excludeDirs -notcontains $_.Name }).Count\r\n            $lines += \"$Prefix$connector$($item.Name)/  ($childCount items)\"\r\n            $lines += Build-Tree -Path $item.FullName -Prefix \"$Prefix$childPrefix\" -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1)\r\n        } else {\r\n            $lines += \"$Prefix$connector$($item.Name)\"\r\n        }\r\n    }\r\n    return $lines\r\n}\r\n\r\nWrite-Host \"[DirectoryTree] Scanning $WorkspacePath ...\" -ForegroundColor Cyan\r\n\r\n$treeLines = Build-Tree -Path $WorkspacePath -MaxDepth 3\r\n$totalDirs  = @(Get-ChildItem -Path $WorkspacePath -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $excludeDirs -notcontains $_.Name }).Count\r\n$totalFiles = @(Get-ChildItem -Path $WorkspacePath -File -Recurse -Force -ErrorAction SilentlyContinue).Count\r\n\r\n$versionTag = \u0027\u0027 in expression or statement.",
+    "type":  "bug",
+    "file_refs":  [
+                      "scripts\\Build-DirectoryTree.ps1"
+                  ],
+    "category":  "bug",
+    "suggested_by":  "CronProcessor-DeepTest",
+    "title":  "Parse error in Build-DirectoryTree.ps1",
+    "created_at":  "2026-08-18T21:49:04.7352135+08:00",
+    "status":  "OPEN",
+    "severity":  "HIGH",
+    "todo_id":  "bug-parse-Build-DirectoryTree-20260818",
+    "priority":  "HIGH",
+    "notes":  "Auto-detected by cron deep-test cycle"
+}

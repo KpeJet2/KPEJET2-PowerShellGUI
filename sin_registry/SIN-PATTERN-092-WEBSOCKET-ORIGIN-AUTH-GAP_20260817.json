@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-092-WEBSOCKET-ORIGIN-AUTH-GAP_20260817",
+  "title": "WebSocket route lacks origin or authentication validation",
+  "description": "Detects WebSocket upgrade handling without an adjacent origin or auth check.",
+  "severity": "HIGH",
+  "category": "security",
+  "scan_regex": "(?i)(?:WebSocket|AcceptWebSocket|websocket\\.accept|upgrade)\\b",
+  "scan_file_pattern": "*.ps1;*.psm1;*.py;*.js;*.ts",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "Origin|Authorization|Authenticate|AllowOrigin|401|403",
+  "context_guard_lines": 8,
+  "context_guard_direction": "both",
+  "preventionRule": "WebSocket upgrades require trusted-origin and authentication checks.",
+  "remedy": "Validate Origin and authorization before accepting the upgrade.",
+  "tags": ["websocket", "origin", "authentication"]
+}

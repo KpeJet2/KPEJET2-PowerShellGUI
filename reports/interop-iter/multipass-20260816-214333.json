@@ -1,0 +1,294 @@
+{
+  "schema": "InteropDriftMultiPass/1.0",
+  "versionTag": "2605.B5.V46.1",
+  "generatedAt": "2026-08-16T21:43:33.0944744+08:00",
+  "workspacePath": ".",
+  "resumedFromIter": 100,
+  "startedAtIter": 101,
+  "minPasses": 1,
+  "maxPasses": 50,
+  "noProgressLimit": 7,
+  "passesRun": 7,
+  "endedAtIter": 107,
+  "noFix": false,
+  "noPipelineDry": false,
+  "noSinScan": true,
+  "noDeanB": false,
+  "stoppedForNoProgress": true,
+  "consecutiveNoProgress": 7,
+  "passes": [
+    {
+      "iteration": 101,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-101.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 102,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-102.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 103,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-103.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 104,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-104.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 105,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-105.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 106,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-106.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    },
+    {
+      "iteration": 107,
+      "findings": 154,
+      "fixes": 0,
+      "byCategory": "LAUNCHBAT=13, MANIFEST=141",
+      "parseErrFiles": 0,
+      "sinTotal": 0,
+      "sinCritical": 0,
+      "deanBCreated": 0,
+      "inventoryBugsCreated": 0,
+      "inventoryIssues": 6,
+      "randomSinBatch": {
+        "skipped": true,
+        "reason": "disabled"
+      },
+      "completionAudit": {
+        "checked": 11,
+        "active": 6,
+        "invalid": 0,
+        "invalidIds": [],
+        "passed": true
+      },
+      "reportPath": ".\\reports\\interop-iter\\iter-107.json",
+      "improvement": false,
+      "stageRelay": [
+        "discovery=COMPLETE",
+        "issue-inventory=COMPLETE",
+        "TheGateBouncer-pre=RELAXED_DETOUR",
+        "auto-fix=COMPLETE",
+        "TheGateBouncer-post=RELAXED_DETOUR",
+        "Digital Effluence and nauance blender=COMPLETE",
+        "verify-parse=PASS",
+        "verify-sin=SKIPPED",
+        "random-sin-batch=SKIPPED",
+        "verify-pipeline-integrity=PASS",
+        "completion-audit=PASS"
+      ],
+      "gateRelayPassed": true
+    }
+  ]
+}

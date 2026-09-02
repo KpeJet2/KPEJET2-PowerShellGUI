@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-089-UNBOUNDED-WAIT_20260817",
+  "title": "Wait operation without a timeout",
+  "description": "Detects common wait calls that can block indefinitely.",
+  "severity": "MEDIUM",
+  "category": "reliability",
+  "scan_regex": "(?i)(?:Wait-Job|WaitHandle\\\\.WaitOne|\\\\.Wait\\\\s*\\\\(\\\\s*\\\\))",
+  "scan_file_pattern": "*.ps1;*.psm1;*.cs;*.js;*.ts",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "Timeout|WaitOne\\s*\\([^)]*,|CancellationToken",
+  "context_guard_lines": 3,
+  "context_guard_direction": "both",
+  "preventionRule": "All waits must have a bounded timeout or cancellation mechanism.",
+  "remedy": "Use a timeout overload and report the timeout as an actionable failure.",
+  "tags": ["wait", "timeout", "reliability"]
+}

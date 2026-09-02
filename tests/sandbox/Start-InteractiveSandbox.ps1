@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2608.B1.V54.3
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -57,7 +57,8 @@ param(
     [string]$vGPU = 'Enable',
     [switch]$AutoLaunchGUI,
     [int]$MaxIdleMinutes = 120,
-    [switch]$NoWait
+    [switch]$NoWait,
+    [switch]$NoReuseExisting
 )
 
 Set-StrictMode -Version Latest
@@ -73,10 +74,64 @@ if (-not (Test-Path (Join-Path $WorkspacePath 'Main-GUI.ps1'))) {
     exit 1
 }
 
-$timestamp   = Get-Date -Format 'yyyyMMdd-HHmmss'
-$sessionDir  = Join-Path $WorkspacePath "temp\sandbox-$SessionName-$timestamp"
-$commandDir  = Join-Path $sessionDir 'cmd'
-$outputDir   = Join-Path $sessionDir 'output'
+function Get-RunningSandboxProcesses {
+    $names = @(
+        'WindowsSandbox',
+        'WindowsSandboxClient',
+        'WindowsSandboxRemoteSession',
+        'vmmemWindowsSandbox',
+        'vmwp'
+    )
+    return @(Get-Process -Name $names -ErrorAction SilentlyContinue)
+}
+
+function Find-ExistingSandboxSession {
+    param([Parameter(Mandatory)][string]$Root, [Parameter(Mandatory)][string]$Name)
+
+    $sessionDirs = @(Get-ChildItem -LiteralPath (Join-Path $Root 'temp') -Directory -Filter ('sandbox-' + $Name + '-*') -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+    foreach ($candidate in $sessionDirs) {
+        $metaPath = Join-Path $candidate.FullName 'session-meta.json'
+        $statusPath = Join-Path (Join-Path $candidate.FullName 'output') 'sandbox-status.json'
+        if (-not (Test-Path -LiteralPath $metaPath) -or -not (Test-Path -LiteralPath $statusPath)) { continue }
+
+        try {
+            $meta = Get-Content -LiteralPath $metaPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $state = [string]$status.status
+            if (($state -ne 'READY') -and ($state -ne 'RUNNING')) { continue }
+            $running = @(Get-RunningSandboxProcesses)
+            if (@($running).Count -eq 0) { continue }
+
+            return [PSCustomObject]@{
+                SessionName = [string]$meta.sessionName
+                Timestamp   = [string]$meta.timestamp
+                SessionDir  = [string]$meta.sessionDir
+                CommandDir  = [string]$meta.commandDir
+                OutputDir   = [string]$meta.outputDir
+                WsbPath     = [string]$meta.wsbPath
+                SandboxPID  = 0
+                Reused      = $true
+            }
+        }
+        catch {
+            Write-Host ('[WARN] Ignoring invalid sandbox session metadata: ' + $candidate.FullName) -ForegroundColor Yellow
+        }
+    }
+    return $null
+}
+
+if (-not $NoReuseExisting) {
+    $existingSession = Find-ExistingSandboxSession -Root $WorkspacePath -Name $SessionName
+    if ($null -ne $existingSession) {
+        Write-Host ('[Reuse] Existing READY sandbox session found: ' + $existingSession.SessionDir) -ForegroundColor Green
+        return $existingSession
+    }
+}
+
+$timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+$sessionDir = Join-Path $WorkspacePath "temp\sandbox-$SessionName-$timestamp"
+$commandDir = Join-Path $sessionDir 'cmd'
+$outputDir = Join-Path $sessionDir 'output'
 $bootstrapDir = Join-Path $sessionDir 'bootstrap'
 
 New-Item -ItemType Directory -Path $commandDir -Force | Out-Null
@@ -95,7 +150,8 @@ $sandboxExe = $null
 $cmdResult = Get-Command WindowsSandbox.exe -ErrorAction SilentlyContinue
 if ($cmdResult) {
     $sandboxExe = $cmdResult.Source
-} else {
+}
+else {
     $fallback = Join-Path $env:SystemRoot 'System32\WindowsSandbox.exe'
     if (Test-Path $fallback) {
         $sandboxExe = $fallback
@@ -122,14 +178,15 @@ if (-not (Test-Path $srcBootstrap)) {
 Copy-Item $srcBootstrap $bootstrapDir -Force
 
 # ========================== GENERATE WSB CONFIG ==========================
-$sandboxWS  = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Source'
+$sandboxWS = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Source'
 $sandboxCmd = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Cmd'
 $sandboxOut = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Output'
-$sandboxBS  = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Bootstrap'
+$sandboxBS = 'C:\Users\WDAGUtilityAccount\Desktop\PwShGUI-Bootstrap'
 
 # Build logon command
-$logonArgs = "-NoProfile -ExecutionPolicy Bypass -File $sandboxBS\Invoke-SandboxBootstrap.ps1"
+$logonArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File $sandboxBS\Invoke-SandboxBootstrap.ps1"
 $logonArgs += " -MaxIdleMinutes $MaxIdleMinutes"
+$logonArgs += " -Networking $Networking"
 
 $wsbXml = @"
 <Configuration>
@@ -203,7 +260,8 @@ if (-not $NoWait) {
         try {
             $jokeData = Get-Content $jokesPath -Raw -Encoding UTF8 | ConvertFrom-Json
             $waitJokes = @($jokeData.jokes)
-        } catch { <# Intentional: jokes are optional #> }
+        }
+        catch { <# Intentional: jokes are optional #> }
     }
     $jokeIdx = 0
     function Show-SandboxWaitJoke {
@@ -220,48 +278,69 @@ if (-not $NoWait) {
             if (($lineLen + $w.Length + 1) -gt 62) {
                 Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan
                 $line = $w + ' '; $lineLen = $w.Length + 1
-            } else { $line += $w + ' '; $lineLen += $w.Length + 1 }
+            }
+            else { $line += $w + ' '; $lineLen += $w.Length + 1 }
         }
         if ($line.Trim()) { Write-Host ('  | ' + $line.TrimEnd()).PadRight(66) + '|' -ForegroundColor Cyan }
         Write-Host ('  +' + ('─' * 64) + '+') -ForegroundColor DarkCyan
         Write-Host ''
     }
 
-    $statusFile  = Join-Path $outputDir 'sandbox-status.json'
-    $maxWaitSec  = 300
-    $elapsed     = 0
-    $interval    = 3
-    $jokeStart   = 90    # start jokes at 1 min 30 sec
-    $jokeEvery   = 30    # one joke every 30 seconds after that
+    $statusFile = Join-Path $outputDir 'sandbox-status.json'
+    $maxWaitSec = 90
+    $elapsed = 0
+    $interval = 3
+    $jokeStart = 90    # start jokes at 1 min 30 sec
+    $jokeEvery = 30    # one joke every 30 seconds after that
     $lastJokeSec = 0
-    $ready       = $false
+    $ready = $false
+    $missingProcWarned = $false
+
+    function Get-SandboxReadiness {
+        param([Parameter(Mandatory)][string]$StatusPath, [Parameter(Mandatory)][System.Diagnostics.Process]$LauncherProcess)
+
+        $statusName = ''
+        $statusDetail = ''
+        if (Test-Path -LiteralPath $StatusPath) {
+            try {
+                $statusObject = Get-Content -LiteralPath $StatusPath -Raw -Encoding UTF8 | ConvertFrom-Json
+                $statusName = [string]$statusObject.status
+                $statusDetail = [string]$statusObject.detail
+            }
+            catch {
+                return [PSCustomObject]@{ Ready = $false; Error = $false; Alive = $true; Detail = 'Status file is being written' }
+            }
+        }
+
+        $running = @(Get-RunningSandboxProcesses)
+        $alive = (@($running).Count -gt 0)
+        if (-not $alive -and -not $LauncherProcess.HasExited) { $alive = $true }
+        return [PSCustomObject]@{
+            Ready  = ($statusName -eq 'READY')
+            Error  = ($statusName -eq 'ERROR')
+            Alive  = $alive
+            Detail = $statusDetail
+        }
+    }
 
     while ($elapsed -lt $maxWaitSec) {
         Start-Sleep -Seconds $interval
         $elapsed += $interval
-        if (Test-Path $statusFile) {
-            try {
-                $status = Get-Content $statusFile -Raw -Encoding UTF8 | ConvertFrom-Json
-                if ($status.status -eq 'READY') {
-                    $ready = $true
-                    break
-                }
-                if ($status.status -eq 'ERROR') {
-                    Write-Host "[FAIL] Sandbox bootstrap error: $($status.detail)" -ForegroundColor Red
-                    exit 1
-                }
-            } catch {
-                # Status file being written, retry
-            }
-        }
-        # Check if sandbox VM is actually running
-        $sandboxAlive = ($null -ne (Get-Process WindowsSandbox -ErrorAction SilentlyContinue)) -or
-                        ($null -ne (Get-Process vmwp -ErrorAction SilentlyContinue))
-        if (-not $sandboxAlive -and -not $sandboxProc.HasExited) { $sandboxAlive = $true }
-        if (-not $sandboxAlive) {
-            Write-Host "[FAIL] Sandbox exited unexpectedly (no WindowsSandbox or vmwp process found)." -ForegroundColor Red
+        $readiness = Get-SandboxReadiness -StatusPath $statusFile -LauncherProcess $sandboxProc
+        if ($readiness.Ready) { $ready = $true; break }
+        if ($readiness.Error) {
+            Write-Host "[FAIL] Sandbox bootstrap error: $($readiness.Detail)" -ForegroundColor Red
             exit 1
         }
+
+        # WindowsSandbox.exe is a launcher process and can exit early; continue
+        # trying to bind to VM processes before declaring failure.
+        $sandboxAlive = $readiness.Alive
+        if (-not $sandboxAlive -and $elapsed -ge 20 -and -not $missingProcWarned) {
+            $missingProcWarned = $true
+            Write-Host "[WARN] Sandbox launcher exited before READY signal. Continuing process detection..." -ForegroundColor Yellow
+        }
+
         if (($elapsed % 15) -eq 0) {
             Write-Host "  ... waiting (${elapsed}s / ${maxWaitSec}s)" -ForegroundColor DarkGray
         }
@@ -272,10 +351,59 @@ if (-not $NoWait) {
         }
     }
 
+    if (-not $ready) {
+        $runningSandboxProcs = @(Get-RunningSandboxProcesses)
+        if (@($runningSandboxProcs).Count -gt 0) {
+            $procNames = @($runningSandboxProcs | Select-Object -ExpandProperty ProcessName -Unique) -join ', '
+            Write-Host "[WARN] Sandbox process detected ($procNames), but READY is pending after ${elapsed}s." -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "[WARN] No sandbox process detected after ${elapsed}s." -ForegroundColor Yellow
+        }
+
+        $retryChoice = Read-Host "Try another 30 seconds [Y], retry sandbox process detection [R], or stop [N]"
+        if ([string]::IsNullOrWhiteSpace($retryChoice)) { $retryChoice = 'Y' }
+
+        if ($retryChoice -match '^[Rr]') {
+            Write-Host "[Retry] Rechecking for existing running sandbox instances..." -ForegroundColor Cyan
+            for ($probe = 1; $probe -le 10; $probe++) {
+                Start-Sleep -Seconds 2
+                $readiness = Get-SandboxReadiness -StatusPath $statusFile -LauncherProcess $sandboxProc
+                if ($readiness.Ready) { $ready = $true; break }
+                if ($readiness.Alive) { Write-Host '[OK] Sandbox process is still alive; continuing readiness detection.' -ForegroundColor Green; break }
+            }
+            if (-not $ready) { $retryChoice = 'Y' }
+        }
+
+        if ($retryChoice -match '^[Yy]') {
+            $extraWaitSec = 30
+            $extraElapsed = 0
+            Write-Host "[Wait] Extending wait by ${extraWaitSec}s..." -ForegroundColor DarkGray
+            while ($extraElapsed -lt $extraWaitSec) {
+                Start-Sleep -Seconds $interval
+                $extraElapsed += $interval
+                $elapsed += $interval
+
+                $readiness = Get-SandboxReadiness -StatusPath $statusFile -LauncherProcess $sandboxProc
+                if ($readiness.Ready) { $ready = $true; break }
+                if ($readiness.Error) {
+                    Write-Host "[FAIL] Sandbox bootstrap error: $($readiness.Detail)" -ForegroundColor Red
+                    exit 1
+                }
+            }
+        }
+    }
+
     if ($ready) {
         Write-Host "[OK] Sandbox is READY (${elapsed}s)" -ForegroundColor Green
-    } else {
-        Write-Host "[WARN] Sandbox did not report READY within ${maxWaitSec}s (may still be starting)" -ForegroundColor Yellow
+    }
+    else {
+        $runningSandboxProcs = @(Get-RunningSandboxProcesses)
+        if (@($runningSandboxProcs).Count -eq 0) {
+            Write-Host "[FAIL] Sandbox exited unexpectedly (no WindowsSandbox or vmwp process found)." -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "[WARN] Sandbox did not report READY within ${elapsed}s (sandbox process still running)." -ForegroundColor Yellow
     }
 
     # Auto-launch GUI if requested

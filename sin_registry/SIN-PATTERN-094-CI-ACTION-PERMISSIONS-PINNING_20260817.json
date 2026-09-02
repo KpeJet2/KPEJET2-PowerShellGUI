@@ -1,0 +1,13 @@
+{
+  "sin_id": "SIN-PATTERN-094-CI-ACTION-PERMISSIONS-PINNING_20260817",
+  "title": "CI action lacks least privilege or immutable pin",
+  "description": "Detects workflow actions using floating refs or broad write permissions.",
+  "severity": "MEDIUM",
+  "category": "supply-chain",
+  "scan_regex": "(?i)uses:\\s*[^\\r\\n@]+@(?:main|master|latest|v\\d+)|permissions:\\s*write-all",
+  "scan_file_pattern": "*.yml;*.yaml",
+  "file_exclusion_regex": "sin_registry|examples|tests",
+  "preventionRule": "Pin third-party actions to immutable commit SHAs and grant only required permissions.",
+  "remedy": "Replace floating refs with reviewed SHAs and narrow workflow permissions.",
+  "tags": ["ci", "supply-chain", "permissions"]
+}

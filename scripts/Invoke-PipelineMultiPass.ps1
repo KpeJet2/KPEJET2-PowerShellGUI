@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.1
+﻿# VersionTag: 2605.B5.V46.1
 # SupportPS5.1: YES(As of: 2026-07-29)
 # SupportsPS7.6: YES(As of: 2026-07-29)
 # SupportPS5.1TestedDate: 2026-07-29
@@ -40,10 +40,13 @@ param(
     [ValidateRange(1, 50)]
     [int]$MinPasses = 3,
     [ValidateRange(1, 50)]
-    [int]$MaxPasses = 10,
+    [int]$MaxPasses = 50,
+    [ValidateRange(1, 50)]
+    [int]$NoProgressLimit = 7,
     [switch]$NoFix,
     [switch]$NoPipelineDry,
-    [switch]$NoSinScan
+    [switch]$NoSinScan,
+    [switch]$NoDeanB
 )
 
 Set-StrictMode -Version Latest
@@ -56,8 +59,8 @@ function Write-PassLog {
 }
 
 # ── AI Action Log bootstrap ──────────────────────────────────────────────────
-$script:_MpAiLoaded  = $false
-$script:_MpActionId  = $null
+$script:_MpAiLoaded = $false
+$script:_MpActionId = $null
 $_mpAiLogModule = Join-Path $WorkspacePath 'modules\PwShGUI-AiActionLog.psm1'
 if (-not (Test-Path -LiteralPath $_mpAiLogModule)) {
     $_mpAiLogModule = Join-Path $WorkspacePath 'modules/PwShGUI-AiActionLog.psm1'
@@ -66,7 +69,7 @@ try {
     if (Test-Path -LiteralPath $_mpAiLogModule) {
         Import-Module $_mpAiLogModule -Force -DisableNameChecking -ErrorAction Stop
         $script:_MpAiLoaded = $true
-        $script:_MpActionId = 'multipass-' + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([guid]::NewGuid().ToString('N').Substring(0,6))
+        $script:_MpActionId = 'multipass-' + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + ([guid]::NewGuid().ToString('N').Substring(0, 6))
         Write-AiActionStart `
             -ActionId   $script:_MpActionId `
             -ActionName 'Invoke-PipelineMultiPass' `
@@ -75,7 +78,8 @@ try {
             -Files      @() `
             -WorkspacePath $WorkspacePath | Out-Null
     }
-} catch {
+}
+catch {
     Write-PassLog "AI action log start failed (non-fatal): $($_.Exception.Message)" 'WARN'
 }
 
@@ -91,7 +95,8 @@ function Invoke-MpAiFinish {
             -Files      @() `
             -Result     $Status `
             -WorkspacePath $WorkspacePath | Out-Null
-    } catch { <# Intentional: non-fatal finish-log suppression #> }
+    }
+    catch { <# Intentional: non-fatal finish-log suppression #> }
 }
 
 # ---- Locate iteration script ----
@@ -113,8 +118,8 @@ if (-not (Test-Path -LiteralPath $iterDir)) {
 function Get-LastIterationNumber {
     param([string]$ReportDir)
     $files = @(Get-ChildItem -Path $ReportDir -Filter 'iter-*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^iter-(\d+)\.json$' } |
-        Sort-Object @{ Expression = { [int]($_.Name -replace 'iter-(\d+)\.json','$1') } } -Descending)
+            Where-Object { $_.Name -match '^iter-(\d+)\.json$' } |
+                Sort-Object @{ Expression = { [int]($_.Name -replace 'iter-(\d+)\.json', '$1') } } -Descending)
     if (@($files).Count -eq 0) { return 0 }
     $topName = $files[0].Name
     if ($topName -match '^iter-(\d+)\.json$') {
@@ -129,7 +134,7 @@ Write-PassLog "Last completed iteration: $lastIter  ->  Starting from: $startIte
 
 $results = [System.Collections.ArrayList]::new()
 $passesRun = 0
-$consecutiveZeroFix = 0
+$consecutiveNoProgress = 0
 
 for ($i = $startIter; $i -lt ($startIter + $MaxPasses); $i++) {
     Write-PassLog "--- Starting pass $i (pass $($passesRun + 1) of this run, min=$MinPasses) ---"
@@ -139,14 +144,16 @@ for ($i = $startIter; $i -lt ($startIter + $MaxPasses); $i++) {
         Iteration     = $i
         WorkspacePath = $WorkspacePath
     }
-    if ($NoFix)          { $iterArgs.NoFix          = $true }
-    if ($NoPipelineDry)  { $iterArgs.NoPipelineDry  = $true }
-    if ($NoSinScan)      { $iterArgs.NoSinScan      = $true }
+    if ($NoFix) { $iterArgs.NoFix = $true }
+    if ($NoPipelineDry) { $iterArgs.NoPipelineDry = $true }
+    if ($NoSinScan) { $iterArgs.NoSinScan = $true }
+    if ($NoDeanB) { $iterArgs.NoDeanB = $true }
 
     $result = $null
     try {
         $result = & $iterScript @iterArgs
-    } catch {
+    }
+    catch {
         Write-PassLog "ERROR in iteration $i : $($_.Exception.Message)" 'ERROR'
         $result = [pscustomobject]@{
             iteration     = $i
@@ -163,9 +170,28 @@ for ($i = $startIter; $i -lt ($startIter + $MaxPasses); $i++) {
     [void]$results.Add($result)
     $passesRun++
 
-    $fixesThisPass    = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'fixes')    { [int]$result.fixes }    else { 0 }
+    $fixesThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'fixes') { [int]$result.fixes }    else { 0 }
     $findingsThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'findings') { [int]$result.findings } else { 0 }
-    Write-PassLog "Pass $i complete — findings=$findingsThisPass  fixes=$fixesThisPass"
+    $deanBCreatedThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'deanBCreated') { [int]$result.deanBCreated } else { 0 }
+    $inventoryBugsThisPass = if ($null -ne $result -and $result.PSObject.Properties.Name -contains 'inventoryBugsCreated') { [int]$result.inventoryBugsCreated } else { 0 }
+    $previousFindings = if ($passesRun -gt 1) { [int]$results[$passesRun - 2].findings } else { $findingsThisPass }
+    $improvementThisPass = ($fixesThisPass -gt 0 -or $deanBCreatedThisPass -gt 0 -or $inventoryBugsThisPass -gt 0 -or $findingsThisPass -lt $previousFindings)
+    Write-PassLog "Pass $i complete — findings=$findingsThisPass fixes=$fixesThisPass deanBItems=$deanBCreatedThisPass inventoryBugs=$inventoryBugsThisPass improvement=$improvementThisPass noProgress=$consecutiveNoProgress/$NoProgressLimit"
+    if ($null -ne $result) {
+        Add-Member -InputObject $result -NotePropertyName 'improvement' -NotePropertyValue $improvementThisPass -Force
+        if ($result.PSObject.Properties.Name -contains 'reportPath' -and (Test-Path -LiteralPath $result.reportPath)) {
+            try {
+                $iterationReport = Get-Content -LiteralPath $result.reportPath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+                $stageRelay = @($iterationReport.stages | ForEach-Object { '{0}={1}' -f $_.name, $_.status })
+                Add-Member -InputObject $result -NotePropertyName 'stageRelay' -NotePropertyValue $stageRelay -Force
+                Add-Member -InputObject $result -NotePropertyName 'gateRelayPassed' -NotePropertyValue (@($iterationReport.stages | Where-Object { $_.status -in @('FAIL', 'STOP') }).Count -eq 0) -Force
+            }
+            catch {
+                Add-Member -InputObject $result -NotePropertyName 'stageRelay' -NotePropertyValue @('REPORT_READ_ERROR') -Force
+                Add-Member -InputObject $result -NotePropertyName 'gateRelayPassed' -NotePropertyValue $false -Force
+            }
+        }
+    }
 
     # ── Drift-regression guard ───────────────────────────────────────────────
     # If findings INCREASED vs the previous pass, flag as DRIFT-REGRESSION.
@@ -183,16 +209,17 @@ for ($i = $startIter; $i -lt ($startIter + $MaxPasses); $i++) {
         }
     }
 
-    if ($fixesThisPass -eq 0) {
-        $consecutiveZeroFix++
-    } else {
-        $consecutiveZeroFix = 0
+    if (-not $improvementThisPass) {
+        $consecutiveNoProgress++
+    }
+    else {
+        $consecutiveNoProgress = 0
     }
 
-    # Enforce minimum passes; after minimum, stop if no more fixes
+    # Stop only after the configured consecutive no-progress window is reached.
     if ($passesRun -ge $MinPasses) {
-        if ($consecutiveZeroFix -ge 2) {
-            Write-PassLog "Minimum passes met and no fixes in last 2 consecutive passes — stopping early."
+        if ($consecutiveNoProgress -ge $NoProgressLimit) {
+            Write-PassLog "No progression detected for $NoProgressLimit consecutive iterations — stopping convergence run."
             break
         }
     }
@@ -202,23 +229,27 @@ Write-PassLog "Multi-pass run complete: $passesRun pass(es) executed (iter $star
 
 # ---- Emit consolidated summary ----
 $summary = [ordered]@{
-    schema          = 'InteropDriftMultiPass/1.0'
-    versionTag      = '2605.B5.V46.1'
-    generatedAt     = (Get-Date).ToString('o')
-    workspacePath   = $WorkspacePath
-    resumedFromIter = $lastIter
-    startedAtIter   = $startIter
-    minPasses       = $MinPasses
-    maxPasses       = $MaxPasses
-    passesRun       = $passesRun
-    endedAtIter     = ($startIter + $passesRun - 1)
-    noFix           = [bool]$NoFix
-    noPipelineDry   = [bool]$NoPipelineDry
-    noSinScan       = [bool]$NoSinScan
-    passes          = @($results)
+    schema                = 'InteropDriftMultiPass/1.0'
+    versionTag            = '2605.B5.V46.1'
+    generatedAt           = (Get-Date).ToString('o')
+    workspacePath         = $WorkspacePath
+    resumedFromIter       = $lastIter
+    startedAtIter         = $startIter
+    minPasses             = $MinPasses
+    maxPasses             = $MaxPasses
+    noProgressLimit       = $NoProgressLimit
+    passesRun             = $passesRun
+    endedAtIter           = ($startIter + $passesRun - 1)
+    noFix                 = [bool]$NoFix
+    noPipelineDry         = [bool]$NoPipelineDry
+    noSinScan             = [bool]$NoSinScan
+    noDeanB               = [bool]$NoDeanB
+    stoppedForNoProgress  = ($consecutiveNoProgress -ge $NoProgressLimit)
+    consecutiveNoProgress = $consecutiveNoProgress
+    passes                = @($results)
 }
 
-$stamp   = Get-Date -Format 'yyyyMMdd-HHmmss'
+$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $outFile = Join-Path $iterDir "multipass-$stamp.json"
 $summary | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $outFile -Encoding UTF8
 Write-PassLog "Summary written: $outFile"

@@ -1,0 +1,31 @@
+%% VersionTag: 2608.B1.V54.0
+%% FileRole: Diagram
+%% Source plan: ~README.md/CRON-PIPE-FLOW-PLAN.md
+sequenceDiagram
+    autonumber
+    participant Dev as Developer / Cron
+    participant RFP as Run-FullPipeline.ps1
+    participant Tests as tests/Run-AllTests.ps1
+    participant Gate as Invoke-PipelineFlowGraphGate.ps1
+    participant Ext as PwShGUI-PipelineFlowGraph.psm1
+    participant Sync as Sync-CronPipeFlowViewerData.ps1
+    participant View as XHTML-Cron-Pipe-Flow.xhtml
+    participant Git as Commit / Task completion
+
+    Dev->>RFP: Invoke pipeline
+    RFP->>RFP: Steps 1-8 version, manifests, SIN scan
+    RFP->>Tests: Blocking full Pester suite
+    Tests-->>RFP: PASS required
+    RFP->>Gate: Step 12 FlowGraph gate
+    Gate->>Ext: Get-PipelineFlowGraph -WorkspacePath
+    Ext-->>Gate: nodes / edges / glossary + graphHash
+    Gate->>Gate: Compare graphHash vs baseline
+    alt Drift detected and -FailOnDrift
+        Gate-->>RFP: Exit 1 with drift report
+        RFP-->>Dev: BLOCKED - resolve or -UpdateBaseline
+    else Clean or baseline updated
+        Gate->>Sync: Emit pipeline-flow-graph.json
+        Sync->>View: Inject FLOW_GRAPH_DATA JS block
+        Sync-->>RFP: viewer synced at current VersionTag
+        RFP-->>Git: Allow completion / commit
+    end

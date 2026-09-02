@@ -1,8 +1,9 @@
-# VersionTag: 2606.B5.V51.4
-# VersionBuildHistory:
-#   2604.B2.V31.0  2026-04-12  Added /HEADLESSONLY, /NOPAUSE, and final FireUpAllEngines chain step
-#   2603.B0.V27.0  2026-03-24 03:28  (deduplicated from 4 entries)
-# Show-Objectives: Run dual-engine smoke quickly, preserve fallback behavior, and keep final engine-chain invocation optional.
+REM VersionTag: 2608.B1.V54.2
+REM VersionBuildHistory:
+REM   2608.B1.V54.2  2026-08-04  Fixed batch header parsing noise and added resilient smoke script path fallback.
+REM   2604.B2.V31.0  2026-04-12  Added /HEADLESSONLY, /NOPAUSE, and final FireUpAllEngines chain step
+REM   2603.B0.V27.0  2026-03-24 03:28  (deduplicated from 4 entries)
+REM Show-Objectives: Run dual-engine smoke quickly, preserve fallback behavior, and keep final engine-chain invocation optional.
 REM ============================================================
 REM  Launch-GUI-SmokeTest.bat  |  Automated GUI Smoke Test
 REM  Author   : The Establishment
@@ -23,6 +24,8 @@ set "HEADLESS_ARG="
 set "NO_PAUSE=FALSE"
 set "RUN_ENGINE_BATCH=TRUE"
 set "ENGINE_BATCH=%scriptDir%SmokeTest-Batch-FireUpAllEnginesForPreProdIdlePerfCallCatchLogsClose.bat"
+set "SMOKE_SCRIPT=%scriptDir%tests\Invoke-GUISmokeTest.ps1"
+set "SMOKE_SCRIPT_FALLBACK=%scriptDir%~ARCHIVED\orphaned-cleanup-20260709\Invoke-GUISmokeTest.ps1"
 
 REM --- Parse switches ---
 REM /TASKTRAY kept for compatibility; smoke harness does not consume it directly.
@@ -36,10 +39,16 @@ for %%A in (%*) do (
     if /I "%%~A"=="/NOENGINES" set "RUN_ENGINE_BATCH=FALSE"
 )
 
-if not exist "%scriptDir%tests\Invoke-GUISmokeTest.ps1" (
-    echo Error: tests\Invoke-GUISmokeTest.ps1 not found in %scriptDir%
-    pause
-    exit /b 1
+if not exist "%SMOKE_SCRIPT%" (
+    if exist "%SMOKE_SCRIPT_FALLBACK%" (
+        set "SMOKE_SCRIPT=%SMOKE_SCRIPT_FALLBACK%"
+        echo [WARN] tests\Invoke-GUISmokeTest.ps1 not found; using archived fallback.
+        echo [WARN] Fallback: %SMOKE_SCRIPT_FALLBACK%
+    ) else (
+        echo Error: Invoke-GUISmokeTest.ps1 not found in tests or fallback archive.
+        if /I not "!NO_PAUSE!"=="TRUE" pause
+        exit /b 1
+    )
 )
 
 cls
@@ -54,13 +63,13 @@ if defined pwshVersion (
     echo [OK] PowerShell 7+ detected: Version !pwshVersion!
     echo Launching smoke test matrix...
     echo.
-    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%tests\Invoke-GUISmokeTest.ps1" -RunShellMatrix !HEADLESS_ARG!
+    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "%SMOKE_SCRIPT%" -RunShellMatrix !HEADLESS_ARG!
     set "exitCode=!errorlevel!"
     goto end
 )
 
 echo [WARNING] PowerShell 7+ not found. Falling back to Windows PowerShell.
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%scriptDir%tests\Invoke-GUISmokeTest.ps1" -RunShellMatrix !HEADLESS_ARG!
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SMOKE_SCRIPT%" -RunShellMatrix !HEADLESS_ARG!
 set "exitCode=!errorlevel!"
 
 :end

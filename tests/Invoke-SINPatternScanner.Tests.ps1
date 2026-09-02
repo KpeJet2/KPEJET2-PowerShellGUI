@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 <#
 .SYNOPSIS
     Pester integration tests for Invoke-SINPatternScanner.ps1
@@ -22,7 +22,7 @@ BeforeAll {
 
     # One full Permissive scan; the rest of the suite consumes its output.
     $global:LASTEXITCODE = 0
-    & $script:Scanner -RatchetMode Permissive -BaselineJson $script:Baseline -OutputJson $script:OutJson -FailOnCritical -Quiet *>$null
+    & $script:Scanner -RatchetMode Permissive -BaselineJson $script:Baseline -OutputJson $script:OutJson -FailOnCritical -Quiet -SummaryOnly *>$null
     $script:PrimaryExit = $LASTEXITCODE
     $script:PrimaryJson = if (Test-Path -LiteralPath $script:OutJson) {
         Get-Content -LiteralPath $script:OutJson -Raw | ConvertFrom-Json
@@ -54,6 +54,24 @@ Describe 'Invoke-SINPatternScanner integration' {
             foreach ($p in $script:PrimaryJson.countsBySinId.PSObject.Properties) { $sum += [int]$p.Value }
             $sum | Should -Be $script:PrimaryJson.totalFindings
         }
+
+        It 'records registry validation and coverage metadata' {
+            $script:PrimaryJson.registry.invalidCount | Should -Be 0
+            $script:PrimaryJson.coverage.staged | Should -BeFalse
+            $script:PrimaryJson.coverage.PSObject.Properties.Name | Should -Contain 'percent'
+            $script:PrimaryJson.coverage.PSObject.Properties.Name | Should -Contain 'stagedFallback'
+        }
+    }
+
+    It 'fails explicitly for an invalid registry definition' {
+        $fixtureRoot = Join-Path $script:OutDir 'invalid-registry'
+        $null = New-Item -ItemType Directory -Path (Join-Path $fixtureRoot 'sin_registry') -Force
+        $null = New-Item -ItemType Directory -Path (Join-Path $fixtureRoot 'temp') -Force
+        '{"sin_id":"SIN-PATTERN-TEST","title":"broken","severity":"HIGH","scan_regex":"["}' | Set-Content -LiteralPath (Join-Path $fixtureRoot 'sin_registry\SIN-PATTERN-TEST.json') -Encoding UTF8
+        $out = Join-Path $fixtureRoot 'temp\invalid.json'
+        & $script:Scanner -WorkspacePath $fixtureRoot -OutputJson $out -FailOnInvalidRegistry -Quiet *>$null
+        $LASTEXITCODE | Should -Be 1
+        (Get-Content -LiteralPath $out -Raw | ConvertFrom-Json).registry.invalidCount | Should -Be 1
     }
 
     Context 'JUnit XML conversion of primary scan' {

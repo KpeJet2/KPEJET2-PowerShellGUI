@@ -1,4 +1,4 @@
-﻿# VersionTag: 2607.B6.V53.1
+﻿# VersionTag: 2607.B7.V53.1
 <#
 .SYNOPSIS
 Collect local network connection telemetry and publish to LocalWebEngine NetMon API.

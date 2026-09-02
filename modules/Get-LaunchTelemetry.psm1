@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: YES(As of: 2026-04-21)
 # SupportsPS7.6: YES(As of: 2026-04-21)
 # SupportPS5.1TestedDate: 2026-04-21
@@ -215,7 +215,10 @@ function Get-LaunchTelemetry {
     None — current scope (single-shot startup telemetry) is complete. Continuous telemetry
     streaming is intentionally out-of-scope and tracked under FEATURE-REQUEST entries.
 #>
-Export-ModuleMember -Function Get-LaunchTelemetry
+$launchTelemetryExportArgs = @{
+    Function = @('Get-LaunchTelemetry')
+}
+Export-ModuleMember @launchTelemetryExportArgs
 
 
 

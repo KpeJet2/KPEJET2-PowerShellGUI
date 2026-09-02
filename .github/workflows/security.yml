@@ -107,6 +107,7 @@ jobs:
         shell: pwsh
         run: |
           ./tests/Invoke-SINPatternScanner.ps1 `
+            -Runtime Both `
             -RatchetMode Strict `
             -BaselineJson config/sin-baseline.json `
             -OutputJson reports/sin-scan-strict.json `
@@ -121,6 +122,12 @@ jobs:
             -ScanJson     reports/sin-scan-strict.json `
             -BaselineJson config/sin-baseline.json `
             -OutputXml    reports/sin-scan-strict-junit.xml
+
+      - name: Sanitize strict scan artifact for GitHub upload
+        if: always()
+        shell: pwsh
+        run: |
+          ./scripts/Protect-SinScanArtifact.ps1 -ScanJson reports/sin-scan-strict.json
 
       - name: Upload strict scan artifacts
         if: always()

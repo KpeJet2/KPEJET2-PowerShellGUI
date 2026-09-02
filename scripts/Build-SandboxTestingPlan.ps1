@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: YES(As of: 2026-05-25)
 # SupportsPS7.6: YES(As of: 2026-05-25)
 # FileRole: TestPlanBuilder

@@ -1,0 +1,16 @@
+{
+  "sin_id": "SIN-PATTERN-087-UNBOUNDED-NETWORK-CALL_20260817",
+  "title": "Network call without an explicit timeout",
+  "description": "Detects common PowerShell web calls that omit a timeout control.",
+  "severity": "MEDIUM",
+  "category": "reliability",
+  "scan_regex": "(?i)(?:Invoke-WebRequest|Invoke-RestMethod|HttpClient)\\b[^\\r\\n]*(?!TimeoutSec|Timeout|CancellationToken)",
+  "scan_file_pattern": "*.ps1;*.psm1",
+  "file_exclusion_regex": "sin_registry|tests|examples",
+  "context_guard_regex": "TimeoutSec|CancellationToken|ConnectTimeout|HttpClientTimeout",
+  "context_guard_lines": 3,
+  "context_guard_direction": "below",
+  "preventionRule": "Every external network operation must have a bounded timeout and cancellation path.",
+  "remedy": "Add TimeoutSec or an equivalent cancellation-aware timeout policy.",
+  "tags": ["network", "timeout", "reliability"]
+}

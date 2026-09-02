@@ -11,6 +11,7 @@ This workspace now includes a dedicated list generation and regeneration system 
 - docs/LISTS-SYSTEM-OBSERVED.md
 - docs/LISTS-GLOBAL-SEQUENTIAL.md
 - docs/LISTS-UNIVERSAL-LIST-GENE.md
+- docs/CRON-PIPE-FLOW-PLAN.md
 
 ## ListGene Runtime Assets
 
@@ -138,4 +139,3 @@ pwsh -NoProfile -File .\scripts\Invoke-ReferenceIntegrityCheck.ps1
 - CI includes refine script smoke coverage on both pwsh and powershell engines.
 
 <!-- AUTO-GENERATED:FEATURE-INDEX:END -->
-

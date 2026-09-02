@@ -105,6 +105,23 @@
             "problemMatcher": []
         },
         {
+            "label": "Pipeline: Churn Evolution Gate",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Run-PipelineChurn35.ps1 -WorkspacePath ${workspaceFolder} -ValidateEvolutionOnly",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Alpha Commit Sync (soft fail)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-AlphaCommitSync.ps1 -WorkspacePath ${workspaceFolder} -CommitMessage \"Alpha pipeline prototype\" -AlphaSoftFail",
+            "group": "build",
+            "detail": "Opt-in prototype: records Git failures and Bug2FIX remediation while allowing the Alpha task to complete softly.",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
             "label": "Pipeline: Continuous Refine (staged)",
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineContinuousRefine.ps1 -WorkspacePath ${workspaceFolder} -StagedOnly -BaselineProfile staged -BaselineJson ${workspaceFolder}\\config\\pipeline-refine-baseline-staged.json -FailOnDrift",
@@ -148,6 +165,135 @@
             "label": "Pipeline: Validate Canonical Paths",
             "type": "shell",
             "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-ValidateCanonicalPaths.ps1 -WorkspacePath ${workspaceFolder} -RegistryPath ${workspaceFolder}\\config\\pipeline-canonical-paths.json -FailOnMissing",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Flow Graph Gate",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineFlowGraphGate.ps1 -WorkspacePath ${workspaceFolder} -FailOnDrift",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Update Flow Graph Baseline",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-PipelineFlowGraphGate.ps1 -WorkspacePath ${workspaceFolder} -UpdateBaseline",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pipeline: Sync Cron Pipe Flow Viewer",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Sync-CronPipeFlowViewerData.ps1 -WorkspacePath ${workspaceFolder}",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Prereqs: Check All",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action CheckAll",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Prereqs: Setup and Upgrade",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action SetupAll",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Prereqs: Master Check Setup Recheck",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-WorkspacePreReqs.ps1 -WorkspacePath ${workspaceFolder} -Action Master",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Host Fix: Generate Instance Manifest",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-HostPrereqFix.ps1 -WorkspacePath ${workspaceFolder} -Action Generate",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "SIN: P015 Path Remediation Report",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SinHardcodedPathRemediation.ps1 -WorkspacePath ${workspaceFolder}",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sandbox: Smoke Test (keep instance)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\tests\\Invoke-SandboxSmokeTest.ps1 -WorkspacePath ${workspaceFolder} -KeepSandbox",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        // ── Session Resilience Loop ─────────────────────────────────────────
+        {
+            "label": "Session Loop: Start (resume today)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -ResumeToday",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "new" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Dry Run (resume today)",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -ResumeToday -DryRun",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Detect Today's Retryable Session",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -DetectOnly",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Status",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -Status",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Session Loop: Stop",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Invoke-SessionResilienceLoop.ps1 -WorkspacePath ${workspaceFolder} -Stop",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "GUI: Open Cron Pipe Flow",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -Command \"Start-Process -FilePath '${workspaceFolder}\\XHTML-Cron-Pipe-Flow.xhtml'\"",
+            "group": "none",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Config AiNge: Export VS Code Report",
+            "type": "shell",
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File ${workspaceFolder}\\scripts\\Export-VsCodeConfigCoverage.ps1 -WorkspacePath ${workspaceFolder}",
             "group": "test",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []

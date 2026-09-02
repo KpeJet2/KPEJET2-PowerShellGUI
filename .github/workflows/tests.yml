@@ -1,4 +1,4 @@
-# VersionTag: 2605.B5.V46.1
+# VersionTag: 2607.B7.V46.1
 # feature:pipeline feature:stability phase:verify
 name: Tests
 
@@ -55,6 +55,97 @@ jobs:
           path: |
             testResults.xml
             todo/test-results-history.json
+          retention-days: 14
+
+  # ── Cert/Approvals contract + deterministic iteration gate ───────────────
+  cert-approvals-contract:
+    name: Cert/Approvals Contracts + 3-Pass Iteration
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]'5.0' })) {
+            Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
+          }
+
+      - name: Run cert/approvals contract tests
+        shell: pwsh
+        run: |
+          $tests = @(
+            './tests/Start-LocalWebEngine.Tests.ps1',
+            './tests/CertHubAndApprovalsSurface.Tests.ps1'
+          )
+          $r = Invoke-Pester -Path $tests -Output Detailed -PassThru
+          if ($null -eq $r -or [int]$r.FailedCount -gt 0) {
+            Write-Host "::error::Cert/approvals contract tests failed."
+            exit 1
+          }
+
+      - name: Dual-engine parser smoke (PS7 + PS5.1)
+        shell: pwsh
+        run: |
+          $targets = @(
+            'scripts/Start-LocalWebEngine.ps1',
+            'tests/Start-LocalWebEngine.Tests.ps1',
+            'tests/CertHubAndApprovalsSurface.Tests.ps1'
+          )
+
+          $failedPwsh = @()
+          foreach ($t in $targets) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $t), [ref]$tokens, [ref]$errors) | Out-Null
+            if (@($errors).Count -gt 0) {
+              $failedPwsh += $t
+            }
+          }
+          if (@($failedPwsh).Count -gt 0) {
+            Write-Host "::error::PS7 parser errors in: $($failedPwsh -join ', ')"
+            exit 1
+          }
+
+          $ps51Cmd = '$ErrorActionPreference = ''Stop''; $targets = @(''scripts/Start-LocalWebEngine.ps1'',''tests/Start-LocalWebEngine.Tests.ps1'',''tests/CertHubAndApprovalsSurface.Tests.ps1''); $failed = @(); foreach ($t in $targets) { $tok = $null; $err = $null; [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $t), [ref]$tok, [ref]$err) | Out-Null; if (@($err).Count -gt 0) { $failed += $t } }; if (@($failed).Count -gt 0) { Write-Error (''PS5.1 parser errors in: '' + ($failed -join '', '')); exit 1 }'
+          powershell -NoProfile -ExecutionPolicy Bypass -Command $ps51Cmd
+
+      - name: Run deterministic 3-pass iteration check
+        shell: pwsh
+        run: |
+          $result = & ./scripts/Invoke-PipelineMultiPass.ps1 `
+            -WorkspacePath . `
+            -MinPasses 3 `
+            -MaxPasses 3 `
+            -NoFix `
+            -NoPipelineDry `
+            -NoSinScan
+
+          if ($null -eq $result -or [int]$result.passesRun -lt 3) {
+            Write-Host "::error::Multi-pass did not execute required 3 passes."
+            exit 1
+          }
+
+          $drift = @($result.passes | Where-Object {
+            $_.PSObject.Properties.Name -contains 'driftRegression' -and $_.driftRegression -eq $true
+          })
+          if (@($drift).Count -gt 0) {
+            Write-Host "::error::DRIFT-REGRESSION detected in $(@($drift).Count) pass(es)."
+            exit 1
+          }
+
+          Write-Host "3-pass iteration gate passed." -ForegroundColor Green
+
+      - name: Upload iteration report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cert-approvals-iteration-report
+          path: reports/interop-iter/multipass-*.json
           retention-days: 14
 
   # ── Nightly multi-pass pipeline convergence check ─────────────────────────

@@ -3,7 +3,7 @@
 TargetTag: 2607.B6.V53.0
 ManifestSource: config/dynamic-manifest.json
 Manifested files total: 285
-Manifested with VersionTag: 285
+Manifested with metadata tag count: 285
 Manifested already at target: 285
 Manifested that would change: 0
 Manifested missing VersionTag: 0

@@ -11,7 +11,8 @@
     Catches the most common, high-impact issues without the full SIN scanner runtime:
 
       Gate 1 - PowerShell parse errors (all .ps1/.psm1 files in scope)
-      Gate 2 - Critical SIN patterns (P001/P009/P010): hardcoded creds, IEX, path injection
+      Gate 2 - Critical SIN patterns: inline P001/P009/P010 fast path plus a
+               sin_registry-driven sweep of every CRITICAL-severity pattern
       Gate 3 - P027 null-array-index findings from the SIN scanner
       Gate 4 - Encoding violations: UTF-8 BOM required for .ps1/.psm1 (P006)
     Gate 5 - VersionTag present and non-empty in every staged .ps1/.psm1 (P007)
@@ -53,6 +54,7 @@ param(
     [switch]  $SkipPipelineControlGate,
     [switch]  $SkipPipelineMetricGate,
     [switch]  $PipelineMetricIncludeGuiCoverage,
+    [switch]  $AutoRemediateLogDrift,
     [switch]  $AutoCorrectFailures,
     [ValidateSet('FullWorkspace','KnowSafeRemidiations','KnowSafeRemediations','FastFix_Auto-Correct','SpecificFocus')]
     [string]  $AutoCorrectScope = 'KnowSafeRemidiations',
@@ -117,6 +119,92 @@ function Get-WorkspaceRelativePath {
         return $pathFull.Substring($rootFull.Length).TrimStart('\', '/')
     }
     return $pathFull
+}
+
+function Test-IsGitTrackedPath {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    try {
+        $relativePath = Get-WorkspaceRelativePath -Root $Root -Path $Path
+        if ([string]::IsNullOrWhiteSpace($relativePath) -or $relativePath -eq '.') {
+            return $false
+        }
+        $null = & git -C $Root ls-files --error-unmatch -- $relativePath 2>$null
+        return ($LASTEXITCODE -eq 0)
+    } catch {
+        return $false
+    }
+}
+
+function Invoke-LogDriftAutoRemediation {
+    param(
+        [string]$Root
+    )
+
+    $moved = [System.Collections.ArrayList]::new()
+    $failed = [System.Collections.ArrayList]::new()
+
+    $logsDiagnostics = Join-Path (Join-Path $Root 'logs') 'diagnostics'
+    $targetDir = Join-Path $logsDiagnostics 'precommit-log-drift'
+    if (-not (Test-Path -LiteralPath $targetDir -PathType Container)) {
+        New-Item -Path $targetDir -ItemType Directory -Force | Out-Null
+    }
+
+    $candidates = [System.Collections.ArrayList]::new()
+    try {
+        $rootLogs = @(Get-ChildItem -LiteralPath $Root -File -Filter '*.log' -ErrorAction SilentlyContinue)
+        foreach ($f in @($rootLogs)) { [void]$candidates.Add($f) }
+    } catch {
+        [void]$failed.Add([pscustomobject]@{
+            file = $Root
+            message = "Failed to enumerate root logs: $($_.Exception.Message)"
+        })
+    }
+
+    try {
+        $logsDir = Join-Path $Root 'logs'
+        if (Test-Path -LiteralPath $logsDir -PathType Container) {
+            $topLevelLogs = @(Get-ChildItem -LiteralPath $logsDir -File -Filter '*.log' -ErrorAction SilentlyContinue)
+            foreach ($f in @($topLevelLogs)) { [void]$candidates.Add($f) }
+        }
+    } catch {
+        [void]$failed.Add([pscustomobject]@{
+            file = Join-Path $Root 'logs'
+            message = "Failed to enumerate top-level logs: $($_.Exception.Message)"
+        })
+    }
+
+    foreach ($file in @($candidates)) {
+        if ($null -eq $file) { continue }
+        if (Test-IsGitTrackedPath -Root $Root -Path $file.FullName) { continue }
+
+        $stamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
+        $candidateName = "{0}-{1}" -f $stamp, $file.Name
+        $dest = Join-Path $targetDir $candidateName
+
+        if (Test-Path -LiteralPath $dest -PathType Leaf) {
+            $fallback = "{0}-{1}-{2}" -f $stamp, ([guid]::NewGuid().ToString('N').Substring(0, 8)), $file.Name
+            $dest = Join-Path $targetDir $fallback
+        }
+
+        try {
+            Move-Item -LiteralPath $file.FullName -Destination $dest -Force
+            [void]$moved.Add($dest)
+        } catch {
+            [void]$failed.Add([pscustomobject]@{
+                file = $file.FullName
+                message = $_.Exception.Message
+            })
+        }
+    }
+
+    return [pscustomobject]@{
+        moved = @($moved)
+        failed = @($failed)
+    }
 }
 
 function Get-AdditionalScanCandidateInventory {
@@ -221,7 +309,11 @@ function Invoke-ParseGate {
 }
 
 function Invoke-CriticalSINGate {
-    param([System.IO.FileInfo[]]$Files)
+    param(
+        [System.IO.FileInfo[]]$Files,
+        [string]$Root = '',
+        [switch]$SkipRegistrySweep
+    )
     $patterns = @(
         [PSCustomObject]@{
             Id = 'P001'
@@ -284,6 +376,39 @@ function Invoke-CriticalSINGate {
             }
         }
     }
+
+    # Registry-driven sweep: the three inline regexes above cover only P001/P009/P010.
+    # Delegate the remaining CRITICAL sin_registry patterns to the canonical scanner so
+    # this gate cannot drift from sin_registry definitions.
+    if (-not $SkipRegistrySweep -and -not [string]::IsNullOrWhiteSpace($Root) -and @($Files).Count -gt 0) {
+        $scanner = Join-Path $Root 'tests\Invoke-SINPatternScanner.ps1'
+        if (Test-Path -LiteralPath $scanner) {
+            $sweepJson = Join-Path (Join-Path $Root 'temp') ('precommit-critical-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
+            try {
+                $sweep = & $scanner -WorkspacePath $Root -IncludeFiles @($Files.FullName) -Runtime Both -FailOnInvalidRegistry -Quiet -OutputJson $sweepJson
+                $seen = @{}
+                foreach ($f in @($findings)) { $seen["$($f.File)|$($f.Line)|$($f.Pattern)"] = $true }
+                if ($null -ne $sweep -and $sweep.PSObject.Properties.Name -contains 'findings') {
+                    foreach ($hit in @($sweep.findings | Where-Object { "$($_.severity)" -eq 'CRITICAL' })) {
+                        $full = Join-Path $Root $hit.file
+                        if ($seen.ContainsKey("$full|$($hit.line)|$($hit.sinId)")) { continue }
+                        [void]$findings.Add([PSCustomObject]@{
+                            Gate     = 'CriticalSIN'
+                            Severity = 'ERROR'
+                            File     = $full
+                            Line     = $hit.line
+                            Pattern  = $hit.sinId
+                            PatName  = 'REGISTRY'
+                            Message  = "$($hit.sinId): $($hit.content)"
+                        })
+                    }
+                }
+            } catch {
+                Write-Gate "  [WARN] Registry CRITICAL sweep failed: $($_.Exception.Message)" 'Warn'
+            }
+        }
+    }
+
     return @($findings)
 }
 
@@ -322,7 +447,7 @@ function Invoke-P027Gate {
     if (@($eligible).Count -eq 0) { return @($findings) }
 
     $scanOutputJson = Join-Path (Join-Path $Root 'temp') ('precommit-p027-{0}.json' -f (Get-Date -Format 'yyMMddHHmmssfff'))
-    $scanResult = & $scanner -WorkspacePath $Root -IncludeFiles @($eligible.FullName) -Quiet -OutputJson $scanOutputJson
+    $scanResult = & $scanner -WorkspacePath $Root -IncludeFiles @($eligible.FullName) -FailOnInvalidRegistry -Quiet -OutputJson $scanOutputJson
     if ($null -eq $scanResult) {
         return @($findings)
     }
@@ -677,9 +802,28 @@ function Invoke-TodoArtifactGuardGate {
 }
 
 function Invoke-LogDriftGate {
-    param([string]$Root)
+    param(
+        [string]$Root,
+        [switch]$AutoRemediate
+    )
 
     $findings = [System.Collections.ArrayList]::new()
+
+    if ($AutoRemediate) {
+        $remediation = Invoke-LogDriftAutoRemediation -Root $Root
+        if (@($remediation.moved).Count -gt 0) {
+            Write-Gate ("  Auto-remediated {0} log drift file(s)" -f @($remediation.moved).Count) 'Info'
+        }
+        foreach ($failure in @($remediation.failed)) {
+            [void]$findings.Add([PSCustomObject]@{
+                Gate     = 'LogDrift'
+                Severity = 'ERROR'
+                File     = [string]$failure.file
+                Line     = 0
+                Message  = "Log drift auto-remediation failed: $([string]$failure.message)"
+            })
+        }
+    }
 
     $rootLogs = @()
     try {
@@ -751,6 +895,225 @@ function Invoke-LogDriftGate {
     return @($findings)
 }
 
+function Get-RedactedFindingSummary {
+    param(
+        [object[]]$Findings,
+        [int]$BlockingCount,
+        [int]$ErrorCount,
+        [int]$WarnCount
+    )
+
+    $gateCounts = [ordered]@{}
+    $severityCounts = [ordered]@{
+        ERROR = 0
+        WARN  = 0
+    }
+
+    foreach ($finding in @($Findings)) {
+        $gate = if ($null -ne $finding -and $finding.PSObject.Properties.Name -contains 'Gate') { [string]$finding.Gate } else { 'Unknown' }
+        if ([string]::IsNullOrWhiteSpace($gate)) { $gate = 'Unknown' }
+        if (-not $gateCounts.Contains($gate)) { $gateCounts[$gate] = 0 }
+        $gateCounts[$gate] = [int]$gateCounts[$gate] + 1
+
+        $severity = if ($null -ne $finding -and $finding.PSObject.Properties.Name -contains 'Severity') { [string]$finding.Severity } else { 'ERROR' }
+        if ([string]::IsNullOrWhiteSpace($severity)) { $severity = 'ERROR' }
+        $severityKey = $severity.ToUpperInvariant()
+        if (-not $severityCounts.Contains($severityKey)) { $severityCounts[$severityKey] = 0 }
+        $severityCounts[$severityKey] = [int]$severityCounts[$severityKey] + 1
+    }
+
+    return [pscustomobject]@{
+        totalCount     = @($Findings).Count
+        blockingCount  = $BlockingCount
+        errorCount     = $ErrorCount
+        warnCount      = $WarnCount
+        byGate         = @($gateCounts.GetEnumerator() | Sort-Object Name | ForEach-Object { [pscustomobject]@{ gate = $_.Name; count = [int]$_.Value } })
+        bySeverity     = @($severityCounts.GetEnumerator() | Sort-Object Name | ForEach-Object { [pscustomobject]@{ severity = $_.Name; count = [int]$_.Value } })
+    }
+}
+
+function Get-PreCommitRemediationPlan {
+    param(
+        [object[]]$Findings,
+        [string]$WorkspacePath
+    )
+
+    $workspaceFull = [System.IO.Path]::GetFullPath($WorkspacePath)
+    $plans = [System.Collections.ArrayList]::new()
+
+    $gateGroups = @($Findings | Group-Object Gate)
+    foreach ($group in $gateGroups) {
+        $gateName = [string]$group.Name
+        $hitCount = @($group.Group).Count
+        $scriptPath = ''
+        $command = ''
+
+        switch ($gateName) {
+            'Encoding' {
+                $scriptPath = Join-Path $workspaceFull 'scripts\Fix-P006-EncodingViolations.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Fix-P006-EncodingViolations.ps1 -WorkspacePath .'
+            }
+            'VersionTag' {
+                $scriptPath = Join-Path $workspaceFull 'scripts\Add-VersionTag.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Add-VersionTag.ps1'
+            }
+            'LogDrift' {
+                $scriptPath = Join-Path $workspaceFull 'tests\Invoke-PreCommitValidation.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath . -AutoRemediateLogDrift'
+            }
+            'PipelineControls' {
+                $scriptPath = Join-Path $workspaceFull 'scripts\Invoke-PipelineIntegrityCheck.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-PipelineIntegrityCheck.ps1 -WorkspacePath .'
+            }
+            'TodoArtifactGuard' {
+                $scriptPath = Join-Path $workspaceFull 'scripts\Invoke-TodoManager.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-TodoManager.ps1 -WorkspacePath .'
+            }
+            'Parse' {
+                $scriptPath = Join-Path $workspaceFull 'tests\Invoke-PreCommitValidation.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath .'
+            }
+            'P027' {
+                $scriptPath = Join-Path $workspaceFull 'tests\Invoke-PreCommitValidation.ps1'
+                $command = 'pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\Invoke-PreCommitValidation.ps1 -WorkspacePath . -AutoCorrectFailures'
+            }
+        }
+
+        [void]$plans.Add([pscustomobject]@{
+            gate         = $gateName
+            count        = $hitCount
+            script       = $(if (Test-Path -LiteralPath $scriptPath) { $scriptPath } else { '' })
+            command      = $command
+            available    = [bool](Test-Path -LiteralPath $scriptPath)
+            remediation  = $(switch ($gateName) {
+                'Encoding'      { 'Run the UTF-8 BOM fixer, then re-run the gate.' }
+                'VersionTag'    { 'Add or normalize VersionTag headers, then re-run the gate.' }
+                'LogDrift'     { 'Auto-remediate untracked drift logs, then re-run the gate.' }
+                'PipelineControls' { 'Repair pipeline artifact integrity, then re-run the gate.' }
+                'TodoArtifactGuard' { 'Normalize todo JSON artifacts, then re-run the gate.' }
+                'Parse'         { 'Fix the parse error and re-run the gate.' }
+                'P027'          { 'Let auto-correct retry the gate, or fix the null-array index and re-run.' }
+                default         { 'Manual review required.' }
+            })
+        })
+    }
+
+    return @($plans)
+}
+
+function Update-PreCommitSafetyNetRegistry {
+    param(
+        [string]$WorkspacePath,
+        [string]$GeneratedAt,
+        [object[]]$Findings,
+        [object[]]$Remediations
+    )
+
+    $registryDir = Join-Path (Join-Path $WorkspacePath 'logs') 'diagnostics'
+    if (-not (Test-Path -LiteralPath $registryDir -PathType Container)) {
+        New-Item -Path $registryDir -ItemType Directory -Force | Out-Null
+    }
+
+    $registryPath = Join-Path $registryDir 'precommit-remediation-safety-net.json'
+    $registry = [ordered]@{
+        schemaVersion = '1.0'
+        updatedAt = $GeneratedAt
+        totalRuns = 0
+        gates = @()
+    }
+
+    if (Test-Path -LiteralPath $registryPath -PathType Leaf) {
+        try {
+            $existing = Get-Content -LiteralPath $registryPath -Raw -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'schemaVersion') { $registry.schemaVersion = [string]$existing.schemaVersion }
+            if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'totalRuns') { $registry.totalRuns = [int]$existing.totalRuns }
+            if ($null -ne $existing -and $existing.PSObject.Properties.Name -contains 'gates') { $registry.gates = @($existing.gates) }
+        } catch {
+            # Corrupt registry should not block validation; rebuild on this run.
+            $registry.gates = @()
+            $registry.totalRuns = 0
+        }
+    }
+
+    $registry.totalRuns = [int]$registry.totalRuns + 1
+
+    $gateGroups = @($Findings | Group-Object Gate)
+    foreach ($group in @($gateGroups)) {
+        $gateName = [string]$group.Name
+        if ([string]::IsNullOrWhiteSpace($gateName)) { $gateName = 'Unknown' }
+
+        $hitCount = @($group.Group).Count
+        $sevSet = @($group.Group | ForEach-Object {
+            if ($null -ne $_ -and $_.PSObject.Properties.Name -contains 'Severity') { [string]$_.Severity }
+        } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
+
+        $remediation = @($Remediations | Where-Object { $_.gate -eq $gateName } | Select-Object -First 1)
+        $command = if (@($remediation).Count -gt 0) { [string]$remediation[0].command } else { '' }
+
+        $existingEntry = @($registry.gates | Where-Object { $_.gate -eq $gateName } | Select-Object -First 1)
+        if (@($existingEntry).Count -eq 0) {
+            $newEntry = [pscustomobject]@{
+                gate = $gateName
+                firstSeenAt = $GeneratedAt
+                lastSeenAt = $GeneratedAt
+                recurrenceCount = [int]$hitCount
+                lastCount = [int]$hitCount
+                severities = @($sevSet)
+                remediationCommand = $command
+                preventativeRule = $(switch ($gateName) {
+                    'LogDrift' { 'Keep runtime logs in logs\\<subfolder>; pre-commit auto-remediation is enabled for untracked drift logs.' }
+                    'P027' { 'Guard index access with @()/.Count and null checks; use targeted SIN-EXEMPT only for documented false positives.' }
+                    'Parse' { 'Run parser checks before staging and keep StrictMode-safe syntax in both PS7.6 and PS5.1.' }
+                    default { 'Add explicit remediation command and codify a recurring prevention rule for this gate.' }
+                })
+            }
+            $registry.gates = @($registry.gates) + @($newEntry)
+            continue
+        }
+
+        $entry = $existingEntry[0]
+        if (-not ($entry.PSObject.Properties.Name -contains 'firstSeenAt')) { Add-Member -InputObject $entry -NotePropertyName 'firstSeenAt' -NotePropertyValue $GeneratedAt }
+        if (-not ($entry.PSObject.Properties.Name -contains 'lastSeenAt')) { Add-Member -InputObject $entry -NotePropertyName 'lastSeenAt' -NotePropertyValue $GeneratedAt }
+        if (-not ($entry.PSObject.Properties.Name -contains 'recurrenceCount')) { Add-Member -InputObject $entry -NotePropertyName 'recurrenceCount' -NotePropertyValue 0 }
+        if (-not ($entry.PSObject.Properties.Name -contains 'lastCount')) { Add-Member -InputObject $entry -NotePropertyName 'lastCount' -NotePropertyValue 0 }
+        if (-not ($entry.PSObject.Properties.Name -contains 'severities')) { Add-Member -InputObject $entry -NotePropertyName 'severities' -NotePropertyValue @() }
+        if (-not ($entry.PSObject.Properties.Name -contains 'remediationCommand')) { Add-Member -InputObject $entry -NotePropertyName 'remediationCommand' -NotePropertyValue '' }
+
+        $entry.lastSeenAt = $GeneratedAt
+        $entry.recurrenceCount = [int]$entry.recurrenceCount + [int]$hitCount
+        $entry.lastCount = [int]$hitCount
+        $entry.severities = @($sevSet)
+        if (-not [string]::IsNullOrWhiteSpace($command)) { $entry.remediationCommand = $command }
+    }
+
+    $registry.updatedAt = $GeneratedAt
+    $registry.gates = @($registry.gates | Sort-Object gate)
+    $registry | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $registryPath -Encoding UTF8
+    return $registryPath
+}
+
+function Write-RedactedFailureSummary {
+    param(
+        [pscustomobject]$Summary,
+        [object[]]$Remediations
+    )
+
+    Write-Gate ('  Redacted summary: total={0} blocking={1} errors={2} warnings={3}' -f $Summary.totalCount, $Summary.blockingCount, $Summary.errorCount, $Summary.warnCount) 'Fail'
+    foreach ($item in @($Summary.bySeverity)) {
+        Write-Gate ('    Severity {0}: {1}' -f $item.severity, $item.count) 'Fail'
+    }
+    foreach ($item in @($Summary.byGate)) {
+        Write-Gate ('    Gate {0}: {1}' -f $item.gate, $item.count) 'Fail'
+    }
+    if (@($Remediations).Count -gt 0) {
+        Write-Gate '  Remediation candidates:' 'Warn'
+        foreach ($item in @($Remediations)) {
+            $scriptNote = if ($item.available) { $item.script } else { '[unavailable]' }
+            Write-Gate ('    {0} x{1} -> {2}' -f $item.gate, $item.count, $scriptNote) 'Warn'
+        }
+    }
+}
+
 function Invoke-PreCommitGateRecoveryLoop {
     [CmdletBinding()]
     param(
@@ -793,6 +1156,16 @@ if ($OutputJson -eq $PSCommandPath) {
     $OutputJson = Join-Path (Join-Path $WorkspacePath 'temp') ("precommit-{0}.json" -f (Get-Date -Format 'yyMMddHHmmss'))
 }
 
+if (@($StagedFiles).Count -eq 1 -and $StagedFiles[0] -is [string]) {
+    $candidate = [string]$StagedFiles[0]
+    if ($candidate -match "`n|`r") {
+        $splitFiles = @($candidate -split "`r?`n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        if (@($splitFiles).Count -gt 1) {
+            $StagedFiles = $splitFiles
+        }
+    }
+}
+
 Write-Gate '' 'Info'
 Write-Gate '============================================================' 'Head'
 Write-Gate '  PRE-COMMIT VALIDATION' 'Head'
@@ -810,44 +1183,44 @@ Write-Gate '[Gate 1] PowerShell parse check...' 'Info'
 $parseHits = @(Invoke-ParseGate -Files $files)
 $parseHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($parseHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $parseHits | ForEach-Object { Write-Gate "  FAIL $($_.File):$($_.Line) - $($_.Message)" 'Fail' } }
+else { Write-Gate ("  Failed: {0} parse error(s)" -f @($parseHits).Count) 'Fail' }
 
-Write-Gate '[Gate 2] Critical SIN patterns (P001/P009/P010)...' 'Info'
-$sinHits = @(Invoke-CriticalSINGate -Files $files)
+Write-Gate '[Gate 2] Critical SIN patterns (inline P001/P009/P010 + sin_registry CRITICAL sweep)...' 'Info'
+$sinHits = @(Invoke-CriticalSINGate -Files $files -Root $WorkspacePath)
 $sinHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($sinHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $sinHits | ForEach-Object { Write-Gate "  FAIL $($_.File):$($_.Line) - $($_.Message)" 'Fail' } }
+else { Write-Gate ("  Failed: {0} critical SIN finding(s)" -f @($sinHits).Count) 'Fail' }
 
 Write-Gate '[Gate 3] P027 null-array-index scan...' 'Info'
 $p027Hits = @(Invoke-P027Gate -Files $files -Root $WorkspacePath -MaxFileSizeKB $MaxP027FileSizeKB -MaxFiles $MaxP027Files)
 $p027Hits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($p027Hits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $p027Hits | ForEach-Object { Write-Gate "  FAIL $($_.File):$($_.Line) - $($_.Message)" 'Fail' } }
+else { Write-Gate ("  Failed: {0} P027 finding(s)" -f @($p027Hits).Count) 'Fail' }
 
 Write-Gate '[Gate 4] UTF-8 BOM encoding check (P006)...' 'Info'
 $encHits = @(Invoke-EncodingGate -Files $files)
 $encHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($encHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $encHits | ForEach-Object { Write-Gate "  WARN $($_.File) - $($_.Message)" 'Warn' } }
+else { Write-Gate ("  Failed: {0} encoding violation(s)" -f @($encHits).Count) 'Warn' }
 
 Write-Gate '[Gate 5] VersionTag alignment (P007)...' 'Info'
 $vtHits = @(Invoke-VersionTagGate -Files $files)
 $vtHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($vtHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $vtHits | ForEach-Object { Write-Gate "  WARN $($_.File) - $($_.Message)" 'Warn' } }
+else { Write-Gate ("  Failed: {0} VersionTag violation(s)" -f @($vtHits).Count) 'Warn' }
 
 Write-Gate '[Gate 6] Todo artifact guard (_master merge markers + object-root active todos)...' 'Info'
 $todoArtifactHits = @(Invoke-TodoArtifactGuardGate -Root $WorkspacePath)
 $todoArtifactHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($todoArtifactHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $todoArtifactHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+else { Write-Gate ("  Failed: {0} todo artifact issue(s)" -f @($todoArtifactHits).Count) 'Fail' }
 
 if (-not $SkipPipelineControlGate) {
     Write-Gate '[Gate 7] Pipeline controls (recursive discovery, MIME, sanitization, SHA256)...' 'Info'
     $pipelineControlHits = @(Invoke-PipelineControlGate -Root $WorkspacePath)
     $pipelineControlHits | ForEach-Object { [void]$allFindings.Add($_) }
     if (@($pipelineControlHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-    else { $pipelineControlHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+    else { Write-Gate ("  Failed: {0} pipeline control issue(s)" -f @($pipelineControlHits).Count) 'Fail' }
 }
 
 if (-not $SkipPipelineMetricGate) {
@@ -855,21 +1228,32 @@ if (-not $SkipPipelineMetricGate) {
     $metricHits = @(Invoke-PipelineMetricGate -Root $WorkspacePath -IncludeGuiCoverage:$PipelineMetricIncludeGuiCoverage)
     $metricHits | ForEach-Object { [void]$allFindings.Add($_) }
     if (@($metricHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-    else { $metricHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+    else { Write-Gate ("  Failed: {0} pipeline metric issue(s)" -f @($metricHits).Count) 'Fail' }
 }
 
 Write-Gate '[Gate 9] Log drift and viewer log-reference guard...' 'Info'
-$logDriftHits = @(Invoke-LogDriftGate -Root $WorkspacePath)
+$logDriftHits = @(Invoke-LogDriftGate -Root $WorkspacePath -AutoRemediate:$AutoRemediateLogDrift)
 $logDriftHits | ForEach-Object { [void]$allFindings.Add($_) }
 if (@($logDriftHits).Count -eq 0) { Write-Gate '  Passed' 'Pass' }
-else { $logDriftHits | ForEach-Object { Write-Gate "  FAIL $($_.File) - $($_.Message)" 'Fail' } }
+else { Write-Gate ("  Failed: {0} log drift issue(s)" -f @($logDriftHits).Count) 'Fail' }
 
 $errorCount = @($allFindings | Where-Object { $_.Severity -eq 'ERROR' }).Count
 $warnCount = @($allFindings | Where-Object { $_.Severity -eq 'WARN' }).Count
 $blockingCount = $errorCount + $(if ($FailOnWarning) { $warnCount } else { 0 })
+$redactedSummary = Get-RedactedFindingSummary -Findings @($allFindings) -BlockingCount $blockingCount -ErrorCount $errorCount -WarnCount $warnCount
+$remediationPlan = Get-PreCommitRemediationPlan -Findings @($allFindings) -WorkspacePath $WorkspacePath
+$safetyNetRegistryPath = ''
+try {
+    $safetyNetRegistryPath = Update-PreCommitSafetyNetRegistry -WorkspacePath $WorkspacePath -GeneratedAt $timestamp -Findings @($allFindings) -Remediations @($remediationPlan)
+} catch {
+    Write-Gate "  [WARN] Could not update pre-commit safety-net registry: $($_.Exception.Message)" 'Warn'
+}
 
 Write-Gate '============================================================' 'Head'
 Write-Gate "  Errors : $errorCount  |  Warnings : $warnCount" $(if ($errorCount -gt 0) { 'Fail' } else { 'Pass' })
+if ($blockingCount -gt 0) {
+    Write-RedactedFailureSummary -Summary $redactedSummary -Remediations $remediationPlan
+}
 
 $additionalScanCandidates = Get-AdditionalScanCandidateInventory -Root $WorkspacePath
 
@@ -885,6 +1269,9 @@ $report = [ordered]@{
     autoCorrect   = $null
     autoCorrectScope = $AutoCorrectScope
     findings      = @($allFindings)
+    redactedSummary = $redactedSummary
+    remediationPlan = $remediationPlan
+    safetyNetRegistryPath = $safetyNetRegistryPath
     additionalScanCandidates = $additionalScanCandidates
 }
 
@@ -936,7 +1323,9 @@ if ($AutoCorrectFailures -and $blockingCount -gt 0) {
             }
         }
 
-        $procArgs = $childArgsBase + @('-AutoCorrectFailures')
+        # The parent loop owns retry orchestration; the child run must be a plain
+        # validation pass so it can return a stable report for the next decision.
+        $procArgs = $childArgsBase
         $proc = Start-Process -FilePath $hostExe -ArgumentList $procArgs -Wait -PassThru -NoNewWindow
         if ($proc.ExitCode -ne 0) {
             $childReport = if (Test-Path -LiteralPath $attemptOutputJson) { Get-Content -LiteralPath $attemptOutputJson -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }

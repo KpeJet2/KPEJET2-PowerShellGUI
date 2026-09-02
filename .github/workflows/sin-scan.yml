@@ -46,6 +46,7 @@ jobs:
         shell: pwsh
         run: |
           ./tests/Invoke-SINPatternScanner.ps1 `
+            -Runtime Both `
             -RatchetMode Permissive `
             -BaselineJson config/sin-baseline.json `
             -OutputJson reports/sin-scan-permissive.json `
@@ -65,47 +66,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $scanPath = 'reports/sin-scan-permissive.json'
-          if (-not (Test-Path -LiteralPath $scanPath)) {
-            exit 0
-          }
-
-          $privateRootPattern = '(?i)(^|[\\/])(sovereign-kernel|logs|Report|reports|checkpoints|pki|temp|\.history|\.snapshots)([\\/]|$)|localhost|127\.0\.0\.1|msaib|XPS15-MS-'
-          $scan = Get-Content -LiteralPath $scanPath -Raw | ConvertFrom-Json
-
-          if ($scan.PSObject.Properties.Name -contains 'workspace') {
-            $scan.workspace = '[REDACTED]'
-          }
-
-          if ($scan.PSObject.Properties.Name -contains 'findings') {
-            $safeFindings = @()
-            foreach ($finding in @($scan.findings)) {
-              $candidatePath = ''
-              if ($finding.PSObject.Properties.Name -contains 'file') {
-                $candidatePath = [string]$finding.file
-              }
-              if ($finding.PSObject.Properties.Name -contains 'path') {
-                $candidatePath = $candidatePath + ' ' + [string]$finding.path
-              }
-              if ($finding.PSObject.Properties.Name -contains 'fullPath') {
-                $candidatePath = $candidatePath + ' ' + [string]$finding.fullPath
-              }
-
-              if ($candidatePath -match $privateRootPattern) {
-                continue
-              }
-
-              if ($finding.PSObject.Properties.Name -contains 'content') {
-                $finding.content = '[REDACTED]'
-              }
-
-              $safeFindings += $finding
-            }
-
-            $scan.findings = $safeFindings
-          }
-
-          $scan | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $scanPath -Encoding UTF8
+          ./scripts/Protect-SinScanArtifact.ps1 -ScanJson reports/sin-scan-permissive.json
 
       - name: Run pipeline continuous refine scan
         if: always()
@@ -165,6 +126,44 @@ jobs:
             Write-Host "SIN scan output not found; skipping bug creation."
           }
         continue-on-error: true
+
+  # Non-PS asset coverage: .xhtml/.js/.bat/.cmd/.json patterns (P032/P033/P034-XHTML,
+  # P059-P062, P067, P081, P082) never fire under the default *.ps1/*.psm1 discovery.
+  # Runs advisory-only until the extended baseline has been recorded, then ratchets.
+  sin-scan-extended:
+    name: SIN Extended Asset Scan (advisory)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run SIN scanner over non-PowerShell assets
+        shell: pwsh
+        run: |
+          ./tests/Invoke-SINPatternScanner.ps1 `
+            -Runtime Both `
+            -ExtraExtensions .xhtml,.js,.bat,.cmd,.json `
+            -RatchetMode Permissive `
+            -BaselineJson config/sin-baseline-extended.json `
+            -OutputJson reports/sin-scan-extended.json
+        continue-on-error: true
+
+      - name: Sanitize extended scan artifact
+        if: always()
+        shell: pwsh
+        run: |
+          ./scripts/Protect-SinScanArtifact.ps1 -ScanJson reports/sin-scan-extended.json
+
+      - name: Upload extended scan artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sin-scan-extended
+          path: reports/sin-scan-extended.json
+          retention-days: 14
 
   refine-smoke-matrix:
     runs-on: windows-latest

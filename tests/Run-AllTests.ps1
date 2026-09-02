@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: yes
 # SupportsPS7.6: yes
 # feature:pipeline feature:stability phase:verify

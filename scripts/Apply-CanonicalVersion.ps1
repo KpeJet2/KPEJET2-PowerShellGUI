@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+# VersionTag: 2607.B7.V53.0
 # FileRole: Script
 # Apply canonical VersionTag bulk rewrite preserving original encoding.
 # Reads workspace-versions.csv, replaces all existing VersionTag values with $TargetVersion.

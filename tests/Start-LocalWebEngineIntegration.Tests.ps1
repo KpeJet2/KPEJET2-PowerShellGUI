@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -208,10 +208,10 @@ BeforeAll {
         } catch { <# Intentional: non-fatal #> }
         Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
     }
-    # Also stop any other powershell process owning port 8042 via netstat
+    # Probe for any other PowerShell process listening on port 8042 via netstat
     try {
-        $netLines = netstat -ano | Where-Object { $_ -match '127\.0\.0\.1:8042\s+0\.0\.0\.0:0\s+LISTENING' }
-    } catch { $netLines = @() }
+        [void](netstat -ano | Where-Object { $_ -match '127\.0\.0\.1:8042\s+0\.0\.0\.0:0\s+LISTENING' })
+    } catch { <# Intentional: non-fatal #> }
     # Brief wait for port release
     Start-Sleep -Milliseconds 800
 
@@ -374,6 +374,30 @@ Describe 'LWE — Engine events endpoint' {
         $isArray = $parsed -is [System.Array]
         $hasEventsArray = ($parsed.PSObject.Properties.Name -contains 'events' -and @($parsed.events).Count -ge 0)
         ($isArray -or $hasEventsArray) | Should -BeTrue
+    }
+}
+
+Describe 'LWE — Pipeline approvals endpoint' {
+    It 'GET /api/pipeline/approvals returns HTTP 200' {
+        $r = Invoke-EngineGet '/api/pipeline/approvals'
+        if ($r.Status -eq 0) {
+            Set-ItResult -Pending -Because 'Engine endpoint transiently unavailable'
+            return
+        }
+        $r.Status | Should -Be 200
+    }
+
+    It 'GET /api/pipeline/approvals returns pending/items/count fields' {
+        $r = Invoke-EngineGet '/api/pipeline/approvals'
+        if ($r.Status -eq 0) {
+            Set-ItResult -Pending -Because 'Engine endpoint transiently unavailable'
+            return
+        }
+        $r.Status | Should -Be 200
+        $r.Json | Should -Not -BeNullOrEmpty
+        $r.Json.PSObject.Properties.Name | Should -Contain 'pending'
+        $r.Json.PSObject.Properties.Name | Should -Contain 'items'
+        $r.Json.PSObject.Properties.Name | Should -Contain 'count'
     }
 }
 

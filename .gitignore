@@ -28,7 +28,11 @@ pki/vault-backups/
 agents/*/pki/*.key
 # local report exports and checkpoints that should not be published
 Report/
+reports/
 reports/pipeline-refine/
+reports/interop-iter/
+reports/sin-hardcoded-path-remediation.json
+temp/host-fixes/
 checkpoints/
 sovereign-kernel/**/*.jsonl
 sovereign-kernel/**/*.log
@@ -41,6 +45,9 @@ XPS15-MS-*.log*
 # ignore system specific
 Thumbs.db
 ehthumbs.db
+config/system-variables.xml
+.pwshgui-session.lock
+.copilot-action-id
 # ignore user profile
 *.suo
 # exclude built manifest files? maybe include them

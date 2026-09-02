@@ -1,0 +1,278 @@
+{
+  "SchemaVersion": "CronPipeFlow/1.0",
+  "VersionTag": "2608.B1.V54.2",
+  "generatedAtUtc": "2026-08-14T04:09:18.1851069Z",
+  "generatedBy": "modules/PwShGUI-PipelineFlowGraph.psm1",
+  "graphHash": "97122a098bd3aa30280833de04d69d9f58e47be8fefbb73e89b523493d849507",
+  "sourceHashes": {
+    "config/dynamic-manifest.json": "227edf42780246b2f92c234ca5ec85a706f03e6534e2fbf0b99d4d892303bedf",
+    "config/pipeline-canonical-paths.json": "2eca6db8d02f8c465da795c7335f80cd6135f0e649600a66908050f03fb2b699",
+    "scripts/Invoke-CronProcessor.ps1": "755bf81c6a16bcf04305ab3ad5f3bdec3f1bf069973aab1c3316d5791dc4408c",
+    "scripts/Invoke-PipelineContinuousRefine.ps1": "0084b017b3c77d6962e93d2823558c2f5d3367fd8cc7120d06c75f4c0fc88af4",
+    "scripts/Run-FullPipeline.ps1": "62ba86c620730daad5286f2fa4e65187d62d5e70d9036f14c2c5db5579235c2d",
+    "tests/Invoke-PreCommitValidation.ps1": "5337448816bd20dd98d519930bad237131c22f5b2a982761a97ce8767c18a7b1",
+    "tests/Invoke-SINPatternScanner.ps1": "8df99dcf32bdef7bac19a4f9809f5298b49ff2692f5d501dfeb1ebb727c691d4"
+  },
+  "blades": [
+    {
+      "id": "blade.pipeline",
+      "title": "Pipeline",
+      "icon": "&#x2699;",
+      "order": 10,
+      "parent": null
+    },
+    {
+      "id": "blade.gates",
+      "title": "Test Gates",
+      "icon": "&#x1F6A6;",
+      "order": 20,
+      "parent": "blade.pipeline"
+    },
+    {
+      "id": "blade.cron",
+      "title": "Cron",
+      "icon": "&#x23F1;",
+      "order": 30,
+      "parent": null
+    },
+    {
+      "id": "blade.artifacts",
+      "title": "Artifacts",
+      "icon": "&#x1F4E6;",
+      "order": 40,
+      "parent": null
+    },
+    {
+      "id": "blade.glossary",
+      "title": "Glossary",
+      "icon": "&#x1F4D6;",
+      "order": 90,
+      "parent": null
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node.source.config-dynamic-manifest-json",
+      "label": "config/dynamic-manifest.json",
+      "kind": "script",
+      "blade": "blade.artifacts",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "config/dynamic-manifest.json",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.config-pipeline-canonical-paths-json",
+      "label": "config/pipeline-canonical-paths.json",
+      "kind": "script",
+      "blade": "blade.artifacts",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "config/pipeline-canonical-paths.json",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.scripts-invoke-cronprocessor-ps1",
+      "label": "scripts/Invoke-CronProcessor.ps1",
+      "kind": "script",
+      "blade": "blade.cron",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "scripts/Invoke-CronProcessor.ps1",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",
+      "label": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "kind": "script",
+      "blade": "blade.pipeline",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "scripts/Invoke-PipelineContinuousRefine.ps1",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.scripts-run-fullpipeline-ps1",
+      "label": "scripts/Run-FullPipeline.ps1",
+      "kind": "script",
+      "blade": "blade.pipeline",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "scripts/Run-FullPipeline.ps1",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.tests-invoke-precommitvalidation-ps1",
+      "label": "tests/Invoke-PreCommitValidation.ps1",
+      "kind": "script",
+      "blade": "blade.gates",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "tests/Invoke-PreCommitValidation.ps1",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    },
+    {
+      "id": "node.source.tests-invoke-sinpatternscanner-ps1",
+      "label": "tests/Invoke-SINPatternScanner.ps1",
+      "kind": "script",
+      "blade": "blade.gates",
+      "parent": null,
+      "order": 0,
+      "sourceFile": "tests/Invoke-SINPatternScanner.ps1",
+      "sourceLine": 1,
+      "functionName": "",
+      "blocking": false,
+      "status": "UNKNOWN",
+      "terms": [
+        "pipeline",
+        "flow"
+      ],
+      "links": [
+        {
+          "rel": "readme",
+          "href": "README.md",
+          "title": "Workspace README"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "node.source.config-dynamic-manifest-json",
+      "to": "node.source.config-pipeline-canonical-paths-json",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    },
+    {
+      "from": "node.source.config-pipeline-canonical-paths-json",
+      "to": "node.source.scripts-invoke-cronprocessor-ps1",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    },
+    {
+      "from": "node.source.scripts-invoke-cronprocessor-ps1",
+      "to": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    },
+    {
+      "from": "node.source.scripts-invoke-pipelinecontinuousrefine-ps1",
+      "to": "node.source.scripts-run-fullpipeline-ps1",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    },
+    {
+      "from": "node.source.scripts-run-fullpipeline-ps1",
+      "to": "node.source.tests-invoke-precommitvalidation-ps1",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    },
+    {
+      "from": "node.source.tests-invoke-precommitvalidation-ps1",
+      "to": "node.source.tests-invoke-sinpatternscanner-ps1",
+      "kind": "sequence",
+      "condition": "scaffold-order",
+      "blocking": false
+    }
+  ],
+  "glossary": [],
+  "crossRefs": {
+    "canonicalPaths": "config/pipeline-canonical-paths.json",
+    "tasks": ".vscode/tasks.json"
+  },
+  "stats": {
+    "nodeCount": 7,
+    "edgeCount": 6,
+    "gateCount": 0,
+    "orphanNodeCount": 0
+  }
+}
