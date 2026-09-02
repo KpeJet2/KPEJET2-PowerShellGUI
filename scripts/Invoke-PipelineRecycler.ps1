@@ -32,6 +32,10 @@ try {
 $result = Invoke-PipelineItemRecycle -WorkspacePath $WorkspacePath -ItemId $ItemId -Reason $Reason -Reapprove:$Reapprove
 if ($null -eq $result) { exit 1 }
 
+if ($PassThru) {
+    $result
+    exit 0
+}
 [ordered]@{
     id = [string]$result.id
     status = [string]$result.status
@@ -39,5 +43,3 @@ if ($null -eq $result) { exit 1 }
     recycleCount = [int]$result.recycleCount
     reapproved = [bool]$Reapprove.IsPresent
 } | ConvertTo-Json -Depth 5
-if (-not $PassThru) { exit 0 }
-$result

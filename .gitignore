@@ -45,6 +45,9 @@ XPS15-MS-*.log*
 # ignore system specific
 Thumbs.db
 ehthumbs.db
+config/system-variables.xml
+.pwshgui-session.lock
+.copilot-action-id
 # ignore user profile
 *.suo
 # exclude built manifest files? maybe include them

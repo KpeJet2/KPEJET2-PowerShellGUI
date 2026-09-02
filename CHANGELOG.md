@@ -5,7 +5,7 @@ This changelog is generated from VersionTag headers and commit history.
 
 ## Recent Changes
 
-- **2026-08-03 22:44:43** Baseline refresh (`config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 60 -> 6; MEDIUM:duplicate-function: 0 -> 18
+- **2026-08-03 22:44:43** Baseline refresh (`config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 60 -> 15; MEDIUM:duplicate-function: 0 -> 18
 
 - **2026-08-02 21:00:35** Baseline refresh (`./config/pipeline-refine-baseline-staged.json`, profile=staged): MEDIUM:deprecated-reference: 1 -> 60
 

@@ -208,7 +208,7 @@ BeforeAll {
         } catch { <# Intentional: non-fatal #> }
         Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
     }
-    # Also stop any other powershell process owning port 8042 via netstat
+    # Probe for any other PowerShell process listening on port 8042 via netstat
     try {
         [void](netstat -ano | Where-Object { $_ -match '127\.0\.0\.1:8042\s+0\.0\.0\.0:0\s+LISTENING' })
     } catch { <# Intentional: non-fatal #> }
