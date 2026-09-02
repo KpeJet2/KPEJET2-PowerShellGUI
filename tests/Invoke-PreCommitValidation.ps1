@@ -107,6 +107,99 @@ function Get-TargetFiles {
     return $allFiles
 }
 
+function Get-WorkspaceRelativePath {
+    param([string]$Root, [string]$Path)
+
+    $rootFull = [System.IO.Path]::GetFullPath($Root)
+    $pathFull = [System.IO.Path]::GetFullPath($Path)
+    if ($pathFull -eq $rootFull) { return '.' }
+    if ($pathFull.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $pathFull.Substring($rootFull.Length).TrimStart('\', '/')
+    }
+    return $pathFull
+}
+
+function Get-AdditionalScanCandidateInventory {
+    param([string]$Root)
+
+    $defaultScanRoots = @('modules', 'scripts', 'tests')
+    $excludeDirNames = @('.git', '.venv', 'node_modules', 'temp', 'logs', 'reports', 'Report', 'checkpoints', '.history', '~DOWNLOADS', '~REPORTS')
+
+    $scannedRootPaths = @()
+    foreach ($name in $defaultScanRoots) {
+        $candidate = Join-Path $Root $name
+        if (Test-Path -LiteralPath $candidate -PathType Container) {
+            $scannedRootPaths += [System.IO.Path]::GetFullPath($candidate)
+        }
+    }
+
+    $candidateFiles = @()
+    try {
+        $candidateFiles = @(Get-ChildItem -LiteralPath $Root -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.Extension -in '.ps1', '.psm1' -and
+                $_.FullName -notmatch '[\\/]\.git[\\/]' -and
+                $_.FullName -notmatch '[\\/]\.venv[\\/]' -and
+                $_.FullName -notmatch '[\\/]node_modules[\\/]' -and
+                $_.FullName -notmatch '[\\/]temp[\\/]' -and
+                $_.FullName -notmatch '[\\/]logs[\\/]' -and
+                $_.FullName -notmatch '[\\/]reports?[\\/]' -and
+                $_.FullName -notmatch '[\\/]checkpoints[\\/]' -and
+                $_.FullName -notmatch '[\\/]\.history[\\/]' -and
+                $_.FullName -notmatch '[\\/]~DOWNLOADS[\\/]' -and
+                $_.FullName -notmatch '[\\/]~REPORTS[\\/]'
+            })
+    } catch {
+        $candidateFiles = @()
+    }
+
+    $notScannedFolders = [System.Collections.ArrayList]::new()
+    $notScannedScripts = [System.Collections.ArrayList]::new()
+    $notScannedModules = [System.Collections.ArrayList]::new()
+
+    foreach ($file in @($candidateFiles)) {
+        $fullName = [System.IO.Path]::GetFullPath($file.FullName)
+        $relativePath = Get-WorkspaceRelativePath -Root $Root -Path $fullName
+        $isInDefaultScope = $false
+        foreach ($scanRoot in $scannedRootPaths) {
+            if ($fullName.StartsWith($scanRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $isInDefaultScope = $true
+                break
+            }
+        }
+        if ($isInDefaultScope) { continue }
+
+        $segments = @($relativePath -split '[\\/]')
+        $skipByFolder = $false
+        foreach ($segment in $segments) {
+            if ($excludeDirNames -contains $segment) {
+                $skipByFolder = $true
+                break
+            }
+        }
+        if ($skipByFolder) { continue }
+
+        $parentDir = Split-Path -Parent $fullName
+        $parentRelative = Get-WorkspaceRelativePath -Root $Root -Path $parentDir
+        if ($parentRelative -and $parentRelative -ne '.' -and -not ($notScannedFolders -contains $parentRelative)) {
+            [void]$notScannedFolders.Add($parentRelative)
+        }
+
+        if ($file.Extension -eq '.psm1') {
+            [void]$notScannedModules.Add($relativePath)
+        } else {
+            [void]$notScannedScripts.Add($relativePath)
+        }
+    }
+
+    return [ordered]@{
+        scannedRoots       = @($defaultScanRoots)
+        notScannedFolders  = @($notScannedFolders | Sort-Object)
+        notScannedScripts  = @($notScannedScripts | Sort-Object)
+        notScannedModules  = @($notScannedModules | Sort-Object)
+    }
+}
+
 function Invoke-ParseGate {
     param([System.IO.FileInfo[]]$Files)
     $findings = [System.Collections.ArrayList]::new()
@@ -658,6 +751,40 @@ function Invoke-LogDriftGate {
     return @($findings)
 }
 
+function Invoke-PreCommitGateRecoveryLoop {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [scriptblock]$Action,
+        [Parameter(Mandatory)] [scriptblock]$ShouldRetry,
+        [int]$MaxAttempts = 3,
+        [string]$Label = 'gate recovery'
+    )
+
+    $attemptResults = [System.Collections.ArrayList]::new()
+    $lastResult = $null
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        $lastResult = & $Action -Attempt $attempt
+        [void]$attemptResults.Add([PSCustomObject]@{
+            attempt = $attempt
+            passed = if ($lastResult.PSObject.Properties['passed']) { [bool]$lastResult.passed } else { $false }
+            blockingCount = if ($lastResult.PSObject.Properties['blockingCount']) { [int]$lastResult.blockingCount } else { 0 }
+        })
+
+        if (-not (& $ShouldRetry -Attempt $attempt -Result $lastResult)) {
+            break
+        }
+    }
+
+    return [PSCustomObject]@{
+        label = $Label
+        attempts = @($attemptResults).Count
+        passed = if ($lastResult -and $lastResult.PSObject.Properties['passed']) { [bool]$lastResult.passed } else { $false }
+        result = $lastResult
+        attemptResults = @($attemptResults)
+    }
+}
+
 $timestamp = (Get-Date).ToUniversalTime().ToString('o')
 if (-not $OutputJson) {
     $OutputJson = Join-Path $WorkspacePath ("temp\precommit-{0}.json" -f (Get-Date -Format 'yyMMddHHmmss'))
@@ -744,6 +871,8 @@ $blockingCount = $errorCount + $(if ($FailOnWarning) { $warnCount } else { 0 })
 Write-Gate '============================================================' 'Head'
 Write-Gate "  Errors : $errorCount  |  Warnings : $warnCount" $(if ($errorCount -gt 0) { 'Fail' } else { 'Pass' })
 
+$additionalScanCandidates = Get-AdditionalScanCandidateInventory -Root $WorkspacePath
+
 $report = [ordered]@{
     generatedAt   = $timestamp
     source        = 'Invoke-PreCommitValidation.ps1'
@@ -756,6 +885,7 @@ $report = [ordered]@{
     autoCorrect   = $null
     autoCorrectScope = $AutoCorrectScope
     findings      = @($allFindings)
+    additionalScanCandidates = $additionalScanCandidates
 }
 
 try {
@@ -768,24 +898,84 @@ try {
 }
 
 if ($AutoCorrectFailures -and $blockingCount -gt 0) {
-    Write-Gate '[AutoCorrect] Attempting iterative corrections for blocking findings...' 'Info'
-    $autoCorrectModule = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AutoCorrectGate.psm1'
-    if (Test-Path -LiteralPath $autoCorrectModule) {
-        try {
-            Import-Module -LiteralPath $autoCorrectModule -Force -DisableNameChecking -ErrorAction Stop
-            $autoCorrectReport = Invoke-AutoCorrectGate -WorkspacePath $WorkspacePath -FailItems @($allFindings) -MaxAttempts 3 -Scope $AutoCorrectScope -FocusTargets @($AutoCorrectFocusTargets) -RecentDays $AutoCorrectRecentDays
-            $report.autoCorrect = $autoCorrectReport
-            $report.errorCount = $autoCorrectReport.finalErrorCount
-            $report.warnCount = $autoCorrectReport.finalWarnCount
-            $report.passed = [bool]$autoCorrectReport.passed
-            $blockingCount = if ($autoCorrectReport.passed) { 0 } else { 1 }
-            $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
-            Write-Gate ("  AutoCorrect: corrected={0} escalated={1} stopped={2}" -f $autoCorrectReport.corrected, $autoCorrectReport.escalated, $autoCorrectReport.stopped) 'Info'
-        } catch {
-            Write-Gate "  [WARN] AutoCorrect failed: $($_.Exception.Message)" 'Warn'
+    $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+    $childArgsBase = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $PSCommandPath,
+        '-WorkspacePath', $WorkspacePath,
+        '-OutputJson', $OutputJson,
+        '-Quiet'
+    )
+    if ($FailOnWarning) { $childArgsBase += '-FailOnWarning' }
+    if ($SkipPipelineControlGate) { $childArgsBase += '-SkipPipelineControlGate' }
+    if ($SkipPipelineMetricGate) { $childArgsBase += '-SkipPipelineMetricGate' }
+    if ($PipelineMetricIncludeGuiCoverage) { $childArgsBase += '-PipelineMetricIncludeGuiCoverage' }
+    if (@($StagedFiles).Count -gt 0) {
+        $childArgsBase += '-StagedFiles'
+        $childArgsBase += @($StagedFiles)
+    }
+
+    $recoveryLoop = Invoke-PreCommitGateRecoveryLoop -Label 'pre-commit auto-correction' -MaxAttempts 3 -Action {
+        param([int]$Attempt)
+        $attemptOutputJson = if ($Attempt -eq 1) { $OutputJson } else { Join-Path (Split-Path $OutputJson -Parent) ("precommit-retry-{0}-{1}.json" -f $Attempt, (Get-Date -Format 'yyMMddHHmmssfff')) }
+
+        if ($Attempt -gt 1) {
+            Write-Gate "[AutoCorrect] Attempt $Attempt/3 after previous failure..." 'Info'
+            $autoCorrectModule = Join-Path (Join-Path $WorkspacePath 'modules') 'PwShGUI-AutoCorrectGate.psm1'
+            if (Test-Path -LiteralPath $autoCorrectModule) {
+                try {
+                    Import-Module -LiteralPath $autoCorrectModule -Force -DisableNameChecking -ErrorAction Stop
+                    $autoCorrectReport = Invoke-AutoCorrectGate -WorkspacePath $WorkspacePath -FailItems @($allFindings) -MaxAttempts 3 -Scope $AutoCorrectScope -FocusTargets @($AutoCorrectFocusTargets) -RecentDays $AutoCorrectRecentDays
+                    Write-Gate ("  AutoCorrect: corrected={0} escalated={1} stopped={2}" -f $autoCorrectReport.corrected, $autoCorrectReport.escalated, $autoCorrectReport.stopped) 'Info'
+                } catch {
+                    Write-Gate "  [WARN] AutoCorrect failed: $($_.Exception.Message)" 'Warn'
+                }
+            } else {
+                Write-Gate "  [WARN] AutoCorrect module not found: $autoCorrectModule" 'Warn'
+            }
         }
-    } else {
-        Write-Gate "  [WARN] AutoCorrect module not found: $autoCorrectModule" 'Warn'
+
+        $procArgs = $childArgsBase + @('-AutoCorrectFailures')
+        $proc = Start-Process -FilePath $hostExe -ArgumentList $procArgs -Wait -PassThru -NoNewWindow
+        if ($proc.ExitCode -ne 0) {
+            $childReport = if (Test-Path -LiteralPath $attemptOutputJson) { Get-Content -LiteralPath $attemptOutputJson -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }
+            if ($null -ne $childReport) {
+                $report = [ordered]@{
+                    passed = [bool]$childReport.passed
+                    blockingCount = [int]$childReport.errorCount + $(if ($childReport.failOnWarning) { [int]$childReport.warnCount } else { 0 })
+                    errorCount = [int]$childReport.errorCount
+                    warnCount = [int]$childReport.warnCount
+                    findings = @($childReport.findings)
+                    autoCorrect = $childReport.autoCorrect
+                }
+                return [PSCustomObject]$report
+            }
+            return [PSCustomObject]@{ passed = $false; blockingCount = 1; errorCount = 1; warnCount = 0; findings = @(); autoCorrect = $null }
+        }
+
+        $childReport = Get-Content -LiteralPath $attemptOutputJson -Raw -Encoding UTF8 | ConvertFrom-Json
+        $blockingCount = [int]$childReport.errorCount + $(if ($childReport.failOnWarning) { [int]$childReport.warnCount } else { 0 })
+        return [PSCustomObject]@{
+            passed = [bool]$childReport.passed
+            blockingCount = $blockingCount
+            errorCount = [int]$childReport.errorCount
+            warnCount = [int]$childReport.warnCount
+            findings = @($childReport.findings)
+            autoCorrect = $childReport.autoCorrect
+            report = $childReport
+        }
+    } -ShouldRetry {
+        param([int]$Attempt, [object]$Result)
+        return ($Attempt -lt 3 -and -not [bool]$Result.passed -and [int]$Result.blockingCount -gt 0)
+    }
+
+    if ($recoveryLoop.passed) {
+        $report = $recoveryLoop.result.report
+        $blockingCount = [int]$recoveryLoop.result.blockingCount
+        if ($report) {
+            $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $OutputJson -Encoding UTF8
+        }
     }
 }
 

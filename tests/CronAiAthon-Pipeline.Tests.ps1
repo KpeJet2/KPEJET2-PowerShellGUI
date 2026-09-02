@@ -1,4 +1,4 @@
-# VersionTag: 2607.B6.V53.0
+﻿# VersionTag: 2607.B6.V53.0
 # SupportPS5.1: null
 # SupportsPS7.6: null
 # SupportPS5.1TestedDate: null
@@ -151,6 +151,25 @@ Describe 'Pipeline CRUD' {
         # Item is now IN_PROGRESS, trying to go to PLANNED should fail
         $result = Update-PipelineItemStatus -WorkspacePath $script:wsPath -ItemId $id -NewStatus 'PLANNED' 3>$null
         $result | Should -Be $false
+    }
+
+    It 'Should mark parent Bug DONE when linked Bugs2FIX is completed' {
+        $bug = New-PipelineItem -Type 'Bug' -Title 'Rollup parent bug'
+        $bugAdded = Add-PipelineItem -WorkspacePath $script:wsPath -Item $bug
+
+        $fix = New-PipelineItem -Type 'Bugs2FIX' -Title 'Rollup child fix'
+        $fix.parentId = $bugAdded.id
+        $fix.bugReferrals = @($bugAdded.id)
+        $fixAdded = Add-PipelineItem -WorkspacePath $script:wsPath -Item $fix
+
+        Update-PipelineItemStatus -WorkspacePath $script:wsPath -ItemId $fixAdded.id -NewStatus 'IN_PROGRESS' | Should -BeTrue
+        Update-PipelineItemStatus -WorkspacePath $script:wsPath -ItemId $fixAdded.id -NewStatus 'DONE' | Should -BeTrue
+
+        $bugAfter = @(Get-PipelineItems -WorkspacePath $script:wsPath -Type 'Bug' | Where-Object { $_.id -eq $bugAdded.id })
+        @($bugAfter).Count | Should -Be 1
+        $bugAfter[0].status | Should -Be 'DONE'
+        $bugAfter[0].PSObject.Properties.Name | Should -Contain 'implementedAt'
+        [string]::IsNullOrWhiteSpace([string]$bugAfter[0].implementedAt) | Should -BeFalse
     }
 }
 
