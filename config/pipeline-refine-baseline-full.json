@@ -1,10 +1,10 @@
 {
-  "VersionTag": "2607.B1.V52.1",
-  "generatedAt": "2026-07-23T23:38:02.3951623+08:00",
+  "VersionTag": "2609.B1.V55.0",
+  "generatedAt": "2026-09-20T23:52:13Z",
   "source": "scripts/Invoke-PipelineContinuousRefine.ps1",
   "profile": "full",
   "counts": {
-    "MEDIUM:deprecated-reference": 1,
+    "MEDIUM:deprecated-reference": 9,
     "MEDIUM:duplicate-function": 20
   }
 }
