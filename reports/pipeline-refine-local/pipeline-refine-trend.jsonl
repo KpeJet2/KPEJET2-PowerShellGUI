@@ -1,0 +1,1 @@
+{"timestamp":"2026-09-21T00:55:10.0471166+00:00","scanId":"PIPE-REFINE-20260921-005522","profile":"full","stagedOnly":false,"findingsTotal":20,"findingsBySeverity":{"CRITICAL":0,"HIGH":0,"MEDIUM":20,"LOW":0},"regressions":0,"improvements":1,"duplicateGroups":74,"deprecatedReferenceHits":0}
