@@ -52,7 +52,7 @@ debugpy>=1.8.0
 agent-dev-cli
 
 # OpenTelemetry — pin to match agent-framework compat shim requirements
-opentelemetry-api==1.39.0
+opentelemetry-api==1.45.1
 opentelemetry-sdk==1.39.0
 opentelemetry-semantic-conventions==0.60b0
 opentelemetry-semantic-conventions-ai==0.4.14
