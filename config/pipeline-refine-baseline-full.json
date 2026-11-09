@@ -4,7 +4,6 @@
   "source": "scripts/Invoke-PipelineContinuousRefine.ps1",
   "profile": "full",
   "counts": {
-    "MEDIUM:deprecated-reference": 1,
     "MEDIUM:duplicate-function": 20
   }
 }
