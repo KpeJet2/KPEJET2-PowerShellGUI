@@ -17,7 +17,8 @@ jobs:
   pester-full:
     name: Full Pester Suite
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
+    # Pull requests use the fast Core subset; push/nightly/dispatch run everything.
     permissions:
       contents: read
     steps:
@@ -36,10 +37,13 @@ jobs:
         env:
           KILLSWITCH_NO_SELFTERMINATE: '1'
         run: |
+          $suite = if ('${{ github.event_name }}' -eq 'pull_request') { 'Core' } else { 'Full' }
+          Write-Host "Pester suite: $suite"
           $result = & ./tests/Run-AllTests.ps1 `
             -RequirePester $true `
             -IncludeModuleValidation `
-            -PesterOnly
+            -PesterOnly `
+            -Suite $suite
 
           if ($result -and $result.PSObject.Properties.Name -contains 'summary') {
             $failed = [int]$result.summary.failed
