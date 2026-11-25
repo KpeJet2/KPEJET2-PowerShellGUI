@@ -45,7 +45,6 @@ XPS15-MS-*.log*
 # ignore system specific
 Thumbs.db
 ehthumbs.db
-config/system-variables.xml
 .pwshgui-session.lock
 .copilot-action-id
 # ignore user profile

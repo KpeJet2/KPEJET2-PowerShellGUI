@@ -317,8 +317,11 @@ Describe 'Export-CertToVault' {
         Initialize-PKIChainManager -BasePath $testBase
         $pw = ConvertTo-SecureString 'TestP@ss1!' -AsPlainText -Force
         $script:vaultRootR = New-RootCACertificate -PfxPassword $pw -ValidityYears 1 -KeyLength 2048
+        # Set-VaultSecret is optional and not shipped here; Pester can only mock an existing command.
+        function global:Set-VaultSecret { param($Name, $Value) $true }
     }
     AfterAll {
+        Remove-Item Function:\Set-VaultSecret -ErrorAction SilentlyContinue
         Get-ChildItem Cert:\CurrentUser\My |
             Where-Object { $_.Thumbprint -eq $script:vaultRootR.Thumbprint } |
             Remove-Item -ErrorAction SilentlyContinue

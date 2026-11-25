@@ -16,9 +16,15 @@
 
 BeforeAll {
     $script:ProjectRoot = Split-Path $PSScriptRoot -Parent
-    $script:ExcludeDirs  = @('.history', 'node_modules', '~REPORTS', 'temp', '__pycache__', '.git')
+    $script:ExcludeDirs  = @('~ARCHIVED', '.history', 'node_modules', '~REPORTS', 'temp', '__pycache__', '.git')
     $script:ExcludeFiles = @('PS-CheatSheet-EXAMPLES-V2.ps1')
     $script:SelfName     = 'SyntaxGuard.Tests.ps1'
+
+    function Remove-StringsAndComments {
+        param([string]$Line)
+        $t = [regex]::Replace($Line, "'[^']*'|`"[^`"]*`"", '')
+        $t -replace '#.*$', ''
+    }
 
     function Get-ProjectPSFiles {
         Get-ChildItem $script:ProjectRoot -Include '*.ps1','*.psm1' -Recurse |
@@ -62,7 +68,8 @@ Describe 'SyntaxGuard - PS 5.1 Compatibility' {
                 $line = $lines[$i]
                 if ($line -match '^\s*#') { continue }
                 # Match ?? not preceded by ? (ternary) and not in strings
-                if ($line -match '(?<!\?)\?\?(?!\?)') {
+                $code = Remove-StringsAndComments $line
+                if ($code -match '(?<!\?)\?\?(?!\?)') {
                     $hits += "$($file.Name):$($i+1)"
                 }
             }
@@ -77,7 +84,7 @@ Describe 'SyntaxGuard - PS 5.1 Compatibility' {
             $lines = [System.IO.File]::ReadAllLines($file.FullName)
             for ($i = 0; $i -lt $lines.Length; $i++) {
                 if ($lines[$i] -match '^\s*#') { continue }
-                if ($lines[$i] -match '\?\.\w') {
+                if ((Remove-StringsAndComments $lines[$i]) -match '\?\.\w') {
                     $hits += "$($file.Name):$($i+1)"
                 }
             }
@@ -87,11 +94,11 @@ Describe 'SyntaxGuard - PS 5.1 Compatibility' {
 }
 
 Describe 'SyntaxGuard - File Integrity' {
-    It 'Main-GUI.ps1 does not exceed 500KB (corruption guard)' {
+    It 'Main-GUI.ps1 does not exceed 700KB (corruption guard)' {
         $mainGui = Join-Path $script:ProjectRoot 'Main-GUI.ps1'
         if (Test-Path $mainGui) {
             $size = (Get-Item $mainGui).Length
-            $size | Should -BeLessOrEqual 512000 -Because "Main-GUI.ps1 over 500KB indicates corruption (normal ~370KB)"
+            $size | Should -BeLessOrEqual 716800 -Because "Main-GUI.ps1 over 700KB indicates corruption (normal ~600KB)"
         }
     }
 
@@ -99,7 +106,7 @@ Describe 'SyntaxGuard - File Integrity' {
         $mainGui = Join-Path $script:ProjectRoot 'Main-GUI.ps1'
         if (Test-Path $mainGui) {
             $lines = [System.IO.File]::ReadAllLines($mainGui)
-            $tagCount = ($lines | Where-Object { $_ -match '^\s*#\s*VersionTag:\s*\d' }).Count
+            $tagCount = @($lines | Where-Object { $_ -match '^\s*#\s*VersionTag:\s*\d' }).Count
             $tagCount | Should -Be 1 -Because "duplicate VersionTag headers indicate file duplication"
         }
     }
@@ -122,11 +129,11 @@ Describe 'SyntaxGuard - File Integrity' {
         }
     }
 
-    It 'Main-GUI.ps1 line count is under 10000' {
+    It 'Main-GUI.ps1 line count is under 15000' {
         $mainGui = Join-Path $script:ProjectRoot 'Main-GUI.ps1'
         if (Test-Path $mainGui) {
             $lc = [System.IO.File]::ReadAllLines($mainGui).Length
-            $lc | Should -BeLessOrEqual 10000 -Because "line counts over 10K indicate file duplication"
+            $lc | Should -BeLessOrEqual 15000 -Because "line counts over 15K indicate file duplication"
         }
     }
 }

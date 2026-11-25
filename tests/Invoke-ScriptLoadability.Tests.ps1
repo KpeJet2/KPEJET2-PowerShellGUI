@@ -11,7 +11,7 @@
       - File presence
       - VersionTag header (SIN P007)
       - AST parse with zero errors
-      - No PS7-only operators (SIN P005: ??, ?.)
+      - No PS7-only operators (SIN P005: null-coalescing and null-conditional)
     Excludes scripts that already have dedicated test files:
       Invoke-AgentCallStats, Invoke-EngineCrashCleanup, Invoke-PipelineIntegration (mapped to Integrity),
       Invoke-RegressionSuite, Invoke-StaticWorkspaceScan, Invoke-WidgetSmokeTests.

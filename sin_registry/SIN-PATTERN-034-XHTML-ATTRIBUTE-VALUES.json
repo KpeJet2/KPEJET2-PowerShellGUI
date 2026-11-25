@@ -1,4 +1,5 @@
 {
+  "sin_id": "SIN-PATTERN-034-XHTML-ATTRIBUTE-VALUES",
   "patternId": "SIN-PATTERN-034",
   "title": "⸸ P034 — XHTML Attributes Must Have Explicit Values",
   "category": "XML/XHTML Validation",

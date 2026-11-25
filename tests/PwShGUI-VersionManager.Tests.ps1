@@ -129,8 +129,11 @@ Describe 'Step-MinorVersion' {
 
 Describe 'CPSR Action Persistence' {
     BeforeEach {
-        $sessionFile = Join-Path $env:TEMP 'cpsr-actions-session.json'
-        $sessionIdFile = Join-Path $env:TEMP 'cpsr-session-id.txt'
+        # The module persists under <workspace>\temp, which is gitignored and absent on fresh checkouts.
+        $cpsrTemp = Join-Path (Split-Path -Parent $PSScriptRoot) 'temp'
+        $null = New-Item -ItemType Directory -Path $cpsrTemp -Force
+        $sessionFile = Join-Path $cpsrTemp 'cpsr-actions-session.json'
+        $sessionIdFile = Join-Path $cpsrTemp 'cpsr-session-id.txt'
         if (Test-Path $sessionFile) { Remove-Item $sessionFile -Force }
         if (Test-Path $sessionIdFile) { Remove-Item $sessionIdFile -Force }
     }
