@@ -13,6 +13,9 @@
     When $true, errors and exits if Pester 5+ is not available.
 .PARAMETER IncludeModuleValidation
     Reserved for future module-validation passes. Currently accepted but not acted on.
+.PARAMETER Suite
+    'Full' (default) runs every *.Tests.ps1. 'Core' runs a curated fast subset of the most
+    important contract/unit tests (no workspace-wide scans or smoke suites) for quick PR cycles.
 .PARAMETER PesterOnly
     When present, restricts execution to Pester test files only (*.Tests.ps1).
 .OUTPUTS
@@ -22,7 +25,9 @@
 param(
     [bool]   $RequirePester            = $false,
     [switch] $IncludeModuleValidation,
-    [switch] $PesterOnly
+    [switch] $PesterOnly,
+    [ValidateSet('Full','Core')]
+    [string] $Suite = 'Full'
 )
 
 Set-StrictMode -Version Latest
@@ -48,6 +53,20 @@ $xmlOutput   = Join-Path $repoRoot 'testResults.xml'
 
 $testFiles = Get-ChildItem -Path $testsRoot -Filter '*.Tests.ps1' -File |
     Sort-Object Name
+
+if ($Suite -eq 'Core') {
+    $coreNames = @(
+        'SyntaxGuard','PwShGUICore','PwShGUI-IntegrityCore','PwShGUI-KillSwitch','PwShGUI-VersionManager',
+        'PwShGUI-PSVersionStandards','PwShGUI-AutoCorrectGate','PwShGUI-EventLogAdapter','PwShGUI-ConvoVault',
+        'SINGovernance','VersionTag-Canonical','Invoke-SINPatternScanner','Invoke-PreCommitValidation',
+        'Invoke-StuckInPipeGate','Invoke-DeanBPipelineGate','Invoke-TheGateBouncer','Invoke-PipelineIntegration',
+        'CronAiAthon-Pipeline','CronAiAthon-Scheduler','CronAiAthon-BugTracker','CronAiAthon-EventLog',
+        'CronAiAthon-ErrorLinker','Start-LocalWebEngine','CertHubAndApprovalsSurface','AVPN-Tracker',
+        'PKIChainManager','SASC-Adapters','AssistedSASC'
+    ) | ForEach-Object { "$_.Tests.ps1" }
+    $testFiles = @($testFiles | Where-Object { $coreNames -contains $_.Name })
+    Write-Host "Suite=Core: $($testFiles.Count) of $($coreNames.Count) curated files present."
+}
 
 if ($testFiles.Count -eq 0) {
     Write-Warning 'No *.Tests.ps1 files found under tests/.'
