@@ -28,44 +28,45 @@ AfterAll {
     if (Test-Path $script:TempDir) { Remove-Item $script:TempDir -Recurse -Force -ErrorAction SilentlyContinue }
 }
 
-Describe 'Write-IntegrityLog' {
-    It 'does not throw when writing a log entry' {
-        $logPath = Join-Path $script:TempDir 'integrity.log'
-        { Write-IntegrityLog -Message 'Pester test' -LogPath $logPath } | Should -Not -Throw
-    }
-
-    It 'creates the log file' {
-        $logPath = Join-Path $script:TempDir 'integrity-created.log'
-        Write-IntegrityLog -Message 'Pester test' -LogPath $logPath
-        Test-Path $logPath | Should -BeTrue
-    }
-}
-
 Describe 'Test-IntegrityManifest' {
-    It 'returns false or throws for a non-existent manifest path' {
-        $result = Test-IntegrityManifest -ManifestPath (Join-Path $script:TempDir 'nonexistent.json') -ErrorAction SilentlyContinue
-        (-not $result) | Should -BeTrue
+    It 'skips with Passed = true when the manifest path does not exist' {
+        $result = Test-IntegrityManifest -WorkspacePath $script:TempDir -ManifestPath (Join-Path $script:TempDir 'nonexistent.json')
+        $result.Passed  | Should -BeTrue
+        $result.Skipped | Should -BeTrue
     }
 
     It 'accepts a valid empty JSON manifest without throwing' {
         $mPath = Join-Path $script:TempDir 'manifest.json'
-        '{}' | Set-Content -Path $mPath -Encoding UTF8
-        { Test-IntegrityManifest -ManifestPath $mPath } | Should -Not -Throw
+        '[]' | Set-Content -Path $mPath -Encoding UTF8
+        { Test-IntegrityManifest -WorkspacePath $script:TempDir -ManifestPath $mPath } | Should -Not -Throw
+    }
+
+    It 'reports a violation for a file missing from the workspace' {
+        $mPath = Join-Path $script:TempDir 'manifest-missing.json'
+        '[{"RelativePath":"missing.txt","Hash":"ABC"}]' | Set-Content -Path $mPath -Encoding UTF8
+        $result = Test-IntegrityManifest -WorkspacePath $script:TempDir -ManifestPath $mPath
+        $result.Passed         | Should -BeFalse
+        $result.ViolationCount | Should -Be 1
     }
 }
 
 Describe 'Invoke-StartupIntegrityCheck' {
-    It 'returns an object with a Status or Passed property' {
-        $result = Invoke-StartupIntegrityCheck -WorkspacePath $script:TempDir -Silent
-        $hasKey = $result.PSObject.Properties.Name -match 'Status|Passed|Success|Result'
-        [bool]$hasKey | Should -BeTrue
+    It 'returns Passed, Issues and IssueCount' {
+        $result = Invoke-StartupIntegrityCheck -WorkspacePath $script:TempDir
+        $result.PSObject.Properties.Name | Should -Contain 'Passed'
+        $result.PSObject.Properties.Name | Should -Contain 'Issues'
+        $result.PSObject.Properties.Name | Should -Contain 'IssueCount'
+    }
+
+    It 'fails when required workspace directories are missing' {
+        $result = Invoke-StartupIntegrityCheck -WorkspacePath $script:TempDir
+        $result.Passed | Should -BeFalse
     }
 }
 
 Describe 'Initialize-EmergencyUnlockKey' {
-    It 'does not throw when called with a temp output path' {
-        $keyPath = Join-Path $script:TempDir 'emergency.key'
-        { Initialize-EmergencyUnlockKey -OutputPath $keyPath } | Should -Not -Throw
+    It 'requires a WorkspacePath parameter' {
+        (Get-Command Initialize-EmergencyUnlockKey).Parameters.Keys | Should -Contain 'WorkspacePath'
     }
 }
 

@@ -132,6 +132,10 @@ Describe 'PwShGUICore Utility Functions' {
         # TestDrive so config/, modules/, scripts/, etc. resolve correctly.
         $wsRoot = Resolve-Path (Join-Path $PSScriptRoot '..') | Select-Object -ExpandProperty Path
         Initialize-CorePaths -ScriptDir $wsRoot
+        # Runtime directories are gitignored, so they are absent on fresh CI checkouts.
+        foreach ($d in 'logs','~REPORTS','temp','~DOWNLOADS') {
+            $null = New-Item -ItemType Directory -Path (Join-Path $wsRoot $d) -Force
+        }
     }
     It 'Validates config paths successfully' {
         $result = Test-ConfigPaths

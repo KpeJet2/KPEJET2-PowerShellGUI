@@ -174,6 +174,17 @@ function Test-SinIdMatch {
     return $false
 }
 
+function ConvertTo-CanonicalSinSeverity {
+    param([string]$Severity)
+    switch -Regex ($Severity.Trim()) {
+        '^(?i)(CRITICAL|BLOCKING)$' { return 'CRITICAL' }
+        '^(?i)HIGH$'                { return 'HIGH' }
+        '^(?i)MEDIUM$'              { return 'MEDIUM' }
+        '^(?i)(LOW|ADVISORY)$'      { return 'LOW' }
+        default                     { return $null }
+    }
+}
+
 function Get-SinRegistryDefinition {
     param(
         [Parameter(Mandatory)] [System.IO.FileInfo]$File,
@@ -205,11 +216,13 @@ function Get-SinRegistryDefinition {
     if ($props -contains 'scan_regex') { $scanRegex = [string]$def.scan_regex }
     elseif ($props -contains 'scanner_pattern') { $scanRegex = [string]$def.scanner_pattern; $usedAliases += 'scanner_pattern' }
     elseif ($props -contains 'detection_regex') { $scanRegex = [string]$def.detection_regex; $usedAliases += 'detection_regex' }
-    else { $errors += 'missing scan_regex (or compatible scanner_pattern/detection_regex)' }
-    if ([string]::IsNullOrWhiteSpace($scanRegex)) { $errors += 'empty scan_regex' }
+    # Documentation-only definitions (manual_only / no regex) are valid; the loader skips them for scanning.
+    $manualOnly = ($props -contains 'manual_only' -and [bool]$def.manual_only)
+    $hasRegexField = [bool]($props | Where-Object { $_ -in @('scan_regex', 'scanner_pattern', 'detection_regex') })
+    if ($hasRegexField -and [string]::IsNullOrWhiteSpace($scanRegex) -and -not $manualOnly) { $errors += 'empty scan_regex' }
     if (-not ($props -contains 'title') -or [string]::IsNullOrWhiteSpace([string]$def.title)) { $errors += 'missing title' }
     if (-not ($props -contains 'severity') -or [string]::IsNullOrWhiteSpace([string]$def.severity)) { $errors += 'missing severity' }
-    if ($props -contains 'severity' -and [string]$def.severity -notin @('CRITICAL', 'HIGH', 'MEDIUM', 'LOW')) { $errors += 'severity must be CRITICAL, HIGH, MEDIUM, or LOW' }
+    if ($props -contains 'severity' -and -not (ConvertTo-CanonicalSinSeverity ([string]$def.severity))) { $errors += 'severity must be CRITICAL, HIGH, MEDIUM, or LOW' }
     if ($scanRegex -notin @('BINARY_CHECK', 'FILE_SIZE_CHECK') -and -not [string]::IsNullOrWhiteSpace($scanRegex)) {
         try { $null = [regex]::new($scanRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase, $regexMatchTimeout) }
         catch { $errors += 'invalid scan_regex: ' + $_.Exception.Message }
@@ -561,7 +574,7 @@ foreach ($pf in $patternFiles) {
 
         $p = [ordered]@{
             SinId                 = $sinId
-            Severity              = if ($props -contains 'severity') { "$($def.severity)" } else { 'MEDIUM' }
+            Severity              = if ($props -contains 'severity') { ConvertTo-CanonicalSinSeverity "$($def.severity)" } else { 'MEDIUM' }
             Title                 = if ($props -contains 'title') { "$($def.title)" }    else { $sinId }
             ScanRegex             = $scanRegex
             Scope                 = $scope
