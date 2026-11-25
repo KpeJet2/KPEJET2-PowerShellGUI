@@ -166,7 +166,10 @@ function Test-IsActiveRefScanCandidate {
         'config/pipeline-refine-baseline-full.json',
         'config/pipeline-refine-baseline-staged.json',
         'config/pipeline-refine-baseline-nightly.json',
-        'config/pipeline-refine-baseline.json'
+        'config/pipeline-refine-baseline.json',
+        'config/agentic-manifest.json',
+        'config/dynamic-manifest.json',
+        'scripts/Invoke-PipelineContinuousRefine.ps1'
     )
     if ($ignoredRegistryFiles -contains $rel) { return $false }
 
