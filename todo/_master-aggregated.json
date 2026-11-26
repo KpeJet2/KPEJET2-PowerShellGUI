@@ -1,17 +1,17 @@
 {
   "meta": {
     "schema": "CronAiAthon-MasterToDo/1.0",
-    "generated": "2026-08-18T15:03:25.4757967Z",
-    "totalItems": 1741,
+    "generated": "2026-11-26T13:50:02.9740727Z",
+    "totalItems": 1743,
     "byType": {
       "FeatureRequest": 7,
-      "Bug": 1041,
+      "Bug": 1042,
       "Items2ADD": 9,
-      "Bugs2FIX": 680,
+      "Bugs2FIX": 681,
       "ToDo": 4
     },
     "byStatus": {
-      "OPEN": 86,
+      "OPEN": 88,
       "PLANNED": 5,
       "IN_PROGRESS": 357,
       "TESTING": 0,
@@ -5281,7 +5281,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-04-17T02:10:28.4233736+08:00",
+      "created": "2026-04-16T18:10:28.4233736+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -5295,7 +5295,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-04-17T03:18:45.3377514+08:00",
+      "created": "2026-04-16T19:18:45.3377514+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -5309,7 +5309,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-04-17T03:18:57.7317411+08:00",
+      "created": "2026-04-16T19:18:57.7317411+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6065,7 +6065,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-28T14:19:21.6503792+08:00",
+      "created": "2026-04-28T06:19:21.6503792+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6079,7 +6079,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-28T16:47:36.397448+08:00",
+      "created": "2026-04-28T08:47:36.397448+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6093,7 +6093,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-29T09:30:09.1870257+08:00",
+      "created": "2026-04-29T01:30:09.1870257+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6107,7 +6107,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-29T09:30:13.3308996+08:00",
+      "created": "2026-04-29T01:30:13.3308996+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6121,7 +6121,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-29T09:33:35.2248363+08:00",
+      "created": "2026-04-29T01:33:35.2248363+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6135,7 +6135,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-29T09:35:42.890576+08:00",
+      "created": "2026-04-29T01:35:42.890576+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6149,7 +6149,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-04-29T09:41:42.3176149+08:00",
+      "created": "2026-04-29T01:41:42.3176149+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6163,7 +6163,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-01T22:16:47.2746797+08:00",
+      "created": "2026-05-01T14:16:47.2746797+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6331,7 +6331,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-02T03:10:02.3679275+08:00",
+      "created": "2026-05-01T19:10:02.3679275+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6345,7 +6345,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-02T03:14:16.4929617+08:00",
+      "created": "2026-05-01T19:14:16.4929617+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6359,7 +6359,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-02T03:40:17.405829+08:00",
+      "created": "2026-05-01T19:40:17.405829+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -6373,7 +6373,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-02T03:56:46.5318408+08:00",
+      "created": "2026-05-01T19:56:46.5318408+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -7941,7 +7941,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.5673086Z",
+      "created": "2026-11-26T13:49:58.0535602Z",
       "modified": "2026-05-06T17:28:18.8542535Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -7955,7 +7955,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-04T19:51:24.0977359+08:00",
+      "created": "2026-05-04T11:51:24.0977359+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -7969,7 +7969,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.5677856Z",
+      "created": "2026-11-26T13:49:58.0574047Z",
       "modified": "2026-05-06T17:28:18.8542535Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9089,7 +9089,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6003606Z",
+      "created": "2026-11-26T13:49:58.1118219Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9103,7 +9103,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6006196Z",
+      "created": "2026-11-26T13:49:58.1122779Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9117,7 +9117,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6008591Z",
+      "created": "2026-11-26T13:49:58.1126939Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9131,7 +9131,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6010956Z",
+      "created": "2026-11-26T13:49:58.1131079Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9145,7 +9145,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-07T01:38:06.7989892+08:00",
+      "created": "2026-05-06T17:38:06.7989892+00:00",
       "modified": "2026-05-15T13:55:32.7228917Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9159,7 +9159,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6015583Z",
+      "created": "2026-11-26T13:49:58.1139304Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9173,7 +9173,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6017944Z",
+      "created": "2026-11-26T13:49:58.1143439Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9187,7 +9187,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6020248Z",
+      "created": "2026-11-26T13:49:58.1147601Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -9201,7 +9201,7 @@
       "status": "IN_PROGRESS",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.6022631Z",
+      "created": "2026-11-26T13:49:58.1152731Z",
       "modified": "2026-05-14T20:42:29.8231546Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -10769,7 +10769,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-16T03:38:00.3544789+08:00",
+      "created": "2026-05-15T19:38:00.3544789+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -10811,7 +10811,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-16T03:41:42.6583229+08:00",
+      "created": "2026-05-15T19:41:42.6583229+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12743,7 +12743,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-16T10:35:18.8468898+08:00",
+      "created": "2026-05-16T02:35:18.8468898+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12757,7 +12757,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-16T11:18:04.8542878+08:00",
+      "created": "2026-05-16T03:18:04.8542878+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12771,7 +12771,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-16T11:18:43.6678614+08:00",
+      "created": "2026-05-16T03:18:43.6678614+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12785,7 +12785,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-16T11:19:48.5157186+08:00",
+      "created": "2026-05-16T03:19:48.5157186+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12799,7 +12799,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-16T23:34:43.43589+08:00",
+      "created": "2026-05-16T15:34:43.43589+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12813,7 +12813,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-16T23:35:37.2620608+08:00",
+      "created": "2026-05-16T15:35:37.2620608+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12827,7 +12827,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-21T04:20:07.1665568+08:00",
+      "created": "2026-05-20T20:20:07.1665568+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12841,7 +12841,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-21T04:22:00.1715418+08:00",
+      "created": "2026-05-20T20:22:00.1715418+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12855,7 +12855,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-21T04:51:45.0927226+08:00",
+      "created": "2026-05-20T20:51:45.0927226+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12869,7 +12869,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-21T04:52:57.0559708+08:00",
+      "created": "2026-05-20T20:52:57.0559708+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12883,7 +12883,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-21T04:55:38.400903+08:00",
+      "created": "2026-05-20T20:55:38.400903+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12897,7 +12897,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-21T04:58:48.0679625+08:00",
+      "created": "2026-05-20T20:58:48.0679625+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12911,7 +12911,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-21T05:00:21.1724678+08:00",
+      "created": "2026-05-20T21:00:21.1724678+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12925,7 +12925,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-22T03:11:06.1742516+08:00",
+      "created": "2026-05-21T19:11:06.1742516+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12939,7 +12939,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-22T03:12:15.1328655+08:00",
+      "created": "2026-05-21T19:12:15.1328655+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12953,7 +12953,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-22T18:06:00.7839091+08:00",
+      "created": "2026-05-22T10:06:00.7839091+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12967,7 +12967,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-22T18:07:20.0530119+08:00",
+      "created": "2026-05-22T10:07:20.0530119+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12981,7 +12981,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-22T18:39:49.7643633+08:00",
+      "created": "2026-05-22T10:39:49.7643633+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -12995,7 +12995,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-22T20:24:17.3647655+08:00",
+      "created": "2026-05-22T12:24:17.3647655+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13009,7 +13009,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-22T21:23:17.8724532+08:00",
+      "created": "2026-05-22T13:23:17.8724532+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13023,8 +13023,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7016407Z",
-      "modified": "2026-08-18T15:02:02.7016930Z",
+      "created": "2026-11-26T13:49:58.2730828Z",
+      "modified": "2026-11-26T13:49:58.2731675Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13037,8 +13037,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7019176Z",
-      "modified": "2026-08-18T15:02:02.7019525Z",
+      "created": "2026-11-26T13:49:58.2748949Z",
+      "modified": "2026-11-26T13:49:58.2750396Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13051,7 +13051,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-23T01:26:35.8168061+08:00",
+      "created": "2026-05-22T17:26:35.8168061+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13065,8 +13065,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7023866Z",
-      "modified": "2026-08-18T15:02:02.7024212Z",
+      "created": "2026-11-26T13:49:58.2758962Z",
+      "modified": "2026-11-26T13:49:58.2759541Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13079,8 +13079,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7026297Z",
-      "modified": "2026-08-18T15:02:02.7026638Z",
+      "created": "2026-11-26T13:49:58.2763583Z",
+      "modified": "2026-11-26T13:49:58.2764125Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13093,8 +13093,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7028700Z",
-      "modified": "2026-08-18T15:02:02.7029031Z",
+      "created": "2026-11-26T13:49:58.2768117Z",
+      "modified": "2026-11-26T13:49:58.2768645Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13107,8 +13107,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7031071Z",
-      "modified": "2026-08-18T15:02:02.7031407Z",
+      "created": "2026-11-26T13:49:58.2772634Z",
+      "modified": "2026-11-26T13:49:58.2773170Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13121,8 +13121,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7033399Z",
-      "modified": "2026-08-18T15:02:02.7033728Z",
+      "created": "2026-11-26T13:49:58.2777333Z",
+      "modified": "2026-11-26T13:49:58.2777860Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13135,8 +13135,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7035820Z",
-      "modified": "2026-08-18T15:02:02.7036156Z",
+      "created": "2026-11-26T13:49:58.2781822Z",
+      "modified": "2026-11-26T13:49:58.2782360Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13149,8 +13149,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7038207Z",
-      "modified": "2026-08-18T15:02:02.7038540Z",
+      "created": "2026-11-26T13:49:58.2786330Z",
+      "modified": "2026-11-26T13:49:58.2786856Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13163,8 +13163,8 @@
       "status": "OPEN",
       "source": "CronAiAthon-Scheduler",
       "category": "SchedulerFailure",
-      "created": "2026-08-18T15:02:02.7040719Z",
-      "modified": "2026-08-18T15:02:02.7041050Z",
+      "created": "2026-11-26T13:49:58.2792103Z",
+      "modified": "2026-11-26T13:49:58.2792663Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13457,7 +13457,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-23T11:21:48.4117013+08:00",
+      "created": "2026-05-23T03:21:48.4117013+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13471,7 +13471,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T16:48:45.366949+08:00",
+      "created": "2026-05-24T08:48:45.366949+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13485,7 +13485,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T16:49:34.407449+08:00",
+      "created": "2026-05-24T08:49:34.407449+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13499,7 +13499,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T16:51:57.321362+08:00",
+      "created": "2026-05-24T08:51:57.321362+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13513,7 +13513,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T17:02:00.1183804+08:00",
+      "created": "2026-05-24T09:02:00.1183804+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13527,7 +13527,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-24T21:13:37.7201229+08:00",
+      "created": "2026-05-24T13:13:37.7201229+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13541,7 +13541,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-24T21:15:59.7012428+08:00",
+      "created": "2026-05-24T13:15:59.7012428+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13555,7 +13555,7 @@
       "status": "CLOSED",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-24T21:26:51.9118289+08:00",
+      "created": "2026-05-24T13:26:51.9118289+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13569,7 +13569,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-24T21:28:01.3711101+08:00",
+      "created": "2026-05-24T13:28:01.3711101+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13583,7 +13583,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T23:46:32.8016308+08:00",
+      "created": "2026-05-24T15:46:32.8016308+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13597,7 +13597,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T23:56:40.0442346+08:00",
+      "created": "2026-05-24T15:56:40.0442346+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13611,7 +13611,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-24T23:59:56.8061812+08:00",
+      "created": "2026-05-24T15:59:56.8061812+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13681,7 +13681,7 @@
       "status": "CLOSED",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-25T00:05:38.5235036+08:00",
+      "created": "2026-05-24T16:05:38.5235036+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13695,7 +13695,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T00:25:58.9302051+08:00",
+      "created": "2026-05-24T16:25:58.9302051+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13709,7 +13709,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T00:26:09.3052883+08:00",
+      "created": "2026-05-24T16:26:09.3052883+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13723,7 +13723,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T00:27:41.2290963+08:00",
+      "created": "2026-05-24T16:27:41.2290963+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13737,7 +13737,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T00:29:19.4676321+08:00",
+      "created": "2026-05-24T16:29:19.4676321+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13751,7 +13751,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T21:12:16.3159507+08:00",
+      "created": "2026-05-25T13:12:16.3159507+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13765,7 +13765,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T22:54:36.923132+08:00",
+      "created": "2026-05-25T14:54:36.923132+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13779,7 +13779,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T22:55:14.7998676+08:00",
+      "created": "2026-05-25T14:55:14.7998676+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13793,7 +13793,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T22:57:16.2354091+08:00",
+      "created": "2026-05-25T14:57:16.2354091+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13807,7 +13807,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:05:19.8089405+08:00",
+      "created": "2026-05-25T15:05:19.8089405+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13821,7 +13821,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:06:29.8887855+08:00",
+      "created": "2026-05-25T15:06:29.8887855+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13835,7 +13835,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:07:59.9407112+08:00",
+      "created": "2026-05-25T15:07:59.9407112+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13849,7 +13849,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:18:05.262149+08:00",
+      "created": "2026-05-25T15:18:05.262149+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13863,7 +13863,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:34:00.7800463+08:00",
+      "created": "2026-05-25T15:34:00.7800463+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13877,7 +13877,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:36:57.7676188+08:00",
+      "created": "2026-05-25T15:36:57.7676188+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13891,7 +13891,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:39:26.1984088+08:00",
+      "created": "2026-05-25T15:39:26.1984088+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13905,7 +13905,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-25T23:40:11.5059488+08:00",
+      "created": "2026-05-25T15:40:11.5059488+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13919,7 +13919,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T00:00:36.1709826+08:00",
+      "created": "2026-05-25T16:00:36.1709826+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13933,7 +13933,7 @@
       "status": "CLOSED",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T00:01:03.7432889+08:00",
+      "created": "2026-05-25T16:01:03.7432889+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 0,
       "origin": "pipeline"
@@ -13947,8 +13947,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:21:34.3087822+08:00",
-      "modified": "2026-05-26T09:21:34.3087822+08:00",
+      "created": "2026-05-26T01:21:34.3087822+00:00",
+      "modified": "2026-05-26T01:21:34.3087822+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13961,8 +13961,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:22:11.3584004+08:00",
-      "modified": "2026-05-26T09:22:11.3584004+08:00",
+      "created": "2026-05-26T01:22:11.3584004+00:00",
+      "modified": "2026-05-26T01:22:11.3584004+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13975,8 +13975,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:22:48.4077324+08:00",
-      "modified": "2026-05-26T09:22:48.4077324+08:00",
+      "created": "2026-05-26T01:22:48.4077324+00:00",
+      "modified": "2026-05-26T01:22:48.4077324+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -13989,8 +13989,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:25:42.051745+08:00",
-      "modified": "2026-05-26T09:25:42.051745+08:00",
+      "created": "2026-05-26T01:25:42.051745+00:00",
+      "modified": "2026-05-26T01:25:42.051745+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14003,8 +14003,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-05-26T09:26:00.6372736+08:00",
-      "modified": "2026-05-26T09:26:00.6372736+08:00",
+      "created": "2026-05-26T01:26:00.6372736+00:00",
+      "modified": "2026-05-26T01:26:00.6372736+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14017,8 +14017,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-26T09:27:18.4839096+08:00",
-      "modified": "2026-05-26T09:27:18.4839096+08:00",
+      "created": "2026-05-26T01:27:18.4839096+00:00",
+      "modified": "2026-05-26T01:27:18.4839096+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14031,8 +14031,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:42:20.1500818+08:00",
-      "modified": "2026-05-26T09:42:20.1500818+08:00",
+      "created": "2026-05-26T01:42:20.1500818+00:00",
+      "modified": "2026-05-26T01:42:20.1500818+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14045,8 +14045,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:43:38.4029639+08:00",
-      "modified": "2026-05-26T09:43:38.4029639+08:00",
+      "created": "2026-05-26T01:43:38.4029639+00:00",
+      "modified": "2026-05-26T01:43:38.4029639+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14059,8 +14059,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T09:43:55.2856456+08:00",
-      "modified": "2026-05-26T09:43:55.2856456+08:00",
+      "created": "2026-05-26T01:43:55.2856456+00:00",
+      "modified": "2026-05-26T01:43:55.2856456+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14073,8 +14073,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T10:08:14.077544+08:00",
-      "modified": "2026-05-26T10:08:14.077544+08:00",
+      "created": "2026-05-26T02:08:14.077544+00:00",
+      "modified": "2026-05-26T02:08:14.077544+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14087,8 +14087,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T10:23:14.0649523+08:00",
-      "modified": "2026-05-26T10:23:14.0649523+08:00",
+      "created": "2026-05-26T02:23:14.0649523+00:00",
+      "modified": "2026-05-26T02:23:14.0649523+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14101,8 +14101,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T10:24:14.3116742+08:00",
-      "modified": "2026-05-26T10:24:14.3116742+08:00",
+      "created": "2026-05-26T02:24:14.3116742+00:00",
+      "modified": "2026-05-26T02:24:14.3116742+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14115,8 +14115,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-05-26T10:41:02.3501899+08:00",
-      "modified": "2026-05-26T10:41:02.3501899+08:00",
+      "created": "2026-05-26T02:41:02.3501899+00:00",
+      "modified": "2026-05-26T02:41:02.3501899+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14129,8 +14129,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-05-26T11:32:07.8808729+08:00",
-      "modified": "2026-05-26T11:32:07.8808729+08:00",
+      "created": "2026-05-26T03:32:07.8808729+00:00",
+      "modified": "2026-05-26T03:32:07.8808729+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14143,8 +14143,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-06-18T01:11:24.5757671+08:00",
-      "modified": "2026-06-18T01:11:24.5757671+08:00",
+      "created": "2026-06-17T17:11:24.5757671+00:00",
+      "modified": "2026-06-17T17:11:24.5757671+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14157,8 +14157,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-06-18T01:12:37.115892+08:00",
-      "modified": "2026-06-18T01:12:37.115892+08:00",
+      "created": "2026-06-17T17:12:37.115892+00:00",
+      "modified": "2026-06-17T17:12:37.115892+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14171,8 +14171,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-06-18T01:26:19.9089044+08:00",
-      "modified": "2026-06-18T01:26:19.9089044+08:00",
+      "created": "2026-06-17T17:26:19.9089044+00:00",
+      "modified": "2026-06-17T17:26:19.9089044+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14185,8 +14185,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T01:26:51.7746273+08:00",
-      "modified": "2026-06-18T01:26:51.7746273+08:00",
+      "created": "2026-06-17T17:26:51.7746273+00:00",
+      "modified": "2026-06-17T17:26:51.7746273+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14199,8 +14199,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T01:28:49.0792785+08:00",
-      "modified": "2026-06-18T01:28:49.0792785+08:00",
+      "created": "2026-06-17T17:28:49.0792785+00:00",
+      "modified": "2026-06-17T17:28:49.0792785+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14213,8 +14213,8 @@
       "status": "OPEN",
       "source": "Invoke-EngineCrashCleanup",
       "category": "dirty-shutdown-fault",
-      "created": "2026-06-18T01:58:40.7825428+08:00",
-      "modified": "2026-06-18T01:58:40.7825428+08:00",
+      "created": "2026-06-17T17:58:40.7825428+00:00",
+      "modified": "2026-06-17T17:58:40.7825428+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14227,8 +14227,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T09:04:39.8988729+08:00",
-      "modified": "2026-06-18T09:04:39.8988729+08:00",
+      "created": "2026-06-18T01:04:39.8988729+00:00",
+      "modified": "2026-06-18T01:04:39.8988729+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14241,8 +14241,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T09:05:53.6986638+08:00",
-      "modified": "2026-06-18T09:05:53.6986638+08:00",
+      "created": "2026-06-18T01:05:53.6986638+00:00",
+      "modified": "2026-06-18T01:05:53.6986638+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14255,8 +14255,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:10:28.6760635+08:00",
-      "modified": "2026-06-18T10:10:28.6760635+08:00",
+      "created": "2026-06-18T02:10:28.6760635+00:00",
+      "modified": "2026-06-18T02:10:28.6760635+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14269,8 +14269,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T10:11:35.0520543+08:00",
-      "modified": "2026-06-18T10:11:35.0520543+08:00",
+      "created": "2026-06-18T02:11:35.0520543+00:00",
+      "modified": "2026-06-18T02:11:35.0520543+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14283,8 +14283,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:22:59.1471597+08:00",
-      "modified": "2026-06-18T10:22:59.1471597+08:00",
+      "created": "2026-06-18T02:22:59.1471597+00:00",
+      "modified": "2026-06-18T02:22:59.1471597+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14297,8 +14297,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T10:24:01.9814644+08:00",
-      "modified": "2026-06-18T10:24:01.9814644+08:00",
+      "created": "2026-06-18T02:24:01.9814644+00:00",
+      "modified": "2026-06-18T02:24:01.9814644+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14311,8 +14311,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:32:23.6951512+08:00",
-      "modified": "2026-06-18T10:32:23.6951512+08:00",
+      "created": "2026-06-18T02:32:23.6951512+00:00",
+      "modified": "2026-06-18T02:32:23.6951512+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14325,8 +14325,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:34:48.2754775+08:00",
-      "modified": "2026-06-18T10:34:48.2754775+08:00",
+      "created": "2026-06-18T02:34:48.2754775+00:00",
+      "modified": "2026-06-18T02:34:48.2754775+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14339,8 +14339,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:34:59.1123258+08:00",
-      "modified": "2026-06-18T10:34:59.1123258+08:00",
+      "created": "2026-06-18T02:34:59.1123258+00:00",
+      "modified": "2026-06-18T02:34:59.1123258+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14353,8 +14353,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T10:36:18.9720501+08:00",
-      "modified": "2026-06-18T10:36:18.9720501+08:00",
+      "created": "2026-06-18T02:36:18.9720501+00:00",
+      "modified": "2026-06-18T02:36:18.9720501+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14367,8 +14367,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:42:09.0578539+08:00",
-      "modified": "2026-06-18T10:42:09.0578539+08:00",
+      "created": "2026-06-18T02:42:09.0578539+00:00",
+      "modified": "2026-06-18T02:42:09.0578539+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14381,8 +14381,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T10:42:14.5776963+08:00",
-      "modified": "2026-06-18T10:42:14.5776963+08:00",
+      "created": "2026-06-18T02:42:14.5776963+00:00",
+      "modified": "2026-06-18T02:42:14.5776963+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14395,8 +14395,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T10:43:17.6487566+08:00",
-      "modified": "2026-06-18T10:43:17.6487566+08:00",
+      "created": "2026-06-18T02:43:17.6487566+00:00",
+      "modified": "2026-06-18T02:43:17.6487566+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14409,8 +14409,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T11:07:00.321957+08:00",
-      "modified": "2026-06-18T11:07:00.321957+08:00",
+      "created": "2026-06-18T03:07:00.321957+00:00",
+      "modified": "2026-06-18T03:07:00.321957+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14423,8 +14423,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T11:08:17.1430531+08:00",
-      "modified": "2026-06-18T11:08:17.1430531+08:00",
+      "created": "2026-06-18T03:08:17.1430531+00:00",
+      "modified": "2026-06-18T03:08:17.1430531+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14437,8 +14437,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-06-18T11:13:59.076563+08:00",
-      "modified": "2026-06-18T11:13:59.076563+08:00",
+      "created": "2026-06-18T03:13:59.076563+00:00",
+      "modified": "2026-06-18T03:13:59.076563+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14451,8 +14451,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T11:15:15.3100245+08:00",
-      "modified": "2026-06-18T11:15:15.3100245+08:00",
+      "created": "2026-06-18T03:15:15.3100245+00:00",
+      "modified": "2026-06-18T03:15:15.3100245+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14465,8 +14465,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T11:27:26.4267681+08:00",
-      "modified": "2026-06-18T11:27:26.4267681+08:00",
+      "created": "2026-06-18T03:27:26.4267681+00:00",
+      "modified": "2026-06-18T03:27:26.4267681+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14479,8 +14479,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-06-18T11:59:45.1242405+08:00",
-      "modified": "2026-06-18T11:59:45.1242405+08:00",
+      "created": "2026-06-18T03:59:45.1242405+00:00",
+      "modified": "2026-06-18T03:59:45.1242405+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14493,8 +14493,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-07-08T01:09:10.7226655+08:00",
-      "modified": "2026-07-08T01:09:10.7226655+08:00",
+      "created": "2026-07-07T17:09:10.7226655+00:00",
+      "modified": "2026-07-07T17:09:10.7226655+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14507,8 +14507,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-07-09T14:18:30.9737343+08:00",
-      "modified": "2026-07-09T14:18:30.9737343+08:00",
+      "created": "2026-07-09T06:18:30.9737343+00:00",
+      "modified": "2026-07-09T06:18:30.9737343+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14521,8 +14521,8 @@
       "status": "OPEN",
       "source": "Invoke-WorkspaceDependencyMap",
       "category": "scan-subroutine-failure",
-      "created": "2026-07-09T19:14:31.9719857+08:00",
-      "modified": "2026-07-09T19:14:31.9719857+08:00",
+      "created": "2026-07-09T11:14:31.9719857+00:00",
+      "modified": "2026-07-09T11:14:31.9719857+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14535,8 +14535,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-07-28T01:28:26.7951076+08:00",
-      "modified": "2026-07-28T01:28:26.7951076+08:00",
+      "created": "2026-07-27T17:28:26.7951076+00:00",
+      "modified": "2026-07-27T17:28:26.7951076+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14549,8 +14549,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-07-28T03:08:46.3383276+08:00",
-      "modified": "2026-07-28T03:08:46.3383276+08:00",
+      "created": "2026-07-27T19:08:46.3383276+00:00",
+      "modified": "2026-07-27T19:08:46.3383276+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14647,8 +14647,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-08-18T22:41:44.1622801+08:00",
-      "modified": "2026-08-18T22:41:44.1622801+08:00",
+      "created": "2026-08-18T14:41:44.1622801+00:00",
+      "modified": "2026-08-18T14:41:44.1622801+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14661,8 +14661,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-08-18T22:50:16.7152977+08:00",
-      "modified": "2026-08-18T22:50:16.7152977+08:00",
+      "created": "2026-08-18T14:50:16.7152977+00:00",
+      "modified": "2026-08-18T14:50:16.7152977+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14675,8 +14675,8 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-08-18T22:57:17.8973398+08:00",
-      "modified": "2026-08-18T22:57:17.8973398+08:00",
+      "created": "2026-08-18T14:57:17.8973398+00:00",
+      "modified": "2026-08-18T14:57:17.8973398+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14689,8 +14689,22 @@
       "status": "OPEN",
       "source": "Invoke-StaticWorkspaceScan",
       "category": "scan-phase-failure",
-      "created": "2026-08-18T23:01:51.1113746+08:00",
-      "modified": "2026-08-18T23:01:51.1113746+08:00",
+      "created": "2026-08-18T15:01:51.1113746+00:00",
+      "modified": "2026-08-18T15:01:51.1113746+00:00",
+      "sessionModCount": 0,
+      "origin": "pipeline"
+    },
+    {
+      "id": "Bug-SCAN-20261126-1302-4f499e91",
+      "type": "Bug",
+      "title": "[SCAN FAIL] Phase 'subroutine' failed in static scan",
+      "description": "Static workspace scan phase 'subroutine' failed: Subroutine failures detected: 114. Samples: dns_resolution:aka.ms, dns_resolution:www.w3.org, dns_resolution:focalpoint-null, dns_resolution:www.nuget.org, dns_resolution:msedgedriver.azureedge.net",
+      "priority": "HIGH",
+      "status": "OPEN",
+      "source": "Invoke-StaticWorkspaceScan",
+      "category": "scan-phase-failure",
+      "created": "2026-11-26T13:02:07.1529053+00:00",
+      "modified": "2026-11-26T13:02:07.1529053+00:00",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14703,8 +14717,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-08-18T15:02:02.7442944Z",
-      "modified": "2026-08-18T15:02:02.7443561Z",
+      "created": "2026-11-26T13:49:58.3591373Z",
+      "modified": "2026-11-26T13:49:58.3592195Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14717,8 +14731,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-08-18T15:02:02.7445926Z",
-      "modified": "2026-08-18T15:02:02.7446397Z",
+      "created": "2026-11-26T13:49:58.3596371Z",
+      "modified": "2026-11-26T13:49:58.3596890Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14731,8 +14745,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-08-18T15:02:02.7448781Z",
-      "modified": "2026-08-18T15:02:02.7449122Z",
+      "created": "2026-11-26T13:49:58.3600974Z",
+      "modified": "2026-11-26T13:49:58.3601520Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14745,8 +14759,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Coverage",
-      "created": "2026-08-18T15:02:02.7451361Z",
-      "modified": "2026-08-18T15:02:02.7451858Z",
+      "created": "2026-11-26T13:49:58.3605636Z",
+      "modified": "2026-11-26T13:49:58.3606140Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14759,8 +14773,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-08-18T15:02:02.7454937Z",
-      "modified": "2026-08-18T15:02:02.7455311Z",
+      "created": "2026-11-26T13:49:58.3610236Z",
+      "modified": "2026-11-26T13:49:58.3610751Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14773,8 +14787,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Performance",
-      "created": "2026-08-18T15:02:02.7457900Z",
-      "modified": "2026-08-18T15:02:02.7458240Z",
+      "created": "2026-11-26T13:49:58.3614858Z",
+      "modified": "2026-11-26T13:49:58.3615377Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -14787,8 +14801,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Quality",
-      "created": "2026-08-18T15:02:02.7460433Z",
-      "modified": "2026-08-18T15:02:02.7460765Z",
+      "created": "2026-11-26T13:49:58.3619360Z",
+      "modified": "2026-11-26T13:49:58.3619863Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18931,8 +18945,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "BugFix",
-      "created": "2026-08-18T15:02:02.8726548Z",
-      "modified": "2026-08-18T15:02:02.8727166Z",
+      "created": "2026-11-26T13:49:58.5345211Z",
+      "modified": "2026-11-26T13:49:58.5345998Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18945,8 +18959,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "Pipeline",
-      "created": "2026-08-18T15:02:02.8729285Z",
-      "modified": "2026-08-18T15:02:02.8729608Z",
+      "created": "2026-11-26T13:49:58.5350939Z",
+      "modified": "2026-11-26T13:49:58.5351456Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -18959,8 +18973,8 @@
       "status": "DONE",
       "source": "agent",
       "category": "BugFix",
-      "created": "2026-08-18T15:02:02.8731663Z",
-      "modified": "2026-08-18T15:02:02.8731981Z",
+      "created": "2026-11-26T13:49:58.5355617Z",
+      "modified": "2026-11-26T13:49:58.5356130Z",
       "sessionModCount": 0,
       "origin": "pipeline"
     },
@@ -23971,7 +23985,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -23985,7 +23999,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -23999,7 +24013,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24013,7 +24027,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24027,7 +24041,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24041,7 +24055,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24055,7 +24069,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24069,7 +24083,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24083,7 +24097,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24097,7 +24111,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24111,7 +24125,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24125,7 +24139,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24139,7 +24153,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24153,7 +24167,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24167,7 +24181,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/secdump-log",
       "category": "security-runtime",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24181,7 +24195,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/scan-failure",
       "category": "pipeline-governance",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24195,7 +24209,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/scan-failure",
       "category": "pipeline-governance",
-      "created": "2026-05-21T03:58:13.5479662+08:00",
+      "created": "2026-05-20T19:58:13.5479662+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24209,7 +24223,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24223,7 +24237,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24237,7 +24251,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24251,7 +24265,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24265,7 +24279,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24279,7 +24293,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24293,7 +24307,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24307,7 +24321,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/crash-report",
       "category": "engine-crash",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24321,7 +24335,7 @@
       "status": "CLOSED",
       "source": "EngineServiceMonitor/scan-failure",
       "category": "pipeline-governance",
-      "created": "2026-05-25T23:37:47.8809005+08:00",
+      "created": "2026-05-25T15:37:47.8809005+00:00",
       "modified": "2026-05-26T00:53:20.3845318Z",
       "sessionModCount": 1,
       "origin": "pipeline"
@@ -24337,6 +24351,20 @@
       "category": "DeanB",
       "created": "2026-08-16T12:44:25.9856959Z",
       "modified": "2026-08-16T12:44:25.9867002Z",
+      "sessionModCount": 1,
+      "origin": "pipeline"
+    },
+    {
+      "id": "Bugs2FIX-20260818232857-12baa344",
+      "type": "Bugs2FIX",
+      "title": "[GIT][BASELINE_REGRESSION] pipeline-refine",
+      "description": "Baseline regressions detected: 1\nBaseline regressions detected: 1\n[PipelineRefine] JSON: reports/pipeline-refine/pipeline-refine-latest.json",
+      "priority": "HIGH",
+      "status": "OPEN",
+      "source": "BugTracker",
+      "category": "git-commit-diagnostic",
+      "created": "2026-08-18T15:28:57.5353774Z",
+      "modified": "2026-08-18T15:28:57.5354311Z",
       "sessionModCount": 1,
       "origin": "pipeline"
     },
