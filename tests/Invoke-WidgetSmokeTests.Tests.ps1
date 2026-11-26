@@ -36,6 +36,8 @@ BeforeDiscovery {
     # -Skip conditions are evaluated at discovery, so the Theme gate must be set here (WinForms is Windows-only).
     $script:ThemeLoaded = (Test-Path -LiteralPath (Join-Path $script:ModDir 'PwShGUI-Theme.psm1')) -and
         ($PSVersionTable.PSEdition -eq 'Desktop' -or $IsWindows)
+    $script:MCPLoaded = (Test-Path -LiteralPath (Join-Path $script:ScDir 'Show-MCPServiceConfig.ps1')) -and
+        ($PSVersionTable.PSEdition -eq 'Desktop' -or $IsWindows)
 
     $script:ModuleNames = @(Get-ChildItem -Path $script:ModDir -Filter '*.psm1' -File -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -notlike 'LOCAL*' } | ForEach-Object { $_.BaseName })
@@ -656,10 +658,10 @@ Describe 'MCP Service Config Functions' -Tag 'MCP' {
 
     BeforeAll {
         $mcpScript = (Join-Path $script:ScDir 'Show-MCPServiceConfig.ps1')
-        $script:MCPLoaded = $false
-        if (Test-Path $mcpScript) {
+        $script:MCPLoaded = (Test-Path $mcpScript) -and
+            ($PSVersionTable.PSEdition -eq 'Desktop' -or $IsWindows)
+        if ($script:MCPLoaded) {
             . $mcpScript
-            $script:MCPLoaded = $true
         }
     }
 

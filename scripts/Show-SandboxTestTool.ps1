@@ -520,7 +520,6 @@ function Show-SandboxTestTool {
 <# ToDo:
     Stub: list pending work here.
 #>
-Export-ModuleMember -Function Show-SandboxTestTool -ErrorAction SilentlyContinue
 
 
 

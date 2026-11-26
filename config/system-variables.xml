@@ -1,22 +1,49 @@
-<!-- VersionTag: 2606.B5.V51.4 -->
 <SystemVariables>
+  <AppData>
+  </AppData>
+  <ProgramFiles_x86>
+  </ProgramFiles_x86>
+  <ProgramFiles>
+  </ProgramFiles>
+  <ComputerName>
+  </ComputerName>
+  <Windows>
+  </Windows>
+  <LogDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/logs</LogDirectory>
+  <LocalAppData>
+  </LocalAppData>
+  <UserName>
+  </UserName>
+  <OSVersion>Unix 6.12.115.2</OSVersion>
+  <SystemRoot>
+  </SystemRoot>
+  <ProcessorCount>
+  </ProcessorCount>
+  <UserDomain>
+  </UserDomain>
+  <Temp>/tmp</Temp>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <PSVersion>7.4.6</PSVersion>
   <PowerShellVersion>7</PowerShellVersion>
+  <ConfigDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/config</ConfigDirectory>
+  <ExecutionDate>2026-11-26 13:50:17</ExecutionDate>
+  <ScriptsDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/scripts</ScriptsDirectory>
   <Version>
-    <Major>2606</Major>
-    <Minor>B5</Minor>
-    <Build>51</Build>
-    <VMajor>51</VMajor>
-    <VMinor>4</VMinor>
+    <Major>2611</Major>
+    <Minor>B0</Minor>
+    <Build>0</Build>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
-    <Folder>.history</Folder>
-    <Folder>.venv</Folder>
-    <Folder>.vscode</Folder>
     <Folder>~BACKUPS</Folder>
-    <Folder>~DOWNLOADS</Folder>
-    <Folder>~REPORTS</Folder>
+    <Folder>FOLDER-ROOT</Folder>
     <Folder>logs</Folder>
+    <Folder>~REPORTS</Folder>
+    <Folder>~DOWNLOADS</Folder>
     <Folder>temp</Folder>
+    <Folder>.logs</Folder>
+    <Folder>AutoIssueFinder-Logs</Folder>
+    <Folder>.history</Folder>
+    <Folder>.vscode</Folder>
   </Do-Not-VersionTag-FoldersFiles>
   <Buttons>
     <LeftColumn>
