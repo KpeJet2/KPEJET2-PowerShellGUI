@@ -98,7 +98,7 @@ function New-DerivedKeySet {
     # Convert SecureString to plaintext bytes for PBKDF2
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Passphrase)
     try {
-        $plain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+        $plain = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
         $pbkdf2 = [System.Security.Cryptography.Rfc2898DeriveBytes]::new(
             $plain,
             $Salt,

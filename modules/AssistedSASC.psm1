@@ -286,7 +286,7 @@ function New-VaultKey {
     # Convert SecureString to plaintext for Rfc2898DeriveBytes, with BSTR cleanup
     $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     try {
-        $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+        $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
     } finally {
         [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
     }

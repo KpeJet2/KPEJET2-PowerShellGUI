@@ -719,9 +719,13 @@ Show-Example "Export and import encrypted credentials (Windows DPAPI)" {
 
         # Import -- decrypts back (must be the same user on the same machine)
         $imported = (Get-Content $tmpFile) | ConvertTo-SecureString
-        $plain    = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-                        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($imported))
-        Write-Host "Round-trip password: $plain"
+        $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($imported)
+        try {
+            $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+            Write-Host "Round-trip password: $plain"
+        } finally {
+            [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+        }
         Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue
     } else {
         Write-Host "DPAPI credential export/import is Windows-only."

@@ -34,6 +34,22 @@ Describe 'Get-UserProfile' {
     }
 }
 
+Describe 'Encrypted profile snapshots' {
+    It 'Rejects a password whose suffix differs from the original password' {
+        $snapshot = @{
+            Meta = @{ ProfileName = 'unicode-password-test' }
+            Data = @{ Theme = 'Dark' }
+        }
+        $path = Join-Path $TestDrive 'profile.upjson'
+        $original = ConvertTo-SecureString 'Pässword-一' -AsPlainText -Force
+        $different = ConvertTo-SecureString 'Pässword-二' -AsPlainText -Force
+
+        Save-ProfileSnapshot -Snapshot $snapshot -OutputPath $path -Encrypt $true -Password $original
+
+        { Import-ProfileSnapshot -FilePath $path -Password $different } | Should -Throw
+    }
+}
+
 
 <# Outline:
     Stub: describe module/script purpose here.
