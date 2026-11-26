@@ -232,8 +232,19 @@ function Get-WorkspaceVersionInventory {
 
 # ========================== CPSR (Chief Project Summary Report) ==========================
 
-$script:CPSRActionsFile = Join-Path $PSScriptRoot "..\temp\cpsr-actions-session.json"
-$script:CPSRSessionId = if (Test-Path (Join-Path $PSScriptRoot "..\temp\cpsr-session-id.txt")) { Get-Content (Join-Path $PSScriptRoot "..\temp\cpsr-session-id.txt") -Raw } else { $id = [guid]::NewGuid().ToString().Substring(0,8); $id | Set-Content (Join-Path $PSScriptRoot "..\temp\cpsr-session-id.txt") -Encoding UTF8; $id }
+$cpsrTemp = Join-Path (Split-Path $PSScriptRoot -Parent) 'temp'
+if (-not (Test-Path -LiteralPath $cpsrTemp)) {
+    New-Item -ItemType Directory -Path $cpsrTemp -Force | Out-Null
+}
+$script:CPSRActionsFile = Join-Path $cpsrTemp 'cpsr-actions-session.json'
+$cpsrSessionIdFile = Join-Path $cpsrTemp 'cpsr-session-id.txt'
+$script:CPSRSessionId = if (Test-Path -LiteralPath $cpsrSessionIdFile) {
+    Get-Content -LiteralPath $cpsrSessionIdFile -Raw
+} else {
+    $id = [guid]::NewGuid().ToString().Substring(0,8)
+    $id | Set-Content -LiteralPath $cpsrSessionIdFile -Encoding UTF8
+    $id
+}
 $script:CPSRStartTime = Get-Date
 
 function Add-CPSRAction {
