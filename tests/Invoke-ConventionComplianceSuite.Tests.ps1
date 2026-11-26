@@ -537,11 +537,14 @@ Describe 'Markdown FileRole and VersionTag Coverage' {
 Describe 'Log Infrastructure' {
 
     It 'logs/secdump/ directory exists for security audit logs' {
+        # logs/ is gitignored runtime output; it does not exist on a fresh CI checkout.
+        if (-not (Test-Path -LiteralPath $script:LogsDir)) { Set-ItResult -Skipped -Because 'logs/ is runtime output and absent on a fresh checkout'; return }
         $secdumpDir = Join-Path $script:LogsDir 'secdump'
         Test-Path -LiteralPath $secdumpDir | Should -Be $true -Because 'Security dump log directory required (DPAPI/vault audit logs go here)'
     }
 
     It 'At least one current-format daily app log exists (MACHINE-YYYY-MM-DD.log)' {
+        if (-not (Test-Path -LiteralPath $script:LogsDir)) { Set-ItResult -Skipped -Because 'logs/ is runtime output and absent on a fresh checkout'; return }
         $dailyLogs = @(
             Get-ChildItem $script:LogsDir -Filter '*.log' -File -ErrorAction SilentlyContinue |
             Where-Object { $_.Name -match '^\w[\w-]+-\d{4}-\d{2}-\d{2}\.log$' }
