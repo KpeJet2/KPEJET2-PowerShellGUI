@@ -32,6 +32,9 @@ $showScripts = @(
     'Show-WorkspaceIntentReview'
 )
 
+# These launch a modal WinForms dialog at top level, which blocks forever on CI.
+$script:LaunchesUiOnLoad = @('Show-EventLogViewer', 'Show-WorkspaceIntentReview')
+
 Describe "Show-Script loadability — <_>" -ForEach $showScripts {
     BeforeAll {
         $script:ScriptName = $_
@@ -70,7 +73,7 @@ Describe "Show-Script loadability — <_>" -ForEach $showScripts {
         $script:Content | Should -Not -Match '\?\.' -Because 'SIN P005'
     }
 
-    It 'Dot-sources without terminating error' {
+    It 'Dot-sources without terminating error' -Skip:($script:LaunchesUiOnLoad -contains $_) {
         if (-not (Test-Path -LiteralPath $script:ScriptPath)) {
             Set-ItResult -Pending -Because 'Script not found'
             return
