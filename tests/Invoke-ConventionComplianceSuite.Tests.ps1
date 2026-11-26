@@ -78,9 +78,9 @@ BeforeAll {
     $script:XhtmlFiles = @(
         Get-ChildItem $script:Root -Recurse -Filter '*.xhtml' -File -ErrorAction SilentlyContinue |
         Where-Object {
-            $_.FullName -notlike '*~REPORTS*'  -and
-            $_.FullName -notlike '*\.history*' -and
-            $_.FullName -notlike '*\.venv*'
+            $_.FullName.Replace('\', '/') -notlike '*~REPORTS*'    -and
+            $_.FullName.Replace('\', '/') -notlike '*/.history/*'  -and
+            $_.FullName.Replace('\', '/') -notlike '*/.venv*'
         }
     )
 
@@ -88,10 +88,10 @@ BeforeAll {
     $script:AllPsFiles = @(
         Get-ChildItem $script:Root -Recurse -Include '*.ps1','*.psm1' -File -ErrorAction SilentlyContinue |
         Where-Object {
-            $_.FullName -notlike '*\.history*'    -and
-            $_.FullName -notlike '*\.git*'        -and
-            $_.FullName -notlike '*\.venv*'       -and
-            $_.FullName -notlike '*node_modules*'
+            $_.FullName.Replace('\', '/') -notlike '*/.history/*'  -and
+            $_.FullName.Replace('\', '/') -notlike '*/.git/*'      -and
+            $_.FullName.Replace('\', '/') -notlike '*/.venv*'      -and
+            $_.FullName.Replace('\', '/') -notlike '*/node_modules/*'
         }
     )
 
@@ -106,12 +106,12 @@ BeforeAll {
     $script:ScriptFiles = @(
         Get-ChildItem $script:ScriptDir -Recurse -Filter '*.ps1' -File -ErrorAction SilentlyContinue |
         Where-Object {
-            $_.FullName -notlike '*\.history*'             -and
-            $_.FullName -notlike '*~REPORTS*'              -and
-            $_.FullName -notlike '*\scripts\QUICK-APP\*'  -and
-            $_.FullName -notlike '*\scripts\windguits\*'  -and
-            $_.FullName -notlike '*\scripts\scripts\*'    -and
-            $_.Name     -notlike 'Script-*.ps1'            -and
+            $_.FullName.Replace('\', '/') -notlike '*/.history/*'           -and
+            $_.FullName.Replace('\', '/') -notlike '*~REPORTS*'             -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/QUICK-APP/*'  -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/windguits/*'  -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/scripts/*'    -and
+            $_.Name     -notlike 'Script-*.ps1'                             -and
             $_.Name     -notlike 'PS-CheatSheet*'
         }
     )
@@ -122,19 +122,19 @@ BeforeAll {
     # non-PowerShell content (e.g. Invoke-PreCommitValidation.ps1 = JSON report artifact)
     $script:VTagFiles = @(
         $script:AllPsFiles | Where-Object {
-            $_.FullName -notlike '*\.history*'               -and
-            $_.FullName -notlike '*testing-routine-saves*'  -and
-            $_.FullName -notlike '*~REPORTS*'               -and
-            $_.FullName -notlike '*\.vscode*'               -and
-            $_.FullName -notlike '*\scripts\QUICK-APP\*'   -and
-            $_.FullName -notlike '*\scripts\windguits\*'   -and
-            $_.FullName -notlike '*\scripts\scripts\*'     -and
-            $_.FullName -notlike '*\temp\*'                 -and
-            $_.FullName -notlike '*\logs\*'                 -and
-            $_.Name     -notlike 'Script-*.ps1'              -and
-            $_.Name     -notlike 'Script?.ps1'              -and
-            $_.Name     -notlike 'PS-CheatSheet*'           -and
-            $_.Name     -notlike '_TEMPLATE*'               -and
+            $_.FullName.Replace('\', '/') -notlike '*/.history/*'             -and
+            $_.FullName.Replace('\', '/') -notlike '*testing-routine-saves*'  -and
+            $_.FullName.Replace('\', '/') -notlike '*~REPORTS*'               -and
+            $_.FullName.Replace('\', '/') -notlike '*/.vscode/*'              -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/QUICK-APP/*'    -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/windguits/*'    -and
+            $_.FullName.Replace('\', '/') -notlike '*/scripts/scripts/*'      -and
+            $_.FullName.Replace('\', '/') -notlike '*/temp/*'                 -and
+            $_.FullName.Replace('\', '/') -notlike '*/logs/*'                 -and
+            $_.Name     -notlike 'Script-*.ps1'                                -and
+            $_.Name     -notlike 'Script?.ps1'                                 -and
+            $_.Name     -notlike 'PS-CheatSheet*'                              -and
+            $_.Name     -notlike '_TEMPLATE*'                                  -and
             $_.Name     -notlike 'Invoke-PreCommitValidation.ps1'
         }
     )
@@ -149,7 +149,7 @@ BeforeAll {
     # Config JSON files — exclude manifest history archive
     $script:ConfigJsonFiles = @(
         Get-ChildItem $script:ConfigDir -Recurse -Filter '*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.FullName -notlike '*\agentic-manifest-history\*' }
+        Where-Object { $_.FullName.Replace('\', '/') -notlike '*/agentic-manifest-history/*' }
     )
 
     # Root-level .bat launchers
