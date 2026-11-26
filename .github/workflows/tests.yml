@@ -23,7 +23,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install Pester
         shell: pwsh
@@ -53,7 +53,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: pester-results
           path: |
@@ -70,7 +70,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install Pester
         shell: pwsh
@@ -146,7 +146,7 @@ jobs:
 
       - name: Upload iteration report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: cert-approvals-iteration-report
           path: reports/interop-iter/multipass-*.json
@@ -164,7 +164,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Run pipeline multi-pass (read-only, min 3)
         shell: pwsh
@@ -192,7 +192,7 @@ jobs:
 
       - name: Upload convergence report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: convergence-report
           path: reports/interop-iter/multipass-*.json
@@ -208,7 +208,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Check for changed todo/sin_registry/reports paths
         id: paths

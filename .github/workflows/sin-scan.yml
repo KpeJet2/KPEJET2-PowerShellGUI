@@ -36,7 +36,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Show PowerShell version
         shell: pwsh
@@ -86,7 +86,7 @@ jobs:
 
       - name: Upload SIN scan artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: sin-scan-results
           path: |
@@ -101,7 +101,7 @@ jobs:
 
       - name: Publish JUnit test results
         if: always()
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3.0.0
         with:
           name: SIN Pattern Scan
           path: reports/sin-scan-junit.xml
@@ -138,7 +138,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Run SIN scanner over non-PowerShell assets
         shell: pwsh
@@ -159,7 +159,7 @@ jobs:
 
       - name: Upload extended scan artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: sin-scan-extended
           path: reports/sin-scan-extended.json
@@ -173,7 +173,7 @@ jobs:
       matrix:
         engine: [pwsh, powershell]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Refine smoke run on matrix engine
         shell: pwsh
         run: |
@@ -197,7 +197,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Install Pester
         shell: pwsh
         run: |
