@@ -62,7 +62,13 @@ if (Test-Path $adapter) { try { Import-Module $adapter -Force -DisableNameChecki
 $script:AaEventSeq = 0
 $script:AaActionId = 'auto-approval-' + ([guid]::NewGuid().ToString().Substring(0,8))
 $script:AaAgentId = 'auto-approval-writer'
-$script:AaEditor = [string]$env:USERNAME
+$script:AaEditor = if (-not [string]::IsNullOrWhiteSpace($env:USERNAME)) {
+    [string]$env:USERNAME
+} elseif (-not [string]::IsNullOrWhiteSpace($env:USER)) {
+    [string]$env:USER
+} else {
+    [string][Environment]::UserName
+}
 
 function New-AaEventId {
     $script:AaEventSeq++
