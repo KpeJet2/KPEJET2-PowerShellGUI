@@ -18,4 +18,39 @@
     <Folder>logs</Folder>
     <Folder>temp</Folder>
   </Do-Not-VersionTag-FoldersFiles>
+  <Buttons>
+    <LeftColumn>
+      <Button>
+        <ScriptName>Script5</ScriptName>
+        <DisplayName>Backup Operations</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script6</ScriptName>
+        <DisplayName>Configuration Sync</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script1</ScriptName>
+        <DisplayName>Database Maintenance</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script3</ScriptName>
+        <DisplayName>Network Diagnostics</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script2</ScriptName>
+        <DisplayName>System Cleanup</DisplayName>
+      </Button>
+      <Button>
+        <ScriptName>Script4</ScriptName>
+        <DisplayName>Access - User and Group Management</DisplayName>
+      </Button>
+    </LeftColumn>
+    <RightColumn>
+      <Button>
+        <ScriptName>PWShQuickApp</ScriptName>
+        <DisplayName>PWSH-Quick-App (PWSH7 Prompt - Script Runner)</DisplayName>
+        <ScriptPath>~PWSH_Quick-APP3.ps1</ScriptPath>
+      </Button>
+    </RightColumn>
+  </Buttons>
 </SystemVariables>
