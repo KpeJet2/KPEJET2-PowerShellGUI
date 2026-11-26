@@ -9,7 +9,7 @@ Describe 'Invoke-PreCommitValidation recovery loop' {
     }
 
     It 'includes a non-scanned candidate inventory in the JSON report' {
-        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe = (Get-Process -Id $PID).Path
         $outPath = Join-Path $repoRoot 'temp/precommit-transparency-test.json'
         if (Test-Path -LiteralPath $outPath) {
             Remove-Item -LiteralPath $outPath -Force
@@ -40,7 +40,7 @@ Describe 'Invoke-PreCommitValidation recovery loop' {
     }
 
     It 'writes a redacted failure summary and remediation plan for blocking issues' {
-        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe = (Get-Process -Id $PID).Path
         $tempFile = Join-Path $repoRoot 'temp/precommit-redacted-remedy-test.ps1'
         $outPath = Join-Path $repoRoot 'temp/precommit-redacted-remedy.json'
 
@@ -84,7 +84,7 @@ Describe 'Invoke-PreCommitValidation recovery loop' {
     }
 
     It 'expands a newline-delimited staged file list passed as a single argument' {
-        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe = (Get-Process -Id $PID).Path
         $outPath = Join-Path $repoRoot 'temp/precommit-staged-list.json'
         if (Test-Path -LiteralPath $outPath) { Remove-Item -LiteralPath $outPath -Force }
 

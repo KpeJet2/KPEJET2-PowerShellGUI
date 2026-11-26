@@ -29,7 +29,7 @@ Describe 'Invoke-StaticWorkspaceScan -- Script exists' {
 Describe 'Invoke-StaticWorkspaceScan -- Output JSON schema' {
     BeforeAll {
         try {
-            & powershell.exe -NoProfile -NonInteractive -File $script:ScanScript `
+            & (Get-Process -Id $PID).Path -NoProfile -NonInteractive -File $script:ScanScript `
                 -WorkspacePath $script:WorkspacePath `
                 -ErrorAction SilentlyContinue 2>$null
         } catch { <# Intentional: scan errors are non-fatal in smoke-test context #> }

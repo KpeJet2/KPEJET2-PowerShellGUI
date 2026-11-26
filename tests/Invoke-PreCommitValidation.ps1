@@ -643,7 +643,7 @@ function Invoke-PipelineMetricGate {
     }
 
     try {
-        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe = (Get-Process -Id $PID).Path
         $proc = Start-Process -FilePath $hostExe -ArgumentList $psArgs -Wait -PassThru -NoNewWindow
         if ($proc.ExitCode -ne 0) {
             [void]$findings.Add([PSCustomObject]@{
@@ -1285,7 +1285,7 @@ try {
 }
 
 if ($AutoCorrectFailures -and $blockingCount -gt 0) {
-    $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+    $hostExe = (Get-Process -Id $PID).Path
     $childArgsBase = @(
         '-NoProfile',
         '-ExecutionPolicy', 'Bypass',
