@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2607.B7.V53.1
+# FileRole: Pipeline
 <#
 .SYNOPSIS
 Collect local network connection telemetry and publish to LocalWebEngine NetMon API.

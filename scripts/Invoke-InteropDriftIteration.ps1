@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2607.B7.V53.0
+# FileRole: Pipeline
 # SupportPS5.1: true
 # SupportsPS7.6: true
 <#

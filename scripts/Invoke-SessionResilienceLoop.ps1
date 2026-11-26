@@ -1,4 +1,5 @@
 ﻿# VersionTag: 2608.B1.V54.1
+# FileRole: Pipeline
 <#
 .SYNOPSIS
     Supervises ONE chat/agent session at a time and presses "Try Again" for you

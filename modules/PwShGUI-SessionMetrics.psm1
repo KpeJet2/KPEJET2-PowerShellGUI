@@ -1,4 +1,5 @@
 # VersionTag: 2607.B7.V53.0
+# FileRole: Module
 # Module: PwShGUI-SessionMetrics
 # Purpose: Boot/exit metrics, session object caching, crash detection
 # ================================================================

@@ -1,4 +1,5 @@
 # VersionTag: 2607.B7.V53.0
+# FileRole: Module
 <#
 .SYNOPSIS
     PwShGUI-KillSwitch — per-version emergency kill switch governance.

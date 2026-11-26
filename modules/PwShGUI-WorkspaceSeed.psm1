@@ -1,4 +1,5 @@
 # VersionTag: 2607.B7.V53.0
+# FileRole: Module
 # PwShGUI-WorkspaceSeed.psm1 — Workspace seeding and initialization module
 
 Set-StrictMode -Version Latest
