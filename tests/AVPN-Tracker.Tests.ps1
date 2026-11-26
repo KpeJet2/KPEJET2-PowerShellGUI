@@ -194,6 +194,12 @@ Describe 'Protect-AVPNCredential / Unprotect-AVPNCredential' {
     It 'Should return non-DPAPI string unchanged (decrypt)' {
         Unprotect-AVPNCredential -Stored 'PlainText' | Should -Be 'PlainText'
     }
+
+    It 'Should round-trip non-ASCII credentials' {
+        $plain = 'Pässword-安全-123'
+        $stored = Protect-AVPNCredential -PlainText $plain
+        Unprotect-AVPNCredential -Stored $stored | Should -Be $plain
+    }
 }
 
 
