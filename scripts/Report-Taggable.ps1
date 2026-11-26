@@ -1,4 +1,4 @@
-# VersionTag: 2607.B7.V53.0
+﻿# VersionTag: 2607.B7.V53.0
 # FileRole: Scanner
 # Analyse untagged files for taggability candidacy.
 
