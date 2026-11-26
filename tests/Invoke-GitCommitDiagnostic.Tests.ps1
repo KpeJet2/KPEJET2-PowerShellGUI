@@ -16,7 +16,7 @@ Describe 'Git commit diagnostic Alpha controls' {
         New-Item -ItemType Directory -Path (Join-Path $ws 'scripts') -Force | Out-Null
         Copy-Item -LiteralPath $script:Diagnostic -Destination (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') -Force
 
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') `
+        & $(if (Get-Command powershell -ErrorAction SilentlyContinue) { 'powershell' } else { 'pwsh' }) -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') `
             -WorkspacePath $ws -Gate 'pipeline-refine' -ExitCode 1 `
             -Message 'Baseline regressions detected: 1' -AlphaSoftFail
         $LASTEXITCODE | Should -Be 0
@@ -35,7 +35,7 @@ Describe 'Git commit diagnostic Alpha controls' {
         New-Item -ItemType Directory -Path (Join-Path $ws 'scripts') -Force | Out-Null
         Copy-Item -LiteralPath $script:Diagnostic -Destination (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') -Force
 
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') `
+        & $(if (Get-Command powershell -ErrorAction SilentlyContinue) { 'powershell' } else { 'pwsh' }) -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-GitCommitDiagnostic.ps1') `
             -WorkspacePath $ws -Gate 'pre-commit-validation' -ExitCode 1 `
             -Message 'ParserError: Missing closing brace; secret scanner private key detected' -AlphaSoftFail
         $record = Get-Content -LiteralPath (@(Get-ChildItem -LiteralPath (Join-Path $ws 'logs\git-errors') -Filter '*.json' -File)[0].FullName) -Raw -Encoding UTF8 | ConvertFrom-Json
