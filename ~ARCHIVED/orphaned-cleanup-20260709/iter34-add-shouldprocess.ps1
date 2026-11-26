@@ -1,4 +1,4 @@
-# VersionTag: 2606.B5.V51.4
+﻿# VersionTag: 2606.B5.V51.4
 # iter34: AST-targeted SupportsShouldProcess injection
 # For each PSSA-flagged function: find its [CmdletBinding(...)] attribute and
 # add SupportsShouldProcess. If no CmdletBinding present, insert one.
