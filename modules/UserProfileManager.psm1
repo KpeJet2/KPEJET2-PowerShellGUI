@@ -1058,7 +1058,7 @@ function Get-LanguageAndSpeech {
             Get-ChildItem $srKey -EA SilentlyContinue | ForEach-Object {
                 $sp   = Get-ItemProperty $_.PSPath -EA SilentlyContinue
                 $regPath = $_.PSPath
-                $attr = Get-ItemProperty (Join-Path $regPath 'Attributes') -EA SilentlyContinue
+                $attr = Get-ItemProperty (Join-Path $regPath 'Attributes') -EA SilentlyContinue # SIN-EXEMPT:P093 -- registry provider child path, not a temporary file
                 $lang = if ($attr -and $null -ne $attr.PSObject.Properties['Language']) { [string]$attr.Language }
                         elseif ($sp -and $null -ne $sp.PSObject.Properties['Language']) { [string]$sp.Language }
                         else { '' }
