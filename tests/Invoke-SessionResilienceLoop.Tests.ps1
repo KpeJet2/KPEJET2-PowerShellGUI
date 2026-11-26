@@ -90,7 +90,7 @@ Describe 'Invoke-SessionResilienceLoop script behavior' {
             'ERROR: process terminated unexpectedly'
         ) | Set-Content -LiteralPath $logFile -Encoding UTF8
 
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-SessionResilienceLoop.ps1') `
+        & $(if (Get-Command powershell -ErrorAction SilentlyContinue) { 'powershell' } else { 'pwsh' }) -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-SessionResilienceLoop.ps1') `
             -WorkspacePath $ws -DetectOnly
         $LASTEXITCODE | Should -Be 0
     }
@@ -105,7 +105,7 @@ Describe 'Invoke-SessionResilienceLoop script behavior' {
             'ERROR: session aborted'
         ) | Set-Content -LiteralPath $logFile -Encoding UTF8
 
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-SessionResilienceLoop.ps1') `
+        & $(if (Get-Command powershell -ErrorAction SilentlyContinue) { 'powershell' } else { 'pwsh' }) -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ws 'scripts\Invoke-SessionResilienceLoop.ps1') `
             -WorkspacePath $ws -ResumeToday -DryRun -SessionCommand 'Write-Output "noop"'
         $LASTEXITCODE | Should -Be 0
 
