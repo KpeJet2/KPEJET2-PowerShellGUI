@@ -32,6 +32,8 @@
     <Major>2611</Major>
     <Minor>B0</Minor>
     <Build>0</Build>
+    <VMajor>1</VMajor>
+    <VMinor>0</VMinor>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>
