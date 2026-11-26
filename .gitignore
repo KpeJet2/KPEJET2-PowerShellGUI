@@ -42,6 +42,8 @@ XPS15-MS-*.log*
 # ignore PowerShell generated files
 *.ps1xml
 *.psd1
+# module manifests are required by tests/Invoke-ConventionComplianceSuite.Tests.ps1
+!modules/*.psd1
 # ignore system specific
 Thumbs.db
 ehthumbs.db
