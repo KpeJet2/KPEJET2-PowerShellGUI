@@ -213,6 +213,10 @@ function Assert-SafePath {
     if ([string]::IsNullOrWhiteSpace($Path)) {
         throw [System.ArgumentException]::new('Path must not be empty.', 'Path')
     }
+    if (@($Path -split '[\\/]+') -contains '..') {
+        throw [System.Security.SecurityException]::new(
+            "Path traversal blocked: '$Path' contains a parent-directory segment.")
+    }
     # Filter out null/empty roots (e.g. when called before Initialize-SASCModule has set $script:_ModuleRoot).
     $effectiveRoots = @($AllowedRoots | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     if (@($effectiveRoots).Count -eq 0) {
@@ -223,7 +227,9 @@ function Assert-SafePath {
     $allowed = $false
     foreach ($root in $effectiveRoots) {
         $canonRoot = [System.IO.Path]::GetFullPath($root)
-        if ($canonical.StartsWith($canonRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $rootPrefix = $canonRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+        if ($canonical.Equals($canonRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+            $canonical.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
             $allowed = $true
             break
         }

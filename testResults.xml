@@ -1,77 +1,772 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="8" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-08-17" time="21:53:29">
-  <environment platform="Microsoft Windows 11 Pro for Workstations|C:\WINDOWS|\Device\Harddisk0\Partition3" user="msaib" clr-version="10.0.10" user-domain="XPS15-MS" cwd="C:\PowerShellGUI" nunit-version="2.5.8.0" os-version="10.0.26100" machine-name="XPS15-MS" />
-  <culture-info current-culture="en-AU" current-uiculture="en-GB" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="328.2635" asserts="0" description="Pester">
-    <results>
-      <test-suite type="TestFixture" name="C:\PowerShellGUI\tests\Invoke-SINPatternScanner.Tests.ps1" executed="True" result="Failure" success="False" time="328.2635" asserts="0" description="C:\PowerShellGUI\tests\Invoke-SINPatternScanner.Tests.ps1">
-        <results>
-          <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration">
-            <results>
-              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline">
-                <results>
-                  <test-case description="wrote a JSON output file" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.wrote a JSON output file" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                  <test-case description="records ratchetMode=Permissive and baselineApplied=true" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records ratchetMode=Permissive and baselineApplied=true" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                  <test-case description="totalFindings equals sum of countsBySinId values" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.totalFindings equals sum of countsBySinId values" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                  <test-case description="records registry validation and coverage metadata" name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records registry validation and coverage metadata" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                </results>
-              </test-suite>
-              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan">
-                <results>
-                  <test-case description="produces well-formed XML with testsuites root" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.produces well-formed XML with testsuites root" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                  <test-case description="tests count is at least totalFindings (plus ratchet metadata cases)" name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.tests count is at least totalFindings (plus ratchet metadata cases)" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                </results>
-              </test-suite>
-              <test-suite type="TestFixture" name="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan)" executed="True" result="Failure" success="False" time="0" asserts="0" description="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan)">
-                <results>
-                  <test-case description="suppresses an empty-catch (P002) finding when SIN-EXEMPT:P002 is on the same line" name="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan).suppresses an empty-catch (P002) finding when SIN-EXEMPT:P002 is on the same line" time="0" asserts="0" success="False" result="Failure" executed="True">
-                    <failure>
-                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                      <stack-trace />
-                    </failure>
-                  </test-case>
-                </results>
-              </test-suite>
-              <test-case description="fails explicitly for an invalid registry definition" name="Invoke-SINPatternScanner integration.fails explicitly for an invalid registry definition" time="0" asserts="0" success="False" result="Failure" executed="True">
-                <failure>
-                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
-                  <stack-trace />
-                </failure>
-              </test-case>
-            </results>
-          </test-suite>
-        </results>
-      </test-suite>
-    </results>
-  </test-suite>
-</test-results>
+<testsuites xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="junit_schema_4.xsd" name="Pester" tests="323" errors="6" failures="37" disabled="0" time="188.014">
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" tests="5" errors="0" failures="1" hostname="adc-sandbox" id="0" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" time="0.926">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Assert-SafePath.Accepts a valid absolute path" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" assertions="0" time="0.089" />
+    <testcase name="Assert-SafePath.Rejects path traversal attempts" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" assertions="0" time="0.090">
+      <failure message="Expected an exception to be thrown, but no exception was thrown.">at { Assert-SafePath -Path '..\..\Windows\System32' -AllowedRoots @($script:WorkspaceRoot) } | Should -Throw, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1:38
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1:38</failure>
+    </testcase>
+    <testcase name="Initialize-SASCModule.Initializes without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" assertions="0" time="0.047" />
+    <testcase name="Test-VaultStatus.Returns a status object" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Find-BWCli.Returns path or null without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AssistedSASC.Tests.ps1" assertions="0" time="0.029" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" tests="22" errors="0" failures="1" hostname="adc-sandbox" id="1" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" time="0.656">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Get-AVPNDefaultTemplateList.Should return 15 device templates" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.074" />
+    <testcase name="Get-AVPNDefaultTemplateList.Should include required template fields" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.031" />
+    <testcase name="Get-AVPNDefaultTemplateList.Template IDs should be sequential 1-15" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Get-AVPNConnectorCount.Should return correct AV Input count" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.036" />
+    <testcase name="Get-AVPNConnectorCount.Should return correct AV Output count" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.016" />
+    <testcase name="Get-AVPNConnectorCount.Should return correct Power Input count" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.012" />
+    <testcase name="Get-AVPNConnectorCount.Should return correct Network count" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Get-AVPNConnectorCount.Should return 0 for unknown connector type" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-AVPNConnectionValid.Network-to-Network should be valid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="Test-AVPNConnectionValid.AV Output-to-AV Input should be valid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-AVPNConnectionValid.Power Output-to-Power Input should be valid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Test-AVPNConnectionValid.USB Plug-to-USB Input should be valid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Test-AVPNConnectionValid.AV Input-to-AV Input should be invalid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Test-AVPNConnectionValid.Power Input-to-Network should be invalid" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Initialize-AVPNConfigFile.Should create config file at specified path" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.048" />
+    <testcase name="Initialize-AVPNConfigFile.Should create valid JSON" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.022" />
+    <testcase name="Initialize-AVPNConfigFile.Should include default device templates" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Initialize-AVPNConfigFile.Should not overwrite existing config" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Import-AVPNCsv / Export-AVPNCsv round-trip.Should export and re-import inventory data" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.086" />
+    <testcase name="Protect-AVPNCredential / Unprotect-AVPNCredential.Should encrypt and decrypt a plaintext string" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.108">
+      <failure message="Expected strings to be the same, but they were different.&#xA;Expected length: 15&#xA;Actual length:   1&#xA;Strings differ at index 1.&#xA;Expected: 'TestPassword123'&#xA;But was:  'T'&#xA;           -^">at $decrypted | Should -Be $plain, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1:187
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1:187</failure>
+    </testcase>
+    <testcase name="Protect-AVPNCredential / Unprotect-AVPNCredential.Should return empty string for null input (encrypt)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Protect-AVPNCredential / Unprotect-AVPNCredential.Should return non-DPAPI string unchanged (decrypt)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/AVPN-Tracker.Tests.ps1" assertions="0" time="0.002" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" tests="22" errors="0" failures="0" hostname="adc-sandbox" id="2" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" time="0.241">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Cert/Approvals surface files exist.Engine script exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Cert/Approvals surface files exist.Workspace hub XHTML exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Cert/Approvals surface files exist.Feature requests XHTML exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Cert/Approvals surface files exist.Certificate management hub XHTML exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Build marker progression (B7).Engine VersionTag moved to 2607.B7 with V preserved" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Build marker progression (B7).Workspace hub VersionTag moved to 2607.B7 with V preserved" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Build marker progression (B7).Feature requests VersionTag moved to 2607.B7 with V preserved" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Build marker progression (B7).Certificate hub VersionTag moved to 2607.B7 with V preserved" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Approvals API and UI compatibility.Engine includes /api/pipeline/feature-submit route case" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Approvals API and UI compatibility.Engine includes feature-submit handler function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Approvals API and UI compatibility.Engine emits approvals aliases for items and pending" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Approvals API and UI compatibility.Workspace hub normalization accepts payload.items for pipeline approvals" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Approvals API and UI compatibility.Workspace hub loader falls back to data.items when pending absent" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Feature requests submit wiring.Feature requests has send-to-approvals button" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Feature requests submit wiring.Feature requests obtains CSRF token from engine" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Feature requests submit wiring.Feature requests posts submit payload to engine route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Feature requests submit wiring.Feature requests triggers pipeline processing after submit" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Certificate hub exposure and capabilities.Workspace hub tool registry includes Certificate Management Hub card" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.021" />
+    <testcase name="Certificate hub exposure and capabilities.Certificate hub includes ACME discovery controls" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.017" />
+    <testcase name="Certificate hub exposure and capabilities.Certificate hub includes secrets integration controls" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Certificate hub exposure and capabilities.Certificate hub includes browser trust hook controls" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Additional menu surface integration.Feature requests XHTML Tools list includes Certificate Management Hub link" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CertHubAndApprovalsSurface.Tests.ps1" assertions="0" time="0.006" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-BugTracker.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="3" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-BugTracker.Tests.ps1" time="0.663">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Invoke-ParseCheck.Returns results array" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-BugTracker.Tests.ps1" assertions="0" time="0.034" />
+    <testcase name="Invoke-FullBugScan.Returns a scan result object" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-BugTracker.Tests.ps1" assertions="0" time="0.101" />
+    <testcase name="Invoke-BugToPipelineProcessor.Processes bugs into pipeline format" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-BugTracker.Tests.ps1" assertions="0" time="0.417" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-ErrorLinker.Tests.ps1" tests="2" errors="0" failures="0" hostname="adc-sandbox" id="4" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-ErrorLinker.Tests.ps1" time="0.512">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Add-ErrorToPipeline TEST-PEST naming.creates incrementing TEST-PEST Bugs2FIX IDs for simulated crashes" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-ErrorLinker.Tests.ps1" assertions="0" time="0.343" />
+    <testcase name="Add-ErrorToPipeline TEST-PEST naming.resets sequence to 1 when test ordinal store is corrupt" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-ErrorLinker.Tests.ps1" assertions="0" time="0.113" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" tests="10" errors="0" failures="0" hostname="adc-sandbox" id="5" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" time="0.137">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="CronAiAthon-EventLog Module.Imports successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="CronAiAthon-EventLog Module.Exports required core functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="Write-CronLog.Writes log entry without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.038" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Debug to Debug" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Info to Informational" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Warning to Warning" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Error to Error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.011" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Critical to Critical" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="ConvertTo-SyslogSeverity.Maps Audit to Notice" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="ConvertTo-SyslogSeverity.Rejects invalid levels" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-EventLog.Tests.ps1" assertions="0" time="0.014" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" tests="39" errors="0" failures="1" hostname="adc-sandbox" id="6" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" time="0.841">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="New-PipelineItem.Should create an item with all required fields" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.012" />
+    <testcase name="New-PipelineItem.Should include outline fields by default" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="New-PipelineItem.Should accept custom outline fields" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="New-PipelineItem.Should accept all valid types" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.008" />
+    <testcase name="New-PipelineItem.Should generate unique IDs" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.018" />
+    <testcase name="Test-StatusTransition.Should allow OPEN -&gt; PLANNED" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Test-StatusTransition.Should allow OPEN -&gt; IN_PROGRESS" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should allow IN_PROGRESS -&gt; DONE" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should allow IN_PROGRESS -&gt; TESTING" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should allow TESTING -&gt; DONE" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should deny OPEN -&gt; DONE (skip states)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should deny TESTING -&gt; PLANNED" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should allow BLOCKED -&gt; OPEN (re-open)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-StatusTransition.Should allow CLOSED -&gt; OPEN (re-open)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Initialize-PipelineRegistry.Should create a registry file in TestDrive" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="Initialize-PipelineRegistry.Should use schema version 1.1" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Initialize-PipelineRegistry.Should include outlineSchema in meta" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.012" />
+    <testcase name="Pipeline CRUD.Should add an item to the registry" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.037" />
+    <testcase name="Pipeline CRUD.Should retrieve added items" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Pipeline CRUD.Should update item status with valid transition" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.058" />
+    <testcase name="Pipeline CRUD.Should block invalid status transition without -Force" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Pipeline CRUD.Should mark parent Bug DONE when linked Bugs2FIX is completed" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.209" />
+    <testcase name="Get-ValidCategories.Should return a non-empty array" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Get-ValidCategories.Should include core categories" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Resolve-ItemCategory.Should map exact category" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Resolve-ItemCategory.Should map partial match" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Resolve-ItemCategory.Should map abbreviation" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Resolve-ItemCategory.Should default to general for unknown" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Resolve-ItemCategory.Should handle null/empty" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Get-PipelineHealthMetrics.Should return metrics object" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.036" />
+    <testcase name="Test-BugSinResolved.Should return true for empty SinId" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Test-BugSinResolved.Should return true for non-existent sin file" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Test-BugSinResolved.Should return false for unresolved sin" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Test-BugSinResolved.Should return true for resolved sin" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Update-TodoBundle.Should regenerate _bundle.js from todo JSON files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.011" />
+    <testcase name="Canonical Normalization.Should normalize legacy status aliases to canonical values" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Canonical Normalization.Should normalize legacy type aliases to canonical values" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Artifact Integrity Parity.Should report healthy integrity after canonical refresh" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.164" />
+    <testcase name="Pipeline Metric Increment Harness.Should pass one-item incremental metric validation harness" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1" assertions="0" time="0.050">
+      <failure message="CommandNotFoundException: The term 'powershell.exe' is not recognized as a name of a cmdlet, function, script file, or executable program.&#xA;Check the spelling of the name, or if a path was included, verify that the path is correct and try again.">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Pipeline.Tests.ps1:329</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Scheduler.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="7" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Scheduler.Tests.ps1" time="0.061">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="CronAiAthon-Scheduler Module.Imports successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Scheduler.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="CronAiAthon-Scheduler Module.Exports required scheduler functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Scheduler.Tests.ps1" assertions="0" time="0.017" />
+    <testcase name="Get-CronSchedule.Returns schedule data without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/CronAiAthon-Scheduler.Tests.ps1" assertions="0" time="0.013" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" tests="4" errors="0" failures="0" hostname="adc-sandbox" id="8" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" time="0.065">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="DeanB pipeline gate wiring.declares DeanB and randomized SIN stages in the iteration runner" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="DeanB pipeline gate wiring.relays DeanB controls through the multi-pass runner" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="DeanB pipeline gate wiring.defines a bounded DeanB batch contract" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="DeanB pipeline gate wiring.contains one unique solution entry for every outstanding finding" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-DeanBPipelineGate.Tests.ps1" assertions="0" time="0.028" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" tests="14" errors="0" failures="0" hostname="adc-sandbox" id="9" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" time="1.458">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Pipeline End-to-End Lifecycle.Step 1: Create a ToDo item" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.042" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 2: Create a Bug item" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.038" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 3: Verify items in registry" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 4: Transition ToDo OPEN -&gt; IN_PROGRESS" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.046" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 5: Transition ToDo IN_PROGRESS -&gt; TESTING" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.083" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 6: Transition ToDo TESTING -&gt; DONE" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.077" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 7: Verify item has completedAt timestamp" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.008" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 8: Health metrics reflect changes" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.031" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 9: Bundle regeneration after changes" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.009" />
+    <testcase name="Pipeline End-to-End Lifecycle.Step 10: Statistics reflect completion" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Batch Operations.Should batch-transition all OPEN bugs to PLANNED" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.267" />
+    <testcase name="Batch Operations.Should filter by category" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.396" />
+    <testcase name="Outline Schema Operations.Should set outline phase for all items" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Outline Schema Operations.Should confirm outline version from v0 to v1" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PipelineIntegration.Tests.ps1" assertions="0" time="0.023" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" tests="4" errors="0" failures="4" hostname="adc-sandbox" id="10" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" time="8.259">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Invoke-PreCommitValidation recovery loop.retries a gate until it passes or reaches the retry cap" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" assertions="0" time="8.112">
+      <failure message="Win32Exception: An error occurred trying to start process 'powershell.exe' with working directory '/root/copilot-worktrees/KPEJET2-PowerShellGUI'. No such file or directory">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.ps1:1329
+at Invoke-PreCommitGateRecoveryLoop, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.ps1:1130
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.ps1:1306
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1:8</failure>
+    </testcase>
+    <testcase name="Invoke-PreCommitValidation recovery loop.includes a non-scanned candidate inventory in the JSON report" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" assertions="0" time="0.041">
+      <failure message="Win32Exception: An error occurred trying to start process 'powershell.exe' with working directory '/root/copilot-worktrees/KPEJET2-PowerShellGUI'. No such file or directory">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1:30</failure>
+    </testcase>
+    <testcase name="Invoke-PreCommitValidation recovery loop.writes a redacted failure summary and remediation plan for blocking issues" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" assertions="0" time="0.045">
+      <failure message="Win32Exception: An error occurred trying to start process 'powershell.exe' with working directory '/root/copilot-worktrees/KPEJET2-PowerShellGUI'. No such file or directory">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1:64</failure>
+    </testcase>
+    <testcase name="Invoke-PreCommitValidation recovery loop.expands a newline-delimited staged file list passed as a single argument" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1" assertions="0" time="0.041">
+      <failure message="Win32Exception: An error occurred trying to start process 'powershell.exe' with working directory '/root/copilot-worktrees/KPEJET2-PowerShellGUI'. No such file or directory">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-PreCommitValidation.Tests.ps1:104</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" tests="8" errors="0" failures="0" hostname="adc-sandbox" id="11" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" time="164.891">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Invoke-SINPatternScanner integration.fails explicitly for an invalid registry definition" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.wrote a JSON output file" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records ratchetMode=Permissive and baselineApplied=true" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.totalFindings equals sum of countsBySinId values" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Invoke-SINPatternScanner integration.Full Permissive scan against current baseline.records registry validation and coverage metadata" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.produces well-formed XML with testsuites root" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Invoke-SINPatternScanner integration.JUnit XML conversion of primary scan.tests count is at least totalFindings (plus ratchet metadata cases)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Invoke-SINPatternScanner integration.SIN-EXEMPT marker suppression (single-file scan).suppresses an empty-catch (P002) finding when SIN-EXEMPT:P002 is on the same line" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-SINPatternScanner.Tests.ps1" assertions="0" time="0.188" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-StuckInPipeGate.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="12" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-StuckInPipeGate.Tests.ps1" time="0.792">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Invoke-StuckInPipeGate stale/corrupt queue recovery.detects stale interruptions, clears corrupt artifacts, and requeues stuck items" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-StuckInPipeGate.Tests.ps1" assertions="0" time="0.339" />
+    <testcase name="Invoke-StuckInPipeGate feature request smoke.creates and completes a test feature request that writes a README date stamp" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-StuckInPipeGate.Tests.ps1" assertions="0" time="0.235" />
+    <testcase name="Invoke-StuckInPipeGate missing component detection.detects missing components and records remediation failure with Bugs2FIX linkage" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-StuckInPipeGate.Tests.ps1" assertions="0" time="0.173" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-TheGateBouncer.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="13" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-TheGateBouncer.Tests.ps1" time="0.077">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="TheGateBouncer and issue inventory.allows a configured bounded route with a relaxed-validation notice" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-TheGateBouncer.Tests.ps1" assertions="0" time="0.047" />
+    <testcase name="TheGateBouncer and issue inventory.blocks protected kernel paths even when detours are requested" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-TheGateBouncer.Tests.ps1" assertions="0" time="0.020" />
+    <testcase name="TheGateBouncer and issue inventory.wires inventory and pre/post bouncer stages into iteration reports" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Invoke-TheGateBouncer.Tests.ps1" assertions="0" time="0.002" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" tests="39" errors="0" failures="25" hostname="adc-sandbox" id="14" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" time="0.216">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="PKIChainManager - Module Surface.Imports without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports exactly 7 functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports Initialize-PKIChainManager" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="PKIChainManager - Module Surface.Exports New-RootCACertificate" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports New-SubordinateCACertificate" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports New-CodeSignCertificate" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports Get-PKIChainStatus" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.017" />
+    <testcase name="PKIChainManager - Module Surface.Exports Export-CertToVault" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PKIChainManager - Module Surface.Exports New-FullPKIChain" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Initialize-PKIChainManager.Creates the expected sub-directories" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Initialize-PKIChainManager.Accepts an already-existing base path without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Initialize-PKIChainManager.Sets the internal initialised flag (verified by Get-PKIChainStatus not throwing)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Pre-initialisation guard.New-RootCACertificate throws before Initialize-PKIChainManager" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Pre-initialisation guard.Get-PKIChainStatus throws before Initialize-PKIChainManager" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="New-RootCACertificate.Returns a result object with expected properties" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-RootCACertificate.Returns Type = RootCA" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-RootCACertificate.Creates a PFX file on disk" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-RootCACertificate.Creates a CER file on disk" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-RootCACertificate.Certificate NotAfter is approximately 1 year in future" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-RootCACertificate.Thumbprint is a valid 40-char hex string" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-SubordinateCACertificate.Returns Type = SubordinateCA" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-SubordinateCACertificate.Records SignedBy = Root CA thumbprint" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-SubordinateCACertificate.Creates SubCA PFX file" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-SubordinateCACertificate.Throws when signer thumbprint does not exist in store" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-CodeSignCertificate.Returns Type = CodeSigning" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-CodeSignCertificate.Creates CodeSign PFX file" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-CodeSignCertificate.Certificate has Enhanced Key Usage for Code Signing" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Get-PKIChainStatus.Returns a list without throwing" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Get-PKIChainStatus.Includes at least the RootCA entry when .cer file is present" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Get-PKIChainStatus.RootCA entry has Status = Valid (cert is 1yr validity, ~400 days left)" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Get-PKIChainStatus.Reports EXPIRING for cert with &lt;90 days remaining" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Get-PKIChainStatus.Returns DaysLeft as an integer" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Export-CertToVault.Calls Set-VaultSecret when vault function is available" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="Export-CertToVault.Does not write raw PFX bytes to temp/ or cwd when vault is available" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-FullPKIChain.Returns an object with RootCA, SubCA, and CodeSigning properties" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-FullPKIChain.RootCA entry has Type = RootCA" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-FullPKIChain.SubCA is signed by Root CA" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-FullPKIChain.CodeSigning cert is signed by SubCA" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+    <testcase name="New-FullPKIChain.All three PFX files exist on disk" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PKIChainManager.Tests.ps1" assertions="0" time="0.000">
+      <failure message="This test should run but it did not. Most likely a setup in some parent block failed."></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-AutoCorrectGate.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="15" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-AutoCorrectGate.Tests.ps1" time="0.164">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="PwShGUI-AutoCorrectGate module surface.Imports and exports required functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-AutoCorrectGate.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Invoke-AutoCorrectGate behavior.WhatIf mode does not modify files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-AutoCorrectGate.Tests.ps1" assertions="0" time="0.080" />
+    <testcase name="Invoke-AutoCorrectGate behavior.Triggers K5 loop-cap/no-progress when attempts are exhausted without improvement" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-AutoCorrectGate.Tests.ps1" assertions="0" time="0.059" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" tests="6" errors="0" failures="0" hostname="adc-sandbox" id="16" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" time="0.151">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Initialize-ConvoVaultKey.does not throw when called with a temp path" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.011" />
+    <testcase name="Protect-ConvoData / Unprotect-ConvoData round-trip.encrypts and decrypts a string" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.033" />
+    <testcase name="Protect-ConvoEntry.does not throw for a simple entry" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Add-ConvoEntry / Get-ConvoEntries round-trip.adds and retrieves at least one entry" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="Export-ConvoBundle.exports bundle file to temp path" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Invoke-ConvoExchange.returns a result object without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-ConvoVault.Tests.ps1" assertions="0" time="0.013" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" tests="9" errors="0" failures="0" hostname="adc-sandbox" id="17" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" time="0.226">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="EventLogAdapter -- ConvertTo-CanonicalSeverity.maps Write-AppLog severities to canonical" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.027" />
+    <testcase name="EventLogAdapter -- ConvertTo-CanonicalSeverity.maps Write-CronLog severities to canonical" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="EventLogAdapter -- ConvertTo-CanonicalSeverity.maps legacy XHTML labels (BOOT/CRASH) and unknowns default to INFO" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="EventLogAdapter -- Write/Get round-trip.writes and reads back a normalized row with the canonical envelope shape" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.020" />
+    <testcase name="EventLogAdapter -- Write/Get round-trip.writes optional provenance fields when provided" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.011" />
+    <testcase name="EventLogAdapter -- root aggregate.unions multiple scopes when scope=root" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="DiffScheduler -- DryRun parses and runs.invokes Invoke-DiffScheduler.ps1 -Once with exit 0" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="EventLogStandard -- script registration.registers all EventLog/Diff scheduler scripts in agentic-manifest.json" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.064" />
+    <testcase name="EventLogStandard -- script registration.registers EventLog adapter actionRoutes in agenticAPI.actionRoutes" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-EventLogAdapter.Tests.ps1" assertions="0" time="0.045" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" tests="6" errors="0" failures="0" hostname="adc-sandbox" id="18" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" time="0.288">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Test-IntegrityManifest.skips with Passed = true when the manifest path does not exist" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.019" />
+    <testcase name="Test-IntegrityManifest.accepts a valid empty JSON manifest without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="Test-IntegrityManifest.reports a violation for a file missing from the workspace" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.016" />
+    <testcase name="Invoke-StartupIntegrityCheck.returns Passed, Issues and IssueCount" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.097" />
+    <testcase name="Invoke-StartupIntegrityCheck.fails when required workspace directories are missing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.100" />
+    <testcase name="Initialize-EmergencyUnlockKey.requires a WorkspacePath parameter" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-IntegrityCore.Tests.ps1" assertions="0" time="0.003" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" tests="13" errors="0" failures="4" hostname="adc-sandbox" id="19" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" time="0.219">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="PwShGUI-KillSwitch module.Get-VersionKillSwitch.returns the seed row when version is V=x" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.009" />
+    <testcase name="PwShGUI-KillSwitch module.Get-VersionKillSwitch.clones the seed row for a new version and computes hashes" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.012" />
+    <testcase name="PwShGUI-KillSwitch module.Get-VersionKillSwitch.persists the cloned row to disk" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="PwShGUI-KillSwitch module.Get-VersionKillSwitch.returns the same row on subsequent calls without duplicating" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="PwShGUI-KillSwitch module.Register-KillTarget / Get-RegisteredKillTargets.tracks process targets" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="PwShGUI-KillSwitch module.Register-KillTarget / Get-RegisteredKillTargets.tracks service targets" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="PwShGUI-KillSwitch module.Invoke-KillSwitch.attempts to stop registered targets without throwing" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.082">
+      <failure message="CommandNotFoundException: Could not find Command Stop-Service"></failure>
+    </testcase>
+    <testcase name="PwShGUI-KillSwitch module.Test-KillSwitchIntegrity.returns no drift when Md5/Sha256 match the Passphrase" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="PwShGUI-KillSwitch module.Test-KillSwitchIntegrity.detects drift when Passphrase changes without hash recompute" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="PwShGUI-KillSwitch module.DPAPI Protect/Unprotect helpers (W3).round-trips a passphrase via Protect/Unprotect" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.010">
+      <failure message="PlatformNotSupportedException: Operation is not supported on this platform.&#xA;MethodInvocationException: Exception calling &quot;Protect&quot; with &quot;3&quot; argument(s): &quot;Operation is not supported on this platform.&quot;">at Protect-KillSwitchPassphrase, /root/copilot-worktrees/KPEJET2-PowerShellGUI/modules/PwShGUI-KillSwitch.psm1:75
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1:115</failure>
+    </testcase>
+    <testcase name="PwShGUI-KillSwitch module.DPAPI Protect/Unprotect helpers (W3).passes plaintext through Unprotect when no DPAPI prefix present" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="PwShGUI-KillSwitch module.DPAPI Protect/Unprotect helpers (W3).is idempotent: Protect of an already-wrapped value returns the input" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.003">
+      <failure message="PlatformNotSupportedException: Operation is not supported on this platform.&#xA;MethodInvocationException: Exception calling &quot;Protect&quot; with &quot;3&quot; argument(s): &quot;Operation is not supported on this platform.&quot;">at Protect-KillSwitchPassphrase, /root/copilot-worktrees/KPEJET2-PowerShellGUI/modules/PwShGUI-KillSwitch.psm1:75
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1:125</failure>
+    </testcase>
+    <testcase name="PwShGUI-KillSwitch module.DPAPI Protect/Unprotect helpers (W3).unwraps DPAPI-stored passphrase via Get-VersionKillSwitch" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1" assertions="0" time="0.005">
+      <failure message="PlatformNotSupportedException: Operation is not supported on this platform.&#xA;MethodInvocationException: Exception calling &quot;Protect&quot; with &quot;3&quot; argument(s): &quot;Operation is not supported on this platform.&quot;">at Protect-KillSwitchPassphrase, /root/copilot-worktrees/KPEJET2-PowerShellGUI/modules/PwShGUI-KillSwitch.psm1:75
+at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-KillSwitch.Tests.ps1:133</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" tests="4" errors="0" failures="0" hostname="adc-sandbox" id="20" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" time="0.038">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="PwShGUI-PSVersionStandards Module.Imports successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="PwShGUI-PSVersionStandards Module.Exports 8 functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Get-PSVersionStandard.Returns version standard data" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Test-PSVersionMinimum.Returns boolean for current host" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-PSVersionStandards.Tests.ps1" assertions="0" time="0.012" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" tests="17" errors="0" failures="1" hostname="adc-sandbox" id="21" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" time="0.690">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Parse-VersionTag.Parses new V-format tag with minor .0" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Parse-VersionTag.Parses V-format tag with non-zero minor" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Parse-VersionTag.Parses legacy lowercase v tag (backward compat)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Parse-VersionTag.Parses tag with different build prefix" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Parse-VersionTag.Returns null for invalid tag" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Format-VersionTag.Formats tag with uppercase V and minor .0" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Format-VersionTag.Formats tag with non-zero minor" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.013" />
+    <testcase name="Format-VersionTag.Uses script default prefix when none specified" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Get-FileVersion / Set-FileVersion.Reads version from file with V-format tag" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.008" />
+    <testcase name="Get-FileVersion / Set-FileVersion.Writes new version tag to file" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Step-MinorVersion.Increments minor version by 1" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.004" />
+    <testcase name="Step-MinorVersion.Increments minor from higher value" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="CPSR Action Persistence.Persists actions to file-backed JSON" status="Failed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.011">
+      <failure message="JsonReaderException: Unexpected character encountered while parsing value: }. Path '', line 0, position 0.&#xA;ArgumentException: Conversion from JSON failed with error: Unexpected character encountered while parsing value: }. Path '', line 0, position 0.">at &lt;ScriptBlock&gt;, /root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1:144</failure>
+    </testcase>
+    <testcase name="Save-PipelineEpoch / Get-LatestEpoch.Saves epoch JSON and returns path" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.033" />
+    <testcase name="Save-PipelineEpoch / Get-LatestEpoch.Epoch JSON contains required fields" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Save-PipelineEpoch / Get-LatestEpoch.Get-LatestEpoch returns most recent" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Get-WorkspaceVersionInventory.Returns version info for workspace files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUI-VersionManager.Tests.ps1" assertions="0" time="0.537" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" tests="17" errors="0" failures="0" hostname="adc-sandbox" id="22" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" time="0.236">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Initialize-CorePaths.Should create required directories in TestDrive" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Assert-DirectoryExists.Should create a directory that does not exist" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.009" />
+    <testcase name="Assert-DirectoryExists.Should not fail when directory already exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Write-AppLog.Should write a log entry without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Write-AppLog.Should write different severity levels" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.038" />
+    <testcase name="Write-ScriptLog.Should write a script-level log without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Export-LogBuffer.Should export buffered log entries without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Get-AllProjectPaths.Should return a hashtable or object with path properties" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Get-RainbowColor.Should return a color object" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Get-RainbowColor.Should return different colors for different indices" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Write-AppLog level validation.Should accept all six canonical levels without throwing" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.007" />
+    <testcase name="Write-AppLog level validation.Should reject non-canonical levels" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Invoke-LogRotation.Should run without error when log directory exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="Write-ErrorReport.Logs an error record without throwing by default" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.010" />
+    <testcase name="Write-ErrorReport.Rethrows when -Rethrow is set" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="PwShGUICore Utility Functions.Validates config paths successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="PwShGUICore Utility Functions.Enumerates project files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/PwShGUICore.Tests.ps1" assertions="0" time="0.058" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SASC-Adapters.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="23" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SASC-Adapters.Tests.ps1" time="0.021">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="SASC-Adapters Module.Imports successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SASC-Adapters.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="SASC-Adapters Module.Exports 8 functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SASC-Adapters.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="SASC-Adapters export contract.Exports the expected public adapter commands" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SASC-Adapters.Tests.ps1" assertions="0" time="0.006" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SINGovernance.Tests.ps1" tests="3" errors="0" failures="0" hostname="adc-sandbox" id="24" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SINGovernance.Tests.ps1" time="0.105">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="SINGovernance Module.Imports successfully" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SINGovernance.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="SINGovernance Module.Exports 6 functions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SINGovernance.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Get-SINReviewQueue.Returns queue data without error" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SINGovernance.Tests.ps1" assertions="0" time="0.079" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" tests="48" errors="0" failures="0" hostname="adc-sandbox" id="25" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" time="0.278">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="Start-LocalWebEngine — Script exists.Script file is present" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — Script exists.Has a VersionTag header" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/scan/status route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/scan/crashes route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/scan/full route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/scan/incremental route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/scan/static route (new)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/agent/stats route (new)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/engine/status route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/engine/events route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/engine/logs/list route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/pipeline/feature-submit route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/engine/stop route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/csrf-token route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/config/bootstrap-menu/rollback route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — API Route declarations.Has /api/config/bootstrap-menu/history route" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has Invoke-StaticScan function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has Get-AgentStats function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has Invoke-Scan function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has Get-EngineEvents function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has New-PipelineFeatureSubmit function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.017" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has request client class helper function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has static fallback allow-list helper function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap config validator function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap snapshot helper function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap rollback handler function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap snapshot retention helper function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap rollback snapshot resolver function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Handler functions present.Has bootstrap history handler function" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — public key fingerprint cache.Get-PublicKeyFingerprint handles an uninitialized cache variable under strict mode" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.014" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Save-BootstrapMenuConfig validates payload via Test-BootstrapMenuConfigObject" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Save-BootstrapMenuConfig creates snapshot before write" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Save-BootstrapMenuConfig enforces schema version" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Save-BootstrapMenuConfig applies snapshot retention policy" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Rollback-BootstrapMenuConfig is wired in route switch" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Rollback-BootstrapMenuConfig supports targeted snapshot requests" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — Bootstrap menu governance checks.Get-BootstrapMenuSnapshotHistory returns snapshot count payload" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Start-LocalWebEngine — CSRF protection on mutating routes.Invoke-Scan checks SessionToken" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — CSRF protection on mutating routes.Invoke-StaticScan has CSRF check" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Start-LocalWebEngine — CSRF protection on mutating routes.Get-AgentStats does NOT require CSRF (GET route)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.005" />
+    <testcase name="Start-LocalWebEngine — CSRF protection on mutating routes./api/csrf-token includes clientClass metadata" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — CSRF protection on mutating routes.New-PipelineFeatureSubmit validates CSRF token" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.006" />
+    <testcase name="Start-LocalWebEngine — Approvals payload compatibility.Get-PipelineApprovals emits both items and pending aliases" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — WebSocket hello schema hardening.WebSocket handshake payload does not include csrfToken field" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.002" />
+    <testcase name="Start-LocalWebEngine — SIN compliance.No PS7-only null-coalesce in code lines (P005)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.032" />
+    <testcase name="Start-LocalWebEngine — SIN compliance.No hardcoded absolute paths in code lines (P015)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.026" />
+    <testcase name="Start-LocalWebEngine — SIN compliance.No Invoke-Expression in code lines (P010)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.026" />
+    <testcase name="Start-LocalWebEngine — SIN compliance.All Set-Content calls use -LiteralPath (P009)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/Start-LocalWebEngine.Tests.ps1" assertions="0" time="0.026" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" tests="9" errors="0" failures="0" hostname="adc-sandbox" id="26" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" time="5.778">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="SyntaxGuard - Parse Validation.All .ps1/.psm1 files parse without errors" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="1.009" />
+    <testcase name="SyntaxGuard - PS 5.1 Compatibility.No null-coalescing operator in .ps1/.psm1 files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="2.126" />
+    <testcase name="SyntaxGuard - PS 5.1 Compatibility.No null-conditional operator in .ps1/.psm1 files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="2.042" />
+    <testcase name="SyntaxGuard - File Integrity.Main-GUI.ps1 does not exceed 700KB (corruption guard)" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="SyntaxGuard - File Integrity.Main-GUI.ps1 has exactly one VersionTag header" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.056" />
+    <testcase name="SyntaxGuard - File Integrity.Main-GUI.ps1 has no duplicate function definitions" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.015" />
+    <testcase name="SyntaxGuard - File Integrity.Main-GUI.ps1 line count is under 15000" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.003" />
+    <testcase name="SyntaxGuard - Style Compliance.No empty catch blocks in module files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.252" />
+    <testcase name="SyntaxGuard - Style Compliance.No SilentlyContinue on Import-Module in module files" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/SyntaxGuard.Tests.ps1" assertions="0" time="0.246" />
+  </testsuite>
+  <testsuite name="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" tests="4" errors="0" failures="0" hostname="adc-sandbox" id="27" skipped="0" disabled="0" package="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" time="0.025">
+    <properties>
+      <property name="junit-version" value="4" />
+      <property name="clr-version" value="8.0.10" />
+      <property name="machine-name" value="adc-sandbox" />
+      <property name="user" value="root" />
+      <property name="platform" value="Linux" />
+      <property name="os-version" value="6.12.115-adc.2" />
+      <property name="user-domain" value="" />
+      <property name="cwd" value="/root/copilot-worktrees/KPEJET2-PowerShellGUI" />
+      <property name="framework-version" value="5.7.1" />
+    </properties>
+    <testcase name="VersionTag canonical format.config/system-variables.xml exists" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="VersionTag canonical format.Version element has Major, Minor, Build, VMajor, VMinor" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" assertions="0" time="0.008" />
+    <testcase name="VersionTag canonical format.Composed VersionTag matches canonical regex" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" assertions="0" time="0.001" />
+    <testcase name="VersionTag canonical format.Main-GUI.ps1 Get-VersionString uses uppercase V literal" status="Passed" classname="/root/copilot-worktrees/KPEJET2-PowerShellGUI/tests/VersionTag-Canonical.Tests.ps1" assertions="0" time="0.006" />
+  </testsuite>
+</testsuites>

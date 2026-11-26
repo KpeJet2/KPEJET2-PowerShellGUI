@@ -40,6 +40,16 @@ Describe 'Assert-SafePath' {
             Set-ItResult -Skipped -Because 'Assert-SafePath not exported'
         }
     }
+
+    It 'Rejects a sibling path sharing the allowed-root prefix' {
+        if (Get-Command Assert-SafePath -ErrorAction SilentlyContinue) {
+            $rootName = Split-Path $script:WorkspaceRoot -Leaf
+            $sibling = Join-Path (Split-Path $script:WorkspaceRoot -Parent) "$rootName-outside"
+            { Assert-SafePath -Path $sibling -AllowedRoots @($script:WorkspaceRoot) } | Should -Throw
+        } else {
+            Set-ItResult -Skipped -Because 'Assert-SafePath not exported'
+        }
+    }
 }
 
 Describe 'Initialize-SASCModule' {
