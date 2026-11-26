@@ -70,3 +70,9 @@ ehthumbs.db
 
 
 /net-commander
+
+# Backups and agent debug logs
+*.bak
+*.bak-*
+*.remediate.bak
+tests/agent-debug-log-*.json
