@@ -140,7 +140,8 @@ Describe 'CPSR Action Persistence' {
 
     It 'Persists actions to file-backed JSON' {
         Add-CPSRAction -Action 'TEST_ACTION' -Agent 'TestAgent' -ItemId 'item-1' -ItemType 'Test' -VersionBefore 'v1' -VersionAfter 'v2' -Detail 'test detail'
-        $lines = Get-Content (Join-Path (Split-Path -Parent $PSScriptRoot) 'temp\cpsr-actions-session.json')
+        $actionFile = Join-Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'temp') 'cpsr-actions-session.json'
+        $lines = Get-Content $actionFile
         $lastLine = $lines[-1] | ConvertFrom-Json
         $lastLine.action | Should -Be 'TEST_ACTION'
     }
