@@ -3,7 +3,7 @@
 # SupportsPS7.6: YES
 #Requires -Modules @{ ModuleName = 'Pester'; ModuleVersion = '5.0' }
 
-$modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'modules\VsCodeConfigCoverage.psm1'
+$modulePath = Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'modules') 'VsCodeConfigCoverage.psm1'
 Import-Module $modulePath -Force -ErrorAction Stop
 
 Describe 'VsCodeConfigCoverage' {
@@ -45,9 +45,9 @@ Describe 'VsCodeConfigCoverage' {
     }
 
     It 'discovers stable install, user, and workspace paths' {
-        $discovery.Stable.InstallDefaultPath | Should -Be (Join-Path $fixtureRoot 'ProgramFiles\Microsoft VS Code\resources\app\defaults\settings.json')
-        $discovery.Stable.CurrentUserPath | Should -Be (Join-Path $fixtureRoot 'AppData\Code\settings.json')
-        $discovery.Stable.CurrentWorkspacePath | Should -Be (Join-Path $fixtureRoot 'workspace\.vscode\settings.json')
+        $discovery.Stable.InstallDefaultPath | Should -Be (Join-Path $defaultDir 'settings.json')
+        $discovery.Stable.CurrentUserPath | Should -Be (Join-Path $userDir 'settings.json')
+        $discovery.Stable.CurrentWorkspacePath | Should -Be (Join-Path $workspaceDir 'settings.json')
         $discovery.Insiders.CurrentUserPath | Should -Match 'Code - Insiders'
     }
 

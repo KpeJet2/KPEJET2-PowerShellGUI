@@ -10,7 +10,13 @@ $ErrorActionPreference = 'Stop'
 function Join-VsCodePath {
     param([Parameter(Mandatory)][string]$Base, [Parameter(Mandatory)][string]$Child)
     if ([string]::IsNullOrWhiteSpace($Base)) { return $null }
-    return Join-Path $Base $Child
+    $path = $Base
+    foreach ($segment in ([regex]::Split($Child, '[\\/]+'))) {
+        if (-not [string]::IsNullOrWhiteSpace($segment)) {
+            $path = Join-Path $path $segment
+        }
+    }
+    return $path
 }
 
 function Get-VsCodePathDiscovery {
@@ -182,7 +188,8 @@ function Get-VsCodeConfigSnapshot {
     param([string]$WorkspacePath, [hashtable]$Discovery)
     if ($null -eq $Discovery) { $Discovery = Get-VsCodePathDiscovery -WorkspacePath $WorkspacePath }
     $sources = New-Object System.Collections.ArrayList
-    foreach ($channel in @($Discovery.Keys)) {
+    foreach ($channel in @('Stable', 'Insiders')) {
+        if (-not $Discovery.ContainsKey($channel)) { continue }
         $paths = $Discovery[$channel]
         [void]$sources.Add((Get-VsCodeSource -Scope 'user' -BaselineKind 'install-default' -Channel $channel -Path $paths.InstallDefaultPath))
         [void]$sources.Add((Get-VsCodeSource -Scope 'user' -BaselineKind 'current' -Channel $channel -Path $paths.CurrentUserPath))
