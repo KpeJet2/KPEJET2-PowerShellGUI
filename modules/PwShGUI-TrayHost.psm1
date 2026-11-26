@@ -210,6 +210,9 @@ function Start-KeyboardMonitor {
     )
     if (-not $PSCmdlet.ShouldProcess('Start-KeyboardMonitor', 'Execute')) { return }
 
+    if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+        return
+    }
 
     if ($script:_KeyboardTimer) { return }  # already running
 

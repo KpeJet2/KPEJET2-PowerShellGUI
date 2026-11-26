@@ -213,8 +213,12 @@ function Invoke-KillSwitch {
     foreach ($t in @($Script:RegisteredKillTargets)) {
         try {
             if ($t.ServiceName) {
-                $svc = Get-Service -Name $t.ServiceName -ErrorAction SilentlyContinue
-                if ($svc -and $svc.Status -ne 'Stopped') {
+                $svc = if (Get-Command Get-Service -ErrorAction SilentlyContinue) {
+                    Get-Service -Name $t.ServiceName -ErrorAction SilentlyContinue
+                } else {
+                    $null
+                }
+                if ($svc -and $svc.Status -ne 'Stopped' -and (Get-Command Stop-Service -ErrorAction SilentlyContinue)) {
                     Stop-Service -Name $t.ServiceName -Force -ErrorAction SilentlyContinue
                     [void]$stopped.Add("svc:$($t.ServiceName)")
                 }
