@@ -800,6 +800,12 @@ function Initialize-ConfigFile {
     $buildElem = $xmlDoc.CreateElement("Build")
     $buildElem.InnerText = '0'
     $versionElement.AppendChild($buildElem) | Out-Null
+    $vMajorElem = $xmlDoc.CreateElement("VMajor")
+    $vMajorElem.InnerText = '1'
+    $versionElement.AppendChild($vMajorElem) | Out-Null
+    $vMinorElem = $xmlDoc.CreateElement("VMinor")
+    $vMinorElem.InnerText = '0'
+    $versionElement.AppendChild($vMinorElem) | Out-Null
     $root.AppendChild($versionElement) | Out-Null
 
     $excludeElement = $xmlDoc.CreateElement("Do-Not-VersionTag-FoldersFiles")

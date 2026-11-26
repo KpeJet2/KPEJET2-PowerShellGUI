@@ -126,6 +126,25 @@ Describe 'Write-ErrorReport' {
     }
 }
 
+Describe 'Initialize-ConfigFile' {
+    It 'Writes the complete canonical version and button schema' {
+        $root = Join-Path $TestDrive 'config-generation'
+        $configDir = Join-Path $root 'config'
+        $configPath = Join-Path $configDir 'system-variables.xml'
+        $logsDir = Join-Path $root 'logs'
+        $scriptsDir = Join-Path $root 'scripts'
+        New-Item -ItemType Directory -Path $configDir,$logsDir,$scriptsDir -Force | Out-Null
+
+        Initialize-ConfigFile -ConfigFile $configPath -LogsDir $logsDir -ConfigDir $configDir -ScriptsDir $scriptsDir
+
+        [xml]$config = Get-Content -LiteralPath $configPath -Raw
+        $config.SystemVariables.Version.VMajor | Should -Be '1'
+        $config.SystemVariables.Version.VMinor | Should -Be '0'
+        $config.SystemVariables.Buttons.LeftColumn.Button.Count | Should -BeGreaterThan 0
+        $config.SystemVariables.Buttons.RightColumn.Button.Count | Should -BeGreaterThan 0
+    }
+}
+
 Describe 'PwShGUICore Utility Functions' {
     BeforeAll {
         # These helpers validate the real workspace; reinitialise away from
