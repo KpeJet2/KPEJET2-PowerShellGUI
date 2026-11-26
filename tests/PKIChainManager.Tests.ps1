@@ -26,6 +26,10 @@
 #Requires -Version 5.1
 #Requires -Modules @{ ModuleName = 'Pester'; ModuleVersion = '5.0' }
 
+BeforeDiscovery {
+    $script:WindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
+}
+
 BeforeAll {
     $modulePath = Join-Path $PSScriptRoot '..\modules\PKIChainManager.psm1'
     try {
@@ -141,7 +145,7 @@ Describe 'Pre-initialisation guard' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'New-RootCACertificate' {
+Describe 'New-RootCACertificate' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_rootca'
         Initialize-PKIChainManager -BasePath $testBase
@@ -189,7 +193,7 @@ Describe 'New-RootCACertificate' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'New-SubordinateCACertificate' {
+Describe 'New-SubordinateCACertificate' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_subca'
         Initialize-PKIChainManager -BasePath $testBase
@@ -225,7 +229,7 @@ Describe 'New-SubordinateCACertificate' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'New-CodeSignCertificate' {
+Describe 'New-CodeSignCertificate' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_codesign'
         Initialize-PKIChainManager -BasePath $testBase
@@ -259,7 +263,7 @@ Describe 'New-CodeSignCertificate' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'Get-PKIChainStatus' {
+Describe 'Get-PKIChainStatus' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_status'
         Initialize-PKIChainManager -BasePath $testBase
@@ -311,7 +315,7 @@ Describe 'Get-PKIChainStatus' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'Export-CertToVault' {
+Describe 'Export-CertToVault' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_vault'
         Initialize-PKIChainManager -BasePath $testBase
@@ -344,7 +348,7 @@ Describe 'Export-CertToVault' {
 }
 
 # ════════════════════════════════════════════════════════════════
-Describe 'New-FullPKIChain' {
+Describe 'New-FullPKIChain' -Skip:(-not $script:WindowsPlatform) {
     BeforeAll {
         $testBase = Join-Path $TestDrive 'pki_full'
         Initialize-PKIChainManager -BasePath $testBase

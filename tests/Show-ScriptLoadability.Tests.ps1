@@ -73,7 +73,7 @@ Describe "Show-Script loadability — <_>" -ForEach $showScripts {
         $script:Content | Should -Not -Match '\?\.' -Because 'SIN P005'
     }
 
-    It 'Dot-sources without terminating error' -Skip:($script:LaunchesUiOnLoad -contains $_) {
+    It 'Dot-sources without terminating error' -Skip:(($script:LaunchesUiOnLoad -contains $_) -or ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT)) {
         if (-not (Test-Path -LiteralPath $script:ScriptPath)) {
             Set-ItResult -Pending -Because 'Script not found'
             return

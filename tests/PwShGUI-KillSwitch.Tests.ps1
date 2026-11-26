@@ -9,7 +9,12 @@
 #>
 Set-StrictMode -Version Latest
 
+BeforeDiscovery {
+    $script:WindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
+}
+
 BeforeAll {
+    $script:WindowsPlatform = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
     $script:ModulePath = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\modules\PwShGUI-KillSwitch.psm1')).Path
     $script:TempCsv    = Join-Path ([System.IO.Path]::GetTempPath()) ("kill-switches-test-{0}.csv" -f ([guid]::NewGuid().ToString('N').Substring(0,8)))
     @(
@@ -78,9 +83,11 @@ Describe 'PwShGUI-KillSwitch module' {
 
         It 'attempts to stop registered targets without throwing' {
             Mock -ModuleName PwShGUI-KillSwitch Stop-Process { } -Verifiable
-            Mock -ModuleName PwShGUI-KillSwitch Stop-Service { } -Verifiable
             Mock -ModuleName PwShGUI-KillSwitch Get-Process { [pscustomobject]@{ Id = 999999 } }
-            Mock -ModuleName PwShGUI-KillSwitch Get-Service { [pscustomobject]@{ Name = 'NoSuchSvc_Pester'; Status = 'Running' } }
+            if ($script:WindowsPlatform) {
+                Mock -ModuleName PwShGUI-KillSwitch Stop-Service { } -Verifiable
+                Mock -ModuleName PwShGUI-KillSwitch Get-Service { [pscustomobject]@{ Name = 'NoSuchSvc_Pester'; Status = 'Running' } }
+            }
             { Invoke-KillSwitch -Reason 'pester' } | Should -Not -Throw
         }
     }
@@ -111,7 +118,7 @@ Describe 'PwShGUI-KillSwitch module' {
 
     Context 'DPAPI Protect/Unprotect helpers (W3)' {
 
-        It 'round-trips a passphrase via Protect/Unprotect' {
+        It 'round-trips a passphrase via Protect/Unprotect' -Skip:(-not $script:WindowsPlatform) {
             $wrapped = Protect-KillSwitchPassphrase -PlainText 'purplezero'
             $wrapped | Should -Match '^DPAPI:'
             (Unprotect-KillSwitchPassphrase -Value $wrapped) | Should -Be 'purplezero'
@@ -121,13 +128,13 @@ Describe 'PwShGUI-KillSwitch module' {
             (Unprotect-KillSwitchPassphrase -Value 'plain-thing') | Should -Be 'plain-thing'
         }
 
-        It 'is idempotent: Protect of an already-wrapped value returns the input' {
+        It 'is idempotent: Protect of an already-wrapped value returns the input' -Skip:(-not $script:WindowsPlatform) {
             $first  = Protect-KillSwitchPassphrase -PlainText 'abc'
             $second = Protect-KillSwitchPassphrase -PlainText $first
             $second | Should -Be $first
         }
 
-        It 'unwraps DPAPI-stored passphrase via Get-VersionKillSwitch' {
+        It 'unwraps DPAPI-stored passphrase via Get-VersionKillSwitch' -Skip:(-not $script:WindowsPlatform) {
             $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("kill-switches-dpapi-{0}.csv" -f ([guid]::NewGuid().ToString('N').Substring(0,8)))
             try {
                 $wrapped = Protect-KillSwitchPassphrase -PlainText 'purplezero'
