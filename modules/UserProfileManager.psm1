@@ -359,6 +359,10 @@ function Get-TaskbarLayout {
         TaskbandData     = $null
     }
 
+    if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+        return $data
+    }
+
     # Pinned shortcuts (lnk files in taskbar folder -- works on both Win10 and Win11)
     $taskbarPinDir = Join-Path $env:APPDATA 'Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar'
     try {
@@ -959,6 +963,25 @@ function Get-InstalledFonts {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Returns a collection or aggregate; plural noun is semantically clearer than singular for these collection/list/settings/metrics APIs. Renaming would require alias bridges across many call sites.')]
     param()
     $result = [System.Collections.Generic.List[hashtable]]::new()
+    if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+        $fontRoots = @(
+            '/usr/share/fonts',
+            '/usr/local/share/fonts',
+            (Join-Path $HOME '.local/share/fonts'),
+            (Join-Path $HOME '.fonts')
+        )
+        Get-ChildItem -Path $fontRoots -Recurse -File -Include '*.ttf','*.otf' -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Unique |
+            ForEach-Object {
+                $result.Add(@{
+                    Name     = $_.BaseName
+                    FileName = $_.Name
+                    FullPath = $_.FullName
+                    Exists   = $true
+                })
+            }
+        return $result
+    }
     try {
         $fontKey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
         if (Test-Path $fontKey) {
