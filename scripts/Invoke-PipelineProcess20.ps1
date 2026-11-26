@@ -87,7 +87,13 @@ if (Test-Path $adapter) {
 
 $script:PipeEventSeq = 0
 $script:PipeActionId = 'pipe20-' + ([guid]::NewGuid().ToString().Substring(0,8))
-$script:PipeEditor = [string]$env:USERNAME
+$script:PipeEditor = if (-not [string]::IsNullOrWhiteSpace($env:USERNAME)) {
+    [string]$env:USERNAME
+} elseif (-not [string]::IsNullOrWhiteSpace($env:USER)) {
+    [string]$env:USER
+} else {
+    [string][Environment]::UserName
+}
 
 function New-PipeEventId {
     $script:PipeEventSeq++

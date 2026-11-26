@@ -26,8 +26,16 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $root = (Resolve-Path -LiteralPath $WorkspacePath).Path
+$machineName = [string][Environment]::MachineName
+$userName = if (-not [string]::IsNullOrWhiteSpace($env:USERNAME)) {
+    [string]$env:USERNAME
+} elseif (-not [string]::IsNullOrWhiteSpace($env:USER)) {
+    [string]$env:USER
+} else {
+    [string][Environment]::UserName
+}
 if ([string]::IsNullOrWhiteSpace($InstanceId)) {
-    $InstanceId = $env:COMPUTERNAME
+    $InstanceId = $machineName
 }
 if ([string]::IsNullOrWhiteSpace($FixRoot)) {
     $FixRoot = Join-Path (Join-Path $root 'temp') 'host-fixes'
@@ -63,9 +71,9 @@ function Get-HostConfiguration {
         instanceId       = $InstanceId
         fixId            = $fixId
         generatedAtUtc   = (Get-Date).ToUniversalTime().ToString('o')
-        computerName     = $env:COMPUTERNAME
-        userName         = $env:USERNAME
-        userProfile      = $env:USERPROFILE
+        computerName     = $machineName
+        userName         = $userName
+        userProfile      = if (-not [string]::IsNullOrWhiteSpace($env:USERPROFILE)) { $env:USERPROFILE } else { $HOME }
         systemRoot       = $env:SystemRoot
         workspacePath    = $root
         processId        = $PID
@@ -83,7 +91,7 @@ function Get-HostConfiguration {
             sha256 = $configHash
         }
         listeningPorts   = @(Get-HostPorts)
-        prereqCommand    = ('pwsh -NoProfile -ExecutionPolicy Bypass -File "' + (Join-Path $root 'scripts\Invoke-WorkspacePreReqs.ps1') + '" -WorkspacePath "' + $root + '" -Action CheckAll')
+        prereqCommand    = ('pwsh -NoProfile -ExecutionPolicy Bypass -File "' + (Join-Path (Join-Path $root 'scripts') 'Invoke-WorkspacePreReqs.ps1') + '" -WorkspacePath "' + $root + '" -Action CheckAll')
         applyCommand     = ('pwsh -NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '" -WorkspacePath "' + $root + '" -InstanceId "' + $InstanceId + '" -Action Apply')
     }
 }
