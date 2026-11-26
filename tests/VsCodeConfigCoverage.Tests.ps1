@@ -3,8 +3,10 @@
 # SupportsPS7.6: YES
 #Requires -Modules @{ ModuleName = 'Pester'; ModuleVersion = '5.0' }
 
-$modulePath = Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'modules') 'VsCodeConfigCoverage.psm1'
-Import-Module $modulePath -Force -ErrorAction Stop
+BeforeAll {
+    $modulePath = Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) 'modules') 'VsCodeConfigCoverage.psm1'
+    Import-Module $modulePath -Force -ErrorAction Stop
+}
 
 Describe 'VsCodeConfigCoverage' {
     BeforeEach {
