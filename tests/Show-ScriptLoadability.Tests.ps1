@@ -33,7 +33,7 @@ $showScripts = @(
 )
 
 # These launch a modal WinForms dialog at top level, which blocks forever on CI.
-$script:LaunchesUiOnLoad = @('Show-EventLogViewer', 'Show-WorkspaceIntentReview')
+$script:LaunchesUiOnLoad = @('Show-CertificateManager', 'Show-EventLogViewer', 'Show-WorkspaceIntentReview')
 
 Describe "Show-Script loadability — <_>" -ForEach $showScripts {
     BeforeAll {
