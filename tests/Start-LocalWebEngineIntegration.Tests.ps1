@@ -217,10 +217,11 @@ BeforeAll {
 
     # Start engine with -NoLaunchBrowser to prevent browser competing for single-threaded queue
     if (Test-Path -LiteralPath $script:EngineScript) {
+        $hostExe = (Get-Process -Id $PID).Path
         $engineJob = Start-Job -ScriptBlock {
-            param($scriptPath, $wsPath)
-            & powershell.exe -NoProfile -NonInteractive -File $scriptPath -WorkspacePath $wsPath -NoLaunchBrowser
-        } -ArgumentList $script:EngineScript, $script:WsPath
+            param($scriptPath, $wsPath, $hostExe)
+            & $hostExe -NoProfile -NonInteractive -File $scriptPath -WorkspacePath $wsPath -NoLaunchBrowser
+        } -ArgumentList $script:EngineScript, $script:WsPath, $hostExe
         $script:EngineJobId = $engineJob.Id
 
         # Poll for HTTP readiness (20 × 500ms = 10 seconds max)

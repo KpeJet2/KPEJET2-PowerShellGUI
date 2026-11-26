@@ -706,7 +706,7 @@ Describe 'P027 Scanner Gate Enforcement' {
 
     It 'Scanner exits non-zero when FailOnSinId targets P027' {
         if (Test-Path $script:scannerOut) { Remove-Item -LiteralPath $script:scannerOut -ErrorAction SilentlyContinue }
-        $scannerProc = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+        $scannerProc = Start-Process -FilePath (Get-Process -Id $PID).Path -ArgumentList @(
             '-NoProfile',
             '-ExecutionPolicy', 'Bypass',
             '-File', $script:scannerPath,

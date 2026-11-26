@@ -317,7 +317,7 @@ Describe 'Pipeline Metric Increment Harness' {
         $harness = Join-Path $repoRoot 'tests\Invoke-PipelineMetricIncrementHarness.ps1'
         Test-Path $harness | Should -Be $true
 
-        $hostExe = if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { 'pwsh.exe' } else { 'powershell.exe' }
+        $hostExe = (Get-Process -Id $PID).Path
         $args = @(
             '-NoProfile',
             '-ExecutionPolicy', 'Bypass',
