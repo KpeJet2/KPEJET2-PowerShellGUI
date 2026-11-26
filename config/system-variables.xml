@@ -1,39 +1,37 @@
 <SystemVariables>
-  <AppData>
-  </AppData>
-  <ProgramFiles_x86>
-  </ProgramFiles_x86>
-  <ProgramFiles>
-  </ProgramFiles>
   <ComputerName>
   </ComputerName>
+  <ExecutionDate>2026-11-26 14:36:37</ExecutionDate>
+  <ScriptsDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-vscodeiso/scripts</ScriptsDirectory>
+  <ProcessorCount>
+  </ProcessorCount>
+  <Temp>/tmp</Temp>
+  <ProgramFiles_x86>
+  </ProgramFiles_x86>
+  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
   <Windows>
   </Windows>
-  <LogDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/logs</LogDirectory>
-  <LocalAppData>
-  </LocalAppData>
+  <ConfigDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-vscodeiso/config</ConfigDirectory>
+  <LogDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-vscodeiso/logs</LogDirectory>
   <UserName>
   </UserName>
+  <AppData>
+  </AppData>
+  <UserDomain>
+  </UserDomain>
   <OSVersion>Unix 6.12.115.2</OSVersion>
   <SystemRoot>
   </SystemRoot>
-  <ProcessorCount>
-  </ProcessorCount>
-  <UserDomain>
-  </UserDomain>
-  <Temp>/tmp</Temp>
-  <InitialExecutionHost>ConsoleHost</InitialExecutionHost>
+  <LocalAppData>
+  </LocalAppData>
   <PSVersion>7.4.6</PSVersion>
   <PowerShellVersion>7</PowerShellVersion>
-  <ConfigDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/config</ConfigDirectory>
-  <ExecutionDate>2026-11-26 13:50:17</ExecutionDate>
-  <ScriptsDirectory>/root/copilot-worktrees/KPEJET2-PowerShellGUI-widget/scripts</ScriptsDirectory>
+  <ProgramFiles>
+  </ProgramFiles>
   <Version>
     <Major>2611</Major>
     <Minor>B0</Minor>
     <Build>0</Build>
-    <VMajor>1</VMajor>
-    <VMinor>0</VMinor>
   </Version>
   <Do-Not-VersionTag-FoldersFiles>
     <Folder>~BACKUPS</Folder>
