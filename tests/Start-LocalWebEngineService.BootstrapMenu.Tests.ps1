@@ -14,6 +14,9 @@ without launching the tray host UI.
 Set-StrictMode -Version Latest
 
 BeforeAll {
+    if (-not (Get-Command Get-CimInstance -ErrorAction SilentlyContinue)) {
+        function global:Get-CimInstance { throw 'Get-CimInstance is unavailable on this platform' }
+    }
     $script:RepoRoot = Split-Path $PSScriptRoot -Parent
     $script:ServiceScript = Join-Path $script:RepoRoot 'scripts\Start-LocalWebEngineService.ps1'
     $script:ServiceContent = Get-Content -LiteralPath $script:ServiceScript -Raw -Encoding UTF8
@@ -198,7 +201,7 @@ Describe 'Start-LocalWebEngineService bootstrap runtime state' {
         @(@($state.headings)[0].items[0].pages).Count | Should -Be 1
     }
 
-    It 'renders headings from extracted runtime state' {
+    It 'renders headings from extracted runtime state' -Skip:([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
         Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
 
         $root = New-Object System.Windows.Forms.ToolStripMenuItem('Bootstrap Quick Access')
