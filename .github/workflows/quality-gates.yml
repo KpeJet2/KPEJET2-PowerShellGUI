@@ -22,7 +22,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Show PowerShell version
         shell: pwsh
@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload drift report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: parse-manifest-report
           path: reports/interop-iter/iter-0.json
@@ -81,7 +81,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Run error-handling compliance loop (2 iterations)
         shell: pwsh
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload error-handling loop report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: error-handling-loop
           path: '~REPORTS/ErrorHandlingLoop/'
@@ -122,7 +122,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Check SIN-P048 linkage coverage
         shell: pwsh
