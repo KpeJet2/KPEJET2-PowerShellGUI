@@ -1,4 +1,6 @@
-﻿<#
+﻿# VersionTag: 2607.B7.V53.0
+# FileRole: Module
+<#
 .SYNOPSIS
     Session Resilience Loop -- outcome classification, retry ladder maths and
     retryable-session discovery.
