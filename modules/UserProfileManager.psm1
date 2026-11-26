@@ -1440,9 +1440,12 @@ function Save-ProfileSnapshot {
             $plainPwd = Get-AutoRollbackPassword -ProfileName $snapshotCopy.Meta.ProfileName
         } else {
             if ($null -eq $Password) { throw 'Password is required when Encrypt=$true.' }
-            $bstr     = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
-            $plainPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+            $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+            try {
+                $plainPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+            } finally {
+                [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+            }
         }
 
         $dataJson  = $snapshotCopy.Data | ConvertTo-Json -Depth 20 -Compress
@@ -1487,9 +1490,12 @@ function Import-ProfileSnapshot {
             if ($null -eq $Password) {
                 throw 'ENCRYPTED:This profile is encrypted. A password is required to open it.'
             }
-            $bstr     = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
-            $plainPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-            [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+            $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+            try {
+                $plainPwd = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+            } finally {
+                [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+            }
         }
         $decrypted     = Unprotect-ProfileData -CipherText $snapshot.Data -Salt $snapshot.Meta.EncryptionSalt -Password $plainPwd
         $snapshot.Data = $decrypted | ConvertFrom-Json -AsHashtable -ErrorAction Stop

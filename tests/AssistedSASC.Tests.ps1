@@ -83,6 +83,22 @@ Describe 'Find-BWCli' {
     }
 }
 
+Describe 'New-VaultKey' {
+    It 'Uses the complete Unicode password as key material' {
+        $firstPassword = ConvertTo-SecureString 'Pässword-一' -AsPlainText -Force
+        $secondPassword = ConvertTo-SecureString 'Pässword-二' -AsPlainText -Force
+        $results = & (Get-Module AssistedSASC) {
+            param($FirstPassword, $SecondPassword)
+            $salt = [byte[]](1..32)
+            $first = New-VaultKey -Password $FirstPassword -Salt $salt -Confirm:$false
+            $second = New-VaultKey -Password $SecondPassword -Salt $salt -Confirm:$false
+            @([Convert]::ToBase64String($first.AesKey), [Convert]::ToBase64String($second.AesKey))
+        } $firstPassword $secondPassword
+
+        $results[0] | Should -Not -Be $results[1]
+    }
+}
+
 
 <# Outline:
     Stub: describe module/script purpose here.

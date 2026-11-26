@@ -57,7 +57,7 @@ function Unprotect-WRCredential {
         $encrypted = $Stored.Substring($script:_VaultDpapiPrefix.Length)
         $secure = ConvertTo-SecureString $encrypted
         $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-        try { return [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr) }
+        try { return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
         finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
     } catch { return '' }
 }
