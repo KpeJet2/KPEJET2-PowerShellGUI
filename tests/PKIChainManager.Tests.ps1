@@ -329,7 +329,7 @@ Describe 'Export-CertToVault' {
 
     It 'Calls Set-VaultSecret when vault function is available' {
         Mock Set-VaultSecret { return $true } -ModuleName PKIChainManager -Verifiable
-        { Export-CertToVault -Thumbprint $script:vaultRootR.Thumbprint -VaultLabel 'TestRootCA' -PfxPassword (ConvertTo-SecureString 'TestP@ss1!' -AsPlainText -Force) } |
+        { Export-CertToVault -PfxPath $script:vaultRootR.PfxPath -VaultItemName 'TestRootCA' } |
             Should -Not -Throw
         Should -Invoke Set-VaultSecret -Times 1 -ModuleName PKIChainManager
     }
@@ -337,7 +337,7 @@ Describe 'Export-CertToVault' {
     It 'Does not write raw PFX bytes to temp/ or cwd when vault is available' {
         $before = Get-ChildItem (Join-Path $env:TEMP '*.pfx') -ErrorAction SilentlyContinue
         Mock Set-VaultSecret { return $true } -ModuleName PKIChainManager
-        Export-CertToVault -Thumbprint $script:vaultRootR.Thumbprint -VaultLabel 'TestRootCA2' -PfxPassword (ConvertTo-SecureString 'TestP@ss1!' -AsPlainText -Force)
+        Export-CertToVault -PfxPath $script:vaultRootR.PfxPath -VaultItemName 'TestRootCA2'
         $after = Get-ChildItem (Join-Path $env:TEMP '*.pfx') -ErrorAction SilentlyContinue
         @($after).Count | Should -Be @($before).Count -Because 'No plaintext PFX should be written to temp when vault is available'
     }
