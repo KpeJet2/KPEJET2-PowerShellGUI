@@ -13,13 +13,13 @@ BeforeAll {
 Describe 'release letter and zero rules' {
     It 'accepts alpha/beta and human single-zero forms' {
         $script:Source | Should -Match '\(\[A-Za-z\]\)\(\\d\+\)'
-        $script:Source | Should -Match "return \"\$letter`0\""
+        $script:Source | Should -Match 'return "\$letter`0"'
         $script:Source | Should -Match 'releaseLetter'
         $script:Source | Should -Match 'releaseNumber'
     }
 
     It 'reserves triple zero for C/D security tokens' {
-        $script:Source | Should -Match "\$letter -notin @\('C','D'\)"
+        $script:Source | Should -Match '\$letter -notin @\(''C'',\s*''D''\)'
         $script:Source | Should -Match 'reservedZeroClass'
         $script:Source | Should -Match 'A00'
     }
