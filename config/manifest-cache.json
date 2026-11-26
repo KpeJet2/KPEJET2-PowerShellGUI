@@ -127,7 +127,7 @@
       "Encrypted": "No"
     },
     {
-      "RelPath": "UI\\ALL-Start-Menu_Service_Checks-n-Trays.bat",
+      "RelPath": "UI\\Start-ALL-Menu_Service_Checks-n-Trays.bat",
       "Signature": "12264|639223152492193271",
       "Created": "2026-08-14T21:13:20",
       "Modified": "2026-08-14T22:40:49",
@@ -197,7 +197,7 @@
       "Encrypted": "No"
     },
     {
-      "RelPath": "UI\\Check-Setup-and-PreReqs.bat",
+      "RelPath": "UI\\Setup-Check-and-PreReqs.bat",
       "Signature": "4189|639223152491830971",
       "Created": "2026-08-14T21:17:11",
       "Modified": "2026-08-14T22:40:49",

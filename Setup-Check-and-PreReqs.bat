@@ -5,7 +5,7 @@ REM VersionTag: 2608.B1.V54.2
 REM VersionBuildHistory:
 REM   2608.B1.V54.2  2026-08-14  Added lowercase check, uppercase setup/upgrade selectors and ! master flow.
 REM ==============================================================
-REM  Check-Setup-and-PreReqs.bat
+REM  Setup-Check-and-PreReqs.bat
 REM  Lowercase = check only
 REM  Uppercase = setup/upgrade
 REM  !         = master check/report then setup/upgrade and recheck

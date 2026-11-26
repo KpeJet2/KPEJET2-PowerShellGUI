@@ -7,7 +7,7 @@ REM   2608.B1.V54.2  2026-08-14  Renamed launcher file; added Check/Setup PreReq
 REM   2608.B1.V54.1  2026-08-04  Added option T to launch LocalWebEngine, ClusterTabController, and MainGui in minimized color-coded WT tabs.
 REM   2608.B1.V54.0  2026-08-03  Added unified Services+Trays menu taxonomy launcher.
 REM ==================================================================
-REM  ALL-Start-Menu_Service_Checks-n-Trays.bat
+REM  Start-ALL-Menu_Service_Checks-n-Trays.bat
 REM  Quick taxonomy launcher for services, trays, setup, tests,
 REM  sandbox, pipeline, tools, engines, and README references.
 REM ==================================================================
@@ -120,9 +120,9 @@ if "%OPT%"=="k" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\script
 if "%OPT%"=="L" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Invoke-NetMonCollector.ps1" -WorkspacePath "%WS%" -EngineBaseUrl http://127.0.0.1:8042 -SampleLimit 120 & goto POST
 if "%OPT%"=="l" "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%WS%\scripts\Invoke-CronProcessor.ps1" -WorkspacePath "%WS%" -DryRun & goto POST
 
-if "%OPT%"=="y" call "%WS%\Check-Setup-and-PreReqs.bat" /CHECK & goto POST
-if "%OPT%"=="Y" call "%WS%\Check-Setup-and-PreReqs.bat" /SETUP & goto POST
-if "%OPT%"=="!" call "%WS%\Check-Setup-and-PreReqs.bat" /MASTER & goto POST
+if "%OPT%"=="y" call "%WS%\Setup-Check-and-PreReqs.bat" /CHECK & goto POST
+if "%OPT%"=="Y" call "%WS%\Setup-Check-and-PreReqs.bat" /SETUP & goto POST
+if "%OPT%"=="!" call "%WS%\Setup-Check-and-PreReqs.bat" /MASTER & goto POST
 
 if "%OPT%"=="R" start "" "%WS%\README.md" & goto POST
 if "%OPT%"=="r" start "" "%WS%\scripts\README.md" & goto POST
@@ -162,7 +162,7 @@ echo  scripts\Start-LocalWebEngineService.ps1
 echo    -Action Start^|Stop^|Restart^|Status^|LaunchWebpage^|RunTray^|Help
 echo    -NoTray -WorkspacePath -Port -TrayPollSec
 echo.
-echo  Check-Setup-and-PreReqs.bat
+echo  Setup-Check-and-PreReqs.bat
 echo    /CHECK /SETUP /MASTER
 echo    CLI selectors: lowercase=check, uppercase=setup/upgrade, ! master
 echo ================================================================
@@ -196,7 +196,7 @@ echo    K/k -> Pipeline refine staged + canonical path validation
 echo    L/l -> NetMon collector + Cron dry-run
 echo.
 echo  checks.prereqs
-echo    y/Y/! -> Check-Setup-and-PreReqs CLI and master remediation flow
+echo    y/Y/! -> Setup-Check-and-PreReqs CLI and master remediation flow
 echo.
 echo  docs.readme
 echo    R/r/S/s/V/t -> README links by domain
