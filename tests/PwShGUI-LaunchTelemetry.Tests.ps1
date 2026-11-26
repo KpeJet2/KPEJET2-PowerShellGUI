@@ -25,38 +25,47 @@ AfterAll {
 
 Describe 'Get-LaunchTelemetry' {
 
+    BeforeAll {
+        $script:TelemetryArgs = @{
+            BatchName  = 'Launch-GUI.bat'
+            VersionTag = '2607.B7.V53.0'
+            BatchPath  = 'C:\PowerShellGUI\Launch-GUI.bat'
+        }
+    }
+
     Context 'Return type' {
         It 'returns an object' {
-            $result = Get-LaunchTelemetry
+            $result = Get-LaunchTelemetry @script:TelemetryArgs
             $result | Should -Not -BeNullOrEmpty
         }
 
-        It 'result is a PSCustomObject or hashtable' {
-            $result = Get-LaunchTelemetry
-            $result.GetType().Name | Should -BeIn @('PSCustomObject', 'Hashtable', 'OrderedDictionary')
+        It 'result is a PSCustomObject' {
+            $result = Get-LaunchTelemetry @script:TelemetryArgs
+            $result.GetType().Name | Should -Be 'PSCustomObject'
         }
     }
 
     Context 'Required keys' {
-        BeforeAll { $script:Telemetry = Get-LaunchTelemetry }
+        BeforeAll { $script:Telemetry = Get-LaunchTelemetry @script:TelemetryArgs }
 
-        It 'has a TotalElapsedMs or ElapsedMs key' {
-            $has = ($script:Telemetry.PSObject.Properties.Name -match 'Elapsed' -or
-                    ($script:Telemetry -is [hashtable] -and ($script:Telemetry.Keys -match 'Elapsed').Count -gt 0))
-            $has | Should -BeTrue
+        It 'has all 14 documented telemetry properties' {
+            $expected = @('Timestamp','BatchName','VersionTag','MachineName','Username','IPAddress',
+                'BatchPath','SystemVolume','SystemVolFreeSpace','MemoryUsedOfTotal','CPULoad',
+                'GPULoad','TotalProcesses','IsAdmin')
+            $actual = @($script:Telemetry.PSObject.Properties.Name)
+            foreach ($name in $expected) { $actual | Should -Contain $name }
         }
 
-        It 'elapsed value is numeric' {
-            $key = $script:Telemetry.PSObject.Properties.Name | Where-Object { $_ -match 'Elapsed' } | Select-Object -First 1
-            if ($key) {
-                { [double]$script:Telemetry.$key } | Should -Not -Throw
-            }
+        It 'echoes the caller-supplied batch parameters' {
+            $script:Telemetry.BatchName  | Should -Be $script:TelemetryArgs.BatchName
+            $script:Telemetry.VersionTag | Should -Be $script:TelemetryArgs.VersionTag
+            $script:Telemetry.BatchPath  | Should -Be $script:TelemetryArgs.BatchPath
         }
     }
 
     Context 'Edge cases' {
         It 'does not throw on repeated calls' {
-            { Get-LaunchTelemetry; Get-LaunchTelemetry } | Should -Not -Throw
+            { Get-LaunchTelemetry @script:TelemetryArgs; Get-LaunchTelemetry @script:TelemetryArgs } | Should -Not -Throw
         }
     }
 }
